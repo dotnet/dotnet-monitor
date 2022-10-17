@@ -33,8 +33,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Tool.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\Microsoft.Diagnostics.Monitoring.Tool.UnitTests.csproj", "{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.ExecuteActionApp", "src\Tests\Microsoft.Diagnostics.Monitoring.ExecuteActionApp\Microsoft.Diagnostics.Monitoring.ExecuteActionApp.csproj", "{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Profiler.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.Profiler.UnitTests\Microsoft.Diagnostics.Monitoring.Profiler.UnitTests.csproj", "{A25AC517-F7C6-43C6-B892-4A447914C42C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp", "src\Tests\Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp\Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp.csproj", "{1CA2284B-A3A0-476A-9A93-A95E665E78BE}"
@@ -46,7 +44,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup\Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup.csproj", "{F324BAD6-C9C0-42DE-9150-D8307D972E9A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook\Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook.csproj", "{9BEB8058-7EE4-4EE2-B83D-592E85236E78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook\Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook.csproj", "{9BEB8058-7EE4-4EE2-B83D-592E85236E78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,10 +100,6 @@ Global
 		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A25AC517-F7C6-43C6-B892-4A447914C42C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A25AC517-F7C6-43C6-B892-4A447914C42C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A25AC517-F7C6-43C6-B892-4A447914C42C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -141,7 +135,6 @@ Global
 		{3AD0A40B-C569-4712-9764-7A788B9CD811} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{173F959B-231B-45D1-8328-9460D4C5BC71} = {19FAB78C-3351-4911-8F0C-8C6056401740}
 		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB} = {C7568468-1C79-4944-8136-18812A7F9EA7}
-		{A5A0CAAB-C200-44D2-BC93-8445C6E748AD} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{A25AC517-F7C6-43C6-B892-4A447914C42C} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{1CA2284B-A3A0-476A-9A93-A95E665E78BE} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{F324BAD6-C9C0-42DE-9150-D8307D972E9A} = {C7568468-1C79-4944-8136-18812A7F9EA7}

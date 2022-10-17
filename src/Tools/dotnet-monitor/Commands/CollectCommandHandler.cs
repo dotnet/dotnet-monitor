@@ -60,14 +60,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 }
                 finally
                 {
-                    if (host is IAsyncDisposable asyncDisposable)
-                    {
-                        await asyncDisposable.DisposeAsync();
-                    }
-                    else
-                    {
-                        host.Dispose();
-                    }
+                    await DisposableHelper.DisposeAsync(host);
                 }
             }
             catch (FormatException ex)
@@ -174,6 +167,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<IExperimentalFlags, ExperimentalFlags>();
                 services.ConfigureInProcessFeatures(context.Configuration);
                 services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
+                services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
             })
             .ConfigureContainer((HostBuilderContext context, IServiceCollection services) =>
             {

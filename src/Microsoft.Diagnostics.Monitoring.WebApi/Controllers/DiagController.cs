@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
-using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,6 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly OperationTrackerService _operationTrackerService;
         private readonly ICollectionRuleService _collectionRuleService;
         private readonly ProfilerChannel _profilerChannel;
+        private readonly ILogsOperationFactory _logsOperationFactory;
 
         public DiagController(ILogger<DiagController> logger,
             IServiceProvider serviceProvider)
@@ -66,6 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
             _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
             _profilerChannel = serviceProvider.GetRequiredService<ProfilerChannel>();
+            _logsOperationFactory = serviceProvider.GetRequiredService<ILogsOperationFactory>();
         }
 
         /// <summary>
@@ -675,15 +676,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             // Allow sync I/O on logging routes due to StreamLogger's usage.
             HttpContext.AllowSynchronousIO();
 
-            string fileName = LogsUtilities.GenerateLogsFileName(processInfo.EndpointInfo);
-            string contentType = LogsUtilities.GetLogsContentType(format.Value);
+            IArtifactOperation logsOperation = _logsOperationFactory.Create(
+                processInfo.EndpointInfo,
+                settings,
+                format.Value);
 
             return Result(
                 Utilities.ArtifactType_Logs,
                 egressProvider,
-                (outputStream, token) => LogsUtilities.CaptureLogsAsync(null, format.Value, processInfo.EndpointInfo, settings, outputStream, token),
-                fileName,
-                contentType,
+                logsOperation.ExecuteAsync,
+                logsOperation.GenerateFileName(),
+                logsOperation.ContentType,
                 processInfo,
                 format != LogFormat.PlainText);
         }

@@ -35,14 +35,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         public async ValueTask DisposeAsync()
         {
-            if (DisposableHelper.CanDispose(ref _disposedState))
+            if (!DisposableHelper.CanDispose(ref _disposedState))
             {
-                _disposalTokenSource.SafeCancel();
-
-                await _completionTask.SafeAwait();
-
-                _disposalTokenSource.Dispose();
+                return;
             }
+
+            _disposalTokenSource.SafeCancel();
+
+            await _completionTask.SafeAwait();
+
+            _disposalTokenSource.Dispose();
         }
 
         public async Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)

@@ -729,4 +729,20 @@
   <data name="DisplayAttributeDescription_CollectStacksOptions_Egress" xml:space="preserve">
     <value>The name of the egress provider to which the call stacks are egressed.</value>
   </data>
+  <data name="DisplayAttributeDescription_CollectTraceOptions_StoppingEvent" xml:space="preserve">
+    <value>The event to watch for while collecting the trace, and once observed the trace will be stopped.</value>
+    <comment>The description provided for the StoppingEvent parameter on CollectTraceOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_TraceEventFilter_EventName" xml:space="preserve">
+    <value>The name of the event, which is a concatenation of the task name and opcode name, if any. The task and opcode names are separated by a '/'. If the event has no opcode, then the event name is just the task name.</value>
+    <comment>The description provided for the EventName parameter on TraceEventFilter.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_TraceEventFilter_ProviderName" xml:space="preserve">
+    <value>The event provider that will produce the specified event.</value>
+    <comment>The description provided for the ProviderName parameter on TraceEventFilter.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_TraceEventFilter_PayloadFilter" xml:space="preserve">
+    <value>A mapping of event payload field names to their expected value. A subset of the payload fields may be specified.</value>
+    <comment>The description provided for the PayloadFilter parameter on TraceEventFilter.</comment>
+  </data>
 </root>

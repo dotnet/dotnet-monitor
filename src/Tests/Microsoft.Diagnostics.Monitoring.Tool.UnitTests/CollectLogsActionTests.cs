@@ -54,7 +54,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     {
                         { TestAppScenarios.Logger.Categories.LoggerCategory1, LogLevel.Error },
                         { TestAppScenarios.Logger.Categories.LoggerCategory2, null },
-                        { TestAppScenarios.Logger.Categories.LoggerCategory3, LogLevel.Warning }
+                        { TestAppScenarios.Logger.Categories.LoggerCategory3, LogLevel.Warning },
+                        { TestAppScenarios.Logger.Categories.SentinelCategory, LogLevel.Critical }
                     },
                     LogLevel = LogLevel.Information,
                     UseAppFilters = false
@@ -222,12 +223,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ICollectionRuleActionFactoryProxy factory;
                 Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectLogs, out factory));
 
-                using CancellationTokenSource endpointTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
-
                 EndpointInfoSourceCallback endpointInfoCallback = new(_outputHelper);
                 await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(endpointInfoCallback);
 
-                AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
+                await using AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
                 runner.ScenarioName = TestAppScenarios.Logger.Name;
 
                 Task<IEndpointInfo> newEndpointInfoTask = endpointInfoCallback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);

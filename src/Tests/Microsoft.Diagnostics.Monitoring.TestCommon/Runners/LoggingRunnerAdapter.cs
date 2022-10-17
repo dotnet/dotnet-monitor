@@ -22,15 +22,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         private readonly List<string> _standardOutputLines = new();
 
         private bool _finishReads;
-        private int? _exitCode;
-        private bool _isDisposed;
-        private int? _processId;
+        private long _disposedState;
         private Task _standardErrorTask;
         private Task _standardOutputTask;
 
         public Dictionary<string, string> Environment { get; } = new();
-        public int ExitCode => _exitCode.HasValue ?
-            _exitCode.Value : throw new InvalidOperationException("Must call WaitForExitAsync before getting exit code.");
+        public int ExitCode => _runner.HasExited ?
+            _runner.ExitCode : throw new InvalidOperationException("Must call WaitForExitAsync before getting exit code.");
 
         public Task<int> ProcessIdTask => _processIdSource.Task;
 
@@ -46,13 +44,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public async ValueTask DisposeAsync()
         {
-            lock (_cancellation)
+            if (!DisposableHelper.CanDispose(ref _disposedState))
             {
-                if (_isDisposed)
-                {
-                    return;
-                }
-                _isDisposed = true;
+                return;
             }
 
             _cancellation.SafeCancel();
@@ -60,8 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             _processIdSource.TrySetCanceled(_cancellation.Token);
 
             // Shutdown the runner
-            _outputHelper.WriteLine("Stopping...");
-            Runner.ForceClose();
+            await StopAsync(CancellationToken.None).SafeAwait(_outputHelper).ConfigureAwait(false);
 
             // Wait for it to exit
             await WaitForExitAsync(CancellationToken.None).SafeAwait(_outputHelper, -1).ConfigureAwait(false);
@@ -105,12 +98,25 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 await Runner.StartAsync(token).ConfigureAwait(false);
             }
 
-            _outputHelper.WriteLine("Process ID: {0}", Runner.ProcessId);
-            _processId = Runner.ProcessId;
-            _processIdSource.TrySetResult(Runner.ProcessId);
+            _outputHelper.WriteLine("Process ID: {0}", _runner.ProcessId);
+            _processIdSource.TrySetResult(_runner.ProcessId);
 
             _standardErrorTask = ReadLinesAsync(Runner.StandardError, _standardErrorLines, ReceivedStandardErrorLine, _cancellation.Token);
             _standardOutputTask = ReadLinesAsync(Runner.StandardOutput, _standardOutputLines, ReceivedStandardOutputLine, _cancellation.Token);
+        }
+
+        public async Task StopAsync(CancellationToken token)
+        {
+            if (_runner.HasExited)
+            {
+                _outputHelper.WriteLine("Already stopped.");
+            }
+            else
+            {
+                _outputHelper.WriteLine("Stopping...");
+
+                await _runner.StopAsync(token);
+            }
         }
 
         public async Task<int> WaitForExitAsync(CancellationToken token)
@@ -133,7 +139,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 exitCode = Runner.ExitCode;
             }
             _outputHelper.WriteLine("Exit Code: {0}", exitCode);
-            _exitCode = exitCode;
             return exitCode.Value;
         }
 

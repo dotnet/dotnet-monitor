@@ -304,6 +304,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The {0} field specified the provider &apos;{1}&apos; but it was not found in the {2} field..
+        /// </summary>
+        internal static string ErrorMessage_MissingStoppingEventProvider {
+            get {
+                return ResourceManager.GetString("ErrorMessage_MissingStoppingEventProvider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The environment block does not contain the &apos;{0}&apos; variable..
         /// </summary>
         internal static string ErrorMessage_NoEnvironmentVariable {
@@ -1227,6 +1236,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_SharedLibraryPath {
             get {
                 return ResourceManager.GetString("LogFormatString_SharedLibraryPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Started capturing {artifactType} artifact..
+        /// </summary>
+        internal static string LogFormatString_StartCollectArtifact {
+            get {
+                return ResourceManager.GetString("LogFormatString_StartCollectArtifact", resourceCulture);
             }
         }
         

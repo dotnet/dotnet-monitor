@@ -278,7 +278,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             await toolRunner.StartAsync();
 
-            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
+            await using AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
             appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
@@ -342,7 +342,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             await toolRunner.StartAsync();
 
-            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
+            await using AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
             appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;

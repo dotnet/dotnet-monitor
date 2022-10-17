@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 {
@@ -116,6 +117,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         {
             using CancellationTokenSource cancellation = new(timeout);
             await runner.StartAsync(cancellation.Token);
+        }
+
+        public static Task StopAsync(this MonitorCollectRunner runner)
+        {
+            return runner.StopAsync(CommonTestTimeouts.StopProcess);
+        }
+
+        public static async Task StopAsync(this MonitorCollectRunner runner, TimeSpan timeout)
+        {
+            using CancellationTokenSource cancellation = new(timeout);
+            await runner.StopAsync(cancellation.Token);
+        }
+
+        public static async Task WaitForStartCollectArtifactAsync(this MonitorCollectRunner runner, string artifactType, TimeSpan timeout)
+        {
+            using CancellationTokenSource cancellation = new(timeout);
+            await runner.WaitForStartCollectArtifactAsync(artifactType, cancellation.Token);
+        }
+
+        public static Task WaitForStartCollectLogsAsync(this MonitorCollectRunner runner)
+        {
+            return runner.WaitForStartCollectArtifactAsync(Utils.ArtifactType_Logs, CommonTestTimeouts.LogsTimeout);
         }
 
         public static Task WaitForCollectionRuleActionsCompletedAsync(this MonitorCollectRunner runner, string ruleName)

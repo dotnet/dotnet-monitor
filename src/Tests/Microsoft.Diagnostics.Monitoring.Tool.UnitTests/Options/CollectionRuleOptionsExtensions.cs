@@ -497,7 +497,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return collectTraceOptions;
         }
 
-        public static CollectTraceOptions VerifyCollectTraceAction(this CollectionRuleOptions ruleOptions, int actionIndex, IEnumerable<EventPipeProvider> providers, string expectedEgress)
+        public static CollectTraceOptions VerifyCollectTraceAction(this CollectionRuleOptions ruleOptions, int actionIndex, IEnumerable<EventPipeProvider> providers, string expectedEgress, TraceEventFilter expectedStoppingEvent = null)
         {
             CollectTraceOptions collectTraceOptions = ruleOptions.VerifyAction<CollectTraceOptions>(
                 actionIndex, KnownCollectionRuleActions.CollectTrace);
@@ -505,6 +505,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             Assert.Equal(expectedEgress, collectTraceOptions.Egress);
             Assert.NotNull(collectTraceOptions.Providers);
             Assert.Equal(providers.Count(), collectTraceOptions.Providers.Count);
+            Assert.Equal(expectedStoppingEvent, collectTraceOptions.StoppingEvent);
 
             int index = 0;
             foreach (EventPipeProvider expectedProvider in providers)

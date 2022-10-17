@@ -41,7 +41,7 @@ Object describing the basic state of a collection rule for the executing instanc
 
 | Name | Type | Description |
 |---|---|---|
-| State | [CollectionRuleState](#collectionrulestate) | Indicates what state the collection rule is in for the current process. |
+| State | [CollectionRuleState](#collectionrulestate-63) | Indicates what state the collection rule is in for the current process. |
 | StateReason | string | Human-readable explanation for the current state of the collection rule. |
 
 ## CollectionRuleDetailedDescription (6.3+)
@@ -50,7 +50,7 @@ Object describing the detailed state of a collection rule for the executing inst
 
 | Name | Type | Description |
 |---|---|---|
-| State | [CollectionRuleState](#collectionrulestate) | Indicates what state the collection rule is in for the current process. |
+| State | [CollectionRuleState](#collectionrulestate-63) | Indicates what state the collection rule is in for the current process. |
 | StateReason | string | Human-readable explanation for the current state of the collection rule. |
 | LifetimeOccurrences | int | The number of times the trigger has executed for a process in its lifetime. |
 | SlidingWindowOccurrences | int | The number of times the trigger has executed within the current sliding window. |
@@ -372,6 +372,16 @@ The `uid` property is useful for uniquely identifying a process when it is runni
     "processArchitecture": "x64"
 }
 ```
+## TraceEventFilter
+
+Object describing a filter for trace events.
+
+| Name | Type | Description |
+|---|---|---|
+| `ProviderName` | string | The event provider that will produce the specified event. |
+| `EventName` | string | The name of the event, which is a concatenation of the task name and opcode name, if any. The task and opcode names are separated by a '/'. If the event has no opcode, then the event name is just the task name. |
+| `PayloadFilter` | map (of string) | (Optional) A mapping of event payload field names to their expected value. A subset of the payload fields may be specified. |
+
 
 ## TraceProfile
 

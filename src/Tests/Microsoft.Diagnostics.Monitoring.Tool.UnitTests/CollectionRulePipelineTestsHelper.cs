@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             EndpointUtilities endpointUtilities = new(outputHelper);
             await using ServerSourceHolder sourceHolder = await endpointUtilities.StartServerAsync(endpointInfoCallback);
 
-            AppRunner runner = new(outputHelper, Assembly.GetExecutingAssembly(), tfm: tfm);
+            await using AppRunner runner = new(outputHelper, Assembly.GetExecutingAssembly(), tfm: tfm);
             runner.ConnectionMode = DiagnosticPortConnectionMode.Connect;
             runner.DiagnosticPortPath = sourceHolder.TransportName;
             runner.ScenarioName = scenarioName;
