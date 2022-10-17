@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob;
-using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using System.CommandLine;
 using System.Text.Json;
 

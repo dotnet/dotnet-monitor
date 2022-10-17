@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob {
+namespace Microsoft.Diagnostics.Monitoring.AzureStorage {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob.Strings", typeof(Strings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Diagnostics.Monitoring.AzureStorage.Strings", typeof(Strings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

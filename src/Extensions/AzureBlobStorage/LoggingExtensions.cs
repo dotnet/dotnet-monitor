@@ -4,11 +4,7 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 
-<<<<<<< HEAD
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress
-=======
 namespace Microsoft.Diagnostics.Monitoring.AzureStorage
->>>>>>> 8bff4cde (Fixed namespaces, put logging back to using ILogger)
 {
     public static class LoggingExtensions
     {
@@ -17,6 +13,13 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 eventId: LoggingEventIds.EgressCopyActionStreamToEgressStream.EventId(),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_EgressCopyActionStreamToEgressStream);
+
+        private static readonly Action<ILogger, string, string, Exception> _egressProviderUnableToFindPropertyKey =
+            LoggerMessage.Define<string, string>(
+                eventId: LoggingEventIds.EgressProvideUnableToFindPropertyKey.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EgressProvideUnableToFindPropertyKey);
+
 
         private static readonly Action<ILogger, string, Exception> _egressProviderInvokeStreamAction =
             LoggerMessage.Define<string>(
@@ -83,14 +86,14 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
             _egressCopyActionStreamToEgressStream(logger, bufferSize, null);
         }
 
+        public static void EgressProviderUnableToFindPropertyKey(this ILogger logger, string providerName, string keyName)
+        {
+            _egressProviderUnableToFindPropertyKey(logger, providerName, keyName, null);
+        }
+
         public static void EgressProviderInvokeStreamAction(this ILogger logger, string providerName)
         {
             _egressProviderInvokeStreamAction(logger, providerName, null);
-        }
-
-        public static void EgressProviderSavedStream(this ILogger logger, string providerName, string path)
-        {
-            _egressProviderSavedStream(logger, providerName, path, null);
         }
 
         public static void QueueDoesNotExist(this ILogger logger, string queueName)

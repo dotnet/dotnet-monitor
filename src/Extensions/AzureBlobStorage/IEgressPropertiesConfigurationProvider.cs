@@ -2,9 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
-
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
+namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 {
     /// <summary>
     /// Provides access to the Egress:Properties section of the configuration.

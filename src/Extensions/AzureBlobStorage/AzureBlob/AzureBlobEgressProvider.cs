@@ -44,8 +44,6 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
         {
             try
             {
-                Logger.LogInformation("THIS IS A LOG INFO TEST");
-
                 AddConfiguredMetadataAsync(options, artifactSettings);
 
                 var containerClient = await GetBlobContainerClientAsync(options, token);

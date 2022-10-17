@@ -4,7 +4,7 @@
 
 using System.Diagnostics;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress
+namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 {
     [DebuggerDisplay("{Succeeded?\"Succeeded\":\"Failed\",nq}: {Succeeded?ArtifactPath:FailureMessage}")]
     internal class EgressArtifactResult
