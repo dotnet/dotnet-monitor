@@ -5,7 +5,7 @@
 using Microsoft.Diagnostics.Monitoring;
 using System;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress
+namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 {
     /// <summary>
     /// Exception that egress providers can throw when an operational error occurs (e.g. failed to write the stream data).

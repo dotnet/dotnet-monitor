@@ -9,13 +9,15 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Queues;
+using Microsoft.Diagnostics.Monitoring.AzureStorage;
+using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
+namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
 {
     /// <summary>
     /// Egress provider for egressing stream data to an Azure blob storage account.
@@ -26,14 +28,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
     internal partial class AzureBlobEgressProvider
     {
         private readonly string AzureBlobStorage = "AzureBlobStorage";
-
-        public AzureBlobEgressProvider()
-        {
-        }
-
         protected ILogger Logger { get; }
 
-        public AzureBlobEgressProvider(ILogger<AzureBlobEgressProvider> logger)
+        public AzureBlobEgressProvider(ILogger logger)
         {
             Logger = logger;
         }
@@ -47,6 +44,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         {
             try
             {
+                Logger.LogInformation("THIS IS A LOG INFO TEST");
+
                 AddConfiguredMetadataAsync(options, artifactSettings);
 
                 var containerClient = await GetBlobContainerClientAsync(options, token);
@@ -55,7 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 BlobClient blobClient = containerClient.GetBlobClient(blobName);
 
-                Utilities.WriteInfoLogs(Strings.LogFormatString_EgressProviderInvokeStreamAction, new string[] { AzureBlobStorage });
+                Logger.EgressProviderInvokeStreamAction(AzureBlobStorage);
                 using var stream = await action(token);
 
                 // Write blob content, headers, and metadata
@@ -144,7 +143,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
             if (queueNameSet ^ queueAccountUriSet)
             {
-                Utilities.WriteInfoLogs(Strings.LogFormatString_QueueOptionsPartiallySet, Array.Empty<string>());
+                Logger.QueueOptionsPartiallySet();
             }
 
             return queueNameSet && queueAccountUriSet;
@@ -183,12 +182,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
             catch (RequestFailedException ex) when (ex.Status == ((int)HttpStatusCode.NotFound))
             {
-                Utilities.WriteWarningLogs(Strings.LogFormatString_QueueDoesNotExist, new string[] { options.QueueName, nameof(options.QueueName), nameof(options.QueueAccountUri) });
+                Logger.QueueDoesNotExist(options.QueueName);
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex); // Temporary - don't keep it like this.
-                Utilities.WriteWarningLogs(Strings.LogFormatString_WritingMessageToQueueFailed, new string[] { options.QueueName });
+                Logger.WritingMessageToQueueFailed(options.QueueName, ex);
             }
         }
 

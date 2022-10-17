@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
+namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 {
     internal sealed partial class AzureBlobEgressProviderOptions :
         IValidatableObject
@@ -22,16 +21,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             if (string.IsNullOrEmpty(AccountKey) && string.IsNullOrEmpty(SharedAccessSignature) && string.IsNullOrEmpty(ManagedIdentityClientId))
             {
                 results.Add(
-                    new ValidationResult("TEMPORARY"));
-                /*
-                results.Add(
                     new ValidationResult(
                         string.Format(
-                            OptionsDisplayStrings.ErrorMessage_CredentialsMissing,
+                            /*OptionsDisplayStrings.ErrorMessage_CredentialsMissing*/"TEMPORARARY {0} {1} {2}",
                             nameof(AccountKey),
                             nameof(SharedAccessSignature),
                             nameof(ManagedIdentityClientId))));
-                */
             }
 
             return results;

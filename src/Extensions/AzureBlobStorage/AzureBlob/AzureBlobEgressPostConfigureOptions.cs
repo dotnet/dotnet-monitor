@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
+namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
 {
     /// <summary>
     /// Fills AccountKey and SharedAccessSignature from Egress:Properties if they do not have values.
@@ -14,11 +13,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
         IPostConfigureOptions<AzureBlobEgressProviderOptions>
     {
         private readonly IEgressPropertiesProvider _provider;
+        private ILogger Logger { get; }
+
 
         public AzureBlobEgressPostConfigureOptions(
-            IEgressPropertiesProvider provider)
+            IEgressPropertiesProvider provider,
+            ILogger logger)
         {
             _provider = provider;
+            Logger = logger;
         }
 
         public void PostConfigure(string name, AzureBlobEgressProviderOptions options)
@@ -34,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 }
                 else
                 {
-                    Utilities.WriteWarningLogs(Strings.LogFormatString_EgressProviderUnableToFindPropertyKey, new string[] { name, options.AccountKeyName });
+                    Logger.EgressProviderUnableToFindPropertyKey(name, options.AccountKeyName);
                 }
             }
 
@@ -49,7 +52,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 }
                 else
                 {
-                    Utilities.WriteWarningLogs(Strings.LogFormatString_EgressProviderUnableToFindPropertyKey, new string[] { name, options.SharedAccessSignatureName });
+                    Logger.EgressProviderUnableToFindPropertyKey(name, options.SharedAccessSignatureName);
                 }
             }
 
@@ -64,7 +67,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
                 }
                 else
                 {
-                    _logger.EgressProviderUnableToFindPropertyKey(name, options.QueueSharedAccessSignatureName);
+                    Logger.EgressProviderUnableToFindPropertyKey(name, options.QueueSharedAccessSignatureName);
                 }
             }
         }

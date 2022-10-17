@@ -4,7 +4,11 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 
+<<<<<<< HEAD
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress
+=======
+namespace Microsoft.Diagnostics.Monitoring.AzureStorage
+>>>>>>> 8bff4cde (Fixed namespaces, put logging back to using ILogger)
 {
     public static class LoggingExtensions
     {

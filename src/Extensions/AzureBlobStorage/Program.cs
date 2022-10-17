@@ -2,9 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
-using System.Collections.Generic;
 using System.CommandLine;
 using System.Text.Json;
 
@@ -38,10 +37,14 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
                 AzureBlobEgressProviderOptions options = BuildOptions(configPayload);
 
-                ILoggerFactory loggerFactory = new LoggerFactory();
-                ILogger<AzureBlobEgressProvider> myLogger = loggerFactory.CreateLogger<AzureBlobEgressProvider>();
+                using var loggerFactory = LoggerFactory.Create(builder =>
+                {
+                    builder.AddConsole();
+                });
 
-                AzureBlobEgressProvider provider = new AzureBlobEgressProvider();
+                var logger = loggerFactory.CreateLogger<Program>();
+
+                AzureBlobEgressProvider provider = new AzureBlobEgressProvider(logger);
 
                 Console.CancelKeyPress += Console_CancelKeyPress;
 
