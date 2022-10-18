@@ -15,6 +15,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
     {
         private static readonly TimeSpan ExceptionTimeout = TimeSpan.FromSeconds(5);
 
+        public static string GetLocalhostUrl(this AppRunner runner)
+        {
+            UriBuilder builder = new(runner.BoundUrl);
+            builder.Host = "localhost";
+            return builder.ToString();
+        }
+
         public static async Task ExecuteAsync(this AppRunner runner, Func<Task> func)
         {
             try

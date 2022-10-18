@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -20,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
 {
     internal static class ScenarioHelpers
     {
-        public static async Task<int> RunScenarioAsync(Func<ILogger, Task<int>> func, CancellationToken token)
+        public static async Task<int> RunScenarioAsync(Func<ILogger, Task<int>> func, CancellationToken token, Action<ILogger> beforeReadyCallback = null)
         {
             // Create JSON console logger so that app can communicate with test host
             // with structured responses.
@@ -41,6 +43,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             // All test host communication should be sent through this logger.
             ILogger<Program> logger = hostServices.GetRequiredService<ILoggerFactory>()
                 .CreateLogger<Program>();
+
+            beforeReadyCallback?.Invoke(logger);
 
             logger.ScenarioState(TestAppScenarios.ScenarioState.Ready);
 
@@ -95,7 +99,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                 // Start hosted services before notifying the test host that the app is ready.
                 await host.StartAsync(token);
 
-                exitCode = await RunScenarioAsync(func, token);
+                exitCode = await RunScenarioAsync(
+                    func,
+                    token,
+                    beforeReadyCallback: logger =>
+                    {
+                        IServer server = host.Services.GetRequiredService<IServer>();
+                        IServerAddressesFeature addressesFeature = server.Features.Get<IServerAddressesFeature>();
+                        foreach (string address in addressesFeature.Addresses)
+                        {
+                            logger.BoundUrl(address);
+                        }
+                    });
 
                 // Stop hosted services after the scenario has completed.
                 await host.StopAsync(token);
