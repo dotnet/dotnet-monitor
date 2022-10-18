@@ -90,7 +90,7 @@ async function run() {
   
     await exec.exec(`curl -sSL "${patch_url}" --output changes.patch`);
 
-    const git_am_command = `git am --3way --ignore-whitespace --exclude="${excluded_path ?? ""}" --keep-non-patch changes.patch`;
+    const git_am_command = `git am --3way --ignore-whitespace --exclude="${excluded_path}" --keep-non-patch changes.patch`;
     let git_am_output = `$ ${git_am_command}\n\n`;
     let git_am_failed = false;
     try {
