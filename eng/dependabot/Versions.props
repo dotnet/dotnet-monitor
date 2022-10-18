@@ -8,7 +8,7 @@
     <MicrosoftExtensionsConfigurationAbstractionsVersion>7.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
     <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.5</MicrosoftExtensionsConfigurationKeyPerFileVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>7.0.0</MicrosoftExtensionsLoggingAbstractionsVersion>
-    <MicrosoftExtensionsLoggingConsoleVersion>6.0.0</MicrosoftExtensionsLoggingConsoleVersion>
+    <MicrosoftExtensionsLoggingConsoleVersion>7.0.0</MicrosoftExtensionsLoggingConsoleVersion>
     <MicrosoftExtensionsLoggingEventSourceVersion>7.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
     <MicrosoftIdentityModelTokensVersion>6.24.0</MicrosoftIdentityModelTokensVersion>
     <MicrosoftOpenApiReadersVersion>1.4.1</MicrosoftOpenApiReadersVersion>
