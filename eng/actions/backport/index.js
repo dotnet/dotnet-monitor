@@ -28,6 +28,7 @@ async function run() {
   let octokit = github.getOctokit(core.getInput("auth_token", { required: true }));
   let target_branch = core.getInput("target_branch", { required: true });
   let pr_label = core.getInput("label", { required: false });
+  let excluded_path = core.getInput("exclude", { required: false });
 
   try {
     // verify the comment user is a repo collaborator
@@ -89,7 +90,7 @@ async function run() {
   
     await exec.exec(`curl -sSL "${patch_url}" --output changes.patch`);
 
-    const git_am_command = "git am --3way --ignore-whitespace --keep-non-patch changes.patch";
+    const git_am_command = `git am --3way --ignore-whitespace --exclude="${excluded_path ?? ""}" --keep-non-patch changes.patch`;
     let git_am_output = `$ ${git_am_command}\n\n`;
     let git_am_failed = false;
     try {
