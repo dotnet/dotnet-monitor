@@ -2053,3 +2053,50 @@ The following example includes a default egress provider that corresponds to the
     value: "monitorBlob"
   ```
 </details>
+
+## **[Experimental]** In-Process Features Configuration (7.0+)
+
+Some features of `dotnet monitor` require loading libraries into target applications. These libraries ship with `dotnet monitor` and are provisioned to be available to target applications using the `DefaultSharedPath` option in the [storage configuration](#storage-configuration) section. The following features require these in-process libraries to be used:
+
+- Call stack collection
+
+Because these libraries are loaded into the target application (they are not loaded into `dotnet monitor`), they may have performance impact on memory and CPU utilization in the target application. These features are off by default and may be enabled via the `InProcessFeatures` configuration section.
+
+### Example
+
+To enable in-process features, such as call stack collection, use the following configuration:
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "InProcessFeatures": {
+      "Enabled": true
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  InProcessFeatures__Enabled: "true"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_InProcessFeatures__Enabled
+    value: "true"
+  ```
+</details>
+
+## Garbage Collector Mode
+
+By default `dotnet monitor` (7.0+) will use Workstation GC mode, unless running in one of the official [docker images](./docker.md) where it will use Server GC mode by default but will fallback to Workstation mode if only one logical CPU core is available.
+
+You can learn more about the different GC modes [here](https://learn.microsoft.com/aspnet/core/performance/memory?view=aspnetcore-6.0#workstation-gc-vs-server-gc), and how to configure the default GC mode [here](https://learn.microsoft.com/dotnet/core/runtime-config/garbage-collector#workstation-vs-server).
