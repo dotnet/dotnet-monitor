@@ -48,17 +48,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public Task OverlappingEventSourceTests_AspNetResponseStatusTest(DiagnosticPortConnectionMode mode)
+        public async Task OverlappingEventSourceTests_AspNetResponseStatusTest(DiagnosticPortConnectionMode mode)
         {
             const int ExpectedResponseCount = 2;
 
-            TemporaryDirectory tempDirectory = new(_outputHelper);
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
             string ExpectedFileContent = Guid.NewGuid().ToString("N");
             string[] urlPaths = new string[] { "", "/Privacy", "" };
 
             Task ruleStartedTask = null;
-            return ScenarioRunner.SingleTarget(
+            await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
                 mode,
@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         .SetAspNetResponseStatusTrigger(options =>
                         {
                             options.ResponseCount = ExpectedResponseCount;
-                            options.StatusCodes = new string[] { "200", "202" };
+                            options.StatusCodes = new string[] { "200" };
                         })
                         .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent);
 
@@ -101,17 +101,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public Task OverlappingEventSourceTests_AspNetRequestDurationTest(DiagnosticPortConnectionMode mode)
+        public async Task OverlappingEventSourceTests_AspNetRequestDurationTest(DiagnosticPortConnectionMode mode)
         {
             const int ExpectedRequestCount = 2;
 
-            TemporaryDirectory tempDirectory = new(_outputHelper);
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
             string ExpectedFileContent = Guid.NewGuid().ToString("N");
             string[] urlPaths = new string[] { "/SlowResponse", "/SlowResponse", "/SlowResponse" };
 
             Task ruleStartedTask = null;
-            return ScenarioRunner.SingleTarget(
+            await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
                 mode,
@@ -177,26 +177,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         {
             int processId = await runner.ProcessIdTask;
 
-            int retryCounter = 0;
-
-            // Repeatedly check if dotnet-monitor is detecting our process; due to timing issues,
-            // tests were sometimes failing due to the target process not being found when collecting a trace.
-            while (retryCounter < 5)
-            {
-                _outputHelper.WriteLine("Retry counter: " + retryCounter);
-
-                IEnumerable<ProcessIdentifier> identifiers = await client.GetProcessesWithRetryAsync(
-                    _outputHelper,
-                    new[] { processId });
-
-                if (identifiers.Any())
-                {
-                    break;
-                }
-
-                retryCounter += 1;
-                await Task.Delay(500);
-            }
+            var _ = await client.GetProcessesWithRetryAsync(
+                _outputHelper,
+                new[] { processId });
 
             ResponseStreamHolder holder = await client.CaptureTraceAsync(processId, TraceDuration, WebApi.Models.TraceProfile.Http);
             Assert.NotNull(holder);
