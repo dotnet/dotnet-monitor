@@ -48,11 +48,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public Task CollectionRuleAndApi_AspNetResponseStatusTest(DiagnosticPortConnectionMode mode)
+        public Task OverlappingEventSourceTests_AspNetResponseStatusTest(DiagnosticPortConnectionMode mode)
         {
             const int ExpectedResponseCount = 2;
 
-            using TemporaryDirectory tempDirectory = new(_outputHelper);
+            TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
             string ExpectedFileContent = Guid.NewGuid().ToString("N");
             string[] urlPaths = new string[] { "", "/Privacy", "" };
@@ -101,11 +101,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public Task CollectionRuleAndApi_AspNetRequestDurationTest(DiagnosticPortConnectionMode mode)
+        public Task OverlappingEventSourceTests_AspNetRequestDurationTest(DiagnosticPortConnectionMode mode)
         {
             const int ExpectedRequestCount = 2;
 
-            using TemporaryDirectory tempDirectory = new(_outputHelper);
+            TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
             string ExpectedFileContent = Guid.NewGuid().ToString("N");
             string[] urlPaths = new string[] { "/SlowResponse", "/SlowResponse", "/SlowResponse" };

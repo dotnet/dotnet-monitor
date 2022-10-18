@@ -50,8 +50,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 string arguments = Options.Arguments;
                 bool IgnoreExitCode = Options.IgnoreExitCode.GetValueOrDefault(ExecuteOptionsDefaults.IgnoreExitCode);
 
-                Console.WriteLine("Arguments: " + arguments);
-
                 ValidateFilePath(path);
 
                 // May want to capture stdout and stderr and return as part of the result in the future
@@ -68,8 +66,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     handler => process.Exited += handler,
                     handler => process.Exited -= handler,
                     token);
-
-                Console.WriteLine("FileName: " + process.StartInfo.FileName);
 
                 if (!process.Start())
                 {
