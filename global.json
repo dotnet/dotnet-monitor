@@ -3,22 +3,18 @@
     "dotnet": "7.0.100-rc.2.22477.23",
     "runtimes": {
       "aspnetcore": [
-        "$(MicrosoftAspNetCoreApp31Version)",
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(VSRedistCommonAspNetCoreSharedFrameworkx6470Version)"
       ],
       "aspnetcore/x86": [
-        "$(MicrosoftAspNetCoreApp31Version)",
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(VSRedistCommonAspNetCoreSharedFrameworkx6470Version)"
       ],
       "dotnet": [
-        "$(MicrosoftNETCoreApp31Version)",
         "$(MicrosoftNETCoreApp60Version)",
         "$(VSRedistCommonNetCoreSharedFrameworkx6470Version)"
       ],
       "dotnet/x86": [
-        "$(MicrosoftNETCoreApp31Version)",
         "$(MicrosoftNETCoreApp60Version)",
         "$(VSRedistCommonNetCoreSharedFrameworkx6470Version)"
       ]
