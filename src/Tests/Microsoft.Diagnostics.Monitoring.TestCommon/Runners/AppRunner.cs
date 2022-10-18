@@ -75,8 +75,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 "Microsoft.Diagnostics.Monitoring.UnitTestApp",
                 tfm);
 
-            _runner.TargetFramework = tfm;
-
             _waitingForEnvironmentVariables = new Dictionary<string, TaskCompletionSource<string>>();
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);

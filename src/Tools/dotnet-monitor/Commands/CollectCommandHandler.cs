@@ -167,6 +167,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureStorage(context.Configuration);
                 services.ConfigureDefaultProcess(context.Configuration);
                 services.ConfigureCollectionRules();
+                services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
             })
             .ConfigureContainer((HostBuilderContext context, IServiceCollection services) =>
             {
