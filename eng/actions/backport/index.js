@@ -80,11 +80,11 @@ async function run() {
         pull_number: pr_number
       })).data;
 
-      if (pr.merge_commit_sha !== null) {
+      if (pr.merged === true && pr.merge_commit_sha !== null) {
         patch_url = `${pr.base.repo.html_url}/commit/${pr.merge_commit_sha}.patch`;
       }
     } catch (error) {
-      console.log(`Failed to get PR information, falling back to pr patch. Error: ${error}`);
+      console.log(`Failed to get PR information, falling back to unmerged patch. Error: ${error}`);
     }
   
     await exec.exec(`curl -sSL "${patch_url}" --output changes.patch`);
