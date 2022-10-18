@@ -67,8 +67,27 @@ async function run() {
       should_open_pull_request = false;
     } catch { }
 
-    // download and apply patch
-    await exec.exec(`curl -sSL "${github.context.payload.issue.pull_request.patch_url}" --output changes.patch`);
+    // download and apply patch.
+
+    // Prefer the merge or squash commit when possible as it'll have the most up-to-date patch context for long-running branches
+    const pr_context = github.context.payload.issue.pull_request;
+    let patch_url = `${pr_context.patch_url}`;
+
+    try {
+      const pr = (await octokit.rest.pulls.get({
+        owner: repo_owner,
+        repo: repo_name,
+        pull_number: pr_number
+      })).data;
+
+      if (pr.merge_commit_sha !== null) {
+        patch_url = `${pr.base.repo.html_url}/commit/${pr.merge_commit_sha}.patch`;
+      }
+    } catch (error) {
+      console.log(`Failed to get PR information, falling back to pr patch. Error: ${error}`);
+    }
+  
+    await exec.exec(`curl -sSL "${patch_url}" --output changes.patch`);
 
     const git_am_command = "git am --3way --ignore-whitespace --keep-non-patch changes.patch";
     let git_am_output = `$ ${git_am_command}\n\n`;
