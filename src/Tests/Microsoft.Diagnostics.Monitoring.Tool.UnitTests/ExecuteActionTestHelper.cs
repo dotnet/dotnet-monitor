@@ -11,10 +11,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
     {
         public static string GenerateArgumentsString(string[] additionalArgs)
         {
-            List<string> args = new();
-
-            // Entrypoint assembly
-            args.Add(AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), "Microsoft.Diagnostics.Monitoring.ExecuteActionApp", TargetFrameworkMoniker.Net60));
+            List<string> args = new()
+            {
+                // Entrypoint assembly
+                AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), "Microsoft.Diagnostics.Monitoring.UnitTestApp"),
+                // Add scenario name
+                TestAppScenarios.Execute.Name
+            };
 
             // Entrypoint arguments
             args.AddRange(additionalArgs);
