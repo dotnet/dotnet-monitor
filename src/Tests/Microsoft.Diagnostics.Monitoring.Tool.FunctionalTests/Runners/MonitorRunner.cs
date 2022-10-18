@@ -73,11 +73,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         {
             _outputHelper = new PrefixedOutputHelper(outputHelper, "[Monitor] ");
 
-            // Must tell runner this is an ASP.NET Core app so that it can choose
-            // the correct ASP.NET Core version (which can be different than the .NET
-            // version, especially for prereleases).
-            _runner.FrameworkReference = DotNetFrameworkReference.Microsoft_AspNetCore_App;
-
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
             _adapter.ReceivedStandardOutputLine += StandardOutputCallback;
 
