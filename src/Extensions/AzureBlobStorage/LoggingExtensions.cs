@@ -81,6 +81,12 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EnvironmentBlockNotSupported);
 
+        private static readonly Action<ILogger, string, string, Exception> _egressProviderSavedStream =
+            LoggerMessage.Define<string, string>(
+                eventId: LoggingEventIds.EgressProviderSavedStream.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_EgressProviderSavedStream);
+
         public static void EgressCopyActionStreamToEgressStream(this ILogger logger, int bufferSize)
         {
             _egressCopyActionStreamToEgressStream(logger, bufferSize, null);
@@ -134,6 +140,11 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
         public static void EgressProviderUnableToFindPropertyKey(this ILogger logger, string providerName, string keyName)
         {
             _egressProviderUnableToFindPropertyKey(logger, providerName, keyName, null);
+        }
+
+        public static void EgressProviderSavedStream(this ILogger logger, string providerName, string path)
+        {
+            _egressProviderSavedStream(logger, providerName, path, null);
         }
     }
 }

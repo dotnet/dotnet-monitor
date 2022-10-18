@@ -20,6 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
         DuplicateKeyInMetadata = 7,
         EnvironmentVariableNotFound = 8,
         EnvironmentBlockNotSupported = 9,
+        EgressProviderSavedStream = 10
     }
 
     internal static class LoggingEventIdsExtensions
