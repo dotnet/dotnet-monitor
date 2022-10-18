@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
                 await SetBlobClientMetadata(blobClient, artifactSettings, token);
 
                 string blobUriString = GetBlobUri(blobClient);
-                Logger?.EgressProviderSavedStream(AzureBlobStorage, blobUriString);
+                Logger.EgressProviderSavedStream(AzureBlobStorage, blobUriString);
 
                 Logger.EgressProviderSavedStream(AzureBlobStorage, blobUriString);
 

@@ -10,17 +10,28 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 {
     internal class Program
     {
+        private readonly static string AzureBlobStorage = "AzureBlobStorage";
         private static Stream StdInStream = null;
         private static CancellationTokenSource CancelSource = new CancellationTokenSource();
+
+        protected static ILogger Logger { get; set; }
+
         static async Task<int> Main(string[] args)
         {
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+            });
+
+            Logger = loggerFactory.CreateLogger<Program>();
+
             // Expected command line format is: AzureBlobStorage.exe Egress
             RootCommand rootCommand = new RootCommand("Egresses an artifact to Azure Storage.");
 
             Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.")
             { };
 
-            egressCmd.SetHandler(Program.Egress);
+            egressCmd.SetHandler(Egress);
 
             rootCommand.Add(egressCmd);
 
@@ -36,14 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
                 AzureBlobEgressProviderOptions options = BuildOptions(configPayload);
 
-                using var loggerFactory = LoggerFactory.Create(builder =>
-                {
-                    builder.AddConsole();
-                });
-
-                var logger = loggerFactory.CreateLogger<Program>();
-
-                AzureBlobEgressProvider provider = new AzureBlobEgressProvider(logger);
+                AzureBlobEgressProvider provider = new AzureBlobEgressProvider(Logger);
 
                 Console.CancelKeyPress += Console_CancelKeyPress;
 
@@ -83,14 +87,48 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 Metadata = GetDictionaryConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.Metadata))
             };
 
-            if (string.IsNullOrEmpty(options.AccountKey) && !string.IsNullOrEmpty(options.AccountKeyName) && configPayload.Properties.TryGetValue(options.AccountKeyName, out string accountKey))
+            // If account key was not provided but the name was provided,
+            // lookup the account key property value from EgressOptions.Properties
+            if (string.IsNullOrEmpty(options.AccountKey) && !string.IsNullOrEmpty(options.AccountKeyName))
             {
-                options.AccountKey = accountKey;
+                if (configPayload.Properties.TryGetValue(options.AccountKeyName, out string accountKey))
+                {
+                    options.AccountKey = accountKey;
+                }
+                else
+                {
+                    Logger.EgressProviderUnableToFindPropertyKey(AzureBlobStorage, options.AccountKeyName);
+                }
+
             }
 
-            if (string.IsNullOrEmpty(options.SharedAccessSignature) && !string.IsNullOrEmpty(options.SharedAccessSignatureName) && configPayload.Properties.TryGetValue(options.SharedAccessSignatureName, out string sasSig))
+            // If shared access signature (SAS) was not provided but the name was provided,
+            // lookup the SAS property value from EgressOptions.Properties
+            if (string.IsNullOrEmpty(options.SharedAccessSignature) && !string.IsNullOrEmpty(options.SharedAccessSignatureName))
             {
-                options.SharedAccessSignature = sasSig;
+                if (configPayload.Properties.TryGetValue(options.SharedAccessSignatureName, out string sasSig))
+                {
+                    options.SharedAccessSignature = sasSig;
+                }
+                else
+                {
+                    Logger.EgressProviderUnableToFindPropertyKey(AzureBlobStorage, options.SharedAccessSignatureName);
+                }
+            }
+
+            // If queue shared access signature (SAS) was not provided but the name was provided,
+            // lookup the SAS property value from EgressOptions.Properties
+            if (string.IsNullOrEmpty(options.QueueSharedAccessSignature) &&
+                !string.IsNullOrEmpty(options.QueueSharedAccessSignatureName))
+            {
+                if (configPayload.Properties.TryGetValue(options.QueueSharedAccessSignatureName, out string signature))
+                {
+                    options.QueueSharedAccessSignature = signature;
+                }
+                else
+                {
+                    Logger.EgressProviderUnableToFindPropertyKey(AzureBlobStorage, options.QueueSharedAccessSignatureName);
+                }
             }
 
             return options;

@@ -161,13 +161,6 @@
 1. providerType: Type of the provider
 2. keyName: Name of the property that could not be found</comment>
   </data>
-  <data name="LogFormatString_EgressProvideUnableToFindPropertyKey" xml:space="preserve">
-    <value>Provider {providerType}: Unable to find '{keyName}' key in egress properties</value>
-    <comment>Gets the format string that is printed in the 10:EgressProvideUnableToFindPropertyKey event.
-2 Format Parameters:
-1. providerType: Type of the provider
-2. keyName: Name of the property that could not be found</comment>
-  </data>
   <data name="LogFormatString_EnvironmentBlockNotSupported" xml:space="preserve">
     <value>Target framework does not support custom egress metadata.</value>
   </data>

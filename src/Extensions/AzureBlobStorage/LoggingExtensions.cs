@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
-
 namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 {
     public static class LoggingExtensions
@@ -18,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
             LoggerMessage.Define<string, string>(
                 eventId: LoggingEventIds.EgressProvideUnableToFindPropertyKey.EventId(),
                 logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_EgressProvideUnableToFindPropertyKey);
+                formatString: Strings.LogFormatString_EgressProviderUnableToFindPropertyKey);
 
 
         private static readonly Action<ILogger, string, Exception> _egressProviderInvokeStreamAction =
