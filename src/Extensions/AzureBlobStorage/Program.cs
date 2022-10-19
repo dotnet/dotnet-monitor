@@ -196,7 +196,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
     {
         public EgressArtifactSettings Settings { get; set; }
         public Dictionary<string, string> Properties { get; set; }
-        public Dictionary<string, string> Configuration { get; set; }
+        public Dictionary<string, object> Configuration { get; set; }
         public string ProfileName { get; set; }
     }
 }

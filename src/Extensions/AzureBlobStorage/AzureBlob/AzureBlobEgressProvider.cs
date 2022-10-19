@@ -9,11 +9,6 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Queues;
-using Microsoft.Diagnostics.Monitoring.AzureStorage;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 
@@ -36,7 +31,6 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
         }
 
         public async Task<string> EgressAsync(
-            string providerName,
             AzureBlobEgressProviderOptions options,
             Func<CancellationToken, Task<Stream>> action,
             EgressArtifactSettings artifactSettings,

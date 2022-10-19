@@ -124,7 +124,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Provider {0}: Unable to find &apos;{1}&apos; key in egress properties.
+        ///   Looks up a localized string similar to Provider {providerType}: Unable to find &apos;{keyName}&apos; key in egress properties.
         /// </summary>
         internal static string LogFormatString_EgressProviderUnableToFindPropertyKey {
             get {
@@ -156,15 +156,6 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage {
         internal static string LogFormatString_InvalidMetadata {
             get {
                 return ResourceManager.GetString("LogFormatString_InvalidMetadata", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Provider {providerType}: Unable to find &apos;{keyName}&apos; key in egress properties.
-        /// </summary>
-        internal static string LogFormatString_EgressProviderUnableToFindPropertyKey {
-            get {
-                return ResourceManager.GetString("LogFormatString_EgressProviderUnableToFindPropertyKey", resourceCulture);
             }
         }
         
