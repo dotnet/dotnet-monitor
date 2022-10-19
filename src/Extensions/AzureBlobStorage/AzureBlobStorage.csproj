@@ -2,30 +2,18 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
-    <RuntimeIdentifiers>linux-x64;linux-musl-x64;win-x64</RuntimeIdentifiers>
-    <PackAsToolShimRuntimeIdentifiers>linux-x64;linux-musl-x64;win-x64</PackAsToolShimRuntimeIdentifiers>
-    <!--<OutputType>Exe</OutputType> -->
     <RootNamespace>Microsoft.Diagnostics.Monitoring.AzureStorage</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
 
-    <!-- Copied from WebApi - may not be exactly configured correctly. -->
     <Description>Azure Blob Storage extension for dotnet-monitor</Description>
-    <!-- Tentatively create package so other teams can tentatively consume. -->
-    <!--<IsPackable>true</IsPackable> -->
-    <!--<IsShippingAssembly>true</IsShippingAssembly> -->
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
     <ToolCommandName>AzureBlobStorage</ToolCommandName>
-    <!--<IncludeSymbols>true</IncludeSymbols> -->
-    <!--<OutputType>Library</OutputType> -->
-
-    <!--<PackAsToolShimRuntimeIdentifiers>linux-x64;linux-musl-x64;win-x64</PackAsToolShimRuntimeIdentifiers> -->
     <!--
       Workaround for https://github.com/dotnet/aspnetcore/issues/42200
       Required as of 7.0 Preview 5 SDK
       -->
-
     <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
   </PropertyGroup>
 

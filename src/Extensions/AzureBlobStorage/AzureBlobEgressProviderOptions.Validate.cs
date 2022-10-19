@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 results.Add(
                     new ValidationResult(
                         string.Format(
-                            /*OptionsDisplayStrings.ErrorMessage_CredentialsMissing*/"TEMPORARARY {0} {1} {2}",
+                            Strings.ErrorMessage_CredentialsMissing,
                             nameof(AccountKey),
                             nameof(SharedAccessSignature),
                             nameof(ManagedIdentityClientId))));

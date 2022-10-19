@@ -82,6 +82,11 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
             _egressProviderInvokeStreamAction(logger, providerName, null);
         }
 
+        public static void EgressProviderSavedStream(this ILogger logger, string providerName, string path)
+        {
+            _egressProviderSavedStream(logger, providerName, path, null);
+        }
+
         public static void QueueDoesNotExist(this ILogger logger, string queueName)
         {
             _queueDoesNotExist(logger, queueName, nameof(AzureBlobEgressProviderOptions.QueueName), nameof(AzureBlobEgressProviderOptions.QueueAccountUri), null);
@@ -120,11 +125,6 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
         public static void EgressProviderUnableToFindPropertyKey(this ILogger logger, string providerName, string keyName)
         {
             _egressProviderUnableToFindPropertyKey(logger, providerName, keyName, null);
-        }
-
-        public static void EgressProviderSavedStream(this ILogger logger, string providerName, string path)
-        {
-            _egressProviderSavedStream(logger, providerName, path, null);
         }
     }
 }

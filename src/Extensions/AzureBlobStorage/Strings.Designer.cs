@@ -61,6 +61,15 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The {0} field, {1} field, or {2} field is required..
+        /// </summary>
+        internal static string ErrorMessage_CredentialsMissing {
+            get {
+                return ResourceManager.GetString("ErrorMessage_CredentialsMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Azure blob egress failed: {0}.
         /// </summary>
         internal static string ErrorMessage_EgressAzureFailedDetailed {
@@ -106,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Provider {0}: Invoking stream action..
+        ///   Looks up a localized string similar to Provider {providerType}: Invoking stream action..
         /// </summary>
         internal static string LogFormatString_EgressProviderInvokeStreamAction {
             get {
@@ -115,7 +124,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Provider {0}: Saved stream to {1}.
+        ///   Looks up a localized string similar to Provider {providerType}: Saved stream to {path}.
         /// </summary>
         internal static string LogFormatString_EgressProviderSavedStream {
             get {
@@ -160,7 +169,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The queue {0} does not exist; ensure that the {1} and {2} fields are set correctly..
+        ///   Looks up a localized string similar to The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly..
         /// </summary>
         internal static string LogFormatString_QueueDoesNotExist {
             get {

@@ -57,8 +57,6 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
                 string blobUriString = GetBlobUri(blobClient);
                 Logger.EgressProviderSavedStream(AzureBlobStorage, blobUriString);
 
-                Logger.EgressProviderSavedStream(AzureBlobStorage, blobUriString);
-
                 if (CheckQueueEgressOptions(options))
                 {
                     await EgressMessageToQueue(blobName, options, token);

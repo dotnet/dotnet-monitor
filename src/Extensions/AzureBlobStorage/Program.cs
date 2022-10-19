@@ -118,8 +118,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 
             // If queue shared access signature (SAS) was not provided but the name was provided,
             // lookup the SAS property value from EgressOptions.Properties
-            if (string.IsNullOrEmpty(options.QueueSharedAccessSignature) &&
-                !string.IsNullOrEmpty(options.QueueSharedAccessSignatureName))
+            if (string.IsNullOrEmpty(options.QueueSharedAccessSignature) && !string.IsNullOrEmpty(options.QueueSharedAccessSignatureName))
             {
                 if (configPayload.Properties.TryGetValue(options.QueueSharedAccessSignatureName, out string signature))
                 {
@@ -146,15 +145,15 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
             return Task.FromResult(StdInStream);
         }
 
-        private static string GetConfig(Dictionary<string, string> configDict, string propKey)
+        private static string GetConfig(Dictionary<string, object> configDict, string propKey)
         {
             if (configDict.ContainsKey(propKey))
             {
-                return configDict[propKey];
+                return configDict[propKey].ToString();
             }
             return null;
         }
-        private static Uri GetUriConfig(Dictionary<string, string> configDict, string propKey)
+        private static Uri GetUriConfig(Dictionary<string, object> configDict, string propKey)
         {
             string uriStr = GetConfig(configDict, propKey);
             if (uriStr == null)
@@ -197,6 +196,5 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
         public EgressArtifactSettings Settings { get; set; }
         public Dictionary<string, string> Properties { get; set; }
         public Dictionary<string, object> Configuration { get; set; }
-        public string ProfileName { get; set; }
     }
 }
