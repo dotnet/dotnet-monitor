@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Amazon.Runtime;
-using Amazon.S3;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
@@ -24,27 +22,32 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             WriteToProviderStream
         }
 
-        internal class InMemoryS3ClientFactory : S3StorageEgressProvider.AmazonS3ClientFactory
+        internal class InMemoryS3ClientFactory : S3StorageEgressProvider.StorageFactory
         {
-            public readonly InMemoryS3 S3 = new();
-            public override IAmazonS3 Create(AWSCredentials awsCredentials, AmazonS3Config configuration) => S3;            
+            public InMemoryStorage S3;
+            public override Task<IS3Storage> CreateAsync(S3StorageEgressProviderOptions options, EgressArtifactSettings settings, CancellationToken token)
+            {
+                S3 = new InMemoryStorage(options.BucketName, settings.Name);
+                return Task.FromResult((IS3Storage)S3);
+            }
         }
 
-        private readonly InMemoryS3ClientFactory _clientFactory = new();
-        private readonly S3StorageEgressProvider _egressProvider;
+        private readonly TestOutputLoggerProvider _loggerProvider;
 
         public S3StorageEgressProviderTests(ITestOutputHelper outputHelper)
         {
             // Arrange
-            TestOutputLoggerProvider loggerProvider = new(outputHelper);
-            _egressProvider = new(loggerProvider.CreateLogger<S3StorageEgressProvider>()) { ClientFactory = _clientFactory };
+            _loggerProvider = new(outputHelper);
         }
 
         [Theory]
         [InlineData(EUploadAction.ProvideUploadStream)]
         [InlineData(EUploadAction.WriteToProviderStream)]
         public async Task ItShouldUploadFile(EUploadAction uploadAction)
-        {
+        { 
+            var clientFactory = new InMemoryS3ClientFactory();
+            var sut = new S3StorageEgressProvider(_loggerProvider.CreateLogger<S3StorageEgressProvider>()) { ClientFactory = clientFactory };
+
             // prepare
             S3StorageEgressProviderOptions options = ConstructEgressProviderSettings();
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
@@ -54,16 +57,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             using var stream = ConstructStream(totalBytes);
             string resourceId = uploadAction switch
             {
-                EUploadAction.ProvideUploadStream => await _egressProvider.EgressAsync(options, _ => Task.FromResult((Stream)stream), artifactSettings, CancellationToken.None),
-                EUploadAction.WriteToProviderStream => await _egressProvider.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
+                EUploadAction.ProvideUploadStream => await sut.EgressAsync(options, _ => Task.FromResult((Stream)stream), artifactSettings, CancellationToken.None),
+                EUploadAction.WriteToProviderStream => await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
                 _ => throw new ArgumentException(nameof(uploadAction))
             };
 
             // verify
             Assert.Equal($"BucketName={options.BucketName}, Key={artifactSettings.Name}", resourceId);
 
-            var storage = _clientFactory.S3;
-            (string key, InMemoryS3.StorageData data) = Assert.Single(storage.Bucket(options.BucketName));
+            var storage = clientFactory.S3;
+            (string key, InMemoryStorage.StorageData data) = Assert.Single(storage.Storage);
             Assert.Equal(key, artifactSettings.Name);            
             Assert.Equal(totalBytes, data.Size);
             Assert.Equal(stream.ToArray(), data.Bytes());
@@ -74,6 +77,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
         [InlineData(EUploadAction.WriteToProviderStream)]
         public async Task ItShouldUploadEmptyFile(EUploadAction uploadAction)
         {
+            var clientFactory = new InMemoryS3ClientFactory();
+            var sut = new S3StorageEgressProvider(_loggerProvider.CreateLogger<S3StorageEgressProvider>()) { ClientFactory = clientFactory };
+
             // prepare
             S3StorageEgressProviderOptions options = ConstructEgressProviderSettings();
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
@@ -83,37 +89,40 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             using var stream = ConstructStream(totalBytes);
             string resourceId = uploadAction switch
             {
-                EUploadAction.ProvideUploadStream => await _egressProvider.EgressAsync(options, _ => Task.FromResult((Stream)stream), artifactSettings, CancellationToken.None),
-                EUploadAction.WriteToProviderStream => await _egressProvider.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
+                EUploadAction.ProvideUploadStream => await sut.EgressAsync(options, _ => Task.FromResult((Stream)stream), artifactSettings, CancellationToken.None),
+                EUploadAction.WriteToProviderStream => await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
                 _ => throw new ArgumentException(nameof(uploadAction))
             };
 
             // verify
             Assert.Equal($"BucketName={options.BucketName}, Key={artifactSettings.Name}", resourceId);
 
-            var storage = _clientFactory.S3;
-            (string key, InMemoryS3.StorageData data) = Assert.Single(storage.Bucket(options.BucketName));
+            var storage = clientFactory.S3;
+            (string key, InMemoryStorage.StorageData data) = Assert.Single(storage.Storage);
             Assert.Equal(key, artifactSettings.Name);
             Assert.Equal(totalBytes, data.Size);
             Assert.Equal(stream.ToArray(), data.Bytes());
 
             if (uploadAction == EUploadAction.WriteToProviderStream)
-                Assert.Empty(storage.Uploads(options.BucketName)); // the upload should be aborted
+                Assert.Empty(storage.Uploads); // the upload should be aborted
         }
 
         [Fact]
         public async Task ItShouldAbortOnError()
         {
+            var clientFactory = new InMemoryS3ClientFactory();
+            var sut = new S3StorageEgressProvider(_loggerProvider.CreateLogger<S3StorageEgressProvider>()) { ClientFactory = clientFactory };
+
             // prepare
             S3StorageEgressProviderOptions options = ConstructEgressProviderSettings();
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // perform
-            await Assert.ThrowsAnyAsync<Exception>(async () => await _egressProvider.EgressAsync(options, (stream, token) => throw new Exception(), artifactSettings, CancellationToken.None));   
+            await Assert.ThrowsAnyAsync<Exception>(async () => await sut.EgressAsync(options, (stream, token) => throw new Exception(), artifactSettings, CancellationToken.None));   
 
-            var storage = _clientFactory.S3;
-            Assert.Empty(storage.Bucket(options.BucketName));
-            Assert.Empty(storage.Uploads(options.BucketName)); // the upload should be aborted
+            var storage = clientFactory.S3;
+            Assert.Empty(storage.Storage);
+            Assert.Empty(storage.Uploads); // the upload should be aborted
         }
 
         [Theory]
@@ -121,6 +130,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
         [InlineData(EUploadAction.WriteToProviderStream)]
         public async Task ItShouldUploadFileAndGeneratePreSignedUrl(EUploadAction uploadAction)
         {
+            var clientFactory = new InMemoryS3ClientFactory();
+            var sut = new S3StorageEgressProvider(_loggerProvider.CreateLogger<S3StorageEgressProvider>()) { ClientFactory = clientFactory };
+
             // prepare
             S3StorageEgressProviderOptions options = ConstructEgressProviderSettings();
             options.GeneratePresSignedUrl = true;
@@ -132,8 +144,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             using var stream = ConstructStream(totalBytes);
             string resourceId = uploadAction switch
             {
-                EUploadAction.ProvideUploadStream => await _egressProvider.EgressAsync(options, _ => Task.FromResult((Stream)stream), artifactSettings, CancellationToken.None),
-                EUploadAction.WriteToProviderStream => await _egressProvider.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
+                EUploadAction.ProvideUploadStream => await sut.EgressAsync(options, _ => Task.FromResult((Stream)stream), artifactSettings, CancellationToken.None),
+                EUploadAction.WriteToProviderStream => await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
                 _ => throw new ArgumentException(nameof(uploadAction))
             };
 
@@ -142,8 +154,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             var expectation = $"local/{options.BucketName}/{artifactSettings.Name}/{expiration:yyyyMMddHH}";
             Assert.StartsWith(expectation, resourceId);
 
-            var storage = _clientFactory.S3;
-            (string key, InMemoryS3.StorageData data) = Assert.Single(storage.Bucket(options.BucketName));
+            var storage = clientFactory.S3;
+            (string key, InMemoryStorage.StorageData data) = Assert.Single(storage.Storage);
             Assert.Equal(key, artifactSettings.Name);
             Assert.Equal(totalBytes, data.Size);
             Assert.Equal(stream.ToArray(), data.Bytes());

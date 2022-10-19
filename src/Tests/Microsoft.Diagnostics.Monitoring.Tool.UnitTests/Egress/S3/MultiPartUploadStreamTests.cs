@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
     public class MultiPartUploadStreamTests
     {
 
-        private readonly InMemoryS3 _s3 = new InMemoryS3();
+        private readonly InMemoryStorage _s3 = new InMemoryStorage("bucket", "key");
 
         private IEnumerable<byte[]> WithBytesReturned(int totalBytes)
         {
@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
         public async Task ItShouldWorkWithBufferSizeGreaterThanMinimum()
         {
             const int BufferSize = MultiPartUploadStream.MinimumSize + MultiPartUploadStream.MinimumSize / 2;
-            var uploadId = (await _s3.InitiateMultipartUploadAsync("bucket", "key")).UploadId;
+            var uploadId = (await _s3.InitMultiPartUploadAsync(null, CancellationToken.None));
             await using var stream = new MultiPartUploadStream(_s3, "bucket", "key", uploadId, BufferSize);
 
             const int Part1ExpectedSize = BufferSize;
@@ -49,20 +49,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             await stream.FinalizeAsync(CancellationToken.None);
 
             Assert.Equal(2, stream.Parts.Count);
-            Assert.True(_s3.Uploads("bucket").TryGetValue(uploadId, out List<InMemoryS3.StorageData> data));
-            Assert.Equal(2, data.Count - 1); // the first entry contains meta information
+            Assert.True(_s3.Uploads.TryGetValue(uploadId, out List<InMemoryStorage.StorageData> data));
+            Assert.Equal(2, data.Count);
 
-            Assert.Equal(Part1ExpectedSize, data[1].Size);
-            Assert.Equal(allBytes.Take(Part1ExpectedSize).ToArray(), data[1].Bytes());
+            Assert.Equal(Part1ExpectedSize, data[0].Size);
+            Assert.Equal(allBytes.Take(Part1ExpectedSize).ToArray(), data[0].Bytes());
 
-            Assert.Equal(allBytes.Skip(Part1ExpectedSize).ToArray(), data[2].Bytes());
-            Assert.Equal(Part2ExpectedSize, data[2].Size);
+            Assert.Equal(allBytes.Skip(Part1ExpectedSize).ToArray(), data[1].Bytes());
+            Assert.Equal(Part2ExpectedSize, data[1].Size);
         }
 
         [Fact]
         public async Task ItShouldWriteMultipleParts()
         {
-            var uploadId = (await _s3.InitiateMultipartUploadAsync("bucket", "key")).UploadId;
+            var uploadId = (await _s3.InitMultiPartUploadAsync(null, CancellationToken.None));
             await using var stream = new MultiPartUploadStream(_s3, "bucket", "key", uploadId, 1024);
 
             const int Part1ExpectedSize = MultiPartUploadStream.MinimumSize;
@@ -79,23 +79,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             await stream.FinalizeAsync(CancellationToken.None);
 
             Assert.Equal(3, stream.Parts.Count);
-            Assert.True(_s3.Uploads("bucket").TryGetValue(uploadId, out List<InMemoryS3.StorageData> data));
-            Assert.Equal(3, data.Count - 1); // the first entry contains meta information
+            Assert.True(_s3.Uploads.TryGetValue(uploadId, out List<InMemoryStorage.StorageData> data));
+            Assert.Equal(3, data.Count); 
 
-            Assert.Equal(Part1ExpectedSize, data[1].Size);
-            Assert.Equal(allBytes.Take(Part1ExpectedSize).ToArray(), data[1].Bytes());
+            Assert.Equal(Part1ExpectedSize, data[0].Size);
+            Assert.Equal(allBytes.Take(Part1ExpectedSize).ToArray(), data[0].Bytes());
 
-            Assert.Equal(Part2ExpectedSize, data[2].Size);
-            Assert.Equal(allBytes.Skip(Part1ExpectedSize).Take(Part2ExpectedSize).ToArray(), data[2].Bytes());
+            Assert.Equal(Part2ExpectedSize, data[1].Size);
+            Assert.Equal(allBytes.Skip(Part1ExpectedSize).Take(Part2ExpectedSize).ToArray(), data[1].Bytes());
 
-            Assert.Equal(allBytes.Skip(Part1ExpectedSize + Part2ExpectedSize).ToArray(), data[3].Bytes());
-            Assert.Equal(Part3ExpectedSize, data[3].Size);
+            Assert.Equal(allBytes.Skip(Part1ExpectedSize + Part2ExpectedSize).ToArray(), data[2].Bytes());
+            Assert.Equal(Part3ExpectedSize, data[2].Size);
         }
 
         [Fact]
         public async Task ItShouldWriteSinglePartialPart()
         {
-            var uploadId = (await _s3.InitiateMultipartUploadAsync("bucket", "key")).UploadId;
+            var uploadId = (await _s3.InitMultiPartUploadAsync(null, CancellationToken.None));
             await using var stream = new MultiPartUploadStream(_s3, "bucket", "key", uploadId, 1024);
 
             const int PartExpectedSize = MultiPartUploadStream.MinimumSize - 1024;
@@ -110,8 +110,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             await stream.FinalizeAsync(CancellationToken.None);
 
             Assert.Single(stream.Parts);
-            Assert.True(_s3.Uploads("bucket").TryGetValue(uploadId, out List<InMemoryS3.StorageData> data));
-            InMemoryS3.StorageData storageItem = Assert.Single(data.Skip(1)); // the first entry contains meta information
+            Assert.True(_s3.Uploads.TryGetValue(uploadId, out List<InMemoryStorage.StorageData> data));
+            InMemoryStorage.StorageData storageItem = Assert.Single(data); 
             Assert.Equal(PartExpectedSize, storageItem.Size);
             Assert.Equal(allBytes.ToArray(), storageItem.Bytes());
         }
@@ -119,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
         [Fact]
         public async Task ItShouldWriteSingleFulllPart()
         {
-            var uploadId = (await _s3.InitiateMultipartUploadAsync("bucket", "key")).UploadId;
+            var uploadId = (await _s3.InitMultiPartUploadAsync(null, CancellationToken.None));
             await using var stream = new MultiPartUploadStream(_s3, "bucket", "key", uploadId, 1024);
 
             const int PartExpectedSize = MultiPartUploadStream.MinimumSize;
@@ -133,8 +133,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             await stream.FinalizeAsync(CancellationToken.None);
 
             Assert.Single(stream.Parts);
-            Assert.True(_s3.Uploads("bucket").TryGetValue(uploadId, out List<InMemoryS3.StorageData> data));
-            InMemoryS3.StorageData storageItem = Assert.Single(data.Skip(1)); // the first entry contains meta information
+            Assert.True(_s3.Uploads.TryGetValue(uploadId, out List<InMemoryStorage.StorageData> data));
+            InMemoryStorage.StorageData storageItem = Assert.Single(data); // the first entry contains meta information
             Assert.Equal(PartExpectedSize, storageItem.Size);
             Assert.Equal(allBytes.ToArray(), storageItem.Bytes());
         }
@@ -142,13 +142,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
         [Fact]
         public async Task ItShouldWriteNothing()
         {
-            var uploadId = (await _s3.InitiateMultipartUploadAsync("bucket", "key")).UploadId;
+            var uploadId = (await _s3.InitMultiPartUploadAsync(null, CancellationToken.None));
             await using var stream = new MultiPartUploadStream(_s3, "bucket", "key", uploadId, 1024);
             await stream.FinalizeAsync(CancellationToken.None);
 
             Assert.Empty(stream.Parts);
-            Assert.True(_s3.Uploads("bucket").TryGetValue(uploadId, out List<InMemoryS3.StorageData> data));
-            Assert.Empty(data.Skip(1)); // the first entry contains meta information
+            Assert.True(_s3.Uploads.TryGetValue(uploadId, out List<InMemoryStorage.StorageData> data));
+            Assert.Empty(data);
         }
     }
 }

@@ -1,4 +1,3 @@
-using Amazon.S3;
 using Amazon.S3.Model;
 using System;
 using System.Buffers;
@@ -17,7 +16,7 @@ internal class MultiPartUploadStream : Stream
     private readonly string _bucketName;
     private readonly string _objectKey;
     private readonly string _uploadId;
-    private readonly IAmazonS3 _client;
+    private readonly IS3Storage _client;
     private readonly List<PartETag> _parts = new();
     public List<PartETag> Parts => _parts.ToList();
     public bool Closed { get; private set; }
@@ -25,7 +24,7 @@ internal class MultiPartUploadStream : Stream
     public const int MinimumSize = 5 * 1024 * 1024; // the minimum size of an upload part (except for the last part)
     private readonly int _bufferSize;
 
-    public MultiPartUploadStream(IAmazonS3 client, string bucketName, string objectKey, string uploadId, int bufferSize)
+    public MultiPartUploadStream(IS3Storage client, string bucketName, string objectKey, string uploadId, int bufferSize)
     {
         _bufferSize = Math.Max(bufferSize, MinimumSize); // has to be at least the minimum
         _buffer = ArrayPool<byte>.Shared.Rent(_bufferSize);
@@ -103,17 +102,8 @@ internal class MultiPartUploadStream : Stream
 
         await using var stream = new MemoryStream(_buffer, 0, _offset);
         stream.Position = 0;
-        var uploadRequest = new UploadPartRequest
-        {
-            BucketName = _bucketName,
-            Key = _objectKey,
-            InputStream = stream,
-            PartSize = _offset,
-            UploadId = _uploadId,
-            PartNumber = _parts.Count
-        };
-        var response = await _client.UploadPartAsync(uploadRequest, cancellationToken);
-        _parts.Add(new PartETag(response.PartNumber, response.ETag));
+        var eTag = await _client.UploadPartAsync(_uploadId, _parts.Count, _offset, stream, cancellationToken);
+        _parts.Add(eTag);
         _offset = 0;
     }
 
