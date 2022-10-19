@@ -164,6 +164,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 string url = hostName + path;
                 _ = await client.ApiCall(url);
+
+                await Task.Delay(TimeSpan.FromMilliseconds(200));
             }
         }
 
