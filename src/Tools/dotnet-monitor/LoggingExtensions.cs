@@ -33,12 +33,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_EgressProviderOptionsValidationError);
 
-        private static readonly Action<ILogger, string, string, Exception> _egressProviderUnableToFindPropertyKey =
-            LoggerMessage.Define<string, string>(
-                eventId: LoggingEventIds.EgressProviderUnableToFindPropertyKey.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_EgressProviderUnableToFindPropertyKey);
-
         private static readonly Action<ILogger, string, Exception> _egressProviderInvokeStreamAction =
             LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.EgressProviderInvokeStreamAction.EventId(),
@@ -327,12 +321,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_ExtensionProbeStart);
 
-        private static readonly Action<ILogger, string, string, Exception> _extensionProbeRepo =
-            LoggerMessage.Define<string, string>(
-                eventId: LoggingEventIds.ExtensionProbeRepo.EventId(),
-                logLevel: LogLevel.Debug,
-                formatString: Strings.LogFormatString_ExtensionProbeRepo);
-
         private static readonly Action<ILogger, string, string, Exception> _extensionProbeSucceeded =
             LoggerMessage.Define<string, string>(
                 eventId: LoggingEventIds.ExtensionProbeSucceeded.EventId(),
@@ -447,30 +435,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticPortWatchingFailed);
 
-        private static readonly Action<ILogger, Exception> _invalidMetadata =
-            LoggerMessage.Define(
-                eventId: LoggingEventIds.InvalidMetadata.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_InvalidMetadata);
-
-        private static readonly Action<ILogger, string, Exception> _duplicateKeyInMetadata =
-            LoggerMessage.Define<string>(
-                eventId: LoggingEventIds.DuplicateKeyInMetadata.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_DuplicateKeyInMetadata);
-
-        private static readonly Action<ILogger, string, Exception> _environmentVariableNotFound =
-            LoggerMessage.Define<string>(
-                eventId: LoggingEventIds.EnvironmentVariableNotFound.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_EnvironmentVariableNotFound);
-
-        private static readonly Action<ILogger, Exception> _environmentBlockNotSupported =
-            LoggerMessage.Define(
-                eventId: LoggingEventIds.EnvironmentBlockNotSupported.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_EnvironmentBlockNotSupported);
-
         private static readonly Action<ILogger, Exception> _failedInitializeSharedLibraryStorage =
             LoggerMessage.Define(
                 eventId: LoggingEventIds.FailedInitializeSharedLibraryStorage.EventId(),
@@ -520,11 +484,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void EgressProviderOptionsValidationFailure(this ILogger logger, string providerName, string failureMessage)
         {
             _egressProviderOptionsValidationFailure(logger, providerName, failureMessage, null);
-        }
-
-        public static void EgressProviderUnableToFindPropertyKey(this ILogger logger, string providerName, string keyName)
-        {
-            _egressProviderUnableToFindPropertyKey(logger, providerName, keyName, null);
         }
 
         public static void EgressProviderInvokeStreamAction(this ILogger logger, string providerName)
@@ -782,11 +741,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _extensionProbeStart(logger, extensionName, null);
         }
 
-        public static void ExtensionProbeRepo(this ILogger logger, string extensionName, ExtensionRepository extensionRepository)
-        {
-            _extensionProbeRepo(logger, extensionName, extensionRepository.DisplayName, null);
-        }
-
         public static void ExtensionProbeSucceeded(this ILogger logger, string extensionName, IExtension extension)
         {
             _extensionProbeSucceeded(logger, extensionName, extension.DisplayName, null);
@@ -880,25 +834,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DiagnosticPortWatchingFailed(this ILogger logger, string diagnosticPort, Exception ex)
         {
             _diagnosticPortWatchingFailed(logger, diagnosticPort, ex);
-        }
-        public static void InvalidMetadata(this ILogger logger, Exception ex)
-        {
-            _invalidMetadata(logger, ex);
-        }
-
-        public static void DuplicateKeyInMetadata(this ILogger logger, string duplicateKey)
-        {
-            _duplicateKeyInMetadata(logger, duplicateKey, null);
-        }
-
-        public static void EnvironmentVariableNotFound(this ILogger logger, string environmentVariable)
-        {
-            _environmentVariableNotFound(logger, environmentVariable, null);
-        }
-
-        public static void EnvironmentBlockNotSupported(this ILogger logger)
-        {
-            _environmentBlockNotSupported(logger, null);
         }
 
         public static void FailedInitializeSharedLibraryStorage(this ILogger logger, Exception ex)

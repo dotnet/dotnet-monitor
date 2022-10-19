@@ -979,15 +979,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Metadata cannot include duplicate keys; please change or remove the key &apos;{key}&apos;.
-        /// </summary>
-        internal static string LogFormatString_DuplicateKeyInMetadata {
-            get {
-                return ResourceManager.GetString("LogFormatString_DuplicateKeyInMetadata", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Copying action stream to egress stream with buffer size {bufferSize}.
         /// </summary>
         internal static string LogFormatString_EgressCopyActionStreamToEgressStream {
@@ -1033,38 +1024,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Provider {providerType}: Unable to find &apos;{keyName}&apos; key in egress properties.
-        /// </summary>
-        internal static string LogFormatString_EgressProviderUnableToFindPropertyKey {
-            get {
-                return ResourceManager.GetString("LogFormatString_EgressProviderUnableToFindPropertyKey", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unexpected timeout from process {processId}. Process will no longer be monitored..
         /// </summary>
         internal static string LogFormatString_EndpointTimeout {
             get {
                 return ResourceManager.GetString("LogFormatString_EndpointTimeout", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Target framework does not support custom egress metadata..
-        /// </summary>
-        internal static string LogFormatString_EnvironmentBlockNotSupported {
-            get {
-                return ResourceManager.GetString("LogFormatString_EnvironmentBlockNotSupported", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The environment variable &apos;{name}&apos; could not be found on the target process..
-        /// </summary>
-        internal static string LogFormatString_EnvironmentVariableNotFound {
-            get {
-                return ResourceManager.GetString("LogFormatString_EnvironmentVariableNotFound", resourceCulture);
             }
         }
         
@@ -1263,15 +1227,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_InvalidActionResultReference {
             get {
                 return ResourceManager.GetString("LogFormatString_InvalidActionResultReference", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid metadata; custom metadata keys must be valid C# identifiers..
-        /// </summary>
-        internal static string LogFormatString_InvalidMetadata {
-            get {
-                return ResourceManager.GetString("LogFormatString_InvalidMetadata", resourceCulture);
             }
         }
         

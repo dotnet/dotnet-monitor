@@ -39,8 +39,4 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <ItemGroup>
-    <InternalsVisibleTo Include="UnitTests" />
-  </ItemGroup>
-
 </Project>
