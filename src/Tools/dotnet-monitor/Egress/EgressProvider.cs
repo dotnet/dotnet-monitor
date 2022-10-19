@@ -57,7 +57,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         /// user has access to it (e.g. no file system permissions or SAS tokens).</returns>
         public virtual Task<string> EgressAsync(
             string providerType,
-            string providerName,
             TOptions options,
             Func<CancellationToken, Task<Stream>> action,
             EgressArtifactSettings artifactSettings,
@@ -79,7 +78,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
             return EgressAsync(
                 providerType,
-                providerName,
                 options,
                 wrappingAction,
                 artifactSettings,
@@ -98,7 +96,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         /// user has access to it (e.g. no file system permissions or SAS tokens).</returns>
         public abstract Task<string> EgressAsync(
             string providerType,
-            string providerName,
             TOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,

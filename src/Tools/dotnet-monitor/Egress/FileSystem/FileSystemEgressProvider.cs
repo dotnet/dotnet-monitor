@@ -28,7 +28,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
 
         public override async Task<string> EgressAsync(
             string providerType,
-            string providerName,
             FileSystemEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,

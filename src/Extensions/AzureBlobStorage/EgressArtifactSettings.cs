@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
         /// <summary>
         /// The content encoding of the blob to be created.
         /// </summary>
-        public string ContentEncoding { get; set; }
+        //public string ContentEncoding { get; set; }
 
         /// <summary>
         /// The content type of the blob to be created.

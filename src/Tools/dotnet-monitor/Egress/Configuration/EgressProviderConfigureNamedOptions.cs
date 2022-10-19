@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System;
 using System.Globalization;
+using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
 {
@@ -34,7 +35,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
                 IConfigurationSection providerOptionsSection = providerTypeSection.GetSection(name);
                 if (providerOptionsSection.Exists())
                 {
-                    providerOptionsSection.Bind(options);
+                    var children = providerOptionsSection.GetChildren();
+
+                    if (options is ExtensionEgressProviderOptions eepOptions)
+                    {
+                        foreach (var child in children)
+                        {
+                            if (child.Value != null)
+                            {
+                                eepOptions.Add(child.Key, child.Value);
+                            }
+                            else
+                            {
+                                eepOptions.Add(child.Key, child.AsEnumerable().ToDictionary(k => k.Key, v => v.Value));
+                            }
+                        }
+                    }
 
                     return;
                 }

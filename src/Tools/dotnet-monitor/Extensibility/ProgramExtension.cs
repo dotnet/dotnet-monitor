@@ -59,7 +59,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         {
             if (!Declaration.SupportedExtensionTypes.Contains(ExtensionTypes.Egress))
             {
-                ExtensionException.ThrowWrongType(_extensionName, _declarationPath, typeof(IEgressExtension));
+                ExtensionException.ThrowWrongType(_extensionName, _exePath, typeof(IEgressExtension));
             }
 
             // This is really weird, yes, but this is one of 2 overloads for [Stream].WriteAsync(...) that supports a CancellationToken, so we use a ReadOnlyMemory<char> instead of a string.

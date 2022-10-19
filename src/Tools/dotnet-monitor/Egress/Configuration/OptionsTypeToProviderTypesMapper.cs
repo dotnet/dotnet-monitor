@@ -35,16 +35,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
                 }
                 yield break;
             }
-            /*
-            else if (optionsType == typeof(AzureBlobEgressProviderOptions))
-            {
-                IConfigurationSection azureBlobSection = _egressSection.GetSection(EgressProviderTypes.AzureBlobStorage);
-                if (azureBlobSection.Exists())
-                {
-                    yield return azureBlobSection;
-                }
-                yield break;
-            }*/
             else if (optionsType == typeof(FileSystemEgressProviderOptions))
             {
                 IConfigurationSection fileSystemSection = _egressSection.GetSection(EgressProviderTypes.FileSystem);

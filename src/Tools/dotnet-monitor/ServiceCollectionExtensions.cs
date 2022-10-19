@@ -222,12 +222,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             string settingsFolder = settings.UserConfigDirectory;
             string dotnetToolsFolder = settings.ExtensionDirectory;
 
-            if (string.IsNullOrWhiteSpace(progDataFolder))
-            {
-                throw new InvalidOperationException();
-            }
-
-            if (string.IsNullOrWhiteSpace(settingsFolder))
+            if (string.IsNullOrWhiteSpace(progDataFolder)
+                || string.IsNullOrWhiteSpace(settingsFolder)
+                || string.IsNullOrWhiteSpace(dotnetToolsFolder))
             {
                 throw new InvalidOperationException();
             }
@@ -236,35 +233,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddExtensionRepository(1000, nextToMeFolder);
             services.AddExtensionRepository(2000, progDataFolder);
             services.AddExtensionRepository(3000, settingsFolder);
-            services.AddExtensionRepository(4000, dotnetToolsFolder);
+            services.AddExtensionRepository(4000, Path.Combine(dotnetToolsFolder, HostBuilderSettings.ExtensionsFolder)); // Special case for dotnet tools installation
 
             return services;
         }
 
         public static IServiceCollection AddExtensionRepository(this IServiceCollection services, int priority, string path)
         {
-            const string ExtensionFolder = "extensions";
-
-            string targetExtensionFolder = string.Empty;
-
-            // Kinda hacky special case
-            if (path != HostBuilderSettings.ExtensionDirectoryPath)
-            {
-                targetExtensionFolder = Path.Combine(path, ExtensionFolder);
-            }
-            else
-            {
-                targetExtensionFolder = path;
-            }
-
-            if (Directory.Exists(targetExtensionFolder))
+            if (Directory.Exists(path))
             {
                 Func<IServiceProvider, ExtensionRepository> createDelegate =
                     (IServiceProvider serviceProvider) =>
                     {
-                        PhysicalFileProvider fileProvider = new(targetExtensionFolder);
-                        ILoggerFactory logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-                        FolderExtensionRepository newRepo = new(fileProvider, logger, priority, targetExtensionFolder);
+                        PhysicalFileProvider fileProvider = new(path);
+                        ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+                        FolderExtensionRepository newRepo = new(fileProvider, loggerFactory, priority, path);
                         return newRepo;
                     };
 

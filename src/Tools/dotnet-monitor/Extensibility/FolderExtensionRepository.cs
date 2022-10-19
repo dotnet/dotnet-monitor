@@ -29,30 +29,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
         public override bool TryFindExtension(string extensionName, out IExtension extension)
         {
-            IDirectoryContents extensionDir = null;
-
             string extensionPath = string.Empty;
 
-            bool isSpecialCase = false; // clean this up
+            bool isDotnetToolsLocation = _targetFolder == HostBuilderSettings.ExtensionDirectoryPath;
 
-            // Special case -> need to look in particular path
-            if (_targetFolder == HostBuilderSettings.ExtensionDirectoryPath)
+            // Special case -> need to look in particular path for dotnet tool installation
+            if (isDotnetToolsLocation)
             {
-                isSpecialCase = true;
+                string extensionVer = Directory.GetDirectories(Path.Combine(".store", extensionName)).First();
 
-                var directories = Directory.GetDirectories(Path.Combine(".store", extensionName));
-                string extensionVer = directories.First();
-
-                string netVer = "net7.0"; // How to determine this?
+                string netVer = "net7.0"; // Still need to determine this
 
                 extensionPath = Path.Combine(".store", extensionName, extensionVer, extensionName, extensionVer, "tools", netVer, "any");
-                extensionDir = _fileSystem.GetDirectoryContents(extensionPath);
             }
             else
             {
                 extensionPath = extensionName;
-                extensionDir = _fileSystem.GetDirectoryContents(extensionName);
             }
+
+            IDirectoryContents extensionDir = _fileSystem.GetDirectoryContents(extensionPath);
 
             if (extensionDir.Exists)
             {
@@ -61,13 +56,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 {
                     ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
 
-                    if (isSpecialCase)
+                    if (isDotnetToolsLocation)
                     {
-                        extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, ExtensionDefinitionFile), Path.Combine(extensionName), logger); // exe is not in the same location as extension.json
+                        extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, ExtensionDefinitionFile), logger);
                     }
                     else
                     {
-                        extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionName, ExtensionDefinitionFile), logger);
+                        extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, ExtensionDefinitionFile), extensionName, logger);
                     }
 
                     return true;

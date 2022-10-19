@@ -13,6 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const string ProductFolderName = "dotnet-monitor";
         private const string DotnetFolderName = "dotnet";
         private const string ToolsFolderName = "tools";
+        public const string ExtensionsFolder = "extensions";
 
         // Allows tests to override the shared configuration directory so there
         // is better control and access of what is visible during test.

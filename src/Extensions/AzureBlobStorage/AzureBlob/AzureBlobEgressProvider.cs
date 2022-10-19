@@ -319,7 +319,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
         private BlobHttpHeaders CreateHttpHeaders(EgressArtifactSettings artifactSettings)
         {
             BlobHttpHeaders headers = new BlobHttpHeaders();
-            headers.ContentEncoding = artifactSettings.ContentEncoding;
+            //headers.ContentEncoding = artifactSettings.ContentEncoding;
             headers.ContentType = artifactSettings.ContentType;
             return headers;
         }
