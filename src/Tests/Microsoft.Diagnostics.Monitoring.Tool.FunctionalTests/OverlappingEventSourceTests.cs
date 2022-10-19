@@ -9,12 +9,9 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,8 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 #if NET6_0_OR_GREATER
         private const string DefaultRuleName = "FunctionalTestRule";
         private readonly TimeSpan TraceDuration = Timeout.InfiniteTimeSpan;
-        private const string ClientBaseUrl = "http://localhost:10000";
-        private const string AppUrl = "http://+:10000";
+        private const string AppUrl = "http://+:0";
         private const string AspNetUrlsKey = "ASPNETCORE_Urls";
 
         /// <summary>
@@ -70,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     await ValidateAspNetTriggerCollected(
                         ruleStartedTask,
                         client,
-                        ClientBaseUrl,
+                        runner.GetLocalhostUrl(),
                         urlPaths,
                         ExpectedFilePath,
                         ExpectedFileContent);
@@ -123,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     await ValidateAspNetTriggerCollected(
                         ruleStartedTask,
                         client,
-                        ClientBaseUrl,
+                        runner.GetLocalhostUrl(),
                         urlPaths,
                         ExpectedFilePath,
                         ExpectedFileContent);
