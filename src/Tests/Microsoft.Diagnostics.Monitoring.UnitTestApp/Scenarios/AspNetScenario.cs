@@ -15,11 +15,11 @@ using System.Threading.Tasks;
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
 #if NET6_0_OR_GREATER
-    internal sealed class AspNetSlowScenario
+    internal sealed class AspNetScenario
     {
         public static Command Command()
         {
-            Command command = new(TestAppScenarios.AspNetSlow.Name);
+            Command command = new(TestAppScenarios.AspNet.Name);
             command.SetHandler(ExecuteAsync);
             return command;
         }
@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         {
             context.ExitCode = await ScenarioHelpers.RunWebScenarioAsync<Startup>(async logger =>
             {
-                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.AspNetSlow.Commands.Continue, logger);
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.AspNet.Commands.Continue, logger);
 
                 return 0;
             }, context.GetCancellationToken());
@@ -60,7 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
                 public async Task<IResult> SlowResponseAsync()
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(1));
+                    await Task.Delay(TimeSpan.FromMilliseconds(100));
 
                     return Results.Ok();
                 }

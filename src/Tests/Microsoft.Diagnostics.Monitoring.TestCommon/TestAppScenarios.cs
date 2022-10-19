@@ -23,9 +23,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             Finished
         }
 
-        public static class AspNetSlow
+        public static class AspNet
         {
-            public const string Name = nameof(AspNetSlow);
+            public const string Name = nameof(AspNet);
 
             public static class Commands
             {

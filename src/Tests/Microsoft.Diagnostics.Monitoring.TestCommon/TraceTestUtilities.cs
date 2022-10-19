@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
     {
         public static async Task ValidateTrace(Stream traceStream)
         {
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.ValidateTraceTimeout);
 
             using var eventSource = new EventPipeEventSource(traceStream);
 

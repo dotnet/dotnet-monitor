@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _outputHelper,
                 _httpClientFactory,
                 mode,
-                TestAppScenarios.AspNetSlow.Name,
+                TestAppScenarios.AspNet.Name,
                 appValidate: async (runner, client) =>
                 {
                     using ResponseStreamHolder holder = await CaptureTrace(runner, client);
@@ -71,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExpectedFilePath,
                         ExpectedFileContent);
 
-                    await runner.SendCommandAsync(TestAppScenarios.AspNetSlow.Commands.Continue);
+                    await runner.SendCommandAsync(TestAppScenarios.AspNet.Commands.Continue);
                 },
                 configureTool: (runner) =>
                 {
@@ -111,7 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _outputHelper,
                 _httpClientFactory,
                 mode,
-                TestAppScenarios.AspNetSlow.Name,
+                TestAppScenarios.AspNet.Name,
                 appValidate: async (runner, client) =>
                 {
                     using ResponseStreamHolder holder = await CaptureTrace(runner, client);
@@ -124,7 +124,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExpectedFilePath,
                         ExpectedFileContent);
 
-                    await runner.SendCommandAsync(TestAppScenarios.AspNetSlow.Commands.Continue);
+                    await runner.SendCommandAsync(TestAppScenarios.AspNet.Commands.Continue);
                 },
                 configureTool: (runner) =>
                 {
@@ -164,8 +164,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 string url = hostName + path;
                 _ = await client.ApiCall(url);
-
-                await Task.Delay(TimeSpan.FromMilliseconds(200));
             }
         }
 
