@@ -63,9 +63,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             Assert.Equal($"BucketName={options.BucketName}, Key={artifactSettings.Name}", resourceId);
 
             var storage = _clientFactory.S3;
-            Assert.Single(storage.Bucket(options.BucketName));
-            Assert.True(storage.Bucket(options.BucketName).ContainsKey(artifactSettings.Name));
-            var data = storage.Bucket(options.BucketName)[artifactSettings.Name];
+            (string key, InMemoryS3.StorageData data) = Assert.Single(storage.Bucket(options.BucketName));
+            Assert.Equal(key, artifactSettings.Name);            
             Assert.Equal(totalBytes, data.Size);
             Assert.Equal(stream.ToArray(), data.Bytes());
         }
@@ -93,11 +92,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             Assert.Equal($"BucketName={options.BucketName}, Key={artifactSettings.Name}", resourceId);
 
             var storage = _clientFactory.S3;
-            Assert.Single(storage.Bucket(options.BucketName));
-            Assert.True(storage.Bucket(options.BucketName).ContainsKey(artifactSettings.Name));
-            var data = storage.Bucket(options.BucketName)[artifactSettings.Name];
+            (string key, InMemoryS3.StorageData data) = Assert.Single(storage.Bucket(options.BucketName));
+            Assert.Equal(key, artifactSettings.Name);
             Assert.Equal(totalBytes, data.Size);
             Assert.Equal(stream.ToArray(), data.Bytes());
+
+            if (uploadAction == EUploadAction.WriteToProviderStream)
+                Assert.Empty(storage.Uploads(options.BucketName)); // the upload should be aborted
+        }
+
+        [Fact]
+        public async Task ItShouldAbortOnError()
+        {
+            // prepare
+            S3StorageEgressProviderOptions options = ConstructEgressProviderSettings();
+            EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
+
+            // perform
+            await Assert.ThrowsAnyAsync<Exception>(async () => await _egressProvider.EgressAsync(options, (stream, token) => throw new Exception(), artifactSettings, CancellationToken.None));   
+
+            var storage = _clientFactory.S3;
+            Assert.Empty(storage.Bucket(options.BucketName));
+            Assert.Empty(storage.Uploads(options.BucketName)); // the upload should be aborted
         }
 
         [Theory]
@@ -127,9 +143,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             Assert.StartsWith(expectation, resourceId);
 
             var storage = _clientFactory.S3;
-            Assert.Single(storage.Bucket(options.BucketName));
-            Assert.True(storage.Bucket(options.BucketName).ContainsKey(artifactSettings.Name));
-            var data = storage.Bucket(options.BucketName)[artifactSettings.Name];
+            (string key, InMemoryS3.StorageData data) = Assert.Single(storage.Bucket(options.BucketName));
+            Assert.Equal(key, artifactSettings.Name);
             Assert.Equal(totalBytes, data.Size);
             Assert.Equal(stream.ToArray(), data.Bytes());
         }

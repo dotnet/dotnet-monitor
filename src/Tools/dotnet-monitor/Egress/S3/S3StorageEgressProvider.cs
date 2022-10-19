@@ -75,10 +75,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
+            IAmazonS3 client = null;
+            string uploadId = null;
+            bool uploadDone = false;
             try
             {
-                var client = await CreateClientAsync(options, token);
-                var uploadId = await InitMultiPartUploadAsync(client, options.BucketName, artifactSettings, token);
+                client = await CreateClientAsync(options, token);
+                uploadId = await InitMultiPartUploadAsync(client, options.BucketName, artifactSettings, token);
                 await using var stream = new MultiPartUploadStream(client, options.BucketName, artifactSettings.Name, uploadId, options.CopyBufferSize!.Value);
                 Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.S3Storage);
                 await action(stream, token);
@@ -96,10 +99,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
                         AutoCloseStream = false,
                     };
                     await client.PutObjectAsync(request, token);
+                    uploadDone = true;
+                    // abort the multi-part upload
+                    await AbortMultipartUploadAsync(client, options.BucketName, uploadId, artifactSettings, token);
                 }
                 else
                 {
                     await CompleteMultiPartUploadAsync(client, options.BucketName, uploadId, artifactSettings, stream.Parts, token);
+                    uploadDone = true;
                 }
 
                 string resourceId = GetResourceId(client, options, artifactSettings);
@@ -107,7 +114,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             }
             catch (AmazonS3Exception e)
             {
+                if (!uploadDone)
+                    await AbortMultipartUploadAsync(client, options.BucketName, uploadId, artifactSettings, token);
                 throw CreateException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressS3FailedDetailed, e.Message));
+            }
+            catch (Exception)
+            {
+                if (!uploadDone)
+                    await AbortMultipartUploadAsync(client, options.BucketName, uploadId, artifactSettings, token);
+                throw;
             }
         }
 
@@ -185,6 +200,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             };
             await client.CompleteMultipartUploadAsync(request, cancellationToken);
         }
+
+        private static async Task AbortMultipartUploadAsync(IAmazonS3 client, string bucketName, string uploadId, EgressArtifactSettings artifactSettings, CancellationToken cancellationToken)
+        {
+            var request = new AbortMultipartUploadRequest
+            {
+                BucketName = bucketName,
+                Key = artifactSettings.Name,
+                UploadId = uploadId
+            };
+            await client.AbortMultipartUploadAsync(request, cancellationToken);
+        }
+
 
         private static T WrapException<T>(Func<T> func)
         {

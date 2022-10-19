@@ -164,8 +164,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
         }
 
         public Task<AbortMultipartUploadResponse> AbortMultipartUploadAsync(string bucketName, string key, string uploadId, CancellationToken cancellationToken = new())
-        {
-            var success = _multiPartUploads.Remove($"{bucketName}/{uploadId}");
+        {            
+            var success = _multiPartUploads.TryGetValue(bucketName, out var uploads) && uploads.Remove(uploadId);
             return Task.FromResult(new AbortMultipartUploadResponse { HttpStatusCode = success ? HttpStatusCode.NoContent : HttpStatusCode.NotFound });
         }
 

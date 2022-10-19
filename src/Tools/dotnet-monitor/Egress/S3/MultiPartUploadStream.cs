@@ -40,9 +40,7 @@ internal class MultiPartUploadStream : Stream
     {
         if (Closed)
             throw new ObjectDisposedException(nameof(MultiPartUploadStream));
-        if (_offset == 0 || _offset < MinimumSize)
-            return;
-        await DoWriteAsync(cancellationToken);
+        await DoWriteAsync(false, cancellationToken);
     }
 
     public async Task FinalizeAsync(CancellationToken cancellationToken)
@@ -51,7 +49,7 @@ internal class MultiPartUploadStream : Stream
             throw new ObjectDisposedException(nameof(MultiPartUploadStream));
         if (_offset == 0)
             return;
-        await DoWriteAsync(cancellationToken);
+        await DoWriteAsync(true, cancellationToken);
     }
 
     public override void Flush()
@@ -91,12 +89,18 @@ internal class MultiPartUploadStream : Stream
 
             // part buffer is full -> trigger upload of part
             if (BytesAvailableInBuffer() == 0)
-                await DoWriteAsync(cancellationToken);
+                await DoWriteAsync(false, cancellationToken);
         } while (count > 0);
     }
 
-    private async Task DoWriteAsync(CancellationToken cancellationToken)
+    private async Task DoWriteAsync(bool allowPartialWrite, CancellationToken cancellationToken)
     {
+        if (_offset == 0) // no data
+            return;
+
+        if (_offset < MinimumSize && !allowPartialWrite) // buffer not full
+            return;
+
         await using var stream = new MemoryStream(_buffer, 0, _offset);
         stream.Position = 0;
         var uploadRequest = new UploadPartRequest
