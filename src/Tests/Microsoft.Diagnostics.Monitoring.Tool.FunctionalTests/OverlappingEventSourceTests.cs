@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             using TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
             string ExpectedFileContent = Guid.NewGuid().ToString("N");
-            string[] urlPaths = new string[] { "", "/Privacy", "" };
+            string[] urlPaths = new string[] { "", "Privacy", "" };
 
             Task ruleStartedTask = null;
             await ScenarioRunner.SingleTarget(
@@ -104,7 +104,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             using TemporaryDirectory tempDirectory = new(_outputHelper);
             string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
             string ExpectedFileContent = Guid.NewGuid().ToString("N");
-            string[] urlPaths = new string[] { "/SlowResponse", "/SlowResponse", "/SlowResponse" };
+            string[] urlPaths = new string[] { "SlowResponse", "SlowResponse", "SlowResponse" };
 
             Task ruleStartedTask = null;
             await ScenarioRunner.SingleTarget(
