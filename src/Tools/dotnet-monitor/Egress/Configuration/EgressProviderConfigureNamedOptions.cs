@@ -52,21 +52,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
                     }
 
                     return;
-                    /*
-                    var children = providerOptionsSection.GetChildren();
-
-                    if (options is ExtensionEgressProviderOptions extensionOptions)
-                    {
-                        foreach (var child in children)
-                        {
-                            if (child.Value != null)
-                            {
-                                extensionOptions.Add(child.Key, child.Value);
-                            }
-                        }
-                    }
-
-                    return;*/
                 }
             }
 
