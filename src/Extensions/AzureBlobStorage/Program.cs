@@ -83,8 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 QueueAccountUri = GetUriConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.QueueAccountUri)),
                 QueueSharedAccessSignature = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.QueueSharedAccessSignature)),
                 QueueSharedAccessSignatureName = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.QueueSharedAccessSignatureName)),
-                ManagedIdentityClientId = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.ManagedIdentityClientId)),
-                Metadata = GetDictionaryConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.Metadata))
+                ManagedIdentityClientId = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.ManagedIdentityClientId))
             };
 
             // If account key was not provided but the name was provided,
@@ -153,6 +152,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
             }
             return null;
         }
+
         private static Uri GetUriConfig(Dictionary<string, object> configDict, string propKey)
         {
             string uriStr = GetConfig(configDict, propKey);
@@ -161,33 +161,6 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 return null;
             }
             return new Uri(uriStr);
-        }
-
-        private static Dictionary<string, string> GetDictionaryConfig(Dictionary<string, object> configDict, string propKey)
-        {
-            if (configDict.ContainsKey(propKey))
-            {
-                configDict[propKey].GetType();
-
-                if (configDict[propKey] is JsonElement element)
-                {
-                    var dict =  JsonSerializer.Deserialize<Dictionary<string, string>>(element);
-
-                    var dictTrimmed = (from kv in dict where kv.Value != null select kv).ToDictionary(kv => kv.Key, kv => kv.Value);
-
-                    var dictToReturn = new Dictionary<string, string>();
-
-                    foreach (string key in dictTrimmed.Keys)
-                    {
-                        string updatedKey = key.Split(":").Last();
-                        dictToReturn.Add(updatedKey, dictTrimmed[key]);
-                    }
-
-                    return dictToReturn;
-
-                }
-            }
-            return null;
         }
     }
 
