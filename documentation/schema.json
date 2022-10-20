@@ -986,16 +986,6 @@
           "additionalProperties": {
             "type": "string"
           }
-        },
-        "Extensions": {
-          "type": [
-            "null",
-            "object"
-          ],
-          "description": "Additional egress providers that can be loaded from their file paths.",
-          "additionalProperties": {
-            "type": "string"
-          }
         }
       }
     },
