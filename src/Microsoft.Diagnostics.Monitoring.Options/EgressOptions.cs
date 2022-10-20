@@ -20,10 +20,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EgressOptions_Properties))]
         public IDictionary<string, string> Properties { get; set; }
-
-        [Display(
-            ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EgressOptions_Extensions))]
-        public IDictionary<string, string> Extensions { get; set; }
     }
 }

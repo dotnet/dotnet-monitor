@@ -229,31 +229,32 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 throw new InvalidOperationException();
             }
 
+            const string ExtensionFolder = "extensions";
+
             // Add the folders we search to get extensions from
-            services.AddExtensionRepository(1000, nextToMeFolder);
-            services.AddExtensionRepository(2000, progDataFolder);
-            services.AddExtensionRepository(3000, settingsFolder);
-            services.AddExtensionRepository(4000, Path.Combine(dotnetToolsFolder, HostBuilderSettings.ExtensionsFolder)); // Special case for dotnet tools installation
+            services.AddExtensionRepository(1000, Path.Combine(nextToMeFolder, ExtensionFolder));
+            services.AddExtensionRepository(2000, Path.Combine(progDataFolder, ExtensionFolder));
+            services.AddExtensionRepository(3000, Path.Combine(settingsFolder, ExtensionFolder));
+            services.AddExtensionRepository(4000, dotnetToolsFolder); // Special case - dotnet tool installation isn't in an Extensions directory
 
             return services;
         }
 
-        public static IServiceCollection AddExtensionRepository(this IServiceCollection services, int priority, string path)
+        public static IServiceCollection AddExtensionRepository(this IServiceCollection services, int priority, string targetExtensionFolder)
         {
-            if (Directory.Exists(path))
+            if (Directory.Exists(targetExtensionFolder))
             {
                 Func<IServiceProvider, ExtensionRepository> createDelegate =
                     (IServiceProvider serviceProvider) =>
                     {
-                        PhysicalFileProvider fileProvider = new(path);
+                        PhysicalFileProvider fileProvider = new(targetExtensionFolder);
                         ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-                        FolderExtensionRepository newRepo = new(fileProvider, loggerFactory, priority, path);
+                        FolderExtensionRepository newRepo = new(fileProvider, loggerFactory, priority, targetExtensionFolder);
                         return newRepo;
                     };
 
                 services.AddSingleton<ExtensionRepository>(createDelegate);
             }
-
             return services;
         }
 

@@ -98,7 +98,6 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 {
                     Logger.EgressProviderUnableToFindPropertyKey(AzureBlobStorage, options.AccountKeyName);
                 }
-
             }
 
             // If shared access signature (SAS) was not provided but the name was provided,
