@@ -34,6 +34,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
                 IConfigurationSection providerOptionsSection = providerTypeSection.GetSection(name);
                 if (providerOptionsSection.Exists())
                 {
+                    if (options is ExtensionEgressProviderOptions extensionOptions)
+                    {
+                        var children = providerOptionsSection.GetChildren();
+
+                        foreach (var child in children)
+                        {
+                            if (child.Value != null)
+                            {
+                                extensionOptions.Add(child.Key, child.Value);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        providerOptionsSection.Bind(options);
+                    }
+
+                    return;
+                    /*
                     var children = providerOptionsSection.GetChildren();
 
                     if (options is ExtensionEgressProviderOptions extensionOptions)
@@ -47,7 +66,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
                         }
                     }
 
-                    return;
+                    return;*/
                 }
             }
 

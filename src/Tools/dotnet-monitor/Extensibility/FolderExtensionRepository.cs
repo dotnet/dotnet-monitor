@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             // Special case -> need to look in particular path for dotnet tool installation
             if (isDotnetToolsLocation)
             {
-                string extensionVer = Directory.GetDirectories(Path.Combine(".store", extensionName)).First();
+                string extensionVer = _fileSystem.GetDirectoryContents(Path.Combine(".store", extensionName)).First().Name;
 
                 string netVer = "net7.0"; // Still need to determine this
 
@@ -58,11 +58,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
                     if (isDotnetToolsLocation)
                     {
-                        extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, ExtensionDefinitionFile), logger);
+                        extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, ExtensionDefinitionFile), extensionName, logger);
                     }
                     else
                     {
-                        extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, ExtensionDefinitionFile), extensionName, logger);
+                        extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, ExtensionDefinitionFile), logger);
                     }
 
                     return true;
