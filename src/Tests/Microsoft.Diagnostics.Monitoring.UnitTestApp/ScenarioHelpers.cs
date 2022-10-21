@@ -1,9 +1,13 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -17,7 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
 {
     internal static class ScenarioHelpers
     {
-        public static async Task<int> RunScenarioAsync(Func<ILogger, Task<int>> func, CancellationToken token)
+        public static async Task<int> RunScenarioAsync(Func<ILogger, Task<int>> func, CancellationToken token, Action<ILogger> beforeReadyCallback = null)
         {
             // Create JSON console logger so that app can communicate with test host
             // with structured responses.
@@ -39,7 +43,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             ILogger<Program> logger = hostServices.GetRequiredService<ILoggerFactory>()
                 .CreateLogger<Program>();
 
-            logger.ScenarioState(TestAppScenarios.SenarioState.Ready);
+            beforeReadyCallback?.Invoke(logger);
+
+            logger.ScenarioState(TestAppScenarios.ScenarioState.Ready);
 
             // Wait for test host before executing scenario
             await WaitForCommandAsync(TestAppScenarios.Commands.StartScenario, logger);
@@ -62,6 +68,58 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             await WaitForCommandAsync(TestAppScenarios.Commands.EndScenario, logger);
 
             return result;
+        }
+
+        public static async Task<int> RunWebScenarioAsync<TStartup>(Func<ILogger, Task<int>> func, CancellationToken token)
+            where TStartup : class
+        {
+            // Create a minimal ASP.NET host that:
+            // - Doesn't write logs to stdout (since the unit test app uses this for execution control)
+            // - Allows ASP.NET events via DiagnosticsSourceEventSource (enabled via adding a logger
+            //   and the ASP.NET hosting category).
+            IHost host = new HostBuilder()
+                .ConfigureServices(services =>
+                {
+                    services.AddLogging(builder =>
+                    {
+                        builder.AddEventSourceLogger();
+                        builder.AddFilter("Microsoft.AspNetCore.Hosting", LogLevel.Information);
+                    });
+                })
+                .ConfigureWebHostDefaults(builder =>
+                {
+                    builder.UseStartup<TStartup>();
+                })
+                .Build();
+
+            int exitCode;
+            try
+            {
+                // Start hosted services before notifying the test host that the app is ready.
+                await host.StartAsync(token);
+
+                exitCode = await RunScenarioAsync(
+                    func,
+                    token,
+                    beforeReadyCallback: logger =>
+                    {
+                        IServer server = host.Services.GetRequiredService<IServer>();
+                        IServerAddressesFeature addressesFeature = server.Features.Get<IServerAddressesFeature>();
+                        foreach (string address in addressesFeature.Addresses)
+                        {
+                            logger.BoundUrl(address);
+                        }
+                    });
+
+                // Stop hosted services after the scenario has completed.
+                await host.StopAsync(token);
+            }
+            finally
+            {
+                await DisposableHelper.DisposeAsync(host);
+            }
+
+            return exitCode;
         }
 
         public static async Task WaitForCommandAsync(string expectedCommand, ILogger logger)
