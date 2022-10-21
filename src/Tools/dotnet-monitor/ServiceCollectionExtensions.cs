@@ -220,41 +220,44 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             string nextToMeFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string progDataFolder = settings.SharedConfigDirectory;
             string settingsFolder = settings.UserConfigDirectory;
-            string dotnetToolsFolder = settings.ExtensionDirectory;
-
-            if (string.IsNullOrWhiteSpace(progDataFolder)
-                || string.IsNullOrWhiteSpace(settingsFolder)
-                || string.IsNullOrWhiteSpace(dotnetToolsFolder))
+            if (string.IsNullOrWhiteSpace(progDataFolder))
             {
                 throw new InvalidOperationException();
             }
 
-            const string ExtensionFolder = "extensions";
+            if (string.IsNullOrWhiteSpace(settingsFolder))
+            {
+                throw new InvalidOperationException();
+            }
 
             // Add the folders we search to get extensions from
-            services.AddExtensionRepository(1000, Path.Combine(nextToMeFolder, ExtensionFolder));
-            services.AddExtensionRepository(2000, Path.Combine(progDataFolder, ExtensionFolder));
-            services.AddExtensionRepository(3000, Path.Combine(settingsFolder, ExtensionFolder));
-            services.AddExtensionRepository(4000, dotnetToolsFolder); // Special case - dotnet tool installation isn't in an Extensions directory
+            services.AddExtensionRepository(1000, nextToMeFolder);
+            services.AddExtensionRepository(2000, progDataFolder);
+            services.AddExtensionRepository(3000, settingsFolder);
 
             return services;
         }
 
-        public static IServiceCollection AddExtensionRepository(this IServiceCollection services, int priority, string targetExtensionFolder)
+        public static IServiceCollection AddExtensionRepository(this IServiceCollection services, int priority, string path)
         {
+            const string ExtensionFolder = "extensions";
+
+            string targetExtensionFolder = Path.Combine(path, ExtensionFolder);
+
             if (Directory.Exists(targetExtensionFolder))
             {
                 Func<IServiceProvider, ExtensionRepository> createDelegate =
                     (IServiceProvider serviceProvider) =>
                     {
                         PhysicalFileProvider fileProvider = new(targetExtensionFolder);
-                        ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-                        FolderExtensionRepository newRepo = new(fileProvider, loggerFactory, priority, targetExtensionFolder);
+                        ILoggerFactory logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+                        FolderExtensionRepository newRepo = new(fileProvider, logger, priority, targetExtensionFolder);
                         return newRepo;
                     };
 
                 services.AddSingleton<ExtensionRepository>(createDelegate);
             }
+
             return services;
         }
 
@@ -263,10 +266,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // Register IEgressService implementation that provides egressing
             // of artifacts for the REST server.
             services.AddSingleton<IEgressService, EgressService>();
-
             services.AddSingleton<IEgressPropertiesConfigurationProvider, EgressPropertiesConfigurationProvider>();
             services.AddSingleton<IEgressPropertiesProvider, EgressPropertiesProvider>();
-
             services.AddSingleton<IOptionsTypeToProviderTypesMapper, OptionsTypeToProviderTypesMapper>();
 
             // Register egress providers

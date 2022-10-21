@@ -21,7 +21,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         private readonly string _extensionName;
         private readonly string _targetFolder;
         private readonly string _declarationPath;
-        private readonly string _exePath;
         private readonly IFileProvider _fileSystem;
         private readonly ILogger<ProgramExtension> _logger;
         private Lazy<ExtensionDeclaration> _extensionDeclaration;
@@ -32,15 +31,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             _targetFolder = targetFolder;
             _fileSystem = fileSystem;
             _declarationPath = declarationPath;
-            _exePath = declarationPath;
             _logger = logger;
             _extensionDeclaration = new Lazy<ExtensionDeclaration>(() => { return GetExtensionDeclaration(); }, LazyThreadSafetyMode.ExecutionAndPublication);
-        }
-
-        public ProgramExtension(string extensionName, string targetFolder, IFileProvider fileSystem, string declarationPath, string exePath, ILogger<ProgramExtension> logger)
-            : this(extensionName, targetFolder, fileSystem, declarationPath, logger)
-        {
-            _exePath = exePath;
         }
 
         /// <inheritdoc/>
@@ -59,20 +51,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         {
             if (!Declaration.SupportedExtensionTypes.Contains(ExtensionTypes.Egress))
             {
-                ExtensionException.ThrowWrongType(_extensionName, _exePath, typeof(IEgressExtension));
+                ExtensionException.ThrowWrongType(_extensionName, _declarationPath, typeof(IEgressExtension));
             }
 
+            // This _should_ only be used in this method, it can get moved to a constants class if that changes
+            const string CommandArgProviderName = "--Provider-Name";
             // This is really weird, yes, but this is one of 2 overloads for [Stream].WriteAsync(...) that supports a CancellationToken, so we use a ReadOnlyMemory<char> instead of a string.
             ReadOnlyMemory<char> NewLine = new ReadOnlyMemory<char>("\r\n".ToCharArray());
 
-            string programRelPath = Path.Combine(Path.GetDirectoryName(_exePath), Declaration.Program);
+            string programRelPath = Path.Combine(Path.GetDirectoryName(_declarationPath), Declaration.Program);
             IFileInfo progInfo = _fileSystem.GetFileInfo(programRelPath);
             if (!progInfo.Exists || progInfo.IsDirectory || progInfo.PhysicalPath == null)
             {
-                _logger.ExtensionProgramMissing(_extensionName, Path.Combine(_targetFolder, _exePath), Declaration.Program);
+                _logger.ExtensionProgramMissing(_extensionName, Path.Combine(_targetFolder, _declarationPath), Declaration.Program);
                 ExtensionException.ThrowNotFound(_extensionName);
             }
 
+            /* [TODOs]
+             * 1. [Done] Add a new service to dynamically find these extension(s)
+             * 2. [Done] Remove all raw logging statements from this method and refactor into LoggingExtensions
+             * 3. [Done] Stream StdOut and StdErr async in the process so their streams don't need to end before we can return
+             * 4. [Done] Refactor WaitForExit to do an async wait
+             * 5. [Simple first part done] Add well-factored protocol for returning information from an extension
+             */
             ProcessStartInfo pStart = new ProcessStartInfo()
             {
                 FileName = progInfo.PhysicalPath,
@@ -83,6 +84,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 UseShellExecute = false,
             };
             pStart.ArgumentList.Add(ExtensionTypes.Egress);
+            pStart.ArgumentList.Add(CommandArgProviderName);
+            pStart.ArgumentList.Add(configPayload.ProviderName);
 
             using Process p = new Process()
             {

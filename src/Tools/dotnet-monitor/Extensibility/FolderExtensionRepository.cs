@@ -6,7 +6,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
@@ -29,42 +28,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
         public override bool TryFindExtension(string extensionName, out IExtension extension)
         {
-            string extensionPath = string.Empty;
-
-            bool isDotnetToolsLocation = _targetFolder == HostBuilderSettings.ExtensionDirectoryPath;
-
-            // Special case -> need to look in particular path for dotnet tool installation
-            if (isDotnetToolsLocation)
-            {
-                string extensionVer = _fileSystem.GetDirectoryContents(Path.Combine(".store", extensionName)).First().Name;
-
-                string netVer = "net7.0"; // Still need to determine this
-
-                extensionPath = Path.Combine(".store", extensionName, extensionVer, extensionName, extensionVer, "tools", netVer, "any");
-            }
-            else
-            {
-                extensionPath = extensionName;
-            }
-
-            IDirectoryContents extensionDir = _fileSystem.GetDirectoryContents(extensionPath);
+            IDirectoryContents extensionDir = _fileSystem.GetDirectoryContents(extensionName);
 
             if (extensionDir.Exists)
             {
-                IFileInfo defFile = _fileSystem.GetFileInfo(Path.Combine(extensionPath, ExtensionDefinitionFile));
+                IFileInfo defFile = _fileSystem.GetFileInfo(Path.Combine(extensionName, ExtensionDefinitionFile));
                 if (defFile.Exists && !defFile.IsDirectory)
                 {
                     ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
-
-                    if (isDotnetToolsLocation)
-                    {
-                        extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, ExtensionDefinitionFile), extensionName, logger);
-                    }
-                    else
-                    {
-                        extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, ExtensionDefinitionFile), logger);
-                    }
-
+                    extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionName, ExtensionDefinitionFile), logger);
                     return true;
                 }
             }

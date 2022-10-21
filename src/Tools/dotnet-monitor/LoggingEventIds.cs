@@ -20,6 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         EgressProviderOptionValue = 7,
         EgressStreamOptionValue = 8,
         EgressProviderFileName = 9,
+        EgressProvideUnableToFindPropertyKey = 10, // Moved to Azure extension
         EgressProviderInvokeStreamAction = 11,
         EgressProviderSavedStream = 12,
         NoAuthentication = 13,
@@ -65,7 +66,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         LoadingProfiler = 53,
         SetEnvironmentVariable = 54,
         GetEnvironmentVariable = 55,
-        MonitorApiKeyNotConfigured = 56, // Note the gap - from removing things related to Azure egress
+        MonitorApiKeyNotConfigured = 56, // Moved to Azure extension
+        QueueDoesNotExist = 57, // Moved to Azure extension
+        QueueOptionsPartiallySet = 58, // Moved to Azure extension
+        WritingMessageToQueueFailed = 59, // Moved to Azure extension
         ExperienceSurvey = 60,
         DiagnosticPortNotInListenModeForCollectionRules = 61,
         RuntimeInstanceCookieFailedToFilterSelf = 62,
@@ -75,6 +79,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         DiagnosticPortDeleteFailed = 66,
         DiagnosticPortAlteredWhileInUse = 67,
         DiagnosticPortWatchingFailed = 68,
+        InvalidMetadata = 69, // Moved to Azure extension
+        DuplicateKeyInMetadata = 70, // Moved to Azure extension
+        EnvironmentVariableNotFound = 71, // Moved to Azure extension
+        EnvironmentBlockNotSupported = 72, // Moved to Azure extension
         FailedInitializeSharedLibraryStorage = 73,
         UnableToApplyProfiler = 74,
         SharedLibraryPath = 75,

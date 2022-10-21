@@ -33,6 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         public override async Task<string> EgressAsync(
             string providerType,
+            string providerName,
             ExtensionEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
@@ -42,7 +43,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             {
                 Settings = artifactSettings,
                 Configuration = options,
-                Properties = _propertyProvider.GetAllProperties()
+                Properties = _propertyProvider.GetAllProperties(),
+                ProviderName = providerName
             };
 
             IEgressExtension ext = _extensionDiscoverer.FindExtension<IEgressExtension>(providerType);

@@ -18,27 +18,24 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 
         static async Task<int> Main(string[] args)
         {
-            using var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddConsole();
-            });
-
-            Logger = loggerFactory.CreateLogger<Program>();
-
-            // Expected command line format is: AzureBlobStorage.exe Egress
+            // Expected command line format is: AzureBlobStorage.exe Egress --Provider-Name MyProviderEndpointName
             RootCommand rootCommand = new RootCommand("Egresses an artifact to Azure Storage.");
 
-            Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.")
-            { };
+            var providerNameOption = new Option<string>(
+                name: "--Provider-Name",
+                description: "The provider name given in the configuration to dotnet-monitor.");
 
-            egressCmd.SetHandler(Egress);
+            Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.")
+            { providerNameOption };
+
+            egressCmd.SetHandler(Egress, providerNameOption);
 
             rootCommand.Add(egressCmd);
 
             return await rootCommand.InvokeAsync(args);
         }
 
-        private static async Task<int> Egress()
+        private static async Task<int> Egress(string providerName)
         {
             EgressArtifactResult result = new();
             try
@@ -143,16 +140,16 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
             return Task.FromResult(StdInStream);
         }
 
-        private static string GetConfig(Dictionary<string, object> configDict, string propKey)
+        private static string GetConfig(Dictionary<string, string> configDict, string propKey)
         {
             if (configDict.ContainsKey(propKey))
             {
-                return configDict[propKey].ToString();
+                return configDict[propKey];
             }
             return null;
         }
 
-        private static Uri GetUriConfig(Dictionary<string, object> configDict, string propKey)
+        private static Uri GetUriConfig(Dictionary<string, string> configDict, string propKey)
         {
             string uriStr = GetConfig(configDict, propKey);
             if (uriStr == null)
@@ -167,6 +164,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
     {
         public EgressArtifactSettings Settings { get; set; }
         public Dictionary<string, string> Properties { get; set; }
-        public Dictionary<string, object> Configuration { get; set; }
+        public Dictionary<string, string> Configuration { get; set; }
+        public string ProviderName { get; set; }
     }
 }

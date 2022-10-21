@@ -45,6 +45,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         {
             return _provider.EgressAsync(
                 providerType,
+                providerName,
                 GetOptions(providerName),
                 action,
                 artifactSettings,
@@ -61,6 +62,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         {
             return _provider.EgressAsync(
                 providerType,
+                providerName,
                 GetOptions(providerName),
                 action,
                 artifactSettings,
