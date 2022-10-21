@@ -23,6 +23,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             Finished
         }
 
+        public static class AspNet
+        {
+            public const string Name = nameof(AspNet);
+
+            public static class Commands
+            {
+                public const string Continue = nameof(Continue);
+            }
+        }
+
         public static class AsyncWait
         {
             public const string Name = nameof(AsyncWait);

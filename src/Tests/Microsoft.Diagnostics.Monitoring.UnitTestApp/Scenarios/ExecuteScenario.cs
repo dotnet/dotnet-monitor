@@ -10,9 +10,6 @@ using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
-    /// <summary>
-    /// Async waits until it receives the Continue command.
-    /// </summary>
     internal class ExecuteScenario
     {
         public static Command Command()
