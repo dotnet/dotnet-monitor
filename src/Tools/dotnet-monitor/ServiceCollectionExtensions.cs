@@ -220,6 +220,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             string nextToMeFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string progDataFolder = settings.SharedConfigDirectory;
             string settingsFolder = settings.UserConfigDirectory;
+
             if (string.IsNullOrWhiteSpace(progDataFolder))
             {
                 throw new InvalidOperationException();
