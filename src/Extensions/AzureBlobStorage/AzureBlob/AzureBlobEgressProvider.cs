@@ -31,6 +31,8 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
         }
 
         public async Task<string> EgressAsync(
+            string providerType,
+            string providerName,
             AzureBlobEgressProviderOptions options,
             Func<CancellationToken, Task<Stream>> action,
             EgressArtifactSettings artifactSettings,
@@ -387,6 +389,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
         private BlobHttpHeaders CreateHttpHeaders(EgressArtifactSettings artifactSettings)
         {
             BlobHttpHeaders headers = new BlobHttpHeaders();
+            headers.ContentEncoding = artifactSettings.ContentEncoding;
             headers.ContentType = artifactSettings.ContentType;
             return headers;
         }

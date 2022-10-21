@@ -35,7 +35,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
                 if (providerOptionsSection.Exists())
                 {
                     providerOptionsSection.Bind(options);
-
                     return;
                 }
             }

@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 Settings = artifactSettings,
                 Configuration = options,
                 Properties = _propertyProvider.GetAllProperties(),
-                ProviderName = providerName
+                ProviderName = providerName,
             };
 
             IEgressExtension ext = _extensionDiscoverer.FindExtension<IEgressExtension>(providerType);

@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
             return await rootCommand.InvokeAsync(args);
         }
 
-        private static async Task<int> Egress(string providerName)
+        private static async Task<int> Egress(string ProviderName)
         {
             EgressArtifactResult result = new();
             try
@@ -47,8 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 
                 Console.CancelKeyPress += Console_CancelKeyPress;
 
-                result.ArtifactPath = await provider.EgressAsync(options, GetStream, configPayload.Settings, CancelSource.Token);
-
+                result.ArtifactPath = await provider.EgressAsync(Constants.AzureBlobStorage, configPayload.ProviderName, options, GetStream, configPayload.Settings, CancelSource.Token);
                 result.Succeeded = true;
             }
             catch (Exception ex)
