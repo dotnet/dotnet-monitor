@@ -199,7 +199,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             ValidateQueue(blobs, messages, expectedCount: 1);
         }
 
-        [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
+        [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs, Skip = "https://github.com/dotnet/dotnet-monitor/issues/2754")]
         [InlineData(UploadAction.ProvideUploadStream)]
         [InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_ThrowsWhen_ContainerDoesNotExistAndUsingRestrictiveSasToken(UploadAction uploadAction)
