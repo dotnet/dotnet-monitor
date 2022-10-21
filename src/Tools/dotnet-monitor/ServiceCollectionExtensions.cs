@@ -266,8 +266,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // Register IEgressService implementation that provides egressing
             // of artifacts for the REST server.
             services.AddSingleton<IEgressService, EgressService>();
+
             services.AddSingleton<IEgressPropertiesConfigurationProvider, EgressPropertiesConfigurationProvider>();
             services.AddSingleton<IEgressPropertiesProvider, EgressPropertiesProvider>();
+
             services.AddSingleton<IOptionsTypeToProviderTypesMapper, OptionsTypeToProviderTypesMapper>();
 
             // Register egress providers
