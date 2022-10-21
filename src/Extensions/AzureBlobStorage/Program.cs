@@ -10,7 +10,6 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 {
     internal class Program
     {
-        private readonly static string AzureBlobStorage = "AzureBlobStorage";
         private static Stream StdInStream = null;
         private static CancellationTokenSource CancelSource = new CancellationTokenSource();
 
@@ -93,7 +92,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 }
                 else
                 {
-                    Logger.EgressProviderUnableToFindPropertyKey(AzureBlobStorage, options.AccountKeyName);
+                    Logger.EgressProviderUnableToFindPropertyKey(Constants.AzureBlobStorage, options.AccountKeyName);
                 }
             }
 
@@ -107,7 +106,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 }
                 else
                 {
-                    Logger.EgressProviderUnableToFindPropertyKey(AzureBlobStorage, options.SharedAccessSignatureName);
+                    Logger.EgressProviderUnableToFindPropertyKey(Constants.AzureBlobStorage, options.SharedAccessSignatureName);
                 }
             }
 
@@ -121,7 +120,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 }
                 else
                 {
-                    Logger.EgressProviderUnableToFindPropertyKey(AzureBlobStorage, options.QueueSharedAccessSignatureName);
+                    Logger.EgressProviderUnableToFindPropertyKey(Constants.AzureBlobStorage, options.QueueSharedAccessSignatureName);
                 }
             }
 

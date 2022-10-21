@@ -22,8 +22,8 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
     /// </remarks>
     internal partial class AzureBlobEgressProvider
     {
-        private readonly string AzureBlobStorage = "AzureBlobStorage";
-        protected ILogger Logger { get; }
+        private int BlobStorageBufferSize = 4 * 1024 * 1024;
+        private ILogger Logger { get; }
 
         public AzureBlobEgressProvider(ILogger logger)
         {
@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
 
                 BlobClient blobClient = containerClient.GetBlobClient(blobName);
 
-                Logger.EgressProviderInvokeStreamAction(AzureBlobStorage);
+                Logger.EgressProviderInvokeStreamAction(Constants.AzureBlobStorage);
                 using var stream = await action(token);
 
                 // Write blob content, headers, and metadata
@@ -55,7 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
                 await SetBlobClientMetadata(blobClient, artifactSettings, token);
 
                 string blobUriString = GetBlobUri(blobClient);
-                Logger?.EgressProviderSavedStream(AzureBlobStorage, blobUriString);
+                Logger?.EgressProviderSavedStream(Constants.AzureBlobStorage, blobUriString);
 
                 if (CheckQueueEgressOptions(options))
                 {
@@ -111,7 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
                     //3. After 4Gi of data has been staged, the data will be commited. This can be forced earlier by flushing
                     //the stream.
                     // Since we want the data to be readily available, we automatically flush (and therefore commit) every time we fill up the buffer.
-                    Logger?.EgressProviderInvokeStreamAction(AzureBlobStorage);
+                    Logger?.EgressProviderInvokeStreamAction(Constants.AzureBlobStorage);
                     await action(flushStream, token);
 
                     await flushStream.FlushAsync(token);
@@ -123,7 +123,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
                 await SetBlobClientMetadata(blobClient, artifactSettings, token);
 
                 string blobUriString = GetBlobUri(blobClient);
-                Logger.EgressProviderSavedStream(AzureBlobStorage, blobUriString);
+                Logger.EgressProviderSavedStream(Constants.AzureBlobStorage, blobUriString);
 
                 if (CheckQueueEgressOptions(options))
                 {
