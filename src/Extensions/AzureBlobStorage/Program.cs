@@ -17,6 +17,13 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 
         static async Task<int> Main(string[] args)
         {
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+            });
+
+            Logger = loggerFactory.CreateLogger<Program>();
+
             // Expected command line format is: AzureBlobStorage.exe Egress --Provider-Name MyProviderEndpointName
             RootCommand rootCommand = new RootCommand("Egresses an artifact to Azure Storage.");
 

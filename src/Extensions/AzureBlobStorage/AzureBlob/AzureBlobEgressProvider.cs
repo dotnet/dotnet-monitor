@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
                 await SetBlobClientMetadata(blobClient, artifactSettings, token);
 
                 string blobUriString = GetBlobUri(blobClient);
-                Logger?.EgressProviderSavedStream(Constants.AzureBlobStorage, blobUriString);
+                Logger.EgressProviderSavedStream(Constants.AzureBlobStorage, blobUriString);
 
                 if (CheckQueueEgressOptions(options))
                 {
@@ -113,7 +113,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob
                     //3. After 4Gi of data has been staged, the data will be commited. This can be forced earlier by flushing
                     //the stream.
                     // Since we want the data to be readily available, we automatically flush (and therefore commit) every time we fill up the buffer.
-                    Logger?.EgressProviderInvokeStreamAction(Constants.AzureBlobStorage);
+                    Logger.EgressProviderInvokeStreamAction(Constants.AzureBlobStorage);
                     await action(flushStream, token);
 
                     await flushStream.FlushAsync(token);
