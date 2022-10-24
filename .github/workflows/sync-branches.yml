@@ -1,0 +1,46 @@
+name: 'Sync branches'
+on:
+  schedule:
+    - cron: '0 0 * * 1' # Run at the start of every monday
+  workflow_dispatch: # Allow manually invoking this workflow
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  base_branch: 'origin/main'
+
+jobs:
+  sync-branch:
+    strategy:
+      matrix:
+        branch: ["release/6.x", "release/7.x"]
+    name: 'Sync ${{ matrix.branch }}'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch the entire repo for the below git operations
+          branch: ${{ matrix.branch }}
+
+      - name: Sync branch
+        run: |
+          git checkout "${{ env.base_branch }}" -- \
+            ".github" \
+            ".devcontainer" \
+            "eng/actions/backport" \
+            "documentation/**.md"
+
+      - name: Open PR
+        uses: ./.github/actions/open-pr
+        with:
+          files_to_commit: "*"
+          title: '[${{ matrix.branch }}] Sync branch from ${{ env.base_branch }}'
+          commit_message: sync branch from ${{ env.base_branch }}
+          body: Sync branch from ${{ env.base_branch }}. This PR was auto generated and will not be automatically merged in.
+          branch_name: sync/${{ matrix.branch }}
+          fail_if_files_unchanged: false
+          auth_token: ${{ secrets.GITHUB_TOKEN }}
