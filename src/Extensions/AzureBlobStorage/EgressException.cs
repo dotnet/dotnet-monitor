@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-namespace Microsoft.Diagnostics.Monitoring.AzureStorage
+namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 {
     /// <summary>
     /// Exception that egress providers can throw when an operational error occurs (e.g. failed to write the stream data).

@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-namespace Microsoft.Diagnostics.Monitoring.AzureStorage
+namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 {
     // The existing EventIds must not be duplicated, reused, or repurposed.
     // New logging events must use the next available EventId.

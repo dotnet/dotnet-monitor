@@ -4,7 +4,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Microsoft.Diagnostics.Monitoring.AzureStorage
+namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 {
     internal sealed partial class AzureBlobEgressProviderOptions :
         IValidatableObject

@@ -2,11 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.AzureStorage.AzureBlob;
 using System.CommandLine;
 using System.Text.Json;
 
-namespace Microsoft.Diagnostics.Monitoring.AzureStorage
+namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 {
     internal class Program
     {
@@ -54,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
 
                 Console.CancelKeyPress += Console_CancelKeyPress;
 
-                result.ArtifactPath = await provider.EgressAsync(Constants.AzureBlobStorage, configPayload.ProviderName, options, GetStream, configPayload.Settings, CancelSource.Token);
+                result.ArtifactPath = await provider.EgressAsync(Constants.AzureBlobStorageProviderName, configPayload.ProviderName, options, GetStream, configPayload.Settings, CancelSource.Token);
                 result.Succeeded = true;
             }
             catch (Exception ex)
@@ -98,7 +97,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 }
                 else
                 {
-                    Logger.EgressProviderUnableToFindPropertyKey(Constants.AzureBlobStorage, options.AccountKeyName);
+                    Logger.EgressProviderUnableToFindPropertyKey(Constants.AzureBlobStorageProviderName, options.AccountKeyName);
                 }
             }
 
@@ -112,7 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 }
                 else
                 {
-                    Logger.EgressProviderUnableToFindPropertyKey(Constants.AzureBlobStorage, options.SharedAccessSignatureName);
+                    Logger.EgressProviderUnableToFindPropertyKey(Constants.AzureBlobStorageProviderName, options.SharedAccessSignatureName);
                 }
             }
 
@@ -126,7 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureStorage
                 }
                 else
                 {
-                    Logger.EgressProviderUnableToFindPropertyKey(Constants.AzureBlobStorage, options.QueueSharedAccessSignatureName);
+                    Logger.EgressProviderUnableToFindPropertyKey(Constants.AzureBlobStorageProviderName, options.QueueSharedAccessSignatureName);
                 }
             }
 

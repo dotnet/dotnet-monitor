@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
-    <RootNamespace>Microsoft.Diagnostics.Monitoring.AzureStorage</RootNamespace>
+    <RootNamespace>Microsoft.Diagnostics.Monitoring.AzureBlobStorage</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
 
     <Description>Azure Blob Storage extension for dotnet-monitor</Description>
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
-    <ToolCommandName>AzureBlobStorage</ToolCommandName>
+    <ToolCommandName>dotnet-monitor-egress-azureblobstorage</ToolCommandName>
   </PropertyGroup>
 
   <ItemGroup>
