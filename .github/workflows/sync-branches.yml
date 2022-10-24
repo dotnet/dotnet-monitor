@@ -31,6 +31,7 @@ jobs:
           git checkout "${{ env.base_branch }}" -- \
             ".github" \
             ".devcontainer" \
+            ".vscode" \
             "eng/actions" \
             "documentation/**.md"
 
