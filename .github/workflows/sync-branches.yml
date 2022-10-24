@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Fetch the entire repo for the below git operations
-          branch: ${{ matrix.branch }}
+          ref: ${{ matrix.branch }}
 
       - name: Sync branch
         run: |
@@ -38,9 +38,9 @@ jobs:
         uses: ./.github/actions/open-pr
         with:
           files_to_commit: "*"
-          title: '[${{ matrix.branch }}] Sync branch from ${{ env.base_branch }}'
-          commit_message: sync branch from ${{ env.base_branch }}
-          body: Sync branch from ${{ env.base_branch }}. This PR was auto generated and will not be automatically merged in.
+          title: '[${{ matrix.branch }}] Sync branch with ${{ env.base_branch }}'
+          commit_message: sync branch with ${{ env.base_branch }}
+          body: Sync branch with `${{ env.base_branch }}`. This PR was auto generated and will not be automatically merged in.
           branch_name: sync/${{ matrix.branch }}
           fail_if_files_unchanged: false
           auth_token: ${{ secrets.GITHUB_TOKEN }}
