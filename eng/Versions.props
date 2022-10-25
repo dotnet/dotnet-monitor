@@ -43,9 +43,6 @@
     <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21526.8</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta4.22504.1</SystemCommandLineVersion>
-    <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>5.0.328102</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>5.0.328102</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/runtime references -->
     <MicrosoftNETCoreAppRuntimewinx64Version>6.0.0</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21522.10</VSRedistCommonNetCoreSharedFrameworkx6460Version>
