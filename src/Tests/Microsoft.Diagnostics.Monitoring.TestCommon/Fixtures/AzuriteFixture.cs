@@ -115,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             }
         }
 
-        private ProcessStartInfo ConstructAzuriteProcessStartInfo(AzuriteAccount authorizedAccount, string workspaceDirectory)
+        private static ProcessStartInfo ConstructAzuriteProcessStartInfo(AzuriteAccount authorizedAccount, string workspaceDirectory)
         {
             bool isVSCopy = false;
             string azuriteFolder = null;
@@ -225,7 +225,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             _azuriteStartupStderr.AppendLine(e.Data);
         }
 
-        private int ParseAzuritePort(string outputLine)
+        private static int ParseAzuritePort(string outputLine)
         {
             int portDelimiterIndex = outputLine.LastIndexOf(':') + 1;
             if (portDelimiterIndex == 0 || portDelimiterIndex >= outputLine.Length)
@@ -236,7 +236,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             return int.Parse(outputLine[portDelimiterIndex..]);
         }
 
-        private string ErrorMessage(string specificReason)
+        private static string ErrorMessage(string specificReason)
         {
             return $"Could not run Azurite based test: {specificReason}.\n" +
                 "Make sure that:\n" +

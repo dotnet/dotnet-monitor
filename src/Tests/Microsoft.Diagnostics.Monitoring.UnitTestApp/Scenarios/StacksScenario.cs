@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
-    internal class StacksScenario
+    internal static class StacksScenario
     {
         [DllImport(ProfilerIdentifiers.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = true)]
         public static extern int TestHook([MarshalAs(UnmanagedType.FunctionPtr)] Action callback);

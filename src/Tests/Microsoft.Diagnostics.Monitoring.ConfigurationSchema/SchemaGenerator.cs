@@ -264,7 +264,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             return discriminatedProperty;
         }
 
-        private class GenerationContext
+        private sealed class GenerationContext
         {
             private readonly JsonSchemaGenerator _generator;
             private readonly JsonSchemaResolver _resolver;

@@ -188,7 +188,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     continue;
                 }
 
-                int foundIndex = 0;
+                int foundIndex;
                 int startIndex = 0;
 
                 PropertyDependency propertyDependency = null;
@@ -210,10 +210,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         continue;
                     }
 
-                    if (propertyDependency == null)
-                    {
-                        propertyDependency = GetOrCreateDependency(actionIndex, property, originalValue);
-                    }
+                    propertyDependency ??= GetOrCreateDependency(actionIndex, property, originalValue);
 
                     var dependency = new ActionDependency(dependencyOptions, actionResultName, foundIndex, suffixIndex);
                     propertyDependency.ActionDependencies.Add(dependency);
@@ -278,9 +275,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             return true;
         }
 
-        private IEnumerable<PropertyInfo> GetDependencyPropertiesFromSettings(CollectionRuleActionOptions options)
+        private static IEnumerable<PropertyInfo> GetDependencyPropertiesFromSettings(CollectionRuleActionOptions options)
         {
-            return _tokenParser.GetPropertiesFromSettings(options.Settings, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
+            return ConfigurationTokenParser.GetPropertiesFromSettings(options.Settings, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
         }
 
 

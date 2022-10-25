@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
         public abstract Task FormatStack(CallStackResult stackResult, CancellationToken token);
 
-        protected string GetModuleName(NameCache cache, ulong moduleId)
+        protected static string GetModuleName(NameCache cache, ulong moduleId)
         {
             string moduleName = UnknownModule;
             if (cache.ModuleData.TryGetValue(moduleId, out ModuleData moduleData))
@@ -90,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        private void BuildClassName(StringBuilder builder, NameCache cache, ulong moduleId, uint token)
+        private static void BuildClassName(StringBuilder builder, NameCache cache, ulong moduleId, uint token)
         {
             var classNames = new Stack<string>();
 

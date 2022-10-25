@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
             else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
             {
-                builder.Append(base.GetModuleName(cache, functionData.ModuleId));
+                builder.Append(GetModuleName(cache, functionData.ModuleId));
                 builder.Append(ModuleSeparator);
                 BuildClassName(builder, cache, functionData);
                 builder.Append(ClassSeparator);
