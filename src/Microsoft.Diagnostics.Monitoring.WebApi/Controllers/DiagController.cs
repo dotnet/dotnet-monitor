@@ -633,6 +633,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             string egressProvider)
         {
             string fileName = TraceUtilities.GenerateTraceFileName(processInfo.EndpointInfo);
+            TaskCompletionSource<object> requestStopCompletionSource = new();
 
             return Result(
                 Utilities.ArtifactType_Trace,
@@ -646,7 +647,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                         {
                             operationRegistration = _operationTrackerService.Register(processInfo.EndpointInfo);
                         }
-                        await TraceUtilities.CaptureTraceAsync(null, processInfo.EndpointInfo, configuration, duration, outputStream, token);
+                        await TraceUtilities.CaptureTraceAsync(
+                            startCompletionSource: null,
+                            processInfo.EndpointInfo,
+                            configuration,
+                            duration,
+                            outputStream,
+                            requestStopCompletionSource,
+                            token);
                     }
                     finally
                     {
@@ -655,7 +663,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 },
                 fileName,
                 ContentTypes.ApplicationOctetStream,
-                processInfo);
+                processInfo,
+                requestStopCompletionSource: requestStopCompletionSource);
         }
 
         private Task<ActionResult> StartLogs(
@@ -729,13 +738,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             string contentType,
             IProcessInfo processInfo,
             bool asAttachment = true,
-            TaskCompletionSource<object> requestGracefulStopCompletionSource = null)
+            TaskCompletionSource<object> requestStopCompletionSource = null)
         {
             KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
 
             if (string.IsNullOrEmpty(providerName))
             {
-                await RegisterHttpResponseAsOperation(processInfo, artifactType, requestGracefulStopCompletionSource);
+                await RegisterHttpResponseAsOperation(processInfo, artifactType, requestStopCompletionSource);
                 return new OutputStreamResult(
                     action,
                     contentType,
@@ -752,31 +761,31 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     contentType,
                     scope),
                     limitKey: artifactType,
-                    requestGracefulStopCompletionSource);
+                    requestStopCompletionSource);
             }
         }
 
-        private async Task RegisterHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, TaskCompletionSource<object> requestGracefulStopCompletionSource = null)
+        private async Task RegisterHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, TaskCompletionSource<object> requestStopCompletionSource = null)
         {
             HttpContext.Response.Headers["href"] = await RegisterOperation(
                 new HttpResponseEgressOperation(HttpContext, processInfo),
                 limitKey: artifactType,
-                requestGracefulStopCompletionSource);
+                requestStopCompletionSource);
         }
 
-        private async Task<string> RegisterOperation(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestGracefulStopCompletionSource)
+        private async Task<string> RegisterOperation(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestStopCompletionSource)
         {
             // Will throw TooManyRequestsException if there are too many concurrent operations.
-            Guid operationId = await _operationsStore.AddOperation(egressOperation, limitKey, requestGracefulStopCompletionSource);
+            Guid operationId = await _operationsStore.AddOperation(egressOperation, limitKey, requestStopCompletionSource);
             return this.Url.Action(
                 action: nameof(OperationsController.GetOperationStatus),
                 controller: OperationsController.ControllerName, new { operationId = operationId },
                 protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
         }
 
-        private async Task<ActionResult> SendToEgress(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestGracefulStopCompletionSource = null)
+        private async Task<ActionResult> SendToEgress(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestStopCompletionSource = null)
         {
-            string operationUrl = await RegisterOperation(egressOperation, limitKey, requestGracefulStopCompletionSource);
+            string operationUrl = await RegisterOperation(egressOperation, limitKey, requestStopCompletionSource);
             return Accepted(operationUrl);
         }
 

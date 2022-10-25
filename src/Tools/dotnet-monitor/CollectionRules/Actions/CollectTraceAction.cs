@@ -104,7 +104,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                         }
                         else
                         {
-                            await TraceUtilities.CaptureTraceAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, token);
+                            await TraceUtilities.CaptureTraceAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, requestStopCompletionSource: null, token);
                         }
                     },
                     egressProvider,

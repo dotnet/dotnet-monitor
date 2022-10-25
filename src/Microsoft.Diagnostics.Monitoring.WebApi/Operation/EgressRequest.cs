@@ -17,16 +17,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private bool _disposed;
         private IDisposable _limitTracker;
 
-        public EgressRequest(Guid operationId, IEgressOperation egressOperation, IDisposable limitTracker, TaskCompletionSource<object> requestGracefulStopCompletionSource)
+        public EgressRequest(Guid operationId, IEgressOperation egressOperation, IDisposable limitTracker, TaskCompletionSource<object> requestStopCompletionSource)
         {
             OperationId = operationId;
             EgressOperation = egressOperation;
-            RequestGracefulStopCompletionSource = requestGracefulStopCompletionSource;
+            RequestStopCompletionSource = requestStopCompletionSource;
             _limitTracker = limitTracker;
         }
 
         public CancellationTokenSource CancellationTokenSource { get; } = new();
-        public TaskCompletionSource<object> RequestGracefulStopCompletionSource { get; }
+        public TaskCompletionSource<object> RequestStopCompletionSource { get; }
 
         public Guid OperationId { get; }
 

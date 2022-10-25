@@ -33,7 +33,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public async Task<ExecutionResult<EgressResult>> ExecuteAsync(IServiceProvider serviceProvider, CancellationToken token)
         {
+            // todo: link cancellation token
             int statusCode = await _responseFinishedCompletionSource.Task.WaitAsync(token);
+            if (token.IsCancellationRequested)
+            {
+                // Signal to the request
+            }
             return statusCode == (int)HttpStatusCode.OK
                 ? ExecutionResult<EgressResult>.Empty()
                 : ExecutionResult<EgressResult>.Failed(new Exception($"HTTP request failed with status code: ${statusCode}"));

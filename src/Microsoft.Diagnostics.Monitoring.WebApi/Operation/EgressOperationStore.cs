@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestGracefulStopCompletionSource = null)
+        public async Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestStopCompletionSource = null)
         {
             egressOperation.Validate(_serviceProvider);
 
@@ -55,7 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new TooManyRequestsException();
             }
 
-            var request = new EgressRequest(operationId, egressOperation, limitTracker, requestGracefulStopCompletionSource);
+            var request = new EgressRequest(operationId, egressOperation, limitTracker, requestStopCompletionSource);
             lock (_requests)
             {
                 //Add operation object to central table.
@@ -87,9 +87,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
                 }
 
-                if (gracefulStop && entry.EgressRequest.RequestGracefulStopCompletionSource != null)
+                // JSFIX: What should be the fallback behavior for a graceful stop that can't happen?
+                if (gracefulStop && entry.EgressRequest.RequestStopCompletionSource != null)
                 {
-                    entry.EgressRequest.RequestGracefulStopCompletionSource.TrySetResult(null);
+                    entry.EgressRequest.RequestStopCompletionSource.TrySetResult(null);
                     entry.State = Models.OperationState.Stopping;
                 }
                 else

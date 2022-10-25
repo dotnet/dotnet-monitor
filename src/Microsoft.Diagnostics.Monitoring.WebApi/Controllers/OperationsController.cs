@@ -72,13 +72,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [HttpDelete("{operationId}")]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        public IActionResult CancelOperation(Guid operationId)
+        public IActionResult CancelOperation(
+            Guid operationId,
+            [FromQuery]
+            bool? gracefulStop = null)
         {
             return this.InvokeService(() =>
             {
+                // JSFIX: Should we break out stop into its own method?
+
                 //Note that if the operation is not found, it will throw an InvalidOperationException and
                 //return an error code.
-                _operationsStore.CancelOperation(operationId);
+                _operationsStore.CancelOperation(operationId, gracefulStop.Value);
                 return Ok();
             }, _logger);
         }

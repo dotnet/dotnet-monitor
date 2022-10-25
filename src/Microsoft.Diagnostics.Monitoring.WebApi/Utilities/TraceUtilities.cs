@@ -77,7 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 bufferSizeInMB: bufferSizeInMB);
         }
 
-        public static async Task CaptureTraceAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, Stream outputStream, CancellationToken token)
+        public static async Task CaptureTraceAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, Stream outputStream, TaskCompletionSource<object> requestStopCompletionSource, CancellationToken token)
         {
             Func<Stream, CancellationToken, Task> streamAvailable = async (Stream eventStream, CancellationToken token) =>
             {
@@ -97,7 +97,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 Duration = duration,
             }, streamAvailable);
 
-            await pipeProcessor.RunAsync(token);
+            Task pipelineRunTask = pipeProcessor.RunAsync(token);
+            if (requestStopCompletionSource == null)
+            {
+                await pipelineRunTask;
+            }
+            else
+            {
+                await Task.WhenAny(pipelineRunTask, requestStopCompletionSource.Task).Unwrap();
+
+                if (requestStopCompletionSource.Task.IsCompleted)
+                {
+                    await pipeProcessor.StopAsync(token);
+                    await pipelineRunTask;
+                }
+            }
         }
 
         public static async Task CaptureTraceUntilEventAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan timeout, Stream outputStream, string providerName, string eventName, IDictionary<string, string> payloadFilter, ILogger logger, CancellationToken token)
