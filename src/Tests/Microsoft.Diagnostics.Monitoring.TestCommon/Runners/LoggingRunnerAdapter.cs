@@ -190,13 +190,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 }
 
                 // If the loop ended because _finishReads was set, we should read to the end of the
-                // stream if readAborded is not set. This is so we can ensure that the entire stream is read.
+                // stream if readAborted is not set. This is so we can ensure that the entire stream is read.
                 if (!readAborted && _finishReads)
                 {
 #if NET7_0_OR_GREATER
                     string remainder = await reader.ReadToEndAsync(cancelToken).ConfigureAwait(false);
 #else
-                    // ReadLineAsync does not have cancellation in 6.0 or lower
+                    // ReadToEndAsync does not have cancellation in 6.0 or lower
                     string remainder = await reader.ReadToEndAsync().ConfigureAwait(false);
 #endif
                     foreach (string line in remainder.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None))
