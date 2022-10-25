@@ -220,6 +220,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
+            const string artifactType = Utilities.ArtifactType_Dump;
+
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(async processInfo =>
@@ -228,7 +230,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 if (string.IsNullOrEmpty(egressProvider))
                 {
-                    await RegisterHttpResponseAsOperation(processInfo, Utilities.ArtifactType_Dump);
+                    await RegisterHttpResponseAsOperation(processInfo, artifactType);
                     Stream dumpStream = await _dumpService.DumpAsync(processInfo.EndpointInfo, type, HttpContext.RequestAborted);
 
                     _logger.WrittenToHttpStream();
@@ -238,7 +240,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 }
                 else
                 {
-                    KeyValueLogScope scope = Utilities.CreateArtifactScope(Utilities.ArtifactType_Dump, processInfo.EndpointInfo);
+                    KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
 
                     return await SendToEgress(new EgressOperation(
                         token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
@@ -246,9 +248,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                         dumpFileName,
                         processInfo,
                         ContentTypes.ApplicationOctetStream,
-                        scope), limitKey: Utilities.ArtifactType_Dump);
+                        scope), limitKey: artifactType);
                 }
-            }, processKey, Utilities.ArtifactType_Dump);
+            }, processKey, artifactType);
         }
 
         /// <summary>
