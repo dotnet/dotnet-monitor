@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fcollectionrules%2Ftemplates)
+
 # Templates
 
 Templates allow users to design reusable collection rule components to decrease configuration verbosity, reduce duplication between rules, and speed up the process of writing complex scenarios.

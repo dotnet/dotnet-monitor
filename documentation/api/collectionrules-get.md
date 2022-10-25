@@ -1,14 +1,14 @@
 
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fprocess-get)
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fcollectionrules-get)
 
-# Processes - Get
+# Collection Rules - Get (6.3+)
 
-Gets detailed information about a specified process.
+Get the detailed state of the specified collection rule for all processes or for the specified process.
 
 ## HTTP Route
 
 ```http
-GET /process?pid={pid}&uid={uid}&name={name} HTTP/1.1
+GET /collectionrules/{collectionrulename}?pid={pid}&uid={uid}&name={name} HTTP/1.1
 ```
 
 > **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -21,13 +21,14 @@ The default host address for these routes is `https://localhost:52323`. This rou
 
 | Name | In | Required | Type | Description |
 |---|---|---|---|---|
+| `collectionrulename` | path | true | string | The name of the collection rule for which a detailed description should be provided. |
 | `pid` | query | false | int | The ID of the process. |
 | `uid` | query | false | guid | A value that uniquely identifies a runtime instance within a process. |
 | `name` | query | false | string | The name of the process. |
 
 See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
-If none of `pid`, `uid`, or `name` are specified, information about the [default process](defaultprocess.md) will be provided. Attempting to get information from the default process when the default process cannot be resolved will fail.
+If none of `pid`, `uid`, or `name` are specified, the detailed description of the collection rule for the [default process](defaultprocess.md) will be provided. Attempting to get the detailed description from the default process when the default process cannot be resolved will fail.
 
 ## Authentication
 
@@ -41,7 +42,7 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | [ProcessInfo](definitions.md#processinfo) | The detailed information about the specified process. | `application/json` |
+| 200 OK | [CollectionRuleDetailedDescription](definitions.md#collectionruledetaileddescription-63) | The detailed information about the current state of the specified collection rule. | `application/json` |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 
@@ -50,7 +51,7 @@ Allowed schemes:
 ### Sample Request
 
 ```http
-GET /process?pid=21632 HTTP/1.1
+GET /collectionrules?pid=21632 HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 ```
@@ -58,7 +59,7 @@ Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 or
 
 ```http
-GET /process?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b HTTP/1.1
+GET /collectionrules?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 ```
@@ -70,12 +71,14 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-    "pid": 21632,
-    "uid": "cd4da319-fa9e-4987-ac4e-e57b2aac248b",
-    "name": "dotnet",
-    "commandLine": "\"C:\\Program Files\\dotnet\\dotnet.exe\" ConsoleApp1.dll",
-    "operatingSystem": "Windows",
-    "processArchitecture": "x64"
+  "state":"Running",
+  "stateReason":"This collection rule is active and waiting for its triggering conditions to be satisfied.",
+  "lifetimeOccurrences":0,
+  "slidingWindowOccurrences":0,
+  "actionCountLimit":2,
+  "actionCountSlidingWindowDurationLimit":"00:01:00",
+  "slidingWindowDurationCountdown":null,
+  "ruleFinishedCountdown":"00:03:00"
 }
 ```
 
@@ -83,9 +86,9 @@ Content-Type: application/json
 
 | Operating System | Runtime Version |
 |---|---|
-| Windows | .NET Core 3.1, .NET 5+ |
-| Linux | .NET Core 3.1, .NET 5+ |
-| MacOS | .NET Core 3.1, .NET 5+ |
+| Windows | .NET 5+ |
+| Linux | .NET 5+ |
+| MacOS | .NET 5+ |
 
 ## Additional Notes
 
