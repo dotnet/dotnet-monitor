@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
-    internal class LiveMetricsTestUtilities
+    internal static class LiveMetricsTestUtilities
     {
         internal static async Task ValidateMetrics(IEnumerable<string> expectedProviders, IEnumerable<string> expectedNames,
             IAsyncEnumerable<CounterPayload> actualMetrics, bool strict)

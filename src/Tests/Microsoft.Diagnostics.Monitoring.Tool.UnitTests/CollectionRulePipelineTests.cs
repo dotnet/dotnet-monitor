@@ -364,7 +364,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(expectedCount, service.ExecutionTimestamps.Count);
         }
 
-        private async Task ManualTriggerBurstAsync(ManualTriggerService service, int count = 10)
+        private static async Task ManualTriggerBurstAsync(ManualTriggerService service, int count = 10)
         {
             for (int i = 0; i < count; i++)
             {

@@ -265,7 +265,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Verifies that an invalid Process request throws the correct exception (ValidationProblemDetailsException) and has the correct Status and StatusCode.
         /// </summary>
-        private async Task VerifyInvalidRequestException(ApiClient client, int? pid, Guid? uid, string name)
+        private static async Task VerifyInvalidRequestException(ApiClient client, int? pid, Guid? uid, string name)
         {
             ValidationProblemDetailsException validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
                 () => client.GetProcessAsync(pid: pid, uid: uid, name: name));

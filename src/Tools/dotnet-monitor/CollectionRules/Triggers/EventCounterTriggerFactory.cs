@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 SlidingWindowDuration = options.SlidingWindowDuration.GetValueOrDefault(TimeSpan.Parse(EventCounterOptionsDefaults.SlidingWindowDuration))
             };
 
-            return _eventPipeTriggerFactory.Create(
+            return EventPipeTriggerFactory.Create(
                 endpointInfo,
                 EventCounterTrigger.CreateConfiguration(settings),
                 _traceEventTriggerFactory,

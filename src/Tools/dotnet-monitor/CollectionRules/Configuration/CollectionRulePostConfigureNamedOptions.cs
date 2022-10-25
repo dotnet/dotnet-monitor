@@ -126,7 +126,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             }
         }
 
-        private bool TryGetTemplate<T>(CollectionRuleOptions ruleOptions, IDictionary<string, T> templatesOptions, string templateKey, out T templatesValue) where T : new()
+        private static bool TryGetTemplate<T>(CollectionRuleOptions ruleOptions, IDictionary<string, T> templatesOptions, string templateKey, out T templatesValue) where T : new()
         {
             if (!templatesOptions.TryGetValue(templateKey, out templatesValue))
             {
@@ -138,7 +138,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             return true;
         }
 
-        private bool SectionHasValue(IConfigurationSection section)
+        private static bool SectionHasValue(IConfigurationSection section)
         {
             // If the section has a value, the value is the name of a template.
             return !string.IsNullOrEmpty(section.Value);

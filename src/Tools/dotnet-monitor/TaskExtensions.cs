@@ -21,7 +21,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// </summary>
         public static Task SafeAwait(this Task task)
         {
-            return task.ContinueWith(_ => { }, TaskContinuationOptions.ExecuteSynchronously);
+            return task.ContinueWith(
+                _ => { },
+                CancellationToken.None,
+                TaskContinuationOptions.ExecuteSynchronously,
+                TaskScheduler.Default);
         }
 
         public static async Task WithCancellation(this Task task, CancellationToken token)

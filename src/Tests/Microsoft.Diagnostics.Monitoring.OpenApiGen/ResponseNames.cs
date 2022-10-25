@@ -4,10 +4,10 @@
 
 namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
 {
-    internal class ResponseNames
+    internal static class ResponseNames
     {
-        public static readonly string BadRequestResponse = nameof(BadRequestResponse);
-        public static readonly string UnauthorizedResponse = nameof(UnauthorizedResponse);
-        public static readonly string TooManyRequestsResponse = nameof(TooManyRequestsResponse);
+        public const string BadRequestResponse = nameof(BadRequestResponse);
+        public const string UnauthorizedResponse = nameof(UnauthorizedResponse);
+        public const string TooManyRequestsResponse = nameof(TooManyRequestsResponse);
     }
 }

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal partial class RootOptions
+    internal sealed partial class RootOptions
     {
         public AuthenticationOptions Authentication { get; set; }
 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp
 {
-    internal class Program
+    internal static class Program
     {
         public static Task<int> Main(string[] args)
         {

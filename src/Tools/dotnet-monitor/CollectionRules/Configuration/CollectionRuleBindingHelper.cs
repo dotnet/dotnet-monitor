@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
-    internal class CollectionRuleBindingHelper
+    internal static class CollectionRuleBindingHelper
     {
         public static void BindActionSettings(IConfigurationSection actionSection, CollectionRuleActionOptions actionOptions, ICollectionRuleActionOperations actionOperations)
         {
