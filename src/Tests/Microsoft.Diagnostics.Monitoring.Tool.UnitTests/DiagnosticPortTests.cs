@@ -74,7 +74,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, overrideSource: GetConfigurationSources(DiagnosticPortTestsConstants.AllListen_EnvironmentVariables));
         }
 
-        private List<IConfigurationSource> GetConfigurationSources(IDictionary<string, string> initialData)
+        private static List<IConfigurationSource> GetConfigurationSources(IDictionary<string, string> initialData)
         {
             List<IConfigurationSource> sources = new();
 

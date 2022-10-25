@@ -8,11 +8,11 @@ using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
-    internal class StacksWorker : IDisposable
+    internal sealed class StacksWorker : IDisposable
     {
         private EventWaitHandle _eventWaitHandle = new ManualResetEvent(false);
 
-        public class StacksWorkerNested<T>
+        public sealed class StacksWorkerNested<T>
         {
             private WaitHandle _handle;
 

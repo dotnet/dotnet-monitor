@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal class CommandLineHelper
+    internal static class CommandLineHelper
     {
         public static string ExtractExecutablePath(string commandLine, bool isWindows)
         {

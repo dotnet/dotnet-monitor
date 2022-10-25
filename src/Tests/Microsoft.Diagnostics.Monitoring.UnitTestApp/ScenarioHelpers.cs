@@ -101,7 +101,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             return commandReceived;
         }
 
-        private class JsonConsoleLoggerProvider : ILoggerProvider
+        private sealed class JsonConsoleLoggerProvider : ILoggerProvider
         {
             private readonly ConcurrentDictionary<string, JsonConsoleLogger> _loggers = new();
 
@@ -114,7 +114,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             {
             }
 
-            private class JsonConsoleLogger : ILogger
+            private sealed class JsonConsoleLogger : ILogger
             {
                 private string _categoryName;
 

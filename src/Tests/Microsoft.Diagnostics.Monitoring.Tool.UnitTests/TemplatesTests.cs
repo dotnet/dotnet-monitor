@@ -105,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, overrideSource: GetConfigurationSources());
         }
 
-        private List<IConfigurationSource> GetConfigurationSources()
+        private static List<IConfigurationSource> GetConfigurationSources()
         {
             string[] filePaths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), SampleConfigurationsDirectory));
 

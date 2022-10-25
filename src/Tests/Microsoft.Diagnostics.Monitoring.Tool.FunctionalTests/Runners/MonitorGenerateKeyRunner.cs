@@ -80,11 +80,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         /// <summary>
         /// A bool indicating if <see cref="StartAsync(CancellationToken)"/> has been called and the field <see cref="_selectedFormat"/> should not be updated.
         /// </summary>
-        private bool _executionStarted = false;
+        private bool _executionStarted;
         /// <summary>
         /// A value indicating which format is being used. This should not be updated after <see cref="StartAsync(CancellationToken)"/> is called.
         /// </summary>
-        private OutputFormat? _selectedFormat = null;
+        private OutputFormat? _selectedFormat;
 
         /// <summary>
         /// Gets the <see cref="OutputFormat"/> that was used to execute dotnet-monitor. If <see cref="Format"/> is set to <see langword="null"/> then

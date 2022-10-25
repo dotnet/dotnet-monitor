@@ -6,7 +6,9 @@ using System;
 using System.Reflection;
 using System.Runtime.Loader;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public sealed class StartupHook
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     private const string TestHostingStartupAssemblyName = "Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup";
 

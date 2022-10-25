@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
-    internal class LoggerScenario
+    internal static class LoggerScenario
     {
         public static Command Command()
         {
@@ -85,17 +85,17 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
         private static void LogTraceMessage(ILogger logger)
         {
-            logger.LogTrace(new EventId(1, "EventIdTrace"), "Trace message with values {value1} and {value2}.", 3, true);
+            logger.LogTrace(new EventId(1, "EventIdTrace"), "Trace message with values {Value1} and {Value2}.", 3, true);
         }
 
         private static void LogDebugMessage(ILogger logger)
         {
-            logger.LogDebug(new EventId(1, "EventIdDebug"), "Debug message with values {value1} and {value2}.", new Guid("F39A5065-732B-4CCE-89D1-52E4AF39E233"), null);
+            logger.LogDebug(new EventId(1, "EventIdDebug"), "Debug message with values {Value1} and {Value2}.", new Guid("F39A5065-732B-4CCE-89D1-52E4AF39E233"), null);
         }
 
         private static void LogInformationMessage(ILogger logger)
         {
-            logger.LogInformation("Information message with values {value1} and {value2}.", "hello", "goodbye");
+            logger.LogInformation("Information message with values {Value1} and {Value2}.", "hello", "goodbye");
         }
 
         private static void LogWarningMessage(ILogger logger)
@@ -113,7 +113,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
         private static void LogErrorMessage(ILogger logger)
         {
-            logger.LogError(new EventId(1, "EventIdError"), "Error message with values {value1} and {value2}.", 'a', new IntPtr(42));
+            logger.LogError(new EventId(1, "EventIdError"), "Error message with values {Value1} and {Value2}.", 'a', new IntPtr(42));
         }
 
         private static void LogCriticalMessage(ILogger logger)

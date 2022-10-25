@@ -116,10 +116,10 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests
             }
         }
 
-        private async Task<IList<string>> ReadAllLines(TextReader reader)
+        private static async Task<IList<string>> ReadAllLines(TextReader reader)
         {
             var lines = new List<string>();
-            string line = null;
+            string line;
 
             while ((line = await reader.ReadLineAsync()) != null)
             {

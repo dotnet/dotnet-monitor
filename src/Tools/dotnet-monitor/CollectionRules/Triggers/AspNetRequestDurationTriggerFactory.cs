@@ -47,7 +47,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
 
             var aspnetTriggerSourceConfiguration = new AspNetTriggerSourceConfiguration(_counterOptions.CurrentValue.GetIntervalSeconds());
 
-            return _eventPipeTriggerFactory.Create(endpointInfo, aspnetTriggerSourceConfiguration, _traceEventTriggerFactory, settings, callback);
+            return EventPipeTriggerFactory.Create(endpointInfo, aspnetTriggerSourceConfiguration, _traceEventTriggerFactory, settings, callback);
         }
     }
 }

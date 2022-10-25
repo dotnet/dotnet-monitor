@@ -14,8 +14,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class DisposableHelper
     {
-        private static readonly long DisposeStateActive = default(long);
-        private static readonly long DisposeStateDisposed = 1;
+        private const long DisposeStateActive = default(long);
+        private const long DisposeStateDisposed = 1;
 
         /// <summary>
         /// Inspects the <paramref name="state"/> parameter to check if the object has been disposed already.
