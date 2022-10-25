@@ -731,14 +731,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             if (string.IsNullOrEmpty(providerName))
             {
-                HttpContext.Response.Headers["href"] = await RegisterOperation(egressOperation: null, limitKey: artifactType);
-                var foo = new EgressOperation(
-                    action,
-                    providerName,
-                    fileName,
-                    processInfo,
-                    contentType,
-                    scope);
+                HttpContext.Response.Headers["href"] = await RegisterOperation(
+                    new HttpResponseEgressOperation(processInfo),
+                    limitKey: artifactType);
 
                 return new OutputStreamResult(
                     action,
@@ -760,7 +755,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
 
-        private async Task<string> RegisterOperation(EgressOperation egressOperation, string limitKey)
+        private async Task<string> RegisterOperation(IEgressOperation egressOperation, string limitKey)
         {
             // Will throw TooManyRequestsException if there are too many concurrent operations.
             Guid operationId = await _operationsStore.AddOperation(egressOperation, limitKey);
@@ -770,7 +765,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
         }
 
-        private async Task<ActionResult> SendToEgress(EgressOperation egressOperation, string limitKey)
+        private async Task<ActionResult> SendToEgress(IEgressOperation egressOperation, string limitKey)
         {
             string operationUrl = await RegisterOperation(egressOperation, limitKey);
             return Accepted(operationUrl);

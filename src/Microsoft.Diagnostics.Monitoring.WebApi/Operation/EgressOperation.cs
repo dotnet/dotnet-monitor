@@ -79,28 +79,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public void Validate(IServiceProvider serviceProvider)
         {
-            if (string.IsNullOrEmpty(EgressProviderName))
-            {
-                return;
-            }
-
             serviceProvider
                 .GetRequiredService<IEgressService>()
                 .ValidateProvider(EgressProviderName);
-        }
-    }
-
-    internal class EgressProcessInfo
-    {
-        public string ProcessName { get; }
-        public int ProcessId { get; }
-        public Guid RuntimeInstanceCookie { get; }
-
-        public EgressProcessInfo(string processName, int processId, Guid runtimeInstanceCookie)
-        {
-            this.ProcessName = processName;
-            this.ProcessId = processId;
-            this.RuntimeInstanceCookie = runtimeInstanceCookie;
         }
     }
 }
