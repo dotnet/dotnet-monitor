@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,13 +30,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             while (!stoppingToken.IsCancellationRequested)
             {
                 EgressRequest egressRequest = await _queue.DequeueAsync(stoppingToken);
+                if (egressRequest.EgressOperation is not IEgressActionableOperation egressOperation)
+                {
+                    Debug.Fail($"Unexpected non-actionable egress operation in the queue.");
+                    continue;
+                }
 
                 //Note we do not await these tasks, but we do limit how many can be executed at the same time
-                _ = Task.Run(() => ExecuteEgressOperation(egressRequest, stoppingToken), stoppingToken);
+                _ = Task.Run(() => ExecuteEgressOperation(egressRequest, egressOperation, stoppingToken), stoppingToken);
             }
         }
 
-        private async Task ExecuteEgressOperation(EgressRequest egressRequest, CancellationToken stoppingToken)
+        private async Task ExecuteEgressOperation(EgressRequest egressRequest, IEgressActionableOperation egressOperation, CancellationToken stoppingToken)
         {
             //We have two stopping tokens, one per item that can be triggered via Delete
             //and if we are stopping the service
@@ -47,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 try
                 {
-                    var result = await egressRequest.EgressOperation.ExecuteAsync(_serviceProvider, token);
+                    var result = await egressOperation.ExecuteAsync(_serviceProvider, token);
 
                     //It is possible that this operation never completes, due to infinite duration operations.
                     _operationsStore.CompleteOperation(egressRequest.OperationId, result);

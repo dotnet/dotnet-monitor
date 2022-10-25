@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal class EgressOperation : IEgressOperation
+    internal class EgressOperation : IEgressActionableOperation
     {
         private readonly Func<IEgressService, CancellationToken, Task<EgressResult>> _egress;
         private readonly KeyValueLogScope _scope;

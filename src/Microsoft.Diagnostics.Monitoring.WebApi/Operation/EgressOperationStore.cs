@@ -39,23 +39,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey)
+        public async Task<Guid> AddOperation(IEgressActionableOperation egressOperation, string limitKey)
         {
             egressOperation.Validate(_serviceProvider);
+            Guid operationId = await AddOperation((IEgressOperation)egressOperation, limitKey);
 
-            Guid operationId = Guid.NewGuid();
-
-            IDisposable limitTracker = _requestLimits.Increment(limitKey, out bool allowOperation);
-            //We increment the limit here, and decrement it once the operation is cancelled or completed.
-            //We do this here so that we can provide immediate errors if the user queues up too many operations.
-
-            if (!allowOperation)
-            {
-                limitTracker.Dispose();
-                throw new TooManyRequestsException();
-            }
-
-            var request = new EgressRequest(operationId, egressOperation, limitTracker);
+            var request = new EgressRequest(operationId, egressOperation, null);
             lock (_requests)
             {
                 //Add operation object to central table.
@@ -72,6 +61,23 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             await _taskQueue.EnqueueAsync(request);
 
             return operationId;
+        }
+
+        public Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey)
+        {
+            Guid operationId = Guid.NewGuid();
+
+            IDisposable limitTracker = _requestLimits.Increment(limitKey, out bool allowOperation);
+            //We increment the limit here, and decrement it once the operation is cancelled or completed.
+            //We do this here so that we can provide immediate errors if the user queues up too many operations.
+
+            if (!allowOperation)
+            {
+                limitTracker.Dispose();
+                throw new TooManyRequestsException();
+            }
+
+            return Task.FromResult(operationId);
         }
 
         public void CancelOperation(Guid operationId)

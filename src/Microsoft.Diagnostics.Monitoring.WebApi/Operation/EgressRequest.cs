@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private bool _disposed;
         private IDisposable _limitTracker;
 
-        public EgressRequest(Guid operationId, IEgressOperation egressOperation, IDisposable limitTracker)
+        public EgressRequest(Guid operationId, IEgressActionableOperation egressOperation, IDisposable limitTracker)
         {
             OperationId = operationId;
             EgressOperation = egressOperation;
