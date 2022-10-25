@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Foperations-list)
+
 # Operations - List
 
 Lists all operations that have been created, as well as their status.
@@ -16,9 +19,9 @@ The default host address for these routes is `https://localhost:52323`. This rou
 
 | Name | In | Required | Type | Description |
 |---|---|---|---|---|
-| `pid` | query | false | int | The ID of the process. |
-| `uid` | query | false | guid | A value that uniquely identifies a runtime instance within a process. |
-| `name` | query | false | string | The name of the process. |
+| `pid` | query | false | int | (6.3+) The ID of the process. |
+| `uid` | query | false | guid | (6.3+) A value that uniquely identifies a runtime instance within a process. |
+| `name` | query | false | string | (6.3+) The name of the process. |
 
 See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
@@ -38,8 +41,8 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | [OperationSummary](./definitions.md#OperationSummary)[] | An array of operation objects. | `application/json` |
-| 400 Bad Request | [ValidationProblemDetails](./definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
+| 200 OK | [OperationSummary](./definitions.md#operationsummary)[] | An array of operation objects. | `application/json` |
+| 400 Bad Request | [ValidationProblemDetails](./definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 
 ## Examples

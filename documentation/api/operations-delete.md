@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Foperations-delete)
+
 # Operations - Delete
 
 Cancel a running operation. Only valid against operations in the `Running` state. Transitions the operation to `Cancelled` state.
@@ -25,7 +28,7 @@ Allowed schemes:
 | Name | Type | Description | Content Type |
 |---|---|---|---|
 | 200 OK |  | The operation was successfully cancelled. | `application/json` |
-| 400 Bad Request | [ValidationProblemDetails](definitions.md#ValidationProblemDetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
+| 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 
 ## Examples

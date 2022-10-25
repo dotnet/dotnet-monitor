@@ -27,6 +27,8 @@ async function run() {
 
   let octokit = github.getOctokit(core.getInput("auth_token", { required: true }));
   let target_branch = core.getInput("target_branch", { required: true });
+  let pr_label = core.getInput("label", { required: false });
+  let excluded_path = core.getInput("exclude", { required: false });
 
   try {
     // verify the comment user is a repo collaborator
@@ -66,10 +68,29 @@ async function run() {
       should_open_pull_request = false;
     } catch { }
 
-    // download and apply patch
-    await exec.exec(`curl -sSL "${github.context.payload.issue.pull_request.patch_url}" --output changes.patch`);
+    // download and apply patch.
 
-    const git_am_command = "git am --3way --ignore-whitespace --keep-non-patch changes.patch";
+    // Prefer the merge or squash commit when possible as it'll have the most up-to-date patch context for long-running branches
+    const pr_context = github.context.payload.issue.pull_request;
+    let patch_url = `${pr_context.patch_url}`;
+
+    try {
+      const pr = (await octokit.rest.pulls.get({
+        owner: repo_owner,
+        repo: repo_name,
+        pull_number: pr_number
+      })).data;
+
+      if (pr.merged === true && pr.merge_commit_sha !== null) {
+        patch_url = `${pr.base.repo.html_url}/commit/${pr.merge_commit_sha}.patch`;
+      }
+    } catch (error) {
+      console.log(`Failed to get PR information, falling back to unmerged patch. Error: ${error}`);
+    }
+  
+    await exec.exec(`curl -sSL "${patch_url}" --output changes.patch`);
+
+    const git_am_command = `git am --3way --ignore-whitespace --exclude="${excluded_path}" --keep-non-patch changes.patch`;
     let git_am_output = `$ ${git_am_command}\n\n`;
     let git_am_failed = false;
     try {
@@ -126,7 +147,7 @@ async function run() {
       .replace(/%cc_users%/g, cc_users);
 
     // open the GitHub PR
-    await octokit.rest.pulls.create({
+    const pr = await octokit.rest.pulls.create({
       owner: repo_owner,
       repo: repo_name,
       title: backport_pr_title,
@@ -134,6 +155,15 @@ async function run() {
       head: temp_branch,
       base: target_branch
     });
+
+    if (pr_label.length !== 0) {
+      await octokit.rest.issues.addLabels({
+        owner: repo_owner,
+        repo: repo_name,
+        issue_number: pr.data.number,
+        labels: [pr_label],
+      });
+    }
 
     console.log("Successfully opened the GitHub PR.");
   } catch (error) {

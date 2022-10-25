@@ -1,21 +1,56 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fdefinitions)
+
 # Definitions
 
-## CollectionRuleDescription
+>**NOTE:** Some features are [experimental](./../experimental.md) and are denoted as `**[Experimental]**` in this document.
+
+## **[Experimental]** CallStack (7.0+)
+
+| Name | Type | Description |
+|---|---|---|
+| `threadId` | int | The native thread id of the managed thread. |
+| `frames` | [CallStackFrame](#experimental-callstackframe-70)[] | Managed frame for the thread at the time of collection. |
+
+## **[Experimental]** CallStackFormat (7.0+)
+
+Enumeration that describes the output format of the collected call stacks.
+
+| Name | Description |
+|---|---|
+| `Json` | Stacks are formatted in Json. See [CallStackResult](#experimental-callstackresult-70). |
+| `PlainText` | Stacks are formatted in plain text. |
+
+## **[Experimental]** CallStackFrame (7.0+)
+
+| Name | Type | Description |
+|---|---|---|
+| `methodName` | string | Name of the method for this frame. This includes generic parameters. |
+| `className` | string | Name of the class for this frame. This includes generic parameters. |
+| `moduleName` | string | Name of the module for this frame. |
+
+## **[Experimental]** CallStackResult (7.0+)
+
+| Name | Type | Description |
+|---|---|---|
+| `stacks` | [CallStack](#experimental-callstack-70)[] | List of all managed stacks at the time of collection. |
+
+## CollectionRuleDescription (6.3+)
 
 Object describing the basic state of a collection rule for the executing instance of `dotnet monitor`.
 
 | Name | Type | Description |
 |---|---|---|
-| State | [CollectionRuleState](#CollectionRuleState) | Indicates what state the collection rule is in for the current process. |
+| State | [CollectionRuleState](#collectionrulestate-63) | Indicates what state the collection rule is in for the current process. |
 | StateReason | string | Human-readable explanation for the current state of the collection rule. |
 
-## CollectionRuleDetailedDescription
+## CollectionRuleDetailedDescription (6.3+)
 
 Object describing the detailed state of a collection rule for the executing instance of `dotnet monitor`.
 
 | Name | Type | Description |
 |---|---|---|
-| State | [CollectionRuleState](#CollectionRuleState) | Indicates what state the collection rule is in for the current process. |
+| State | [CollectionRuleState](#collectionrulestate-63) | Indicates what state the collection rule is in for the current process. |
 | StateReason | string | Human-readable explanation for the current state of the collection rule. |
 | LifetimeOccurrences | int | The number of times the trigger has executed for a process in its lifetime. |
 | SlidingWindowOccurrences | int | The number of times the trigger has executed within the current sliding window. |
@@ -24,7 +59,7 @@ Object describing the detailed state of a collection rule for the executing inst
 | SlidingWindowDurationCountdown | TimeSpan? | The amount of time remaining before the collection rule will no longer be throttled. |
 | RuleFinishedCountdown | TimeSpan? | The amount of time remaining before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely. |
 
-## CollectionRuleState
+## CollectionRuleState (6.3+)
 
 Enumeration that describes the current state of the collection rule.
 
@@ -41,7 +76,7 @@ Object describing diagnostic/automation information about the executing instance
 
 | Name | Type | Description |
 |---|---|---|
-| Version | string | The current version of Dotnet-Monitor. |
+| Version | string | The current version of `dotnet monitor`. |
 | RuntimeVersion | string | The version of the dotnet runtime. |
 | DiagnosticPortMode | DiagnosticPortConnectionMode | Indicates whether `dotnet monitor` is in `connect` mode or `listen` mode. |
 | DiagnosticPortName | string | The name of the named pipe or unix domain socket to use for connecting to the diagnostic server. |
@@ -64,7 +99,7 @@ Describes custom metrics.
 | Name | Type | Description |
 |---|---|---|
 | `includeDefaultProviders` | bool | Determines if the default counter providers should be used (such as System.Runtime). |
-| `providers` | [EventMetricsProvider](#EventMetricsProvider)[] | Array of providers for metrics to collect. |
+| `providers` | [EventMetricsProvider](#eventmetricsprovider)[] | Array of providers for metrics to collect. |
 
 ## EventMetricsProvider
 
@@ -90,7 +125,7 @@ Object describing the list of event providers, keywords, event levels, and addit
 
 | Name | Type | Description |
 |---|---|---|
-| Providers | [EventProvider](#EventProvider)[] | List of event providers from which to capture events. At least one event provider must be specified. |
+| Providers | [EventProvider](#eventprovider)[] | List of event providers from which to capture events. At least one event provider must be specified. |
 | RequestRundown | bool | The runtime may provide additional type information for certain types of events after the trace session is ended. This additional information is known as rundown events. Without this information, some events may not be parsable into useful information. Default is `true`. |
 | BufferSizeInMB | int | The size (in megabytes) of the event buffer used in the runtime. If the event buffer is filled, events produced by event providers may be dropped until the buffer is cleared. Increase the buffer size to mitigate this or pair down the list of event providers, keywords, and level to filter out extraneous events. Default is `256`. Min is `1`. Max is `1024`. |
 
@@ -120,7 +155,7 @@ Object describing a log entry from a target process.
 | `Category` | string | The category of the log entry. |
 | `EventId` | string | The event name of the EventId of the log entry. |
 | `Exception` | string | If an exception is logged, this property contains the formatted message of the log entry. |
-| `LogLevel` | string | The [LogLevel](#LogLevel) of the log entry. |
+| `LogLevel` | string | The [LogLevel](#loglevel) of the log entry. |
 | `Message` | string | If an exception is NOT logged, this property contains the formatted message of the log entry. |
 | `Scopes` | map (of object) | The scope information associated with the log entry. |
 
@@ -176,8 +211,8 @@ Object describing the default log level and filtering specifications for collect
 
 | Name | Type | Description |
 |---|---|---|
-| `logLevel` | [LogLevel](#LogLevel) | The default log level at which logs are collected. Default is `Warning`. |
-| `filterSpecs` | map (of [LogLevel](#LogLevel) or `null`) | A mapping of logger categories and the levels at which those categories should be collected. If level is set to `null`, collect category at the default level set in the `logLevel` property. |
+| `logLevel` | [LogLevel](#loglevel) | The default log level at which logs are collected. Default is `Warning`. |
+| `filterSpecs` | map (of [LogLevel](#loglevel) or `null`) | A mapping of logger categories and the levels at which those categories should be collected. If level is set to `null`, collect category at the default level set in the `logLevel` property. |
 | `useAppFilters` | bool | Collect logs for the categories and at the levels as specified by the [application-defined configuration](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/#configure-logging). Default is `true`. |
 
 ### Example
@@ -214,6 +249,16 @@ Object describing a metric from the application.
 | `code` | string | Error code representing the failure. |
 | `message` | string | Detailed error message. |
 
+## OperationProcessInfo (6.3+)
+
+The process on which the egress operation is performed.
+
+| Name | Type | Description |
+|---|---|---|
+| `pid` | int | The ID of the process. |
+| `uid` | guid | `.NET 5+` A value that uniquely identifies a runtime instance within a process.<br/>`.NET Core 3.1` An empty value: `00000000-0000-0000-0000-000000000000` |
+| `name` | string | The name of the process. |
+
 ## OperationState
 
 Status of the egress operation.
@@ -232,10 +277,10 @@ Detailed information about an operation.
 | Name | Type | Description |
 |---|---|---|
 | `resourceLocation` | string | Resource location of the egressed artifact. This can be Uri or path depending on the egress provider. |
-| `error` | [OperationError](#OperationError) | Detailed error message if the operation is in a `Failed` state. |
+| `error` | [OperationError](#operationerror) | Detailed error message if the operation is in a `Failed` state. |
 | `operationId` | guid | Unique identifier for the operation. |
 | `createdDateTime` | datetime string | UTC DateTime string of when the operation was created. |
-| `status` | [OperationState](#OperationState) | The current status of operation. |
+| `status` | [OperationState](#operationstate) | The current status of operation. |
 
 ### Example
 
@@ -257,7 +302,8 @@ Summary state of an operation.
 |---|---|---|
 | `operationId` | guid | Unique identifier for the operation. |
 | `createdDateTime` | datetime string | UTC DateTime string of when the operation was created. |
-| `status` | [OperationState](#OperationState) | The current status of operation. |
+| `status` | [OperationState](#operationstate) | The current status of operation. |
+| `process` | [OperationProcessInfo](#operationprocessinfo) | (6.3+) The process on which the operation is performed. |
 
 ### Example
 
@@ -265,7 +311,12 @@ Summary state of an operation.
 {
     "operationId": "67f07e40-5cca-4709-9062-26302c484f18",
     "createdDateTime": "2021-07-21T06:21:15.315861Z",
-    "status": "Succeeded"
+    "status": "Succeeded",
+    "process": {
+        "pid": 21632,
+        "uid": "cd4da319-fa9e-4987-ac4e-e57b2aac248b",
+        "name": "dotnet"
+    }
 }
 ```
 
@@ -321,6 +372,16 @@ The `uid` property is useful for uniquely identifying a process when it is runni
     "processArchitecture": "x64"
 }
 ```
+## TraceEventFilter
+
+Object describing a filter for trace events.
+
+| Name | Type | Description |
+|---|---|---|
+| `ProviderName` | string | The event provider that will produce the specified event. |
+| `EventName` | string | The name of the event, which is a concatenation of the task name and opcode name, if any. The task and opcode names are separated by a '/'. If the event has no opcode, then the event name is just the task name. |
+| `PayloadFilter` | map (of string) | (Optional) A mapping of event payload field names to their expected value. A subset of the payload fields may be specified. |
+
 
 ## TraceProfile
 
