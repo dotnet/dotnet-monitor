@@ -41,10 +41,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 if (builder.Length > 0)
                 {
-                    builder.Append(" ");
+                    builder.Append(' ');
                 }
                 builder.Append(kvp.Key);
-                builder.Append(":");
+                builder.Append(':');
                 builder.Append(kvp.Value);
             }
             return builder.ToString();

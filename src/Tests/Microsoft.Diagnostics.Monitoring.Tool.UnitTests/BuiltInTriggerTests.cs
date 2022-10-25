@@ -149,7 +149,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ValidateEventCounterOptionsTranslation(expectedSettings, eventCounterOptions);
         }
 
-        private void ValidateEventCounterOptionsTranslation(EventCounterOptions expected, EventCounterOptions actual)
+        private static void ValidateEventCounterOptionsTranslation(EventCounterOptions expected, EventCounterOptions actual)
         {
             Assert.Equal(expected.CounterName, actual.CounterName);
             Assert.Equal(expected.ProviderName, actual.ProviderName);

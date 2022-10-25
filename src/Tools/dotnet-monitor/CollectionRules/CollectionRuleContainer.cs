@@ -244,7 +244,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
         }
 
-        private bool TrySetCanceledAndReturnTrue(OperationCanceledException ex, TaskCompletionSource<object> source)
+        private static bool TrySetCanceledAndReturnTrue(OperationCanceledException ex, TaskCompletionSource<object> source)
         {
             // Always attempt to cancel the completion source
             source.TrySetCanceled(ex.CancellationToken);

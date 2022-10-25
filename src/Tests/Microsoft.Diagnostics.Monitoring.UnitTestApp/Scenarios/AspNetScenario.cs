@@ -36,29 +36,28 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
         private sealed class Startup
         {
-            public void ConfigureServices(IServiceCollection services)
+            public static void ConfigureServices(IServiceCollection services)
             {
                 services.AddControllers();
-                services.AddSingleton<ResponseService>();
             }
 
-            public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ResponseService responses)
+            public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
             {
                 app.UseRouting();
 
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapGet("/", responses.Ok);
-                    endpoints.MapGet("/privacy", responses.Ok);
-                    endpoints.MapGet("/slowresponse", responses.SlowResponseAsync);
+                    endpoints.MapGet("/", Responses.Ok);
+                    endpoints.MapGet("/privacy", Responses.Ok);
+                    endpoints.MapGet("/slowresponse", Responses.SlowResponseAsync);
                 });
             }
 
-            public sealed class ResponseService
+            public static class Responses
             {
-                public IResult Ok() => Results.Ok();
+                public static IResult Ok() => Results.Ok();
 
-                public async Task<IResult> SlowResponseAsync()
+                public static async Task<IResult> SlowResponseAsync()
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(100));
 

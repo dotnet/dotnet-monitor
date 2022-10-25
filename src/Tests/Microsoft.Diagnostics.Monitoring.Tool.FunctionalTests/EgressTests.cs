@@ -297,7 +297,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 #endif
         }
 
-        private async Task<HttpResponseMessage> TraceWithDelay(ApiClient client, int processId, bool delay = true)
+        private static async Task<HttpResponseMessage> TraceWithDelay(ApiClient client, int processId, bool delay = true)
         {
             HttpResponseMessage message = await client.ApiCall(FormattableString.Invariant($"/trace?pid={processId}&durationSeconds=-1"));
             if (delay)
@@ -307,12 +307,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             return message;
         }
 
-        private Task<HttpResponseMessage> EgressDirect(ApiClient client, int processId)
+        private static Task<HttpResponseMessage> EgressDirect(ApiClient client, int processId)
         {
             return client.ApiCall(FormattableString.Invariant($"/trace?pid={processId}&egressProvider={FileProviderName}"));
         }
 
-        private async Task<OperationResponse> EgressTraceWithDelay(ApiClient apiClient, int processId, bool delay = true)
+        private static async Task<OperationResponse> EgressTraceWithDelay(ApiClient apiClient, int processId, bool delay = true)
         {
             try
             {
@@ -329,13 +329,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         }
 
-        private async Task CancelEgressOperation(ApiClient apiClient, OperationResponse response)
+        private static async Task CancelEgressOperation(ApiClient apiClient, OperationResponse response)
         {
             HttpStatusCode deleteStatus = await apiClient.CancelEgressOperation(response.OperationUri);
             Assert.Equal(HttpStatusCode.OK, deleteStatus);
         }
 
-        private void ValidateOperation(OperationStatus expected, OperationSummary summary)
+        private static void ValidateOperation(OperationStatus expected, OperationSummary summary)
         {
             Assert.Equal(expected.OperationId, summary.OperationId);
             Assert.Equal(expected.Status, summary.Status);

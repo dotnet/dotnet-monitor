@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
-    internal class ExecuteActionTestHelper
+    internal static class ExecuteActionTestHelper
     {
         public static string GenerateArgumentsString(string[] additionalArgs)
         {

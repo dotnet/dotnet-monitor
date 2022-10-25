@@ -216,7 +216,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         private async Task<ResponseStreamHolder> CaptureDumpAsync(string processQuery, DumpType dumpType, CancellationToken token)
         {
-            using HttpRequestMessage request = new(HttpMethod.Get, $"/dump?{processQuery}&type={dumpType.ToString("G")}");
+            using HttpRequestMessage request = new(HttpMethod.Get, $"/dump?{processQuery}&type={dumpType:G}");
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationOctetStream);
 
             using DisposableBox<HttpResponseMessage> responseBox = new(
@@ -465,7 +465,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             {
                 case HttpStatusCode.OK:
                     ValidateContentType(response, ContentTypes.TextPlain);
-                    return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    return await response.Content.ReadAsStringAsync(token).ConfigureAwait(false);
                 case HttpStatusCode.BadRequest:
                     ValidateContentType(response, ContentTypes.ApplicationProblemJson);
                     throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
@@ -704,7 +704,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             }
         }
 
-        private void ValidateContentType(HttpResponseMessage responseMessage, string expectedMediaType)
+        private static void ValidateContentType(HttpResponseMessage responseMessage, string expectedMediaType)
         {
             Assert.Equal(expectedMediaType, responseMessage.Content.Headers.ContentType?.MediaType);
         }
@@ -714,7 +714,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             StringBuilder routeBuilder = new();
             routeBuilder.Append("/logs?");
             routeBuilder.Append(processIdentifierQuery);
-            routeBuilder.Append("&");
+            routeBuilder.Append('&');
             AppendDuration(routeBuilder, duration);
             if (logLevel.HasValue)
             {
@@ -729,7 +729,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             StringBuilder routeBuilder = new();
             routeBuilder.Append("/trace?");
             routeBuilder.Append(processIdentifierQuery);
-            routeBuilder.Append("&");
+            routeBuilder.Append('&');
             AppendDuration(routeBuilder, duration);
             if (profile.HasValue)
             {

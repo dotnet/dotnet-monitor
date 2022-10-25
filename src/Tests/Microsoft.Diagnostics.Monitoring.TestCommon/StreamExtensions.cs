@@ -1,4 +1,9 @@
-﻿using System.IO;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -10,10 +15,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static async Task<byte[]> ReadBytesAsync(this Stream stream, int length, CancellationToken cancellationToken)
         {
             byte[] buffer = new byte[length];
+            Memory<byte> memory = buffer;
 
             int read;
             int total = 0;
-            while (total < buffer.Length && 0 != (read = await stream.ReadAsync(buffer, total, buffer.Length - total, cancellationToken)))
+            while (total < buffer.Length && 0 != (read = await stream.ReadAsync(memory.Slice(total), cancellationToken)))
             {
                 total += read;
             }

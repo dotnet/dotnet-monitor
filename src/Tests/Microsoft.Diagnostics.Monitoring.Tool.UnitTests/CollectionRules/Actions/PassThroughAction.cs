@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions
 {
-    internal class PassThroughActionFactory : ICollectionRuleActionFactory<PassThroughOptions>
+    internal sealed class PassThroughActionFactory : ICollectionRuleActionFactory<PassThroughOptions>
     {
         public ICollectionRuleAction Create(IEndpointInfo endpointInfo, PassThroughOptions options)
         {
@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
         }
     }
 
-    internal class PassThroughAction : CollectionRuleActionBase<PassThroughOptions>
+    internal sealed class PassThroughAction : CollectionRuleActionBase<PassThroughOptions>
     {
         public PassThroughAction(IEndpointInfo endpointInfo, PassThroughOptions settings)
             : base(endpointInfo, settings)

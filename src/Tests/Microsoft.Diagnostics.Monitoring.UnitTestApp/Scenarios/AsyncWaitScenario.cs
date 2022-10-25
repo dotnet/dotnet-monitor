@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
     /// <summary>
     /// Async waits until it receives the Continue command.
     /// </summary>
-    internal class AsyncWaitScenario
+    internal static class AsyncWaitScenario
     {
         public static Command Command()
         {

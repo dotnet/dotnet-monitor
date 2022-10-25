@@ -347,7 +347,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        private void ValidateCollectionRuleDescriptions(Dictionary<string, CollectionRuleDescription> expectedCollectionRuleDescriptions, Dictionary<string, CollectionRuleDescription> actualCollectionRuleDescriptions)
+        private static void ValidateCollectionRuleDescriptions(Dictionary<string, CollectionRuleDescription> expectedCollectionRuleDescriptions, Dictionary<string, CollectionRuleDescription> actualCollectionRuleDescriptions)
         {
             Assert.Equal(actualCollectionRuleDescriptions.Keys.Count, expectedCollectionRuleDescriptions.Keys.Count);
 
