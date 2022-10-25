@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2FREADME)
+
 # 📖 `dotnet monitor` documentation
 
 `dotnet monitor` is a tool that makes it easier to get access to diagnostics information in a dotnet process.
@@ -24,6 +27,7 @@ When running a dotnet application, differences in diverse local and production e
     - [`/logs`](./api/logs.md)
     - [`/info`](./api/info.md)
     - [`/operations`](./api/operations.md)
+    - [`/collectionrules`](./api/collectionrules.md)
 - [Configuration](./configuration.md)
     - [JSON Schema](./schema.json)
 - [Authentication](./authentication.md)

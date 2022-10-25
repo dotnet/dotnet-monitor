@@ -1,15 +1,15 @@
-name: 'C# linting'
+name: 'Add Markdown Feedback'
 on:
   pull_request:
-    paths: ['src/**.cs']
-    branches: ['main', 'release/6.x', 'release/7.*']
+    paths: ['documentation/**.md']
+    branches: ['main']
 
 permissions:
   pull-requests: read
 
 jobs:
-  lint-csharp:
-    name: 'C# Linting'
+  add-markdown-feedback:
+    name: 'Add Markdown Feedback'
     runs-on: ubuntu-latest
 
     steps:
@@ -25,25 +25,17 @@ jobs:
       - name: Get changed files
         run: |
           echo "Files changed: '$(git diff-tree --no-commit-id --name-only -r ${{ env.base_sha }} ${{ github.sha }})'"
-          changed_source_files=$(git diff-tree --no-commit-id --name-only -r ${{ env.base_sha }} ${{ github.sha }} | { grep "**.cs$" || test $? = 1; })
+          changed_source_files=$(git diff-tree --no-commit-id --name-only -r ${{ env.base_sha }} ${{ github.sha }} -- documentation ':!documentation/releaseNotes/*' | { grep "**.md$" || test $? = 1; })
           echo "Files to validate: '${changed_source_files}'"
+          changed_source_files=$(echo ${changed_source_files} | sed 's/ documentation/,documentation/g')
           echo "updated_files=$(echo ${changed_source_files})" >> $GITHUB_ENV
 
-      - name: Get dotnet version
-        run: echo 'dotnet_version='$(jq -r '.tools.dotnet' global.json) >> $GITHUB_ENV
-
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v3.0.2
+      - name: Append To File
+        uses: ./.github/actions/AppendToFile
         with:
-          dotnet-version: ${{ env.dotnet_version }}
-          include-prerelease: true
-
-      # Workaround for a bug in the dotnet-format build shipped in .NET 7.0 Preview 5. Ref: https://github.com/dotnet/core/blob/main/release-notes/7.0/known-issues.md#unhandled-exception-in-dotnet-format-app-in-net-70-preview-5
-      - name: Setup dotnet format
-        run: dotnet tool install -g dotnet-format --version "7.*" --configfile ./NuGet.config
-
-      - name: Run dotnet format
-        run: dotnet-format --include ${{ env.updated_files }}
+          textToSearch: 'DGDQWXH'
+          textToAdd: '### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src={insertFileName})'
+          paths: ${{ env.updated_files }}
 
       - name: Generate artifacts
         run: |
