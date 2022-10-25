@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -16,14 +17,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private bool _disposed;
         private IDisposable _limitTracker;
 
-        public EgressRequest(Guid operationId, IEgressOperation egressOperation, IDisposable limitTracker)
+        public EgressRequest(Guid operationId, IEgressOperation egressOperation, IDisposable limitTracker, TaskCompletionSource<object> requestGracefulStopCompletionSource)
         {
             OperationId = operationId;
             EgressOperation = egressOperation;
+            RequestGracefulStopCompletionSource = requestGracefulStopCompletionSource;
             _limitTracker = limitTracker;
         }
 
         public CancellationTokenSource CancellationTokenSource { get; } = new();
+        public TaskCompletionSource<object> RequestGracefulStopCompletionSource { get; }
 
         public Guid OperationId { get; }
 

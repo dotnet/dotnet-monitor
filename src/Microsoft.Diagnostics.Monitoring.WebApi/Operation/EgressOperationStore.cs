@@ -39,22 +39,23 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<Guid> AddOperation(IEgressActionableOperation egressOperation, string limitKey)
+        public async Task<Guid> AddOperation(IEgressActionableOperation egressOperation, string limitKey, TaskCompletionSource<object> requestGracefulStopCompletionSource = null)
         {
             egressOperation.Validate(_serviceProvider);
-            (Guid operationId, EgressRequest egressRequest) = AddOperationCore(egressOperation, limitKey);
+            (Guid operationId, EgressRequest egressRequest) = AddOperationCore(egressOperation, limitKey, requestGracefulStopCompletionSource);
 
             await _taskQueue.EnqueueAsync(egressRequest);
             return operationId;
         }
 
-        public Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey)
+        public Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestGracefulStopCompletionSource = null)
         {
-            (Guid operationId, _) = AddOperationCore(egressOperation, limitKey);
+            // JSFIX: Link cancellation tokens
+            (Guid operationId, _) = AddOperationCore(egressOperation, limitKey, requestGracefulStopCompletionSource);
             return Task.FromResult(operationId);
         }
 
-        private (Guid operationId, EgressRequest egressRequest) AddOperationCore(IEgressOperation egressOperation, string limitKey)
+        private (Guid operationId, EgressRequest egressRequest) AddOperationCore(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestGracefulStopCompletionSource)
         {
             Guid operationId = Guid.NewGuid();
 
@@ -68,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new TooManyRequestsException();
             }
 
-            var request = new EgressRequest(operationId, egressOperation, limitTracker);
+            var request = new EgressRequest(operationId, egressOperation, limitTracker, requestGracefulStopCompletionSource);
             lock (_requests)
             {
                 //Add operation object to central table.

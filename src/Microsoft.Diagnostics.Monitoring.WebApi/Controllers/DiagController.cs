@@ -228,6 +228,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 if (string.IsNullOrEmpty(egressProvider))
                 {
+                    await RegisterHttpResponseAsOperation(processInfo, Utilities.ArtifactType_Dump);
                     Stream dumpStream = await _dumpService.DumpAsync(processInfo.EndpointInfo, type, HttpContext.RequestAborted);
 
                     _logger.WrittenToHttpStream();
@@ -725,16 +726,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             string fileName,
             string contentType,
             IProcessInfo processInfo,
-            bool asAttachment = true)
+            bool asAttachment = true,
+            TaskCompletionSource<object> requestGracefulStopCompletionSource = null)
         {
             KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
 
             if (string.IsNullOrEmpty(providerName))
             {
-                HttpContext.Response.Headers["href"] = await RegisterOperation(
-                    new HttpResponseEgressOperation(processInfo),
-                    limitKey: artifactType);
-
+                await RegisterHttpResponseAsOperation(processInfo, artifactType, requestGracefulStopCompletionSource);
                 return new OutputStreamResult(
                     action,
                     contentType,
@@ -750,24 +749,32 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     processInfo,
                     contentType,
                     scope),
-                    limitKey: artifactType);
+                    limitKey: artifactType,
+                    requestGracefulStopCompletionSource);
             }
         }
 
+        private async Task RegisterHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, TaskCompletionSource<object> requestGracefulStopCompletionSource = null)
+        {
+            HttpContext.Response.Headers["href"] = await RegisterOperation(
+                new HttpResponseEgressOperation(processInfo),
+                limitKey: artifactType,
+                requestGracefulStopCompletionSource);
+        }
 
-        private async Task<string> RegisterOperation(IEgressOperation egressOperation, string limitKey)
+        private async Task<string> RegisterOperation(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestGracefulStopCompletionSource)
         {
             // Will throw TooManyRequestsException if there are too many concurrent operations.
-            Guid operationId = await _operationsStore.AddOperation(egressOperation, limitKey);
+            Guid operationId = await _operationsStore.AddOperation(egressOperation, limitKey, requestGracefulStopCompletionSource);
             return this.Url.Action(
                 action: nameof(OperationsController.GetOperationStatus),
                 controller: OperationsController.ControllerName, new { operationId = operationId },
                 protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
         }
 
-        private async Task<ActionResult> SendToEgress(IEgressOperation egressOperation, string limitKey)
+        private async Task<ActionResult> SendToEgress(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestGracefulStopCompletionSource = null)
         {
-            string operationUrl = await RegisterOperation(egressOperation, limitKey);
+            string operationUrl = await RegisterOperation(egressOperation, limitKey, requestGracefulStopCompletionSource);
             return Accepted(operationUrl);
         }
 
