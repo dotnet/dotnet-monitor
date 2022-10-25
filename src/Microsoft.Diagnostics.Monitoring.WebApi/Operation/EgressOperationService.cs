@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 EgressRequest egressRequest = await _queue.DequeueAsync(stoppingToken);
                 if (egressRequest.EgressOperation is not IEgressActionableOperation egressOperation)
                 {
-                    Debug.Fail($"Unexpected non-actionable egress operation in the queue.");
+                    Debug.Fail("Unexpected non-actionable egress operation in the queue.");
                     continue;
                 }
 
