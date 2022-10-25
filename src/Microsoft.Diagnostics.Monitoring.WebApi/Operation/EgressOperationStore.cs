@@ -42,28 +42,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public async Task<Guid> AddOperation(IEgressActionableOperation egressOperation, string limitKey)
         {
             egressOperation.Validate(_serviceProvider);
-            Guid operationId = await AddOperation((IEgressOperation)egressOperation, limitKey);
+            (Guid operationId, EgressRequest egressRequest) = AddOperationCore(egressOperation, limitKey);
 
-            var request = new EgressRequest(operationId, egressOperation, null);
-            lock (_requests)
-            {
-                //Add operation object to central table.
-                _requests.Add(operationId,
-                    new EgressEntry
-                    {
-                        State = Models.OperationState.Running,
-                        EgressRequest = request,
-                        OperationId = operationId
-                    });
-            }
-
-            //Kick off work to attempt egress
-            await _taskQueue.EnqueueAsync(request);
-
+            await _taskQueue.EnqueueAsync(egressRequest);
             return operationId;
         }
 
         public Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey)
+        {
+            (Guid operationId, _) = AddOperationCore(egressOperation, limitKey);
+            return Task.FromResult(operationId);
+        }
+
+        private (Guid operationId, EgressRequest egressRequest) AddOperationCore(IEgressOperation egressOperation, string limitKey)
         {
             Guid operationId = Guid.NewGuid();
 
@@ -77,7 +68,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new TooManyRequestsException();
             }
 
-            return Task.FromResult(operationId);
+            var request = new EgressRequest(operationId, egressOperation, limitTracker);
+            lock (_requests)
+            {
+                //Add operation object to central table.
+                _requests.Add(operationId,
+                    new EgressEntry
+                    {
+                        State = Models.OperationState.Running,
+                        EgressRequest = request,
+                        OperationId = operationId
+                    });
+            }
+
+            return (operationId, request);
         }
 
         public void CancelOperation(Guid operationId)
