@@ -7,7 +7,7 @@ using System;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    internal class MockSystemClock : ISystemClock
+    internal sealed class MockSystemClock : ISystemClock
     {
         private DateTimeOffset _utcNow = DateTimeOffset.UtcNow;
 

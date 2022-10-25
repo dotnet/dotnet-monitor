@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<CorsConfigurationOptions> corsOptions)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<CorsConfigurationOptions> corsOptions)
         {
             if (env.IsDevelopment())
             {

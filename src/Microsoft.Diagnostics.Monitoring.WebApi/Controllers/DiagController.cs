@@ -710,15 +710,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 return LogFormat.JsonSequence;
             }
-            if (acceptedHeaders.Any(h => TextPlainHeader.IsSubsetOf(h)))
+            if (acceptedHeaders.Any(TextPlainHeader.IsSubsetOf))
             {
                 return LogFormat.PlainText;
             }
-            if (acceptedHeaders.Any(h => NdJsonHeader.IsSubsetOf(h)))
+            if (acceptedHeaders.Any(NdJsonHeader.IsSubsetOf))
             {
                 return LogFormat.NewlineDelimitedJson;
             }
-            if (acceptedHeaders.Any(h => JsonSequenceHeader.IsSubsetOf(h)))
+            if (acceptedHeaders.Any(JsonSequenceHeader.IsSubsetOf))
             {
                 return LogFormat.JsonSequence;
             }

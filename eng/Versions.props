@@ -46,6 +46,7 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/arcade references -->
+    <MicrosoftDotNetCodeAnalysisVersion>8.0.0-beta.22524.5</MicrosoftDotNetCodeAnalysisVersion>
     <MicrosoftDotNetXUnitExtensionsVersion>8.0.0-beta.22524.5</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>7.0.0</MicrosoftAspNetCoreAppRuntimewinx64Version>
@@ -55,6 +56,8 @@
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>6.0.0-preview.22524.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>6.0.0-preview.22524.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <!-- dotnet/roslyn-analyzers -->
+    <MicrosoftCodeAnalysisNetAnalyzersVersion>7.0.0-preview1.22524.2</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
     <MicrosoftNETCoreAppRuntimewinx64Version>7.0.0</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6470Version>7.0.0-rtm.22512.2</VSRedistCommonNetCoreSharedFrameworkx6470Version>

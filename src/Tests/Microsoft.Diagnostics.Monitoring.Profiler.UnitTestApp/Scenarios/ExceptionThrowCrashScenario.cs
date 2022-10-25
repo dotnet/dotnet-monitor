@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp.Scenarios
     /// <summary>
     /// Async waits until it receives the Continue command.
     /// </summary>
-    internal class ExceptionThrowCrashScenario
+    internal static class ExceptionThrowCrashScenario
     {
         public static Command Command()
         {

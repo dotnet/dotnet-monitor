@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    internal class DiagnosticPortTestsConstants
+    internal static class DiagnosticPortTestsConstants
     {
         public const string SimplifiedDiagnosticPort = "SimplifiedDiagnosticPort";
         public const string FullDiagnosticPort = "FullDiagnosticPort";

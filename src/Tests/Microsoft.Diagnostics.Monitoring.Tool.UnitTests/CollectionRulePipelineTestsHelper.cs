@@ -25,7 +25,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    internal class CollectionRulePipelineTestsHelper
+    internal static class CollectionRulePipelineTestsHelper
     {
         internal static async Task ExecuteScenario(
             TargetFrameworkMoniker tfm,
@@ -96,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// that the actions are invoked for the number of expected iterations (<paramref name="expectedCount"/>) and
         /// are throttled for the remaining number of iterations.
         /// </summary>
-        internal async static Task ManualTriggerAsync(
+        internal static async Task ManualTriggerAsync(
             ManualTriggerService triggerService,
             CallbackActionService callbackService,
             PipelineCallbacks callbacks,
@@ -184,7 +184,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.False(actionStartedTask.IsCompleted);
         }
 
-        internal class PipelineCallbacks
+        internal sealed class PipelineCallbacks
         {
             private readonly List<CompletionEntry> _entries = new();
 
@@ -247,7 +247,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             public int StartedCount => _startedCount;
 
-            private class CompletionEntry
+            private sealed class CompletionEntry
             {
                 private readonly TaskCompletionSource<object> _source = new(TaskCreationOptions.RunContinuationsAsynchronously);
 

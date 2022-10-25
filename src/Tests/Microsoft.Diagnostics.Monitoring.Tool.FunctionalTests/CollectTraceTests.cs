@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             });
         }
 
-        private string ConstructQualifiedEventName(string eventName, TraceEventOpcode opcode)
+        private static string ConstructQualifiedEventName(string eventName, TraceEventOpcode opcode)
         {
             return (opcode == TraceEventOpcode.Info)
                 ? eventName
@@ -148,7 +148,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Assert.Equal(collectRundown, hasRundown);
         }
 
-        private Task<(bool hasStoppingEvent, bool hasRundown)> ValidateNettraceFile(string filePath, TraceEventFilter eventFilter)
+        private static Task<(bool hasStoppingEvent, bool hasRundown)> ValidateNettraceFile(string filePath, TraceEventFilter eventFilter)
         {
             return Task.Run(() =>
             {

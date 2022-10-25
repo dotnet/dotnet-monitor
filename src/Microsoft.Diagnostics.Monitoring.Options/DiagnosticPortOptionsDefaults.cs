@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal class DiagnosticPortOptionsDefaults
+    internal static class DiagnosticPortOptionsDefaults
     {
         public const DiagnosticPortConnectionMode ConnectionMode = DiagnosticPortConnectionMode.Connect;
         public const bool DeleteEndpointOnStartup = false;

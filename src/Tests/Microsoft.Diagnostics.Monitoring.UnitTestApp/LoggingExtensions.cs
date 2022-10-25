@@ -14,25 +14,25 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             LoggerMessage.Define<TestAppScenarios.ScenarioState>(
                 eventId: TestAppLogEventIds.ScenarioState.EventId(),
                 logLevel: LogLevel.Information,
-                formatString: "State: {state}");
+                formatString: "State: {State}");
 
         private static readonly Action<ILogger, string, bool, Exception> _receivedCommand =
             LoggerMessage.Define<string, bool>(
                 eventId: TestAppLogEventIds.ReceivedCommand.EventId(),
                 logLevel: LogLevel.Debug,
-                formatString: "Received command: {command}; Expected: {expected}");
+                formatString: "Received command: {Command}; Expected: {Expected}");
 
         private static readonly Action<ILogger, string, string, Exception> _environmentVariable =
             LoggerMessage.Define<string, string>(
                 eventId: TestAppLogEventIds.EnvironmentVariable.EventId(),
                 logLevel: LogLevel.Information,
-                formatString: "Environment Variable: {name} = {value}");
+                formatString: "Environment Variable: {Name} = {Value}");
 
         private static readonly Action<ILogger, string, Exception> _boundUrl =
             LoggerMessage.Define<string>(
                 eventId: TestAppLogEventIds.BoundUrl.EventId(),
                 logLevel: LogLevel.Information,
-                formatString: "Bound URL: {url}");
+                formatString: "Bound URL: {Url}");
 
         public static void ScenarioState(this ILogger logger, TestAppScenarios.ScenarioState state)
         {

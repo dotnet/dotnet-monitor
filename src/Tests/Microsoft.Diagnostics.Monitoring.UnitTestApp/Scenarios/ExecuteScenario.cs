@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
-    internal class ExecuteScenario
+    internal static class ExecuteScenario
     {
         public static Command Command()
         {

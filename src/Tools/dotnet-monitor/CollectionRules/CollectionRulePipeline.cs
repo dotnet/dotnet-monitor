@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
         // Flag used to guard against multiple invocations of _startCallback.
-        private bool _invokedStartCallback = false;
+        private bool _invokedStartCallback;
 
         private CollectionRulePipelineState _stateHolder;
 

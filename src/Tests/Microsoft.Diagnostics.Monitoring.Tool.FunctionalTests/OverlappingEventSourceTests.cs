@@ -145,7 +145,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        private async Task ValidateAspNetTriggerCollected(Task ruleTask, ApiClient client, string hostName, string[] paths, string expectedFilePath, string expectedFileContent)
+        private static async Task ValidateAspNetTriggerCollected(Task ruleTask, ApiClient client, string hostName, string[] paths, string expectedFilePath, string expectedFileContent)
         {
             await ApiCallHelper(hostName, paths, client);
 
@@ -158,7 +158,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             File.Delete(expectedFilePath);
         }
 
-        private async Task ApiCallHelper(string hostName, string[] paths, ApiClient client)
+        private static async Task ApiCallHelper(string hostName, string[] paths, ApiClient client)
         {
             foreach (string path in paths)
             {
