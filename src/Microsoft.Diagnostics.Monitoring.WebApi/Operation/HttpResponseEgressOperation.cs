@@ -32,13 +32,30 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public async Task<ExecutionResult<EgressResult>> ExecuteAsync(IServiceProvider serviceProvider, CancellationToken token)
         {
-            using IDisposable registration = _httpContext.RequestAborted.Register(
-                () => _responseFinishedCompletionSource.TrySetCanceled(_httpContext.RequestAborted));
+            int statusCode;
+            try
+            {
+                using IDisposable registration = _httpContext.RequestAborted.Register(
+                    () => _responseFinishedCompletionSource.TrySetCanceled(_httpContext.RequestAborted));
 
-            // If the http request is aborted, it will cause an OperationCanceledException here.
-            // When this occurs, the operation service will mirror the cancelled state into the
-            // operation store.
-            int statusCode = await _responseFinishedCompletionSource.Task.WaitAsync(token);
+                // If the http request is aborted, it will cause an OperationCanceledException here.
+                // When this occurs, the operation service will mirror the cancelled state into the
+                // operation store.
+                statusCode = await _responseFinishedCompletionSource.Task.WaitAsync(token);
+            }
+            catch (ObjectDisposedException)
+            {
+                // If the http request is disposed by the time the operation service has a chance to get here
+                // then either the response must have gracefully completed or it was aborted.
+                if (_responseFinishedCompletionSource.Task.IsCompleted)
+                {
+                    statusCode = await _responseFinishedCompletionSource.Task;
+                }
+                else
+                {
+                    throw new OperationCanceledException("The HTTP request was aborted before the operation could be completed.");
+                }
+            }
 
             return statusCode == (int)HttpStatusCode.OK
                 ? ExecutionResult<EgressResult>.Empty()
