@@ -21,7 +21,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public HttpResponseEgressOperation(HttpContext context, IProcessInfo processInfo)
         {
             _httpContext = context;
-            // JSFIX: investigate if the user closes the stream
             _httpContext.Response.OnCompleted((_) =>
             {
                 _responseFinishedCompletionSource.TrySetResult(_httpContext.Response.StatusCode);
@@ -33,12 +32,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public async Task<ExecutionResult<EgressResult>> ExecuteAsync(IServiceProvider serviceProvider, CancellationToken token)
         {
-            // todo: link cancellation token
+            using IDisposable registration = _httpContext.RequestAborted.Register(
+                () => _responseFinishedCompletionSource.TrySetCanceled(_httpContext.RequestAborted));
+
+            // If the http request is aborted, it will cause an OperationCanceledException here.
+            // When this occurs, the operation service will mirror the cancelled state into the
+            // operation store.
             int statusCode = await _responseFinishedCompletionSource.Task.WaitAsync(token);
-            if (token.IsCancellationRequested)
-            {
-                // Signal to the request
-            }
+
             return statusCode == (int)HttpStatusCode.OK
                 ? ExecutionResult<EgressResult>.Empty()
                 : ExecutionResult<EgressResult>.Failed(new Exception($"HTTP request failed with status code: ${statusCode}"));

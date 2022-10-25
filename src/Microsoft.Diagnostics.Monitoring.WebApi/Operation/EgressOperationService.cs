@@ -52,8 +52,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     //It is possible that this operation never completes, due to infinite duration operations.
                     _operationsStore.CompleteOperation(egressRequest.OperationId, result);
                 }
+                catch (OperationCanceledException)
+                {
+                    try
+                    {
+                        // Try to mirror the state in the operations store
+                        _operationsStore.CancelOperation(egressRequest.OperationId);
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
                 //This is unexpected, but an unhandled exception should still fail the operation.
-                catch (Exception e) when (!(e is OperationCanceledException))
+                catch (Exception e)
                 {
                     _operationsStore.CompleteOperation(egressRequest.OperationId, ExecutionResult<EgressResult>.Failed(e));
                 }
