@@ -23,6 +23,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         [JsonPropertyName("process")]
         public OperationProcessInfo Process { get; set; }
+
+        [JsonPropertyName("egressProviderName")]
+        public string EgressProviderName { get; set; }
     }
 
     /// <summary>

@@ -14,23 +14,23 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     internal class EgressOperation : IEgressOperation
     {
         private readonly Func<IEgressService, CancellationToken, Task<EgressResult>> _egress;
-        private readonly string _egressProvider;
         private readonly KeyValueLogScope _scope;
         public EgressProcessInfo ProcessInfo { get; private set; }
+        public string EgressProviderName { get; private set; }
 
         public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata = null)
         {
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, processInfo.EndpointInfo, collectionRuleMetadata, token);
-            _egressProvider = endpointName;
             _scope = scope;
 
+            EgressProviderName = endpointName;
             ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
         }
 
         public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata = null)
         {
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, processInfo.EndpointInfo, collectionRuleMetadata, token);
-            _egressProvider = endpointName;
+            EgressProviderName = endpointName;
             _scope = scope;
 
             ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
@@ -40,14 +40,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata)
         {
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, source, collectionRuleMetadata, token);
-            _egressProvider = endpointName;
+            EgressProviderName = endpointName;
             _scope = scope;
         }
 
         public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata)
         {
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, source, collectionRuleMetadata, token);
-            _egressProvider = endpointName;
+            EgressProviderName = endpointName;
             _scope = scope;
         }
 
@@ -76,12 +76,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 return ExecutionResult<EgressResult>.Succeeded(egressResult);
             }, logger, token);
         }
-        
+
         public void Validate(IServiceProvider serviceProvider)
         {
+            if (string.IsNullOrEmpty(EgressProviderName))
+            {
+                return;
+            }
+
             serviceProvider
                 .GetRequiredService<IEgressService>()
-                .ValidateProvider(_egressProvider);
+                .ValidateProvider(EgressProviderName);
         }
     }
 

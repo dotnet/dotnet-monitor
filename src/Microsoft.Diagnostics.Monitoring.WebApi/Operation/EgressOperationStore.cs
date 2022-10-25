@@ -164,6 +164,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         OperationId = kvp.Key,
                         CreatedDateTime = kvp.Value.CreatedDateTime,
                         Status = kvp.Value.State,
+                        EgressProviderName = kvp.Value.EgressRequest.EgressOperation.EgressProviderName,
                         Process = processInfo != null ?
                             new Models.OperationProcessInfo
                             {
@@ -191,6 +192,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     OperationId = entry.EgressRequest.OperationId,
                     Status = entry.State,
                     CreatedDateTime = entry.CreatedDateTime,
+                    EgressProviderName = entry.EgressRequest.EgressOperation.EgressProviderName,
                     Process = processInfo != null ?
                         new Models.OperationProcessInfo
                         {
