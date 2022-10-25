@@ -20,5 +20,9 @@
     <NewtonsoftJsonVersion>13.0.1</NewtonsoftJsonVersion>
     <NJsonSchemaVersion>10.8.0</NJsonSchemaVersion>
     <SwashbuckleAspNetCoreSwaggerGenVersion>6.4.0</SwashbuckleAspNetCoreSwaggerGenVersion>
+    
+    <!-- Release-branch specific reference -->
+    <!-- dotnet/diagnostics references -->
+    <MicrosoftDiagnosticsMonitoringVersion>5.0.328102</MicrosoftDiagnosticsMonitoringVersion>
   </PropertyGroup>
 </Project>
