@@ -14,7 +14,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     /* 
      * == Egress Provider Design ==
      * - Each type of egress is implemented as an EgressProvider<TOptions>. The following are the built-in providers:
-     *   - AzureBlobEgressProvider: Allows egressing stream data to a blob in Azure blob storage.
      *   - FileSystemEgressProvider: Allows egressing stream data to the file system.
      *   The egress provider options are typically use for describing to where stream data is to be egressed.
      * - When invoking an egress provider, the following are required:

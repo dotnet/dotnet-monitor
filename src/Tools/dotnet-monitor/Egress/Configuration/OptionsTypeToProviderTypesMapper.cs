@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -33,15 +32,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
                     {
                         yield return providerTypeSection;
                     }
-                }
-                yield break;
-            }
-            else if (optionsType == typeof(AzureBlobEgressProviderOptions))
-            {
-                IConfigurationSection azureBlobSection = _egressSection.GetSection(EgressProviderTypes.AzureBlobStorage);
-                if (azureBlobSection.Exists())
-                {
-                    yield return azureBlobSection;
                 }
                 yield break;
             }

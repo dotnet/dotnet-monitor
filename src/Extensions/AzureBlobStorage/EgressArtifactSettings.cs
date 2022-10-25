@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress
+namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 {
     internal sealed class EgressArtifactSettings
     {
@@ -14,10 +15,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         /// The content type of the blob to be created.
         /// </summary>
         public string ContentType { get; set; }
+
         /// <summary>
         /// The metadata of the blob to be created.
         /// </summary>
-        public Dictionary<string, string> Metadata { get; }
+        public Dictionary<string, string> Metadata { get; set; }
             = new Dictionary<string, string>(StringComparer.Ordinal);
 
         /// <summary>
@@ -26,6 +28,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public Dictionary<string, string> CustomMetadata { get; }
             = new Dictionary<string, string>(StringComparer.Ordinal);
 
+        /// <summary>
+        /// Environment block of the target process.
+        /// </summary>
         public Dictionary<string, string> EnvBlock { get; set; }
             = new Dictionary<string, string>(StringComparer.Ordinal);
 

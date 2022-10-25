@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -33,12 +32,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: LoggingEventIds.EgressProviderOptionsValidationFailure.EventId(),
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_EgressProviderOptionsValidationError);
-
-        private static readonly Action<ILogger, string, string, Exception> _egressProviderUnableToFindPropertyKey =
-            LoggerMessage.Define<string, string>(
-                eventId: LoggingEventIds.EgressProvideUnableToFindPropertyKey.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_EgressProvideUnableToFindPropertyKey);
 
         private static readonly Action<ILogger, string, Exception> _egressProviderInvokeStreamAction =
             LoggerMessage.Define<string>(
@@ -310,24 +303,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ApiKeyNotConfigured);
 
-        private static readonly Action<ILogger, string, string, string, Exception> _queueDoesNotExist =
-            LoggerMessage.Define<string, string, string>(
-                eventId: LoggingEventIds.QueueDoesNotExist.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_QueueDoesNotExist);
-
-        private static readonly Action<ILogger, string, string, Exception> _queueOptionsPartiallySet =
-            LoggerMessage.Define<string, string>(
-                eventId: LoggingEventIds.QueueOptionsPartiallySet.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_QueueOptionsPartiallySet);
-
-        private static readonly Action<ILogger, string, Exception> _writingMessageToQueueFailed =
-            LoggerMessage.Define<string>(
-                eventId: LoggingEventIds.WritingMessageToQueueFailed.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_WritingMessageToQueueFailed);
-
         private static readonly Action<ILogger, string, Exception> _experienceSurvey =
             LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.ExperienceSurvey.EventId(),
@@ -345,12 +320,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: LoggingEventIds.ExtensionProbeStart.EventId(),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_ExtensionProbeStart);
-
-        private static readonly Action<ILogger, string, string, Exception> _extensionProbeRepo =
-            LoggerMessage.Define<string, string>(
-                eventId: LoggingEventIds.ExtensionProbeRepo.EventId(),
-                logLevel: LogLevel.Debug,
-                formatString: Strings.LogFormatString_ExtensionProbeRepo);
 
         private static readonly Action<ILogger, string, string, Exception> _extensionProbeSucceeded =
             LoggerMessage.Define<string, string>(
@@ -466,30 +435,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticPortWatchingFailed);
 
-        private static readonly Action<ILogger, Exception> _invalidMetadata =
-            LoggerMessage.Define(
-                eventId: LoggingEventIds.InvalidMetadata.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_InvalidMetadata);
-
-        private static readonly Action<ILogger, string, Exception> _duplicateKeyInMetadata =
-            LoggerMessage.Define<string>(
-                eventId: LoggingEventIds.DuplicateKeyInMetadata.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_DuplicateKeyInMetadata);
-
-        private static readonly Action<ILogger, string, Exception> _environmentVariableNotFound =
-            LoggerMessage.Define<string>(
-                eventId: LoggingEventIds.EnvironmentVariableNotFound.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_EnvironmentVariableNotFound);
-
-        private static readonly Action<ILogger, Exception> _environmentBlockNotSupported =
-            LoggerMessage.Define(
-                eventId: LoggingEventIds.EnvironmentBlockNotSupported.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_EnvironmentBlockNotSupported);
-
         private static readonly Action<ILogger, Exception> _failedInitializeSharedLibraryStorage =
             LoggerMessage.Define(
                 eventId: LoggingEventIds.FailedInitializeSharedLibraryStorage.EventId(),
@@ -539,11 +484,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void EgressProviderOptionsValidationFailure(this ILogger logger, string providerName, string failureMessage)
         {
             _egressProviderOptionsValidationFailure(logger, providerName, failureMessage, null);
-        }
-
-        public static void EgressProviderUnableToFindPropertyKey(this ILogger logger, string providerName, string keyName)
-        {
-            _egressProviderUnableToFindPropertyKey(logger, providerName, keyName, null);
         }
 
         public static void EgressProviderInvokeStreamAction(this ILogger logger, string providerName)
@@ -786,21 +726,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 CultureInfo.CurrentUICulture.LCID);
         }
 
-        public static void QueueDoesNotExist(this ILogger logger, string queueName)
-        {
-            _queueDoesNotExist(logger, queueName, nameof(AzureBlobEgressProviderOptions.QueueName), nameof(AzureBlobEgressProviderOptions.QueueAccountUri), null);
-        }
-
-        public static void QueueOptionsPartiallySet(this ILogger logger)
-        {
-            _queueOptionsPartiallySet(logger, nameof(AzureBlobEgressProviderOptions.QueueName), nameof(AzureBlobEgressProviderOptions.QueueAccountUri), null);
-        }
-
-        public static void WritingMessageToQueueFailed(this ILogger logger, string queueName, Exception ex)
-        {
-            _writingMessageToQueueFailed(logger, queueName, ex);
-        }
-
         public static void ExperienceSurvey(this ILogger logger)
         {
             _experienceSurvey(logger, Monitor.ExperienceSurvey.ExperienceSurveyLink, null);
@@ -814,11 +739,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ExtensionProbeStart(this ILogger logger, string extensionName)
         {
             _extensionProbeStart(logger, extensionName, null);
-        }
-
-        public static void ExtensionProbeRepo(this ILogger logger, string extensionName, ExtensionRepository extensionRepository)
-        {
-            _extensionProbeRepo(logger, extensionName, extensionRepository.DisplayName, null);
         }
 
         public static void ExtensionProbeSucceeded(this ILogger logger, string extensionName, IExtension extension)
@@ -914,25 +834,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DiagnosticPortWatchingFailed(this ILogger logger, string diagnosticPort, Exception ex)
         {
             _diagnosticPortWatchingFailed(logger, diagnosticPort, ex);
-        }
-        public static void InvalidMetadata(this ILogger logger, Exception ex)
-        {
-            _invalidMetadata(logger, ex);
-        }
-
-        public static void DuplicateKeyInMetadata(this ILogger logger, string duplicateKey)
-        {
-            _duplicateKeyInMetadata(logger, duplicateKey, null);
-        }
-
-        public static void EnvironmentVariableNotFound(this ILogger logger, string environmentVariable)
-        {
-            _environmentVariableNotFound(logger, environmentVariable, null);
-        }
-
-        public static void EnvironmentBlockNotSupported(this ILogger logger)
-        {
-            _environmentBlockNotSupported(logger, null);
         }
 
         public static void FailedInitializeSharedLibraryStorage(this ILogger logger, Exception ex)

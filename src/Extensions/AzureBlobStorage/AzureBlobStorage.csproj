@@ -2,27 +2,15 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob</RootNamespace>
+    <RootNamespace>Microsoft.Diagnostics.Monitoring.AzureBlobStorage</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
-  </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="..\..\Tools\dotnet-monitor\LoggingEventIds.cs" Link="ExternalRefs\LoggingEventIds.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\EgressProvider.cs" Link="ExternalRefs\EgressProvider.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\IEgressProvider.cs" Link="ExternalRefs\IEgressProvider.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\EgressProviderTypes.cs" Link="ExternalRefs\EgressProviderTypes.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\EgressException.cs" Link="ExternalRefs\EgressException.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\EgressArtifactSettings.cs" Link="ExternalRefs\EgressArtifactSettings.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\AzureBlob\AzureBlobEgressProvider.cs" Link="ExternalRefs\AzureBlobEgressProvider.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\AzureBlob\AzureBlobEgressProvider.AutoFlushStream.cs" Link="ExternalRefs\AzureBlobEgressProvider.AutoFlushStream.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Egress\Extension\EgressArtifactResult.cs" Link="ExternalRefs\EgressArtifactResult.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\IEgressProviderCommonOptions.cs" Link="ExternalRefs\IEgressProviderCommonOptions.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\OptionsDisplayStrings.Designer.cs" Link="ExternalRefs\OptionsDisplayStrings.Designer.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Extensibility\IExtensionResult.cs" Link="ExternalRefs\IExtensionResult.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.Options\AzureBlobEgressProviderOptions.cs" Link="ExternalRefs\AzureBlobEgressProviderOptions.cs" />
-  </ItemGroup>
+    <Description>Azure Blob Storage extension for dotnet-monitor</Description>
+    <PackageTags>Diagnostic</PackageTags>
+    <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
+    <ToolCommandName>dotnet-monitor-egress-azureblobstorage</ToolCommandName>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="$(AzureIdentityVersion)" />

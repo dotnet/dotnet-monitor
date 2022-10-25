@@ -653,7 +653,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The format used to display the callstacks..
+        ///   Looks up a localized string similar to The format used to display the call stacks..
         /// </summary>
         public static string DisplayAttributeDescription_CollectStacksOptions_Format {
             get {
@@ -883,15 +883,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_DiagnosticPortOptions_MaxConnections {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_DiagnosticPortOptions_MaxConnections", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Mapping of Azure blob storage egress provider names to their options..
-        /// </summary>
-        public static string DisplayAttributeDescription_EgressOptions_AzureBlobStorage {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_AzureBlobStorage", resourceCulture);
             }
         }
         

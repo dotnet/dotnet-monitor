@@ -12,7 +12,6 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using System;
 using System.Collections.Generic;
 using System.IO;

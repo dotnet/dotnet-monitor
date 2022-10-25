@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob {
+namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob.Strings", typeof(Strings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Diagnostics.Monitoring.AzureBlobStorage.Strings", typeof(Strings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field, {1} field, or {2} field is required..
+        /// </summary>
+        internal static string ErrorMessage_CredentialsMissing {
+            get {
+                return ResourceManager.GetString("ErrorMessage_CredentialsMissing", resourceCulture);
             }
         }
         
@@ -120,6 +129,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob {
         internal static string LogFormatString_EgressProviderSavedStream {
             get {
                 return ResourceManager.GetString("LogFormatString_EgressProviderSavedStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provider {providerType}: Unable to find &apos;{keyName}&apos; key in egress properties.
+        /// </summary>
+        internal static string LogFormatString_EgressProviderUnableToFindPropertyKey {
+            get {
+                return ResourceManager.GetString("LogFormatString_EgressProviderUnableToFindPropertyKey", resourceCulture);
             }
         }
         

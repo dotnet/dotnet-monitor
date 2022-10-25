@@ -365,10 +365,6 @@
     <value>In 'Listen' mode, the maximum amount of connections to accept.</value>
     <comment>The description provided for the MaxConnections parameter on DiagnosticPortOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_EgressOptions_AzureBlobStorage" xml:space="preserve">
-    <value>Mapping of Azure blob storage egress provider names to their options.</value>
-    <comment>The description provided for the AzureBlobStorage parameter on EgressOptions.</comment>
-  </data>
   <data name="DisplayAttributeDescription_EgressOptions_FileSystem" xml:space="preserve">
     <value>Mapping of file system egress provider names to their options.</value>
     <comment>The description provided for the FileSystem parameter on EgressOptions.</comment>

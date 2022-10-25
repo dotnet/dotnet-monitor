@@ -569,10 +569,6 @@
 2. providerType: The type of provider that the new provider was attempting to be registered.
 3. existingProviderType: The type of provider that the new provider name was already registered.</comment>
   </data>
-  <data name="LogFormatString_DuplicateKeyInMetadata" xml:space="preserve">
-    <value>Metadata cannot include duplicate keys; please change or remove the key '{key}'</value>
-    <comment>Gets a string similar to "Metadata cannot include duplicate keys; please change or remove the key '{key}'".</comment>
-  </data>
   <data name="LogFormatString_EgressCopyActionStreamToEgressStream" xml:space="preserve">
     <value>Copying action stream to egress stream with buffer size {bufferSize}</value>
     <comment>Gets the format string that is printed in the 5:EgressCopyActionStreamToEgressStream event.
@@ -605,22 +601,8 @@
 1. providerType: Type of the provider
 2. path: path where provider saved the stream</comment>
   </data>
-  <data name="LogFormatString_EgressProvideUnableToFindPropertyKey" xml:space="preserve">
-    <value>Provider {providerType}: Unable to find '{keyName}' key in egress properties</value>
-    <comment>Gets the format string that is printed in the 10:EgressProvideUnableToFindPropertyKey event.
-2 Format Parameters:
-1. providerType: Type of the provider
-2. keyName: Name of the property that could not be found</comment>
-  </data>
   <data name="LogFormatString_EndpointTimeout" xml:space="preserve">
     <value>Unexpected timeout from process {processId}. Process will no longer be monitored.</value>
-  </data>
-  <data name="LogFormatString_EnvironmentBlockNotSupported" xml:space="preserve">
-    <value>Target framework does not support custom egress metadata.</value>
-  </data>
-  <data name="LogFormatString_EnvironmentVariableNotFound" xml:space="preserve">
-    <value>The environment variable '{name}' could not be found on the target process.</value>
-    <comment>Gets a string similar to "The environment variable '{name}' could not be found on the target process.".</comment>
   </data>
   <data name="LogFormatString_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {link}</value>
@@ -749,10 +731,6 @@
   </data>
   <data name="LogFormatString_InvalidActionResultReference" xml:space="preserve">
     <value>Invalid result refrence '{actionToken}'.</value>
-  </data>
-  <data name="LogFormatString_InvalidMetadata" xml:space="preserve">
-    <value>Invalid metadata; custom metadata keys must be valid C# identifiers.</value>
-    <comment>Gets a string similar to "Invalid metadata; custom metadata keys must be valid C# identifiers.".</comment>
   </data>
   <data name="LogFormatString_InvalidToken" xml:space="preserve">
     <value>Action '{actionName}' with setting '{setting}' has invalid tokens.</value>

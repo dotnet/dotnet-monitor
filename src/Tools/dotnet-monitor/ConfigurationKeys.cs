@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const string CollectionRuleDefaults = nameof(RootOptions.CollectionRuleDefaults);
 
         public const string Templates = nameof(RootOptions.Templates);
-        
+
         public const string InternalHostBuilderSettings = nameof(InternalHostBuilderSettings);
     }
 }
