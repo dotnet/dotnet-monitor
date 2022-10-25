@@ -65,7 +65,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         Running,
         Succeeded,
         Failed,
-        Cancelled
+        Cancelled,
+        Stopping
     }
 
     public class OperationError

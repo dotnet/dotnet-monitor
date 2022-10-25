@@ -759,7 +759,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private async Task RegisterHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, TaskCompletionSource<object> requestGracefulStopCompletionSource = null)
         {
             HttpContext.Response.Headers["href"] = await RegisterOperation(
-                new HttpResponseEgressOperation(processInfo),
+                new HttpResponseEgressOperation(HttpContext, processInfo),
                 limitKey: artifactType,
                 requestGracefulStopCompletionSource);
         }

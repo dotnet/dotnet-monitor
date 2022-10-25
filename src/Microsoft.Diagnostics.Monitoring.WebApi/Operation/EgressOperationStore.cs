@@ -39,24 +39,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<Guid> AddOperation(IEgressActionableOperation egressOperation, string limitKey, TaskCompletionSource<object> requestGracefulStopCompletionSource = null)
+        public async Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestGracefulStopCompletionSource = null)
         {
             egressOperation.Validate(_serviceProvider);
-            (Guid operationId, EgressRequest egressRequest) = AddOperationCore(egressOperation, limitKey, requestGracefulStopCompletionSource);
 
-            await _taskQueue.EnqueueAsync(egressRequest);
-            return operationId;
-        }
-
-        public Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestGracefulStopCompletionSource = null)
-        {
-            // JSFIX: Link cancellation tokens
-            (Guid operationId, _) = AddOperationCore(egressOperation, limitKey, requestGracefulStopCompletionSource);
-            return Task.FromResult(operationId);
-        }
-
-        private (Guid operationId, EgressRequest egressRequest) AddOperationCore(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestGracefulStopCompletionSource)
-        {
             Guid operationId = Guid.NewGuid();
 
             IDisposable limitTracker = _requestLimits.Increment(limitKey, out bool allowOperation);
@@ -81,11 +67,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         OperationId = operationId
                     });
             }
+            await _taskQueue.EnqueueAsync(request);
 
-            return (operationId, request);
+            return operationId;
         }
 
-        public void CancelOperation(Guid operationId)
+        public void CancelOperation(Guid operationId, bool gracefulStop = false)
         {
             lock (_requests)
             {
@@ -94,13 +81,23 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
 
-                if (entry.State != Models.OperationState.Running)
+                if (entry.State != Models.OperationState.Running &&
+                    entry.State != Models.OperationState.Stopping)
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
                 }
 
-                entry.State = Models.OperationState.Cancelled;
-                entry.EgressRequest.CancellationTokenSource.Cancel();
+                if (gracefulStop && entry.EgressRequest.RequestGracefulStopCompletionSource != null)
+                {
+                    entry.EgressRequest.RequestGracefulStopCompletionSource.TrySetResult(null);
+                    entry.State = Models.OperationState.Stopping;
+                }
+                else
+                {
+                    entry.EgressRequest.CancellationTokenSource.Cancel();
+                    entry.State = Models.OperationState.Cancelled;
+                }
+
                 entry.EgressRequest.Dispose();
             }
         }
@@ -113,7 +110,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
-                if (entry.State != Models.OperationState.Running)
+
+                if (entry.State != Models.OperationState.Running &&
+                    entry.State != Models.OperationState.Stopping)
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
                 }
