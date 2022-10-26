@@ -7,11 +7,6 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
     internal sealed class EgressArtifactSettings
     {
         /// <summary>
-        /// The content encoding of the blob to be created.
-        /// </summary>
-        public string ContentEncoding { get; set; }
-
-        /// <summary>
         /// The content type of the blob to be created.
         /// </summary>
         public string ContentType { get; set; }

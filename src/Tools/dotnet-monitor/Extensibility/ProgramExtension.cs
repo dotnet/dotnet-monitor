@@ -54,8 +54,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 ExtensionException.ThrowWrongType(_extensionName, _declarationPath, typeof(IEgressExtension));
             }
 
-            // This _should_ only be used in this method, it can get moved to a constants class if that changes
-            const string CommandArgProviderName = "--Provider-Name";
             // This is really weird, yes, but this is one of 2 overloads for [Stream].WriteAsync(...) that supports a CancellationToken, so we use a ReadOnlyMemory<char> instead of a string.
             ReadOnlyMemory<char> NewLine = new ReadOnlyMemory<char>("\r\n".ToCharArray());
 
@@ -84,8 +82,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 UseShellExecute = false,
             };
             pStart.ArgumentList.Add(ExtensionTypes.Egress);
-            pStart.ArgumentList.Add(CommandArgProviderName);
-            pStart.ArgumentList.Add(configPayload.ProviderName);
 
             using Process p = new Process()
             {
