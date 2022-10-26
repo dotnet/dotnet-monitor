@@ -4,9 +4,13 @@
 
 ## How Configuration Works
 
-`dotnet-monitor` accepts configuration from several different sources, and must combine it to 
-https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/HostBuilder/HostBuilderHelper.cs#L46
+`dotnet-monitor` accepts configuration from several different sources, and must combine it from these sources for the host builder. Configuration sources are added in the order of lowest to highest precedence - meaning that if there is a conflict between a property in two configuration sources, the property found in the latter configuration source will be used.
 
+https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/HostBuilder/HostBuilderHelper.cs#L46
+https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs
+https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/ConfigurationJsonWriter.cs
+https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/Program.cs#L69
+https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/Commands/ConfigShowCommandHandler.cs
 
 ## How To Update Configuration
 
