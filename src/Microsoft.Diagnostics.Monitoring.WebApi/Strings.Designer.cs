@@ -142,6 +142,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Operation does not support being stopped..
+        /// </summary>
+        internal static string ErrorMessage_OperationDoesNotSupportBeingStopped {
+            get {
+                return ResourceManager.GetString("ErrorMessage_OperationDoesNotSupportBeingStopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Operation not found..
         /// </summary>
         internal static string ErrorMessage_OperationNotFound {

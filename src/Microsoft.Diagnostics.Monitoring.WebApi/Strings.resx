@@ -151,6 +151,9 @@
     <value>Unable to discover a target process.</value>
     <comment>Gets a string similar to "Unable to discover a target process.".</comment>
   </data>
+  <data name="ErrorMessage_OperationDoesNotSupportBeingStopped" xml:space="preserve">
+    <value>Operation does not support being stopped.</value>
+  </data>
   <data name="ErrorMessage_OperationNotFound" xml:space="preserve">
     <value>Operation not found.</value>
   </data>

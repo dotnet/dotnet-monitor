@@ -26,6 +26,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         [JsonPropertyName("egressProviderName")]
         public string EgressProviderName { get; set; }
+
+        [JsonPropertyName("isStoppable")]
+        public bool IsStoppable { get; set; }
     }
 
     /// <summary>

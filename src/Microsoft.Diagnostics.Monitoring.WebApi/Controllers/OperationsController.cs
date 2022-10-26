@@ -79,11 +79,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             return this.InvokeService(() =>
             {
-                // JSFIX: Should we break out stop into its own method?
-
                 //Note that if the operation is not found, it will throw an InvalidOperationException and
                 //return an error code.
-                _operationsStore.CancelOperation(operationId, gracefulStop);
+                if (gracefulStop)
+                {
+                    _operationsStore.StopOperation(operationId);
+                }
+                else
+                {
+                    _operationsStore.CancelOperation(operationId);
+                }
                 return Ok();
             }, _logger);
         }

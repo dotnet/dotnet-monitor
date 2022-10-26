@@ -14,6 +14,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         private sealed class EgressEntry
         {
+            public bool IsStoppable
+            {
+                get
+                {
+                    return State == Models.OperationState.Running && EgressRequest.RequestStopCompletionSource != null;
+                }
+            }
+
             public ExecutionResult<EgressResult> ExecutionResult { get; set; }
             public Models.OperationState State { get; set; }
 
@@ -72,7 +80,31 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return operationId;
         }
 
-        public void CancelOperation(Guid operationId, bool gracefulStop = false)
+        public void StopOperation(Guid operationId)
+        {
+            lock (_requests)
+            {
+                if (!_requests.TryGetValue(operationId, out EgressEntry entry))
+                {
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
+                }
+
+                if (entry.State != Models.OperationState.Running)
+                {
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
+                }
+
+                if (entry.EgressRequest.RequestStopCompletionSource == null)
+                {
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationDoesNotSupportBeingStopped);
+                }
+
+                entry.EgressRequest.RequestStopCompletionSource.TrySetResult(null);
+                entry.State = Models.OperationState.Stopping;
+            }
+        }
+
+        public void CancelOperation(Guid operationId)
         {
             lock (_requests)
             {
@@ -87,18 +119,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
                 }
 
-                // JSFIX: What should be the fallback behavior for a graceful stop that can't happen?
-                if (gracefulStop && entry.EgressRequest.RequestStopCompletionSource != null)
-                {
-                    entry.EgressRequest.RequestStopCompletionSource.TrySetResult(null);
-                    entry.State = Models.OperationState.Stopping;
-                }
-                else
-                {
-                    entry.EgressRequest.CancellationTokenSource.Cancel();
-                    entry.State = Models.OperationState.Cancelled;
-                }
-
+                entry.State = Models.OperationState.Cancelled;
+                entry.EgressRequest.CancellationTokenSource.Cancel();
                 entry.EgressRequest.Dispose();
             }
         }
@@ -176,6 +198,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         CreatedDateTime = kvp.Value.CreatedDateTime,
                         Status = kvp.Value.State,
                         EgressProviderName = kvp.Value.EgressRequest.EgressOperation.EgressProviderName,
+                        IsStoppable = kvp.Value.IsStoppable,
                         Process = processInfo != null ?
                             new Models.OperationProcessInfo
                             {
@@ -204,6 +227,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     Status = entry.State,
                     CreatedDateTime = entry.CreatedDateTime,
                     EgressProviderName = entry.EgressRequest.EgressOperation.EgressProviderName,
+                    IsStoppable = entry.IsStoppable,
                     Process = processInfo != null ?
                         new Models.OperationProcessInfo
                         {
