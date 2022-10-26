@@ -10,9 +10,9 @@ graph TD
     B[Start Here!] --> C[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/building.md'>Building Locally</a>]
     C --> D[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/architecture.md'>Architecture Overview</a>]
     D --> G["Go through VS Diagnostics Wiki (this)"]
-    G --> |OPTIONAL| H[<a href='https://microsoft.sharepoint.com/:o:/r/teams/VisualStudioProductTeam/_layouts/15/Doc.aspx?sourcedoc=%7B1B956597-4B0E-4150-A3AF-1C8327205C26%7D&file=Diagnostics%20Hub&action=edit&mobileredirect=true&wdorigin=Sharepoint'>Collection Rules</a>]
-    G --> |OPTIONAL| I[<a href='https://microsoft.sharepoint.com/teams/VisualStudioProductTeam/Shared%20Documents/Forms/AllItems.aspx?id=%2Fteams%2FVisualStudioProductTeam%2FShared%20Documents%2FVS%20Diagnostics%2FProduction%20Diagnostics%2F%5FOneNote&viewid=fc0feb05%2D8384%2D4621%2Da946%2D71f556fd73ec'>API</a>]
-    G --> |OPTIONAL| J["<a href='https://microsoft.sharepoint.com/teams/VisualStudioProductTeam/_layouts/15/Doc.aspx?sourcedoc={62985f92-d727-4d94-a965-15931f382492}'>Testing</a>"]
+    G --> |OPTIONAL| H[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/collectionrules.md'>Collection Rules</a>]
+    G --> |OPTIONAL| I[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/api.md'>API</a>]
+    G --> |OPTIONAL| J["<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/testing.md'>Testing</a>"]
 ```
 
 *Note*: Need to update links to point to dotnet-monitor repo, not my branch
