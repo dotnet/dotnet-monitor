@@ -37,9 +37,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     public partial class DiagController : ControllerBase
     {
         private const Models.TraceProfile DefaultTraceProfiles = Models.TraceProfile.Cpu | Models.TraceProfile.Http | Models.TraceProfile.Metrics;
-        private static readonly MediaTypeHeaderValue NdJsonHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationNdJson);
-        private static readonly MediaTypeHeaderValue JsonSequenceHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationJsonSequence);
-        private static readonly MediaTypeHeaderValue TextPlainHeader = new MediaTypeHeaderValue(ContentTypes.TextPlain);
 
         private readonly ILogger<DiagController> _logger;
         private readonly IDiagnosticServices _diagnosticServices;
@@ -612,13 +609,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return await InvokeForProcess(async processInfo =>
             {
-                bool plainText = Request.GetTypedHeaders().Accept?.Contains(TextPlainHeader) ?? false;
+                //Stack format based on Content-Type
+
+                StackFormat stackFormat = ContentTypeUtilities.ComputeStackFormat(Request.GetTypedHeaders().Accept) ?? StackFormat.PlainText;
+                bool plainText = ContentTypeUtilities.IsPlainText(stackFormat);
 
                 return await Result(Utilities.ArtifactType_Stacks, egressProvider, async (stream, token) =>
                 {
-                    await StackUtilities.CollectStacksAsync(null, processInfo.EndpointInfo, _profilerChannel, plainText, stream, token);
+                    await StackUtilities.CollectStacksAsync(null, processInfo.EndpointInfo, _profilerChannel, stackFormat, stream, token);
 
-                }, StackUtilities.GenerateStacksFilename(processInfo.EndpointInfo, plainText), plainText ? ContentTypes.TextPlain : ContentTypes.ApplicationJson, processInfo, asAttachment: false);
+                }, StackUtilities.GenerateStacksFilename(processInfo.EndpointInfo, plainText), ContentTypeUtilities.MapFormatToContentType(stackFormat), processInfo, asAttachment: false);
 
             }, processKey, Utilities.ArtifactType_Stacks);
         }
@@ -686,27 +686,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return null;
             }
 
-            if (acceptedHeaders.Contains(TextPlainHeader))
+            if (acceptedHeaders.Contains(ContentTypeUtilities.TextPlainHeader))
             {
                 return LogFormat.PlainText;
             }
-            if (acceptedHeaders.Contains(NdJsonHeader))
+            if (acceptedHeaders.Contains(ContentTypeUtilities.NdJsonHeader))
             {
                 return LogFormat.NewlineDelimitedJson;
             }
-            if (acceptedHeaders.Contains(JsonSequenceHeader))
+            if (acceptedHeaders.Contains(ContentTypeUtilities.JsonSequenceHeader))
             {
                 return LogFormat.JsonSequence;
             }
-            if (acceptedHeaders.Any(TextPlainHeader.IsSubsetOf))
+            if (acceptedHeaders.Any(ContentTypeUtilities.TextPlainHeader.IsSubsetOf))
             {
                 return LogFormat.PlainText;
             }
-            if (acceptedHeaders.Any(NdJsonHeader.IsSubsetOf))
+            if (acceptedHeaders.Any(ContentTypeUtilities.NdJsonHeader.IsSubsetOf))
             {
                 return LogFormat.NewlineDelimitedJson;
             }
-            if (acceptedHeaders.Any(JsonSequenceHeader.IsSubsetOf))
+            if (acceptedHeaders.Any(ContentTypeUtilities.JsonSequenceHeader.IsSubsetOf))
             {
                 return LogFormat.JsonSequence;
             }

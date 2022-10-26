@@ -12,8 +12,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 {
     internal sealed class TextStacksFormatter : StacksFormatter
     {
-        private const char ModuleSeparator = '!';
-        private const char ClassSeparator = '.';
         private const string Indent = "  ";
 
         public TextStacksFormatter(Stream outputStream) : base(outputStream)

@@ -336,18 +336,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// <summary>
         /// GET /stacks
         /// </summary>
-        public static Task<ResponseStreamHolder> CaptureStacksAsync(this ApiClient client, int pid, bool plainText)
+        public static Task<ResponseStreamHolder> CaptureStacksAsync(this ApiClient client, int pid, WebApi.StackFormat format)
         {
-            return client.CaptureStacksAsync(pid, plainText, TestTimeouts.HttpApi);
+            return client.CaptureStacksAsync(pid, format, TestTimeouts.HttpApi);
         }
 
         /// <summary>
         /// GET /stacks
         /// </summary>
-        public static async Task<ResponseStreamHolder> CaptureStacksAsync(this ApiClient client, int pid, bool plainText, TimeSpan timeout)
+        public static async Task<ResponseStreamHolder> CaptureStacksAsync(this ApiClient client, int pid, WebApi.StackFormat format, TimeSpan timeout)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
-            return await client.CaptureStacksAsync(pid, plainText, timeoutSource.Token).ConfigureAwait(false);
+            return await client.CaptureStacksAsync(pid, format, timeoutSource.Token).ConfigureAwait(false);
         }
 
         /// <summary>

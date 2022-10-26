@@ -59,7 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     int processId = await runner.ProcessIdTask;
 
-                    using ResponseStreamHolder holder = await client.CaptureStacksAsync(processId, plainText: true);
+                    using ResponseStreamHolder holder = await client.CaptureStacksAsync(processId, WebApi.StackFormat.PlainText);
                     Assert.NotNull(holder);
 
                     using StreamReader reader = new StreamReader(holder.Stream);
@@ -115,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     int processId = await runner.ProcessIdTask;
 
-                    using ResponseStreamHolder holder = await client.CaptureStacksAsync(processId, plainText: false);
+                    using ResponseStreamHolder holder = await client.CaptureStacksAsync(processId, WebApi.StackFormat.Json);
                     Assert.NotNull(holder);
 
                     WebApi.Models.CallStackResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder.Stream);
@@ -154,12 +154,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     int processId = await runner.ProcessIdTask;
 
-                    using ResponseStreamHolder holder1 = await client.CaptureStacksAsync(processId, plainText: false);
+                    using ResponseStreamHolder holder1 = await client.CaptureStacksAsync(processId, WebApi.StackFormat.Json);
                     Assert.NotNull(holder1);
 
                     WebApi.Models.CallStackResult result1 = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder1.Stream);
 
-                    using ResponseStreamHolder holder2 = await client.CaptureStacksAsync(processId, plainText: false);
+                    using ResponseStreamHolder holder2 = await client.CaptureStacksAsync(processId, WebApi.StackFormat.Json);
                     Assert.NotNull(holder2);
 
                     WebApi.Models.CallStackResult result2 = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder2.Stream);
@@ -200,7 +200,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     int processId = await runner.ProcessIdTask;
 
-                    ApiStatusCodeException ex = await Assert.ThrowsAsync<ApiStatusCodeException>(() => client.CaptureStacksAsync(processId, plainText: false));
+                    ApiStatusCodeException ex = await Assert.ThrowsAsync<ApiStatusCodeException>(() => client.CaptureStacksAsync(processId, WebApi.StackFormat.Json));
                     Assert.Equal(HttpStatusCode.NotFound, ex.StatusCode);
 
                     await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
@@ -232,7 +232,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     int processId = await runner.ProcessIdTask;
 
-                    ApiStatusCodeException ex = await Assert.ThrowsAsync<ApiStatusCodeException>(() => client.CaptureStacksAsync(processId, plainText: false));
+                    ApiStatusCodeException ex = await Assert.ThrowsAsync<ApiStatusCodeException>(() => client.CaptureStacksAsync(processId, WebApi.StackFormat.Json));
                     Assert.Equal(HttpStatusCode.NotFound, ex.StatusCode);
 
                     await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
