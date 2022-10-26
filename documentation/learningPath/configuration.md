@@ -4,6 +4,10 @@
 
 ## How Configuration Works
 
+`dotnet-monitor` accepts configuration from several different sources, and must combine it to 
+https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/HostBuilder/HostBuilderHelper.cs#L46
+
+
 ## How To Update Configuration
 
 ## Keeping Documentation Up-To-Date
