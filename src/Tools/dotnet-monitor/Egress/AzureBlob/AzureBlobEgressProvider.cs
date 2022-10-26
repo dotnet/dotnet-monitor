@@ -212,7 +212,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             return queueNameSet && queueAccountUriSet;
         }
 
-        private Uri GetBlobAccountUri(AzureBlobEgressProviderOptions options, out string accountName)
+        private static Uri GetBlobAccountUri(AzureBlobEgressProviderOptions options, out string accountName)
         {
             var blobUriBuilder = new BlobUriBuilder(options.AccountUri);
             blobUriBuilder.Query = null;
@@ -224,7 +224,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             return blobUriBuilder.ToUri();
         }
 
-        private Uri GetQueueAccountUri(AzureBlobEgressProviderOptions options, out string accountName)
+        private static Uri GetQueueAccountUri(AzureBlobEgressProviderOptions options, out string accountName)
         {
             var queueUriBuilder = new QueueUriBuilder(options.QueueAccountUri);
 
@@ -253,7 +253,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
         }
 
-        private async Task<QueueClient> GetQueueClientAsync(AzureBlobEgressProviderOptions options, CancellationToken token)
+        private static async Task<QueueClient> GetQueueClientAsync(AzureBlobEgressProviderOptions options, CancellationToken token)
         {
             QueueClientOptions clientOptions = new()
             {
@@ -322,7 +322,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             return queueClient;
         }
 
-        private async Task<BlobContainerClient> GetBlobContainerClientAsync(AzureBlobEgressProviderOptions options, CancellationToken token)
+        private static async Task<BlobContainerClient> GetBlobContainerClientAsync(AzureBlobEgressProviderOptions options, CancellationToken token)
         {
             bool mayHaveLimitedPermissions = false;
             BlobServiceClient serviceClient;
@@ -376,7 +376,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             return containerClient;
         }
 
-        private string GetBlobName(AzureBlobEgressProviderOptions options, EgressArtifactSettings artifactSettings)
+        private static string GetBlobName(AzureBlobEgressProviderOptions options, EgressArtifactSettings artifactSettings)
         {
             if (string.IsNullOrEmpty(options.BlobPrefix))
             {
@@ -388,7 +388,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
         }
 
-        private BlobHttpHeaders CreateHttpHeaders(EgressArtifactSettings artifactSettings)
+        private static BlobHttpHeaders CreateHttpHeaders(EgressArtifactSettings artifactSettings)
         {
             BlobHttpHeaders headers = new BlobHttpHeaders();
             headers.ContentEncoding = artifactSettings.ContentEncoding;

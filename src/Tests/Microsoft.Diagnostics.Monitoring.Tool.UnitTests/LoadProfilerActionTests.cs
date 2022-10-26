@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// <summary>
         /// Set profiler as startup profiler before the runtime instance is resumed.
         /// </summary>
-        private class LoadProfilerCallback :
+        private sealed class LoadProfilerCallback :
             EndpointInfoSourceCallback
         {
             private readonly IHost _host;

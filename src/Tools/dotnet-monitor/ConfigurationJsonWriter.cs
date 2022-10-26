@@ -276,7 +276,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return string.Empty;
         }
 
-        private bool CanWriteChildren(IConfigurationSection section, IEnumerable<IConfigurationSection> children)
+        private static bool CanWriteChildren(IConfigurationSection section, IEnumerable<IConfigurationSection> children)
         {
             if (section.Path.Equals(nameof(RootOptions.DiagnosticPort)))
             {
@@ -304,7 +304,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
-        private bool CheckForSequentialIndices(IEnumerable<IConfigurationSection> children)
+        private static bool CheckForSequentialIndices(IEnumerable<IConfigurationSection> children)
         {
             int indexValue = 0;
 

@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    internal class TriggerTestsConstants
+    internal static class TriggerTestsConstants
     {
         public static readonly string[] ExpectedStatusCodes = { "400", "500" };
 

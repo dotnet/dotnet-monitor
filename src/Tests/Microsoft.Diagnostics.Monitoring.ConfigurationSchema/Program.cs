@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 {
-    class Program
+    internal static class Program
     {
         static void Main(string[] args)
         {

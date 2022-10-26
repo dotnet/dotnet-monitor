@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public static void ConfigureServices(IServiceCollection services)
         {
             // AddControllers is sufficient because the tool does not use Razor nor Views.
             services.AddControllers()

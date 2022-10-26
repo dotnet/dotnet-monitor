@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
 
     internal sealed class CallbackAction : ICollectionRuleAction
     {
-        public static readonly string ActionName = nameof(CallbackAction);
+        public const string ActionName = nameof(CallbackAction);
 
         private readonly CallbackActionService _service;
 
@@ -74,7 +74,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Action
 
     internal sealed class DelayedCallbackAction : ICollectionRuleAction
     {
-        public static readonly string ActionName = nameof(DelayedCallbackAction);
+        public const string ActionName = nameof(DelayedCallbackAction);
 
         private readonly CallbackActionService _service;
 

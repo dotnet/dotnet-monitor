@@ -17,7 +17,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    internal class EndpointUtilities
+    internal sealed class EndpointUtilities
     {
         private readonly ITestOutputHelper _outputHelper;
 

@@ -95,7 +95,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 throw new ArgumentNullException(nameof(endpointInfo));
             }
 
-            IProcessInfo processInfo = await ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo);
+            IProcessInfo processInfo;
+            {
+                using CancellationTokenSource extendedInfoCancellation = new(ProcessInfoImpl.ExtendedProcessInfoTimeout);
+                processInfo = await ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo, extendedInfoCancellation.Token);
+            }
 
             IReadOnlyCollection<string> ruleNames = _provider.GetCollectionRuleNames();
 

@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token)
         {
-            DiagProcessFilter filterOptions = null;
+            DiagProcessFilter filterOptions;
             if (processKey.HasValue)
             {
                 filterOptions = DiagProcessFilter.FromProcessKey(processKey.Value);

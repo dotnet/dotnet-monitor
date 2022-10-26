@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    class Program
+    internal static class Program
     {
         private static Command GenerateApiKeyCommand()
         {

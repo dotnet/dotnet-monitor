@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
-    internal class RegularExpressionsAttribute : RegularExpressionAttribute
+    internal sealed class RegularExpressionsAttribute : RegularExpressionAttribute
     {
         public RegularExpressionsAttribute(string pattern) : base(pattern)
         {

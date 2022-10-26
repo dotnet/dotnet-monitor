@@ -51,7 +51,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // Filter out the current process based on the connection mode.
             if (RuntimeInfo.IsDiagnosticsEnabled)
             {
+#if NET5_0_OR_GREATER
+                int pid = Environment.ProcessId;
+#else
                 int pid = Process.GetCurrentProcess().Id;
+#endif
 
                 // Regardless of connection mode, can use the runtime instance cookie to filter self out.
                 try

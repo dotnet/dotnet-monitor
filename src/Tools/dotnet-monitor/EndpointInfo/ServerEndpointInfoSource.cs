@@ -206,7 +206,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             while (!token.IsCancellationRequested)
             {
-                await Task.Delay(PruningInterval);
+                await Task.Delay(PruningInterval, token);
 
                 await PruneEndpointsAsync(validEndpoints: null, token);
             }

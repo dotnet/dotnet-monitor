@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
     /// <summary>
     /// Synchronously spins until it receives the Continue command.
     /// </summary>
-    internal class SpinWaitScenario
+    internal static class SpinWaitScenario
     {
         public static Command Command()
         {
