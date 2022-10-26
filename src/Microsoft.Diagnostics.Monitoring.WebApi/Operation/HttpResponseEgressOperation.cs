@@ -27,7 +27,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 return Task.CompletedTask;
             });
 
-
             ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
         }
 
