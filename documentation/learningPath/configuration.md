@@ -1,18 +1,19 @@
 # Configuration
 
-`dotnet monitor` has extensive configuration to control various aspects of its behavior. Here, we'll walk through the basics of how configuration works, how to update it, and keeping the documentation up to date.
+`dotnet monitor` has extensive configuration to control various aspects of its behavior. Here, we'll walk through the basics of how configuration works and keeping the documentation up to date.
 
 ## How Configuration Works
 
-`dotnet-monitor` accepts configuration from several different sources, and must combine it from these sources for the host builder. Configuration sources are added in the order of lowest to highest precedence - meaning that if there is a conflict between a property in two configuration sources, the property found in the latter configuration source will be used.
+`dotnet-monitor` accepts configuration from several different sources, and must [combine these sources for the host builder](https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/HostBuilder/HostBuilderHelper.cs#L46). Configuration sources are added in the order of lowest to highest precedence - meaning that if there is a conflict between a property in two configuration sources, the property found in the latter configuration source will be used.
 
-https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/HostBuilder/HostBuilderHelper.cs#L46
-https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs
-https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/ConfigurationJsonWriter.cs
-https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/Program.cs#L69
-https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/Commands/ConfigShowCommandHandler.cs
+To see the merged configuration, the user can run the `config show` command (see [here](https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/Program.cs#L69) and [here](https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/Commands/ConfigShowCommandHandler.cs)); the `--show-sources` flag can be used to reveal which configuration source is responsible for each property. The `config show` command's output is [written out as JSON](https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/ConfigurationJsonWriter.cs); this section must be manually updated whenever new options are added (or existing options are changed).
 
-## How To Update Configuration
+Once configuration has been merged, any singletons that have been added to the `IServiceCollection` (see [here](https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs) and [here](https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/src/Tools/dotnet-monitor/Commands/CollectCommandHandler.cs#L87)), such as `IConfigureOptions`, `IPostConfigureOptions`, and `IValidateOptions`, are called when an object of that type is first used, **not on startup**. This step is often used to incorporate defaults for properties that were not explicitly set by configuration, or to validate that options were set correctly. 
+
+Any changes to the configuration need to be propagated to the [schema](https://github.com/kkeirstead/dotnet-monitor/blob/698970a7158040114f8477fa2c4b6780111c7de8/documentation/schema.json). **The updated schema should be generated automatically; you should never need to manually edit the JSON.** To update the schema in Visual Studio:
+* Set [Microsoft.Diagnostics.Monitoring.ConfigurationSchema](https://github.com/kkeirstead/dotnet-monitor/tree/698970a7158040114f8477fa2c4b6780111c7de8/src/Tests/Microsoft.Diagnostics.Monitoring.ConfigurationSchema) as the startup project
+* Build the project, with a single command-line argument for the schema's absolute path within your project
+* Validate that the schema was correctly updated using the tests in [Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests](https://github.com/kkeirstead/dotnet-monitor/tree/698970a7158040114f8477fa2c4b6780111c7de8/src/Tests/Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests)
 
 ## Keeping Documentation Up-To-Date
 
