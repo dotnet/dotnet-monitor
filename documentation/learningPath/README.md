@@ -9,10 +9,11 @@ Our learning path is designed to help you get up-and-running with your first con
 graph TD
     B[Start Here!] --> C[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/building.md'>Building Locally</a>]
     C --> D[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/architecture.md'>Architecture Overview</a>]
-    D --> G["Go through VS Diagnostics Wiki (this)"]
+    D --> G[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/architecture.md'>Configuration</a>]
     G --> |OPTIONAL| H[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/collectionrules.md'>Collection Rules</a>]
     G --> |OPTIONAL| I[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/api.md'>API</a>]
     G --> |OPTIONAL| J["<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/testing.md'>Testing</a>"]
+    G --> |OPTIONAL| K["<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/configuration.md'>Configuration</a>"]
 ```
 
 *Note*: Need to update links to point to dotnet-monitor repo, not my branch
