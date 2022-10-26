@@ -21,11 +21,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public HttpResponseEgressOperation(HttpContext context, IProcessInfo processInfo)
         {
             _httpContext = context;
-            _httpContext.Response.OnCompleted((_) =>
+            _httpContext.Response.OnCompleted(() =>
             {
                 _responseFinishedCompletionSource.TrySetResult(_httpContext.Response.StatusCode);
                 return Task.CompletedTask;
-            }, null);
+            });
 
 
             ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
