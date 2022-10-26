@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fcollectionrules%2Fcollectionrules)
+
 # Collection Rules
 
 `dotnet monitor` can be [configured](./../configuration.md#collection-rule-configuration) to automatically collect diagnostic artifacts based on conditions within the discovered processes.
@@ -56,6 +59,7 @@ The following are the currently available actions:
 | [CollectGCDump](./../configuration.md#collectgcdump-action) | Collects a gcdump of the target process. |
 | [CollectLiveMetrics](./../configuration.md#collectlivemetrics-action) | Collects live metrics from the target process. |
 | [CollectLogs](./../configuration.md#collectlogs-action) | Collects logs from the target process. |
+| [CollectStacks](./../configuration.md#collectstacks-action) | Collects call stacks from the target process. |
 | [CollectTrace](./../configuration.md#collecttrace-action) | Collects an event trace of the target process. |
 | [Execute](./../configuration.md#execute-action) | Executes an external executable with command line parameters. |
 | [LoadProfiler](./../configuration.md#loadprofiler-action) | Loads an ICorProfilerCallback implementation into the target process. |
@@ -78,25 +82,67 @@ where `<ActionName>` is the name of the action from which to get an output value
 
 For example, if action `A` has an output named `EgressPath`, and action `B` has a settings property named `Arguments`, then action `B` can reference the `EgressPath` from within the `Arguments` property setting:
 
-```json
-{
-    "Actions": [{
-        "Name": "A",
-        "Type": "CollectTrace",
-        "Settings": {
-            "Profile": "Cpu",
-            "Egress": "AzureBlob"
-        }
-    },{
-        "Name": "B",
-        "Type": "Execute",
-        "Settings": {
-            "Path": "path-to-dotnet",
-            "Arguments": "MyApp.dll $(Actions.A.EgressPath)"
-        }
-    }]
-}
-```
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+      "Actions": [{
+          "Name": "A",
+          "Type": "CollectTrace",
+          "Settings": {
+              "Profile": "Cpu",
+              "Egress": "AzureBlob"
+          }
+      },{
+          "Name": "B",
+          "Type": "Execute",
+          "Settings": {
+              "Path": "path-to-dotnet",
+              "Arguments": "MyApp.dll $(Actions.A.EgressPath)"
+          }
+      }]
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  CollectionRules__RuleName__Actions__0__Name: "A"
+  CollectionRules__RuleName__Actions__0__Type: "CollectTrace"
+  CollectionRules__RuleName__Actions__0__Settings__Profile: "Cpu"
+  CollectionRules__RuleName__Actions__0__Settings__Egress: "AzureBlob"
+  CollectionRules__RuleName__Actions__1__Name: "B"
+  CollectionRules__RuleName__Actions__1__Type: "Execute"
+  CollectionRules__RuleName__Actions__1__Settings__Path: "path-to-dotnet"
+  CollectionRules__RuleName__Actions__1__Settings__Arguments: "MyApp.dll $(Actions.A.EgressPath)"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Name
+    value: "A"
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Type
+    value: "CollectTrace"
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Profile
+    value: "Cpu"
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress
+    value: "AzureBlob"
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__1__Name
+    value: "B"
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__1__Type
+    value: "Execute"
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Path
+    value: "path-to-dotnet"
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__1__Settings__Arguments
+    value: "MyApp.dll $(Actions.A.EgressPath)"
+  ```
+</details>
 
 At this time, only the `Arguments` property of the `Execute` action may use an action output dependency.
 
