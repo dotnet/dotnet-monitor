@@ -27,35 +27,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 return Task.CompletedTask;
             }, null);
 
+
             ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
         }
 
         public async Task<ExecutionResult<EgressResult>> ExecuteAsync(IServiceProvider serviceProvider, CancellationToken token)
         {
-            int statusCode;
-            try
-            {
-                using IDisposable registration = _httpContext.RequestAborted.Register(
-                    () => _responseFinishedCompletionSource.TrySetCanceled(_httpContext.RequestAborted));
+            using CancellationTokenSource cancellationTokenSourc = CancellationTokenSource.CreateLinkedTokenSource(token, _httpContext.RequestAborted);
+            using IDisposable registration = token.Register(_httpContext.Abort);
 
-                // If the http request is aborted, it will cause an OperationCanceledException here.
-                // When this occurs, the operation service will mirror the cancelled state into the
-                // operation store.
-                statusCode = await _responseFinishedCompletionSource.Task.WaitAsync(token);
-            }
-            catch (ObjectDisposedException)
-            {
-                // If the http request is disposed by the time the operation service has a chance to get here
-                // then either the response must have gracefully completed or it was aborted.
-                if (_responseFinishedCompletionSource.Task.IsCompleted)
-                {
-                    statusCode = await _responseFinishedCompletionSource.Task;
-                }
-                else
-                {
-                    throw new OperationCanceledException("The HTTP request was aborted before the operation could be completed.");
-                }
-            }
+            int statusCode = await _responseFinishedCompletionSource.Task.WaitAsync(cancellationTokenSourc.Token);
 
             return statusCode == (int)HttpStatusCode.OK
                 ? ExecutionResult<EgressResult>.Empty()
