@@ -30,23 +30,41 @@ async function run() {
     const repoName = github.context.payload.repository.name;
 
     try {
-        const changelog = await generateChangelog(octokit, branch, additional_branch, repoOwner, repoName, lastReleaseDate,
-            [
-                {
-                    labelName: "breaking-change",
-                    moniker: "⚠️"
-                },
-                {
-                    labelName: "experimental-feature",
-                    moniker: "🔬"
-                }
-            ]);
+        const significantLabels = [
+            {
+                moniker: "⚠️",
+                labelName: "breaking-change",
+                description: "indicates a breaking change",
+                inChangelog: false
+            },
+            {
+                moniker: "🔬",
+                labelName: "experimental-feature",
+                description: "indicates an experimental feature",
+                inChangelog: false
+            }
+        ];
+        const changelog = await generateChangelog(octokit, branch, additional_branch, repoOwner, repoName, lastReleaseDate, significantLabels);
+        const monikerDescriptions = generateMonikerDescriptions(significantLabels);
 
-            const releaseNotes = await generateReleaseNotes(path.join(__dirname, "releaseNotes.template.md"), buildDescription, changelog);
-            await writeFile(output, releaseNotes);
+        const releaseNotes = await generateReleaseNotes(path.join(__dirname, "releaseNotes.template.md"), buildDescription, changelog, monikerDescriptions);
+        await writeFile(output, releaseNotes);
     } catch (error) {
         core.setFailed(error);
     }
+}
+
+function generateMonikerDescriptions(significantLabels) {
+    let descriptions = [];
+    for (const label of significantLabels) {
+        if (!label.inChangelog) {
+            continue;
+        }
+
+        entry += `\\*${label.moniker} **_${label.description}_**`;
+    }
+
+    return descriptions.join(" \\\n");
 }
 
 async function generateChangelog(octokit, branchName, additionalBranch, repoOwner, repoName, minMergeDate, significantLabels) {
@@ -75,6 +93,7 @@ async function generateChangelog(octokit, branchName, additionalBranch, repoOwne
         {
             for(let i = 0; i < significantLabels.length; i++){
                 if (label.name === significantLabels[i].labelName) {
+                    significantLabels[i].inChangelog = true;
                     labelIndicesSeen.push(i);
                     break;
                 }
@@ -102,12 +121,13 @@ async function generateChangelog(octokit, branchName, additionalBranch, repoOwne
     return changelog.join("\n");
 }
 
-async function generateReleaseNotes(templatePath, buildDescription, changelog) {
+async function generateReleaseNotes(templatePath, buildDescription, changelog, monikerDescriptions) {
     let releaseNotes = await readFile(templatePath);
     releaseNotes = releaseNotes.replace("${buildDescription}", buildDescription);
     releaseNotes = releaseNotes.replace("${changelog}", changelog);
+    releaseNotes = releaseNotes.replace("${monikerDescriptions}", monikerDescriptions);
 
-    return releaseNotes;
+    return releaseNotes.trim();
 }
 
 async function getPRs(octokit, branchName, additionalBranch, repoOwner, repoName, minMergeDate, labelFilter) {

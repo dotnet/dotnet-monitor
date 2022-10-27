@@ -2,5 +2,4 @@ Today we are releasing the ${buildDescription} of the `dotnet monitor` tool. Thi
 
 ${changelog}
 
-\*🔬 **_indicates an experimental feature_** \
-\*⚠️ **_indicates a breaking change_**
+${monikerDescriptions}
