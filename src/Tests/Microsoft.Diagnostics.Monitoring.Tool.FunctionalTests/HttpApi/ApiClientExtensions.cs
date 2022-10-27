@@ -423,6 +423,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return await client.GetOperations(timeoutSource.Token).ConfigureAwait(false);
         }
 
+        public static async Task<HttpStatusCode> StopEgressOperation(this ApiClient client, Uri operation)
+        {
+            using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
+            return await client.StopEgressOperation(operation, timeoutSource.Token).ConfigureAwait(false);
+        }
+
         public static async Task<HttpStatusCode> CancelEgressOperation(this ApiClient client, Uri operation)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);

@@ -72,6 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [HttpDelete("{operationId}")]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         public IActionResult CancelOperation(
             Guid operationId,
             [FromQuery]
@@ -84,12 +85,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 if (gracefulStop)
                 {
                     _operationsStore.StopOperation(operationId);
+                    // Stop operations are not instant, they are instead queued and can take an indeterminate amount of time.
+                    return Accepted();
                 }
                 else
                 {
                     _operationsStore.CancelOperation(operationId);
+                    return Ok();
                 }
-                return Ok();
             }, _logger);
         }
     }

@@ -56,7 +56,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     try
                     {
-                        // Try to mirror the state in the operations store
+                        // Mirror the state in the operations store incase the operation was cancelled via another means besides
+                        // the operations API.
                         _operationsStore.CancelOperation(egressRequest.OperationId);
                     }
                     catch (Exception)

@@ -21,7 +21,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -101,6 +100,41 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     operationResult = await apiClient.GetOperationStatus(response.OperationUri);
                     Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
                     Assert.Equal(OperationState.Cancelled, operationResult.OperationStatus.Status);
+
+                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: (toolRunner) =>
+                {
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
+                });
+        }
+
+        [Fact]
+        public async Task EgressStopTest()
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    int processId = await appRunner.ProcessIdTask;
+
+                    OperationResponse response = await apiClient.EgressTraceAsync(processId, durationSeconds: -1, FileProviderName);
+                    Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
+
+                    OperationStatusResponse operationResult = await apiClient.GetOperationStatus(response.OperationUri);
+                    Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
+                    Assert.Equal(OperationState.Running, operationResult.OperationStatus.Status);
+
+                    HttpStatusCode deleteStatus = await apiClient.StopEgressOperation(response.OperationUri);
+                    Assert.Equal(HttpStatusCode.Accepted, deleteStatus);
+
+                    operationResult = await apiClient.GetOperationStatus(response.OperationUri);
+                    Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
+                    Assert.True(operationResult.OperationStatus.Status == OperationState.Stopping ||
+                                operationResult.OperationStatus.Status == OperationState.Succeeded);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
