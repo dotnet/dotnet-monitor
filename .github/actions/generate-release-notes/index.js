@@ -57,7 +57,7 @@ async function run() {
 function generateMonikerDescriptions(significantLabels) {
     let descriptions = [];
     for (const label of significantLabels) {
-        if (!label.inChangelog) {
+        if (label.inChangelog !== true) {
             continue;
         }
 
