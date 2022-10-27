@@ -131,10 +131,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     HttpStatusCode deleteStatus = await apiClient.StopEgressOperation(response.OperationUri);
                     Assert.Equal(HttpStatusCode.Accepted, deleteStatus);
 
-                    operationResult = await apiClient.GetOperationStatus(response.OperationUri);
-                    Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
-                    Assert.True(operationResult.OperationStatus.Status == OperationState.Stopping ||
-                                operationResult.OperationStatus.Status == OperationState.Succeeded);
+                    OperationStatusResponse pollOperationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
+                    Assert.Equal(HttpStatusCode.Created, pollOperationResult.StatusCode);
+                    Assert.Equal(OperationState.Succeeded, pollOperationResult.OperationStatus.Status);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -374,6 +373,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Assert.Equal(expected.OperationId, summary.OperationId);
             Assert.Equal(expected.Status, summary.Status);
             Assert.Equal(expected.CreatedDateTime, summary.CreatedDateTime);
+            Assert.Equal(expected.EgressProviderName, summary.EgressProviderName);
+            Assert.Equal(expected.IsStoppable, summary.IsStoppable);
         }
 
         public void Dispose()
