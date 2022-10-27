@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             format switch
             {
                 StackFormat.Json => new JsonStacksFormatter(outputStream),
-                StackFormat.Speedscope => new SpeedScopeStacksFormatter(outputStream),
+                StackFormat.Speedscope => new SpeedscopeStacksFormatter(outputStream),
                 StackFormat.PlainText => new TextStacksFormatter(outputStream),
                 _ => throw new InvalidOperationException(),
             };

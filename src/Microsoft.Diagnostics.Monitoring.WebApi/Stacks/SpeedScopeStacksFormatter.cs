@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
-using Microsoft.Diagnostics.Tracing.Parsers.FrameworkEventSource;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -16,14 +15,14 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 {
-    internal sealed class SpeedScopeStacksFormatter : StacksFormatter
+    internal sealed class SpeedscopeStacksFormatter : StacksFormatter
     {
         private const double FixedStart = 0.0;
         private const double FixedEnd = 1.0;
         private static readonly string Exporter = FormattableString.Invariant($"dotnetmonitor@{Assembly.GetExecutingAssembly().GetInformationalVersionString()}");
         private const string Name = "speedscope.json";
 
-        public SpeedScopeStacksFormatter(Stream outputStream) : base(outputStream)
+        public SpeedscopeStacksFormatter(Stream outputStream) : base(outputStream)
         {
         }
 
@@ -39,13 +38,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 {0, 0}
             };
 
-            var speedScopeResult = new Models.SpeedScopeResult();
+            var speedscopeResult = new Models.SpeedscopeResult();
 
-            speedScopeResult.ActiveProfileIndex = 0;
-            speedScopeResult.Profiles = new List<Models.Profile>();
-            speedScopeResult.Exporter = Exporter;
-            speedScopeResult.Name = Name;
-            speedScopeResult.Shared = new Models.SharedFrames
+            speedscopeResult.ActiveProfileIndex = 0;
+            speedscopeResult.Profiles = new List<Models.Profile>();
+            speedscopeResult.Exporter = Exporter;
+            speedscopeResult.Name = Name;
+            speedscopeResult.Shared = new Models.SharedFrames
             {
                 Frames = new List<Models.SharedFrame>()
                 {
@@ -67,13 +66,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                     Name = string.Format(CultureInfo.CurrentCulture, Strings.CallstackThreadHeader, stack.ThreadId),
                 };
 
-                speedScopeResult.Profiles.Add(profile);
+                speedscopeResult.Profiles.Add(profile);
 
                 foreach (CallStackFrame frame in stack.Frames)
                 {
                     if (frame.FunctionId == 0)
                     {
-                        var profileEvent = new ProfileEvent { At = FixedStart, Frame = 0, Type = ProfileEventType.O };
+                        profile.Events.Add(new ProfileEvent { At = FixedStart, Frame = 0, Type = ProfileEventType.O });
 
                     }
                     else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
@@ -88,8 +87,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
                         if (!functionToSharedFrameMap.TryGetValue(frame.FunctionId, out int mapping))
                         {
-                            speedScopeResult.Shared.Frames.Add(new SharedFrame { Name = builder.ToString() });
-                            mapping = speedScopeResult.Shared.Frames.Count - 1;
+                            speedscopeResult.Shared.Frames.Add(new SharedFrame { Name = builder.ToString() });
+                            mapping = speedscopeResult.Shared.Frames.Count - 1;
                             functionToSharedFrameMap.Add(frame.FunctionId, mapping);
                         }
 
@@ -105,7 +104,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                     }
                     else
                     {
-                        profile.Events.Add(new ProfileEvent { At = FixedStart, Frame = 1, Type= ProfileEventType.O });
+                        profile.Events.Add(new ProfileEvent { At = FixedStart, Frame = 1, Type = ProfileEventType.O });
                     }
                 }
 
@@ -122,7 +121,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
 #endif
             };
-            await JsonSerializer.SerializeAsync(OutputStream, speedScopeResult, options, cancellationToken: token);
+            await JsonSerializer.SerializeAsync(OutputStream, speedscopeResult, options, cancellationToken: token);
         }
     }
 }

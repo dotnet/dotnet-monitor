@@ -681,7 +681,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
         private static LogFormat? ComputeLogFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
         {
-            if (acceptedHeaders == null)
+            if (acceptedHeaders == null || acceptedHeaders.Count == 0)
             {
                 return null;
             }

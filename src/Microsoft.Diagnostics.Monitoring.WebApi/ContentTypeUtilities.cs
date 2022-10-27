@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static readonly MediaTypeHeaderValue NdJsonHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationNdJson);
         public static readonly MediaTypeHeaderValue JsonSequenceHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationJsonSequence);
         public static readonly MediaTypeHeaderValue TextPlainHeader = new MediaTypeHeaderValue(ContentTypes.TextPlain);
-        public static readonly MediaTypeHeaderValue SpeedScopeJsonHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationSpeedscopeJson);
+        public static readonly MediaTypeHeaderValue SpeedscopeJsonHeader = new MediaTypeHeaderValue(ContentTypes.ApplicationSpeedscopeJson);
 
         public static StackFormat? ComputeStackFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
         {
@@ -24,10 +24,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             if (acceptedHeaders == null) return null;
             if (acceptedHeaders.Contains(TextPlainHeader)) return StackFormat.PlainText;
             if (acceptedHeaders.Contains(ApplicationJsonHeader)) return StackFormat.Json;
-            if (acceptedHeaders.Contains(SpeedScopeJsonHeader)) return StackFormat.Speedscope;
+            if (acceptedHeaders.Contains(SpeedscopeJsonHeader)) return StackFormat.Speedscope;
             if (acceptedHeaders.Any(TextPlainHeader.IsSubsetOf)) return StackFormat.PlainText;
             if (acceptedHeaders.Any(ApplicationJsonHeader.IsSubsetOf)) return StackFormat.Json;
-            if (acceptedHeaders.Any(SpeedScopeJsonHeader.IsSubsetOf)) return StackFormat.Speedscope;
+            if (acceptedHeaders.Any(SpeedscopeJsonHeader.IsSubsetOf)) return StackFormat.Speedscope;
             return null;
         }
 

@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
-    public class SpeedScopeResult
+    public class SpeedscopeResult
     {
         [JsonPropertyName("exporter")]
         public string Exporter { get; set; }
@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public int Frame { get; set; }
 
         [JsonPropertyName("at")]
-        public double At {  get; set; }
+        public double At { get; set; }
     }
 
     public class Profile
@@ -98,10 +98,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public UnitType Unit { get; set; }
 
         [JsonPropertyName("startValue")]
-        public double StartValue { get; set;}
+        public double StartValue { get; set; }
 
         [JsonPropertyName("endValue")]
-        public double EndValue { get; set;}
+        public double EndValue { get; set; }
 
         [JsonPropertyName("events")]
         public List<ProfileEvent> Events { get; set; }
