@@ -32,7 +32,7 @@
     </Dependency>
     <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.3">
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
-      <Sha>ab872327c24877f82ad6d7608314f48fe3f24227</Sha>
+      <Sha>a95ffe84fd4767dcb987c8c9ab2fc977ecf48ae0</Sha>
     </Dependency>
     <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="6.0.0-beta.22517.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
