@@ -10,6 +10,7 @@
 #include "../Logging/StdErrLogger.h"
 #include "../Stacks/StacksEventProvider.h"
 #include "../Stacks/StackSampler.h"
+#include "../Utilities/ThreadUtilities.h"
 #include "corhlpr.h"
 #include "macros.h"
 #include <memory>
@@ -293,7 +294,7 @@ HRESULT MainProfiler::ProcessCallstackMessage()
     //HACK See https://github.com/dotnet/runtime/issues/76704
     // We sleep here for 200ms to ensure that our event is timestamped. Since we are on a dedicated message
     // thread we should not be interfering with the app itself.
-    Sleep(200);
+    ThreadUtilities::Sleep(200);
 
     IfFailLogRet(eventProvider->WriteEndEvent());
 
