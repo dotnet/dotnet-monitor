@@ -29,6 +29,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
         public override async Task FormatStack(CallStackResult stackResult, CancellationToken token)
         {
+            // Speedscope contains a shared set of frames and each callstack references an index
+            // into the shared frame pool.
+            // We map each FunctionId to a corresponding index.
+            // Index 0 is reserved for Native frames
+            // Index 1 has no corresponding FunctionId and is reserved for Unknown.
             var functionToSharedFrameMap = new Dictionary<ulong, int>()
             {
                 {0, 0}
@@ -85,6 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                         {
                             speedScopeResult.Shared.Frames.Add(new SharedFrame { Name = builder.ToString() });
                             mapping = speedScopeResult.Shared.Frames.Count - 1;
+                            functionToSharedFrameMap.Add(frame.FunctionId, mapping);
                         }
 
                         var profileEvent = new ProfileEvent
@@ -103,6 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                     }
                 }
 
+                // Speedscope requires a close event for each open event.
                 for (int i = profile.Events.Count - 1; i >= 0; i--)
                 {
                     profile.Events.Add(new ProfileEvent { At = FixedEnd, Frame = profile.Events[i].Frame, Type = ProfileEventType.C });
