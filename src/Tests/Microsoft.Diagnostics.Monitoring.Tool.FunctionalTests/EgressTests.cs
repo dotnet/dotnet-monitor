@@ -100,6 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     operationResult = await apiClient.GetOperationStatus(response.OperationUri);
                     Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
                     Assert.Equal(OperationState.Cancelled, operationResult.OperationStatus.Status);
+                    Assert.False(operationResult.OperationStatus.IsStoppable);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -134,6 +135,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     OperationStatusResponse pollOperationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
                     Assert.Equal(HttpStatusCode.Created, pollOperationResult.StatusCode);
                     Assert.Equal(OperationState.Succeeded, pollOperationResult.OperationStatus.Status);
+                    Assert.False(pollOperationResult.OperationStatus.IsStoppable);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -166,10 +168,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     OperationStatusResponse status1 = await apiClient.GetOperationStatus(response1.OperationUri);
                     OperationSummary summary1 = result.First(os => os.OperationId == status1.OperationStatus.OperationId);
                     ValidateOperation(status1.OperationStatus, summary1);
+                    Assert.True(summary1.IsStoppable);
+                    Assert.Equal(FileProviderName, summary1.EgressProviderName);
 
                     OperationStatusResponse status2 = await apiClient.GetOperationStatus(response2.OperationUri);
                     OperationSummary summary2 = result.First(os => os.OperationId == status2.OperationStatus.OperationId);
                     ValidateOperation(status2.OperationStatus, summary2);
+                    Assert.False(summary2.IsStoppable);
+                    Assert.Equal(FileProviderName, summary2.EgressProviderName);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
