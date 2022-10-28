@@ -904,6 +904,11 @@
                 "schema": {
                   "type": "string"
                 }
+              },
+              "application/speedscope+json": {
+                "schema": {
+                  "type": "string"
+                }
               }
             }
           },
