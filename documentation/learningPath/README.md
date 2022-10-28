@@ -8,8 +8,9 @@ Our learning path is designed to help you get up-and-running with your first con
 ```mermaid
 graph TD
     B[Start Here!] --> C[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/building.md'>Building Locally</a>]
-    C --> D[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/architecture.md'>Architecture Overview</a>]
-    D --> G[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/sample-pull-request.md'>A Sample Pull Request</a>]
+    C --> D[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/basic-usage.md'>Basic Usage</a>]
+    D --> E[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/architecture.md'>Architecture Overview</a>]
+    E --> G[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/sample-pull-request.md'>A Sample Pull Request</a>]
     G --> |OPTIONAL| H[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/collectionrules.md'>Collection Rules</a>]
     G --> |OPTIONAL| I[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/api.md'>API</a>]
     G --> |OPTIONAL| J["<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/testing.md'>Testing</a>"]
