@@ -43,16 +43,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     // - .NET Core 3.1 processes, which require issuing a brief event pipe session to get the process commmand
                     //   line information and parse out the process name
                     // - Caching entrypoint information (when that becomes available).
-                    try
-                    {
-                        processInfoTasks.Add(ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo, extendedInfoCancellation.Token));
-                    }
-                    catch (Exception ex)
-                    {
-                        // This likely occurs when the process exits after it was discovered
-                        // and before an IProcessInfo could be created for it.
-                        _logger.DiagnosticRequestFailed(endpointInfo.ProcessId, ex);
-                    }
+                    processInfoTasks.Add(Task.Run(
+                        async () =>
+                        {
+                            try
+                            {
+                                return await ProcessInfoImpl.FromEndpointInfoAsync(
+                                    endpointInfo,
+                                    extendedInfoCancellation.Token);
+                            }
+                            catch (Exception ex) when (!(ex is OperationCanceledException))
+                            {
+                                // This likely occurs when the process exits after it was discovered
+                                // and before an IProcessInfo could be created for it.
+                                _logger.DiagnosticRequestFailed(endpointInfo.ProcessId, ex);
+                            }
+                            return null;
+                        },
+                        token));
                 }
 
                 // FromEndpointInfoAsync can fill in the command line for .NET Core 3.1 processes by invoking the
@@ -63,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 await Task.WhenAll(processInfoTasks);
 
                 processes = processInfoTasks
-                    .Where(t => t.IsCompletedSuccessfully)
+                    .Where(t => t.Result != null)
                     .Select(t => t.Result);
             }
             catch (UnauthorizedAccessException)
