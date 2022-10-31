@@ -5,11 +5,6 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "main"
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    target-branch: "release/7.x"
   - package-ecosystem: "nuget"
     directory: "/eng/dependabot"
     schedule:
