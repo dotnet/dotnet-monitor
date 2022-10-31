@@ -50,10 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
                 Console.CancelKeyPress += Console_CancelKeyPress;
 
                 result.ArtifactPath = await provider.EgressAsync(options,
-                    async (stream, token) =>
-                    {
-                        await GetStream(stream, token);
-                    },
+                    GetStream,
                     configPayload.Settings,
                     CancelSource.Token);
 
