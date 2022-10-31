@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.CommandLine;
+using System.CommandLine.Parsing;
 using System.Text.Json;
 
 namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
@@ -48,7 +49,14 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 
                 Console.CancelKeyPress += Console_CancelKeyPress;
 
-                result.ArtifactPath = await provider.EgressAsync(options, GetStream, configPayload.Settings, CancelSource.Token);
+                result.ArtifactPath = await provider.EgressAsync(options,
+                    async (stream, token) =>
+                    {
+                        await GetStream(stream, token);
+                    },
+                    configPayload.Settings,
+                    CancelSource.Token);
+
                 result.Succeeded = true;
             }
             catch (Exception ex)
@@ -133,10 +141,11 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
             StdInStream.Close();
         }
 
-        private static Task<Stream> GetStream(CancellationToken cancellationToken)
+        private static async Task GetStream(Stream outputStream, CancellationToken cancellationToken)
         {
-            StdInStream = Console.OpenStandardInput();
-            return Task.FromResult(StdInStream);
+            const int DefaultBufferSize = 0x10000;
+
+            await Console.OpenStandardInput().CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
         }
 
         private static string GetConfig(Dictionary<string, string> configDict, string propKey)

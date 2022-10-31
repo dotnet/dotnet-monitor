@@ -22,6 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
     /// </remarks>
     internal partial class AzureBlobEgressProvider
     {
+        private int BlobStorageBufferSize = 4 * 1024 * 1024;
         private readonly ILogger _logger;
 
         public AzureBlobEgressProvider(ILogger logger)
@@ -31,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 
         public async Task<string> EgressAsync(
             AzureBlobEgressProviderOptions options,
-            Func<CancellationToken, Task<Stream>> action,
+            Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
@@ -43,13 +44,31 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 
                 string blobName = GetBlobName(options, artifactSettings);
 
-                BlobClient blobClient = containerClient.GetBlobClient(blobName);
+                BlockBlobClient blobClient = containerClient.GetBlockBlobClient(blobName);
 
-                _logger.EgressProviderInvokeStreamAction(Constants.AzureBlobStorageProviderName);
-                using var stream = await action(token);
+                // Write blob content
 
-                // Write blob content, headers, and metadata
-                await blobClient.UploadAsync(stream, CreateHttpHeaders(artifactSettings), cancellationToken: token);
+                var bloboptions = new BlockBlobOpenWriteOptions
+                {
+                    BufferSize = BlobStorageBufferSize,
+                };
+                using (Stream blobStream = await blobClient.OpenWriteAsync(overwrite: true, options: bloboptions, cancellationToken: token))
+                using (AutoFlushStream flushStream = new AutoFlushStream(blobStream, BlobStorageBufferSize))
+                {
+                    //Azure's stream from OpenWriteAsync will do the following
+                    //1. Write the data to a local buffer
+                    //2. Once that buffer is full, stage the data remotely (this data is not considered valid yet)
+                    //3. After 4Gi of data has been staged, the data will be commited. This can be forced earlier by flushing
+                    //the stream.
+                    // Since we want the data to be readily available, we automatically flush (and therefore commit) every time we fill up the buffer.
+                    _logger.EgressProviderInvokeStreamAction(Constants.AzureBlobStorageProviderName);
+                    await action(flushStream, token);
+
+                    await flushStream.FlushAsync(token);
+                }
+
+                // Write blob headers
+                await blobClient.SetHttpHeadersAsync(CreateHttpHeaders(artifactSettings), cancellationToken: token);
 
                 await SetBlobClientMetadata(blobClient, artifactSettings, token);
 
