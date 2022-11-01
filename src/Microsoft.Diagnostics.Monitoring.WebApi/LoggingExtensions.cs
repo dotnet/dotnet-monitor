@@ -51,6 +51,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DefaultProcessUnexpectedFailure);
 
+        private static readonly Action<ILogger, int, Exception> _diagnosticRequestFailed =
+            LoggerMessage.Define<int>(
+                eventId: new EventId(10, "DiagnosticRequestFailed"),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_DiagnosticRequestFailed);
+
         public static void RequestFailed(this ILogger logger, Exception ex)
         {
             _requestFailed(logger, ex);
@@ -84,6 +90,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static void DefaultProcessUnexpectedFailure(this ILogger logger, Exception ex)
         {
             _defaultProcessUnexpectedFailure(logger, ex);
+        }
+
+        public static void DiagnosticRequestFailed(this ILogger logger, int processId, Exception ex)
+        {
+            _diagnosticRequestFailed(logger, processId, ex);
         }
     }
 }
