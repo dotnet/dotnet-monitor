@@ -31,58 +31,6 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
         }
 
         public async Task<string> EgressAsync(
-            string providerType,
-            string providerName,
-            AzureBlobEgressProviderOptions options,
-            Func<CancellationToken, Task<Stream>> action,
-            EgressArtifactSettings artifactSettings,
-            CancellationToken token)
-        {
-            try
-            {
-                AddConfiguredMetadataAsync(options, artifactSettings);
-
-                var containerClient = await GetBlobContainerClientAsync(options, token);
-
-                string blobName = GetBlobName(options, artifactSettings);
-
-                BlobClient blobClient = containerClient.GetBlobClient(blobName);
-
-                _logger.EgressProviderInvokeStreamAction(Constants.AzureBlobStorageProviderName);
-                using var stream = await action(token);
-
-                // Write blob content, headers, and metadata
-                await blobClient.UploadAsync(stream, CreateHttpHeaders(artifactSettings), cancellationToken: token);
-
-                await SetBlobClientMetadata(blobClient, artifactSettings, token);
-
-                string blobUriString = GetBlobUri(blobClient);
-                _logger.EgressProviderSavedStream(Constants.AzureBlobStorageProviderName, blobUriString);
-
-                if (CheckQueueEgressOptions(options))
-                {
-                    await EgressMessageToQueue(blobName, options, token);
-                }
-
-                return blobUriString;
-            }
-            catch (AggregateException ex) when (ex.InnerException is RequestFailedException innerException)
-            {
-                throw CreateException(innerException);
-            }
-            catch (RequestFailedException ex)
-            {
-                throw CreateException(ex);
-            }
-            catch (CredentialUnavailableException ex)
-            {
-                throw CreateException(ex);
-            }
-        }
-
-        public async Task<string> EgressAsync(
-            string providerType,
-            string providerName,
             AzureBlobEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
@@ -389,7 +337,6 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
         private BlobHttpHeaders CreateHttpHeaders(EgressArtifactSettings artifactSettings)
         {
             BlobHttpHeaders headers = new BlobHttpHeaders();
-            headers.ContentEncoding = artifactSettings.ContentEncoding;
             headers.ContentType = artifactSettings.ContentType;
             return headers;
         }

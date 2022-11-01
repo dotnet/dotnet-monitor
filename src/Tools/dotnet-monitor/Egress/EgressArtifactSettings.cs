@@ -6,24 +6,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     internal sealed class EgressArtifactSettings
     {
         /// <summary>
-        /// The content encoding of the blob to be created.
-        /// </summary>
-        public string ContentEncoding { get; set; }
-
-        /// <summary>
         /// The content type of the blob to be created.
         /// </summary>
         public string ContentType { get; set; }
+
         /// <summary>
         /// The metadata of the blob to be created.
         /// </summary>
         public Dictionary<string, string> Metadata { get; }
-            = new Dictionary<string, string>(StringComparer.Ordinal);
-
-        /// <summary>
-        /// Custom metadata of the blob to be created.
-        /// </summary>
-        public Dictionary<string, string> CustomMetadata { get; }
             = new Dictionary<string, string>(StringComparer.Ordinal);
 
         public Dictionary<string, string> EnvBlock { get; set; }

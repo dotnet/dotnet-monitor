@@ -9,7 +9,7 @@
     <Description>Azure Blob Storage extension for dotnet-monitor</Description>
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
-    <ToolCommandName>dotnet-monitor-egress-azureblobstorage</ToolCommandName>
+    <AssemblyName>dotnet-monitor-egress-azureblobstorage</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
