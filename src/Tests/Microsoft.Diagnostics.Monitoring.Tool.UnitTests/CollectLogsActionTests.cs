@@ -6,16 +6,22 @@ using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
+using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.Pipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Channels;
@@ -54,8 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     {
                         { TestAppScenarios.Logger.Categories.LoggerCategory1, LogLevel.Error },
                         { TestAppScenarios.Logger.Categories.LoggerCategory2, null },
-                        { TestAppScenarios.Logger.Categories.LoggerCategory3, LogLevel.Warning },
-                        { TestAppScenarios.Logger.Categories.SentinelCategory, LogLevel.Critical }
+                        { TestAppScenarios.Logger.Categories.LoggerCategory3, LogLevel.Warning }
                     },
                     LogLevel = LogLevel.Information,
                     UseAppFilters = false
@@ -199,10 +204,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
+            Pipe logEntriesPipe = new();
+
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
-                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
-
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectLogsAction(ActionTestsConstants.ExpectedEgressProvider, options =>
                     {
@@ -219,6 +224,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 // This is reassigned here due to a quirk in which a null value in the dictionary has its key removed, thus causing LogsDefaultLevelFallbackActionTest to fail. By reassigning here, any keys with null values are maintained.
                 options.FilterSpecs = configuration.FilterSpecs;
+
+                // The Sentinel and Flush categories are implementation details of the logs test infrastructure.
+                // Instead of having each test understand to add these, add them to the configuration
+                // if the test is using FilterSpecs.
+                if (null != options.FilterSpecs)
+                {
+                    options.FilterSpecs.Add(TestAppScenarios.Logger.Categories.SentinelCategory, LogLevel.Critical);
+                    options.FilterSpecs.Add(TestAppScenarios.Logger.Categories.FlushCategory, LogLevel.Critical);
+                }
 
                 ICollectionRuleActionFactoryProxy factory;
                 Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectLogs, out factory));
@@ -239,27 +253,41 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
 
-                    CollectionRuleActionResult result;
                     try
                     {
                         await action.StartAsync(cancellationTokenSource.Token);
 
                         await runner.SendCommandAsync(TestAppScenarios.Logger.Commands.StartLogging);
 
-                        result = await action.WaitForCompletionAsync(cancellationTokenSource.Token);
+                        using Stream readerStream = logEntriesPipe.Reader.AsStream();
+
+                        await LogsTestUtilities.ValidateLogsEquality(readerStream, callback, logFormat, _outputHelper);
+
+                        // Note: Do not wait for completion of the action execution. No more relevant data will be produced;
+                        // the code would only be waiting for the action to end. Ideally the action is gracefully stopped at
+                        // this point.
                     }
                     finally
                     {
                         await Tools.Monitor.DisposableHelper.DisposeAsync(action);
                     }
-
-                    string egressPath = ActionTestsHelper.ValidateEgressPath(result);
-
-                    using FileStream logsStream = new(egressPath, FileMode.Open, FileAccess.Read);
-                    Assert.NotNull(logsStream);
-
-                    await LogsTestUtilities.ValidateLogsEquality(logsStream, callback, logFormat, _outputHelper);
                 });
+            },
+            services =>
+            {
+                services.RegisterProvider<PipeEgressOptions, PipeEgressProvider>(PipeEgressProvider.Name);
+                services.AddSingleton<IConfigureOptions<PipeEgressOptions>, PipeEgressConfigureNamedOptions>(
+                    _ => new PipeEgressConfigureNamedOptions(logEntriesPipe.Writer));
+            },
+            overrideSource: new List<IConfigurationSource>()
+            {
+                new MemoryConfigurationSource()
+                {
+                    InitialData = new Dictionary<string, string>()
+                    {
+                        { ConfigurationPath.Combine(ConfigurationKeys.Egress, PipeEgressProvider.Name, ActionTestsConstants.ExpectedEgressProvider), "UnusedOptions" }
+                    }
+                }
             });
         }
 
