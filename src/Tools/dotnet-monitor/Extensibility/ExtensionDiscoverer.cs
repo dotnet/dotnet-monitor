@@ -13,6 +13,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         private readonly ExtensionRepository[] _extensionRepos;
         private readonly ILogger<ExtensionDiscoverer> _logger;
 
+        private const string AzureBlobStorageConfigurationName = "AzureBlobStorage";
+        private const string AzureBlobStorageToolName = "dotnet-monitor-egress-azureblobstorage"; // This must be the same as the AzureBlobStorage project's AssemblyName
+
         public ExtensionDiscoverer(IEnumerable<ExtensionRepository> extensionRepos, ILogger<ExtensionDiscoverer> logger)
         {
             _extensionRepos = extensionRepos.OrderBy(eRepo => eRepo.ResolvePriority).ToArray<ExtensionRepository>();
@@ -31,7 +34,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             _logger.ExtensionProbeStart(extensionName);
             foreach (ExtensionRepository repo in _extensionRepos)
             {
-                bool found = repo.TryFindExtension(extensionName, out IExtension genericResult);
+                bool found = false;
+                IExtension genericResult = null;
+
+                // Configuration written for the in-box AzureBlobStorage egress provider
+                // should work automatically with the extension; this translates the
+                // existing name (AzureBlobStorage) to our extension's AssemblyName
+                if (extensionName == AzureBlobStorageConfigurationName)
+                {
+                    found = repo.TryFindExtension(AzureBlobStorageToolName, out genericResult);
+                }
+
+                if (!found)
+                {
+                    found = repo.TryFindExtension(extensionName, out genericResult);
+                }
+
                 if (found)
                 {
                     bool isOfType = genericResult is TExtensionType;

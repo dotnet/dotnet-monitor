@@ -11,10 +11,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     internal class FolderExtensionRepository : ExtensionRepository
     {
-        private const string ExtensionDefinitionFile = "extension.json";
-        private readonly string _targetFolder;
-        private readonly IFileProvider _fileSystem;
-        private readonly ILoggerFactory _loggerFactory;
+        protected const string ExtensionDefinitionFile = "extension.json";
+        protected readonly string _targetFolder;
+        protected readonly IFileProvider _fileSystem;
+        protected readonly ILoggerFactory _loggerFactory;
 
         public FolderExtensionRepository(IFileProvider fileSystem, ILoggerFactory loggerFactory, int resolvePriority, string targetFolder)
             : base(resolvePriority, string.Format(CultureInfo.CurrentCulture, Strings.Message_FolderExtensionRepoName, targetFolder))
@@ -28,20 +28,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
         public override bool TryFindExtension(string extensionName, out IExtension extension)
         {
-            IDirectoryContents extensionDir = _fileSystem.GetDirectoryContents(extensionName);
+            if (ExtensionDefinitionExists(extensionName))
+            {
+                ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
+                extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionName, ExtensionDefinitionFile), logger);
+                return true;
+            }
+
+            extension = null;
+            return false;
+        }
+
+        protected bool ExtensionDefinitionExists(string extensionPath)
+        {
+            IDirectoryContents extensionDir = _fileSystem.GetDirectoryContents(extensionPath);
 
             if (extensionDir.Exists)
             {
-                IFileInfo defFile = _fileSystem.GetFileInfo(Path.Combine(extensionName, ExtensionDefinitionFile));
+                IFileInfo defFile = _fileSystem.GetFileInfo(Path.Combine(extensionPath, ExtensionDefinitionFile));
                 if (defFile.Exists && !defFile.IsDirectory)
                 {
-                    ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
-                    extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionName, ExtensionDefinitionFile), logger);
                     return true;
                 }
             }
 
-            extension = null;
             return false;
         }
     }

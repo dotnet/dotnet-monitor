@@ -220,40 +220,49 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             string nextToMeFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string progDataFolder = settings.SharedConfigDirectory;
             string settingsFolder = settings.UserConfigDirectory;
+            string dotnetToolsFolder = settings.ExtensionDirectory;
 
-            if (string.IsNullOrWhiteSpace(progDataFolder))
-            {
-                throw new InvalidOperationException();
-            }
-
-            if (string.IsNullOrWhiteSpace(settingsFolder))
+            if (string.IsNullOrWhiteSpace(progDataFolder)
+                || string.IsNullOrWhiteSpace(settingsFolder)
+                || string.IsNullOrWhiteSpace(dotnetToolsFolder))
             {
                 throw new InvalidOperationException();
             }
 
             // Add the folders we search to get extensions from
-            services.AddExtensionRepository(1000, nextToMeFolder);
-            services.AddExtensionRepository(2000, progDataFolder);
-            services.AddExtensionRepository(3000, settingsFolder);
+            services.AddFolderExtensionRepository(1000, nextToMeFolder);
+            services.AddFolderExtensionRepository(2000, progDataFolder);
+            services.AddFolderExtensionRepository(3000, settingsFolder);
+            services.AddToolsExtensionRepository(4000, dotnetToolsFolder);
 
             return services;
         }
 
-        public static IServiceCollection AddExtensionRepository(this IServiceCollection services, int priority, string path)
+        public static IServiceCollection AddFolderExtensionRepository(this IServiceCollection services, int priority, string path)
         {
             const string ExtensionFolder = "extensions";
 
             string targetExtensionFolder = Path.Combine(path, ExtensionFolder);
 
+            return services.AddExtensionRepository<FolderExtensionRepository>(priority, targetExtensionFolder);
+        }
+
+        public static IServiceCollection AddToolsExtensionRepository(this IServiceCollection services, int priority, string targetExtensionFolder)
+        {
+            return services.AddExtensionRepository<ToolsExtensionRepository>(priority, targetExtensionFolder);
+        }
+
+        public static IServiceCollection AddExtensionRepository<T>(this IServiceCollection services, int priority, string targetExtensionFolder) where T : FolderExtensionRepository
+        {
             if (Directory.Exists(targetExtensionFolder))
             {
                 Func<IServiceProvider, ExtensionRepository> createDelegate =
                     (IServiceProvider serviceProvider) =>
                     {
                         PhysicalFileProvider fileProvider = new(targetExtensionFolder);
-                        ILoggerFactory logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-                        FolderExtensionRepository newRepo = new(fileProvider, logger, priority, targetExtensionFolder);
-                        return newRepo;
+                        ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+
+                        return (T)Activator.CreateInstance(typeof(T), new object[] { fileProvider, loggerFactory, priority, targetExtensionFolder });
                     };
 
                 services.AddSingleton<ExtensionRepository>(createDelegate);
