@@ -83,6 +83,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// avoid real-time buffering issues in the runtime eventing infrastructure and the
         /// trace event library event processor.
         /// </summary>
-        public static readonly TimeSpan EventSourceBufferAvoidanceTimeout = TimeSpan.FromMilliseconds(200);
+        /// <remarks>
+        /// See: https://github.com/dotnet/runtime/issues/76704
+        /// </remarks>
+        public static readonly TimeSpan EventSourceBufferAvoidanceTimeout = TimeSpan.FromMilliseconds(250);
     }
 }
