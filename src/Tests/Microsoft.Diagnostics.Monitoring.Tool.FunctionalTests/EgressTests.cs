@@ -13,6 +13,8 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tracing;
+using Microsoft.Diagnostics.Tracing.Parsers.Clr;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -263,6 +265,122 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
                 });
+        }
+
+        [Fact]
+        public async Task HttpEgressCancelTest()
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    int processId = await appRunner.ProcessIdTask;
+
+                    using ResponseStreamHolder responseBox = await apiClient.HttpEgressTraceAsync(processId, durationSeconds: -1);
+
+                    Uri operationUri = responseBox.Response.Headers.Location;
+                    Assert.NotNull(operationUri);
+
+                    // Start consuming the stream
+                    Task drainResponseTask = responseBox.Stream.CopyToAsync(Stream.Null);
+
+                    // Make sure the operation exists
+                    OperationStatusResponse operationResult = await apiClient.GetOperationStatus(operationUri);
+                    Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
+                    Assert.True(operationResult.OperationStatus.Status == OperationState.Running);
+
+                    // Cancel it.
+
+                    HttpStatusCode deleteStatus = await apiClient.CancelEgressOperation(operationUri);
+                    Assert.Equal(HttpStatusCode.OK, deleteStatus);
+
+                    operationResult = await apiClient.GetOperationStatus(operationUri);
+                    Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
+                    Assert.Equal(OperationState.Cancelled, operationResult.OperationStatus.Status);
+
+                    await Assert.ThrowsAsync<IOException>(async () => await drainResponseTask);
+
+                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: (toolRunner) =>
+                {
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
+                });
+        }
+
+        [Fact]
+        public async Task HttpEgressStopTest()
+        {
+            using TemporaryDirectory tempDir = new(_outputHelper);
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    int processId = await appRunner.ProcessIdTask;
+
+                    using ResponseStreamHolder responseBox = await apiClient.HttpEgressTraceAsync(processId, durationSeconds: -1);
+
+                    Uri operationUri = responseBox.Response.Headers.Location;
+                    Assert.NotNull(operationUri);
+
+                    // Start saving the stream
+                    string traceFile = Path.Combine(tempDir.FullName, "test.nettrace");
+                    using FileStream traceFileWriter = File.OpenWrite(traceFile);
+
+                    using MemoryStream dstStream = new();
+                    Task drainResponseTask = responseBox.Stream.CopyToAsync(traceFileWriter);
+
+                    // Make sure the operation exists
+                    OperationStatusResponse operationResult = await apiClient.GetOperationStatus(operationUri);
+                    Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
+                    Assert.True(operationResult.OperationStatus.Status == OperationState.Running);
+
+                    // Stop it.
+                    HttpStatusCode deleteStatus = await apiClient.StopEgressOperation(operationUri);
+                    Assert.Equal(HttpStatusCode.Accepted, deleteStatus);
+
+                    await drainResponseTask;
+                    await traceFileWriter.DisposeAsync();
+
+                    operationResult = await apiClient.GetOperationStatus(operationUri);
+                    Assert.Equal(HttpStatusCode.Created, operationResult.StatusCode);
+                    Assert.Equal(OperationState.Succeeded, operationResult.OperationStatus.Status);
+
+                    // Verify the resulting trace has rundown information
+                    Assert.True(await DoesNettraceFileHaveRundown(traceFile));
+
+                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: (toolRunner) =>
+                {
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
+                });
+        }
+
+        private static Task<bool> DoesNettraceFileHaveRundown(string filePath)
+        {
+            return Task.Run(() =>
+            {
+                using FileStream fs = File.OpenRead(filePath);
+                using EventPipeEventSource eventSource = new(fs);
+
+                bool didSeeRundownEvents = false;
+                ClrRundownTraceEventParser rundown = new(eventSource);
+                rundown.RuntimeStart += (data) =>
+                {
+                    didSeeRundownEvents = true;
+                };
+
+                eventSource.Process();
+                return didSeeRundownEvents;
+            });
         }
 
         /// <summary>

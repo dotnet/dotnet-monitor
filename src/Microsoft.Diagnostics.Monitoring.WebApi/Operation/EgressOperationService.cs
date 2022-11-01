@@ -64,6 +64,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     {
 
                     }
+
+                    throw;
                 }
                 //This is unexpected, but an unhandled exception should still fail the operation.
                 catch (Exception e)

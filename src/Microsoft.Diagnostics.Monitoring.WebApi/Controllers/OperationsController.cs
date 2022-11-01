@@ -84,8 +84,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 //return an error code.
                 if (gracefulStop)
                 {
-                    _operationsStore.StopOperation(operationId);
                     // Stop operations are not instant, they are instead queued and can take an indeterminate amount of time.
+                    _operationsStore.StopOperation(operationId);
                     return Accepted();
                 }
                 else

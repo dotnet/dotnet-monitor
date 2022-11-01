@@ -564,6 +564,34 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return response;
         }
 
+        public async Task<ResponseStreamHolder> HttpEgressTraceAsync(int processId, int durationSeconds, CancellationToken token)
+        {
+            string uri = FormattableString.Invariant($"/trace?pid={processId}&durationSeconds={durationSeconds}");
+            using HttpRequestMessage request = new(HttpMethod.Get, uri);
+
+            using DisposableBox<HttpResponseMessage> responseBox = new(
+                await SendAndLogAsync(
+                    request,
+                    HttpCompletionOption.ResponseHeadersRead,
+                    token).ConfigureAwait(false));
+
+
+            switch (responseBox.Value.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    return await ResponseStreamHolder.CreateAsync(responseBox).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                case HttpStatusCode.TooManyRequests:
+                    ValidateContentType(responseBox.Value, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(responseBox.Value).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                    ThrowIfNotSuccess(responseBox.Value);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
+        }
+
         public async Task<OperationResponse> EgressTraceAsync(int processId, int durationSeconds, string egressProvider, CancellationToken token)
         {
             string uri = FormattableString.Invariant($"/trace?pid={processId}&egressProvider={egressProvider}&durationSeconds={durationSeconds}");
@@ -718,8 +746,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
                 _outputHelper.WriteLine("-> {0}", request.ToString());
             }
 
-            _outputHelper.WriteLine("<- {0}", response.ToString());
-            _outputHelper.WriteLine($"Request duration: {sw.ElapsedMilliseconds} ms");
+            if (completionOption == HttpCompletionOption.ResponseContentRead)
+            {
+                _outputHelper.WriteLine("<- {0}", response.ToString());
+                _outputHelper.WriteLine($"Request duration: {sw.ElapsedMilliseconds} ms");
+            }
+            else
+            {
+                _outputHelper.WriteLine($"Request ACK duration: {sw.ElapsedMilliseconds} ms");
+            }
 
             return response;
         }

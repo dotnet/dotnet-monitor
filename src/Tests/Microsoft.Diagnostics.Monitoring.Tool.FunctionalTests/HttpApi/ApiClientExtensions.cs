@@ -411,6 +411,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return await client.EgressTraceAsync(processId, durationSeconds, egressProvider, timeoutSource.Token).ConfigureAwait(false);
         }
 
+        public static async Task<ResponseStreamHolder> HttpEgressTraceAsync(this ApiClient client, int processId, int durationSeconds)
+        {
+            using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
+            return await client.HttpEgressTraceAsync(processId, durationSeconds, timeoutSource.Token).ConfigureAwait(false);
+        }
+
         public static async Task<OperationStatusResponse> GetOperationStatus(this ApiClient client, Uri operation)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
