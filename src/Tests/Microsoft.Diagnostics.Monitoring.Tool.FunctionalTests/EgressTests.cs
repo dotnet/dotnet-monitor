@@ -292,8 +292,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
                     Assert.True(operationResult.OperationStatus.Status == OperationState.Running);
 
-                    // Cancel it.
-
+                    // Cancel the trace operation
                     HttpStatusCode deleteStatus = await apiClient.CancelEgressOperation(operationUri);
                     Assert.Equal(HttpStatusCode.OK, deleteStatus);
 
@@ -342,7 +341,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
                     Assert.True(operationResult.OperationStatus.Status == OperationState.Running);
 
-                    // Stop it.
+                    // Stop the trace operation
                     HttpStatusCode deleteStatus = await apiClient.StopEgressOperation(operationUri);
                     Assert.Equal(HttpStatusCode.Accepted, deleteStatus);
 
