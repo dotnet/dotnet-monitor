@@ -219,7 +219,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        private static IServiceCollection RegisterProvider<TOptions, TProvider>(this IServiceCollection services, string name)
+        public static IServiceCollection RegisterProvider<TOptions, TProvider>(this IServiceCollection services, string name)
             where TProvider : class, IEgressProvider<TOptions>
             where TOptions : class
         {

@@ -36,6 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                         builder.AddFilter(TestAppScenarios.Logger.Categories.LoggerCategory2, LogLevel.Information);
                         builder.AddFilter(TestAppScenarios.Logger.Categories.LoggerCategory3, LogLevel.Warning);
                         builder.AddFilter(TestAppScenarios.Logger.Categories.SentinelCategory, LogLevel.Critical);
+                        builder.AddFilter(TestAppScenarios.Logger.Categories.FlushCategory, LogLevel.Critical);
                     }).BuildServiceProvider();
 
                 ILoggerFactory loggerFactory = services.GetRequiredService<ILoggerFactory>();
@@ -71,13 +72,25 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 // any more logging data that should be checked.
                 LogCriticalMessage(sentinelCategory);
 
+                // See: https://github.com/dotnet/runtime/issues/76704
                 // The log entries above may get stuck in buffers in the runtime eventing infra or
                 // in the trace event library event processor due to their close proximity in being emitted.
-                // To mitigate this, wait a short time and send another log entry, which will cause the buffer
-                // to flush the existing entries. This log entry should be ignored by the logs tests.
-                await Task.Delay(CommonTestTimeouts.EventSourceBufferAvoidanceTimeout);
+                // To mitigate this, repeatedly wait a short time and send another log entry, which will cause the buffer
+                // to flush the existing entries. These log entries should be ignored by the logs tests.
+                ILogger flushCategory = loggerFactory.CreateLogger(TestAppScenarios.Logger.Categories.FlushCategory);
+                // The number of times the flush entry is produced came about from imperical testing. Sending one seems
+                // to occassionally flush the entries through, but not often. Two entries "should" be enough: the first entry
+                // (if it doesn't flow through all the way) will initially get stuck in the runtime eventing buffer; the second
+                // entry will flush out the first entry. This second entry may be stuck in the runtime eventing buffer and
+                // the first one may be stuck in the trace event library buffer on the consumer side, however all of the relevant
+                // data entries that precede these flush entries should no longer be buffered. Sending any more "should" not
+                // be necessary unless another layer of buffering is in place.
+                for (int i = 0; i < 2; i++)
+                {
+                    await Task.Delay(CommonTestTimeouts.EventSourceBufferAvoidanceTimeout);
 
-                LogCriticalMessage(sentinelCategory);
+                    LogCriticalMessage(flushCategory);
+                }
 
                 return 0;
             }, context.GetCancellationToken());
