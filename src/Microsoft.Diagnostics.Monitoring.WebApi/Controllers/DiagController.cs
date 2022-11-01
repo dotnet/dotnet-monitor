@@ -767,6 +767,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
         private async Task RegisterHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, TaskCompletionSource<object> requestStopCompletionSource = null)
         {
+            // While not strictly a Location redirect, use the same header as
+            // externally egressed operations for consistency.
             HttpContext.Response.Headers["Location"] = await RegisterOperation(
                 new HttpResponseEgressOperation(HttpContext, processInfo),
                 limitKey: artifactType,
