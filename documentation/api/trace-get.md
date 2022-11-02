@@ -44,11 +44,13 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | stream | A trace of the process. | `application/octet-stream` |
-| 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
+| 200 OK | stream | A trace of the process when no egress provider is specified. | `application/octet-stream` |
+| 202 Accepted | | When an egress provider is specified. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many trace requests at this time. Try to request a trace at a later time. | `application/problem+json` |
+
+Regardless if an egress provider is specified (response codes 200 or 202), if a trace is successfully started, the Location header containers the URI of the operation. This can be used to query the status of the operation, immediately cancel it, or request a graceful stop to the trace which will include rundown information.
 
 > **NOTE:** After the expiration of the trace duration, completing the request may take a long time (up to several minutes) for large applications. The runtime needs to send over the type cache for all managed code that was captured in the trace, known as rundown events. Thus, the length of time of the request may take significantly longer than the requested duration.
 
@@ -78,6 +80,7 @@ The 1 minute trace with http request handling and metric information, chunk enco
 HTTP/1.1 200 OK
 Content-Type: application/octet-stream
 Transfer-Encoding: chunked
+Location: localhost:52323/operation/627efe4f-602e-451b-a5a4-27eefaba2464
 ```
 
 ## Supported Runtimes
