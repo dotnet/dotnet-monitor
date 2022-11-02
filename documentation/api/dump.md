@@ -45,11 +45,13 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | stream | A managed dump of the process. | `application/octet-stream` |
-| 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
+| 200 OK | stream | A managed dump of the process when no egress provider is specified. | `application/octet-stream` |
+| 202 Accepted | | When an egress provider is specified, the artifact has begun being collected. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many dump requests at this time. Try to request a dump at a later time. | |
+
+> **NOTE:** Regardless if an egress provider is specified, if the request was successful (response codes 200 or 202), the Location header containers the URI of the operation. This can be used to query the status of the operation or change its state.
 
 ## Examples
 
@@ -77,6 +79,7 @@ The managed dump containing all memory of the process, chunk encoded, is returne
 HTTP/1.1 200 OK
 Content-Type: application/octet-stream
 Transfer-Encoding: chunked
+Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 ```
 
 ## Supported Runtimes

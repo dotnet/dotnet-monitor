@@ -7,6 +7,11 @@ Gracefully stops a running operation. Only valid against operations with the `is
 
 Stopping an operation may not happen immediately such as in the case of traces where stopping may collect rundown information. An operation in the `Stopping` state can still be cancelled using [Delete Operation](operations-delete.md).
 
+## Supported Artifacts
+
+The following API endpoints have support for their operations being gracefully stopped when they are in the `Running` state.
+- [`/trace`](./api/trace.md)
+
 ## HTTP Route
 
 ```http
