@@ -230,7 +230,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 if (string.IsNullOrEmpty(egressProvider))
                 {
-                    await RegisterHttpResponseAsOperation(processInfo, artifactType);
+                    await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType);
                     Stream dumpStream = await _dumpService.DumpAsync(processInfo.EndpointInfo, type, HttpContext.RequestAborted);
 
                     _logger.WrittenToHttpStream();
@@ -744,7 +744,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             if (string.IsNullOrEmpty(providerName))
             {
-                await RegisterHttpResponseAsOperation(processInfo, artifactType, requestStopCompletionSource);
+                await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType, requestStopCompletionSource);
                 return new OutputStreamResult(
                     action,
                     contentType,
@@ -765,10 +765,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        private async Task RegisterHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, TaskCompletionSource<object> requestStopCompletionSource = null)
+        private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, TaskCompletionSource<object> requestStopCompletionSource = null)
         {
-            // While not strictly a Location redirect, use the same header as
-            // externally egressed operations for consistency.
+            // While not strictly a Location redirect, use the same header as externally egressed operations for consistency.
             HttpContext.Response.Headers["Location"] = await RegisterOperation(
                 new HttpResponseEgressOperation(HttpContext, processInfo),
                 limitKey: artifactType,

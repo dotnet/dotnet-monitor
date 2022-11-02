@@ -575,7 +575,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
                     HttpCompletionOption.ResponseHeadersRead,
                     token).ConfigureAwait(false));
 
-
             switch (responseBox.Value.StatusCode)
             {
                 case HttpStatusCode.OK:
