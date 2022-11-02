@@ -37,7 +37,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             int statusCode = await _responseFinishedCompletionSource.Task.WaitAsync(cancellationTokenSource.Token);
 
-            return statusCode == (int)HttpStatusCode.OK
+
+            return statusCode >= (int)HttpStatusCode.OK && statusCode < (int)HttpStatusCode.Ambiguous
                 ? ExecutionResult<EgressResult>.Empty()
                 : ExecutionResult<EgressResult>.Failed(new Exception($"HTTP request failed with status code: ${statusCode}"));
         }

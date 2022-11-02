@@ -89,8 +89,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 ? eventName
                 : FormattableString.Invariant($"{eventName}/{opcode}");
         }
-#endif // NET5_0_OR_GREATER
-
 
         private async Task StopOnEventTestCore(bool expectStoppingEvent, TraceEventOpcode opcode = TestAppScenarios.TraceEvents.UniqueEventOpcode, bool collectRundown = true, IDictionary<string, string> payloadFilter = null, TimeSpan? duration = null)
         {
@@ -187,5 +185,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 return (didSeeStoppingEvent, didSeeRundownEvents);
             });
         }
+#endif // NET5_0_OR_GREATER
     }
 }
