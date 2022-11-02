@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Amazon.S3;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
@@ -118,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // perform
-            await Assert.ThrowsAnyAsync<Exception>(async () => await sut.EgressAsync(options, (stream, token) => throw new Exception(), artifactSettings, CancellationToken.None));   
+            await Assert.ThrowsAnyAsync<Exception>(async () => await sut.EgressAsync(options, (stream, token) => throw new AmazonS3Exception(new Exception()), artifactSettings, CancellationToken.None));   
 
             var storage = clientFactory.S3;
             Assert.Empty(storage.Storage);
@@ -135,7 +136,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
 
             // prepare
             S3StorageEgressProviderOptions options = ConstructEgressProviderSettings();
-            options.GeneratePresSignedUrl = true;
+            options.GeneratePreSignedUrl = true;
             options.PreSignedUrlExpiry = TimeSpan.FromMinutes(10);
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 

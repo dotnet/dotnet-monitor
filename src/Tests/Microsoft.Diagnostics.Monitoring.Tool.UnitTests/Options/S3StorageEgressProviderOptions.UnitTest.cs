@@ -37,14 +37,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
         }
 
         [Theory]
-        [InlineData(null, null, null)]
-        [InlineData("AccessKeyId", "SecretAccessKey", null)]
-        [InlineData("AccessKeyId", null, "SecretsAccessKeyFile")]
-        public void ItShouldAcceptEmptySecrets(string accessKeyId, string secretAccessKey, string secretsAccessKeyFile)
+        [InlineData(null, null)]
+        [InlineData(null, "SecretAccessKey")]
+        public void ItShouldAcceptEmptySecrets(string accessKeyId, string secretAccessKey)
         {
             _options.AccessKeyId = accessKeyId;
             _options.SecretAccessKey = secretAccessKey;
-            _options.SecretsAccessKeyFile = secretsAccessKeyFile;
 
             var result = new List<ValidationResult>();
             var valid = Validator.TryValidateObject(_options, new (_options), result, true);
@@ -54,14 +52,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
         }
 
         [Theory]
-        [InlineData(null, null)]
-        [InlineData("", null)]
-        [InlineData(null, "")]
-        public void ItShouldNotAcceptEmptySecrets(string secretAccessKey, string secretsAccessKeyFile)
+        [InlineData(null)]
+        [InlineData("")]
+        public void ItShouldNotAcceptEmptySecrets(string secretAccessKey)
         {
             _options.AccessKeyId = "accessKey";
             _options.SecretAccessKey = secretAccessKey;
-            _options.SecretsAccessKeyFile = secretsAccessKeyFile;
 
             var result = new List<ValidationResult>();
             var valid = Validator.TryValidateObject(_options, new(_options), result, true);
@@ -75,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
         public void ItShouldAcceptPreSignedUrlExpiryToBeNull()
         {
             _options.PreSignedUrlExpiry = null;
-            _options.GeneratePresSignedUrl = false;
+            _options.GeneratePreSignedUrl = false;
 
             var result = new List<ValidationResult>();
             var valid = Validator.TryValidateObject(_options, new(_options), result, true);
@@ -88,7 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
         public void ItShouldNotAcceptPreSignedUrlExpiryToBeNull()
         {
             _options.PreSignedUrlExpiry = null;
-            _options.GeneratePresSignedUrl = true;
+            _options.GeneratePreSignedUrl = true;
 
             var result = new List<ValidationResult>();
             var valid = Validator.TryValidateObject(_options, new(_options), result, true);
@@ -104,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
         public void ItShouldNotAcceptInvalidPreSignedUrlExpiry(string preSignedUrlExpiry)
         {
             _options.PreSignedUrlExpiry = TimeSpan.Parse(preSignedUrlExpiry);
-            _options.GeneratePresSignedUrl = true;
+            _options.GeneratePreSignedUrl = true;
 
             var result = new List<ValidationResult>();
             var valid = Validator.TryValidateObject(_options, new(_options), result, true);

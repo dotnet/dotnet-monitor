@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 {
     /// <summary>
-    /// Egress provider options for file system egress.
+    /// Egress provider options for S3 storage.
     /// </summary>
     internal sealed partial class S3StorageEgressProviderOptions : IEgressProviderCommonOptions
     {
@@ -36,10 +36,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsAccessKeyFile))]
-        public string SecretsAccessKeyFile { get; set; }
-        [Display(
-            ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey))]
         public string SecretAccessKey { get; set; }
 
@@ -51,12 +47,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfilePath))]
-        public string AwsProfileFilePath { get; set; }
+        public string AwsProfilePath { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_GeneratePreSignedUrl))]
-        public bool GeneratePresSignedUrl { get; set; }
+        public bool GeneratePreSignedUrl { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

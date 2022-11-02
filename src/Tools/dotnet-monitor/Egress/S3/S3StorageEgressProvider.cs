@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 {
-    /// <summary>s
+    /// <summary>
     /// Egress provider for egressing stream data to the S3 storage.
     /// </summary>
     internal class S3StorageEgressProvider : EgressProvider<S3StorageEgressProviderOptions>
@@ -67,7 +67,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             {
                 client = await ClientFactory.CreateAsync(options, artifactSettings, token);
                 uploadId = await client.InitMultiPartUploadAsync(artifactSettings.Metadata, token);
-                await using var stream = new MultiPartUploadStream(client, options.BucketName, artifactSettings.Name, uploadId, options.CopyBufferSize!.Value);
+                int copyBufferSize = options.CopyBufferSize.GetValueOrDefault(0x100000);
+                await using var stream = new MultiPartUploadStream(client, options.BucketName, artifactSettings.Name, uploadId, copyBufferSize);
                 Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.S3Storage);
                 await action(stream, token);
                 await stream.FinalizeAsync(token); // force to push the last part
@@ -95,17 +96,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
                     await client.AbortMultipartUploadAsync(uploadId, token);
                 throw CreateException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressS3FailedDetailed, e.Message));
             }
-            catch (Exception)
-            {
-                if (!uploadDone)
-                    await client.AbortMultipartUploadAsync(uploadId, token);
-                throw;
-            }
         }
 
         private string GetResourceId(IS3Storage client, S3StorageEgressProviderOptions options, EgressArtifactSettings artifactSettings)
         {
-            if (!options.GeneratePresSignedUrl)
+            if (!options.GeneratePreSignedUrl)
                 return $"BucketName={options.BucketName}, Key={artifactSettings.Name}";
 
             DateTime expires = DateTime.UtcNow.Add(options.PreSignedUrlExpiry!.Value);

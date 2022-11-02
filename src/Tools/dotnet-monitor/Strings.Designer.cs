@@ -187,15 +187,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to S3 storage egress failed: the configured bucket does not exist and cannot be created. Reason: {0].
-        /// </summary>
-        internal static string ErrorMessage_EgressS3FailedBucketNotExistsOrCannotBeCreated {
-            get {
-                return ResourceManager.GetString("ErrorMessage_EgressS3FailedBucketNotExistsOrCannotBeCreated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to S3 storage egress failed: {0}.
         /// </summary>
         internal static string ErrorMessage_EgressS3FailedDetailed {
@@ -1284,14 +1275,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to There was no content which can be upload..
-        /// </summary>
-        internal static string Message_EgressS3NoContent {
-            get {
-                return ResourceManager.GetString("Message_EgressS3NoContent", resourceCulture);
-            }
-        }
         /// <summary>
         ///   Looks up a localized string similar to The provided configuration file &apos;{0}&apos; could not be found..
         /// </summary>

@@ -36,12 +36,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             _endpointUtilities = new(_outputHelper);
         }
 
-        [Fact]
-        public void Foo()
-        {
-            ActionTestsHelper.GetTfmArchitectureProfilerPath().ToArray();
-        }
-
         /// <summary>
         /// Tests the LoadProfiler action using the monitor profiler.
         /// </summary>

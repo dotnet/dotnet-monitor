@@ -9,16 +9,16 @@ using System.ComponentModel.DataAnnotations;
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 {
     /// <summary>
-    /// Egress provider options for file system egress.
+    /// Egress provider options for S3 storage.
     /// </summary>
     internal sealed partial class S3StorageEgressProviderOptions : IValidatableObject
     {
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (!string.IsNullOrEmpty(AccessKeyId) && string.IsNullOrEmpty(SecretsAccessKeyFile) && string.IsNullOrEmpty(SecretAccessKey))
+            if (!string.IsNullOrEmpty(AccessKeyId) && string.IsNullOrEmpty(SecretAccessKey))
                 yield return new ValidationResult(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingSecrets);
             
-            if (GeneratePresSignedUrl && !PreSignedUrlExpiry.HasValue)
+            if (GeneratePreSignedUrl && !PreSignedUrlExpiry.HasValue)
                 yield return new ValidationResult(string.Format(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingOption, nameof(PreSignedUrlExpiry)));
         }
     }

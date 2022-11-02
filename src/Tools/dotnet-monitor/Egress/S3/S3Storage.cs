@@ -34,14 +34,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
         {
             AWSCredentials awsCredentials = null;
             AmazonS3Config configuration = new();
-            // use the specified access key and the secrets taken from configuration or a local file
-            if (!string.IsNullOrEmpty(options.AccessKeyId) && (!string.IsNullOrEmpty(options.SecretAccessKey) || !string.IsNullOrEmpty(options.SecretsAccessKeyFile)))
+            // use the specified access key and the secrets taken from configuration
+            if (!string.IsNullOrEmpty(options.AccessKeyId) && !string.IsNullOrEmpty(options.SecretAccessKey))
             {
-                string secretAccessKeyId;
-                if (!string.IsNullOrEmpty(options.SecretsAccessKeyFile) && File.Exists(options.SecretsAccessKeyFile))
-                    secretAccessKeyId = (await File.ReadAllTextAsync(options.SecretsAccessKeyFile, cancellationToken)).Trim();
-                else
-                    secretAccessKeyId = options.SecretAccessKey;
+                string secretAccessKeyId = options.SecretAccessKey;                
                 awsCredentials = new BasicAWSCredentials(options.AccessKeyId, secretAccessKeyId);
 
                 configuration.ForcePathStyle = options.ForcePathStyle;
@@ -53,8 +49,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             // use configured AWS profile
             else if (!string.IsNullOrEmpty(options.AwsProfileName))
             {
-                CredentialProfileStoreChain chain = !string.IsNullOrEmpty(options.AwsProfileFilePath)
-                ? new CredentialProfileStoreChain(options.AwsProfileFilePath)
+                CredentialProfileStoreChain chain = !string.IsNullOrEmpty(options.AwsProfilePath)
+                ? new CredentialProfileStoreChain(options.AwsProfilePath)
                     : new CredentialProfileStoreChain();
 
                 if (!chain.TryGetAWSCredentials(options.AwsProfileName, out awsCredentials))

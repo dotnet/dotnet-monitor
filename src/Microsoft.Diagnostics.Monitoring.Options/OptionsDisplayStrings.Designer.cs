@@ -653,7 +653,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The format used to display the callstacks..
+        ///   Looks up a localized string similar to The format used to display the call stacks..
         /// </summary>
         public static string DisplayAttributeDescription_CollectStacksOptions_Format {
             get {
@@ -1415,15 +1415,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The path to secret file to get the value for user accountId and user password for connecting to S3..
-        /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsAccessKeyFile {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretsAccessKeyFile", resourceCulture);
             }
         }
         
