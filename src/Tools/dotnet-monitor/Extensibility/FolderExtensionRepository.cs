@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             IDirectoryContents extensionDirs = _fileSystem.GetDirectoryContents(string.Empty);
             ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
 
-            foreach (var extensionDir in extensionDirs)
+            foreach (IFileInfo extensionDir in extensionDirs)
             {
                 if (ExtensionRepositoryUtilities.ExtensionDefinitionExists(_fileSystem, extensionDir.Name))
                 {

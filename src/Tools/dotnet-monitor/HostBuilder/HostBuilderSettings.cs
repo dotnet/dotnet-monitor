@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         // Location where extensions are stored by default.
         // Windows: "%USERPROFILE%\.dotnet\Tools"
-        // Other: "%XDG_CONFIG_HOME%/.dotnet/tools" OR "%HOME%/dotnet/tools" -> THIS HAS NOT BEEN TESTED YET ON LINUX
+        // Other: "%XDG_CONFIG_HOME%/.dotnet/tools" OR "%HOME%/.dotnet/tools" -> THIS HAS NOT BEEN TESTED YET ON LINUX
         public static readonly string DotnetToolsExtensionDirectoryPath =
             GetEnvironmentOverrideOrValue(
                 UserConfigDirectoryOverrideEnvironmentVariable,

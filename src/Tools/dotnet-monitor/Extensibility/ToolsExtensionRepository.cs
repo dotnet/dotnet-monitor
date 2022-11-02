@@ -29,18 +29,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         public override bool TryFindExtension(string extensionName, out IExtension extension)
         {
             const string storeDirectory = ".store";
-            IDirectoryContents allDotnetTools = _fileSystem.GetDirectoryContents(storeDirectory);
+            IDirectoryContents toolsStoreDir = _fileSystem.GetDirectoryContents(storeDirectory);
             ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
 
-            foreach (var tool in allDotnetTools)
+            foreach (IFileInfo tool in toolsStoreDir)
             {
-                var toolName = tool.Name;
-
-                string extensionVer = _fileSystem.GetDirectoryContents(Path.Combine(storeDirectory, toolName)).First().Name;
+                string extensionVer = _fileSystem.GetDirectoryContents(Path.Combine(storeDirectory, tool.Name)).First().Name;
 
                 string netVer = "net7.0"; // TODO: Still need to determine this
 
-                string extensionPath = Path.Combine(storeDirectory, toolName, extensionVer, toolName, extensionVer, "tools", netVer, "any");
+                string extensionPath = Path.Combine(storeDirectory, tool.Name, extensionVer, tool.Name, extensionVer, "tools", netVer, "any");
 
                 if (ExtensionRepositoryUtilities.ExtensionDefinitionExists(_fileSystem, extensionPath))
                 {
