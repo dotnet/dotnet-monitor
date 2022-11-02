@@ -244,15 +244,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             string targetExtensionFolder = Path.Combine(path, ExtensionFolder);
 
-            return services.AddExtensionRepository<FolderExtensionRepository>(priority, targetExtensionFolder);
+            if (Directory.Exists(targetExtensionFolder))
+            {
+                Func<IServiceProvider, ExtensionRepository> createDelegate =
+                    (IServiceProvider serviceProvider) =>
+                    {
+                        PhysicalFileProvider fileProvider = new(targetExtensionFolder);
+                        ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+
+                        return new FolderExtensionRepository(fileProvider, loggerFactory, priority, targetExtensionFolder);
+                    };
+
+                services.AddSingleton<ExtensionRepository>(createDelegate);
+            }
+
+            return services;
         }
 
         public static IServiceCollection AddToolsExtensionRepository(this IServiceCollection services, int priority, string targetExtensionFolder)
-        {
-            return services.AddExtensionRepository<ToolsExtensionRepository>(priority, targetExtensionFolder);
-        }
-
-        public static IServiceCollection AddExtensionRepository<T>(this IServiceCollection services, int priority, string targetExtensionFolder) where T : FolderExtensionRepository
         {
             if (Directory.Exists(targetExtensionFolder))
             {
@@ -262,7 +271,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         PhysicalFileProvider fileProvider = new(targetExtensionFolder);
                         ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-                        return (T)Activator.CreateInstance(typeof(T), new object[] { fileProvider, loggerFactory, priority, targetExtensionFolder });
+                        return new ToolsExtensionRepository(fileProvider, loggerFactory, priority, targetExtensionFolder);
                     };
 
                 services.AddSingleton<ExtensionRepository>(createDelegate);

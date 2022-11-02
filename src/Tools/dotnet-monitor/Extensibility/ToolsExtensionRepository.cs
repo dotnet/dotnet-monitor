@@ -4,31 +4,55 @@
 
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
-    internal class ToolsExtensionRepository : FolderExtensionRepository
+    internal class ToolsExtensionRepository : ExtensionRepository
     {
+        private readonly string _targetFolder;
+        private readonly IFileProvider _fileSystem;
+        private readonly ILoggerFactory _loggerFactory;
+
         public ToolsExtensionRepository(IFileProvider fileSystem, ILoggerFactory loggerFactory, int resolvePriority, string targetFolder)
-            : base(fileSystem, loggerFactory, resolvePriority, targetFolder)
+            : base(resolvePriority, string.Format(CultureInfo.CurrentCulture, Strings.Message_FolderExtensionRepoName, targetFolder))
         {
+            _fileSystem = fileSystem;
+
+            _targetFolder = targetFolder;
+
+            _loggerFactory = loggerFactory;
         }
 
         public override bool TryFindExtension(string extensionName, out IExtension extension)
         {
-            string extensionVer = _fileSystem.GetDirectoryContents(Path.Combine(".store", extensionName)).First().Name;
+            // Need to enumerate all directories inside .store, then traverse path and send to ExtensionFileExists
 
-            string netVer = "net7.0"; // TODO: Still need to determine this
+            IDirectoryContents allDotnetTools = _fileSystem.GetDirectoryContents(".store"); // This holds all the possible extension dirs
 
-            string extensionPath = Path.Combine(".store", extensionName, extensionVer, extensionName, extensionVer, "tools", netVer, "any");
+            ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
 
-            if (ExtensionDefinitionExists(extensionPath))
+            foreach (var tool in allDotnetTools)
             {
-                ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
-                extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, ExtensionDefinitionFile), extensionName, logger);
-                return true;
+                var toolName = tool.Name;
+
+                string extensionVer = _fileSystem.GetDirectoryContents(Path.Combine(".store", toolName)).First().Name;
+
+                string netVer = "net7.0"; // TODO: Still need to determine this
+
+                string extensionPath = Path.Combine(".store", toolName, extensionVer, toolName, extensionVer, "tools", netVer, "any");
+
+                if (ExtensionRepositoryUtilities.ExtensionDefinitionExists(_fileSystem, extensionPath))
+                {
+                    var tempExtension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, Constants.ExtensionDefinitionFile), extensionName, logger);
+                    if (extensionName == tempExtension.ExtensionDeclaration.Value.DisplayName)
+                    {
+                        extension = tempExtension;
+                        return true;
+                    }
+                }
             }
 
             extension = null;

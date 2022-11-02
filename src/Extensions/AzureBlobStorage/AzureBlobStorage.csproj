@@ -10,6 +10,7 @@
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
     <AssemblyName>dotnet-monitor-egress-azureblobstorage</AssemblyName>
+    <ToolCommandName>dotnet-monitor-egress-azureblobstorage</ToolCommandName>
   </PropertyGroup>
 
   <ItemGroup>

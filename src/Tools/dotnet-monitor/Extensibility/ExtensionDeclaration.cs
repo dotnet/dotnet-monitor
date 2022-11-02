@@ -24,6 +24,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         public string Program { get; set; }
 
         /// <summary>
+        /// This is the name that users specify in configuration to refer to the extension.
+        /// </summary>
+        public string DisplayName { get; set; }
+
+        /// <summary>
         /// An array of strings declaring what types of extensions are supported by this extension.
         /// This should contain values from <see cref="ExtensionTypes"/>.
         /// </summary>

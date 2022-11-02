@@ -11,10 +11,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     internal class FolderExtensionRepository : ExtensionRepository
     {
-        protected const string ExtensionDefinitionFile = "extension.json";
-        protected readonly string _targetFolder;
-        protected readonly IFileProvider _fileSystem;
-        protected readonly ILoggerFactory _loggerFactory;
+        private readonly string _targetFolder;
+        private readonly IFileProvider _fileSystem;
+        private readonly ILoggerFactory _loggerFactory;
 
         public FolderExtensionRepository(IFileProvider fileSystem, ILoggerFactory loggerFactory, int resolvePriority, string targetFolder)
             : base(resolvePriority, string.Format(CultureInfo.CurrentCulture, Strings.Message_FolderExtensionRepoName, targetFolder))
@@ -28,30 +27,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
         public override bool TryFindExtension(string extensionName, out IExtension extension)
         {
-            if (ExtensionDefinitionExists(extensionName))
+            // Need to enumerate all directories inside current directory of _fileSystem, then send each to ExtensionFileExists
+
+            IDirectoryContents extensionsDirs = _fileSystem.GetDirectoryContents(""); // This holds all the possible extension dirs
+
+            ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
+
+            foreach (var extensionDir in extensionsDirs)
             {
-                ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
-                extension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionName, ExtensionDefinitionFile), logger);
-                return true;
-            }
+                var extensionDirName = extensionDir.Name;
 
-            extension = null;
-            return false;
-        }
-
-        protected bool ExtensionDefinitionExists(string extensionPath)
-        {
-            IDirectoryContents extensionDir = _fileSystem.GetDirectoryContents(extensionPath);
-
-            if (extensionDir.Exists)
-            {
-                IFileInfo defFile = _fileSystem.GetFileInfo(Path.Combine(extensionPath, ExtensionDefinitionFile));
-                if (defFile.Exists && !defFile.IsDirectory)
+                if (ExtensionRepositoryUtilities.ExtensionDefinitionExists(_fileSystem, extensionDirName))
                 {
-                    return true;
+                    var tempExtension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionDirName, Constants.ExtensionDefinitionFile), logger);
+                    if (extensionName == tempExtension.ExtensionDeclaration.Value.DisplayName)
+                    {
+                        extension = tempExtension;
+                        return true;
+                    }
                 }
             }
 
+            extension = null;
             return false;
         }
     }
