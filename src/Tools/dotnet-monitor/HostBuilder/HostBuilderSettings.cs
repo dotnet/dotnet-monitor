@@ -46,8 +46,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         // Location where extensions are stored by default.
         // Windows: "%USERPROFILE%\.dotnet\Tools"
-        // Other: "%XDG_CONFIG_HOME%/.dotnet/tools" OR "%HOME%/dotnet/tools" -> IS THIS RIGHT?
-        public static readonly string ExtensionDirectoryPath =
+        // Other: "%XDG_CONFIG_HOME%/.dotnet/tools" OR "%HOME%/dotnet/tools" -> THIS HAS NOT BEEN TESTED YET ON LINUX
+        public static readonly string DotnetToolsExtensionDirectoryPath =
             GetEnvironmentOverrideOrValue(
                 UserConfigDirectoryOverrideEnvironmentVariable,
                 RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
@@ -70,8 +70,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public string UserConfigDirectory { get; set; }
 
-        public string ExtensionDirectory { get; set; }
-
+        public string DotnetToolsExtensionDirectory { get; set; }
 
         public FileInfo UserProvidedConfigFilePath { get; set; }
 
@@ -97,7 +96,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 SharedConfigDirectory = SharedConfigDirectoryPath,
                 UserConfigDirectory = UserConfigDirectoryPath,
                 UserProvidedConfigFilePath = userProvidedConfigFilePath,
-                ExtensionDirectory = ExtensionDirectoryPath
+                DotnetToolsExtensionDirectory = DotnetToolsExtensionDirectoryPath
             };
         }
 

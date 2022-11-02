@@ -27,22 +27,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
         public override bool TryFindExtension(string extensionName, out IExtension extension)
         {
-            // Need to enumerate all directories inside current directory of _fileSystem, then send each to ExtensionFileExists
-
-            IDirectoryContents extensionsDirs = _fileSystem.GetDirectoryContents(""); // This holds all the possible extension dirs
-
+            IDirectoryContents extensionDirs = _fileSystem.GetDirectoryContents(string.Empty);
             ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
 
-            foreach (var extensionDir in extensionsDirs)
+            foreach (var extensionDir in extensionDirs)
             {
-                var extensionDirName = extensionDir.Name;
-
-                if (ExtensionRepositoryUtilities.ExtensionDefinitionExists(_fileSystem, extensionDirName))
+                if (ExtensionRepositoryUtilities.ExtensionDefinitionExists(_fileSystem, extensionDir.Name))
                 {
-                    var tempExtension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionDirName, Constants.ExtensionDefinitionFile), logger);
-                    if (extensionName == tempExtension.ExtensionDeclaration.Value.DisplayName)
+                    var currExtension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionDir.Name, Constants.ExtensionDefinitionFile), logger);
+                    if (extensionName == currExtension.ExtensionDeclaration.Value.DisplayName)
                     {
-                        extension = tempExtension;
+                        extension = currExtension;
                         return true;
                     }
                 }

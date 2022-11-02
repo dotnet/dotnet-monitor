@@ -32,7 +32,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             foreach (ExtensionRepository repo in _extensionRepos)
             {
                 bool found = repo.TryFindExtension(extensionName, out IExtension genericResult);
-
                 if (found)
                 {
                     bool isOfType = genericResult is TExtensionType;

@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         private readonly string _exePath;
         private readonly IFileProvider _fileSystem;
         private readonly ILogger<ProgramExtension> _logger;
-        public Lazy<ExtensionDeclaration> ExtensionDeclaration { get; set; }
+        public Lazy<ExtensionDeclaration> ExtensionDeclaration { get; }
 
         public ProgramExtension(string extensionName, string targetFolder, IFileProvider fileSystem, string declarationPath, ILogger<ProgramExtension> logger)
         {

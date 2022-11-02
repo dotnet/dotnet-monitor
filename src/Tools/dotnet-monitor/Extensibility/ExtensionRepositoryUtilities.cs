@@ -11,7 +11,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
     {
         public static bool ExtensionDefinitionExists(IFileProvider fileSystem, string extensionPath)
         {
-            // Just checks - is there an extensions.json file here, regardless of what's inside it?
             IDirectoryContents extensionDir = fileSystem.GetDirectoryContents(extensionPath);
 
             if (extensionDir.Exists)

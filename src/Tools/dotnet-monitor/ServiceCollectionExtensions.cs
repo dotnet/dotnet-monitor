@@ -220,7 +220,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             string nextToMeFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string progDataFolder = settings.SharedConfigDirectory;
             string settingsFolder = settings.UserConfigDirectory;
-            string dotnetToolsFolder = settings.ExtensionDirectory;
+            string dotnetToolsFolder = settings.DotnetToolsExtensionDirectory;
 
             if (string.IsNullOrWhiteSpace(progDataFolder)
                 || string.IsNullOrWhiteSpace(settingsFolder)
@@ -251,7 +251,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         PhysicalFileProvider fileProvider = new(targetExtensionFolder);
                         ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-
                         return new FolderExtensionRepository(fileProvider, loggerFactory, priority, targetExtensionFolder);
                     };
 
@@ -270,7 +269,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         PhysicalFileProvider fileProvider = new(targetExtensionFolder);
                         ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-
                         return new ToolsExtensionRepository(fileProvider, loggerFactory, priority, targetExtensionFolder);
                     };
 
@@ -307,7 +305,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             return services;
         }
-
 
         public static IServiceCollection ConfigureProfiler(this IServiceCollection services)
         {

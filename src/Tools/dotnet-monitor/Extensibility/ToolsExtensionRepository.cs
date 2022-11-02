@@ -28,28 +28,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
         public override bool TryFindExtension(string extensionName, out IExtension extension)
         {
-            // Need to enumerate all directories inside .store, then traverse path and send to ExtensionFileExists
-
-            IDirectoryContents allDotnetTools = _fileSystem.GetDirectoryContents(".store"); // This holds all the possible extension dirs
-
+            const string storeDirectory = ".store";
+            IDirectoryContents allDotnetTools = _fileSystem.GetDirectoryContents(storeDirectory);
             ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
 
             foreach (var tool in allDotnetTools)
             {
                 var toolName = tool.Name;
 
-                string extensionVer = _fileSystem.GetDirectoryContents(Path.Combine(".store", toolName)).First().Name;
+                string extensionVer = _fileSystem.GetDirectoryContents(Path.Combine(storeDirectory, toolName)).First().Name;
 
                 string netVer = "net7.0"; // TODO: Still need to determine this
 
-                string extensionPath = Path.Combine(".store", toolName, extensionVer, toolName, extensionVer, "tools", netVer, "any");
+                string extensionPath = Path.Combine(storeDirectory, toolName, extensionVer, toolName, extensionVer, "tools", netVer, "any");
 
                 if (ExtensionRepositoryUtilities.ExtensionDefinitionExists(_fileSystem, extensionPath))
                 {
-                    var tempExtension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, Constants.ExtensionDefinitionFile), extensionName, logger);
-                    if (extensionName == tempExtension.ExtensionDeclaration.Value.DisplayName)
+                    var currExtension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, Constants.ExtensionDefinitionFile), extensionName, logger);
+                    if (extensionName == currExtension.ExtensionDeclaration.Value.DisplayName)
                     {
-                        extension = tempExtension;
+                        extension = currExtension;
                         return true;
                     }
                 }
