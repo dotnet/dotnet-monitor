@@ -1207,6 +1207,14 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "gracefulStop",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
           }
         ],
         "responses": {
@@ -1215,6 +1223,9 @@
           },
           "200": {
             "description": "Success"
+          },
+          "202": {
+            "description": "Accepted"
           }
         }
       }
@@ -1496,7 +1507,8 @@
           "Running",
           "Succeeded",
           "Failed",
-          "Cancelled"
+          "Cancelled",
+          "Stopping"
         ],
         "type": "string"
       },
@@ -1516,6 +1528,13 @@
           },
           "process": {
             "$ref": "#/components/schemas/OperationProcessInfo"
+          },
+          "egressProviderName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isStoppable": {
+            "type": "boolean"
           },
           "resourceLocation": {
             "type": "string",
@@ -1544,6 +1563,13 @@
           },
           "process": {
             "$ref": "#/components/schemas/OperationProcessInfo"
+          },
+          "egressProviderName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isStoppable": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false,
