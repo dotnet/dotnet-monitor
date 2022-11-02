@@ -55,7 +55,7 @@ The expected content type is `application/json`.
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many requests at this time. Try to request metrics at a later time. | `application/problem+json` |
 
-> **NOTE:** Regardless if an egress provider is specified, if the request was successful (response codes 200 or 202), the Location header containers the URI of the operation. This can be used to query the status of the operation or change its state.
+> **NOTE:** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header containers the URI of the operation. This can be used to query the status of the operation or change its state.
 
 ## Examples
 
