@@ -10,7 +10,7 @@ Stopping an operation may not happen immediately such as in the case of traces w
 ## Supported Artifacts
 
 The following API endpoints have support for their operations being gracefully stopped when they are in the `Running` state.
-- [`/trace`](./api/trace.md)
+- [`/trace`](./trace.md)
 
 ## HTTP Route
 
