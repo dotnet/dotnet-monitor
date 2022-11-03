@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
                 var client = await ClientFactory.CreateAsync(options, artifactSettings, token);
                 if (stream.CanSeek) // use the stream directly
-                {                    
+                {
                     await client.PutAsync(stream, token);
                 }
                 else // copy temporary to memory stream locally

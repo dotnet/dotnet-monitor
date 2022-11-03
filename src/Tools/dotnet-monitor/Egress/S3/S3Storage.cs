@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             // use the specified access key and the secrets taken from configuration
             if (!string.IsNullOrEmpty(options.AccessKeyId) && !string.IsNullOrEmpty(options.SecretAccessKey))
             {
-                string secretAccessKeyId = options.SecretAccessKey;                
+                string secretAccessKeyId = options.SecretAccessKey;
                 awsCredentials = new BasicAWSCredentials(options.AccessKeyId, secretAccessKeyId);
 
                 configuration.ForcePathStyle = options.ForcePathStyle;
