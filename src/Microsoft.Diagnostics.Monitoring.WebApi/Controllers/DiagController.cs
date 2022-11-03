@@ -684,9 +684,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return Result(
                 Utilities.ArtifactType_Logs,
                 egressProvider,
-                logsOperation.ExecuteAsync,
-                logsOperation.GenerateFileName(),
-                logsOperation.ContentType,
+                logsOperation,
                 processInfo,
                 format != LogFormat.PlainText);
         }
@@ -752,6 +750,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     fileName,
                     processInfo,
                     contentType,
+                    scope),
+                    limitKey: artifactType);
+            }
+        }
+
+        private Task<ActionResult> Result(
+            string artifactType,
+            string providerName,
+            IArtifactOperation operation,
+            IProcessInfo processInfo,
+            bool asAttachment = true)
+        {
+            KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
+
+            if (string.IsNullOrEmpty(providerName))
+            {
+                return Task.FromResult<ActionResult>(new OutputStreamResult(
+                    operation,
+                    asAttachment ? operation.GenerateFileName() : null,
+                    scope));
+            }
+            else
+            {
+                return SendToEgress(new EgressOperation(
+                    operation,
+                    providerName,
+                    processInfo,
                     scope),
                     limitKey: artifactType);
             }
