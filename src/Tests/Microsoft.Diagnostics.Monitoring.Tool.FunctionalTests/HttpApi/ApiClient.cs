@@ -613,28 +613,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
-        public async Task<OperationResponse> CaptureTraceAsync(int processId, int durationSeconds, CancellationToken token)
-        {
-            string uri = FormattableString.Invariant($"/trace?pid={processId}&durationSeconds={durationSeconds}");
-            using HttpRequestMessage request = new(HttpMethod.Get, uri);
-            using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
-
-            switch (response.StatusCode)
-            {
-                case HttpStatusCode.Accepted:
-                    return new OperationResponse(response.StatusCode, response.Headers.Location);
-                case HttpStatusCode.BadRequest:
-                case HttpStatusCode.TooManyRequests:
-                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
-                    throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
-                case HttpStatusCode.Unauthorized:
-                    ThrowIfNotSuccess(response);
-                    break;
-            }
-
-            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
-        }
-
         public async Task<List<OperationSummary>> GetOperations(CancellationToken token)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, "/operations");
