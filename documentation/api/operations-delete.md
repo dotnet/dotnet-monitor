@@ -5,7 +5,6 @@
 
 Cancel a running operation. Only valid against operations in the `Running` or `Stopping` state. Transitions the operation to `Cancelled` state. Cancelling an operation may result in an incomplete or unreadable artifact. To stop an operation early while still producing a valid artifact, use the [Stop Operation](operations-stop.md).
 
-
 ## HTTP Route
 
 ```http
