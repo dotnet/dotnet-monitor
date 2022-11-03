@@ -262,6 +262,9 @@
 0. stringName: The variable name for the provided string.
 1. stringValue: The value of the string that could not be parsed.</comment>
   </data>
+  <data name="ErrorMessage_OperationIsNotStoppable" xml:space="preserve">
+    <value>This operation does not support being stopped.</value>
+  </data>
   <data name="ErrorMessage_ParameterNotAllowed" xml:space="preserve">
     <value>The {0} parameter value '{1}' is not allowed.</value>
     <comment>Gets the format string for rejecting a parameter value.
