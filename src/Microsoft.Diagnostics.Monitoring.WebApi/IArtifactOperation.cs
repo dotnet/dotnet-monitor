@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,15 +12,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// Represents an operation that can produce a diagnostic
     /// artifact to the provided output stream.
     /// </summary>
-    internal interface IArtifactOperation : IAsyncDisposable
+    internal interface IArtifactOperation
     {
         /// <summary>
-        /// Start to produce a diagnostic artifact to the output stream.
+        /// Produces a diagnostic artifact to the output stream.
         /// </summary>
         /// <param name="outputStream">The stream to which the diagnostic artifact is written.</param>
+        /// <param name="startCompletionSource">A completion source that is signaled when the operation has started.</param>
         /// <param name="token">A token used to cancel the operation.</param>
-        Task StartAsync(
+        /// <returns></returns>
+        Task ExecuteAsync(
             Stream outputStream,
+            TaskCompletionSource<object> startCompletionSource,
             CancellationToken token);
 
         /// <summary>
@@ -29,12 +31,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// </summary>
         /// <param name="token">A token used to cancel the stopping of the operation.</param>
         Task StopAsync(CancellationToken token);
-
-        /// <summary>
-        /// Waits for the production of the diagnostic artiface to complete.
-        /// </summary>
-        /// <param name="token">A token used to cancel waiting for completion.</param>
-        Task WaitForCompletionAsync(CancellationToken token);
 
         /// <summary>
         /// Generates a file name for the associated artifact type.

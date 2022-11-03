@@ -20,8 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private readonly string _artifactType;
         private readonly ILogger _logger;
 
-        private EventSourcePipeline<T> _pipeline;
-        private Task _runTask;
+        private Func<CancellationToken, Task> _stopFunc;
 
         protected EventSourceArtifactOperation(ILogger logger, string artifactType, IEndpointInfo endpointInfo, T settings, bool isStoppable = true)
         {
@@ -33,32 +32,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             Settings = settings;
         }
 
-        public ValueTask DisposeAsync()
+        public async Task ExecuteAsync(Stream outputStream, TaskCompletionSource<object> startCompletionSource, CancellationToken token)
         {
-            if (null != _pipeline)
-            {
-                return _pipeline.DisposeAsync();
-            }
-            return ValueTask.CompletedTask;
-        }
+            await using EventSourcePipeline<T> pipeline = CreatePipeline(outputStream);
 
-        public async Task StartAsync(Stream outputStream, CancellationToken token)
-        {
-            if (null != _pipeline || null != _runTask)
-            {
-                throw new InvalidOperationException();
-            }
+            _stopFunc = pipeline.StopAsync;
 
-            _pipeline = CreatePipeline(outputStream);
-
-            _runTask = await _pipeline.StartAsync(token);
+            Task runTask = await pipeline.StartAsync(token);
 
             _logger.StartCollectArtifact(_artifactType);
+
+            // Signal that the logs operation has started
+            startCompletionSource?.TrySetResult(null);
+
+            await runTask;
         }
 
-        public Task StopAsync(CancellationToken token)
+        public async Task StopAsync(CancellationToken token)
         {
-            if (null == _pipeline)
+            if (null == _stopFunc)
             {
                 throw new InvalidOperationException();
             }
@@ -68,17 +60,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 throw new MonitoringException(Strings.ErrorMessage_OperationIsNotStoppable);
             }
 
-            return _pipeline.StopAsync(token);
-        }
-
-        public Task WaitForCompletionAsync(CancellationToken token)
-        {
-            if (null == _runTask)
-            {
-                throw new InvalidOperationException();
-            }
-
-            return _runTask.WaitAsync(token);
+            await _stopFunc(token);
         }
 
         public abstract string GenerateFileName();
