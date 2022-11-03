@@ -71,6 +71,29 @@ internal class MultiPartUploadStream : Stream
         throw new NotSupportedException();
     }
 
+    public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
+    {
+        if (Closed)
+            throw new ObjectDisposedException(nameof(MultiPartUploadStream));
+
+        int BytesAvailableInBuffer() { return _bufferSize - _offset; }
+        int count = buffer.Length;
+        int offset = 0;
+        do
+        {
+            int bytesToCopy = Math.Min(count, BytesAvailableInBuffer());
+            buffer.Slice(offset, bytesToCopy).CopyTo(_buffer);
+            _offset += bytesToCopy; // move the offset of the stream buffer
+            offset += bytesToCopy; // move offset of part buffer
+            count -= bytesToCopy; // reduce amount of bytes which still needs to be written
+            _position += bytesToCopy; // move global position
+
+            // part buffer is full -> trigger upload of part
+            if (BytesAvailableInBuffer() == 0)
+                await DoWriteAsync(false, cancellationToken);
+        } while (count > 0);
+    }
+
     public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
         if (Closed)
