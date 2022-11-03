@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             WriteToProviderStream
         }
 
-        internal class InMemoryS3ClientFactory : S3StorageEgressProvider.StorageFactory
+        internal sealed class InMemoryS3ClientFactory : S3StorageEgressProvider.StorageFactory
         {
             public InMemoryStorage S3;
             public override Task<IS3Storage> CreateAsync(S3StorageEgressProviderOptions options, EgressArtifactSettings settings, CancellationToken token)
