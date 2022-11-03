@@ -745,15 +745,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
                 _outputHelper.WriteLine("-> {0}", request.ToString());
             }
 
-            if (completionOption == HttpCompletionOption.ResponseContentRead)
-            {
-                _outputHelper.WriteLine("<- {0}", response.ToString());
-                _outputHelper.WriteLine($"Request duration: {sw.ElapsedMilliseconds} ms");
-            }
-            else
-            {
-                _outputHelper.WriteLine($"Request ACK duration: {sw.ElapsedMilliseconds} ms");
-            }
+            _outputHelper.WriteLine("<- {0}", response.ToString());
+            _outputHelper.WriteLine($"Request duration: {sw.ElapsedMilliseconds} ms");
 
             return response;
         }
