@@ -82,7 +82,7 @@ internal class MultiPartUploadStream : Stream
         do
         {
             int bytesToCopy = Math.Min(count, BytesAvailableInBuffer());
-            buffer.Slice(offset, bytesToCopy).CopyTo(_buffer);
+            buffer.Slice(offset, bytesToCopy).CopyTo(_buffer.AsMemory(_offset));
             _offset += bytesToCopy; // move the offset of the stream buffer
             offset += bytesToCopy; // move offset of part buffer
             count -= bytesToCopy; // reduce amount of bytes which still needs to be written
@@ -96,23 +96,7 @@ internal class MultiPartUploadStream : Stream
 
     public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
-        if (Closed)
-            throw new ObjectDisposedException(nameof(MultiPartUploadStream));
-
-        int BytesAvailableInBuffer() { return _bufferSize - _offset; }
-        do
-        {
-            int bytesToCopy = Math.Min(count, BytesAvailableInBuffer());
-            Array.Copy(buffer, offset, _buffer, _offset, bytesToCopy);
-            _offset += bytesToCopy; // move the offset of the stream buffer
-            offset += bytesToCopy; // move offset of part buffer
-            count -= bytesToCopy; // reduce amount of bytes which still needs to be written
-            _position += bytesToCopy; // move global position
-
-            // part buffer is full -> trigger upload of part
-            if (BytesAvailableInBuffer() == 0)
-                await DoWriteAsync(false, cancellationToken);
-        } while (count > 0);
+        await WriteAsync(buffer.AsMemory().Slice(offset, count), cancellationToken);
     }
 
     private async Task DoWriteAsync(bool allowPartialWrite, CancellationToken cancellationToken)

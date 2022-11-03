@@ -1153,13 +1153,6 @@
           ],
           "description": "The AWS AccessKeyId for IAM user to login"
         },
-        "SecretsAccessKeyFile": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The path to secret file to get the value for user accountId and user password for connecting to S3."
-        },
         "SecretAccessKey": {
           "type": [
             "null",
@@ -1174,14 +1167,14 @@
           ],
           "description": "The AWS profile name to be used for login"
         },
-        "AwsProfileFilePath": {
+        "AwsProfilePath": {
           "type": [
             "null",
             "string"
           ],
           "description": "The AWS profile path, if profile details not stored in default path"
         },
-        "GeneratePresSignedUrl": {
+        "GeneratePreSignedUrl": {
           "type": "boolean",
           "description": "A boolean flag indicates if the return value of egress provider should be a pre-signed URL or only the bucket name and object id of uploaded entry."
         },
@@ -1191,7 +1184,7 @@
             "string"
           ],
           "description": "The amount of time the generated pre-signed url will be accessible.",
-          "format": "time-span"
+          "format": "duration"
         },
         "ForcePathStyle": {
           "type": "boolean",

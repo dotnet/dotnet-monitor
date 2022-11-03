@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
 
         private readonly InMemoryStorage _s3 = new InMemoryStorage("bucket", "key");
 
-        private IEnumerable<byte[]> WithBytesReturned(int totalBytes)
+        private static IEnumerable<byte[]> WithBytesReturned(int totalBytes)
         {
             while (totalBytes > 0)
             {
@@ -35,10 +35,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             }
         }
 
-        [Theory]
-        [InlineData(EWriteOperation.WithBuffer)]
-        [InlineData(EWriteOperation.WithMemory)]
-        public async Task ItShouldWorkWithBufferSizeGreaterThanMinimum(EWriteOperation writeOperation)
+        [Fact]
+        public async Task ItShouldWorkWithBufferSizeGreaterThanMinimum()
         {
             const int BufferSize = MultiPartUploadStream.MinimumSize + MultiPartUploadStream.MinimumSize / 2;
             var uploadId = (await _s3.InitMultiPartUploadAsync(null, CancellationToken.None));
@@ -46,20 +44,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
 
             const int Part1ExpectedSize = BufferSize;
             const int Part2ExpectedSize = MultiPartUploadStream.MinimumSize / 2;
-
+                        
             var allBytes = new List<byte>();
             foreach (var bytes in WithBytesReturned(Part1ExpectedSize + Part2ExpectedSize))
             {
-                switch (writeOperation)
-                {
-                    case EWriteOperation.WithBuffer:
-                        await stream.WriteAsync(bytes, 0, bytes.Length, CancellationToken.None);
-                        break;
-                    case EWriteOperation.WithMemory:
-                        await stream.WriteAsync(bytes.AsMemory(), CancellationToken.None);
-                        break;
-                }
-                
+                await stream.WriteAsync(bytes, CancellationToken.None);
                 allBytes.AddRange(bytes);
             }
 
@@ -76,10 +65,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             Assert.Equal(Part2ExpectedSize, data[1].Size);
         }
 
-        [Theory]
-        [InlineData(EWriteOperation.WithBuffer)]
-        [InlineData(EWriteOperation.WithMemory)]
-        public async Task ItShouldWriteMultipleParts(EWriteOperation writeOperation)
+        [Fact]
+        public async Task ItShouldWriteMultipleParts()
         {
             var uploadId = (await _s3.InitMultiPartUploadAsync(null, CancellationToken.None));
             await using var stream = new MultiPartUploadStream(_s3, "bucket", "key", uploadId, 1024);
@@ -91,15 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             var allBytes = new List<byte>();
             foreach (var bytes in WithBytesReturned(Part1ExpectedSize + Part2ExpectedSize + Part3ExpectedSize))
             {
-                switch (writeOperation)
-                {
-                    case EWriteOperation.WithBuffer:
-                        await stream.WriteAsync(bytes, 0, bytes.Length, CancellationToken.None);
-                        break;
-                    case EWriteOperation.WithMemory:
-                        await stream.WriteAsync(bytes.AsMemory(), CancellationToken.None);
-                        break;
-                }
+                await stream.WriteAsync(bytes, CancellationToken.None);
                 allBytes.AddRange(bytes);
             }
 
@@ -119,10 +98,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             Assert.Equal(Part3ExpectedSize, data[2].Size);
         }
 
-        [Theory]
-        [InlineData(EWriteOperation.WithBuffer)]
-        [InlineData(EWriteOperation.WithMemory)]
-        public async Task ItShouldWriteSinglePartialPart(EWriteOperation writeOperation)
+        [Fact]
+        public async Task ItShouldWriteSinglePartialPart()
         {
             var uploadId = (await _s3.InitMultiPartUploadAsync(null, CancellationToken.None));
             await using var stream = new MultiPartUploadStream(_s3, "bucket", "key", uploadId, 1024);
@@ -132,15 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             var allBytes = new List<byte>();
             foreach (var bytes in WithBytesReturned(PartExpectedSize))
             {
-                switch (writeOperation)
-                {
-                    case EWriteOperation.WithBuffer:
-                        await stream.WriteAsync(bytes, 0, bytes.Length, CancellationToken.None);
-                        break;
-                    case EWriteOperation.WithMemory:
-                        await stream.WriteAsync(bytes.AsMemory(), CancellationToken.None);
-                        break;
-                }
+                await stream.WriteAsync(bytes, CancellationToken.None);
                 allBytes.AddRange(bytes);
             }
 
@@ -153,10 +122,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             Assert.Equal(allBytes.ToArray(), storageItem.Bytes());
         }
 
-        [Theory]
-        [InlineData(EWriteOperation.WithBuffer)]
-        [InlineData(EWriteOperation.WithMemory)]
-        public async Task ItShouldWriteSingleFulllPart(EWriteOperation writeOperation)
+        [Fact]
+        public async Task ItShouldWriteSingleFulllPart()
         {
             var uploadId = (await _s3.InitMultiPartUploadAsync(null, CancellationToken.None));
             await using var stream = new MultiPartUploadStream(_s3, "bucket", "key", uploadId, 1024);
@@ -165,15 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             var allBytes = new List<byte>();
             foreach (var bytes in WithBytesReturned(PartExpectedSize))
             {
-                switch (writeOperation)
-                {
-                    case EWriteOperation.WithBuffer:
-                        await stream.WriteAsync(bytes, 0, bytes.Length, CancellationToken.None);
-                        break;
-                    case EWriteOperation.WithMemory:
-                        await stream.WriteAsync(bytes.AsMemory(), CancellationToken.None);
-                        break;
-                }
+                await stream.WriteAsync(bytes, CancellationToken.None);
                 allBytes.AddRange(bytes);
             }
 

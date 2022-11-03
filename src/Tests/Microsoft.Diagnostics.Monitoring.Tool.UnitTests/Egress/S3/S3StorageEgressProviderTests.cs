@@ -60,7 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             {
                 EUploadAction.ProvideUploadStream => await sut.EgressAsync(options, _ => Task.FromResult((Stream)stream), artifactSettings, CancellationToken.None),
                 EUploadAction.WriteToProviderStream => await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
-                _ => throw new ArgumentException(nameof(uploadAction))
+                _ => throw new ArgumentException("Unsupported value", nameof(uploadAction))
             };
 
             // verify
@@ -92,7 +92,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             {
                 EUploadAction.ProvideUploadStream => await sut.EgressAsync(options, _ => Task.FromResult((Stream)stream), artifactSettings, CancellationToken.None),
                 EUploadAction.WriteToProviderStream => await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
-                _ => throw new ArgumentException(nameof(uploadAction))
+                _ => throw new ArgumentException("Unsupported value", nameof(uploadAction))
             };
 
             // verify
@@ -147,7 +147,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             {
                 EUploadAction.ProvideUploadStream => await sut.EgressAsync(options, _ => Task.FromResult((Stream)stream), artifactSettings, CancellationToken.None),
                 EUploadAction.WriteToProviderStream => await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
-                _ => throw new ArgumentException(nameof(uploadAction))
+                _ => throw new ArgumentException("Unsupported value", nameof(uploadAction))
             };
 
             // verify
