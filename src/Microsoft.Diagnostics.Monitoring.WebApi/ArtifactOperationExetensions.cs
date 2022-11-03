@@ -10,9 +10,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class ArtifactOperationExetensions
     {
-        public static Task ExecuteAsync(this IArtifactOperation operation, Stream outputStream, CancellationToken token)
+        public static async Task ExecuteAsync(this IArtifactOperation operation, Stream outputStream, CancellationToken token)
         {
-            return operation.ExecuteAsync(outputStream, startCompletionSource: null, token);
+            await operation.StartAsync(outputStream, token);
+
+            await operation.WaitForCompletionAsync(token);
+        }
+
+        public static async Task ExecuteAsync(this IArtifactOperation operation, Stream outputStream, TaskCompletionSource<object> startCompletionSource, CancellationToken token)
+        {
+            await operation.StartAsync(outputStream, token);
+
+            startCompletionSource.TrySetResult(null);
+
+            await operation.WaitForCompletionAsync(token);
         }
     }
 }

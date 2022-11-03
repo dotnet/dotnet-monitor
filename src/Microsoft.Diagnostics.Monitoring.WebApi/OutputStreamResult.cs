@@ -18,6 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly Func<Stream, CancellationToken, Task> _action;
         private readonly string _contentType;
         private readonly string _fileDownloadName;
+        private readonly IArtifactOperation _operation;
         private readonly KeyValueLogScope _scope;
 
         public OutputStreamResult(Func<Stream, CancellationToken, Task> action, string contentType, string fileDownloadName, KeyValueLogScope scope)
@@ -28,30 +29,46 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _scope = scope;
         }
 
+        public OutputStreamResult(IArtifactOperation operation, string fileDownloadName, KeyValueLogScope scope)
+            : this(operation.ExecuteAsync, operation.ContentType, fileDownloadName, scope)
+        {
+            _operation = operation;
+        }
+
         public override async Task ExecuteResultAsync(ActionContext context)
         {
-            ILogger<OutputStreamResult> logger = context.HttpContext.RequestServices
-                .GetRequiredService<ILoggerFactory>()
-                .CreateLogger<OutputStreamResult>();
-
-            using var _ = logger.BeginScope(_scope);
-
-            await context.InvokeAsync(async (token) =>
+            try
             {
-                if (_fileDownloadName != null)
+                ILogger<OutputStreamResult> logger = context.HttpContext.RequestServices
+                    .GetRequiredService<ILoggerFactory>()
+                    .CreateLogger<OutputStreamResult>();
+
+                using var _ = logger.BeginScope(_scope);
+
+                await context.InvokeAsync(async (token) =>
                 {
-                    ContentDispositionHeaderValue contentDispositionHeaderValue = new ContentDispositionHeaderValue("attachment");
-                    contentDispositionHeaderValue.FileName = _fileDownloadName;
-                    context.HttpContext.Response.Headers["Content-Disposition"] = contentDispositionHeaderValue.ToString();
+                    if (_fileDownloadName != null)
+                    {
+                        ContentDispositionHeaderValue contentDispositionHeaderValue = new ContentDispositionHeaderValue("attachment");
+                        contentDispositionHeaderValue.FileName = _fileDownloadName;
+                        context.HttpContext.Response.Headers["Content-Disposition"] = contentDispositionHeaderValue.ToString();
+                    }
+                    context.HttpContext.Response.Headers["Content-Type"] = _contentType;
+
+                    context.HttpContext.Features.Get<AspNetCore.Http.Features.IHttpResponseBodyFeature>()?.DisableBuffering();
+
+                    await _action(context.HttpContext.Response.Body, token);
+
+                    logger.WrittenToHttpStream();
+                }, logger);
+            }
+            finally
+            {
+                if (null != _operation)
+                {
+                    await _operation.DisposeAsync();
                 }
-                context.HttpContext.Response.Headers["Content-Type"] = _contentType;
-
-                context.HttpContext.Features.Get<AspNetCore.Http.Features.IHttpResponseBodyFeature>()?.DisableBuffering();
-
-                await _action(context.HttpContext.Response.Body, token);
-
-                logger.WrittenToHttpStream();
-            }, logger);
+            }
         }
     }
 }

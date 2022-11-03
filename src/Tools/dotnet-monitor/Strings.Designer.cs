@@ -340,6 +340,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This operation does not support being stopped..
+        /// </summary>
+        internal static string ErrorMessage_OperationIsNotStoppable {
+            get {
+                return ResourceManager.GetString("ErrorMessage_OperationIsNotStoppable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} parameter value &apos;{1}&apos; is not allowed..
         /// </summary>
         internal static string ErrorMessage_ParameterNotAllowed {

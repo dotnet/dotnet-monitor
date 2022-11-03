@@ -2,9 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,32 +20,72 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private readonly string _artifactType;
         private readonly ILogger _logger;
 
-        protected EventSourceArtifactOperation(ILogger logger, string artifactType, IEndpointInfo endpointInfo, T settings)
+        private EventSourcePipeline<T> _pipeline;
+        private Task _runTask;
+
+        protected EventSourceArtifactOperation(ILogger logger, string artifactType, IEndpointInfo endpointInfo, T settings, bool isStoppable = true)
         {
             _artifactType = artifactType;
             _logger = logger;
 
             EndpointInfo = endpointInfo;
+            IsStoppable = isStoppable;
             Settings = settings;
         }
 
-        public async Task ExecuteAsync(Stream outputStream, TaskCompletionSource<object> startCompletionSource, CancellationToken token)
+        public ValueTask DisposeAsync()
         {
-            await using EventSourcePipeline<T> pipeline = CreatePipeline(outputStream);
+            if (null != _pipeline)
+            {
+                return _pipeline.DisposeAsync();
+            }
+            return ValueTask.CompletedTask;
+        }
 
-            Task runTask = await pipeline.StartAsync(token);
+        public async Task StartAsync(Stream outputStream, CancellationToken token)
+        {
+            if (null != _pipeline || null != _runTask)
+            {
+                throw new InvalidOperationException();
+            }
+
+            _pipeline = CreatePipeline(outputStream);
+
+            _runTask = await _pipeline.StartAsync(token);
 
             _logger.StartCollectArtifact(_artifactType);
+        }
 
-            // Signal that the logs operation has started
-            startCompletionSource?.TrySetResult(null);
+        public Task StopAsync(CancellationToken token)
+        {
+            if (null == _pipeline)
+            {
+                throw new InvalidOperationException();
+            }
 
-            await runTask;
+            if (!IsStoppable)
+            {
+                throw new MonitoringException(Strings.ErrorMessage_OperationIsNotStoppable);
+            }
+
+            return _pipeline.StopAsync(token);
+        }
+
+        public Task WaitForCompletionAsync(CancellationToken token)
+        {
+            if (null == _runTask)
+            {
+                throw new InvalidOperationException();
+            }
+
+            return _runTask.WaitAsync(token);
         }
 
         public abstract string GenerateFileName();
 
         public abstract string ContentType { get; }
+
+        public bool IsStoppable { get; }
 
         protected abstract EventSourcePipeline<T> CreatePipeline(Stream outputStream);
 
