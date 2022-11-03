@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
 
         private IEnumerable<byte[]> WithBytesReturned(int totalBytes)
         {
-            while(totalBytes > 0)            
+            while (totalBytes > 0)
             {
                 var length = Random.Shared.Next(1, Math.Min(totalBytes, 1024));
                 var bytes = new byte[length];
@@ -80,7 +80,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
 
             Assert.Equal(3, stream.Parts.Count);
             Assert.True(_s3.Uploads.TryGetValue(uploadId, out List<InMemoryStorage.StorageData> data));
-            Assert.Equal(3, data.Count); 
+            Assert.Equal(3, data.Count);
 
             Assert.Equal(Part1ExpectedSize, data[0].Size);
             Assert.Equal(allBytes.Take(Part1ExpectedSize).ToArray(), data[0].Bytes());
@@ -111,7 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
 
             Assert.Single(stream.Parts);
             Assert.True(_s3.Uploads.TryGetValue(uploadId, out List<InMemoryStorage.StorageData> data));
-            InMemoryStorage.StorageData storageItem = Assert.Single(data); 
+            InMemoryStorage.StorageData storageItem = Assert.Single(data);
             Assert.Equal(PartExpectedSize, storageItem.Size);
             Assert.Equal(allBytes.ToArray(), storageItem.Bytes());
         }

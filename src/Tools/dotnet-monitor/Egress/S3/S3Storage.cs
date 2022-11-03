@@ -3,14 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
-using System.Threading;
-using System.Threading.Tasks;
-using System.IO;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 {

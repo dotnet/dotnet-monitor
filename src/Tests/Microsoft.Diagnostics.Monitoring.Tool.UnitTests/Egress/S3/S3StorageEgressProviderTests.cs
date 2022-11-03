@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
         [InlineData(EUploadAction.ProvideUploadStream)]
         [InlineData(EUploadAction.WriteToProviderStream)]
         public async Task ItShouldUploadFile(EUploadAction uploadAction)
-        { 
+        {
             var clientFactory = new InMemoryS3ClientFactory();
             var sut = new S3StorageEgressProvider(_loggerProvider.CreateLogger<S3StorageEgressProvider>()) { ClientFactory = clientFactory };
 
@@ -68,7 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
 
             var storage = clientFactory.S3;
             (string key, InMemoryStorage.StorageData data) = Assert.Single(storage.Storage);
-            Assert.Equal(key, artifactSettings.Name);            
+            Assert.Equal(key, artifactSettings.Name);
             Assert.Equal(totalBytes, data.Size);
             Assert.Equal(stream.ToArray(), data.Bytes());
         }
@@ -119,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // perform
-            await Assert.ThrowsAnyAsync<Exception>(async () => await sut.EgressAsync(options, (stream, token) => throw new AmazonS3Exception(new Exception()), artifactSettings, CancellationToken.None));   
+            await Assert.ThrowsAnyAsync<Exception>(async () => await sut.EgressAsync(options, (stream, token) => throw new AmazonS3Exception(new Exception()), artifactSettings, CancellationToken.None));
 
             var storage = clientFactory.S3;
             Assert.Empty(storage.Storage);

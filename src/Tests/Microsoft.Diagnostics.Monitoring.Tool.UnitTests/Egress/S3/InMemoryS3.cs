@@ -117,15 +117,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
 
         public Task<string> InitMultiPartUploadAsync(IDictionary<string, string> metadata, CancellationToken cancellationToken = new())
         {
-            var uploadId = Guid.NewGuid().ToString("N")[..8];                                  
+            var uploadId = Guid.NewGuid().ToString("N")[..8];
             Uploads.Add(uploadId, new List<StorageData>());
             return Task.FromResult(uploadId);
         }
 
         public async Task PutAsync(Stream inputStream, CancellationToken cancellationToken = new())
         {
-            var stream = new MemoryStream();            
-            await inputStream.CopyToAsync(stream, cancellationToken);            
+            var stream = new MemoryStream();
+            await inputStream.CopyToAsync(stream, cancellationToken);
             stream.Position = 0;
             Upsert(stream);
         }
@@ -139,7 +139,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
                 throw new AmazonS3Exception($"The upload with id '{uploadId}' cannot be found!");
 
             var part = new StorageData(_objectKey);
-            part.SetContent(inputStream, partSize);            
+            part.SetContent(inputStream, partSize);
             parts.Add(part);
 
             return Task.FromResult(new PartETag

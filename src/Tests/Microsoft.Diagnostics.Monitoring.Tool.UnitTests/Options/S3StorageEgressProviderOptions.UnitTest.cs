@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Xunit;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using System.ComponentModel.DataAnnotations;
-using System.Collections.Generic;
+using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
 {
@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
             _options.SecretAccessKey = secretAccessKey;
 
             var result = new List<ValidationResult>();
-            var valid = Validator.TryValidateObject(_options, new (_options), result, true);
+            var valid = Validator.TryValidateObject(_options, new(_options), result, true);
 
             Assert.True(valid);
             Assert.Empty(result);
@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
             var result = new List<ValidationResult>();
             var valid = Validator.TryValidateObject(_options, new(_options), result, true);
 
-            Assert.False(valid);            
+            Assert.False(valid);
             Assert.Single(result);
             Assert.Equal(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingSecrets, result[0].ErrorMessage);
         }
@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
             var result = new List<ValidationResult>();
             var valid = Validator.TryValidateObject(_options, new(_options), result, true);
 
-            Assert.True(valid);            
+            Assert.True(valid);
             Assert.Empty(result);
         }
 
