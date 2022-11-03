@@ -9,9 +9,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Amazon.S3;
-using Amazon.S3.Model;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
 {
