@@ -27,6 +27,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             CancellationToken token);
 
         /// <summary>
+        /// Stops the production of the diagnostic artifact.
+        /// </summary>
+        /// <param name="token">A token used to cancel the stopping of the operation.</param>
+        Task StopAsync(CancellationToken token);
+
+        /// <summary>
         /// Generates a file name for the associated artifact type.
         /// </summary>
         string GenerateFileName();
@@ -35,5 +41,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// Reports the content type of the diagnostic artifact.
         /// </summary>
         string ContentType { get; }
+
+        /// <summary>
+        /// Reports if the production of the diagnostic artifact is able to be stopped.
+        /// </summary>
+        bool IsStoppable { get; }
     }
 }

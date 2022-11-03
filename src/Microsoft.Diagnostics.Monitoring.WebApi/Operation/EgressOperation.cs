@@ -36,6 +36,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
         }
 
+        public EgressOperation(IArtifactOperation operation, string endpointName, IProcessInfo processInfo, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata = null)
+            : this(operation.ExecuteAsync, endpointName, operation.GenerateFileName(), processInfo, operation.ContentType, scope, collectionRuleMetadata)
+        {
+        }
+
         // The below constructors don't need EgressProcessInfo as their callers don't store to the operations table.
         public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata)
         {
