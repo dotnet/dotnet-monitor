@@ -17,7 +17,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
         {
             if (!string.IsNullOrEmpty(AccessKeyId) && string.IsNullOrEmpty(SecretAccessKey))
                 yield return new ValidationResult(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingSecrets);
-            
             if (GeneratePreSignedUrl && !PreSignedUrlExpiry.HasValue)
                 yield return new ValidationResult(string.Format(OptionsDisplayStrings.ErrorMessage_EgressS3FailedMissingOption, nameof(PreSignedUrlExpiry)));
         }
