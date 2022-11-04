@@ -51,6 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly OperationTrackerService _operationTrackerService;
         private readonly ICollectionRuleService _collectionRuleService;
         private readonly ProfilerChannel _profilerChannel;
+        private readonly IDumpOperationFactory _dumpOperationFactory;
         private readonly ILogsOperationFactory _logsOperationFactory;
 
         public DiagController(ILogger<DiagController> logger,
@@ -66,6 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
             _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
             _profilerChannel = serviceProvider.GetRequiredService<ProfilerChannel>();
+            _dumpOperationFactory = serviceProvider.GetRequiredService<IDumpOperationFactory>();
             _logsOperationFactory = serviceProvider.GetRequiredService<ILogsOperationFactory>();
         }
 
@@ -223,32 +225,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
-            return InvokeForProcess(async processInfo =>
-            {
-                string dumpFileName = DumpUtilities.GenerateDumpFileName();
-
-                if (string.IsNullOrEmpty(egressProvider))
-                {
-                    Stream dumpStream = await _dumpService.DumpAsync(processInfo.EndpointInfo, type, HttpContext.RequestAborted);
-
-                    _logger.WrittenToHttpStream();
-                    //Compression is done automatically by the response
-                    //Chunking is done because the result has no content-length
-                    return File(dumpStream, ContentTypes.ApplicationOctetStream, dumpFileName);
-                }
-                else
-                {
-                    KeyValueLogScope scope = Utilities.CreateArtifactScope(Utilities.ArtifactType_Dump, processInfo.EndpointInfo);
-
-                    return await SendToEgress(new EgressOperation(
-                        token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
-                        egressProvider,
-                        dumpFileName,
-                        processInfo,
-                        ContentTypes.ApplicationOctetStream,
-                        scope), limitKey: Utilities.ArtifactType_Dump);
-                }
-            }, processKey, Utilities.ArtifactType_Dump);
+            return InvokeForProcess(
+                processInfo => Result(
+                    Utilities.ArtifactType_Dump,
+                    egressProvider,
+                    _dumpOperationFactory.Create(processInfo.EndpointInfo, type),
+                    processInfo),
+                processKey,
+                Utilities.ArtifactType_Dump);
         }
 
         /// <summary>
