@@ -52,6 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ICollectionRuleService _collectionRuleService;
         private readonly ProfilerChannel _profilerChannel;
         private readonly ILogsOperationFactory _logsOperationFactory;
+        private readonly IMetricsOperationFactory _metricsOperationFactory;
 
         public DiagController(ILogger<DiagController> logger,
             IServiceProvider serviceProvider)
@@ -67,6 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
             _profilerChannel = serviceProvider.GetRequiredService<ProfilerChannel>();
             _logsOperationFactory = serviceProvider.GetRequiredService<ILogsOperationFactory>();
+            _metricsOperationFactory = serviceProvider.GetRequiredService<IMetricsOperationFactory>();
         }
 
         /// <summary>
