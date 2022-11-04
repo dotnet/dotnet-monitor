@@ -62,7 +62,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Action<RootOptions> setup,
             Action<IServiceCollection> servicesCallback,
             Action<ILoggingBuilder> loggingCallback = null,
-            List<IConfigurationSource> overrideSource = null)
+            List<IConfigurationSource> overrideSource = null,
+            HostBuilderSettings settings = null)
         {
             return new HostBuilder()
                 .ConfigureAppConfiguration(builder =>
@@ -100,6 +101,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.ConfigureTemplates(context.Configuration);
                     services.AddSingleton<OperationTrackerService>();
                     services.ConfigureCollectionRules();
+                    services.ConfigureExtensions(settings); // settings could be null...how do we want to protect against this?
                     services.ConfigureEgress();
 
                     services.ConfigureDiagnosticPort(context.Configuration);
