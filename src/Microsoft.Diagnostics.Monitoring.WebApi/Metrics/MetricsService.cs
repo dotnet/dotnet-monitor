@@ -51,8 +51,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     IProcessInfo pi = await _services.GetProcessAsync(processKey: null, stoppingToken);
                     var client = new DiagnosticsClient(pi.EndpointInfo.Endpoint);
 
-
-
                     MetricsOptions options = _optionsMonitor.CurrentValue;
                     GlobalCounterOptions counterOptions = _counterOptions.CurrentValue;
                     using var optionsTokenSource = new CancellationTokenSource();
