@@ -44,7 +44,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
 
             const int Part1ExpectedSize = BufferSize;
             const int Part2ExpectedSize = MultiPartUploadStream.MinimumSize / 2;
-                        
             var allBytes = new List<byte>();
             foreach (var bytes in WithBytesReturned(Part1ExpectedSize + Part2ExpectedSize))
             {
