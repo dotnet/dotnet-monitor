@@ -50,9 +50,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     includeDefaults: true,
                     durationSeconds: durationSeconds);
 
-                // Allow sync I/O on livemetrics routes due to JsonCounterLogger's usage.
-                HttpContext.AllowSynchronousIO();
-
                 return await Result(Utilities.ArtifactType_Metrics,
                     egressProvider,
                     (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, settings, outputStream, token),
@@ -101,9 +98,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     _counterOptions.CurrentValue,
                     durationSeconds,
                     configuration);
-
-                // Allow sync I/O on livemetrics routes due to JsonCounterLogger's usage.
-                HttpContext.AllowSynchronousIO();
 
                 return await Result(Utilities.ArtifactType_Metrics,
                     egressProvider,

@@ -3,39 +3,71 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
-using System.IO;
+using System;
+using System.Threading;
+using System.Threading.Channels;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal abstract class StreamingCounterLogger : ICountersLogger
     {
-        private readonly Stream _stream;
+        private const int BoundedChannelSize = 1000;
 
-        protected abstract void SerializeCounter(Stream stream, ICounterPayload counter);
+        // The amount of time to wait for serialization to finish before stopping the pipeline
+        private static readonly TimeSpan FinishSerializationTimeout = TimeSpan.FromSeconds(3);
 
-        protected virtual void Cleanup() { }
+        private readonly Channel<ICounterPayload> _channel;
+        private readonly ChannelWriter<ICounterPayload> _channelWriter;
 
-        protected StreamingCounterLogger(Stream stream)
+        private ManualResetEvent _finishedSerialization = new(false);
+
+        protected abstract Task SerializeAsync(ICounterPayload counter);
+
+        protected StreamingCounterLogger()
         {
-            _stream = stream;
+            _channel = Channel.CreateBounded<ICounterPayload>(
+                new BoundedChannelOptions(BoundedChannelSize)
+                {
+                    AllowSynchronousContinuations = false,
+                    FullMode = BoundedChannelFullMode.DropWrite,
+                    SingleReader = true,
+                    SingleWriter = true
+                });
+            _channelWriter = _channel.Writer;
         }
 
         public void Log(ICounterPayload counter)
         {
-            //CONSIDER
-            //Ideally this would be an asynchronous api, but making this async would extend the lifetime of writing to the stream
-            //beyond the lifetime of the Counters pipeline.
-
-            SerializeCounter(_stream, counter);
+            _channelWriter.TryWrite(counter);
         }
 
         public void PipelineStarted()
         {
+            _ = ReadAndSerializeAsync();
         }
 
         public void PipelineStopped()
         {
-            Cleanup();
+            _channelWriter.Complete();
+
+            _finishedSerialization.WaitOne(FinishSerializationTimeout);
+        }
+
+        private async Task ReadAndSerializeAsync()
+        {
+            try
+            {
+                ChannelReader<ICounterPayload> reader = _channel.Reader;
+                while (await reader.WaitToReadAsync())
+                {
+                    await SerializeAsync(await reader.ReadAsync());
+                }
+            }
+            finally
+            {
+                _finishedSerialization.Set();
+            }
         }
     }
 }
