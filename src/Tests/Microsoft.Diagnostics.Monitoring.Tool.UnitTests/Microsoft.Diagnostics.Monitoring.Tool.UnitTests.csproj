@@ -114,6 +114,9 @@
     <None Update="DiagnosticPortConfigurations\SimplifiedListen.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="EgressExtensionResources\extension.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="SampleConfigurations\InProcessFeatures.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
