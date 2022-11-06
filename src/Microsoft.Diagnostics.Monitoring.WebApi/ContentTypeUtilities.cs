@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Net.Http.Headers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -39,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 StackFormat.PlainText => ContentTypes.TextPlain,
                 StackFormat.Json => ContentTypes.ApplicationJson,
                 StackFormat.Speedscope => ContentTypes.ApplicationSpeedscopeJson,
-                _ => null
+                _ => throw new InvalidOperationException()
             };
     }
 }

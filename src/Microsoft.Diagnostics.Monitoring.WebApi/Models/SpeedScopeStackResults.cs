@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public string Name { get; set; }
 
         [JsonPropertyName("col")]
-        public int? Col { get; set; }
+        public int? Column { get; set; }
 
         [JsonPropertyName("line")]
         public int? Line { get; set; }

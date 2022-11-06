@@ -36,6 +36,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 }
                 await writer.WriteLineAsync();
             }
+
+            await writer.FlushAsync();
         }
 
         private void BuildFrame(StringBuilder builder, NameCache cache, CallStackFrame frame)

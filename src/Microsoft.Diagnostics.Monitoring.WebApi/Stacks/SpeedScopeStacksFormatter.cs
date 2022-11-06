@@ -21,6 +21,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         private const double FixedEnd = 1.0;
         private static readonly string Exporter = FormattableString.Invariant($"dotnetmonitor@{Assembly.GetExecutingAssembly().GetInformationalVersionString()}");
         private const string Name = "speedscope.json";
+        private static readonly ProfileEvent NativeProfileEvent = new ProfileEvent{ At = FixedStart, Frame = 0, Type = ProfileEventType.O };
+        private static readonly ProfileEvent UnknownProfileEvent = new ProfileEvent { At = FixedStart, Frame = 1, Type = ProfileEventType.O };
 
         public SpeedscopeStacksFormatter(Stream outputStream) : base(outputStream)
         {
@@ -54,6 +56,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             };
 
             NameCache cache = stackResult.NameCache;
+            var builder = new StringBuilder();
 
             foreach (CallStack stack in stackResult.Stacks)
             {
@@ -72,21 +75,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 {
                     if (frame.FunctionId == 0)
                     {
-                        profile.Events.Add(new ProfileEvent { At = FixedStart, Frame = 0, Type = ProfileEventType.O });
+                        profile.Events.Add(NativeProfileEvent);
 
                     }
                     else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
                     {
-                        var builder = new StringBuilder();
-                        builder.Append(GetModuleName(cache, functionData.ModuleId));
-                        builder.Append(ModuleSeparator);
-                        BuildClassName(builder, cache, functionData);
-                        builder.Append(ClassSeparator);
-                        builder.Append(functionData.Name);
-                        BuildGenericParameters(builder, cache, functionData.TypeArgs);
-
                         if (!functionToSharedFrameMap.TryGetValue(frame.FunctionId, out int mapping))
                         {
+                            builder.Clear();
+                            builder.Append(GetModuleName(cache, functionData.ModuleId));
+                            builder.Append(ModuleSeparator);
+                            BuildClassName(builder, cache, functionData);
+                            builder.Append(ClassSeparator);
+                            builder.Append(functionData.Name);
+                            BuildGenericParameters(builder, cache, functionData.TypeArgs);
+
                             speedscopeResult.Shared.Frames.Add(new SharedFrame { Name = builder.ToString() });
                             mapping = speedscopeResult.Shared.Frames.Count - 1;
                             functionToSharedFrameMap.Add(frame.FunctionId, mapping);
@@ -104,7 +107,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                     }
                     else
                     {
-                        profile.Events.Add(new ProfileEvent { At = FixedStart, Frame = 1, Type = ProfileEventType.O });
+                        profile.Events.Add(UnknownProfileEvent);
                     }
                 }
 
@@ -117,9 +120,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
             JsonSerializerOptions options = new JsonSerializerOptions
             {
-#if NET6_0_OR_GREATER
                 DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
-#endif
             };
             await JsonSerializer.SerializeAsync(OutputStream, speedscopeResult, options, cancellationToken: token);
         }

@@ -143,6 +143,43 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public Task TestSpeedscopeStacks(Architecture targetArchitecture)
+        {
+            return ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                WebApi.DiagnosticPortConnectionMode.Listen,
+                TestAppScenarios.Stacks.Name,
+                appValidate: async (runner, client) =>
+                {
+                    int processId = await runner.ProcessIdTask;
+
+                    using ResponseStreamHolder holder = await client.CaptureStacksAsync(processId, WebApi.StackFormat.Speedscope);
+                    Assert.NotNull(holder);
+
+                    WebApi.Models.SpeedscopeResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.SpeedscopeResult>(holder.Stream);
+
+                    //Assert.Equal(expectedFrames.Length, actualFrames.Count);
+                    //for (int i = 0; i < expectedFrames.Length; i++)
+                    //{
+                    //    Assert.True(AreFramesEqual(expectedFrames[i], actualFrames[i]));
+                    //}
+
+                    await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
+                    runner.EnableCallStacksFeature = true;
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task TestRepeatStackCalls(Architecture targetArchitecture)
         {
             return ScenarioRunner.SingleTarget(
