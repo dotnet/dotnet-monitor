@@ -259,6 +259,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to get diagnostic response from runtime in process {processId}..
+        /// </summary>
+        internal static string LogFormatString_DiagnosticRequestFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_DiagnosticRequestFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Egressed artifact to {location}.
         /// </summary>
         internal static string LogFormatString_EgressedArtifact {
