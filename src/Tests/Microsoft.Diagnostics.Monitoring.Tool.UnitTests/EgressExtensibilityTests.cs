@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
+using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 using static Microsoft.Diagnostics.Monitoring.Tool.UnitTests.ConfigurationTests;
@@ -119,7 +121,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             var extensionDiscoverer = host.Services.GetService<ExtensionDiscoverer>();
 
-            _ = extensionDiscoverer.FindExtension<IEgressExtension>(extensionDirectoryName);
+            var extension = extensionDiscoverer.FindExtension<IEgressExtension>(extensionDirectoryName);
+
+            ExtensionEgressPayload payload = new()
+            {
+            };
+
+            TimeSpan timeout = new(0, 0, 30); // do something real
+            CancellationTokenSource tokenSource = new(timeout);
+
+            extension.EgressArtifact(payload, null, tokenSource.Token);
+        }
+
+        [Fact]
+        public static void ExtensionResponse_Success()
+        {
+            string testAppPath = AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp", TargetFrameworkMoniker.Net60);
+
         }
 
         /// This is the order of configuration sources where a name with a lower
