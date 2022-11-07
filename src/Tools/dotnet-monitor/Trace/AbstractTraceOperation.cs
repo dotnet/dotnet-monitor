@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         protected readonly EventTracePipelineSettings _settings;
 
         public AbstractTraceOperation(IEndpointInfo endpointInfo, EventTracePipelineSettings settings, ILogger logger)
-            : base(logger, Utils.ArtifactType_Trace, endpointInfo, isStoppable: true)
+            : base(logger, Utils.ArtifactType_Trace, endpointInfo)
         {
             _settings = settings;
         }
