@@ -304,6 +304,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to stop the &apos;{operationId}&apos; operation..
+        /// </summary>
+        internal static string LogFormatString_StopOperationFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_StopOperationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hit stopping trace event &apos;{providerName}/{eventName}&apos;.
         /// </summary>
         internal static string LogFormatString_StoppingTraceEventHit {

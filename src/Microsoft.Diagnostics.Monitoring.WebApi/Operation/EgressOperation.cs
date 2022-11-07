@@ -17,6 +17,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly KeyValueLogScope _scope;
         public EgressProcessInfo ProcessInfo { get; private set; }
         public string EgressProviderName { get; private set; }
+        public bool IsStoppable { get { return _operation?.IsStoppable ?? false; } }
+
+        private readonly IArtifactOperation _operation;
+
 
         public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata = null)
         {
@@ -39,6 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public EgressOperation(IArtifactOperation operation, string endpointName, IProcessInfo processInfo, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata = null)
             : this(operation.ExecuteAsync, endpointName, operation.GenerateFileName(), processInfo, operation.ContentType, scope, collectionRuleMetadata)
         {
+            _operation = operation;
         }
 
         // The below constructors don't need EgressProcessInfo as their callers don't store to the operations table.
@@ -87,6 +92,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             serviceProvider
                 .GetRequiredService<IEgressService>()
                 .ValidateProvider(EgressProviderName);
+        }
+
+        public Task StopAsync(CancellationToken token)
+        {
+            if (_operation == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            return _operation.StopAsync(token);
         }
     }
 }

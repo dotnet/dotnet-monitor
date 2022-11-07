@@ -52,6 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ICollectionRuleService _collectionRuleService;
         private readonly ProfilerChannel _profilerChannel;
         private readonly ILogsOperationFactory _logsOperationFactory;
+        private readonly ITraceOperationFactory _traceOperationFactory;
 
         public DiagController(ILogger<DiagController> logger,
             IServiceProvider serviceProvider)
@@ -67,6 +68,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
             _profilerChannel = serviceProvider.GetRequiredService<ProfilerChannel>();
             _logsOperationFactory = serviceProvider.GetRequiredService<ILogsOperationFactory>();
+            _traceOperationFactory = serviceProvider.GetRequiredService<ITraceOperationFactory>();
+
         }
 
         /// <summary>
@@ -632,45 +635,28 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             TimeSpan duration,
             string egressProvider)
         {
-            string fileName = TraceUtilities.GenerateTraceFileName(processInfo.EndpointInfo);
-            TaskCompletionSource<object> requestStopCompletionSource = new();
+            IArtifactOperation traceOperation = _traceOperationFactory.Create(
+                processInfo.EndpointInfo,
+                configuration,
+                duration);
+
+            if (_diagnosticPortOptions.Value.ConnectionMode == DiagnosticPortConnectionMode.Listen)
+            {
+                IDisposable operationRegistration = _operationTrackerService.Register(processInfo.EndpointInfo);
+                HttpContext.Response.RegisterForDispose(operationRegistration);
+            }
 
             return Result(
                 Utilities.ArtifactType_Trace,
                 egressProvider,
-                async (outputStream, token) =>
-                {
-                    IDisposable operationRegistration = null;
-                    try
-                    {
-                        if (_diagnosticPortOptions.Value.ConnectionMode == DiagnosticPortConnectionMode.Listen)
-                        {
-                            operationRegistration = _operationTrackerService.Register(processInfo.EndpointInfo);
-                        }
-                        await TraceUtilities.CaptureTraceAsync(
-                            startCompletionSource: null,
-                            processInfo.EndpointInfo,
-                            configuration,
-                            duration,
-                            outputStream,
-                            requestStopCompletionSource,
-                            token);
-                    }
-                    finally
-                    {
-                        operationRegistration?.Dispose();
-                    }
-                },
-                fileName,
-                ContentTypes.ApplicationOctetStream,
-                processInfo,
-                requestStopCompletionSource: requestStopCompletionSource);
+                traceOperation,
+                processInfo);
         }
 
         private Task<ActionResult> StartLogs(
-            IProcessInfo processInfo,
-            EventLogsPipelineSettings settings,
-            string egressProvider)
+        IProcessInfo processInfo,
+        EventLogsPipelineSettings settings,
+        string egressProvider)
         {
             LogFormat? format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
             if (null == format)
@@ -728,7 +714,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return null;
         }
 
-        private Task<ActionResult> Result(
+        private async Task<ActionResult> Result(
             string artifactType,
             string providerName,
             IArtifactOperation operation,
@@ -739,14 +725,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             if (string.IsNullOrEmpty(providerName))
             {
-                return Task.FromResult<ActionResult>(new OutputStreamResult(
+                await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType, operation);
+                return new OutputStreamResult(
                     operation,
                     asAttachment ? operation.GenerateFileName() : null,
-                    scope));
+                    scope);
             }
             else
             {
-                return SendToEgress(new EgressOperation(
+                return await SendToEgress(new EgressOperation(
                     operation,
                     providerName,
                     processInfo,
@@ -756,20 +743,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         private async Task<ActionResult> Result(
-            string artifactType,
-            string providerName,
-            Func<Stream, CancellationToken, Task> action,
-            string fileName,
-            string contentType,
-            IProcessInfo processInfo,
-            bool asAttachment = true,
-            TaskCompletionSource<object> requestStopCompletionSource = null)
+        string artifactType,
+        string providerName,
+        Func<Stream, CancellationToken, Task> action,
+        string fileName,
+        string contentType,
+        IProcessInfo processInfo,
+        bool asAttachment = true)
         {
             KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
 
             if (string.IsNullOrEmpty(providerName))
             {
-                await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType, requestStopCompletionSource);
+                await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType);
                 return new OutputStreamResult(
                     action,
                     contentType,
@@ -785,33 +771,39 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     processInfo,
                     contentType,
                     scope),
-                    limitKey: artifactType,
-                    requestStopCompletionSource);
+                    limitKey: artifactType);
             }
         }
 
-        private async Task<ActionResult> SendToEgress(EgressOperation egressStreamResult, string limitKey)
+        private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, IArtifactOperation operation)
+        {
+            // While not strictly a Location redirect, use the same header as externally egressed operations for consistency.
+            HttpContext.Response.Headers["Location"] = await RegisterOperation(
+                new HttpResponseEgressOperation(HttpContext, processInfo, operation),
+                limitKey: artifactType);
+        }
+
+        private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType)
         {
             // While not strictly a Location redirect, use the same header as externally egressed operations for consistency.
             HttpContext.Response.Headers["Location"] = await RegisterOperation(
                 new HttpResponseEgressOperation(HttpContext, processInfo),
-                limitKey: artifactType,
-                requestStopCompletionSource);
+                limitKey: artifactType);
         }
 
-        private async Task<string> RegisterOperation(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestStopCompletionSource)
+        private async Task<string> RegisterOperation(IEgressOperation egressOperation, string limitKey)
         {
             // Will throw TooManyRequestsException if there are too many concurrent operations.
-            Guid operationId = await _operationsStore.AddOperation(egressOperation, limitKey, requestStopCompletionSource);
+            Guid operationId = await _operationsStore.AddOperation(egressOperation, limitKey);
             return this.Url.Action(
                 action: nameof(OperationsController.GetOperationStatus),
                 controller: OperationsController.ControllerName, new { operationId = operationId },
                 protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
         }
 
-        private async Task<ActionResult> SendToEgress(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestStopCompletionSource = null)
+        private async Task<ActionResult> SendToEgress(IEgressOperation egressOperation, string limitKey)
         {
-            string operationUrl = await RegisterOperation(egressOperation, limitKey, requestStopCompletionSource);
+            string operationUrl = await RegisterOperation(egressOperation, limitKey);
             return Accepted(operationUrl);
         }
 

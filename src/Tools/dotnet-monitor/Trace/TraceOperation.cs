@@ -9,29 +9,32 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class TraceOperation : AbstractTraceOperation
     {
+        private readonly TaskCompletionSource<object> _eventStreamAvailableCompletionSource = new();
+
         public TraceOperation(IEndpointInfo endpointInfo, EventTracePipelineSettings settings, ILogger logger)
             : base(endpointInfo, settings, logger) { }
 
-        public override async Task ExecuteAsync(Stream outputStream, TaskCompletionSource<object> startCompletionSource, CancellationToken token)
+        protected override EventTracePipeline CreatePipeline(Stream outputStream)
         {
-            _logger.StartCollectArtifact(Utils.ArtifactType_Trace);
-
-            DiagnosticsClient client = new(_endpointInfo.Endpoint);
-
-            await using EventTracePipeline pipeProcessor = new EventTracePipeline(client, _settings,
+            DiagnosticsClient client = new(EndpointInfo.Endpoint);
+            return new EventTracePipeline(client, _settings,
                 async (eventStream, token) =>
                 {
-                    startCompletionSource.TrySetResult(null);
+                    _eventStreamAvailableCompletionSource.TrySetResult(null);
                     await eventStream.CopyToAsync(outputStream, DefaultBufferSize, token);
                 });
+        }
 
-            await pipeProcessor.RunAsync(token);
+        protected override async Task<Task> StartPipelineAsync(EventTracePipeline pipeline, CancellationToken token)
+        {
+            Task pipelineRunTask = pipeline.RunAsync(token);
+            await _eventStreamAvailableCompletionSource.Task;
+            return pipelineRunTask;
         }
     }
 }

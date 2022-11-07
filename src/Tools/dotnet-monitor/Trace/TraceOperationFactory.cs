@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
-using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -18,16 +19,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _logger = logger;
         }
 
-        public IArtifactOperation Create(IEndpointInfo endpointInfo, EventTracePipelineSettings settings, LogFormat format)
+        public IArtifactOperation Create(IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, object stoppingEvent = null)
         {
-            if (true)
+            EventTracePipelineSettings settings = new()
             {
-                return new TraceUntilEventOperation(endpointInfo, settings, format, _logger);
-            }
-            else
-            {
-                return new TraceOperation(endpointInfo, settings, format, _logger);
-            }
+                Configuration = configuration,
+                Duration = duration
+            };
+
+            // JSFIX: cast
+            return stoppingEvent != null
+                ? new TraceUntilEventOperation(endpointInfo, settings, (TraceEventFilter)stoppingEvent, _logger)
+                : new TraceOperation(endpointInfo, settings, _logger);
         }
     }
 }

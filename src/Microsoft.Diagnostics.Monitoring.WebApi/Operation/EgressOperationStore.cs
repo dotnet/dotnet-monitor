@@ -4,8 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
@@ -18,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 get
                 {
-                    return State == Models.OperationState.Running && EgressRequest.RequestStopCompletionSource != null;
+                    return State == Models.OperationState.Running && EgressRequest.EgressOperation.IsStoppable;
                 }
             }
 
@@ -47,7 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey, TaskCompletionSource<object> requestStopCompletionSource = null)
+        public async Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey)
         {
             egressOperation.Validate(_serviceProvider);
 
@@ -63,7 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new TooManyRequestsException();
             }
 
-            var request = new EgressRequest(operationId, egressOperation, limitTracker, requestStopCompletionSource);
+            var request = new EgressRequest(operationId, egressOperation, limitTracker);
             lock (_requests)
             {
                 //Add operation object to central table.
@@ -80,7 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return operationId;
         }
 
-        public void StopOperation(Guid operationId)
+        public void StopOperation(Guid operationId, Action<Exception> onStopException, CancellationToken stopCancellatonToken = default)
         {
             lock (_requests)
             {
@@ -94,13 +96,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
                 }
 
-                if (entry.EgressRequest.RequestStopCompletionSource == null)
+                if (!entry.EgressRequest.EgressOperation.IsStoppable)
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationDoesNotSupportBeingStopped);
                 }
 
-                entry.EgressRequest.RequestStopCompletionSource.TrySetResult(null);
                 entry.State = Models.OperationState.Stopping;
+                _ = Task.Run(() => entry.EgressRequest.EgressOperation.StopAsync(stopCancellatonToken), stopCancellatonToken)
+                    .ContinueWith(task =>
+                    {
+                        Debug.Assert(task.Exception != null);
+                        onStopException(task.Exception);
+                    },
+                    stopCancellatonToken,
+                    TaskContinuationOptions.OnlyOnFaulted,
+                    TaskScheduler.Default);
             }
         }
 

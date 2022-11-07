@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
-using Microsoft.Diagnostics.Monitoring.Options;
+using System;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -17,7 +17,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// </summary>
         IArtifactOperation Create(
             IEndpointInfo endpointInfo,
-            EventTracePipelineSettings settings,
-            LogFormat format);
+            MonitoringSourceConfiguration configuration,
+            TimeSpan duration,
+            object stoppingEvent = null);
     }
 }

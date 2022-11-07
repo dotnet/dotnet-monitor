@@ -168,6 +168,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureInProcessFeatures(context.Configuration);
                 services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
                 services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
+                services.AddSingleton<ITraceOperationFactory, TraceOperationFactory>();
             })
             .ConfigureContainer((HostBuilderContext context, IServiceCollection services) =>
             {

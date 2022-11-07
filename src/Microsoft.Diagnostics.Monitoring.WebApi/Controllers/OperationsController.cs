@@ -84,8 +84,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 //return an error code.
                 if (stop)
                 {
+                    // If stopping an operation fails, it's undefined behavior.
+                    // Leave the operation in the "Stopping" state and it'll either complete on its own
+                    // or the user will cancel it.
+                    _operationsStore.StopOperation(operationId, (ex) => _logger.StopOperationFailed(operationId, ex));
+
                     // Stop operations are not instant, they are instead queued and can take an indeterminate amount of time.
-                    _operationsStore.StopOperation(operationId);
                     return Accepted();
                 }
                 else

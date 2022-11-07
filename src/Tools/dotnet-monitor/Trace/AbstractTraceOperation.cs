@@ -6,36 +6,28 @@ using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
 using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal abstract class AbstractTraceOperation : IArtifactOperation
+    internal abstract class AbstractTraceOperation : PipelineArtifactOperation<EventTracePipeline>
     {
         // Buffer size matches FileStreamResult
         protected const int DefaultBufferSize = 0x10000;
 
-        protected readonly ILogger _logger;
-        protected readonly IEndpointInfo _endpointInfo;
         protected readonly EventTracePipelineSettings _settings;
 
         public AbstractTraceOperation(IEndpointInfo endpointInfo, EventTracePipelineSettings settings, ILogger logger)
+            : base(logger, Utils.ArtifactType_Trace, endpointInfo, isStoppable: true)
         {
-            _logger = logger;
-            _endpointInfo = endpointInfo;
             _settings = settings;
         }
 
-        public abstract Task ExecuteAsync(Stream outputStream, TaskCompletionSource<object> startCompletionSource, CancellationToken token);
-
-        public string GenerateFileName()
+        public override string GenerateFileName()
         {
-            return FormattableString.Invariant($"{Utils.GetFileNameTimeStampUtcNow()}_{_endpointInfo.ProcessId}.nettrace");
+            return FormattableString.Invariant($"{Utils.GetFileNameTimeStampUtcNow()}_{EndpointInfo.ProcessId}.nettrace");
         }
 
-        public string ContentType => ContentTypes.ApplicationOctetStream;
+        public override string ContentType => ContentTypes.ApplicationOctetStream;
     }
 }

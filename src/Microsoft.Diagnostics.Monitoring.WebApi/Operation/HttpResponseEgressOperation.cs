@@ -17,6 +17,23 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public EgressProcessInfo ProcessInfo { get; private set; }
         public string EgressProviderName { get { return null; } }
+        public bool IsStoppable { get { return _operation?.IsStoppable ?? false; } }
+
+        private readonly IArtifactOperation _operation;
+
+        public HttpResponseEgressOperation(HttpContext context, IProcessInfo processInfo, IArtifactOperation operation)
+        {
+            _httpContext = context;
+            _httpContext.Response.OnCompleted(() =>
+            {
+                _responseFinishedCompletionSource.TrySetResult(_httpContext.Response.StatusCode);
+                return Task.CompletedTask;
+            });
+
+            _operation = operation;
+
+            ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
+        }
 
         public HttpResponseEgressOperation(HttpContext context, IProcessInfo processInfo)
         {
@@ -45,6 +62,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public void Validate(IServiceProvider serviceProvider)
         {
             // noop
+        }
+
+        public Task StopAsync(CancellationToken token)
+        {
+            if (_operation == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            return _operation.StopAsync(token);
         }
     }
 }

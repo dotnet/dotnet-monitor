@@ -232,6 +232,12 @@
     <comment>Gets the format string that is printed in the 3:ResolvedTargetProcess event.
 0 Format Parameters</comment>
   </data>
+  <data name="LogFormatString_StopOperationFailed" xml:space="preserve">
+    <value>Failed to stop the '{operationId}' operation.</value>
+    <comment>Gets the format string that is printed in the 11:StopOperationFailed event.
+1 Format Parameter:
+1. operationId: The id of the operation that failed to stop.</comment>
+  </data>
   <data name="LogFormatString_StoppingTraceEventHit" xml:space="preserve">
     <value>Hit stopping trace event '{providerName}/{eventName}'</value>
     <comment>Gets the format string that is printed in the 8:StoppingTraceEventHit event.
