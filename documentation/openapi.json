@@ -1209,7 +1209,7 @@
             }
           },
           {
-            "name": "gracefulStop",
+            "name": "stop",
             "in": "query",
             "schema": {
               "type": "boolean",
