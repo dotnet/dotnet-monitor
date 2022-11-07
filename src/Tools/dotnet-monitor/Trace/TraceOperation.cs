@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class TraceOperation : AbstractTraceOperation
     {
-        private readonly TaskCompletionSource<object> _eventStreamAvailableCompletionSource = new();
+        private readonly TaskCompletionSource<object> _eventStreamAvailableCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         public TraceOperation(IEndpointInfo endpointInfo, EventTracePipelineSettings settings, ILogger logger)
             : base(endpointInfo, settings, logger) { }
@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         protected override async Task<Task> StartPipelineAsync(EventTracePipeline pipeline, CancellationToken token)
         {
             Task pipelineRunTask = pipeline.RunAsync(token);
-            await _eventStreamAvailableCompletionSource.Task;
+            await _eventStreamAvailableCompletionSource.Task.WaitAsync(token);
             return pipelineRunTask;
         }
     }
