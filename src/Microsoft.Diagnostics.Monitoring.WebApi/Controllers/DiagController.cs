@@ -69,7 +69,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _profilerChannel = serviceProvider.GetRequiredService<ProfilerChannel>();
             _logsOperationFactory = serviceProvider.GetRequiredService<ILogsOperationFactory>();
             _traceOperationFactory = serviceProvider.GetRequiredService<ITraceOperationFactory>();
-
         }
 
         /// <summary>
@@ -654,9 +653,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         private Task<ActionResult> StartLogs(
-        IProcessInfo processInfo,
-        EventLogsPipelineSettings settings,
-        string egressProvider)
+            IProcessInfo processInfo,
+            EventLogsPipelineSettings settings,
+            string egressProvider)
         {
             LogFormat? format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
             if (null == format)
@@ -743,13 +742,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         private async Task<ActionResult> Result(
-        string artifactType,
-        string providerName,
-        Func<Stream, CancellationToken, Task> action,
-        string fileName,
-        string contentType,
-        IProcessInfo processInfo,
-        bool asAttachment = true)
+            string artifactType,
+            string providerName,
+            Func<Stream, CancellationToken, Task> action,
+            string fileName,
+            string contentType,
+            IProcessInfo processInfo,
+            bool asAttachment = true)
         {
             KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
 
