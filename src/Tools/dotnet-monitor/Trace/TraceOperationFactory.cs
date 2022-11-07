@@ -4,9 +4,9 @@
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _logger = logger;
         }
 
-        public IArtifactOperation Create(IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, object stoppingEvent = null)
+        public IArtifactOperation Create(IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan duration)
         {
             EventTracePipelineSettings settings = new()
             {
@@ -27,10 +27,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 Duration = duration
             };
 
-            // JSFIX: cast
-            return stoppingEvent != null
-                ? new TraceUntilEventOperation(endpointInfo, settings, (TraceEventFilter)stoppingEvent, _logger)
-                : new TraceOperation(endpointInfo, settings, _logger);
+            return new TraceOperation(endpointInfo, settings, _logger);
+        }
+
+        public IArtifactOperation Create(IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, string providerName, string eventName, IDictionary<string, string> payloadFilter)
+        {
+            EventTracePipelineSettings settings = new()
+            {
+                Configuration = configuration,
+                Duration = duration
+            };
+
+            return new TraceUntilEventOperation(endpointInfo, settings, providerName, eventName, payloadFilter, _logger);
         }
     }
 }

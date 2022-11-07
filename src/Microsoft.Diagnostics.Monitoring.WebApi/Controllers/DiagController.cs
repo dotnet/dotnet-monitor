@@ -775,19 +775,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, IArtifactOperation operation)
+        private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, IArtifactOperation operation = null)
         {
             // While not strictly a Location redirect, use the same header as externally egressed operations for consistency.
             HttpContext.Response.Headers["Location"] = await RegisterOperation(
                 new HttpResponseEgressOperation(HttpContext, processInfo, operation),
-                limitKey: artifactType);
-        }
-
-        private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType)
-        {
-            // While not strictly a Location redirect, use the same header as externally egressed operations for consistency.
-            HttpContext.Response.Headers["Location"] = await RegisterOperation(
-                new HttpResponseEgressOperation(HttpContext, processInfo),
                 limitKey: artifactType);
         }
 

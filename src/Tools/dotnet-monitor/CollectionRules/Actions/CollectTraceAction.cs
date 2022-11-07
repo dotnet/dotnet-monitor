@@ -88,11 +88,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Trace, EndpointInfo);
 
                 ITraceOperationFactory operationFactory = _serviceProvider.GetRequiredService<ITraceOperationFactory>();
-                IArtifactOperation operation = operationFactory.Create(
-                    EndpointInfo,
-                    configuration,
-                    duration,
-                    stoppingEvent);
+                IArtifactOperation operation;
+                if (stoppingEvent == null)
+                {
+                    operation = operationFactory.Create(
+                        EndpointInfo,
+                        configuration,
+                        duration);
+                }
+                else
+                {
+                    operation = operationFactory.Create(
+                        EndpointInfo,
+                        configuration,
+                        duration,
+                        stoppingEvent.ProviderName,
+                        stoppingEvent.EventName,
+                        stoppingEvent.PayloadFilter);
+                }
 
                 EgressOperation egressOperation = new EgressOperation(
                     async (outputStream, token) =>

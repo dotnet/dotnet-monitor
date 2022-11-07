@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private readonly IArtifactOperation _operation;
 
-        public HttpResponseEgressOperation(HttpContext context, IProcessInfo processInfo, IArtifactOperation operation)
+        public HttpResponseEgressOperation(HttpContext context, IProcessInfo processInfo, IArtifactOperation operation = null)
         {
             _httpContext = context;
             _httpContext.Response.OnCompleted(() =>
@@ -31,18 +31,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             });
 
             _operation = operation;
-
-            ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
-        }
-
-        public HttpResponseEgressOperation(HttpContext context, IProcessInfo processInfo)
-        {
-            _httpContext = context;
-            _httpContext.Response.OnCompleted(() =>
-            {
-                _responseFinishedCompletionSource.TrySetResult(_httpContext.Response.StatusCode);
-                return Task.CompletedTask;
-            });
 
             ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
         }

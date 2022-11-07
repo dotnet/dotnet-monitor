@@ -5,8 +5,8 @@
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,15 +15,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class TraceUntilEventOperation : AbstractTraceOperation
     {
-        private readonly TraceEventFilter _stoppingEvent;
+        private readonly string _providerName;
+        private readonly string _eventName;
+        private readonly IDictionary<string, string> _payloadFilter;
 
         private readonly TaskCompletionSource<object> _eventStreamAvailableCompletionSource = new();
         private readonly TaskCompletionSource<object> _stoppingEventHitSource = new();
 
-        public TraceUntilEventOperation(IEndpointInfo endpointInfo, EventTracePipelineSettings settings, TraceEventFilter stoppingEvent, ILogger logger)
+        public TraceUntilEventOperation(
+            IEndpointInfo endpointInfo,
+            EventTracePipelineSettings settings,
+            string providerName,
+            string eventName,
+            IDictionary<string, string> payloadFilter,
+            ILogger logger)
             : base(endpointInfo, settings, logger)
         {
-            _stoppingEvent = stoppingEvent;
+            _providerName = providerName;
+            _eventName = eventName;
+            _payloadFilter = payloadFilter;
         }
 
         protected override EventTracePipeline CreatePipeline(Stream outputStream)
@@ -35,9 +45,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     _eventStreamAvailableCompletionSource?.TrySetResult(null);
 
                     await using EventMonitoringPassthroughStream eventMonitoringStream = new(
-                        _stoppingEvent.ProviderName,
-                        _stoppingEvent.EventName,
-                        _stoppingEvent.PayloadFilter,
+                        _providerName,
+                        _eventName,
+                        _payloadFilter,
                         onEvent: (traceEvent) =>
                         {
                             Logger.StoppingTraceEventHit(traceEvent);

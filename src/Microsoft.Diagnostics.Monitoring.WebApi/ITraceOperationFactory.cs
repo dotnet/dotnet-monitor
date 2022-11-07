@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using System;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -18,7 +19,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         IArtifactOperation Create(
             IEndpointInfo endpointInfo,
             MonitoringSourceConfiguration configuration,
+            TimeSpan duration);
+
+        /// <summary>
+        /// Creates an operation that produces a trace artifact and supports a stopping event.
+        /// </summary>
+        IArtifactOperation Create(
+            IEndpointInfo endpointInfo,
+            MonitoringSourceConfiguration configuration,
             TimeSpan duration,
-            object stoppingEvent = null);
+            string providerName,
+            string eventName,
+            IDictionary<string, string> payloadFilter);
     }
 }
