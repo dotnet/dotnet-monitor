@@ -47,7 +47,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly IInProcessFeatures _inProcessFeatures;
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
         private readonly EgressOperationStore _operationsStore;
-        private readonly IDumpService _dumpService;
         private readonly OperationTrackerService _operationTrackerService;
         private readonly ICollectionRuleService _collectionRuleService;
         private readonly ProfilerChannel _profilerChannel;
@@ -62,7 +61,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
             _inProcessFeatures = serviceProvider.GetRequiredService<IInProcessFeatures>();
             _operationsStore = serviceProvider.GetRequiredService<EgressOperationStore>();
-            _dumpService = serviceProvider.GetRequiredService<IDumpService>();
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
             _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
             _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
