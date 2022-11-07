@@ -28,6 +28,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _scope = scope;
         }
 
+        public OutputStreamResult(IArtifactOperation operation, string fileDownloadName, KeyValueLogScope scope)
+            : this(operation.ExecuteAsync, operation.ContentType, fileDownloadName, scope)
+        {
+        }
+
         public override async Task ExecuteResultAsync(ActionContext context)
         {
             ILogger<OutputStreamResult> logger = context.HttpContext.RequestServices
