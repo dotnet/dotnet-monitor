@@ -76,13 +76,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         public IActionResult CancelOperation(
             Guid operationId,
             [FromQuery]
-            bool gracefulStop = false)
+            bool stop = false)
         {
             return this.InvokeService(() =>
             {
                 //Note that if the operation is not found, it will throw an InvalidOperationException and
                 //return an error code.
-                if (gracefulStop)
+                if (stop)
                 {
                     // Stop operations are not instant, they are instead queued and can take an indeterminate amount of time.
                     _operationsStore.StopOperation(operationId);

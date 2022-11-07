@@ -15,7 +15,7 @@ The following API endpoints have support for their operations being gracefully s
 ## HTTP Route
 
 ```http
-DELETE /operations/{operationId}?gracefulStop=true HTTP/1.1
+DELETE /operations/{operationId}?stop=true HTTP/1.1
 ```
 
 ## Host Address
@@ -43,7 +43,7 @@ Allowed schemes:
 ### Sample Request
 
 ```http
-DELETE /operations/67f07e40-5cca-4709-9062-26302c484f18?gracefulStop=true HTTP/1.1
+DELETE /operations/67f07e40-5cca-4709-9062-26302c484f18?stop=true HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 ```

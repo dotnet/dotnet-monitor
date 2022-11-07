@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal class HttpResponseEgressOperation : IEgressOperation
+    internal sealed class HttpResponseEgressOperation : IEgressOperation
     {
         private readonly HttpContext _httpContext;
         private readonly TaskCompletionSource<int> _responseFinishedCompletionSource = new();

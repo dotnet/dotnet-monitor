@@ -658,7 +658,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         public async Task<HttpStatusCode> StopEgressOperation(Uri operation, CancellationToken token)
         {
-            string operationUri = QueryHelpers.AddQueryString(operation.ToString(), "gracefulStop", "true");
+            string operationUri = QueryHelpers.AddQueryString(operation.ToString(), "stop", "true");
 
             using HttpRequestMessage request = new(HttpMethod.Delete, operationUri);
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
