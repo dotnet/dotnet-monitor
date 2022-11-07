@@ -4,9 +4,11 @@
 
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
@@ -15,6 +17,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         private readonly string _targetFolder;
         private readonly IFileProvider _fileSystem;
         private readonly ILoggerFactory _loggerFactory;
+
+        private const string DotnetFolderName = "dotnet";
+        private const string ToolsFolderName = "tools";
+
+        // Location where extensions are stored by default.
+        // Windows: "%USERPROFILE%\.dotnet\Tools"
+        // Other: "%XDG_CONFIG_HOME%/.dotnet/tools" OR "%HOME%/.dotnet/tools" -> THIS HAS NOT BEEN TESTED YET ON LINUX
+        public static readonly string DotnetToolsExtensionDirectoryPath =
+            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + DotnetFolderName, ToolsFolderName) :
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "." + DotnetFolderName, ToolsFolderName);
 
         public ToolsExtensionRepository(IFileProvider fileSystem, ILoggerFactory loggerFactory, int resolvePriority, string targetFolder)
             : base(resolvePriority, string.Format(CultureInfo.CurrentCulture, Strings.Message_FolderExtensionRepoName, targetFolder))
@@ -34,16 +47,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
             foreach (IFileInfo tool in toolsStoreDir)
             {
-                string extensionVer = _fileSystem.GetDirectoryContents(Path.Combine(storeDirectory, tool.Name)).First().Name;
+                string toolVersion = _fileSystem.GetDirectoryContents(Path.Combine(storeDirectory, tool.Name)).First().Name;
 
                 string netVer = "net7.0"; // TODO: Still need to determine this
 
-                string extensionPath = Path.Combine(storeDirectory, tool.Name, extensionVer, tool.Name, extensionVer, "tools", netVer, "any");
+                string extensionPath = Path.Combine(storeDirectory, tool.Name, toolVersion, tool.Name, toolVersion, "tools", netVer, "any");
 
-                if (ExtensionRepositoryUtilities.ExtensionDefinitionExists(_fileSystem, extensionPath))
+                if (_fileSystem.TryGetExtensionDefinitionPath(extensionPath, out string definitionPath))
                 {
-                    var currExtension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionPath, Constants.ExtensionDefinitionFile), extensionName, logger);
-                    if (extensionName == currExtension.ExtensionDeclaration.Value.DisplayName)
+                    var currExtension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, definitionPath, extensionName, logger);
+                    if (extensionName == currExtension.Declaration.Name)
                     {
                         extension = currExtension;
                         return true;

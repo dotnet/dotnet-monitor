@@ -5,7 +5,6 @@
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
-using System.IO;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
@@ -32,10 +31,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
             foreach (IFileInfo extensionDir in extensionDirs)
             {
-                if (ExtensionRepositoryUtilities.ExtensionDefinitionExists(_fileSystem, extensionDir.Name))
+                if (_fileSystem.TryGetExtensionDefinitionPath(extensionDir.Name, out string definitionPath))
                 {
-                    var currExtension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, Path.Combine(extensionDir.Name, Constants.ExtensionDefinitionFile), logger);
-                    if (extensionName == currExtension.ExtensionDeclaration.Value.DisplayName)
+                    var currExtension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, definitionPath, logger);
+                    if (extensionName == currExtension.Declaration.Name)
                     {
                         extension = currExtension;
                         return true;

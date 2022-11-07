@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         private readonly string _exePath;
         private readonly IFileProvider _fileSystem;
         private readonly ILogger<ProgramExtension> _logger;
-        public Lazy<ExtensionDeclaration> ExtensionDeclaration { get; }
+        private Lazy<ExtensionDeclaration> _extensionDeclaration;
 
         public ProgramExtension(string extensionName, string targetFolder, IFileProvider fileSystem, string declarationPath, ILogger<ProgramExtension> logger)
         {
@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             _declarationPath = declarationPath;
             _exePath = declarationPath;
             _logger = logger;
-            ExtensionDeclaration = new Lazy<ExtensionDeclaration>(() => { return GetExtensionDeclaration(); }, LazyThreadSafetyMode.ExecutionAndPublication);
+            _extensionDeclaration = new Lazy<ExtensionDeclaration>(GetExtensionDeclaration, LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
         public ProgramExtension(string extensionName, string targetFolder, IFileProvider fileSystem, string declarationPath, string exePath, ILogger<ProgramExtension> logger)
@@ -46,11 +46,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         /// <inheritdoc/>
         public string DisplayName => Path.GetDirectoryName(_declarationPath);
 
-        private ExtensionDeclaration Declaration
+        public ExtensionDeclaration Declaration
         {
             get
             {
-                return ExtensionDeclaration.Value;
+                return _extensionDeclaration.Value;
             }
         }
 
