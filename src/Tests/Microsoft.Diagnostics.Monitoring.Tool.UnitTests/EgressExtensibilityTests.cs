@@ -7,12 +7,14 @@ using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
 using Xunit;
 using Xunit.Abstractions;
+using static Microsoft.Diagnostics.Monitoring.Tool.UnitTests.ConfigurationTests;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -63,23 +65,50 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         // This only verifies that the Extension.json file is found for the user's extension,
         // not that there is a suitable executable file.
-        [Fact]
-        public void FoundExtension_Success()
+        [Theory]
+        [InlineData(ConfigDirectory.UserConfigDirectory)]
+        [InlineData(ConfigDirectory.SharedConfigDirectory)]
+        //[InlineData(ConfigDirectory.DotnetToolsDirectory)]
+        //[InlineData(ConfigDirectory.NextToMeDirectory)]
+        public void FoundExtension_Success(ConfigDirectory configDirectory)
         {
             //const string extensionDisplayName = "AzureBlobStorage"; // This has to be the same as the display name within the Extension.json file
             const string extensionDirectoryName = "dotnet-monitor-egress-azureblobstorage";
 
             using TemporaryDirectory sharedConfigDir = new(_outputHelper);
             using TemporaryDirectory userConfigDir = new(_outputHelper);
+            using TemporaryDirectory dotnetToolsConfigDir = new(_outputHelper);
 
             // Set up the initial settings used to create the host builder.
             HostBuilderSettings settings = new()
             {
                 SharedConfigDirectory = sharedConfigDir.FullName,
-                UserConfigDirectory = userConfigDir.FullName
+                UserConfigDirectory = userConfigDir.FullName,
+                //DotnetToolsExtensionDirectory = dotnetToolsConfigDir
             };
 
-            string destPath = Path.Combine(userConfigDir.FullName, ExtensionsFolder, extensionDirectoryName);
+            string directoryName = string.Empty;
+
+            switch (configDirectory)
+            {
+                case ConfigDirectory.UserConfigDirectory:
+                    directoryName = userConfigDir.FullName;
+                    break;
+                case ConfigDirectory.SharedConfigDirectory:
+                    directoryName = sharedConfigDir.FullName;
+                    break;
+                case ConfigDirectory.DotnetToolsDirectory:
+                    directoryName = dotnetToolsConfigDir.FullName;
+                    break;
+                case ConfigDirectory.NextToMeDirectory:
+                    //directoryName = .FullName;
+                    // NOT HANDLING THIS YET
+                    break;
+                default:
+                    throw new Exception("Config Directory not found.");
+            }
+
+            string destPath = Path.Combine(directoryName, ExtensionsFolder, extensionDirectoryName);
 
             Directory.CreateDirectory(destPath);
 
@@ -91,6 +120,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             var extensionDiscoverer = host.Services.GetService<ExtensionDiscoverer>();
 
             _ = extensionDiscoverer.FindExtension<IEgressExtension>(extensionDirectoryName);
+        }
+
+        /// This is the order of configuration sources where a name with a lower
+        /// enum value has a lower precedence in configuration.
+        public enum ConfigDirectory
+        {
+            NextToMeDirectory,
+            SharedConfigDirectory,
+            UserConfigDirectory,
+            DotnetToolsDirectory
         }
     }
 }
