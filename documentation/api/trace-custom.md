@@ -55,7 +55,7 @@ The expected content type is `application/json`.
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many trace requests at this time. Try to request a trace at a later time. | `application/problem+json` |
 
-> **NOTE:** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
+> **NOTE: (8.0+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
 
 > **NOTE:** After the expiration of the trace duration, completing the request may take a long time (up to several minutes) for large applications if `EventProvidersConfiguration.RequestRundown` is set to `true`. The runtime needs to send over the type cache for all managed code that was captured in the trace, known as rundown events. Thus, the length of time of the request may take significantly longer than the requested duration.
 

@@ -282,8 +282,8 @@ Detailed information about an operation.
 | `operationId` | guid | Unique identifier for the operation. |
 | `createdDateTime` | datetime string | UTC DateTime string of when the operation was created. |
 | `status` | [OperationState](#operationstate) | The current status of operation. |
-| `egressProviderName` | string | The name of the egress provider that the artifact is being sent to. This will be null if the artifact is being sent directly back to the user from an HTTP request. |
-| `isStoppable` | bool | Whether this operation can be gracefully stopped using [Stop Operation](operations-stop.md). Not all operations support being stopped. |
+| `egressProviderName` | string | (8.0+) The name of the egress provider that the artifact is being sent to. This will be null if the artifact is being sent directly back to the user from an HTTP request. |
+| `isStoppable` | bool | (8.0+) Whether this operation can be gracefully stopped using [Stop Operation](operations-stop.md). Not all operations support being stopped. |
 
 ### Example
 
@@ -308,8 +308,8 @@ Summary state of an operation.
 | `operationId` | guid | Unique identifier for the operation. |
 | `createdDateTime` | datetime string | UTC DateTime string of when the operation was created. |
 | `status` | [OperationState](#operationstate) | The current status of operation. |
-| `egressProviderName` | string | The name of the egress provider that the artifact is being sent to. This will be null if the artifact is being sent directly back to the user from an HTTP request. |
-| `isStoppable` | bool | Whether this operation can be gracefully stopped using [Stop Operation](operations-stop.md). Not all operations support being stopped. |
+| `egressProviderName` | string | (8.0+) The name of the egress provider that the artifact is being sent to. This will be null if the artifact is being sent directly back to the user from an HTTP request. |
+| `isStoppable` | bool | (8.0+) Whether this operation can be gracefully stopped using [Stop Operation](operations-stop.md). Not all operations support being stopped. |
 | `process` | [OperationProcessInfo](#operationprocessinfo) | (6.3+) The process on which the operation is performed. |
 
 ### Example

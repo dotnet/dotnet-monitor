@@ -51,7 +51,7 @@ Allowed schemes:
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many dump requests at this time. Try to request a dump at a later time. | |
 
-> **NOTE:** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
+> **NOTE: (8.0+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
 
 ## Examples
 
