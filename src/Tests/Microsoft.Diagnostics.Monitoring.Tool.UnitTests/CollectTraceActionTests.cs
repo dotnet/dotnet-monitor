@@ -10,13 +10,11 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
-using Microsoft.Diagnostics.Tracing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -112,7 +110,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 using FileStream traceStream = new(egressPath, FileMode.Open, FileAccess.Read);
                 Assert.NotNull(traceStream);
 
-                await TraceTestUtilities.ValidateTrace(traceStream);
+                await TraceTestUtilities.ValidateTrace(traceStream, expectRundown: true);
 
                 await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
             });

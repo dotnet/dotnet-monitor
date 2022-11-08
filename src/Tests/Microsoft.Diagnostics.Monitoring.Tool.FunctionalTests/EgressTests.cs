@@ -13,8 +13,6 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor;
-using Microsoft.Diagnostics.Tracing;
-using Microsoft.Diagnostics.Tracing.Parsers.Clr;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -23,6 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -130,6 +129,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     OperationStatusResponse operationResult = await apiClient.GetOperationStatus(response.OperationUri);
                     Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
                     Assert.Equal(OperationState.Running, operationResult.OperationStatus.Status);
+                    Assert.True(operationResult.OperationStatus.IsStoppable);
 
                     HttpStatusCode deleteStatus = await apiClient.StopEgressOperation(response.OperationUri);
                     Assert.Equal(HttpStatusCode.Accepted, deleteStatus);
@@ -300,7 +300,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
                     Assert.Equal(OperationState.Cancelled, operationResult.OperationStatus.Status);
 
-                    await Assert.ThrowsAsync<IOException>(async () => await drainResponseTask);
+                    await Assert.ThrowsAsync<IOException>(() => drainResponseTask);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -333,7 +333,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     string traceFile = Path.Combine(tempDir.FullName, "test.nettrace");
                     using FileStream traceFileWriter = File.OpenWrite(traceFile);
 
-                    using MemoryStream dstStream = new();
                     Task drainResponseTask = responseBox.Stream.CopyToAsync(traceFileWriter);
 
                     // Make sure the operation exists
@@ -345,7 +344,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     HttpStatusCode deleteStatus = await apiClient.StopEgressOperation(operationUri);
                     Assert.Equal(HttpStatusCode.Accepted, deleteStatus);
 
-                    await drainResponseTask;
+                    using CancellationTokenSource timeoutCancellation = new(CommonTestTimeouts.TraceTimeout);
+                    await drainResponseTask.WaitAsync(timeoutCancellation.Token);
                     await traceFileWriter.DisposeAsync();
 
                     operationResult = await apiClient.GetOperationStatus(operationUri);
@@ -353,7 +353,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.Equal(OperationState.Succeeded, operationResult.OperationStatus.Status);
 
                     // Verify the resulting trace has rundown information
-                    Assert.True(await DoesNettraceFileHaveRundown(traceFile));
+                    using FileStream traceStream = File.OpenRead(traceFile);
+                    await TraceTestUtilities.ValidateTrace(traceStream, expectRundown: true);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -361,25 +362,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
                 });
-        }
-
-        private static Task<bool> DoesNettraceFileHaveRundown(string filePath)
-        {
-            return Task.Run(() =>
-            {
-                using FileStream fs = File.OpenRead(filePath);
-                using EventPipeEventSource eventSource = new(fs);
-
-                bool didSeeRundownEvents = false;
-                ClrRundownTraceEventParser rundown = new(eventSource);
-                rundown.RuntimeStart += (data) =>
-                {
-                    didSeeRundownEvents = true;
-                };
-
-                eventSource.Process();
-                return didSeeRundownEvents;
-            });
         }
 
         /// <summary>
