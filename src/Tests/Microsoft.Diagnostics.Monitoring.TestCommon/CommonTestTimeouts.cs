@@ -34,6 +34,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static readonly TimeSpan TraceTimeout = TimeSpan.FromMinutes(2);
 
         /// <summary>
+        /// Default timeout for validating a trace.
+        /// </summary>
+        public static readonly TimeSpan ValidateTraceTimeout = TimeSpan.FromSeconds(30);
+
+        /// <summary>
         /// Default timeout for live metrics collection.
         /// </summary>
         public static readonly TimeSpan LiveMetricsTimeout = TimeSpan.FromMinutes(2);

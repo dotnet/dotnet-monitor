@@ -70,6 +70,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_DiagnosticRequestFailed);
 
+        private static readonly Action<ILogger, Guid, Exception> _stopOperationFailed =
+            LoggerMessage.Define<Guid>(
+                eventId: new EventId(11, "StopOperationFailed"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_StopOperationFailed);
+
         public static void RequestFailed(this ILogger logger, Exception ex)
         {
             _requestFailed(logger, ex);
@@ -118,6 +124,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static void DiagnosticRequestFailed(this ILogger logger, int processId, Exception ex)
         {
             _diagnosticRequestFailed(logger, processId, ex);
+        }
+
+        public static void StopOperationFailed(this ILogger logger, Guid operationId, Exception ex)
+        {
+            _stopOperationFailed(logger, operationId, ex);
         }
     }
 }
