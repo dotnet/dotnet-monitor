@@ -179,6 +179,12 @@
 1 Format Parameter:
 0. providerType: The type of the provider that could not be found.</comment>
   </data>
+  <data name="ErrorMessage_EgressS3FailedDetailed" xml:space="preserve">
+    <value>S3 storage egress failed: {0}</value>
+    <comment>Gets the format string for egress failure to S3 storage (with an inner message).
+1 Format Parameter:
+0. innerMessage: The detailed inner message with additional error context.</comment>
+  </data>
   <data name="ErrorMessage_EgressUnableToCreateIntermediateFile" xml:space="preserve">
     <value>Unable to create unique intermediate file in '{0}' directory.</value>
     <comment>Gets the format string for file system egress provider failure due to inability to create an intermediate file.

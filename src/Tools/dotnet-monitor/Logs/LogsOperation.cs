@@ -9,28 +9,37 @@ using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class LogsOperation : EventSourceArtifactOperation<EventLogsPipelineSettings>
+    internal sealed class LogsOperation : PipelineArtifactOperation<EventLogsPipeline>
     {
         private readonly LogFormat _format;
+        private readonly EventLogsPipelineSettings _settings;
 
         public LogsOperation(IEndpointInfo endpointInfo, EventLogsPipelineSettings settings, LogFormat format, ILogger logger)
-            : base(logger, Utils.ArtifactType_Logs, endpointInfo, settings)
+            : base(logger, Utils.ArtifactType_Logs, endpointInfo)
         {
             _format = format;
+            _settings = settings;
         }
 
-        protected override EventSourcePipeline<EventLogsPipelineSettings> CreatePipeline(Stream outputStream)
+        protected override EventLogsPipeline CreatePipeline(Stream outputStream)
         {
             LoggerFactory loggerFactory = new();
             loggerFactory.AddProvider(new StreamingLoggerProvider(outputStream, _format, logLevel: null));
 
             var client = new DiagnosticsClient(EndpointInfo.Endpoint);
 
-            return new EventLogsPipeline(client, Settings, loggerFactory);
+            return new EventLogsPipeline(client, _settings, loggerFactory);
+        }
+
+        protected override Task<Task> StartPipelineAsync(EventLogsPipeline pipeline, CancellationToken token)
+        {
+            return pipeline.StartAsync(token);
         }
 
         public override string GenerateFileName()

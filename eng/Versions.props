@@ -38,31 +38,31 @@
   </PropertyGroup>
   <!--
     These versions should ONLY be updated by automation.
-
+    
     DO NOT UPDATE THESE MANUALLY. Use the `darc` command line tool to update this file so it stays in sync with
     Version.Details.xml.
-
+    
     See https://github.com/dotnet/arcade/blob/master/Documentation/Darc.md for instructions on using darc.
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/arcade references -->
-    <MicrosoftDotNetCodeAnalysisVersion>8.0.0-beta.22552.1</MicrosoftDotNetCodeAnalysisVersion>
-    <MicrosoftDotNetXUnitExtensionsVersion>8.0.0-beta.22552.1</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetCodeAnalysisVersion>8.0.0-beta.22554.2</MicrosoftDotNetCodeAnalysisVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>8.0.0-beta.22554.2</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>7.0.0</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <VSRedistCommonAspNetCoreSharedFrameworkx6470Version>7.0.0-rtm.22513.7</VSRedistCommonAspNetCoreSharedFrameworkx6470Version>
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta4.22504.1</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>6.0.0-preview.22552.1</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>6.0.0-preview.22552.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>6.0.0-preview.22557.1</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>6.0.0-preview.22557.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/roslyn-analyzers -->
-    <MicrosoftCodeAnalysisNetAnalyzersVersion>7.0.0-preview1.22553.1</MicrosoftCodeAnalysisNetAnalyzersVersion>
+    <MicrosoftCodeAnalysisNetAnalyzersVersion>7.0.0-preview1.22553.2</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
     <MicrosoftNETCoreAppRuntimewinx64Version>7.0.0</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6470Version>7.0.0-rtm.22512.2</VSRedistCommonNetCoreSharedFrameworkx6470Version>
     <!-- dotnet/symstore references -->
-    <MicrosoftFileFormatsVersion>1.0.353101</MicrosoftFileFormatsVersion>
+    <MicrosoftFileFormatsVersion>1.0.355701</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftNETCoreApp31Version>3.1.30</MicrosoftNETCoreApp31Version>

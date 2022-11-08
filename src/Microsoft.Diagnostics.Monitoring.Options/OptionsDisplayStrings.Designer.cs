@@ -653,7 +653,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The format used to display the callstacks..
+        ///   Looks up a localized string similar to The format used to display the call stacks..
         /// </summary>
         public static string DisplayAttributeDescription_CollectStacksOptions_Format {
             get {
@@ -910,6 +910,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_EgressOptions_Properties {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_Properties", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mapping of S3 storage egress provider names to their options..
+        /// </summary>
+        public static string DisplayAttributeDescription_EgressOptions_S3Storage {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_S3Storage", resourceCulture);
             }
         }
         
@@ -1320,6 +1329,96 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The AWS AccessKeyId for IAM user to login.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_AccessKeyId {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_AccessKeyId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The AWS profile name to be used for login.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfileName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The AWS profile path, if profile details not stored in default path.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfilePath {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfilePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the bucket used for storage.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_BucketName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_BucketName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The endpoint of S3 to connect to. This is optional in case of using AWS storage..
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_Endpoint {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_Endpoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The boolean flag set for AWS connection configuration ForcePathStyle option..
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_ForcePathStyle {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_ForcePathStyle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A boolean flag indicates if the return value of egress provider should be a pre-signed URL or only the bucket name and object id of uploaded entry..
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_GeneratePreSignedUrl {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_GeneratePreSignedUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The amount of time the generated pre-signed url will be accessible..
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiry {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the S3 region.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_RegionName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_RegionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The AWS SecretAccessKey associated AccessKeyId for IAM user to login.
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name of the environment variable to set..
         /// </summary>
         public static string DisplayAttributeDescription_SetEnvironmentVariableOptions_Name {
@@ -1433,6 +1532,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string ErrorMessage_CredentialsMissing {
             get {
                 return ResourceManager.GetString("ErrorMessage_CredentialsMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field is required..
+        /// </summary>
+        public static string ErrorMessage_EgressS3FailedMissingOption {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressS3FailedMissingOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to S3 storage egress failed: Neither the secrets file nor the password are specified..
+        /// </summary>
+        public static string ErrorMessage_EgressS3FailedMissingSecrets {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressS3FailedMissingSecrets", resourceCulture);
             }
         }
         

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring;
-using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,34 +12,32 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal abstract class EventSourceArtifactOperation<T> :
+    internal abstract class PipelineArtifactOperation<T> :
         IArtifactOperation
-        where T : EventSourcePipelineSettings
+        where T : Pipeline
     {
         private readonly string _artifactType;
-        private readonly ILogger _logger;
 
         private Func<CancellationToken, Task> _stopFunc;
 
-        protected EventSourceArtifactOperation(ILogger logger, string artifactType, IEndpointInfo endpointInfo, T settings, bool isStoppable = true)
+        protected PipelineArtifactOperation(ILogger logger, string artifactType, IEndpointInfo endpointInfo, bool isStoppable = true)
         {
             _artifactType = artifactType;
-            _logger = logger;
 
+            Logger = logger;
             EndpointInfo = endpointInfo;
             IsStoppable = isStoppable;
-            Settings = settings;
         }
 
         public async Task ExecuteAsync(Stream outputStream, TaskCompletionSource<object> startCompletionSource, CancellationToken token)
         {
-            await using EventSourcePipeline<T> pipeline = CreatePipeline(outputStream);
+            await using T pipeline = CreatePipeline(outputStream);
 
             _stopFunc = pipeline.StopAsync;
 
-            Task runTask = await pipeline.StartAsync(token);
+            Task runTask = await StartPipelineAsync(pipeline, token);
 
-            _logger.StartCollectArtifact(_artifactType);
+            Logger.StartCollectArtifact(_artifactType);
 
             // Signal that the logs operation has started
             startCompletionSource?.TrySetResult(null);
@@ -69,10 +66,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public bool IsStoppable { get; }
 
-        protected abstract EventSourcePipeline<T> CreatePipeline(Stream outputStream);
+        protected abstract T CreatePipeline(Stream outputStream);
+
+        /// <summary>
+        /// Starts the pipeline and returns a <see cref="Task{Task}"/> that completes when the pipeline
+        /// has started; the inner <see cref="Task"/> shall complete when the pipeline runs to completion.
+        /// </summary>
+        /// <param name="pipeline">The pipeline that shall be started.</param>
+        /// <param name="token">The token to monitor for cancellation requests.</param>
+        protected abstract Task<Task> StartPipelineAsync(T pipeline, CancellationToken token);
 
         protected IEndpointInfo EndpointInfo { get; }
 
-        protected T Settings { get; }
+        protected ILogger Logger { get; }
     }
 }

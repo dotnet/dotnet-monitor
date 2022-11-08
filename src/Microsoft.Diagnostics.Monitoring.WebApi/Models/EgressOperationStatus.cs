@@ -23,6 +23,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         [JsonPropertyName("process")]
         public OperationProcessInfo Process { get; set; }
+
+        [JsonPropertyName("egressProviderName")]
+        public string EgressProviderName { get; set; }
+
+        [JsonPropertyName("isStoppable")]
+        public bool IsStoppable { get; set; }
     }
 
     /// <summary>
@@ -62,7 +68,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         Running,
         Succeeded,
         Failed,
-        Cancelled
+        Cancelled,
+        Stopping
     }
 
     public class OperationError
