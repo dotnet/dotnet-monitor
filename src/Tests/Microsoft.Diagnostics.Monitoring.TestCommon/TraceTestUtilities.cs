@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             if (expectRundown.HasValue)
             {
-                Assert.Equal(expectRundown, foundRundown);
+                Assert.Equal(expectRundown.Value, foundRundown);
             }
         }
     }
