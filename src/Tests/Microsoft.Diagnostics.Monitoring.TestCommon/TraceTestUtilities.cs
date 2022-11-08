@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     public static class TraceTestUtilities
     {
-        public static async Task ValidateTrace(Stream traceStream, bool expectRundown)
+        public static async Task ValidateTrace(Stream traceStream, bool? expectRundown = null)
         {
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.ValidateTraceTimeout);
 
@@ -30,16 +30,23 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 foundTraceObject = true;
             };
 
-            var rundown = new ClrRundownTraceEventParser(eventSource);
-            rundown.RuntimeStart += (data) =>
+            if (expectRundown.HasValue)
             {
-                foundRundown = true;
-            };
+                var rundown = new ClrRundownTraceEventParser(eventSource);
+                rundown.RuntimeStart += (data) =>
+                {
+                    foundRundown = true;
+                };
+            }
 
             await Task.Run(() => Assert.True(eventSource.Process()), cancellationTokenSource.Token);
 
             Assert.True(foundTraceObject);
-            Assert.Equal(expectRundown, foundRundown);
+
+            if (expectRundown.HasValue)
+            {
+                Assert.Equal(expectRundown, foundRundown);
+            }
         }
     }
 }

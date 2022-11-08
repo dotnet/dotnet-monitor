@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
-        private async Task PerformTrace(IHost host, TargetFrameworkMoniker tfm)
+        private async Task PerformTrace(IHost host, TargetFrameworkMoniker tfm, bool expectRundown = true)
         {
             CollectTraceOptions options = ActionTestsHelper.GetActionOptions<CollectTraceOptions>(host, DefaultRuleName);
 
@@ -110,7 +110,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 using FileStream traceStream = new(egressPath, FileMode.Open, FileAccess.Read);
                 Assert.NotNull(traceStream);
 
-                await TraceTestUtilities.ValidateTrace(traceStream, expectRundown: true);
+                await TraceTestUtilities.ValidateTrace(traceStream);
 
                 await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
             });
