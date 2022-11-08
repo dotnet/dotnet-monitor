@@ -5,6 +5,7 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
+using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -16,6 +17,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EgressOptions_AzureBlobStorage))]
         public IDictionary<string, AzureBlobEgressProviderOptions> AzureBlobStorage { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EgressOptions_S3Storage))]
+        public IDictionary<string, S3StorageEgressProviderOptions> S3Storage { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
