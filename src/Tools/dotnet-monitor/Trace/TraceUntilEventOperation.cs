@@ -19,8 +19,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private readonly string _eventName;
         private readonly IDictionary<string, string> _payloadFilter;
 
-        private readonly TaskCompletionSource<object> _eventStreamAvailableCompletionSource = new();
-        private readonly TaskCompletionSource<object> _stoppingEventHitSource = new();
+        private readonly TaskCompletionSource<object> _eventStreamAvailableCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<object> _stoppingEventHitSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         public TraceUntilEventOperation(
             IEndpointInfo endpointInfo,
@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         protected override async Task<Task> StartPipelineAsync(EventTracePipeline pipeline, CancellationToken token)
         {
             Task pipelineRunTask = pipeline.RunAsync(token);
-            await _eventStreamAvailableCompletionSource.Task;
+            await _eventStreamAvailableCompletionSource.Task.WaitAsync(token);
 
             return Task.Run(async () =>
             {
