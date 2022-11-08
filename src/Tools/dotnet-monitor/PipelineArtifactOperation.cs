@@ -17,15 +17,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         where T : Pipeline
     {
         private readonly string _artifactType;
-        private readonly ILogger _logger;
 
         private Func<CancellationToken, Task> _stopFunc;
 
         protected PipelineArtifactOperation(ILogger logger, string artifactType, IEndpointInfo endpointInfo, bool isStoppable = true)
         {
             _artifactType = artifactType;
-            _logger = logger;
 
+            Logger = logger;
             EndpointInfo = endpointInfo;
             IsStoppable = isStoppable;
         }
@@ -38,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             Task runTask = await StartPipelineAsync(pipeline, token);
 
-            _logger.StartCollectArtifact(_artifactType);
+            Logger.StartCollectArtifact(_artifactType);
 
             // Signal that the logs operation has started
             startCompletionSource?.TrySetResult(null);
@@ -78,5 +77,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         protected abstract Task<Task> StartPipelineAsync(T pipeline, CancellationToken token);
 
         protected IEndpointInfo EndpointInfo { get; }
+
+        protected ILogger Logger { get; }
     }
 }

@@ -52,6 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ICollectionRuleService _collectionRuleService;
         private readonly ProfilerChannel _profilerChannel;
         private readonly ILogsOperationFactory _logsOperationFactory;
+        private readonly ITraceOperationFactory _traceOperationFactory;
 
         public DiagController(ILogger<DiagController> logger,
             IServiceProvider serviceProvider)
@@ -67,6 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
             _profilerChannel = serviceProvider.GetRequiredService<ProfilerChannel>();
             _logsOperationFactory = serviceProvider.GetRequiredService<ILogsOperationFactory>();
+            _traceOperationFactory = serviceProvider.GetRequiredService<ITraceOperationFactory>();
         }
 
         /// <summary>
@@ -207,7 +209,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = Utilities.ArtifactType_Dump)]
         [EgressValidation]
         public Task<ActionResult> CaptureDump(
             [FromQuery]
@@ -221,6 +222,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
+            const string artifactType = Utilities.ArtifactType_Dump;
+
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
             return InvokeForProcess(async processInfo =>
@@ -229,6 +232,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 if (string.IsNullOrEmpty(egressProvider))
                 {
+                    await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType);
                     Stream dumpStream = await _dumpService.DumpAsync(processInfo.EndpointInfo, type, HttpContext.RequestAborted);
 
                     _logger.WrittenToHttpStream();
@@ -238,7 +242,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 }
                 else
                 {
-                    KeyValueLogScope scope = Utilities.CreateArtifactScope(Utilities.ArtifactType_Dump, processInfo.EndpointInfo);
+                    KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
 
                     return await SendToEgress(new EgressOperation(
                         token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
@@ -246,9 +250,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                         dumpFileName,
                         processInfo,
                         ContentTypes.ApplicationOctetStream,
-                        scope), limitKey: Utilities.ArtifactType_Dump);
+                        scope), limitKey: artifactType);
                 }
-            }, processKey, Utilities.ArtifactType_Dump);
+            }, processKey, artifactType);
         }
 
         /// <summary>
@@ -266,7 +270,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = Utilities.ArtifactType_GCDump)]
         [EgressValidation]
         public Task<ActionResult> CaptureGcDump(
             [FromQuery]
@@ -325,7 +328,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = Utilities.ArtifactType_Trace)]
         [EgressValidation]
         public Task<ActionResult> CaptureTrace(
             [FromQuery]
@@ -369,7 +371,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = Utilities.ArtifactType_Trace)]
         [EgressValidation]
         public Task<ActionResult> CaptureTraceCustom(
             [FromBody][Required]
@@ -420,7 +421,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = Utilities.ArtifactType_Logs)]
         [EgressValidation]
         public Task<ActionResult> CaptureLogs(
             [FromQuery]
@@ -476,7 +476,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = Utilities.ArtifactType_Logs)]
         [EgressValidation]
         public Task<ActionResult> CaptureLogsCustom(
             [FromBody]
@@ -593,7 +592,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = Utilities.ArtifactType_Stacks)]
         [EgressValidation]
         public async Task<ActionResult> CaptureStacks(
             [FromQuery]
@@ -636,29 +634,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             TimeSpan duration,
             string egressProvider)
         {
-            string fileName = TraceUtilities.GenerateTraceFileName(processInfo.EndpointInfo);
+            IArtifactOperation traceOperation = _traceOperationFactory.Create(
+                processInfo.EndpointInfo,
+                configuration,
+                duration);
+
+            if (_diagnosticPortOptions.Value.ConnectionMode == DiagnosticPortConnectionMode.Listen)
+            {
+                IDisposable operationRegistration = _operationTrackerService.Register(processInfo.EndpointInfo);
+                HttpContext.Response.RegisterForDispose(operationRegistration);
+            }
 
             return Result(
                 Utilities.ArtifactType_Trace,
                 egressProvider,
-                async (outputStream, token) =>
-                {
-                    IDisposable operationRegistration = null;
-                    try
-                    {
-                        if (_diagnosticPortOptions.Value.ConnectionMode == DiagnosticPortConnectionMode.Listen)
-                        {
-                            operationRegistration = _operationTrackerService.Register(processInfo.EndpointInfo);
-                        }
-                        await TraceUtilities.CaptureTraceAsync(null, processInfo.EndpointInfo, configuration, duration, outputStream, token);
-                    }
-                    finally
-                    {
-                        operationRegistration?.Dispose();
-                    }
-                },
-                fileName,
-                ContentTypes.ApplicationOctetStream,
+                traceOperation,
                 processInfo);
         }
 
@@ -723,7 +713,35 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return null;
         }
 
-        private Task<ActionResult> Result(
+        private async Task<ActionResult> Result(
+            string artifactType,
+            string providerName,
+            IArtifactOperation operation,
+            IProcessInfo processInfo,
+            bool asAttachment = true)
+        {
+            KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
+
+            if (string.IsNullOrEmpty(providerName))
+            {
+                await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType, operation);
+                return new OutputStreamResult(
+                    operation,
+                    asAttachment ? operation.GenerateFileName() : null,
+                    scope);
+            }
+            else
+            {
+                return await SendToEgress(new EgressOperation(
+                    operation,
+                    providerName,
+                    processInfo,
+                    scope),
+                    limitKey: artifactType);
+            }
+        }
+
+        private async Task<ActionResult> Result(
             string artifactType,
             string providerName,
             Func<Stream, CancellationToken, Task> action,
@@ -736,15 +754,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             if (string.IsNullOrEmpty(providerName))
             {
-                return Task.FromResult<ActionResult>(new OutputStreamResult(
+                await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType);
+                return new OutputStreamResult(
                     action,
                     contentType,
                     asAttachment ? fileName : null,
-                    scope));
+                    scope);
             }
             else
             {
-                return SendToEgress(new EgressOperation(
+                return await SendToEgress(new EgressOperation(
                     action,
                     providerName,
                     fileName,
@@ -755,43 +774,28 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        private Task<ActionResult> Result(
-            string artifactType,
-            string providerName,
-            IArtifactOperation operation,
-            IProcessInfo processInfo,
-            bool asAttachment = true)
+        private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, IArtifactOperation operation = null)
         {
-            KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
-
-            if (string.IsNullOrEmpty(providerName))
-            {
-                return Task.FromResult<ActionResult>(new OutputStreamResult(
-                    operation,
-                    asAttachment ? operation.GenerateFileName() : null,
-                    scope));
-            }
-            else
-            {
-                return SendToEgress(new EgressOperation(
-                    operation,
-                    providerName,
-                    processInfo,
-                    scope),
-                    limitKey: artifactType);
-            }
+            // While not strictly a Location redirect, use the same header as externally egressed operations for consistency.
+            HttpContext.Response.Headers["Location"] = await RegisterOperation(
+                new HttpResponseEgressOperation(HttpContext, processInfo, operation),
+                limitKey: artifactType);
         }
 
-        private async Task<ActionResult> SendToEgress(EgressOperation egressStreamResult, string limitKey)
+        private async Task<string> RegisterOperation(IEgressOperation egressOperation, string limitKey)
         {
             // Will throw TooManyRequestsException if there are too many concurrent operations.
-            Guid operationId = await _operationsStore.AddOperation(egressStreamResult, limitKey);
-            string newUrl = this.Url.Action(
+            Guid operationId = await _operationsStore.AddOperation(egressOperation, limitKey);
+            return this.Url.Action(
                 action: nameof(OperationsController.GetOperationStatus),
                 controller: OperationsController.ControllerName, new { operationId = operationId },
                 protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
+        }
 
-            return Accepted(newUrl);
+        private async Task<ActionResult> SendToEgress(IEgressOperation egressOperation, string limitKey)
+        {
+            string operationUrl = await RegisterOperation(egressOperation, limitKey);
+            return Accepted(operationUrl);
         }
 
         private Task<ActionResult> InvokeForProcess(Func<IProcessInfo, ActionResult> func, ProcessKey? processKey, string artifactType = null)
