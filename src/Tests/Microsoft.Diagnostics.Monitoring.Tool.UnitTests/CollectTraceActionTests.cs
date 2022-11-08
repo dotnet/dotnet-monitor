@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
-        private async Task PerformTrace(IHost host, TargetFrameworkMoniker tfm, bool expectRundown = true)
+        private async Task PerformTrace(IHost host, TargetFrameworkMoniker tfm)
         {
             CollectTraceOptions options = ActionTestsHelper.GetActionOptions<CollectTraceOptions>(host, DefaultRuleName);
 
