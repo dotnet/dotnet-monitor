@@ -3,10 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.IO;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +18,8 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 {
     internal class Program
     {
+        const int DefaultBufferSize = 4000;
+
         static async Task<int> Main(string[] args)
         {
             // Expected command line format is: dotnet-monitor-egress-azureblobstorage.exe Egress
@@ -36,6 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
             try
             {
                 string jsonConfig = Console.ReadLine();
+                Console.WriteLine("JSONCONFIG: " + jsonConfig);
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
 
                 Stream outputStream = new MemoryStream(); // might not be a good stream type
@@ -43,9 +48,9 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
                 TimeSpan timeout = new TimeSpan(0, 0, 30); // Should do something real here
                 CancellationTokenSource timeoutSource = new(timeout);
 
-                await GetStream(outputStream, timeoutSource.Token);
+                outputStream = GetStream();
 
-                Assert.NotEqual(outputStream.Length, 0); // could potentially check that it's the right length if we know it
+                Assert.Equal(outputStream.Length, DefaultBufferSize);
 
                 TestEgressProviderOptions options = BuildOptions(configPayload);
 
@@ -85,11 +90,13 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
             return options;
         }
 
-        private static async Task GetStream(Stream outputStream, CancellationToken cancellationToken)
+        private static Stream GetStream()
         {
-            const int DefaultBufferSize = 0x10000;
+            byte[] buffer = new byte[DefaultBufferSize];
 
-            await Console.OpenStandardInput().CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
+            Console.OpenStandardInput().Read(buffer, 0, DefaultBufferSize);
+
+            return new MemoryStream(buffer);
         }
 
         private static bool GetConfig(IDictionary<string, string> configDict, string propKey)

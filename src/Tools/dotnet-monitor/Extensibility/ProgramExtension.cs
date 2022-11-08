@@ -112,7 +112,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             _logger.ExtensionConfigured(pStart.FileName, p.Id);
 
             await getStreamAction(p.StandardInput.BaseStream, token);
+            await p.StandardInput.WriteAsync(NewLine, token);
             await p.StandardInput.BaseStream.FlushAsync(token);
+
             p.StandardInput.Close();
             _logger.ExtensionEgressPayloadCompleted(p.Id);
 
