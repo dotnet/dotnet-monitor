@@ -9,14 +9,11 @@ using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text.Json;
 using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
-using static Microsoft.Diagnostics.Monitoring.Tool.UnitTests.ConfigurationTests;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -114,8 +111,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             Directory.CreateDirectory(destPath);
 
+            string appName = "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp";
+
+            string testAppPath = AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), appName, TargetFrameworkMoniker.Net60);
+
             File.Copy(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), EgressExtensionsDirectory, ExtensionDefinitionFile),
-                Path.Combine(destPath, ExtensionDefinitionFile));
+                Path.Combine(destPath));
+
+
+            /*File.Copy(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), EgressExtensionsDirectory, ExtensionDefinitionFile),
+                Path.Combine(destPath, ExtensionDefinitionFile));*/
+
+
+            File.Copy(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), EgressExtensionsDirectory),
+                destPath); // This won't work for special dotnet tools case
 
             IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
 
