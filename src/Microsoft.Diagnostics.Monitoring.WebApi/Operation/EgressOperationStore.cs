@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -82,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return operationId;
         }
 
-        public void StopOperation(Guid operationId, Action<Exception> onStopException, CancellationToken stopCancellatonToken = default)
+        public void StopOperation(Guid operationId, Action<Exception> onStopException)
         {
             lock (_requests)
             {
@@ -102,13 +101,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
 
                 entry.State = Models.OperationState.Stopping;
-                _ = Task.Run(() => entry.EgressRequest.EgressOperation.StopAsync(stopCancellatonToken), stopCancellatonToken)
-                    .ContinueWith(task =>
-                    {
-                        Debug.Assert(task.Exception != null);
-                        onStopException(task.Exception);
-                    },
-                    stopCancellatonToken,
+
+                CancellationToken token = entry.EgressRequest.CancellationTokenSource.Token;
+                _ = Task.Run(() => entry.EgressRequest.EgressOperation.StopAsync(token), token)
+                    .ContinueWith(task => onStopException(task.Exception),
+                    token,
                     TaskContinuationOptions.OnlyOnFaulted,
                     TaskScheduler.Default);
             }
