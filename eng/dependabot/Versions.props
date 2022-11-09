@@ -5,11 +5,11 @@
     <AzureIdentityVersion>1.7.0</AzureIdentityVersion>
     <AzureStorageBlobsVersion>12.14.1</AzureStorageBlobsVersion>
     <AzureStorageQueuesVersion>12.12.0</AzureStorageQueuesVersion>
-    <MicrosoftExtensionsConfigurationAbstractionsVersion>6.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
-    <MicrosoftExtensionsConfigurationKeyPerFileVersion>6.0.5</MicrosoftExtensionsConfigurationKeyPerFileVersion>
-    <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.3</MicrosoftExtensionsLoggingAbstractionsVersion>
-    <MicrosoftExtensionsLoggingConsoleVersion>6.0.0</MicrosoftExtensionsLoggingConsoleVersion>
-    <MicrosoftExtensionsLoggingEventSourceVersion>6.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
+    <MicrosoftExtensionsConfigurationAbstractionsVersion>7.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
+    <MicrosoftExtensionsConfigurationKeyPerFileVersion>7.0.0</MicrosoftExtensionsConfigurationKeyPerFileVersion>
+    <MicrosoftExtensionsLoggingAbstractionsVersion>7.0.0</MicrosoftExtensionsLoggingAbstractionsVersion>
+    <MicrosoftExtensionsLoggingConsoleVersion>7.0.0</MicrosoftExtensionsLoggingConsoleVersion>
+    <MicrosoftExtensionsLoggingEventSourceVersion>7.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
     <MicrosoftIdentityModelTokensVersion>6.25.0</MicrosoftIdentityModelTokensVersion>
     <MicrosoftOpenApiReadersVersion>1.4.1</MicrosoftOpenApiReadersVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
