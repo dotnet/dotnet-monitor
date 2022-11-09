@@ -159,11 +159,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     WebApi.Models.SpeedscopeResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.SpeedscopeResult>(holder.Stream);
 
-                    //Assert.Equal(expectedFrames.Length, actualFrames.Count);
-                    //for (int i = 0; i < expectedFrames.Length; i++)
-                    //{
-                    //    Assert.True(AreFramesEqual(expectedFrames[i], actualFrames[i]));
-                    //}
+                    int bottomIndex = result.Shared.Frames.FindIndex(f => f.Name == FormatFrame(ExpectedModule, ExpectedClass, ExpectedFunction));
+                    Assert.NotEqual(-1, bottomIndex);
+                    string topFrameName = FormatFrame(ExpectedModule, ExpectedClass, ExpectedCallbackFunction);
+                    int topIndex = result.Shared.Frames.FindIndex(f => f.Name == topFrameName);
+                    Assert.NotEqual(-1, topIndex);
+
+                    var expectedFrames = ExpectedSpeedscopeFrames(topIndex, bottomIndex);
+                    var actualFrames = GetActualFrames(result, topFrameName, 3);
+
+                    Assert.Equal(expectedFrames.Length, actualFrames.Count);
+                    for (int i = 0; i < expectedFrames.Length; i++)
+                    {
+                        Assert.True(AreFramesEqual(expectedFrames[i], actualFrames[i]));
+                    }
 
                     await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
                 },
@@ -347,6 +356,40 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private static bool AreFramesEqual(WebApi.Models.CallStackFrame left, WebApi.Models.CallStackFrame right) =>
             (left.ModuleName == right.ModuleName) && (left.ClassName == right.ClassName) && (left.MethodName == right.MethodName);
 
+        private static bool AreFramesEqual(WebApi.Models.ProfileEvent left, WebApi.Models.ProfileEvent right) =>
+            (left.Frame == right.Frame) && (left.At == right.At) && (left.Type == right.Type);
+
+        private static IList<WebApi.Models.ProfileEvent> GetActualFrames(WebApi.Models.SpeedscopeResult result, string expectedFirstFrame, int expectedFrameCount)
+        {
+            int matchingFrameIndex = -1;
+            var actualFrames = new List<WebApi.Models.ProfileEvent>();
+            for (int i = 0; i < result.Shared.Frames.Count; i++)
+            {
+                WebApi.Models.SharedFrame frame = result.Shared.Frames[i];
+                if (frame.Name == expectedFirstFrame)
+                {
+                    matchingFrameIndex = i;
+                }
+            }
+
+            foreach (WebApi.Models.Profile callstack in result.Profiles)
+            {
+                actualFrames.Clear();
+                foreach (WebApi.Models.ProfileEvent frame in callstack.Events)
+                {
+                    if ((frame.Frame == matchingFrameIndex) || actualFrames.Count > 0)
+                    {
+                        actualFrames.Add(frame);
+                        if (actualFrames.Count == expectedFrameCount)
+                        {
+                            return actualFrames;
+                        }
+                    }
+                }
+            }
+            return actualFrames;
+        }
+
         private static IList<WebApi.Models.CallStackFrame> GetActualFrames(WebApi.Models.CallStackResult result, WebApi.Models.CallStackFrame expectedFirstFrame, int expectedFrameCount)
         {
             var actualFrames = new List<WebApi.Models.CallStackFrame>();
@@ -367,6 +410,29 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
             return actualFrames;
         }
+
+        private static WebApi.Models.ProfileEvent[] ExpectedSpeedscopeFrames(int topFrameIndex, int bottomFrameIndex) => new WebApi.Models.ProfileEvent[]
+        {
+            new WebApi.Models.ProfileEvent
+            {
+                Frame = topFrameIndex,
+                At = 0.0,
+                Type = WebApi.Models.ProfileEventType.O
+            },
+            new WebApi.Models.ProfileEvent
+            {
+                Frame = 0,
+                At = 0.0,
+                Type = WebApi.Models.ProfileEventType.O
+            },
+            new WebApi.Models.ProfileEvent
+            {
+                Frame = bottomFrameIndex,
+                At = 0.0,
+                Type = WebApi.Models.ProfileEventType.O
+            },
+
+        };
 
         private static WebApi.Models.CallStackFrame[] ExpectedFrames() => new WebApi.Models.CallStackFrame[]
             {

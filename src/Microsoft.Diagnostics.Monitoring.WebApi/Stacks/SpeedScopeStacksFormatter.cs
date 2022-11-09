@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         private const double FixedEnd = 1.0;
         private static readonly string Exporter = FormattableString.Invariant($"dotnetmonitor@{Assembly.GetExecutingAssembly().GetInformationalVersionString()}");
         private const string Name = "speedscope.json";
-        private static readonly ProfileEvent NativeProfileEvent = new ProfileEvent{ At = FixedStart, Frame = 0, Type = ProfileEventType.O };
+        private static readonly ProfileEvent NativeProfileEvent = new ProfileEvent { At = FixedStart, Frame = 0, Type = ProfileEventType.O };
         private static readonly ProfileEvent UnknownProfileEvent = new ProfileEvent { At = FixedStart, Frame = 1, Type = ProfileEventType.O };
 
         public SpeedscopeStacksFormatter(Stream outputStream) : base(outputStream)
@@ -82,6 +82,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                     {
                         if (!functionToSharedFrameMap.TryGetValue(frame.FunctionId, out int mapping))
                         {
+                            // Note this may imply some duplicate frames because we use FunctionId as a unique identifier for a frame,
+                            // but Speedscope uses the name.
+
                             builder.Clear();
                             builder.Append(GetModuleName(cache, functionData.ModuleId));
                             builder.Append(ModuleSeparator);
