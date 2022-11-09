@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             var speedscopeResult = new Models.SpeedscopeResult();
 
             speedscopeResult.ActiveProfileIndex = 0;
-            speedscopeResult.Profiles = new List<Models.Profile>();
+            speedscopeResult.Profiles = new List<Models.Profile>(stackResult.Stacks.Count);
             speedscopeResult.Exporter = Exporter;
             speedscopeResult.Name = Name;
             speedscopeResult.Shared = new Models.SharedFrames
