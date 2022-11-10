@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
@@ -11,15 +10,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
-using System.CommandLine.Parsing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -29,6 +24,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private ITestOutputHelper _outputHelper;
         private const string ExtensionsFolder = "extensions";
+        public const string SampleArtifactPath = "my/sample/path";
+        public const string SampleFailureMessage = "the extension failed";
+        private const string TestAppName = "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp";
+
         //private const string ExtensionDefinitionFile = "extension.json";
         //private const string EgressExtensionsDirectory = "EgressExtensionResources";
 
@@ -125,9 +124,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             string sourcePath = Path.GetDirectoryName(testAppPath);
 
-
-            //string sourcePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), EgressExtensionsDirectory);
-
             foreach (string newPath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
             {
                 string newFilePath = newPath.Replace(sourcePath, destPath);
@@ -137,17 +133,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 File.Copy(newPath, newFilePath, true);
             }
-
-            /*File.Copy(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), EgressExtensionsDirectory, ExtensionDefinitionFile),
-                Path.Combine(destPath));*/
-
-
-            /*File.Copy(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), EgressExtensionsDirectory, ExtensionDefinitionFile),
-                Path.Combine(destPath, ExtensionDefinitionFile));*/
-
-
-            /*File.Copy(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), EgressExtensionsDirectory),
-                destPath); // This won't work for special dotnet tools case*/
 
             IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
 
@@ -163,16 +148,47 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             TimeSpan timeout = new(0, 0, 30); // do something real
             CancellationTokenSource tokenSource = new(timeout);
 
-            var result = await extension.EgressArtifact(payload, GetStream, tokenSource.Token);
+            EgressArtifactResult result = await extension.EgressArtifact(payload, GetStream, tokenSource.Token);
 
-            _outputHelper.WriteLine("Succeeded? " + result.Succeeded);
+            Assert.True(result.Succeeded);
+            Assert.Equal(SampleArtifactPath, result.ArtifactPath);
         }
 
         [Fact]
-        public static void ExtensionResponse_Success()
+        public async Task ExtensionResponse_Success()
         {
-            string testAppPath = AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp", TargetFrameworkMoniker.Net60);
+            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            using TemporaryDirectory userConfigDir = new(_outputHelper);
+            using TemporaryDirectory dotnetToolsConfigDir = new(_outputHelper);
 
+            // Set up the initial settings used to create the host builder.
+            HostBuilderSettings settings = new()
+            {
+                SharedConfigDirectory = sharedConfigDir.FullName,
+                UserConfigDirectory = userConfigDir.FullName,
+                //DotnetToolsExtensionDirectory = dotnetToolsConfigDir
+            };
+
+            CopyExtensionFiles(userConfigDir.FullName);
+
+            IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
+
+            var extensionDiscoverer = host.Services.GetService<ExtensionDiscoverer>();
+
+            var extension = extensionDiscoverer.FindExtension<IEgressExtension>(TestAppName);
+
+            ExtensionEgressPayload payload = new();
+
+            payload.Configuration = new Dictionary<string, string>();
+            payload.Configuration.Add("ShouldSucceed", "true");
+
+            TimeSpan timeout = new(0, 0, 30); // do something real
+            CancellationTokenSource tokenSource = new(timeout);
+
+            EgressArtifactResult result = await extension.EgressArtifact(payload, GetStream, tokenSource.Token);
+
+            Assert.True(result.Succeeded);
+            Assert.Equal(SampleArtifactPath, result.ArtifactPath);
         }
 
         private static async Task GetStream(Stream stream, CancellationToken cancellationToken)
@@ -184,6 +200,26 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await tempStream.CopyToAsync(stream);
         }
 
+        private static void CopyExtensionFiles(string directoryName)
+        {
+            string destPath = Path.Combine(directoryName, ExtensionsFolder, TestAppName);
+
+            Directory.CreateDirectory(destPath);
+
+            string testAppPath = AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), TestAppName, TargetFrameworkMoniker.Net60); // set this?
+
+            string sourcePath = Path.GetDirectoryName(testAppPath);
+
+            foreach (string newPath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
+            {
+                string newFilePath = newPath.Replace(sourcePath, destPath);
+                string newDirPath = Path.GetDirectoryName(newFilePath);
+
+                Directory.CreateDirectory(newDirPath);
+
+                File.Copy(newPath, newFilePath, true);
+            }
+        }
 
         /// This is the order of configuration sources where a name with a lower
         /// enum value has a lower precedence in configuration.

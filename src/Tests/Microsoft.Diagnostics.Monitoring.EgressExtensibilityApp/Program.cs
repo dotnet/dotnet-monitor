@@ -2,13 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.IO;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,7 +39,6 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
             try
             {
                 string jsonConfig = Console.ReadLine();
-                Console.WriteLine("JSONCONFIG: " + jsonConfig);
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
 
                 Stream outputStream = new MemoryStream(); // might not be a good stream type
@@ -57,12 +55,12 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
                 if (options.ShouldSucceed)
                 {
                     result.Succeeded = true;
-                    result.ArtifactPath = "/test/artifactPath"; // do something real here
+                    result.ArtifactPath = EgressExtensibilityTests.SampleArtifactPath;
                 }
                 else
                 {
                     result.Succeeded = false;
-                    result.FailureMessage = "The egress operation failed."; // do something real here
+                    result.FailureMessage = EgressExtensibilityTests.SampleFailureMessage;
                 }
             }
             catch (Exception ex)
