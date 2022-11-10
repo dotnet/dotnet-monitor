@@ -34,13 +34,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         }
 
         private readonly Dictionary<Guid, EgressEntry> _requests = new();
-        private readonly EgressOperationQueue _taskQueue;
-        private readonly RequestLimitTracker _requestLimits;
+        private readonly IEgressOperationQueue _taskQueue;
+        private readonly IRequestLimitTracker _requestLimits;
         private readonly IServiceProvider _serviceProvider;
 
         public EgressOperationStore(
-            EgressOperationQueue queue,
-            RequestLimitTracker requestLimits,
+            IEgressOperationQueue queue,
+            IRequestLimitTracker requestLimits,
             IServiceProvider serviceProvider)
         {
             _taskQueue = queue;
