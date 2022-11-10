@@ -11,6 +11,5 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         public ValueTask EnqueueAsync(EgressRequest workItem);
         public ValueTask<EgressRequest> DequeueAsync(CancellationToken cancellationToken);
-
     }
 }
