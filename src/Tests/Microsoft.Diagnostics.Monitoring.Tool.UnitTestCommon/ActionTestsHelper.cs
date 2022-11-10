@@ -18,7 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
+namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     internal static class ActionTestsHelper
     {

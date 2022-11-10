@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -202,7 +203,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             options.GreaterThan = 5;
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
                         })
-                        .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent)
+                        .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), "TextFileOutput", ExpectedFilePath, ExpectedFileContent)
                         .SetActionLimits(count: ExpectedActionCountLimit);
 
                     ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(NonStartupRuleName);
@@ -336,7 +337,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             options.GreaterThan = 5;
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
                         })
-                        .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent)
+                        .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), "TextFileOutput", ExpectedFilePath, ExpectedFileContent)
                         .SetActionLimits(count: ExpectedActionCountLimit);
 
                     runner.ConfigurationFromEnvironment.CreateCollectionRule(StartupRuleName)

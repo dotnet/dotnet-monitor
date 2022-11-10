@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -82,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             options.ResponseCount = ExpectedResponseCount;
                             options.StatusCodes = new string[] { "200" };
                         })
-                        .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent);
+                        .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), "TextFileOutput", ExpectedFilePath, ExpectedFileContent);
 
                     ruleStartedTask = runner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
                 },
@@ -135,7 +136,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             options.RequestCount = ExpectedRequestCount;
                             options.RequestDuration = TimeSpan.FromSeconds(0);
                         })
-                        .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent);
+                        .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), "TextFileOutput", ExpectedFilePath, ExpectedFileContent);
 
                     ruleStartedTask = runner.WaitForCollectionRuleActionsCompletedAsync(DefaultRuleName);
                 },

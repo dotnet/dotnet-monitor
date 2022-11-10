@@ -13,7 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions
+namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     internal sealed class CallbackActionFactory : ICollectionRuleActionFactory<BaseRecordOptions>
     {
