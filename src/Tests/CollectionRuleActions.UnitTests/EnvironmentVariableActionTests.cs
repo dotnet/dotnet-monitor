@@ -20,6 +20,7 @@ using Xunit.Abstractions;
 
 namespace CollectionRuleActions.UnitTests
 {
+    [Collection(TestCollections.CollectionRuleActions)]
     public class EnvironmentVariableActionTests
     {
         private readonly ITestOutputHelper _outputHelper;

@@ -23,6 +23,7 @@ using Xunit.Abstractions;
 
 namespace CollectionRuleActions.UnitTests
 {
+    [Collection(TestCollections.CollectionRuleActions)]
     public sealed class LoadProfilerActionTests
     {
         private const string DefaultRuleName = "ProfilerTestRule";

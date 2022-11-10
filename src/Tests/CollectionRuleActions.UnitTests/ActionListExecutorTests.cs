@@ -22,6 +22,7 @@ using Xunit.Abstractions;
 
 namespace CollectionRuleActions.UnitTests
 {
+    [Collection(TestCollections.CollectionRuleActions)]
     public sealed class ActionListExecutorTests
     {
         private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);

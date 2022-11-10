@@ -22,6 +22,7 @@ using Xunit.Abstractions;
 
 namespace CollectionRuleActions.UnitTests
 {
+    [Collection(TestCollections.CollectionRuleActions)]
     public sealed class CollectTraceActionTests
     {
         private const string DefaultRuleName = "TraceTestRule";
