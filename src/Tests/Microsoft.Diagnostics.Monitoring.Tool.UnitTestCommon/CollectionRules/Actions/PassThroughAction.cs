@@ -15,29 +15,36 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
     {
         public ICollectionRuleAction Create(IEndpointInfo endpointInfo, PassThroughOptions options)
         {
-            return new PassThroughAction(endpointInfo, options);
+            return new PassThroughAction(options);
         }
     }
 
-    internal sealed class PassThroughAction : CollectionRuleActionBase<PassThroughOptions>
+    internal sealed class PassThroughAction : ICollectionRuleAction
     {
-        public PassThroughAction(IEndpointInfo endpointInfo, PassThroughOptions settings)
-            : base(endpointInfo, settings)
+        private readonly PassThroughOptions _options;
+
+        public PassThroughAction(PassThroughOptions options)
         {
+            _options = options;
         }
 
-        protected override Task<CollectionRuleActionResult> ExecuteCoreAsync(
-            TaskCompletionSource<object> startCompletionSource,
-            CollectionRuleMetadata collectionRuleMetadata,
-            CancellationToken token)
+        public Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
-            startCompletionSource.TrySetResult(null);
+            return StartAsync(token);
+        }
 
+        public Task StartAsync(CancellationToken token)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task<CollectionRuleActionResult> WaitForCompletionAsync(CancellationToken token)
+        {
             CollectionRuleActionResult result = new CollectionRuleActionResult() { OutputValues = new Dictionary<string, string>() };
 
-            result.OutputValues.Add("Output1", Options.Input1);
-            result.OutputValues.Add("Output2", Options.Input2);
-            result.OutputValues.Add("Output3", Options.Input3);
+            result.OutputValues.Add("Output1", _options.Input1);
+            result.OutputValues.Add("Output2", _options.Input2);
+            result.OutputValues.Add("Output3", _options.Input3);
 
             return Task.FromResult(result);
         }

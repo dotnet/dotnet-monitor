@@ -32,6 +32,7 @@ using DisposableHelper = Microsoft.Diagnostics.Monitoring.TestCommon.DisposableH
 
 namespace CollectionRuleActions.UnitTests
 {
+    [Collection(TestCollections.CollectionRuleActions)]
     public class CollectLogsActionTests
     {
         private readonly ITestOutputHelper _outputHelper;

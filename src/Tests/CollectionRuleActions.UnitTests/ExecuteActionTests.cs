@@ -19,6 +19,7 @@ using DisposableHelper = Microsoft.Diagnostics.Monitoring.TestCommon.DisposableH
 
 namespace CollectionRuleActions.UnitTests
 {
+    [Collection(TestCollections.CollectionRuleActions)]
     public sealed class ExecuteActionTests
     {
         private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);

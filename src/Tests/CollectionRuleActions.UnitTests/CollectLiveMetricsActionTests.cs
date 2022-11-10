@@ -21,6 +21,7 @@ using Xunit.Abstractions;
 
 namespace CollectionRuleActions.UnitTests
 {
+    [Collection(TestCollections.CollectionRuleActions)]
     public class CollectLiveMetricsActionTests
     {
         private readonly ITestOutputHelper _outputHelper;
