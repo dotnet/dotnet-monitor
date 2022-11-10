@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Moq;
 using System;
 using System.Threading;
@@ -63,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
             store.StopOperation(operationId, (ex) => exceptionHit.TrySetResult(ex));
 
             // Assert
-            Exception hitException = await exceptionHit.Task;
+            Exception hitException = await exceptionHit.Task.WaitAsync(CommonTestTimeouts.AwaitForTaskToProcessTimeout);
             Assert.NotNull(hitException);
             Assert.Equal(Models.OperationState.Stopping, store.GetOperationStatus(operationId).Status);
         }
@@ -98,7 +99,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
             store.CancelOperation(operationId);
 
             // Assert
-            await stopCancelled.Task;
+            await stopCancelled.Task.WaitAsync(CommonTestTimeouts.AwaitForTaskToProcessTimeout);
             Assert.Equal(Models.OperationState.Cancelled, store.GetOperationStatus(operationId).Status);
         }
     }
