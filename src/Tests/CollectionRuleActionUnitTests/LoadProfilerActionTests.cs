@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
+namespace CollectionRuleActionUnitTests
 {
     public sealed class LoadProfilerActionTests
     {

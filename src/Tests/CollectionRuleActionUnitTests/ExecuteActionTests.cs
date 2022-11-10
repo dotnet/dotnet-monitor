@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
@@ -13,8 +14,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using DisposableHelper = Microsoft.Diagnostics.Monitoring.TestCommon.DisposableHelper;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
+namespace CollectionRuleActionUnitTests
 {
     public sealed class ExecuteActionTests
     {
@@ -62,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     CollectionRuleActionException invalidOperationException = await Assert.ThrowsAsync<CollectionRuleActionException>(
                         () => action.WaitForCompletionAsync(token));
 
-                    Assert.Equal(string.Format(Tools.Monitor.Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
+                    Assert.Equal(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), invalidOperationException.Message);
                 });
         }
 
@@ -136,7 +138,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     CollectionRuleActionException fileNotFoundException = await Assert.ThrowsAsync<CollectionRuleActionException>(
                         () => action.StartAsync(token));
 
-                    Assert.Equal(string.Format(Tools.Monitor.Strings.ErrorMessage_FileNotFound, uniquePathName), fileNotFoundException.Message);
+                    Assert.Equal(string.Format(Strings.ErrorMessage_FileNotFound, uniquePathName), fileNotFoundException.Message);
                 });
         }
 

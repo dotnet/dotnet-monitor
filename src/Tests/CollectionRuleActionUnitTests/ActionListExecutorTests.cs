@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
-using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
@@ -20,7 +19,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
+namespace CollectionRuleActionUnitTests
 {
     public sealed class ActionListExecutorTests
     {

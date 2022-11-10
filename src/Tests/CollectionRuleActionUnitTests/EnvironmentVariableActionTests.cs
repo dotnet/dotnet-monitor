@@ -6,16 +6,18 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
+namespace CollectionRuleActionUnitTests
 {
     public class EnvironmentVariableActionTests
     {
@@ -44,13 +46,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             await TestHostHelper.CreateCollectionRulesHost(
                 outputHelper: _outputHelper,
-                setup: (Tools.Monitor.RootOptions rootOptions) =>
+                setup: (RootOptions rootOptions) =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
                         .AddSetEnvironmentVariableAction(DefaultVarName, DefaultVarValue);
                 },
-                hostCallback: async (Extensions.Hosting.IHost host) =>
+                hostCallback: async (IHost host) =>
                 {
                     SetEnvironmentVariableOptions setOpts = ActionTestsHelper.GetActionOptions<SetEnvironmentVariableOptions>(host, DefaultRuleName, 0);
 
@@ -93,14 +95,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             const string VariableDoesNotExist = "SomeEnvVarThatIsNotSet";
             await TestHostHelper.CreateCollectionRulesHost(
                 outputHelper: _outputHelper,
-                setup: (Tools.Monitor.RootOptions rootOptions) =>
+                setup: (RootOptions rootOptions) =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
                         .AddGetEnvironmentVariableAction(TestAppScenarios.EnvironmentVariables.IncrementVariableName)
                         .AddGetEnvironmentVariableAction(VariableDoesNotExist);
                 },
-                hostCallback: async (Extensions.Hosting.IHost host) =>
+                hostCallback: async (IHost host) =>
                 {
                     GetEnvironmentVariableOptions getOpts = ActionTestsHelper.GetActionOptions<GetEnvironmentVariableOptions>(host, DefaultRuleName, 0);
                     GetEnvironmentVariableOptions getFailOpts = ActionTestsHelper.GetActionOptions<GetEnvironmentVariableOptions>(host, DefaultRuleName, 1);
@@ -159,14 +161,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             await TestHostHelper.CreateCollectionRulesHost(
                 outputHelper: _outputHelper,
-                setup: (Tools.Monitor.RootOptions rootOptions) =>
+                setup: (RootOptions rootOptions) =>
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
                         .AddSetEnvironmentVariableAction(DefaultVarName, DefaultVarValue)
                         .AddGetEnvironmentVariableAction(DefaultVarName);
                 },
-                hostCallback: async (Extensions.Hosting.IHost host) =>
+                hostCallback: async (IHost host) =>
                 {
                     SetEnvironmentVariableOptions setOpts = ActionTestsHelper.GetActionOptions<SetEnvironmentVariableOptions>(host, DefaultRuleName, 0);
                     GetEnvironmentVariableOptions getOpts = ActionTestsHelper.GetActionOptions<GetEnvironmentVariableOptions>(host, DefaultRuleName, 1);

@@ -6,7 +6,6 @@ using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.Pipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor;
@@ -28,8 +27,9 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using DisposableHelper = Microsoft.Diagnostics.Monitoring.TestCommon.DisposableHelper;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
+namespace CollectionRuleActionUnitTests
 {
     public class CollectLogsActionTests
     {
@@ -269,7 +269,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     }
                     finally
                     {
-                        await Tools.Monitor.DisposableHelper.DisposeAsync(action);
+                        await DisposableHelper.DisposeAsync(action);
                     }
                 });
             },

@@ -19,13 +19,13 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
+namespace CollectionRuleActionUnitTests
 {
     public sealed class CollectGCDumpActionTests
     {
         private const string DefaultRuleName = "GCDumpTestRule";
 
-        readonly private ITestOutputHelper _outputHelper;
+        private readonly ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
 
         public CollectGCDumpActionTests(ITestOutputHelper outputHelper)
