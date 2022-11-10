@@ -25,7 +25,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = Utilities.ArtifactType_Metrics)]
         [EgressValidation]
         public Task<ActionResult> CaptureMetrics(
             [FromQuery]
@@ -79,7 +78,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [RequestLimit(LimitKey = Utilities.ArtifactType_Metrics)]
         [EgressValidation]
         public Task<ActionResult> CaptureMetricsCustom(
             [FromBody][Required]

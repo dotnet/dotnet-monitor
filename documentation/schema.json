@@ -976,6 +976,16 @@
             "$ref": "#/definitions/AzureBlobEgressProviderOptions"
           }
         },
+        "S3Storage": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "Mapping of S3 storage egress provider names to their options.",
+          "additionalProperties": {
+            "$ref": "#/definitions/S3StorageEgressProviderOptions"
+          }
+        },
         "FileSystem": {
           "type": [
             "null",
@@ -1107,6 +1117,88 @@
           "additionalProperties": {
             "type": "string"
           }
+        }
+      }
+    },
+    "S3StorageEgressProviderOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "BucketName"
+      ],
+      "properties": {
+        "Endpoint": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The endpoint of S3 to connect to. This is optional in case of using AWS storage."
+        },
+        "BucketName": {
+          "type": "string",
+          "description": "The name of the bucket used for storage",
+          "minLength": 1
+        },
+        "RegionName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the S3 region"
+        },
+        "AccessKeyId": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The AWS AccessKeyId for IAM user to login"
+        },
+        "SecretAccessKey": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The AWS SecretAccessKey associated AccessKeyId for IAM user to login"
+        },
+        "AwsProfileName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The AWS profile name to be used for login"
+        },
+        "AwsProfilePath": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The AWS profile path, if profile details not stored in default path"
+        },
+        "GeneratePreSignedUrl": {
+          "type": "boolean",
+          "description": "A boolean flag indicates if the return value of egress provider should be a pre-signed URL or only the bucket name and object id of uploaded entry."
+        },
+        "PreSignedUrlExpiry": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The amount of time the generated pre-signed url will be accessible.",
+          "format": "duration"
+        },
+        "ForcePathStyle": {
+          "type": "boolean",
+          "description": "The boolean flag set for AWS connection configuration ForcePathStyle option."
+        },
+        "CopyBufferSize": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
         }
       }
     },

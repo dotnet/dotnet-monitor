@@ -267,6 +267,7 @@ Status of the egress operation.
 |---|---|
 | `Running` | Operation has been started. This is the initial state. |
 | `Cancelled` | The operation was cancelled by the user. |
+| `Stopping` | The operation is in the process of stopping at the request of the user. |
 | `Succeeded` | Egress operation has been successful. Querying the operation will return the location of the egressed artifact. |
 | `Failed` | Egress operation failed. Querying the operation will return detailed error information. |
 
@@ -281,6 +282,8 @@ Detailed information about an operation.
 | `operationId` | guid | Unique identifier for the operation. |
 | `createdDateTime` | datetime string | UTC DateTime string of when the operation was created. |
 | `status` | [OperationState](#operationstate) | The current status of operation. |
+| `egressProviderName` | string | (8.0+) The name of the egress provider that the artifact is being sent to. This will be null if the artifact is being sent directly back to the user from an HTTP request. |
+| `isStoppable` | bool | (8.0+) Whether this operation can be gracefully stopped using [Stop Operation](operations-stop.md). Not all operations support being stopped. |
 
 ### Example
 
@@ -290,7 +293,9 @@ Detailed information about an operation.
     "error": null,
     "operationId": "67f07e40-5cca-4709-9062-26302c484f18",
     "createdDateTime": "2021-07-21T06:21:15.315861Z",
-    "status": "Succeeded"
+    "status": "Succeeded",
+    "egressProviderName": "monitorBlob",
+    "isStoppable": false,
 }
 ```
 
@@ -303,6 +308,8 @@ Summary state of an operation.
 | `operationId` | guid | Unique identifier for the operation. |
 | `createdDateTime` | datetime string | UTC DateTime string of when the operation was created. |
 | `status` | [OperationState](#operationstate) | The current status of operation. |
+| `egressProviderName` | string | (8.0+) The name of the egress provider that the artifact is being sent to. This will be null if the artifact is being sent directly back to the user from an HTTP request. |
+| `isStoppable` | bool | (8.0+) Whether this operation can be gracefully stopped using [Stop Operation](operations-stop.md). Not all operations support being stopped. |
 | `process` | [OperationProcessInfo](#operationprocessinfo) | (6.3+) The process on which the operation is performed. |
 
 ### Example
@@ -312,6 +319,8 @@ Summary state of an operation.
     "operationId": "67f07e40-5cca-4709-9062-26302c484f18",
     "createdDateTime": "2021-07-21T06:21:15.315861Z",
     "status": "Succeeded",
+    "egressProviderName": null,
+    "isStoppable": false,
     "process": {
         "pid": 21632,
         "uid": "cd4da319-fa9e-4987-ac4e-e57b2aac248b",
