@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
@@ -15,7 +14,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
+namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     internal sealed class EndpointUtilities
     {
@@ -58,9 +57,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return new ServerSourceHolder(source, transportName);
         }
 
-        public AppRunner CreateAppRunner(string transportName, TargetFrameworkMoniker tfm, int appId = 1)
+        public AppRunner CreateAppRunner(Assembly testAssembly, string transportName, TargetFrameworkMoniker tfm, int appId = 1)
         {
-            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly(), appId, tfm);
+            AppRunner appRunner = new(_outputHelper, testAssembly, appId, tfm);
             appRunner.ConnectionMode = DiagnosticPortConnectionMode.Connect;
             appRunner.DiagnosticPortPath = transportName;
             appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;

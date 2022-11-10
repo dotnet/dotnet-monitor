@@ -4,7 +4,7 @@
 
 using System.IO.Pipelines;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.Pipe
+namespace CollectionRuleActions.UnitTests
 {
     internal sealed class PipeEgressOptions
     {

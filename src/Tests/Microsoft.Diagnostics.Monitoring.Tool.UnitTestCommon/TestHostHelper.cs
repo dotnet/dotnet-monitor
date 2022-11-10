@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
+namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     internal static class TestHostHelper
     {
@@ -108,6 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.ConfigureStorage(context.Configuration);
                     services.ConfigureInProcessFeatures(context.Configuration);
                     services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
+                    services.AddSingleton<IDumpOperationFactory, DumpOperationFactory>();
                     services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
                     services.AddSingleton<IMetricsOperationFactory, MetricsOperationFactory>();
                     services.AddSingleton<ITraceOperationFactory, TraceOperationFactory>();

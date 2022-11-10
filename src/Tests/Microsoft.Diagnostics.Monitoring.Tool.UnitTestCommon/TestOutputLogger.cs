@@ -8,7 +8,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
+namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     internal sealed class TestOutputLoggerProvider : ILoggerProvider
     {

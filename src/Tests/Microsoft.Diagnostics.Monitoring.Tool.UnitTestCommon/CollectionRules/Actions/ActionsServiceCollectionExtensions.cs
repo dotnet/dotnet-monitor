@@ -8,7 +8,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions
+namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     internal static class ActionsServiceCollectionExtensions
     {

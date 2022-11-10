@@ -47,10 +47,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly IInProcessFeatures _inProcessFeatures;
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
         private readonly EgressOperationStore _operationsStore;
-        private readonly IDumpService _dumpService;
         private readonly OperationTrackerService _operationTrackerService;
         private readonly ICollectionRuleService _collectionRuleService;
         private readonly ProfilerChannel _profilerChannel;
+        private readonly IDumpOperationFactory _dumpOperationFactory;
         private readonly ILogsOperationFactory _logsOperationFactory;
         private readonly IMetricsOperationFactory _metricsOperationFactory;
         private readonly ITraceOperationFactory _traceOperationFactory;
@@ -63,11 +63,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
             _inProcessFeatures = serviceProvider.GetRequiredService<IInProcessFeatures>();
             _operationsStore = serviceProvider.GetRequiredService<EgressOperationStore>();
-            _dumpService = serviceProvider.GetRequiredService<IDumpService>();
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
             _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
             _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
             _profilerChannel = serviceProvider.GetRequiredService<ProfilerChannel>();
+            _dumpOperationFactory = serviceProvider.GetRequiredService<IDumpOperationFactory>();
             _logsOperationFactory = serviceProvider.GetRequiredService<ILogsOperationFactory>();
             _metricsOperationFactory = serviceProvider.GetRequiredService<IMetricsOperationFactory>();
             _traceOperationFactory = serviceProvider.GetRequiredService<ITraceOperationFactory>();
@@ -224,37 +224,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null)
         {
-            const string artifactType = Utilities.ArtifactType_Dump;
-
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
-            return InvokeForProcess(async processInfo =>
-            {
-                string dumpFileName = DumpUtilities.GenerateDumpFileName();
-
-                if (string.IsNullOrEmpty(egressProvider))
-                {
-                    await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType);
-                    Stream dumpStream = await _dumpService.DumpAsync(processInfo.EndpointInfo, type, HttpContext.RequestAborted);
-
-                    _logger.WrittenToHttpStream();
-                    //Compression is done automatically by the response
-                    //Chunking is done because the result has no content-length
-                    return File(dumpStream, ContentTypes.ApplicationOctetStream, dumpFileName);
-                }
-                else
-                {
-                    KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
-
-                    return await SendToEgress(new EgressOperation(
-                        token => _dumpService.DumpAsync(processInfo.EndpointInfo, type, token),
-                        egressProvider,
-                        dumpFileName,
-                        processInfo,
-                        ContentTypes.ApplicationOctetStream,
-                        scope), limitKey: artifactType);
-                }
-            }, processKey, artifactType);
+            return InvokeForProcess(
+                processInfo => Result(
+                    Utilities.ArtifactType_Dump,
+                    egressProvider,
+                    _dumpOperationFactory.Create(processInfo.EndpointInfo, type),
+                    processInfo),
+                processKey,
+                Utilities.ArtifactType_Dump);
         }
 
         /// <summary>

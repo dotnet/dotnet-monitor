@@ -12,6 +12,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.Event
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
@@ -171,16 +172,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 });
         }
 
-        public static CollectionRuleOptions AddExecuteActionAppAction(this CollectionRuleOptions options, params string[] args)
+        public static CollectionRuleOptions AddExecuteActionAppAction(this CollectionRuleOptions options, Assembly testAssembly, params string[] args)
         {
-            options.AddExecuteAction(DotNetHost.GetPath(), ExecuteActionTestHelper.GenerateArgumentsString(args));
+            options.AddExecuteAction(DotNetHost.GetPath(), ExecuteActionTestHelper.GenerateArgumentsString(testAssembly, args));
 
             return options;
         }
 
-        public static CollectionRuleOptions AddExecuteActionAppAction(this CollectionRuleOptions options, bool waitForCompletion, params string[] args)
+        public static CollectionRuleOptions AddExecuteActionAppAction(this CollectionRuleOptions options, Assembly testAssembly, bool waitForCompletion, params string[] args)
         {
-            options.AddExecuteAction(DotNetHost.GetPath(), ExecuteActionTestHelper.GenerateArgumentsString(args), waitForCompletion);
+            options.AddExecuteAction(DotNetHost.GetPath(), ExecuteActionTestHelper.GenerateArgumentsString(testAssembly, args), waitForCompletion);
 
             return options;
         }
