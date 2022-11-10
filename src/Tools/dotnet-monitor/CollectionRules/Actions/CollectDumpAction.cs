@@ -42,14 +42,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         internal sealed class CollectDumpAction :
             CollectionRuleActionBase<CollectDumpOptions>
         {
-            private readonly IDumpService _dumpService;
+            private readonly IDumpOperationFactory _dumpOperationFactory;
             private readonly IServiceProvider _serviceProvider;
 
             public CollectDumpAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectDumpOptions options)
                 : base(endpointInfo, options)
             {
                 _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-                _dumpService = serviceProvider.GetRequiredService<IDumpService>();
+                _dumpOperationFactory = serviceProvider.GetRequiredService<IDumpOperationFactory>();
             }
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
@@ -60,22 +60,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 DumpType dumpType = Options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
                 string egressProvider = Options.Egress;
 
-                string dumpFileName = DumpUtilities.GenerateDumpFileName();
-
-                string dumpFilePath = string.Empty;
-
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Dump, EndpointInfo);
 
+                IArtifactOperation dumpOperation = _dumpOperationFactory.Create(EndpointInfo, dumpType);
+
                 EgressOperation egressOperation = new EgressOperation(
-                    token =>
-                    {
-                        startCompletionSource.TrySetResult(null);
-                        return _dumpService.DumpAsync(EndpointInfo, dumpType, token);
-                    },
+                    (outputStream, token) => dumpOperation.ExecuteAsync(outputStream, startCompletionSource, token),
                     egressProvider,
-                    dumpFileName,
+                    dumpOperation.GenerateFileName(),
                     EndpointInfo,
-                    ContentTypes.ApplicationOctetStream,
+                    dumpOperation.ContentType,
                     scope,
                     collectionRuleMetadata);
 
@@ -84,7 +78,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 {
                     throw new CollectionRuleActionException(result.Exception);
                 }
-                dumpFilePath = result.Result.Value;
+                string dumpFilePath = result.Result.Value;
 
                 return new CollectionRuleActionResult()
                 {
