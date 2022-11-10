@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Globalization;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     internal sealed class HttpResponseEgressOperation : IEgressOperation
     {
         private readonly HttpContext _httpContext;
-        private readonly TaskCompletionSource<int> _responseFinishedCompletionSource = new();
+        private readonly TaskCompletionSource<int> _responseFinishedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         public EgressProcessInfo ProcessInfo { get; private set; }
         public string EgressProviderName { get { return null; } }
@@ -44,7 +45,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             return statusCode >= (int)HttpStatusCode.OK && statusCode < (int)HttpStatusCode.Ambiguous
                 ? ExecutionResult<EgressResult>.Empty()
-                : ExecutionResult<EgressResult>.Failed(new Exception($"HTTP request failed with status code: ${statusCode}"));
+                : ExecutionResult<EgressResult>.Failed(
+                    new Exception(string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.ErrorMessage_HttpOperationFailed,
+                        statusCode)));
         }
 
         public void Validate(IServiceProvider serviceProvider)
