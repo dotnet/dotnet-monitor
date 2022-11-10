@@ -88,6 +88,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP request failed with status code: &apos;{0}&apos;.
+        /// </summary>
+        internal static string ErrorMessage_HttpOperationFailed {
+            get {
+                return ResourceManager.GetString("ErrorMessage_HttpOperationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid metric count..
         /// </summary>
         internal static string ErrorMessage_InvalidMetricCount {
