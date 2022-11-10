@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             });
         }
 
-        private string ConstructQualifiedEventName(string eventName, TraceEventOpcode opcode)
+        private static string ConstructQualifiedEventName(string eventName, TraceEventOpcode opcode)
         {
             return (opcode == TraceEventOpcode.Info)
                 ? eventName
@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             TraceEventFilter traceEventFilter = new()
             {
                 ProviderName = TestAppScenarios.TraceEvents.EventProviderName,
-                EventName = ConstructQualifiedEventName(TestAppScenarios.TraceEvents.UniqueEventName, opcode),
+                EventName = CollectTraceTests.ConstructQualifiedEventName(TestAppScenarios.TraceEvents.UniqueEventName, opcode),
                 PayloadFilter = payloadFilter
             };
 
@@ -143,12 +143,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             string[] files = Directory.GetFiles(tempDirectory.FullName, "*.nettrace", SearchOption.TopDirectoryOnly);
             string traceFile = Assert.Single(files);
 
-            var (hasStoppingEvent, hasRundown) = await ValidateNettraceFile(traceFile, traceEventFilter);
+            var (hasStoppingEvent, hasRundown) = await CollectTraceTests.ValidateNettraceFile(traceFile, traceEventFilter);
             Assert.Equal(expectStoppingEvent, hasStoppingEvent);
             Assert.Equal(collectRundown, hasRundown);
         }
 
-        private Task<(bool hasStoppingEvent, bool hasRundown)> ValidateNettraceFile(string filePath, TraceEventFilter eventFilter)
+        private static Task<(bool hasStoppingEvent, bool hasRundown)> ValidateNettraceFile(string filePath, TraceEventFilter eventFilter)
         {
             return Task.Run(() =>
             {
