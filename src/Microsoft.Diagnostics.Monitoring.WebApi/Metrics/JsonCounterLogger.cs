@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers;
 using System.IO;
@@ -26,10 +27,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly ArrayBufferWriter<byte> _bufferWriter;
         private readonly Stream _stream;
 
-        public JsonCounterLogger(Stream stream)
+        public JsonCounterLogger(Stream stream, ILogger logger)
+            : base(logger)
         {
-            _stream = stream;
             _bufferWriter = new(InitialBufferCapacity);
+            _stream = stream;
         }
 
         protected override async Task SerializeAsync(ICounterPayload counter)
