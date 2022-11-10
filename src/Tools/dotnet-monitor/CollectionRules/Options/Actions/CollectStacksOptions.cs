@@ -14,7 +14,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     internal enum CallStackFormat
     {
         Json,
-        PlainText
+        PlainText,
+        Speedscope
     }
 
     [DebuggerDisplay("CollectStacks")]

@@ -20,6 +20,7 @@ Enumeration that describes the output format of the collected call stacks.
 |---|---|
 | `Json` | Stacks are formatted in Json. See [CallStackResult](#experimental-callstackresult-70). |
 | `PlainText` | Stacks are formatted in plain text. |
+| `Speedscope` | Stacks are formatted in [speedscope](https://www.speedscope.app). Note that performance data is not present. |
 
 ## **[Experimental]** CallStackFrame (7.0+)
 
