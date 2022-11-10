@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
@@ -14,6 +15,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         private sealed class EgressEntry
         {
+            public bool IsStoppable
+            {
+                get
+                {
+                    return State == Models.OperationState.Running && EgressRequest.EgressOperation.IsStoppable;
+                }
+            }
+
             public ExecutionResult<EgressResult> ExecutionResult { get; set; }
             public Models.OperationState State { get; set; }
 
@@ -67,11 +76,39 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         OperationId = operationId
                     });
             }
-
-            //Kick off work to attempt egress
             await _taskQueue.EnqueueAsync(request);
 
             return operationId;
+        }
+
+        public void StopOperation(Guid operationId, Action<Exception> onStopException)
+        {
+            lock (_requests)
+            {
+                if (!_requests.TryGetValue(operationId, out EgressEntry entry))
+                {
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
+                }
+
+                if (entry.State != Models.OperationState.Running)
+                {
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
+                }
+
+                if (!entry.EgressRequest.EgressOperation.IsStoppable)
+                {
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationDoesNotSupportBeingStopped);
+                }
+
+                entry.State = Models.OperationState.Stopping;
+
+                CancellationToken token = entry.EgressRequest.CancellationTokenSource.Token;
+                _ = Task.Run(() => entry.EgressRequest.EgressOperation.StopAsync(token), token)
+                    .ContinueWith(task => onStopException(task.Exception),
+                    token,
+                    TaskContinuationOptions.OnlyOnFaulted,
+                    TaskScheduler.Default);
+            }
         }
 
         public void CancelOperation(Guid operationId)
@@ -83,7 +120,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
 
-                if (entry.State != Models.OperationState.Running)
+                if (entry.State != Models.OperationState.Running &&
+                    entry.State != Models.OperationState.Stopping)
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
                 }
@@ -102,7 +140,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
-                if (entry.State != Models.OperationState.Running)
+
+                if (entry.State != Models.OperationState.Running &&
+                    entry.State != Models.OperationState.Stopping)
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
                 }
@@ -164,6 +204,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         OperationId = kvp.Key,
                         CreatedDateTime = kvp.Value.CreatedDateTime,
                         Status = kvp.Value.State,
+                        EgressProviderName = kvp.Value.EgressRequest.EgressOperation.EgressProviderName,
+                        IsStoppable = kvp.Value.IsStoppable,
                         Process = processInfo != null ?
                             new Models.OperationProcessInfo
                             {
@@ -191,6 +233,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     OperationId = entry.EgressRequest.OperationId,
                     Status = entry.State,
                     CreatedDateTime = entry.CreatedDateTime,
+                    EgressProviderName = entry.EgressRequest.EgressOperation.EgressProviderName,
+                    IsStoppable = entry.IsStoppable,
                     Process = processInfo != null ?
                         new Models.OperationProcessInfo
                         {

@@ -53,10 +53,12 @@ The expected content type is `application/json`.
 |---|---|---|---|
 | 200 OK | | The logs from the process formatted as [newline delimited JSON](https://github.com/ndjson/ndjson-spec). Each JSON object is a [LogEntry](definitions.md#logentry) | `application/x-ndjson` |
 | 200 OK | | The logs from the process formatted as plain text, similar to the output of the JSON console formatter. | `text/plain` |
-| 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
+| 202 Accepted | | When an egress provider is specified, the artifact has begun being collected. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many logs requests at this time. Try to request logs at a later time. | `application/problem+json` |
+
+> **NOTE: (8.0+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
 
 ## Examples
 
@@ -98,6 +100,7 @@ The log statements logged at the Information level or higher for 1 minute is ret
 ```http
 HTTP/1.1 200 OK
 Content-Type: text/plain
+Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 
 2021-05-13 18:06:41Z info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
       => RequestId:0HM8M726ENU3K:0000002B, RequestPath:/, SpanId:|4791a4a7-433aa59a9e362743., TraceId:4791a4a7-433aa59a9e362743, ParentId:

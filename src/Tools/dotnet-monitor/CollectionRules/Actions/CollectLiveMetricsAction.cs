@@ -46,12 +46,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             private readonly IServiceProvider _serviceProvider;
             private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
+            private readonly IMetricsOperationFactory _metricsOperationFactory;
 
             public CollectLiveMetricsAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectLiveMetricsOptions options)
                 : base(endpointInfo, options)
             {
                 _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
                 _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
+                _metricsOperationFactory = serviceProvider.GetRequiredService<IMetricsOperationFactory>();
             }
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
@@ -75,16 +77,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     (int)duration.TotalSeconds,
                     configuration);
 
-                string fileName = MetricsUtilities.GetMetricFilename(EndpointInfo);
+                IArtifactOperation operation = _metricsOperationFactory.Create(
+                    EndpointInfo,
+                    settings);
 
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Metrics, EndpointInfo);
 
                 EgressOperation egressOperation = new EgressOperation(
-                    (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(startCompletionSource, EndpointInfo, settings, outputStream, token),
+                    (outputStream, token) => operation.ExecuteAsync(outputStream, startCompletionSource, token),
                     egressProvider,
-                    fileName,
+                    operation.GenerateFileName(),
                     EndpointInfo,
-                    ContentTypes.ApplicationOctetStream,
+                    operation.ContentType,
                     scope,
                     collectionRuleMetadata);
 

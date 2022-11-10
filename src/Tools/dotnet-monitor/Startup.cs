@@ -95,9 +95,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // https://github.com/dotnet/aspnetcore/issues/36960
             //app.UseResponseCompression();
 
-            //Note this must be after UseRouting but before UseEndpoints
-            app.UseMiddleware<RequestLimitMiddleware>();
-
             app.UseEndpoints(builder =>
             {
                 builder.MapControllers();

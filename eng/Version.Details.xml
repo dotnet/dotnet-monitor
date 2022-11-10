@@ -1,16 +1,16 @@
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="6.0.0-preview.22557.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="6.0.0-preview.22558.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>c8861bddf37a33fc2cb59b00091b13cc3b2b0489</Sha>
+      <Sha>779daedbfb92b4973a156702c9342cf652d1211e</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="6.0.0-preview.22557.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="6.0.0-preview.22558.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>c8861bddf37a33fc2cb59b00091b13cc3b2b0489</Sha>
+      <Sha>779daedbfb92b4973a156702c9342cf652d1211e</Sha>
     </Dependency>
-    <Dependency Name="System.CommandLine" Version="2.0.0-beta4.22504.1">
+    <Dependency Name="System.CommandLine" Version="2.0.0-beta4.22526.1">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
-      <Sha>c776cd4e906b669b9cce1017fee7d0ba9845d163</Sha>
+      <Sha>605dd1d76ddfea34aa42b4337dfb3f7b467acb0d</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
@@ -18,9 +18,9 @@
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>d50065c4a4fe31a66a1cc2e1a31896d30464da13</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0-preview1.22553.2">
+    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0-preview1.22559.1">
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
-      <Sha>c2bc164fe991d87662dc5b6d3aa94bf276392241</Sha>
+      <Sha>31373ce8529c3d2f6b91e61585872160b0d7d7cd</Sha>
     </Dependency>
     <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="8.0.0-beta.22554.2">
       <Uri>https://github.com/dotnet/arcade</Uri>
