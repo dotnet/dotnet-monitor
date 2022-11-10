@@ -10,6 +10,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -36,7 +37,7 @@ namespace CollectionRuleActions.UnitTests
                 options =>
                 {
                     options.Path = DotNetHost.GetPath();
-                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.ZeroExitCode });
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(Assembly.GetExecutingAssembly(), ActionTestsConstants.ZeroExitCode);
                 },
                 async (action, token) =>
                 {
@@ -55,7 +56,7 @@ namespace CollectionRuleActions.UnitTests
                 options =>
                 {
                     options.Path = DotNetHost.GetPath();
-                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.NonZeroExitCode });
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(Assembly.GetExecutingAssembly(), ActionTestsConstants.NonZeroExitCode);
                 },
                 async (action, token) =>
                 {
@@ -80,7 +81,7 @@ namespace CollectionRuleActions.UnitTests
                 options =>
                 {
                     options.Path = DotNetHost.GetPath();
-                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.Sleep, sleepMsArg });
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(Assembly.GetExecutingAssembly(), ActionTestsConstants.Sleep, sleepMsArg);
                 },
                 async (action, token) =>
                 {
@@ -108,7 +109,7 @@ namespace CollectionRuleActions.UnitTests
                 options =>
                 {
                     options.Path = DotNetHost.GetPath();
-                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.TextFileOutput, textFileOutputPath, testMessage });
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(Assembly.GetExecutingAssembly(), ActionTestsConstants.TextFileOutput, textFileOutputPath, testMessage);
                 },
                 async (action, token) =>
                 {
@@ -131,7 +132,7 @@ namespace CollectionRuleActions.UnitTests
                 options =>
                 {
                     options.Path = uniquePathName;
-                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(Array.Empty<string>());
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(Assembly.GetExecutingAssembly());
                 },
                 async (action, token) =>
                 {
@@ -149,7 +150,7 @@ namespace CollectionRuleActions.UnitTests
                 options =>
                 {
                     options.Path = DotNetHost.GetPath();
-                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(new string[] { ActionTestsConstants.NonZeroExitCode });
+                    options.Arguments = ExecuteActionTestHelper.GenerateArgumentsString(Assembly.GetExecutingAssembly(), ActionTestsConstants.NonZeroExitCode);
                     options.IgnoreExitCode = true;
                 },
                 async (action, token) =>

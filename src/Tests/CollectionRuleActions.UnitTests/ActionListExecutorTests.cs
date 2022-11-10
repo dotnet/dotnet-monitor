@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -40,8 +41,8 @@ namespace CollectionRuleActions.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddExecuteActionAppAction(new string[] { ActionTestsConstants.ZeroExitCode })
-                    .AddExecuteActionAppAction(new string[] { ActionTestsConstants.ZeroExitCode })
+                    .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), ActionTestsConstants.ZeroExitCode)
+                    .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), ActionTestsConstants.ZeroExitCode)
                     .SetStartupTrigger();
             }, async host =>
             {
@@ -81,8 +82,8 @@ namespace CollectionRuleActions.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.ZeroExitCode })
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.NonZeroExitCode })
+                    .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), waitForCompletion, ActionTestsConstants.ZeroExitCode)
+                    .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), waitForCompletion, ActionTestsConstants.NonZeroExitCode)
                     .SetStartupTrigger();
             }, async host =>
             {
@@ -127,8 +128,8 @@ namespace CollectionRuleActions.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.NonZeroExitCode })
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.ZeroExitCode })
+                    .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), waitForCompletion, ActionTestsConstants.NonZeroExitCode)
+                    .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), waitForCompletion, ActionTestsConstants.ZeroExitCode)
                     .SetStartupTrigger();
             }, async host =>
             {
