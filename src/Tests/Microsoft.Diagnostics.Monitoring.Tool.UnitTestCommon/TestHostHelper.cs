@@ -108,6 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     services.ConfigureStorage(context.Configuration);
                     services.ConfigureInProcessFeatures(context.Configuration);
                     services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
+                    services.AddSingleton<IDumpOperationFactory, DumpOperationFactory>();
                     services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
                     services.AddSingleton<ITraceOperationFactory, TraceOperationFactory>();
                     servicesCallback?.Invoke(services);
