@@ -13,6 +13,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -62,7 +63,7 @@ namespace CollectionRuleActionUnitTests
                     EndpointInfoSourceCallback endpointInfoCallback = new(_outputHelper);
                     await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(endpointInfoCallback);
 
-                    await using AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
+                    await using AppRunner runner = _endpointUtilities.CreateAppRunner(Assembly.GetExecutingAssembly(), sourceHolder.TransportName, tfm);
                     runner.ScenarioName = TestAppScenarios.EnvironmentVariables.Name;
 
                     Task<IEndpointInfo> newEndpointInfoTask = endpointInfoCallback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
@@ -113,7 +114,7 @@ namespace CollectionRuleActionUnitTests
                     EndpointInfoSourceCallback endpointInfoCallback = new(_outputHelper);
                     await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(endpointInfoCallback);
 
-                    await using AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
+                    await using AppRunner runner = _endpointUtilities.CreateAppRunner(Assembly.GetExecutingAssembly(), sourceHolder.TransportName, tfm);
                     runner.ScenarioName = TestAppScenarios.EnvironmentVariables.Name;
 
                     Task<IEndpointInfo> newEndpointInfoTask = endpointInfoCallback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
@@ -180,7 +181,7 @@ namespace CollectionRuleActionUnitTests
                     EndpointInfoSourceCallback endpointInfoCallback = new(_outputHelper);
                     await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(endpointInfoCallback);
 
-                    await using AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
+                    await using AppRunner runner = _endpointUtilities.CreateAppRunner(Assembly.GetExecutingAssembly(), sourceHolder.TransportName, tfm);
                     runner.ScenarioName = TestAppScenarios.EnvironmentVariables.Name;
 
                     Task<IEndpointInfo> newEndpointInfoTask = endpointInfoCallback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);

@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -59,7 +60,7 @@ namespace CollectionRuleActionUnitTests
                 LoadProfilerCallback callback = new(_outputHelper, host);
                 await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
 
-                await using AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
+                await using AppRunner runner = _endpointUtilities.CreateAppRunner(Assembly.GetExecutingAssembly(), sourceHolder.TransportName, tfm);
                 runner.Architecture = architecture;
                 runner.ScenarioName = TestAppScenarios.AsyncWait.Name;
 
