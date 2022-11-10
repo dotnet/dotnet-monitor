@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             TraceEventFilter traceEventFilter = new()
             {
                 ProviderName = TestAppScenarios.TraceEvents.EventProviderName,
-                EventName = CollectTraceTests.ConstructQualifiedEventName(TestAppScenarios.TraceEvents.UniqueEventName, opcode),
+                EventName = ConstructQualifiedEventName(TestAppScenarios.TraceEvents.UniqueEventName, opcode),
                 PayloadFilter = payloadFilter
             };
 
@@ -143,7 +143,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             string[] files = Directory.GetFiles(tempDirectory.FullName, "*.nettrace", SearchOption.TopDirectoryOnly);
             string traceFile = Assert.Single(files);
 
-            var (hasStoppingEvent, hasRundown) = await CollectTraceTests.ValidateNettraceFile(traceFile, traceEventFilter);
+            var (hasStoppingEvent, hasRundown) = await ValidateNettraceFile(traceFile, traceEventFilter);
             Assert.Equal(expectStoppingEvent, hasStoppingEvent);
             Assert.Equal(collectRundown, hasRundown);
         }
