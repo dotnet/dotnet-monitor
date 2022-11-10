@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -54,7 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             var endpointInfos = await _endpointUtilities.GetEndpointInfoAsync(sourceHolder.Source);
             Assert.Empty(endpointInfos);
 
-            await using AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, appTfm);
+            await using AppRunner runner = _endpointUtilities.CreateAppRunner(Assembly.GetExecutingAssembly(), sourceHolder.TransportName, appTfm);
 
             Task addedEndpointTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
             Task removedEndpointTask = callback.WaitRemovedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
@@ -107,7 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Start all app instances
             for (int i = 0; i < appCount; i++)
             {
-                runners[i] = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, appTfm, appId: i + 1);
+                runners[i] = _endpointUtilities.CreateAppRunner(Assembly.GetExecutingAssembly(), sourceHolder.TransportName, appTfm, appId: i + 1);
                 addedEndpointTasks[i] = callback.WaitAddedEndpointInfoAsync(runners[i], CommonTestTimeouts.StartProcess);
                 removedEndpointTasks[i] = callback.WaitRemovedEndpointInfoAsync(runners[i], CommonTestTimeouts.StartProcess);
             }
@@ -167,7 +168,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             MockDumpService dumpService = new(operationTrackerService);
             await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback, dumpService, operationTrackerService);
 
-            await using AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, appTfm);
+            await using AppRunner runner = _endpointUtilities.CreateAppRunner(Assembly.GetExecutingAssembly(), sourceHolder.TransportName, appTfm);
 
             Task<IEndpointInfo> addedEndpointTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
             Task<IEndpointInfo> removedEndpointTask = callback.WaitRemovedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);

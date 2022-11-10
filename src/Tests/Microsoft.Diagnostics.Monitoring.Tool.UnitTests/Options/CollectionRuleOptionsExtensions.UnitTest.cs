@@ -6,11 +6,11 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
-    internal static partial class CollectionRuleOptionsExtensions
+    internal static class CollectionRuleOptionsExtensions
     {
         public static CollectionRuleOptions SetManualTrigger(this CollectionRuleOptions options)
         {
-            return SetTrigger(options, ManualTrigger.TriggerName);
+            return options.SetTrigger(ManualTrigger.TriggerName);
         }
     }
 }

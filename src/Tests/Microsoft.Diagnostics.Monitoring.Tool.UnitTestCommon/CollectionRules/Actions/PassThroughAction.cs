@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions
+namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     internal sealed class PassThroughActionFactory : ICollectionRuleActionFactory<PassThroughOptions>
     {
