@@ -16,7 +16,7 @@ using Xunit;
 using Xunit.Abstractions;
 using DisposableHelper = Microsoft.Diagnostics.Monitoring.TestCommon.DisposableHelper;
 
-namespace CollectionRuleActionUnitTests
+namespace CollectionRuleActions.UnitTests
 {
     public sealed class ExecuteActionTests
     {

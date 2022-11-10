@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace CollectionRuleActionUnitTests
+namespace CollectionRuleActions.UnitTests
 {
     public class EnvironmentVariableActionTests
     {

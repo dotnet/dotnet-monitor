@@ -9,7 +9,7 @@ using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CollectionRuleActionUnitTests
+namespace CollectionRuleActions.UnitTests
 {
     internal sealed class PipeEgressProvider : IEgressProvider<PipeEgressOptions>
     {

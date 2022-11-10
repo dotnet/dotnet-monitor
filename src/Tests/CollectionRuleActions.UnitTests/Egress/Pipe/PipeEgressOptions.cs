@@ -4,7 +4,7 @@
 
 using System.IO.Pipelines;
 
-namespace CollectionRuleActionUnitTests
+namespace CollectionRuleActions.UnitTests
 {
     internal sealed class PipeEgressOptions
     {

@@ -31,7 +31,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Profiler.UnitTests" />
-    <InternalsVisibleTo Include="CollectionRuleActionUnitTests" />
+    <InternalsVisibleTo Include="CollectionRuleActions.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
   </ItemGroup>

@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Options;
 using System.IO.Pipelines;
 
-namespace CollectionRuleActionUnitTests
+namespace CollectionRuleActions.UnitTests
 {
     internal sealed class PipeEgressConfigureNamedOptions : IConfigureNamedOptions<PipeEgressOptions>
     {

@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="CollectionRuleActionUnitTests" />
+    <InternalsVisibleTo Include="CollectionRuleActions.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
   </ItemGroup>
 

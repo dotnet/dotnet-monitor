@@ -39,7 +39,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.ConfigurationSchema" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.OpenApiGen" />
-    <InternalsVisibleTo Include="CollectionRuleActionUnitTests" />
+    <InternalsVisibleTo Include="CollectionRuleActions.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
