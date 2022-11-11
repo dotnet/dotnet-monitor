@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 context.ExitCode = await GenerateApiKeyCommandHandler.Invoke(
                     context.GetCancellationToken(),
-                    context.ParseResult.GetValueForOption(OutputOption),
+                    context.ParseResult.GetValue(OutputOption),
                     context.Console);
             });
 
@@ -52,14 +52,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 context.ExitCode = await CollectCommandHandler.Invoke(
                     context.GetCancellationToken(),
-                    context.ParseResult.GetValueForOption(UrlsOption),
-                    context.ParseResult.GetValueForOption(MetricUrlsOption),
-                    context.ParseResult.GetValueForOption(ProvideMetricsOption),
-                    context.ParseResult.GetValueForOption(DiagnosticPortOption),
-                    context.ParseResult.GetValueForOption(NoAuthOption),
-                    context.ParseResult.GetValueForOption(TempApiKeyOption),
-                    context.ParseResult.GetValueForOption(NoHttpEgressOption),
-                    context.ParseResult.GetValueForOption(ConfigurationFilePathOption));
+                    context.ParseResult.GetValue(UrlsOption),
+                    context.ParseResult.GetValue(MetricUrlsOption),
+                    context.ParseResult.GetValue(ProvideMetricsOption),
+                    context.ParseResult.GetValue(DiagnosticPortOption),
+                    context.ParseResult.GetValue(NoAuthOption),
+                    context.ParseResult.GetValue(TempApiKeyOption),
+                    context.ParseResult.GetValue(NoHttpEgressOption),
+                    context.ParseResult.GetValue(ConfigurationFilePathOption));
             });
 
             return command;
@@ -86,16 +86,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             showCommand.SetHandler(context =>
             {
                 ConfigShowCommandHandler.Invoke(
-                    context.ParseResult.GetValueForOption(UrlsOption),
-                    context.ParseResult.GetValueForOption(MetricUrlsOption),
-                    context.ParseResult.GetValueForOption(ProvideMetricsOption),
-                    context.ParseResult.GetValueForOption(DiagnosticPortOption),
-                    context.ParseResult.GetValueForOption(NoAuthOption),
-                    context.ParseResult.GetValueForOption(TempApiKeyOption),
-                    context.ParseResult.GetValueForOption(NoHttpEgressOption),
-                    context.ParseResult.GetValueForOption(ConfigurationFilePathOption),
-                    context.ParseResult.GetValueForOption(ConfigLevelOption),
-                    context.ParseResult.GetValueForOption(ShowSourcesOption));
+                    context.ParseResult.GetValue(UrlsOption),
+                    context.ParseResult.GetValue(MetricUrlsOption),
+                    context.ParseResult.GetValue(ProvideMetricsOption),
+                    context.ParseResult.GetValue(DiagnosticPortOption),
+                    context.ParseResult.GetValue(NoAuthOption),
+                    context.ParseResult.GetValue(TempApiKeyOption),
+                    context.ParseResult.GetValue(NoHttpEgressOption),
+                    context.ParseResult.GetValue(ConfigurationFilePathOption),
+                    context.ParseResult.GetValue(ConfigLevelOption),
+                    context.ParseResult.GetValue(ShowSourcesOption));
             });
 
             Command configCommand = new Command(
@@ -112,7 +112,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             new Option<string[]>(
                 aliases: new[] { "-u", "--urls" },
                 description: Strings.HelpDescription_OptionUrls,
-                getDefaultValue: () => new[] { "https://localhost:52323" })
+                defaultValueFactory: () => new[] { "https://localhost:52323" })
             {
                 ArgumentHelpName = "urls"
             };
@@ -121,7 +121,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             new Option<string[]>(
                 aliases: new[] { "--metricUrls" },
                 description: Strings.HelpDescription_OptionMetricsUrls,
-                getDefaultValue: () => new[] { "http://localhost:52325" })
+                defaultValueFactory: () => new[] { "http://localhost:52325" })
             {
                 ArgumentHelpName = "metricUrls"
             };
@@ -130,7 +130,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             new Option<bool>(
                 aliases: new[] { "-m", "--metrics" },
                 description: Strings.HelpDescription_OptionMetrics,
-                getDefaultValue: () => true)
+                defaultValueFactory: () => true)
             {
                 ArgumentHelpName = "metrics"
             };
@@ -155,7 +155,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             new Option<bool>(
                 name: "--no-auth",
                 description: Strings.HelpDescription_OptionNoAuth,
-                getDefaultValue: () => false)
+                defaultValueFactory: () => false)
             {
                 ArgumentHelpName = "noAuth"
             };
@@ -164,7 +164,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             new Option<bool>(
                 name: "--no-http-egress",
                 description: Strings.HelpDescription_OptionNoHttpEgress,
-                getDefaultValue: () => false)
+                defaultValueFactory: () => false)
             {
                 ArgumentHelpName = "noHttpEgress"
             };
@@ -173,7 +173,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             new Option<bool>(
                 name: "--temp-apikey",
                 description: Strings.HelpDescription_OptionTempApiKey,
-                getDefaultValue: () => false)
+                defaultValueFactory: () => false)
             {
                 ArgumentHelpName = "tempApiKey"
             };
@@ -182,7 +182,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             new Option<OutputFormat>(
                 aliases: new[] { "-o", "--output" },
                 description: Strings.HelpDescription_OutputFormat,
-                getDefaultValue: () => OutputFormat.Json)
+                defaultValueFactory: () => OutputFormat.Json)
             {
                 ArgumentHelpName = "output"
             };
@@ -191,7 +191,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             new Option<ConfigDisplayLevel>(
                 name: "--level",
                 description: Strings.HelpDescription_OptionLevel,
-                getDefaultValue: () => ConfigDisplayLevel.Redacted)
+                defaultValueFactory: () => ConfigDisplayLevel.Redacted)
             {
                 ArgumentHelpName = "level"
             };
@@ -200,7 +200,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             new Option<bool>(
                 name: "--show-sources",
                 description: Strings.HelpDescription_OptionShowSources,
-                getDefaultValue: () => false)
+                defaultValueFactory: () => false)
             {
                 ArgumentHelpName = "showSources"
             };
