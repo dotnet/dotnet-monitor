@@ -3,7 +3,7 @@
 
 # Definitions
 
->**NOTE:** Some features are [experimental](./../experimental.md) and are denoted as `**[Experimental]**` in this document.
+>**Note**: Some features are [experimental](./../experimental.md) and are denoted as `**[Experimental]**` in this document.
 
 ## **[Experimental]** CallStack (7.0+)
 
