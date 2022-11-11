@@ -5,7 +5,7 @@
 
 Captures a managed dump of a specified process without using a debugger.
 
-> **WARNING**: Capturing a dump of the process suspends the entire process while the dump is collected.
+> **Warning**: Capturing a dump of the process suspends the entire process while the dump is collected.
 
 ## HTTP Route
 
