@@ -19,7 +19,9 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
-  <TestRunnerAdditionalArguments>--blame "CollectHangDump;TestTimeout=3m"</TestRunnerAdditionalArguments>
+  <PropertyGroup>
+    <TestRunnerAdditionalArguments>--blame "CollectHangDump;TestTimeout=3m"</TestRunnerAdditionalArguments>
+  </PropertyGroup>
 
   <!-- Filter tests based on specified TestGroup -->
   <PropertyGroup Condition="'$(TestGroup)' == 'CI'">
