@@ -17,7 +17,7 @@ Captures a GC dump of a specified process. These dumps are useful for several sc
 GET /gcdump?pid={pid}&uid={uid}&name={name}&egressProvider={egressProvider} HTTP/1.1
 ```
 
-> **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 

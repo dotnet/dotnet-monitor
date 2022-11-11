@@ -5,7 +5,7 @@
 
 Captures log statements that are logged to the [ILogger<> infrastructure](https://docs.microsoft.com/aspnet/core/fundamentals/logging) within a specified process. By default, logs are collected at the levels as specified by the [application-defined configuration](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/#configure-logging).
 
-> **NOTE:** The [`LoggingEventSource`](https://docs.microsoft.com/aspnet/core/fundamentals/logging#event-source) provider must be enabled in the process in order to capture logs.
+> **Note**: The [`LoggingEventSource`](https://docs.microsoft.com/aspnet/core/fundamentals/logging#event-source) provider must be enabled in the process in order to capture logs.
 
 ## HTTP Route
 
@@ -13,7 +13,7 @@ Captures log statements that are logged to the [ILogger<> infrastructure](https:
 GET /logs?pid={pid}&uid={uid}&name={name}&level={level}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
-> **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 

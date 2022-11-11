@@ -3,7 +3,7 @@
 
 # API Key Format
 API Keys or MonitorApiKeys used in `dotnet monitor` are JSON Web Tokens or JWTs as defined by [RFC 7519: JSON Web Token (JWT)](https://datatracker.ietf.org/doc/html/rfc7519).
-> **Note:** Because the API Key is a `Bearer` token, it should be treated as a secret and always transmitted over `TLS` or another protected protocol.
+> **Note**: Because the API Key is a `Bearer` token, it should be treated as a secret and always transmitted over `TLS` or another protected protocol.
 
 It is possible to make your own API Keys for `dotnet monitor` by following the format as defined below. Although, it is recommended to use the `generatekey` command unless you have a specific reason to make your own key.
 
@@ -14,7 +14,7 @@ For this example, let's consider the API Key given on the [Authentication page](
 ```yaml
 eyJhbGciOiJFUffffffffffffCI6IkpXVCJ9.eyJhdWQiOiJodffffffffffffGh1Yi5jb20vZG90bmV0L2RvdG5ldC1tb25pdG9yIiwiaXNzIjoiaHR0cHM6Ly9naXRodWIuY29tL2RvdG5ldC9kb3RuZXQtbW9uaXRvci9nZW5lcmF0ZWtleStNb25pdG9yQXBpS2V5Iiwic3ViIjoiYWU1NDczYjYtOGRhZC00OThkLWI5MTUtNTNiOWM2ODQwMDBlIn0.RZffffffffffff_yIyApvFKcxFpDJ65HJZek1_dt7jCTCMEEEffffffffffffR08OyhZZHs46PopwAsf_6fdTLKB1UGvLr95volwEwIFnHjdvMfTJ9ffffffffffffAU
 ```
->**Note:** While all values provided in this document are the correct length and format, the raw values have been edited to prevent this public example being used as a dotnet-monitor configuration.
+>**Note**: While all values provided in this document are the correct length and format, the raw values have been edited to prevent this public example being used as a dotnet-monitor configuration.
 
 ### Header
 The header (decoded from the token above) must contain at least 2 elements: `alg` (or [Algorithm](https://www.rfc-editor.org/rfc/rfc7518.html#section-3.1)), and `typ` (or [Type](https://datatracker.ietf.org/doc/html/rfc7519#section-5.1)). `dotnet monitor` expects the `typ` to always be `JWT` for a JSON Web Token. `dotnet monitor` supports 6 `alg` values: `ES256`, `ES384`, `ES512`, `RS256`, `RS384`, and `RS512`.
@@ -25,7 +25,7 @@ The header (decoded from the token above) must contain at least 2 elements: `alg
   "typ": "JWT"
 }
 ```
->**Note:** The `alg` requirement is designed to enforce `dotnet monitor` to use public/private key signed tokens. This allows the key that is stored in configuration (as `Authentication__MonitorApiKey__PublicKey`) to only contain public key information and thus does not need to be kept secret.
+>**Note**: The `alg` requirement is designed to enforce `dotnet monitor` to use public/private key signed tokens. This allows the key that is stored in configuration (as `Authentication__MonitorApiKey__PublicKey`) to only contain public key information and thus does not need to be kept secret.
 
 ### Payload
 The payload (also decoded from the token above) must contain at least 2 elements: `aud` (or [Audience](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.3)), and `sub` (or [Subject](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2)). `dotnet monitor` expects the `aud` to always be `https://github.com/dotnet/dotnet-monitor` which signals that the token is intended for dotnet-monitor. The `sub` field is any non-empty string defined in `Authentication__MonitorApiKey__Subject`, this is used to validate that the token provided is for the expected instance and is user-defined in configuration. 

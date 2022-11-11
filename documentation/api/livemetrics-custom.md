@@ -11,7 +11,7 @@ Captures metrics for a process, with the ability to specify custom metrics.
 POST /livemetrics?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
-> **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 

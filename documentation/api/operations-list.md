@@ -27,7 +27,7 @@ See [ProcessIdentifier](definitions.md#processidentifier) for more details about
 
 If none of `pid`, `uid`, or `name` are specified, all operations will be listed.
 
-> **NOTE:** If multiple processes match the provided parameters (e.g., two processes named "MyProcess"), the operations for all matching processes will be listed.
+> **Note**: If multiple processes match the provided parameters (e.g., two processes named "MyProcess"), the operations for all matching processes will be listed.
 
 ## Authentication
 

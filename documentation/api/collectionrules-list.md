@@ -11,7 +11,7 @@ Get the basic state of all collection rules for all processes or for the specifi
 GET /collectionrules?pid={pid}&uid={uid}&name={name} HTTP/1.1
 ```
 
-> **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 

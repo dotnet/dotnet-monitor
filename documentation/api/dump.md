@@ -5,7 +5,7 @@
 
 Captures a managed dump of a specified process without using a debugger.
 
-> **WARNING**: Capturing a dump of the process suspends the entire process while the dump is collected.
+> **Warning**: Capturing a dump of the process suspends the entire process while the dump is collected.
 
 ## HTTP Route
 
@@ -13,7 +13,7 @@ Captures a managed dump of a specified process without using a debugger.
 GET /dump?pid={pid}&uid={uid}&name={name}&type={type}&egressProvider={egressProvider} HTTP/1.1
 ```
 
-> **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 
@@ -90,7 +90,7 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 | Linux | .NET Core 3.1, .NET 5+ |
 | MacOS | .NET 5+ |
 
-> **NOTE:** For .NET 5, only ELF core dumps are supported on MacOS and require setting an environment variable in the application. Starting in .NET 6, dumps will be in the MachO format, and this environment variable is deprecated. See [Minidump Generation on OS X](https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/botr/xplat-minidump-generation.md#os-x) for further details.
+> **Note**: For .NET 5, only ELF core dumps are supported on MacOS and require setting an environment variable in the application. Starting in .NET 6, dumps will be in the MachO format, and this environment variable is deprecated. See [Minidump Generation on OS X](https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/botr/xplat-minidump-generation.md#os-x) for further details.
 
 ## Additional Notes
 
