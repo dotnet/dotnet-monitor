@@ -28,10 +28,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
                 })
                 .Returns(Mock.Of<IDisposable>());
 
-            return new EgressOperationStore(
-                Mock.Of<IEgressOperationQueue>(),
-                mockRequestLimitTracker.Object,
-                Mock.Of<IServiceProvider>());
+            Mock<IServiceProvider> mockServiceProvider = new();
+            mockServiceProvider.Setup(provider => provider.GetService(typeof(IRequestLimitTracker)))
+                .Returns(mockRequestLimitTracker.Object);
+
+            mockServiceProvider.Setup(provider => provider.GetService(typeof(IEgressOperationQueue)))
+                .Returns(Mock.Of<IEgressOperationQueue>());
+
+            return new EgressOperationStore(mockServiceProvider.Object);
         }
 
         [Fact]
