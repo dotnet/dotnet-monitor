@@ -23,7 +23,7 @@
 
     <!--
       Moq version & constants derived from Moq.
-      The MoqInternalsVisibleTo* keys are not managed by Dependabot and may need to be updated incase a new version of Moq ever changes them.
+      The MoqInternalsVisibleTo* properties are not managed by Dependabot and may need to be updated incase a new version of Moq ever changes them.
     -->
     <MoqVersion>4.18.1</MoqVersion>
     <MoqInternalsVisibleTo>DynamicProxyGenAssembly2</MoqInternalsVisibleTo>
