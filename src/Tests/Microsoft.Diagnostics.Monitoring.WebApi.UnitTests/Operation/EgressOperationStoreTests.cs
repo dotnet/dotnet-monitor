@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
                 {
                     try
                     {
-                        await Task.Delay(TimeSpan.MaxValue, token);
+                        await Task.Delay(millisecondsDelay: -1, token);
                     }
                     catch (OperationCanceledException)
                     {
