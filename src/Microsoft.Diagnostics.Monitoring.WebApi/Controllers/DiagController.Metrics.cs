@@ -40,27 +40,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
+            EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                _counterOptions.CurrentValue,
+                includeDefaults: true,
+                durationSeconds: durationSeconds);
+
             return InvokeForProcess(
-                processInfo =>
-                {
-                    EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
-                        _counterOptions.CurrentValue,
-                        includeDefaults: true,
-                        durationSeconds: durationSeconds);
-
-                    // Allow sync I/O on livemetrics routes due to JsonCounterLogger's usage.
-                    HttpContext.AllowSynchronousIO();
-
-                    IArtifactOperation operation = _metricsOperationFactory.Create(
-                        processInfo.EndpointInfo,
-                        settings);
-
-                    return Result(
-                        Utilities.ArtifactType_Metrics,
-                        egressProvider,
-                        operation,
-                        processInfo);
-                },
+                processInfo => Result(
+                    Utilities.ArtifactType_Metrics,
+                    egressProvider,
+                    _metricsOperationFactory.Create(processInfo.EndpointInfo, settings),
+                    processInfo),
                 processKey,
                 Utilities.ArtifactType_Metrics);
         }
@@ -95,27 +85,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
+            EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                _counterOptions.CurrentValue,
+                durationSeconds,
+                configuration);
+
             return InvokeForProcess(
-                processInfo =>
-                {
-                    EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
-                        _counterOptions.CurrentValue,
-                        durationSeconds,
-                        configuration);
-
-                    // Allow sync I/O on livemetrics routes due to JsonCounterLogger's usage.
-                    HttpContext.AllowSynchronousIO();
-
-                    IArtifactOperation operation = _metricsOperationFactory.Create(
-                            processInfo.EndpointInfo,
-                            settings);
-
-                    return Result(
-                        Utilities.ArtifactType_Metrics,
-                        egressProvider,
-                        operation,
-                        processInfo);
-                },
+                processInfo => Result(
+                    Utilities.ArtifactType_Metrics,
+                    egressProvider,
+                    _metricsOperationFactory.Create(processInfo.EndpointInfo, settings),
+                    processInfo),
                 processKey,
                 Utilities.ArtifactType_Metrics);
         }

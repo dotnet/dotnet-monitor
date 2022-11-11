@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return new EventCounterPipeline(
                 client,
                 _settings,
-                loggers: new[] { new JsonCounterLogger(outputStream) });
+                loggers: new[] { new JsonCounterLogger(outputStream, Logger) });
         }
 
         protected override Task<Task> StartPipelineAsync(EventCounterPipeline pipeline, CancellationToken token)
