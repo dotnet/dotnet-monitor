@@ -811,7 +811,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 | queueSharedAccessSignatureName | string | false | (6.3+) Name of the property in the Properties section that will contain the queue SAS token; if using SAS, must be specified if `queueSharedAccessSignature` is not specified.|
 | metadata | Dictionary<string, string> | false | A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.|
 
-**Note**: Starting with `dotnet monitor` 7.0, all built-in metadata keys are prefixed with `DotnetMonitor_`; to avoid metadata naming conflicts, avoid prefixing your metadata keys with `DotnetMonitor_`.
+> **Note**: Starting with `dotnet monitor` 7.0, all built-in metadata keys are prefixed with `DotnetMonitor_`; to avoid metadata naming conflicts, avoid prefixing your metadata keys with `DotnetMonitor_`.
 
 ### Example azureBlobStorage provider
 
@@ -1944,7 +1944,7 @@ An action that gets an environment variable from the target process. Its value i
 
 Usage that gets a token your app has access to and uses it to send a trace.
 
-**Note**: the example below is of an entire action list to provide context, only the second json entry represents the `GetEnvironmentVariable` Action.
+> **Note**: the example below is of an entire action list to provide context, only the second json entry represents the `GetEnvironmentVariable` Action.
 
 <details>
   <summary>JSON</summary>
