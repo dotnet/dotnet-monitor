@@ -128,6 +128,9 @@
     <value>HTTP egress is not enabled.</value>
     <comment>Gets a string similar to "HTTP egress is not enabled.".</comment>
   </data>
+  <data name="ErrorMessage_HttpOperationFailed" xml:space="preserve">
+    <value>HTTP request failed with status code: '{0}'</value>
+  </data>
   <data name="ErrorMessage_InvalidMetricCount" xml:space="preserve">
     <value>Invalid metric count.</value>
     <comment>Gets a string similar to "Invalid metric count.".</comment>
@@ -150,6 +153,9 @@
   <data name="ErrorMessage_NoTargetProcess" xml:space="preserve">
     <value>Unable to discover a target process.</value>
     <comment>Gets a string similar to "Unable to discover a target process.".</comment>
+  </data>
+  <data name="ErrorMessage_OperationDoesNotSupportBeingStopped" xml:space="preserve">
+    <value>Operation does not support being stopped.</value>
   </data>
   <data name="ErrorMessage_OperationNotFound" xml:space="preserve">
     <value>Operation not found.</value>
@@ -228,6 +234,12 @@
     <value>Resolved target process.</value>
     <comment>Gets the format string that is printed in the 3:ResolvedTargetProcess event.
 0 Format Parameters</comment>
+  </data>
+  <data name="LogFormatString_StopOperationFailed" xml:space="preserve">
+    <value>Failed to stop the '{operationId}' operation.</value>
+    <comment>Gets the format string that is printed in the 11:StopOperationFailed event.
+1 Format Parameter:
+1. operationId: The id of the operation that failed to stop.</comment>
   </data>
   <data name="LogFormatString_StoppingTraceEventHit" xml:space="preserve">
     <value>Hit stopping trace event '{providerName}/{eventName}'</value>

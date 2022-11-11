@@ -110,6 +110,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
                     services.AddSingleton<IDumpOperationFactory, DumpOperationFactory>();
                     services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
+                    services.AddSingleton<ITraceOperationFactory, TraceOperationFactory>();
                     servicesCallback?.Invoke(services);
                 })
                 .Build();

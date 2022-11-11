@@ -88,6 +88,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP request failed with status code: &apos;{0}&apos;.
+        /// </summary>
+        internal static string ErrorMessage_HttpOperationFailed {
+            get {
+                return ResourceManager.GetString("ErrorMessage_HttpOperationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid metric count..
         /// </summary>
         internal static string ErrorMessage_InvalidMetricCount {
@@ -138,6 +147,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         internal static string ErrorMessage_NoTargetProcess {
             get {
                 return ResourceManager.GetString("ErrorMessage_NoTargetProcess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operation does not support being stopped..
+        /// </summary>
+        internal static string ErrorMessage_OperationDoesNotSupportBeingStopped {
+            get {
+                return ResourceManager.GetString("ErrorMessage_OperationDoesNotSupportBeingStopped", resourceCulture);
             }
         }
         
@@ -291,6 +309,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         internal static string LogFormatString_ResolvedTargetProcess {
             get {
                 return ResourceManager.GetString("LogFormatString_ResolvedTargetProcess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to stop the &apos;{operationId}&apos; operation..
+        /// </summary>
+        internal static string LogFormatString_StopOperationFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_StopOperationFailed", resourceCulture);
             }
         }
         

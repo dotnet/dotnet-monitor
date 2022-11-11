@@ -8,7 +8,6 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -86,31 +85,38 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     stoppingEvent = Options.StoppingEvent;
                 }
 
-                string fileName = TraceUtilities.GenerateTraceFileName(EndpointInfo);
-
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Trace, EndpointInfo);
+
+                ITraceOperationFactory operationFactory = _serviceProvider.GetRequiredService<ITraceOperationFactory>();
+                IArtifactOperation operation;
+                if (stoppingEvent == null)
+                {
+                    operation = operationFactory.Create(
+                        EndpointInfo,
+                        configuration,
+                        duration);
+                }
+                else
+                {
+                    operation = operationFactory.Create(
+                        EndpointInfo,
+                        configuration,
+                        duration,
+                        stoppingEvent.ProviderName,
+                        stoppingEvent.EventName,
+                        stoppingEvent.PayloadFilter);
+                }
 
                 EgressOperation egressOperation = new EgressOperation(
                     async (outputStream, token) =>
                     {
                         using IDisposable operationRegistration = _operationTrackerService.Register(EndpointInfo);
-                        if (null != stoppingEvent)
-                        {
-                            ILogger<CollectTraceAction> logger = _serviceProvider
-                                .GetRequiredService<ILoggerFactory>()
-                                .CreateLogger<CollectTraceAction>();
-
-                            await TraceUtilities.CaptureTraceUntilEventAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, stoppingEvent.ProviderName, stoppingEvent.EventName, stoppingEvent.PayloadFilter, logger, token);
-                        }
-                        else
-                        {
-                            await TraceUtilities.CaptureTraceAsync(startCompletionSource, EndpointInfo, configuration, duration, outputStream, token);
-                        }
+                        await operation.ExecuteAsync(outputStream, startCompletionSource, token);
                     },
                     egressProvider,
-                    fileName,
+                    operation.GenerateFileName(),
                     EndpointInfo,
-                    ContentTypes.ApplicationOctetStream,
+                    operation.ContentType,
                     scope,
                     collectionRuleMetadata);
 
