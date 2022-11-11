@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
     {
         private readonly string _targetFolder;
         private readonly IFileProvider _fileSystem;
-        private readonly ILoggerFactory _loggerFactory;
+        private readonly ILogger<ProgramExtension> _logger;
 
         private const string DotnetFolderName = "dotnet";
         private const string ToolsFolderName = "tools";
@@ -29,25 +29,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + DotnetFolderName, ToolsFolderName) :
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "." + DotnetFolderName, ToolsFolderName);
 
-        public ToolsExtensionRepository(IFileProvider fileSystem, ILoggerFactory loggerFactory, int resolvePriority, string targetFolder)
-            : base(resolvePriority, string.Format(CultureInfo.CurrentCulture, Strings.Message_FolderExtensionRepoName, targetFolder))
+        public ToolsExtensionRepository(IFileProvider fileSystem, ILogger<ProgramExtension> logger, string targetFolder)
+            : base(string.Format(CultureInfo.CurrentCulture, Strings.Message_FolderExtensionRepoName, targetFolder))
         {
             _fileSystem = fileSystem;
 
             _targetFolder = targetFolder;
 
-            _loggerFactory = loggerFactory;
+            _logger = logger;
         }
 
         public override bool TryFindExtension(string extensionName, out IExtension extension)
         {
             const string storeDirectory = ".store";
             IDirectoryContents toolsStoreDir = _fileSystem.GetDirectoryContents(storeDirectory);
-            ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
 
             foreach (IFileInfo tool in toolsStoreDir)
             {
-                string toolVersion = _fileSystem.GetDirectoryContents(Path.Combine(storeDirectory, tool.Name)).First().Name;
+                IFileInfo versionDirInfo = _fileSystem.GetDirectoryContents(Path.Combine(storeDirectory, tool.Name)).FirstOrDefault();
+                if (null == versionDirInfo)
+                {
+                    continue;
+                }
+                string toolVersion = versionDirInfo.Name;
 
                 string netVer = "net7.0"; // TODO: Still need to determine this
 
@@ -55,7 +59,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
                 if (_fileSystem.TryGetExtensionDefinitionPath(extensionPath, out string definitionPath))
                 {
-                    var currExtension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, definitionPath, extensionName, logger);
+                    var currExtension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, definitionPath, tool.Name, _logger);
                     if (extensionName == currExtension.Declaration.Name)
                     {
                         extension = currExtension;

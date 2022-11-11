@@ -9,9 +9,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     public static class FileProviderExtensions
     {
-        public static bool TryGetExtensionDefinitionPath(this IFileProvider fileProvider, string extensionName, out string definitionPath)
+        public static bool TryGetExtensionDefinitionPath(this IFileProvider fileProvider, string extensionSubPath, out string definitionPath)
         {
-            definitionPath = Path.Combine(extensionName, Constants.ExtensionDefinitionFile);
+            definitionPath = Path.Combine(extensionSubPath, Constants.ExtensionDefinitionFile);
             IFileInfo defFile = fileProvider.GetFileInfo(definitionPath);
             if (defFile.Exists && !defFile.IsDirectory)
             {

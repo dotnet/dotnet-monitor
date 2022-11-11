@@ -12,28 +12,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
     {
         private readonly string _targetFolder;
         private readonly IFileProvider _fileSystem;
-        private readonly ILoggerFactory _loggerFactory;
+        private readonly ILogger<ProgramExtension> _logger;
 
-        public FolderExtensionRepository(IFileProvider fileSystem, ILoggerFactory loggerFactory, int resolvePriority, string targetFolder)
-            : base(resolvePriority, string.Format(CultureInfo.CurrentCulture, Strings.Message_FolderExtensionRepoName, targetFolder))
+        public FolderExtensionRepository(IFileProvider fileSystem, ILogger<ProgramExtension> logger, string targetFolder)
+            : base(string.Format(CultureInfo.CurrentCulture, Strings.Message_FolderExtensionRepoName, targetFolder))
         {
             _fileSystem = fileSystem;
 
             _targetFolder = targetFolder;
 
-            _loggerFactory = loggerFactory;
+            _logger = logger;
         }
 
         public override bool TryFindExtension(string extensionName, out IExtension extension)
         {
             IDirectoryContents extensionDirs = _fileSystem.GetDirectoryContents(string.Empty);
-            ILogger<ProgramExtension> logger = _loggerFactory.CreateLogger<ProgramExtension>();
 
             foreach (IFileInfo extensionDir in extensionDirs)
             {
                 if (_fileSystem.TryGetExtensionDefinitionPath(extensionDir.Name, out string definitionPath))
                 {
-                    var currExtension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, definitionPath, logger);
+                    var currExtension = new ProgramExtension(extensionName, _targetFolder, _fileSystem, definitionPath, _logger);
                     if (extensionName == currExtension.Declaration.Name)
                     {
                         extension = currExtension;
