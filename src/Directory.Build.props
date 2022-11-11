@@ -19,9 +19,7 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(ContinuousIntegrationBuild)' == 'true'">
-    <TestRunnerAdditionalArguments>--blame "CollectHangDump;TestTimeout=3m"</TestRunnerAdditionalArguments>
-  </PropertyGroup>
+  <TestRunnerAdditionalArguments>--blame "CollectHangDump;TestTimeout=3m"</TestRunnerAdditionalArguments>
 
   <!-- Filter tests based on specified TestGroup -->
   <PropertyGroup Condition="'$(TestGroup)' == 'CI'">

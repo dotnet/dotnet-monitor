@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
             store.CancelOperation(operationId);
 
             // Assert
-            await stopCancelled.Task.WaitAsync(CommonTestTimeouts.AwaitForTaskToProcessTimeout);
+            await stopCancelled.Task;
             Assert.Equal(Models.OperationState.Cancelled, store.GetOperationStatus(operationId).Status);
         }
     }
