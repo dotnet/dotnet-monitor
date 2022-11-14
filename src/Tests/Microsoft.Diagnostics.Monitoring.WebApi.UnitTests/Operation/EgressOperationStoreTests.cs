@@ -5,6 +5,8 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Moq;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -68,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
             store.StopOperation(operationId, (ex) => exceptionHit.TrySetResult(ex));
 
             // Assert
-            Exception hitException = await exceptionHit.Task.WaitAsync(CommonTestTimeouts.AwaitForTaskToProcessTimeout);
+            Exception hitException = await exceptionHit.Task;
             Assert.NotNull(hitException);
             Assert.Equal(Models.OperationState.Stopping, store.GetOperationStatus(operationId).Status);
         }
@@ -87,7 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
                 {
                     try
                     {
-                        await Task.Delay(Timeout.InfiniteTimeSpan, token);
+                        await Task.Delay(Timeout.InfiniteTimeSpan, token).ConfigureAwait(false);
                     }
                     catch (OperationCanceledException)
                     {
