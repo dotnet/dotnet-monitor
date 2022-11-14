@@ -5,7 +5,7 @@
 
 Authenticated requests to `dotnet monitor` help protect sensitive diagnostic artifacts from unauthorized users and lower privileged processes. `dotnet monitor` can be configured to use either [Windows Authentication](#windows-authentication) or via an [API Key](#api-key-authentication). It is possible, although strongly not recommended, to [disable authentication](#disabling-authentication).
 
-> **NOTE:** Authentication is not performed on requests to the metrics endpoint (by default, http://localhost:52325).
+> **Note**: Authentication is not performed on requests to the metrics endpoint (by default, http://localhost:52325).
 
 The recommended configuration for `dotnet monitor` is to use [API Key Authentication](#api-key-authentication) over a channel secured with TLS.
 
@@ -15,13 +15,13 @@ We only recommend using Windows Authentication if you're running `dotnet monitor
 
 Windows authentication doesn't require explicit configuration and is enabled automatically when running `dotnet monitor` on Windows. When available, `dotnet monitor` will authorize any user authenticated as the same user that started the `dotnet monitor` process. It is not possible to disable Windows authentication.
 
-> **NOTE:** Windows authentication will not be attempted if you are running `dotnet monitor` as an Administrator
+> **Note**: Windows authentication will not be attempted if you are running `dotnet monitor` as an Administrator
 
 ## API Key Authentication
 
 An API Key is the recommended authentication mechanism for `dotnet monitor`. API Keys are referred to as `MonitorApiKey` in configuration and source code but we will shorten the term to "API key" in this document. To enable it, you will need to generate a secret token, update the configuration of `dotnet monitor`, and then specify the secret token in the `Authorization` header on all requests to `dotnet monitor`. To configure API Key authentication using the integrated `generatekey` command see: [API Key Setup](./api-key-setup.md).
 
-> **NOTE:** API Key Authentication should only be used when TLS is enabled to protect the key while in transit. `dotnet monitor` will emit a warning if authentication is enabled over an insecure transport medium.
+> **Note**: API Key Authentication should only be used when TLS is enabled to protect the key while in transit. `dotnet monitor` will emit a warning if authentication is enabled over an insecure transport medium.
 
 ## Authenticating requests
 

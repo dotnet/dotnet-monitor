@@ -5,7 +5,7 @@
 
 The HTTP API enables on-demand extraction of diagnostic information and artifacts from discoverable processes.
 
->**NOTE:** Some features are [experimental](./../experimental.md) and are denoted as `**[Experimental]**` in this document.
+>**Note**: Some features are [experimental](./../experimental.md) and are denoted as `**[Experimental]**` in this document.
 
 The following are the root routes on the HTTP API surface.
 

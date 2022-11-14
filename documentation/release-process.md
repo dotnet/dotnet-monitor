@@ -79,7 +79,7 @@ After the release has been completed, this pipeline variable should be changed t
 ### Updating dependencies
 
 If necessary, update dependencies in the release branch.
->**Note:** This is no longer needed for the diagnostics packages. They are kept up-to-date by dependabot.
+>**Note**: This is no longer needed for the diagnostics packages. They are kept up-to-date by dependabot.
 
 1. For new branches only, you need to setup a subscription using darc: `darc add-subscription --channel ".NET Core Tooling Release" --source-repo https://github.com/dotnet/diagnostics --target-repo https://github.com/dotnet/dotnet-monitor --target-branch release/8.x --update-frequency None --standard-automerge`
 1. Use `darc get-subscriptions --target-repo monitor` to see existing subscriptions.
@@ -103,7 +103,7 @@ The nightly image is `mcr.microsoft.com/dotnet/nightly/monitor`. The tag list is
 1. Start [release pipeline](https://dev.azure.com/dnceng/internal/_release?_a=releases&view=mine&definitionId=105). Allow the stages to trigger automatically (do not check the boxes in the associated dropdown). During creation of the release you must select the dotnet-monitor build to release from the list of available builds. This must be a build with the tag `MonitorRelease` and the associated `MonitorRelease` artifact (set `dotnet-monitor_build` to the pipeline run of `dotnet monitor` that is being released; set `dotnet-monitor_source` to the latest commit from `main`).
 1. The release will start the stage "Pre-Release Verification"; this will check that the above steps were done as expected. The name of the release will be updated automatically.
 1. Approve the sign-off step the day before the release after 8:45 AM PDT, when ready to publish.
->**Note:** After sign-off of the "Pre-Release Verification" environment the NuGet and GitHub release steps will automatically wait until 8:45 AM PDT the next day to correspond with the typical docker release time of 9:00 AM PDT.
+>**Note**: After sign-off of the "Pre-Release Verification" environment the NuGet and GitHub release steps will automatically wait until 8:45 AM PDT the next day to correspond with the typical docker release time of 9:00 AM PDT.
 
 The remainder of the release will automatically push NuGet packages to nuget.org, [tag](https://github.com/dotnet/dotnet-monitor/tags) the commit from the build with the release version, and add a new [GitHub release](https://github.com/dotnet/dotnet-monitor/releases).
 
