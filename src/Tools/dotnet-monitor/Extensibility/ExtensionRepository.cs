@@ -6,16 +6,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     internal abstract class ExtensionRepository
     {
-        public ExtensionRepository(int resolvePriority, string displayName)
+        public ExtensionRepository(string displayName)
         {
-            ResolvePriority = resolvePriority;
             DisplayName = displayName;
         }
-
-        /// <summary>
-        /// Gets the integer that describes the order used to probe multiple repositories
-        /// </summary>
-        public int ResolvePriority { get; private init; }
 
         /// <summary>
         /// Gets a friendly name to describe this instance of an <see cref="ExtensionRepository"/>. This is used in Logs.

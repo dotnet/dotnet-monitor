@@ -220,26 +220,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             string nextToMeFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string progDataFolder = settings.SharedConfigDirectory;
             string settingsFolder = settings.UserConfigDirectory;
+            string dotnetToolsFolder = ToolsExtensionRepository.DotnetToolsExtensionDirectoryPath;
 
-            if (string.IsNullOrWhiteSpace(progDataFolder))
-            {
-                throw new InvalidOperationException();
-            }
-
-            if (string.IsNullOrWhiteSpace(settingsFolder))
+            if (string.IsNullOrWhiteSpace(progDataFolder)
+                || string.IsNullOrWhiteSpace(settingsFolder)
+                || string.IsNullOrWhiteSpace(dotnetToolsFolder))
             {
                 throw new InvalidOperationException();
             }
 
             // Add the folders we search to get extensions from
-            services.AddExtensionRepository(1000, nextToMeFolder);
-            services.AddExtensionRepository(2000, progDataFolder);
-            services.AddExtensionRepository(3000, settingsFolder);
+            services.AddFolderExtensionRepository(nextToMeFolder);
+            services.AddFolderExtensionRepository(progDataFolder);
+            services.AddFolderExtensionRepository(settingsFolder);
+            services.AddToolsExtensionRepository(dotnetToolsFolder);
 
             return services;
         }
 
-        public static IServiceCollection AddExtensionRepository(this IServiceCollection services, int priority, string path)
+        public static IServiceCollection AddFolderExtensionRepository(this IServiceCollection services, string path)
         {
             const string ExtensionFolder = "extensions";
 
@@ -251,9 +250,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     (IServiceProvider serviceProvider) =>
                     {
                         PhysicalFileProvider fileProvider = new(targetExtensionFolder);
-                        ILoggerFactory logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-                        FolderExtensionRepository newRepo = new(fileProvider, logger, priority, targetExtensionFolder);
-                        return newRepo;
+                        ILogger<ProgramExtension> logger = serviceProvider.GetRequiredService<ILogger<ProgramExtension>>();
+                        return new FolderExtensionRepository(fileProvider, logger, targetExtensionFolder);
+                    };
+
+                services.AddSingleton<ExtensionRepository>(createDelegate);
+            }
+
+            return services;
+        }
+
+        public static IServiceCollection AddToolsExtensionRepository(this IServiceCollection services, string targetExtensionFolder)
+        {
+            if (Directory.Exists(targetExtensionFolder))
+            {
+                Func<IServiceProvider, ExtensionRepository> createDelegate =
+                    (IServiceProvider serviceProvider) =>
+                    {
+                        PhysicalFileProvider fileProvider = new(targetExtensionFolder);
+                        ILogger<ProgramExtension> logger = serviceProvider.GetRequiredService<ILogger<ProgramExtension>>();
+                        return new ToolsExtensionRepository(fileProvider, logger, targetExtensionFolder);
                     };
 
                 services.AddSingleton<ExtensionRepository>(createDelegate);
@@ -289,7 +305,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             return services;
         }
-
 
         public static IServiceCollection ConfigureProfiler(this IServiceCollection services)
         {

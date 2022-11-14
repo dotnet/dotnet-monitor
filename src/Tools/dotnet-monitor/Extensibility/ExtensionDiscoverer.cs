@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
         public ExtensionDiscoverer(IEnumerable<ExtensionRepository> extensionRepos, ILogger<ExtensionDiscoverer> logger)
         {
-            _extensionRepos = extensionRepos.OrderBy(eRepo => eRepo.ResolvePriority).ToArray<ExtensionRepository>();
+            _extensionRepos = extensionRepos.ToArray();
             _logger = logger;
         }
 
