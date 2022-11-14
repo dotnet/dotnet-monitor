@@ -53,6 +53,8 @@ Content-Type: application/json
     "operationId": "67f07e40-5cca-4709-9062-26302c484f18",
     "createdDateTime": "2021-07-21T06:21:15.315861Z",
     "status": "Succeeded",
+    "egressProviderName": "monitorBlob",
+    "isStoppable": true,
     "process":
     {
         "pid":1,

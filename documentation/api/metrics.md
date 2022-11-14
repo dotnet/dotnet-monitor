@@ -12,7 +12,7 @@ The metrics are collected from the following providers by default:
 
 All of the counters for each of these providers are collected by default.
 
-> **NOTE:** This route collects metrics only from a single process. If there are no processes or more than one process, the endpoint will not return information. In order to facilitate observing a single process, the tool can be configured to listen for connections from a target process; see [Default Process Configuration](<../configuration.md#default-process-configuration>) and [Diagnostic Port Configuration](<../configuration.md#diagnostic-port-configuration>) for more details.
+> **Note**: This route collects metrics only from a single process. If there are no processes or more than one process, the endpoint will not return information. In order to facilitate observing a single process, the tool can be configured to listen for connections from a target process; see [Default Process Configuration](<../configuration.md#default-process-configuration>) and [Diagnostic Port Configuration](<../configuration.md#diagnostic-port-configuration>) for more details.
 
 ## HTTP Route
 
@@ -20,7 +20,7 @@ All of the counters for each of these providers are collected by default.
 GET /metrics HTTP/1.1
 ```
 
-> **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 

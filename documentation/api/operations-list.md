@@ -27,7 +27,7 @@ See [ProcessIdentifier](definitions.md#processidentifier) for more details about
 
 If none of `pid`, `uid`, or `name` are specified, all operations will be listed.
 
-> **NOTE:** If multiple processes match the provided parameters (e.g., two processes named "MyProcess"), the operations for all matching processes will be listed.
+> **Note**: If multiple processes match the provided parameters (e.g., two processes named "MyProcess"), the operations for all matching processes will be listed.
 
 ## Authentication
 
@@ -65,7 +65,22 @@ Content-Type: application/json
     {
         "operationId": "67f07e40-5cca-4709-9062-26302c484f18",
         "createdDateTime": "2021-07-21T06:21:15.315861Z",
-        "status": "Succeeded", 
+        "status": "Succeeded",
+        "egressProviderName": "monitorBlob",
+        "isStoppable": false,
+        "process":
+        {
+            "pid":1,
+            "uid":"95b0202a-4ed3-44a6-98f1-767d270ec783",
+            "name":"dotnet-monitor-demo"
+        }
+    },
+    {
+        "operationId": "06ac07e2-f7cd-45ad-80c6-e38160bc5881",
+        "createdDateTime": "2021-07-21T20:22:15.315861Z",
+        "status": "Stopping",
+        "egressProviderName": null,
+        "isStoppable": false,
         "process":
         {
             "pid":1,
@@ -76,7 +91,9 @@ Content-Type: application/json
     {
         "operationId": "26e74e52-0a16-4e84-84bb-27f904bfaf85",
         "createdDateTime": "2021-07-21T23:30:22.3058272Z",
-        "status": "Failed", 
+        "status": "Failed",
+        "egressProviderName": "monitorBlob",
+        "isStoppable": false,
         "process":
         {
             "pid":11782,
@@ -105,7 +122,9 @@ Content-Type: application/json
     {
         "operationId": "67f07e40-5cca-4709-9062-26302c484f18",
         "createdDateTime": "2021-07-21T06:21:15.315861Z",
-        "status": "Succeeded", 
+        "status": "Succeeded",
+        "egressProviderName": "monitorBlob",
+        "isStoppable": false,
         "process":
         {
             "pid":1,

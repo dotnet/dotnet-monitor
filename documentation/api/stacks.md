@@ -5,7 +5,7 @@
 
 Captures the call stacks of the currently running process. Note that only managed frames are collected.
 
->**NOTE:** This feature is [experimental](./../experimental.md). To enable this feature, set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. Additionally, the [in-process features](./../configuration.md#experimental-in-process-features-configuration-70) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
+>**Note**: This feature is [experimental](./../experimental.md). To enable this feature, set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. Additionally, the [in-process features](./../configuration.md#experimental-in-process-features-configuration-70) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
 
 ## HTTP Route
 
@@ -13,7 +13,7 @@ Captures the call stacks of the currently running process. Note that only manage
 GET /stacks?pid={pid}&uid={uid}&name={name}&egressProvider={egressProvider} HTTP/1.1
 ```
 
-> **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 
@@ -46,10 +46,12 @@ Allowed schemes:
 |---|---|---|---|
 | 200 OK | [CallStackResult](definitions.md#experimental-callstackresult-70) | Callstacks for all managed threads in the process. | `application/json` |
 | 200 OK | text | Text representation of callstacks in the process. | `text/plain` |
-| 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
+| 202 Accepted | | When an egress provider is specified, the artifact has begun being collected. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many stack requests at this time. Try to request a stack at a later time. | `application/problem+json` |
+
+> **NOTE: (8.0+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
 
 ## Examples
 
@@ -67,6 +69,7 @@ Accept: application/json
 ```http
 HTTP/1.1 200 OK
 Content-Type: application/json
+Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 
 {
     "threadId": 30860,
@@ -103,6 +106,7 @@ Accept: text/plain
 ```http
 HTTP/1.1 200 OK
 Content-Type: text/plain
+Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 
 Thread: (0x68C0)
   System.Private.CoreLib.dll!System.Threading.Monitor.Wait
