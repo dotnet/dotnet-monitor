@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TestRunnerAdditionalArguments>--blame "CollectHangDump;TestTimeout=3m"</TestRunnerAdditionalArguments>
+    <TestRunnerAdditionalArguments>--blame-crash --blame-hang-timeout 3m</TestRunnerAdditionalArguments>
   </PropertyGroup>
 
   <!-- Filter tests based on specified TestGroup -->
