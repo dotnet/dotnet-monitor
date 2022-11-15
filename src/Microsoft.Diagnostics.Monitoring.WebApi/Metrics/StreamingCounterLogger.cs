@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
@@ -11,7 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         private readonly Stream _stream;
 
-        protected abstract void SerializeCounter(Stream stream, ICounterPayload counter);
+        protected abstract void SerializeCounter(Stream stream, List<ICounterPayload> counter);
 
         protected virtual void Cleanup() { }
 
@@ -20,7 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _stream = stream;
         }
 
-        public void Log(ICounterPayload counter)
+        public void Log(List<ICounterPayload> counter)
         {
             //CONSIDER
             //Ideally this would be an asynchronous api, but making this async would extend the lifetime of writing to the stream

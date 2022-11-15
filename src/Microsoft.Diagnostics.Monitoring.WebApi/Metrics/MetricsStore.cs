@@ -19,9 +19,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         private sealed class MetricKey
         {
-            private ICounterPayload _metric;
+            private List<ICounterPayload> _metric;
 
-            public MetricKey(ICounterPayload metric)
+            public MetricKey(List<ICounterPayload> metric)
             {
                 _metric = metric;
             }
@@ -29,8 +29,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             public override int GetHashCode()
             {
                 HashCode code = new HashCode();
-                code.Add(_metric.Provider);
-                code.Add(_metric.Name);
+                code.Add(_metric[0].Provider); // Might not be safe to do this...
+                code.Add(_metric[0].Name);
                 return code.ToHashCode();
             }
 
@@ -38,13 +38,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 if (obj is MetricKey metricKey)
                 {
-                    return CompareMetrics(_metric, metricKey._metric);
+                    if (_metric.Count != metricKey._metric.Count)
+                    {
+                        return false;
+                    }
+
+                    for (int i = 0; i < _metric.Count; i += 1)
+                    {
+                        bool isSame = CompareMetrics(_metric[i], metricKey._metric[i]);
+                        if (!isSame)
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
                 }
                 return false;
             }
         }
 
-        private Dictionary<MetricKey, Queue<ICounterPayload>> _allMetrics = new Dictionary<MetricKey, Queue<ICounterPayload>>();
+        private Dictionary<MetricKey, Queue<List<ICounterPayload>>> _allMetrics = new Dictionary<MetricKey, Queue<List<ICounterPayload>>>();
         private readonly int _maxMetricCount;
 
         public MetricsStore(int maxMetricCount)
@@ -56,14 +70,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _maxMetricCount = maxMetricCount;
         }
 
-        public void AddMetric(ICounterPayload metric)
+        public void AddMetric(List<ICounterPayload> metric)
         {
             lock (_allMetrics)
             {
                 var metricKey = new MetricKey(metric);
-                if (!_allMetrics.TryGetValue(metricKey, out Queue<ICounterPayload> metrics))
+                if (!_allMetrics.TryGetValue(metricKey, out Queue<List<ICounterPayload>> metrics))
                 {
-                    metrics = new Queue<ICounterPayload>();
+                    metrics = new Queue<List<ICounterPayload>>();
                     _allMetrics.Add(metricKey, metrics);
                 }
                 metrics.Enqueue(metric);
@@ -76,13 +90,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public async Task SnapshotMetrics(Stream outputStream, CancellationToken token)
         {
-            Dictionary<MetricKey, Queue<ICounterPayload>> copy = null;
+            Dictionary<MetricKey, Queue<List<ICounterPayload>>> copy = null;
             lock (_allMetrics)
             {
-                copy = new Dictionary<MetricKey, Queue<ICounterPayload>>();
+                copy = new Dictionary<MetricKey, Queue<List<ICounterPayload>>>();
                 foreach (var metricGroup in _allMetrics)
                 {
-                    copy.Add(metricGroup.Key, new Queue<ICounterPayload>(metricGroup.Value));
+                    copy.Add(metricGroup.Key, new Queue<List<ICounterPayload>>(metricGroup.Value));
                 }
             }
 
@@ -91,19 +105,23 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             foreach (var metricGroup in copy)
             {
-                ICounterPayload metricInfo = metricGroup.Value.First();
-                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.Provider, metricInfo.Name, metricInfo.Unit);
+                List<ICounterPayload> metricInfo = metricGroup.Value.First();
+                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo[0].Provider, metricInfo[0].Name, metricInfo[0].Unit);
                 string metricType = "gauge";
 
-                //TODO Some clr metrics claim to be incrementing, but are really gauges.
-
-                await writer.WriteLineAsync(FormattableString.Invariant($"# HELP {metricName} {metricInfo.DisplayName}"));
+                await writer.WriteLineAsync(FormattableString.Invariant($"# HELP {metricName} {metricInfo[0].DisplayName}"));
                 await writer.WriteLineAsync(FormattableString.Invariant($"# TYPE {metricName} {metricType}"));
 
                 foreach (var metric in metricGroup.Value)
                 {
-                    string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(metric.Unit, metric.Value);
-                    await WriteMetricDetails(writer, metric, metricName, metricValue);
+                    foreach (var individualMetric in metric)
+                    {
+                        var keyValuePairs = from pair in individualMetric.Metadata select pair.Key + "=" + "\"" + pair.Value + "\"";
+                        string metricLabels = string.Join(", ", keyValuePairs);
+
+                        string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(individualMetric.Unit, individualMetric.Value);
+                        await WriteMetricDetails(writer, individualMetric, metricName, metricValue, metricLabels);
+                    }
                 }
             }
         }
@@ -112,10 +130,46 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     StreamWriter writer,
                     ICounterPayload metric,
                     string metricName,
-                    string metricValue)
+                    string metricValue,
+                    string metricLabels)
         {
-            await writer.WriteAsync(metricName);
-            await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
+            if (metric is GaugePayload gaugeMetric)
+            {
+                await writer.WriteAsync(gaugeMetric.DisplayName);
+                if (!string.IsNullOrWhiteSpace(metricLabels))
+                {
+                    await writer.WriteAsync("{" + metricLabels + "}");
+                }
+                await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
+            }
+            else if (metric is RatePayload rateMetric)
+            {
+                await writer.WriteAsync(rateMetric.DisplayName);
+                if (!string.IsNullOrWhiteSpace(metricLabels))
+                {
+                    await writer.WriteAsync("{" + metricLabels + "}");
+                }
+                await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
+            }
+            else if (metric is PercentilePayload percentileMetric)
+            {
+                await writer.WriteAsync(percentileMetric.DisplayName); // Just experimenting with this
+                if (!string.IsNullOrWhiteSpace(metricLabels))
+                {
+                    await writer.WriteAsync("{" + metricLabels + "}");
+                }
+                await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue}"));
+            }
+            else
+            {
+                // Existing format for EventCounters
+                await writer.WriteAsync(metricName);
+                if (!string.IsNullOrWhiteSpace(metricLabels))
+                {
+                    await writer.WriteAsync("{" + metricLabels + "}");
+                }
+                await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
+            }
         }
 
         private static bool CompareMetrics(ICounterPayload first, ICounterPayload second)

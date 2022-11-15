@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// </summary>
     internal interface IMetricsStore : IDisposable
     {
-        void AddMetric(ICounterPayload metric);
+        void AddMetric(List<ICounterPayload> metric);
 
         Task SnapshotMetrics(Stream stream, CancellationToken token);
 

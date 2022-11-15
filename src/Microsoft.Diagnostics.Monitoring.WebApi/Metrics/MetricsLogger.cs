@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -15,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _store = metricsStore;
         }
 
-        public void Log(ICounterPayload metric)
+        public void Log(List<ICounterPayload> metric)
         {
             _store.AddMetric(metric);
         }

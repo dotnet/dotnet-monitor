@@ -1185,6 +1185,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The maximum number of histograms that can be tracked. Each unique combination of provider name, histogram name, and dimension values counts as one histogram. Tracking more histograms uses more memory in the target process so this bound guards against unintentional high memory use..
+        /// </summary>
+        public static string DisplayAttributeDescription_MetricsOptions_MaxHistograms {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_MetricsOptions_MaxHistograms", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The maximum number of time series that can be tracked. Each unique combination of provider name, metric name, and dimension values counts as one time series. Tracking more time series uses more memory in the target process so this bound guards against unintentional high memory use..
+        /// </summary>
+        public static string DisplayAttributeDescription_MetricsOptions_MaxTimeSeries {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_MetricsOptions_MaxTimeSeries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Amount of data points to store per metric..
         /// </summary>
         public static string DisplayAttributeDescription_MetricsOptions_MetricCount {
