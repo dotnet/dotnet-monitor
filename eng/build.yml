@@ -196,17 +196,16 @@ jobs:
           pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
           artifactName: Build_${{ parameters.configuration }}
 
-    - script: $(Build.SourcesDirectory)/dotnet$(scriptExt) test -l trx -c ${{ parameters.configuration }} --no-build --no-restore --nologo --blame-crash --blame-hang-timeout 3m --results-directory $(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)
+    - script: $(Build.SourcesDirectory)/dotnet$(scriptExt) test -l trx -c ${{ parameters.configuration }} --no-build --no-restore --nologo --blame-crash --blame-hang-timeout 3m --filter "TargetFrameworkMoniker!=NetCoreApp31&TargetFrameworkMoniker!=Net50" --results-directory $(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig) -- xunit.parallelizeAssembly=false xunit.parallelizeTestCollections=false xunit.maxParallelThreads=-1
       displayName: Test
 
     # Publish test results to Azure Pipelines
     - task: PublishTestResults@2
       displayName: Publish Test Results
       inputs:
-        testResultsFormat: VSTest
+        testResultsFormat: XUnit
         testResultsFiles: '**/*.trx'
         searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults/'
-        failTaskOnFailedTests: true
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
         publishRunAttachments: true
         mergeTestResults: true
