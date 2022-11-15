@@ -196,15 +196,21 @@ jobs:
           pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
           artifactName: Build_${{ parameters.configuration }}
 
-    - script: $(Build.SourcesDirectory)/dotnet$(scriptExt) test -l trx -c ${{ parameters.configuration }} --no-build --no-restore --nologo --blame-crash --blame-hang-timeout 3m --filter "TargetFrameworkMoniker!=NetCoreApp31&TargetFrameworkMoniker!=Net50" --results-directory $(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)
+    - task: VSTest@2
       displayName: Test
-
-    # Publish test results to Azure Pipelines
-    - task: PublishBuildArtifacts@1
-      displayName: Publish Test Result Files
+      timeoutInMinutes: 20
       inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
-        PublishLocation: Container
-        ArtifactName: TestResults_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
-      continueOnError: true
-      condition: succeededOrFailed()
+        searchFolder: $(Build.SourcesDirectory)/artifacts/bin/
+        testAssemblyVer2: '**Tests/**Tests.dll'
+        resultsFolder: $(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)
+        testFiltercriteria: TargetFrameworkMoniker!=NetCoreApp31&TargetFrameworkMoniker!=Net50
+        testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
+        configuration: ${{ parameters.configuration }}
+        minimumExpectedTests: 1
+        runInParallel: false
+        publishRunAttachments: true
+        collectDumpOn: onAbortOnly
+        rerunFailedTests: true
+        rerunType: basedOnTestFailurePercentage
+        rerunFailedThreshold: 30
+        rerunMaxAttempts: 3
