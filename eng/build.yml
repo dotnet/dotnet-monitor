@@ -196,18 +196,11 @@ jobs:
           pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
           artifactName: Build_${{ parameters.configuration }}
 
-    - script: $(Build.SourcesDirectory)/dotnet$(scriptExt) test -l trx -c ${{ parameters.configuration }} --no-build --no-restore --nologo --blame-hang-timeout 3m --filter "TargetFrameworkMoniker!=NetCoreApp31&TargetFrameworkMoniker!=Net50" --results-directory $(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)
+    - task: DotNetCoreCLI@2
       displayName: Test
-
-    # Publish test results to Azure Pipelines
-    - task: PublishTestResults@2
-      displayName: Publish Test Results
       inputs:
-        testRunner: VSTest
-        testResultsFiles: '**/*.trx'
-        searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults/'
+        command: 'test'
+        configuration: ${{ parameters.configuration }}
+        publishTestResults: true
+        arguments: --no-build --no-restore --blame-crash --blame-hang-timeout 3m --filter "TargetFrameworkMoniker!=NetCoreApp31&TargetFrameworkMoniker!=Net50"
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
-        publishRunAttachments: true
-        buildConfiguration: ${{ parameters.name }}
-      continueOnError: true
-      condition: succeededOrFailed()
