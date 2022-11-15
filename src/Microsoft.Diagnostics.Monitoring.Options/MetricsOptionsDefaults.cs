@@ -9,6 +9,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public const int MetricCount = 3;
 
+        public const int MaxHistograms = 10;
+
+        public const int MaxTimeSeries = 1000;
+
         public const bool IncludeDefaultProviders = true;
     }
 }

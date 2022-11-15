@@ -17,13 +17,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static EventPipeCounterPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, bool includeDefaults,
             int durationSeconds)
         {
-            return CreateSettings(includeDefaults, durationSeconds, counterOptions.GetIntervalSeconds(), () => new List<EventPipeCounterGroup>(0));
+            return CreateSettings(includeDefaults, durationSeconds, counterOptions.GetIntervalSeconds(), MetricsOptionsDefaults.MaxHistograms,
+                MetricsOptionsDefaults.MaxTimeSeries, () => new List<EventPipeCounterGroup>(0));
         }
 
         public static EventPipeCounterPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, MetricsOptions options)
         {
             return CreateSettings(options.IncludeDefaultProviders.GetValueOrDefault(MetricsOptionsDefaults.IncludeDefaultProviders),
                 Timeout.Infinite, counterOptions.GetIntervalSeconds(),
+                options.MaxHistograms.GetValueOrDefault(MetricsOptionsDefaults.MaxHistograms),
+                options.MaxTimeSeries.GetValueOrDefault(MetricsOptionsDefaults.MaxTimeSeries),
                 () => ConvertCounterGroups(options.Providers));
         }
 
@@ -33,12 +36,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return CreateSettings(configuration.IncludeDefaultProviders,
                 durationSeconds,
                 counterOptions.GetIntervalSeconds(),
+                MetricsOptionsDefaults.MaxHistograms,
+                MetricsOptionsDefaults.MaxTimeSeries,
                 () => ConvertCounterGroups(configuration.Providers));
         }
 
         private static EventPipeCounterPipelineSettings CreateSettings(bool includeDefaults,
             int durationSeconds,
             float counterInterval,
+            int maxHistograms,
+            int maxTimeSeries,
             Func<List<EventPipeCounterGroup>> createCounterGroups)
         {
             List<EventPipeCounterGroup> eventPipeCounterGroups = createCounterGroups();
@@ -54,7 +61,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 CounterGroups = eventPipeCounterGroups.ToArray(),
                 Duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds),
-                CounterIntervalSeconds = counterInterval
+                CounterIntervalSeconds = counterInterval,
+                MaxHistograms = maxHistograms,
+                MaxTimeSeries = maxTimeSeries
             };
         }
 

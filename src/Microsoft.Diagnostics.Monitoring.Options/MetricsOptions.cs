@@ -43,6 +43,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_Providers))]
         public List<MetricProvider> Providers { get; set; } = new List<MetricProvider>(0);
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_MaxHistograms))]
+        [DefaultValue(MetricsOptionsDefaults.MaxHistograms)]
+        [Range(1, int.MaxValue)] // do we want this range?
+        public int? MaxHistograms { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_MaxTimeSeries))]
+        [DefaultValue(MetricsOptionsDefaults.MaxTimeSeries)]
+        [Range(1, int.MaxValue)] // do we want this range?
+        public int? MaxTimeSeries { get; set; }
     }
 
     public class MetricProvider
