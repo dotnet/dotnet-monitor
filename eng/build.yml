@@ -204,8 +204,8 @@ jobs:
       displayName: Publish Test Results
       inputs:
         testResultsFormat: VSTest
-        testResultsFiles: '*.trx'
-        searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
+        testResultsFiles: '**/*.trx'
+        searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults/'
         failTaskOnFailedTests: true
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
         publishRunAttachments: true
