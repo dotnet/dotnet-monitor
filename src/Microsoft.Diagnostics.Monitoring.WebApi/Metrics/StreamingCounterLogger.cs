@@ -23,6 +23,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly ManualResetEvent _finishedSerialization = new(false);
         private readonly ILogger _logger;
 
+        protected ILogger Logger => _logger;
+
         private long _dropCount;
 
         protected abstract Task SerializeAsync(ICounterPayload counter);
