@@ -200,15 +200,11 @@ jobs:
       displayName: Test
 
     # Publish test results to Azure Pipelines
-    - task: PublishTestResults@2
-      displayName: Publish Test Results
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Test Result Files
       inputs:
-        testRunner: VSTest
-        testResultsFiles: '**/*.trx'
-        searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults/'
-        testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
-        publishRunAttachments: true
-        mergeTestResults: true
-        buildConfiguration: ${{ parameters.name }}
+        PathtoPublish: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
+        PublishLocation: Container
+        ArtifactName: TestResults_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
       continueOnError: true
       condition: succeededOrFailed()
