@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -60,15 +61,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private Dictionary<MetricKey, Queue<List<ICounterPayload>>> _allMetrics = new Dictionary<MetricKey, Queue<List<ICounterPayload>>>();
         private readonly int _maxMetricCount;
+        private ILogger<MetricsStoreService> _logger;
 
-        public MetricsStore(int maxMetricCount)
+        public MetricsStore(ILogger<MetricsStoreService> logger, int maxMetricCount)
         {
             if (maxMetricCount < 1)
             {
                 throw new ArgumentException(Strings.ErrorMessage_InvalidMetricCount);
             }
             _maxMetricCount = maxMetricCount;
+            _logger = logger;
         }
+
 
         public void AddMetric(List<ICounterPayload> metric)
         {
@@ -106,11 +110,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             foreach (var metricGroup in copy)
             {
                 List<ICounterPayload> metricInfo = metricGroup.Value.First();
-                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo[0].Provider, metricInfo[0].Name, metricInfo[0].Unit);
-                string metricType = "gauge";
 
-                await writer.WriteLineAsync(FormattableString.Invariant($"# HELP {metricName} {metricInfo[0].DisplayName}"));
-                await writer.WriteLineAsync(FormattableString.Invariant($"# TYPE {metricName} {metricType}"));
+                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo[0].Provider, metricInfo[0].Name, metricInfo[0].Unit);
+
+                await WriteMetricHeader(metricInfo[0], writer, metricName);
 
                 foreach (var metric in metricGroup.Value)
                 {
@@ -126,7 +129,34 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        private static async Task WriteMetricDetails(
+        private static async Task WriteMetricHeader(ICounterPayload metricInfo, StreamWriter writer, string metricName)
+        {
+            if (metricInfo.EventType != EventType.Error)
+            {
+                string metricType = GetMetricType(metricInfo.EventType);
+
+                await writer.WriteLineAsync(FormattableString.Invariant($"# HELP {metricName} {metricInfo.DisplayName}"));
+                await writer.WriteLineAsync(FormattableString.Invariant($"# TYPE {metricName} {metricType}"));
+            }
+        }
+
+        private static string GetMetricType(EventType eventType)
+        {
+            switch (eventType)
+            {
+                case EventType.Rate:
+                    return "counter";
+                case EventType.Gauge:
+                    return "gauge";
+                case EventType.Histogram:
+                    return "summary";
+                case EventType.Error:
+                default:
+                    return string.Empty; // Not sure this is how we want to do it.
+            }
+        }
+
+        private async Task WriteMetricDetails(
                     StreamWriter writer,
                     ICounterPayload metric,
                     string metricName,
@@ -159,6 +189,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     await writer.WriteAsync("{" + metricLabels + "}");
                 }
                 await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue}"));
+            }
+            else if (metric is ErrorPayload errorMetric)
+            {
+                _logger.LogWarning("This is a warning for - " + errorMetric.ErrorMessage);
             }
             else
             {
