@@ -169,6 +169,16 @@ jobs:
       - script: echo "##vso[task.prependpath]/usr/share/node/bin"
         displayName: Add Azurite to PATH
 
+    - script: node -e 'console.log("###vso[task.setvariable dotnet_version=" + require("./global.json").tools.dotnet + ";]")'
+      displayName: Calculate DotNet version
+
+    - task: UseDotNet@2
+      displayName: Install DotNet
+      inputs:
+        version: $(dotnet_version)
+        includePreviewVersion: true
+        installationPath: $(Build.SourcesDirectory)/.dotnet     
+
     - script: >-
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
         -configuration ${{ parameters.configuration }}
@@ -200,7 +210,6 @@ jobs:
       displayName: Test
       inputs:
         command: 'test'
-        configuration: ${{ parameters.configuration }}
         publishTestResults: true
         arguments: --no-build --no-restore --blame-crash --blame-hang-timeout 3m --filter "TargetFrameworkMoniker!=NetCoreApp31&TargetFrameworkMoniker!=Net50"
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
