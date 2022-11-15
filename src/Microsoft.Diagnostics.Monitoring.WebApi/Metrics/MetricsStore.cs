@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,45 +44,82 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        private Dictionary<MetricKey, Queue<ICounterPayload>> _allMetrics = new Dictionary<MetricKey, Queue<ICounterPayload>>();
+        private Dictionary<MetricKey, Queue<List<ICounterPayload>>> _allMetrics = new Dictionary<MetricKey, Queue<List<ICounterPayload>>>();
         private readonly int _maxMetricCount;
+        private ILogger<MetricsStoreService> _logger;
 
-        public MetricsStore(int maxMetricCount)
+        public MetricsStore(ILogger<MetricsStoreService> logger, int maxMetricCount)
         {
             if (maxMetricCount < 1)
             {
                 throw new ArgumentException(Strings.ErrorMessage_InvalidMetricCount);
             }
             _maxMetricCount = maxMetricCount;
+            _logger = logger;
         }
+
 
         public void AddMetric(ICounterPayload metric)
         {
+            List<ICounterPayload> metricAsList = new();
+            metricAsList.Add(metric);
+
             lock (_allMetrics)
             {
                 var metricKey = new MetricKey(metric);
-                if (!_allMetrics.TryGetValue(metricKey, out Queue<ICounterPayload> metrics))
+
+                if (metric.EventType == EventType.Histogram)
                 {
-                    metrics = new Queue<ICounterPayload>();
-                    _allMetrics.Add(metricKey, metrics);
+                    if (_allMetrics.TryGetValue(metricKey, out Queue<List<ICounterPayload>> metrics))
+                    {
+                        List<ICounterPayload> recentMetrics = metrics.LastOrDefault();
+
+                        if (recentMetrics.Any() && recentMetrics[0].Timestamp == metric.Timestamp)
+                        {
+                            metrics.LastOrDefault().Add(metric);
+                        }
+                        else
+                        {
+                            metrics.Enqueue(metricAsList);
+                        }
+                    }
+                    else
+                    {
+                        metrics = new Queue<List<ICounterPayload>>();
+                        _allMetrics.Add(metricKey, metrics);
+                        metrics.Enqueue(metricAsList);
+                    }
+
+                    if (metrics.Count > _maxMetricCount)
+                    {
+                        metrics.Dequeue();
+                    }
                 }
-                metrics.Enqueue(metric);
-                if (metrics.Count > _maxMetricCount)
+                else
                 {
-                    metrics.Dequeue();
+                    if (!_allMetrics.TryGetValue(metricKey, out Queue<List<ICounterPayload>> metrics))
+                    {
+                        metrics = new Queue<List<ICounterPayload>>();
+                        _allMetrics.Add(metricKey, metrics);
+                    }
+                    metrics.Enqueue(metricAsList);
+                    if (metrics.Count > _maxMetricCount)
+                    {
+                        metrics.Dequeue();
+                    }
                 }
             }
         }
 
         public async Task SnapshotMetrics(Stream outputStream, CancellationToken token)
         {
-            Dictionary<MetricKey, Queue<ICounterPayload>> copy = null;
+            Dictionary<MetricKey, Queue<List<ICounterPayload>>> copy = null;
             lock (_allMetrics)
             {
-                copy = new Dictionary<MetricKey, Queue<ICounterPayload>>();
+                copy = new Dictionary<MetricKey, Queue<List<ICounterPayload>>>();
                 foreach (var metricGroup in _allMetrics)
                 {
-                    copy.Add(metricGroup.Key, new Queue<ICounterPayload>(metricGroup.Value));
+                    copy.Add(metricGroup.Key, new Queue<List<ICounterPayload>>(metricGroup.Value));
                 }
             }
 
@@ -90,39 +128,101 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             foreach (var metricGroup in copy)
             {
-                ICounterPayload metricInfo = metricGroup.Value.First();
-                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.Provider, metricInfo.Name, metricInfo.Unit);
-                string metricType = "gauge";
+                List<ICounterPayload> metricInfo = metricGroup.Value.First();
 
-                var keyValuePairs = from pair in metricInfo.Metadata select PrometheusDataModel.GetPrometheusNormalizedLabel(pair.Key, pair.Value);
-                string metricLabels = string.Join(", ", keyValuePairs);
+                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo[0].Provider, metricInfo[0].Name, metricInfo[0].Unit);
 
-                //TODO Some clr metrics claim to be incrementing, but are really gauges.
-
-                await writer.WriteLineAsync(FormattableString.Invariant($"# HELP {metricName} {metricInfo.DisplayName}"));
-                await writer.WriteLineAsync(FormattableString.Invariant($"# TYPE {metricName} {metricType}"));
+                await WriteMetricHeader(metricInfo[0], writer, metricName);
 
                 foreach (var metric in metricGroup.Value)
                 {
-                    string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(metric.Unit, metric.Value);
-                    await WriteMetricDetails(writer, metric, metricName, metricValue, metricLabels);
+                    foreach (var individualMetric in metric)
+                    {
+                        var keyValuePairs = from pair in individualMetric.Metadata select pair.Key + "=" + "\"" + pair.Value + "\"";
+                        string metricLabels = string.Join(", ", keyValuePairs);
+
+                        string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(individualMetric.Unit, individualMetric.Value);
+                        await WriteMetricDetails(writer, individualMetric, metricName, metricValue, metricLabels);
+                    }
                 }
             }
         }
 
-        private static async Task WriteMetricDetails(
+        private static async Task WriteMetricHeader(ICounterPayload metricInfo, StreamWriter writer, string metricName)
+        {
+            if (metricInfo.EventType != EventType.Error)
+            {
+                string metricType = GetMetricType(metricInfo.EventType);
+
+                await writer.WriteLineAsync(FormattableString.Invariant($"# HELP {metricName} {metricInfo.DisplayName}"));
+                await writer.WriteLineAsync(FormattableString.Invariant($"# TYPE {metricName} {metricType}"));
+            }
+        }
+
+        private static string GetMetricType(EventType eventType)
+        {
+            switch (eventType)
+            {
+                case EventType.Rate:
+                    return "counter";
+                case EventType.Gauge:
+                    return "gauge";
+                case EventType.Histogram:
+                    return "summary";
+                case EventType.Error:
+                default:
+                    return string.Empty; // Not sure this is how we want to do it.
+            }
+        }
+
+        private async Task WriteMetricDetails(
                     StreamWriter writer,
                     ICounterPayload metric,
                     string metricName,
                     string metricValue,
                     string metricLabels)
         {
-            await writer.WriteAsync(metricName);
-            if (!string.IsNullOrWhiteSpace(metricLabels))
+            if (metric is GaugePayload)
             {
-                await writer.WriteAsync("{" + metricLabels + "}");
+                await writer.WriteAsync(metricName);
+                if (!string.IsNullOrWhiteSpace(metricLabels))
+                {
+                    await writer.WriteAsync("{" + metricLabels + "}");
+                }
+                await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
             }
-            await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
+            else if (metric is RatePayload)
+            {
+                await writer.WriteAsync(metricName);
+                if (!string.IsNullOrWhiteSpace(metricLabels))
+                {
+                    await writer.WriteAsync("{" + metricLabels + "}");
+                }
+                await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
+            }
+            else if (metric is PercentilePayload)
+            {
+                await writer.WriteAsync(metricName); // Just experimenting with this
+                if (!string.IsNullOrWhiteSpace(metricLabels))
+                {
+                    await writer.WriteAsync("{" + metricLabels + "}");
+                }
+                await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue}"));
+            }
+            else if (metric is ErrorPayload errorMetric)
+            {
+                _logger.LogWarning(errorMetric.ErrorMessage);
+            }
+            else
+            {
+                // Existing format for EventCounters
+                await writer.WriteAsync(metricName);
+                if (!string.IsNullOrWhiteSpace(metricLabels))
+                {
+                    await writer.WriteAsync("{" + metricLabels + "}");
+                }
+                await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
+            }
         }
 
         private static bool CompareMetrics(ICounterPayload first, ICounterPayload second)

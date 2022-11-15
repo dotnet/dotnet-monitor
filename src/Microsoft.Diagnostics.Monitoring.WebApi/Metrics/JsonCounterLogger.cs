@@ -35,8 +35,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         protected override async Task SerializeAsync(ICounterPayload counter)
         {
-            await _stream.WriteAsync(JsonSequenceRecordSeparator);
+            if (counter is ErrorPayload errorPayload)
+            {
+                Logger.LogWarning(errorPayload.ErrorMessage);
 
+                return;
+            }
+
+            await _stream.WriteAsync(JsonSequenceRecordSeparator);
             _bufferWriter.Clear();
             using (var writer = new Utf8JsonWriter(_bufferWriter, new JsonWriterOptions { Indented = false }))
             {
@@ -48,15 +54,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 writer.WriteString("unit", counter.Unit);
                 writer.WriteString("counterType", counter.CounterType.ToString());
 
+                string tagsVal = string.Empty;
+
+                if (counter.Metadata.TryGetValue("quantile", out string percentile))
+                {
+                    tagsVal = "Percentile=" + percentile; // note that this is currently decimal not percentile
+                }
+
+                writer.WriteString("tags", tagsVal);
+
                 //Some versions of .Net return invalid metric numbers. See https://github.com/dotnet/runtime/pull/46938
                 writer.WriteNumber("value", double.IsNaN(counter.Value) ? 0.0 : counter.Value);
-
-                writer.WriteStartObject("metadata");
-                foreach (var kvPair in counter.Metadata)
-                {
-                    writer.WriteString(kvPair.Key, kvPair.Value);
-                }
-                writer.WriteEndObject();
 
                 writer.WriteEndObject();
             }
