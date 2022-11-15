@@ -9,7 +9,7 @@ parameters:
   variables: {}
   # Optional: Job timeout
   timeoutInMinutes: 180
-  # Depends on 
+  # Depends on
   dependsOn: ''
   # Sub paths under 'artifacts' folder from which files are published to artifacts location
   publishArtifactsSubPaths: []
@@ -95,22 +95,11 @@ jobs:
     # Component Governance does not work on Musl
     - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
       - skipComponentGovernanceDetection: true
-    
+
     # Cross build for arm64 non-Windows builds
     - ${{ if and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')) }}:
       - _CrossBuildArgs: '-cross'
 
-    - ${{ if ne(parameters.testGroup, 'None') }}:
-      # If TestGroup == 'Default', choose the test group based on the type of pipeline run
-      - ${{ if eq(parameters.testGroup, 'Default') }}:
-        - ${{ if in(variables['Build.Reason'], 'BatchedCI', 'IndividualCI') }}:
-          - _TestArgs: '-test -testgroup CI'
-        - ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
-          - _TestArgs: '-test -testgroup PR'
-        - ${{ else }}:
-          - _TestArgs: '-test -testgroup All'
-      - ${{ else }}:
-          - _TestArgs: '-test -testgroup ${{ parameters.testGroup }}'
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - group: DotNet-MSRC-Storage
@@ -185,10 +174,9 @@ jobs:
         -configuration ${{ parameters.configuration }}
         -architecture ${{ parameters.architecture }}
         $(_CrossBuildArgs)
-        $(_TestArgs)
         $(_InternalInstallArgs)
         $(_InternalBuildArgs)
-      displayName: Build and Test
+      displayName: Build
       ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
         env:
           ROOTFS_DIR: '/crossrootfs/arm64'
@@ -207,6 +195,9 @@ jobs:
         inputs:
           pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
           artifactName: Build_${{ parameters.configuration }}
+
+    - script: $(Build.SourcesDirectory)/dotnet$(scriptExt) test -l trx -c ${{ parameters.configuration }} --no-build --no-restore --nologo --blame-crash --blame-hang-timeout 3m --results-directory '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
+      displayName: Test
 
     # Publish test results to Azure Pipelines
     - ${{ if ne(parameters.testGroup, 'None') }}:
