@@ -169,15 +169,15 @@ jobs:
       - script: echo "##vso[task.prependpath]/usr/share/node/bin"
         displayName: Add Azurite to PATH
 
-    - script: node -e 'console.log("###vso[task.setvariable dotnet_version=" + require("./global.json").tools.dotnet + ";]")'
-      displayName: Calculate DotNet version
+    # - script: node -e 'console.log("###vso[task.setvariable dotnet_version=" + require("./global.json").tools.dotnet + ";]")'
+    #   displayName: Calculate DotNet version
 
-    - task: UseDotNet@2
-      displayName: Install DotNet
-      inputs:
-        version: $(dotnet_version)
-        includePreviewVersion: true
-        installationPath: $(Build.SourcesDirectory)/.dotnet     
+    # - task: UseDotNet@2
+    #   displayName: Install DotNet
+    #   inputs:
+    #     version: $(dotnet_version)
+    #     includePreviewVersion: true
+    #     installationPath: $(Build.SourcesDirectory)/.dotnet     
 
     - script: >-
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
