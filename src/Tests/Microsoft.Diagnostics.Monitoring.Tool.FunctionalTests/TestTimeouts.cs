@@ -12,31 +12,31 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Timeout for polling a long running operation to completion.
         /// This may need to be adjusted for individual calls that are longer than 30 seconds.
         /// </summary>
-        public static readonly TimeSpan OperationTimeout = TimeSpan.FromSeconds(30);
+        public static readonly TimeSpan OperationTimeout = TimeSpan.FromMinutes(3);
 
         /// <summary>
         /// Timeout for metrics api.
         /// </summary>
-        public static readonly TimeSpan CaptureMetricsTimeout = TimeSpan.FromSeconds(30);
+        public static readonly TimeSpan CaptureMetricsTimeout = TimeSpan.FromMinutes(3);
 
         /// <summary>
         /// Default timeout for HTTP API calls
         /// </summary>
-        public static readonly TimeSpan HttpApi = TimeSpan.FromSeconds(30);
+        public static readonly TimeSpan HttpApi = TimeSpan.FromMinutes(3);
 
         /// <summary>
         /// Timeout for waiting for a collection rule to complete.
         /// </summary>
-        public static readonly TimeSpan CollectionRuleCompletionTimeout = TimeSpan.FromSeconds(30);
+        public static readonly TimeSpan CollectionRuleCompletionTimeout = TimeSpan.FromMinutes(3);
 
         /// <summary>
         /// Timeout for waiting for a collection rule to be filtered.
         /// </summary>
-        public static readonly TimeSpan CollectionRuleFilteredTimeout = TimeSpan.FromSeconds(10);
+        public static readonly TimeSpan CollectionRuleFilteredTimeout = TimeSpan.FromMinutes(3);
 
         /// <summary>
         /// Timeout for waiting for a collection rule to run its action list to completion.
         /// </summary>
-        public static readonly TimeSpan CollectionRuleActionsCompletedTimeout = TimeSpan.FromSeconds(30);
+        public static readonly TimeSpan CollectionRuleActionsCompletedTimeout = TimeSpan.FromMinutes(3);
     }
 }
