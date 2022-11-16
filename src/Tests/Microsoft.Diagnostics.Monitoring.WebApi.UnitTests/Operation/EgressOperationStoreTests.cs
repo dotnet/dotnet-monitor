@@ -2,11 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Moq;
 using System;
-using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -51,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
             await Assert.ThrowsAsync<TooManyRequestsException>(() => store.AddOperation(Mock.Of<IEgressOperation>(), DenyOperationKey));
         }
 
-        [Fact(Skip = "Deadlock")]
+        [Fact]
         public async Task StopOperation_OnException_InvokesCallback()
         {
             // Arrange
@@ -75,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
             Assert.Equal(Models.OperationState.Stopping, store.GetOperationStatus(operationId).Status);
         }
 
-        [Fact(Skip = "Deadlock")]
+        [Fact]
         public async Task CancelOperation_Supports_StoppingState()
         {
             // Arrange
@@ -83,18 +80,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
 
             Mock<IEgressOperation> mockOperation = new();
             mockOperation.SetupGet(operation => operation.IsStoppable).Returns(true);
-            TaskCompletionSource<object> stopCancelled = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            TaskCompletionSource<CancellationToken> stopCancellationTokenReceived = new(TaskCreationOptions.RunContinuationsAsynchronously);
             mockOperation.Setup(operation => operation.StopAsync(It.IsAny<CancellationToken>()))
-                .Callback(async (CancellationToken token) =>
+                .Callback((CancellationToken token) =>
                 {
-                    try
-                    {
-                        await Task.Delay(Timeout.InfiniteTimeSpan, token).ConfigureAwait(false);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        stopCancelled.SetResult(null);
-                    }
+                    stopCancellationTokenReceived.TrySetResult(token);
                 });
 
             Guid operationId = await store.AddOperation(mockOperation.Object, AllowOperationKey);
@@ -105,7 +95,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
             store.CancelOperation(operationId);
 
             // Assert
-            await stopCancelled.Task;
+            CancellationToken stopToken = await stopCancellationTokenReceived.Task;
+            Assert.True(stopToken.IsCancellationRequested);
             Assert.Equal(Models.OperationState.Cancelled, store.GetOperationStatus(operationId).Status);
         }
     }
