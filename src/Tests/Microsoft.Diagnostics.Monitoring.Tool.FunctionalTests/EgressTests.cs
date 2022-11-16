@@ -111,6 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
+        [Fact]
         public async Task EgressStopTest()
         {
             await ScenarioRunner.SingleTarget(
