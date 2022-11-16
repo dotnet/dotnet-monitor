@@ -111,7 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "Flaky - TBD")]
         public async Task EgressStopTest()
         {
             await ScenarioRunner.SingleTarget(
