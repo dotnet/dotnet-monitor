@@ -201,7 +201,7 @@ jobs:
       inputs:
         command: 'test'
         publishTestResults: true
-        arguments: --arch ${{ parameters.architecture }} -c ${{ parameters.configuration }} --no-build --no-restore --filter "FullyQualifiedName~UnitTests" -s $(Build.SourcesDirectory)/src/Tests/unittest.runsettings
+        arguments: -c ${{ parameters.configuration }} --no-build --no-restore --filter \"FullyQualifiedName~UnitTests\"
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
 
     - task: DotNetCoreCLI@2
@@ -209,5 +209,5 @@ jobs:
       inputs:
         command: 'test'
         publishTestResults: true
-        arguments: --arch ${{ parameters.architecture }} -c ${{ parameters.configuration }}  --no-build --no-restore --filter "FullyQualifiedName~FunctionalTests" -s $(Build.SourcesDirectory)/src/Tests/functionaltest.runsettings
+        arguments: -c ${{ parameters.configuration }}  --no-build --no-restore --filter \"FullyQualifiedName~FunctionalTests\"
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
