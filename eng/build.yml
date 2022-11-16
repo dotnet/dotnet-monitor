@@ -169,16 +169,6 @@ jobs:
       - script: echo "##vso[task.prependpath]/usr/share/node/bin"
         displayName: Add Azurite to PATH
 
-    # - script: node -e 'console.log("###vso[task.setvariable dotnet_version=" + require("./global.json").tools.dotnet + ";]")'
-    #   displayName: Calculate DotNet version
-
-    # - task: UseDotNet@2
-    #   displayName: Install DotNet
-    #   inputs:
-    #     version: $(dotnet_version)
-    #     includePreviewVersion: true
-    #     installationPath: $(Build.SourcesDirectory)/.dotnet     
-
     - script: >-
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
         -configuration ${{ parameters.configuration }}
@@ -207,9 +197,17 @@ jobs:
           artifactName: Build_${{ parameters.configuration }}
 
     - task: DotNetCoreCLI@2
-      displayName: Test
+      displayName: Unit Tests
       inputs:
         command: 'test'
         publishTestResults: true
-        arguments: --no-build --no-restore
+        arguments: --arch ${{ parameters.architecture }} -c ${{ parameters.configuration }} --no-build --no-restore --filter "FullyQualifiedName~UnitTests" -s $(Build.SourcesDirectory)/src/Tests/unittest.runsettings
+        testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
+
+    - task: DotNetCoreCLI@2
+      displayName: Functional Tests
+      inputs:
+        command: 'test'
+        publishTestResults: true
+        arguments: --arch ${{ parameters.architecture }} -c ${{ parameters.configuration }}  --no-build --no-restore --filter "FullyQualifiedName~FunctionalTests" -s $(Build.SourcesDirectory)/src/Tests/functionaltest.runsettings
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
