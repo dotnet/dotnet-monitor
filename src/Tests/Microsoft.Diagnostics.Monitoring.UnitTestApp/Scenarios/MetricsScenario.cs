@@ -3,15 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Diagnostics.Metrics;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
@@ -43,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 while (num <= 10)
                 {
                     // Pretend our store has a transaction each second that sells 4 hats
-                    Thread.Sleep(1000);
+                    await Task.Delay(1000);
                     Console.WriteLine(num);
                     num += 1;
                     counter1.Add(8);

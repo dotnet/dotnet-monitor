@@ -28,13 +28,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 writer.WriteString("unit", counter[0].Unit);
                 writer.WriteString("counterType", counter[0].CounterType.ToString());
 
-                int index = 0; // temporary only
-
-                foreach (var individualCounter in counter)
+                // Histogram - show quantiles
+                if (counter.Count > 1)
+                {
+                    writer.WriteStartObject("value");
+                    foreach (var individualCounter in counter)
+                    {
+                        string quantile = individualCounter.Metadata["quantile"]; // need to make this cleaner/safer
+                        //Some versions of .Net return invalid metric numbers. See https://github.com/dotnet/runtime/pull/46938
+                        writer.WriteNumber(quantile, double.IsNaN(individualCounter.Value) ? 0.0 : individualCounter.Value);
+                    }
+                    writer.WriteEndObject();
+                }
+                else
                 {
                     //Some versions of .Net return invalid metric numbers. See https://github.com/dotnet/runtime/pull/46938
-                    writer.WriteNumber("value " + index, double.IsNaN(individualCounter.Value) ? 0.0 : individualCounter.Value);
-                    index += 1;
+                    writer.WriteNumber("value", double.IsNaN(counter[0].Value) ? 0.0 : counter[0].Value);
                 }
 
                 writer.WriteEndObject();

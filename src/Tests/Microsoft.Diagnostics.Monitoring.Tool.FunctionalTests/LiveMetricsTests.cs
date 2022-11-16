@@ -9,7 +9,9 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
@@ -91,6 +93,69 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         strict: true);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                });
+        }
+
+        [Fact]
+        public async Task TestSystemDiagnosticsMetrics()
+        {
+            var counterNames = new[] { "test-counter", "test-gauge", "test-histogram" };
+
+            MetricProvider p1 = new MetricProvider();
+            p1.ProviderName = "P1";
+            var providers = new List<MetricProvider>()
+            {
+                p1
+            };
+
+            Task startCollectLogsTask = null;
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.Metrics.Name,
+                appValidate: async (runner, client) =>
+                {
+                    using ResponseStreamHolder holder = await client.CaptureMetricsAsync(await runner.ProcessIdTask,
+                        durationSeconds: 10,
+                        metricsConfiguration: new EventMetricsConfiguration
+                        {
+                            IncludeDefaultProviders = false,
+                            Providers = new[]
+                            {
+                                new EventMetricsProvider
+                                {
+                                    ProviderName = p1.ProviderName,
+                                    CounterNames = counterNames,
+                                }
+                            }
+                        });
+
+                    var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
+                    await LiveMetricsTestUtilities.ValidateMetrics(new[] { p1.ProviderName },
+                        counterNames,
+                        metrics,
+                        strict: true);
+
+                    //await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: runner =>
+                {
+                    startCollectLogsTask = runner.WaitForStartCollectLogsAsync();
+
+                    runner.WriteKeyPerValueConfiguration(new RootOptions()
+                    {
+                        Metrics = new MetricsOptions()
+                        {
+                            Enabled = true,
+                            IncludeDefaultProviders = false,
+                            Providers = providers
+                        },
+                        GlobalCounter = new GlobalCounterOptions()
+                        {
+                            IntervalSeconds = 1
+                        }
+                    });
                 });
         }
     }

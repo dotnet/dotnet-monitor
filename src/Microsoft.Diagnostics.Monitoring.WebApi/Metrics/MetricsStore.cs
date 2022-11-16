@@ -163,27 +163,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     string metricValue,
                     string metricLabels)
         {
-            if (metric is GaugePayload gaugeMetric)
+            if (metric is GaugePayload)
             {
-                await writer.WriteAsync(gaugeMetric.DisplayName);
+                await writer.WriteAsync(metricName);
                 if (!string.IsNullOrWhiteSpace(metricLabels))
                 {
                     await writer.WriteAsync("{" + metricLabels + "}");
                 }
                 await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
             }
-            else if (metric is RatePayload rateMetric)
+            else if (metric is RatePayload)
             {
-                await writer.WriteAsync(rateMetric.DisplayName);
+                await writer.WriteAsync(metricName);
                 if (!string.IsNullOrWhiteSpace(metricLabels))
                 {
                     await writer.WriteAsync("{" + metricLabels + "}");
                 }
                 await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
             }
-            else if (metric is PercentilePayload percentileMetric)
+            else if (metric is PercentilePayload)
             {
-                await writer.WriteAsync(percentileMetric.DisplayName); // Just experimenting with this
+                await writer.WriteAsync(metricName); // Just experimenting with this
                 if (!string.IsNullOrWhiteSpace(metricLabels))
                 {
                     await writer.WriteAsync("{" + metricLabels + "}");
@@ -192,7 +192,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             else if (metric is ErrorPayload errorMetric)
             {
-                _logger.LogWarning("This is a warning for - " + errorMetric.ErrorMessage);
+                _logger.LogWarning(errorMetric.ErrorMessage);
             }
             else
             {
