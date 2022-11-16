@@ -211,5 +211,5 @@ jobs:
       inputs:
         command: 'test'
         publishTestResults: true
-        arguments: --no-build --no-restore --blame-crash --blame-hang-timeout 3m --filter "TargetFrameworkMoniker!=NetCoreApp31&TargetFrameworkMoniker!=Net50"
+        arguments: --no-build --no-restore
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
