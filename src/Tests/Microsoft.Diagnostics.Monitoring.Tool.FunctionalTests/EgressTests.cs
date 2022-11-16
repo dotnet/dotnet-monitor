@@ -348,7 +348,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     await drainResponseTask.WaitAsync(timeoutCancellation.Token);
                     await traceFileWriter.DisposeAsync();
 
-                    operationResult = await apiClient.GetOperationStatus(operationUri);
+                    operationResult = await apiClient.PollOperationToCompletion(operationUri);
                     Assert.Equal(HttpStatusCode.Created, operationResult.StatusCode);
                     Assert.Equal(OperationState.Succeeded, operationResult.OperationStatus.Status);
 
