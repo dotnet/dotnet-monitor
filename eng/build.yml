@@ -201,7 +201,7 @@ jobs:
       inputs:
         command: 'test'
         publishTestResults: true
-        arguments: -c ${{ parameters.configuration }} --no-build --no-restore --filter \"FullyQualifiedName~UnitTests\"
+        arguments: -c ${{ parameters.configuration }} --no-build --no-restore --filter 'FullyQualifiedName~UnitTests'
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
 
     - task: DotNetCoreCLI@2
@@ -209,5 +209,5 @@ jobs:
       inputs:
         command: 'test'
         publishTestResults: true
-        arguments: -c ${{ parameters.configuration }}  --no-build --no-restore --filter \"FullyQualifiedName~FunctionalTests\"
+        arguments: -c ${{ parameters.configuration }}  --no-build --no-restore --filter 'FullyQualifiedName~FunctionalTests'
         testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
