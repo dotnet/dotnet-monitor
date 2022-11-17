@@ -15,12 +15,6 @@ parameters:
   publishArtifactsSubPaths: []
   # Group of tests to be run
   testGroup: Default
-  # TFMs for which test results are uploaded
-  testResultTfms:
-  - key: net6.0
-    value: .NET 6
-  - key: net7.0
-    value: .NET 7
 
 jobs:
 - template: /eng/common/templates/job/job.yml
@@ -196,10 +190,12 @@ jobs:
           pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
           artifactName: Build_${{ parameters.configuration }}
 
-    - task: DotNetCoreCLI@2
-      displayName: Test
-      inputs:
-        command: 'test'
-        publishTestResults: true
-        arguments: -c ${{ parameters.configuration }} --no-build --no-restore -- MaxCpuCount=1 DisableParallelization=true
-        testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
+    - ${{ if ne(parameters.testGroup, 'None') }}:
+      - task: DotNetCoreCLI@2
+        displayName: Test
+        timeoutInMinutes: 45
+        inputs:
+          command: 'test'
+          publishTestResults: true
+          arguments: -c ${{ parameters.configuration }} --no-build --no-restore $(_TestArgs) -- MaxCpuCount=1 DisableParallelization=true
+          testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'

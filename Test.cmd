@@ -1,3 +1,3 @@
 @echo off
-powershell -ExecutionPolicy ByPass -NoProfile -command "& """%~dp0eng\common\build.ps1""" -test %*"
+%~dp0dotnet.cmd test --no-build --no-restore --results-directory %~dp0artifacts\TestResults %*
 exit /b %ErrorLevel%
