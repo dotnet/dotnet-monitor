@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Amazon.S3;
+using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;

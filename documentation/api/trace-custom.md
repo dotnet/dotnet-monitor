@@ -11,7 +11,7 @@ Captures a diagnostic trace of a process using the given set of event providers 
 POST /trace?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
-> **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 
@@ -57,7 +57,7 @@ The expected content type is `application/json`.
 
 > **NOTE: (8.0+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
 
-> **NOTE:** After the expiration of the trace duration, completing the request may take a long time (up to several minutes) for large applications if `EventProvidersConfiguration.RequestRundown` is set to `true`. The runtime needs to send over the type cache for all managed code that was captured in the trace, known as rundown events. Thus, the length of time of the request may take significantly longer than the requested duration.
+> **Note**: After the expiration of the trace duration, completing the request may take a long time (up to several minutes) for large applications if `EventProvidersConfiguration.RequestRundown` is set to `true`. The runtime needs to send over the type cache for all managed code that was captured in the trace, known as rundown events. Thus, the length of time of the request may take significantly longer than the requested duration.
 
 ## Examples
 
