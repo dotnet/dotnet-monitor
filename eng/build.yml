@@ -99,7 +99,7 @@ jobs:
     - ${{ if eq(parameters.testBlameMode, true) }}:
         # Avoid blame crash for now, as it'll incorrectly trigger during our functional tests when our child procs "crash" intentionally.
         # When this happens, the blame collector will terminate the entire proc tree, including the test host.
-      - _TestArgs: '--blame --blame-hang-timeout 10m'
+      - _TestArgs: '--blame --blame-hang-timeout 1m'
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - group: DotNet-MSRC-Storage
