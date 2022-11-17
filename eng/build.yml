@@ -15,6 +15,8 @@ parameters:
   publishArtifactsSubPaths: []
   # Group of tests to be run
   testGroup: Default
+  # Additional test args (e.g. blame)
+  additionalTestArgs: ''
 
 jobs:
 - template: /eng/common/templates/job/job.yml
@@ -82,7 +84,6 @@ jobs:
     - _HelixType: build/product
     - _HelixBuildConfig: ${{ parameters.configuration }}
     - _CrossBuildArgs: ''
-    - _TestArgs: ''
     - _InternalInstallArgs: ''
     - _InternalBuildArgs: ''
 
@@ -197,5 +198,5 @@ jobs:
         inputs:
           command: 'test'
           publishTestResults: true
-          arguments: -c ${{ parameters.configuration }} --no-build --no-restore $(_TestArgs) -- MaxCpuCount=1 DisableParallelization=true
+          arguments: -c ${{ parameters.configuration }} --no-build --no-restore ${{ parameters.additionalTestArgs }} -- MaxCpuCount=1 DisableParallelization=true
           testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
