@@ -11,6 +11,13 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
+    internal enum StackFormat
+    {
+        Json,
+        PlainText,
+        Speedscope
+    }
+
     internal static class StackUtilities
     {
         public static string GenerateStacksFilename(IEndpointInfo endpointInfo, bool plainText)
@@ -22,7 +29,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static async Task CollectStacksAsync(TaskCompletionSource<object> startCompletionSource,
             IEndpointInfo endpointInfo,
             ProfilerChannel profilerChannel,
-            bool plainText,
+            StackFormat format,
             Stream outputStream, CancellationToken token)
         {
             var settings = new EventStacksPipelineSettings
@@ -48,9 +55,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             await runPipelineTask;
             Stacks.CallStackResult result = await eventTracePipeline.Result;
 
-            StacksFormatter formatter = (plainText == true) ? new TextStacksFormatter(outputStream) : new JsonStacksFormatter(outputStream);
+            StacksFormatter formatter = CreateFormatter(format, outputStream);
 
             await formatter.FormatStack(result, token);
         }
+
+        private static StacksFormatter CreateFormatter(StackFormat format, Stream outputStream) =>
+            format switch
+            {
+                StackFormat.Json => new JsonStacksFormatter(outputStream),
+                StackFormat.Speedscope => new SpeedscopeStacksFormatter(outputStream),
+                StackFormat.PlainText => new TextStacksFormatter(outputStream),
+                _ => throw new InvalidOperationException(),
+            };
     }
 }

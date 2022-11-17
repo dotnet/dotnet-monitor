@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal sealed class EgressOperationQueue : IEgressOperationQueue, IDisposable
+    internal sealed class EgressOperationQueue : IDisposable
     {
         private readonly Channel<EgressRequest> _queue;
         private bool _disposed;

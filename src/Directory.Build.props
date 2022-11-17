@@ -19,10 +19,6 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <TestRunnerAdditionalArguments>--blame-crash --blame-hang-timeout 3m</TestRunnerAdditionalArguments>
-  </PropertyGroup>
-
   <!-- Filter tests based on specified TestGroup -->
   <PropertyGroup Condition="'$(TestGroup)' == 'CI'">
     <!-- Exclude netcoreapp3.1 and net5.0 tests from CI builds -->

@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal sealed class RequestLimitTracker : IRequestLimitTracker
+    internal sealed class RequestLimitTracker
     {
         private sealed class RequestCount : IDisposable
         {

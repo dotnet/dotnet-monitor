@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading;
@@ -12,14 +11,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal sealed class EgressOperationService : BackgroundService
     {
-        private IEgressOperationQueue _queue;
+        private EgressOperationQueue _queue;
         private IServiceProvider _serviceProvider;
         private EgressOperationStore _operationsStore;
 
-        public EgressOperationService(IServiceProvider serviceProvider,
+        public EgressOperationService(EgressOperationQueue taskQueue,
+            IServiceProvider serviceProvider,
             EgressOperationStore operationStore)
         {
-            _queue = serviceProvider.GetRequiredService<IEgressOperationQueue>();
+            _queue = taskQueue;
             _serviceProvider = serviceProvider;
             _operationsStore = operationStore;
         }

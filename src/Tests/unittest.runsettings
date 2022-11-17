@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>  
-<RunSettings>  
-  <RunConfiguration>  
-    <MaxCpuCount>0</MaxCpuCount>
-    <DisableParallelization>false</DisableParallelization>
-    <CollectSourceInformation>true</CollectSourceInformation>
-  </RunConfiguration>  
-</RunSettings>  

@@ -41,7 +41,6 @@
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.OpenApiGen" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
-    <InternalsVisibleTo Include="$(MoqInternalsVisibleTo)" Key="$(MoqInternalsVisibleToKey)" />
   </ItemGroup>
 
   <ItemGroup>

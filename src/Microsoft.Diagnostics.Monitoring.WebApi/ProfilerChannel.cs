@@ -42,7 +42,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public async Task<ProfilerMessage> SendMessage(IEndpointInfo endpointInfo, ProfilerMessage message, CancellationToken token)
         {
-#if NET6_0_OR_GREATER
             string channelPath = ComputeChannelPath(endpointInfo);
             var endpoint = new UnixDomainSocketEndPoint(channelPath);
             using var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
@@ -71,9 +70,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 MessageType = (ProfilerMessageType)BitConverter.ToInt16(buffer, startIndex: 0),
                 Parameter = BitConverter.ToInt32(buffer, startIndex: 2)
             };
-#else
-            return await Task.FromException<ProfilerMessage>(new NotImplementedException());
-#endif
         }
 
         private string ComputeChannelPath(IEndpointInfo endpointInfo)
