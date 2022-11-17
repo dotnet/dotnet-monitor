@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Amazon.Runtime;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
@@ -21,9 +22,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private ITestOutputHelper _outputHelper;
 
+
+        private readonly string MeterName = "MeterName";
+        private readonly string InstrumentName = "InstrumentName";
+        private readonly DateTime Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(10000000).DateTime;
+        private readonly ILogger<MetricsStoreService> _logger;
+
+        private const int MetricCount = 1;
+        private const int Value = 50;
+        private const int IntervalSeconds = 10;
+
         public MetricsFormattingTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
+
+            LoggerFactory factory = new LoggerFactory();
+            _logger = factory.CreateLogger<MetricsStoreService>();
         }
 
         /*
@@ -32,62 +46,69 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
         }*/
 
-        /*
         [Fact]
         public async Task GaugeFormat_Test()
         {
+            ICounterPayload payload = new GaugePayload(MeterName, InstrumentName, "DisplayName", "", new(), Value, Timestamp);
 
-        }*/
+            MemoryStream stream = await GetMetrics(new() { payload });
 
-        
+            List<string> lines = ReadStream(stream);
+
+            // Question - this is manually recreating what PrometheusDataModel.GetPrometheusNormalizedName does to get the metric name;
+            // should we call this method, or should this also be implicitly testing its behavior by having this hard-coded?
+            string metricName = $"{MeterName.ToLowerInvariant()}_{payload.Name}";
+
+            Assert.Equal(3, lines.Count);
+            Assert.Equal($"# HELP {metricName}{payload.Unit} {payload.DisplayName}", lines[0]);
+            Assert.Equal($"# TYPE {metricName} gauge", lines[1]);
+            Assert.Equal($"{metricName} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}", lines[2]);
+        }
+
         [Fact]
         public async Task CounterFormat_Test()
         {
-            LoggerFactory factory = new LoggerFactory();
-            var logger = factory.CreateLogger<MetricsStoreService>();
+            ICounterPayload payload = new RatePayload(MeterName, InstrumentName, "DisplayName", "", new(), Value, IntervalSeconds, Timestamp);
 
-            IMetricsStore metricsStore = new MetricsStore(logger, 10); // 10 is arbitrary
+            MemoryStream stream = await GetMetrics(new() { payload });
 
-            MemoryStream stream = new();
-            CancellationTokenSource source = new(5000); // arbitrary
+            List<string> lines = ReadStream(stream);
 
-            const long milliseconds = 1;
+            // Question - this is manually recreating what PrometheusDataModel.GetPrometheusNormalizedName does to get the metric name;
+            // should we call this method, or should this also be implicitly testing its behavior by having this hard-coded?
+            string metricName = $"{MeterName.ToLowerInvariant()}_{payload.Name}";
 
-            DateTime dt = new DateTime(1);
+            Assert.Equal(3, lines.Count);
+            Assert.Equal($"# HELP {metricName}{payload.Unit} {payload.DisplayName}", lines[0]);
+            Assert.Equal($"# TYPE {metricName} counter", lines[1]);
+            Assert.Equal($"{metricName} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}", lines[2]);
+        }
 
-            DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(milliseconds);
-
-            ICounterPayload payload = new RatePayload("ProviderName", "CounterName", "DisplayName", "", new(), 40, 10, dateTimeOffset.DateTime);
-
-            List<ICounterPayload> payloads = new()
-            {
-                payload
-            };
-
+        private async Task<MemoryStream> GetMetrics(List<ICounterPayload> payloads)
+        {
+            IMetricsStore metricsStore = new MetricsStore(_logger, MetricCount);
             metricsStore.AddMetric(payloads);
 
-            await metricsStore.SnapshotMetrics(stream, source.Token);
+            var outputStream = new MemoryStream();
+            await metricsStore.SnapshotMetrics(outputStream, CancellationToken.None);
 
-            List<string> lines = new();
+            return outputStream;
+        }
+
+        private static List<string> ReadStream(Stream stream)
+        {
+            var lines = new List<string>();
 
             stream.Position = 0;
             using (var reader = new StreamReader(stream))
             {
                 while (!reader.EndOfStream)
                 {
-                    // StringStream creation and initialization
                     lines.Add(reader.ReadLine());
                 }
             }
 
-            // Question - this is manually recreating what PrometheusDataModel.GetPrometheusNormalizedName does to get the metric name;
-            // should we call this method, or should this also be implicitly testing its behavior by having this hard-coded?
-            string metricName = $"{payload.Provider.ToLowerInvariant()}_{payload.Name}";
-
-            Assert.Equal(3, lines.Count);
-            Assert.Equal($"# HELP {metricName}{payload.Unit} {payload.DisplayName}", lines[0]);
-            Assert.Equal($"# TYPE {metricName} counter", lines[1]);
-            Assert.Equal($"{metricName} {payload.Value} {dateTimeOffset.ToUnixTimeMilliseconds()}", lines[2]);
+            return lines;
         }
 
         /*

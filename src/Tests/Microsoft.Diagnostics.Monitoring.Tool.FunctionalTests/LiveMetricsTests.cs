@@ -99,16 +99,24 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public async Task TestSystemDiagnosticsMetrics()
         {
-            var counterNames = new[] { "test-counter", "test-gauge", "test-histogram" };
+            var counterNamesP1 = new[] { "test-counter", "test-gauge", "test-histogram" };
+            var counterNamesP2 = new[] { "test-histogram" };
 
-            MetricProvider p1 = new MetricProvider();
-            p1.ProviderName = "P1";
-            var providers = new List<MetricProvider>()
+            MetricProvider p1 = new MetricProvider()
             {
-                p1
+                ProviderName = "P1"
             };
 
-            Task startCollectLogsTask = null;
+            MetricProvider p2 = new MetricProvider()
+            {
+                ProviderName = "P2"
+            };
+
+            var providers = new List<MetricProvider>()
+            {
+                p1, p2
+            };
+
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -116,8 +124,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.Metrics.Name,
                 appValidate: async (runner, client) =>
                 {
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+
                     using ResponseStreamHolder holder = await client.CaptureMetricsAsync(await runner.ProcessIdTask,
-                        durationSeconds: 10,
+                        durationSeconds: 2,
                         metricsConfiguration: new EventMetricsConfiguration
                         {
                             IncludeDefaultProviders = false,
@@ -126,23 +136,27 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                                 new EventMetricsProvider
                                 {
                                     ProviderName = p1.ProviderName,
-                                    CounterNames = counterNames,
+                                    CounterNames = counterNamesP1,
+                                },
+                                new EventMetricsProvider
+                                {
+                                    ProviderName = p2.ProviderName,
+                                    CounterNames = counterNamesP2,
                                 }
                             }
                         });
 
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+
                     var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
-                    await LiveMetricsTestUtilities.ValidateMetrics(new[] { p1.ProviderName },
-                        counterNames,
+
+                    await LiveMetricsTestUtilities.ValidateMetrics(new[] { p1.ProviderName, p2.ProviderName },
+                        counterNamesP1,
                         metrics,
                         strict: true);
-
-                    //await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
                 configureTool: runner =>
                 {
-                    startCollectLogsTask = runner.WaitForStartCollectLogsAsync();
-
                     runner.WriteKeyPerValueConfiguration(new RootOptions()
                     {
                         Metrics = new MetricsOptions()

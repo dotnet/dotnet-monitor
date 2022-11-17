@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Extensions.Logging;
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
+#if NET6_0_OR_GREATER
     internal static class MetricsScenario
     {
         public static Command Command()
@@ -24,6 +26,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         {
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Metrics.Commands.Continue, logger);
+
                 Random rd = new();
 
                 Meter meter1 = new Meter("P1", "1.0.0");
@@ -34,14 +38,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 Meter meter2 = new Meter("P2", "1.0.0");
                 Histogram<int> histogram2 = meter2.CreateHistogram<int>("test-histogram");
 
-                int num = 1;
-                while (num <= 10)
+                for (int index = 0; index < 20; ++index)
                 {
-                    // Pretend our store has a transaction each second that sells 4 hats
-                    await Task.Delay(1000);
-                    Console.WriteLine(num);
-                    num += 1;
-                    counter1.Add(8);
+                    await Task.Delay(100);
+                    counter1.Add(1);
 
                     for (int i = 0; i < 20; ++i)
                     {
@@ -50,8 +50,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                     }
                 }
 
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Metrics.Commands.Continue, logger);
+
                 return 0;
             }, context.GetCancellationToken());
         }
     }
+#endif
 }
