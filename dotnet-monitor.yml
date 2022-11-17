@@ -33,10 +33,10 @@ parameters:
   values:
   - Default
   - None
-- name: AdditionalTestArgs
-  displayName: 'Additional test arguments'
-  type: string
-  default: ''
+- name: TestBlameMode
+  displayName: 'Run tests in blame mode'
+  type: boolean
+  default: false
 
 variables:
 - name: _TeamName
@@ -58,7 +58,7 @@ stages:
       osGroup: Windows
       configuration: Debug
       testGroup: ${{ parameters.TestGroup }}
-      additionalTestArgs: ${{ parameters.AdditionalTestArgs }}
+      testBlameMode: ${{ parameters.TestBlameMode }}
   - template: /eng/build.yml
     parameters:
       name: Windows_x64_Release
@@ -69,7 +69,7 @@ stages:
       - source: 'bin'
       - source: 'obj'
       testGroup: ${{ parameters.TestGroup }}
-      additionalTestArgs: ${{ parameters.AdditionalTestArgs }}
+      testBlameMode: ${{ parameters.TestBlameMode }}
   - template: /eng/build.yml
     parameters:
       name: Windows_x86_Release
@@ -80,7 +80,7 @@ stages:
       publishArtifactsSubPaths:
       - source: 'bin/Windows_NT.x86.Release'
       testGroup: ${{ parameters.TestGroup }}
-      additionalTestArgs: ${{ parameters.AdditionalTestArgs }}
+      testBlameMode: ${{ parameters.TestBlameMode }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
     - template: /eng/build.yml
       parameters:
@@ -99,7 +99,7 @@ stages:
       osGroup: Linux
       configuration: Debug
       testGroup: ${{ parameters.TestGroup }}
-      additionalTestArgs: ${{ parameters.AdditionalTestArgs }}
+      testBlameMode: ${{ parameters.TestBlameMode }}
   - template: /eng/build.yml
     parameters:
       name: Linux_x64_Release
@@ -109,7 +109,7 @@ stages:
       publishArtifactsSubPaths:
       - source: 'bin/Linux.x64.Release'
       testGroup: ${{ parameters.TestGroup }}
-      additionalTestArgs: ${{ parameters.AdditionalTestArgs }}
+      testBlameMode: ${{ parameters.TestBlameMode }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
     - template: /eng/build.yml
       parameters:
@@ -128,7 +128,7 @@ stages:
       osGroup: Linux_Musl
       configuration: Debug
       testGroup: ${{ parameters.TestGroup }}
-      additionalTestArgs: ${{ parameters.AdditionalTestArgs }}
+      testBlameMode: ${{ parameters.TestBlameMode }}
   - template: /eng/build.yml
     parameters:
       name: Linux_Musl_x64_Release
@@ -139,7 +139,7 @@ stages:
       - source: 'bin/Linux.x64.Release'
         target: 'bin/Linux-musl.x64.Release'
       testGroup: ${{ parameters.TestGroup }}
-      additionalTestArgs: ${{ parameters.AdditionalTestArgs }}
+      testBlameMode: ${{ parameters.TestBlameMode }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
     - template: /eng/build.yml
       parameters:
@@ -159,7 +159,7 @@ stages:
       osGroup: MacOS
       configuration: Debug
       testGroup: ${{ parameters.TestGroup }}
-      additionalTestArgs: ${{ parameters.AdditionalTestArgs }}
+      testBlameMode: ${{ parameters.TestBlameMode }}
   - template: /eng/build.yml
     parameters:
       name: MacOS_x64_Release
@@ -169,7 +169,7 @@ stages:
       publishArtifactsSubPaths:
       - source: 'bin/OSX.x64.Release'
       testGroup: ${{ parameters.TestGroup }}
-      additionalTestArgs: ${{ parameters.AdditionalTestArgs }}
+      testBlameMode: ${{ parameters.TestBlameMode }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
     - template: /eng/build.yml
       parameters:

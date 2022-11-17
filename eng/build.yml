@@ -15,8 +15,8 @@ parameters:
   publishArtifactsSubPaths: []
   # Group of tests to be run
   testGroup: Default
-  # Additional test args (e.g. blame)
-  additionalTestArgs: ''
+  # Run tests in blame mode
+  testBlameMode: false
 
 jobs:
 - template: /eng/common/templates/job/job.yml
@@ -86,6 +86,7 @@ jobs:
     - _CrossBuildArgs: ''
     - _InternalInstallArgs: ''
     - _InternalBuildArgs: ''
+    - _TestArgs: ''
 
     # Component Governance does not work on Musl
     - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
@@ -95,6 +96,10 @@ jobs:
     - ${{ if and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')) }}:
       - _CrossBuildArgs: '-cross'
 
+    - ${{ if eq(parameters.testBlameMode, true) }}:
+        # Avoid blame crash for now, as it'll incorrectly trigger during our functional tests when our child procs "crash" intentionally.
+        # When this happens, the blame collector will terminate the entire proc tree, including the test host.
+      - _TestArgs: '--blame --blame-hang-timeout 10m'
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - group: DotNet-MSRC-Storage
@@ -198,5 +203,15 @@ jobs:
         inputs:
           command: 'test'
           publishTestResults: true
-          arguments: -c ${{ parameters.configuration }} --no-build --no-restore ${{ parameters.additionalTestArgs }} -- MaxCpuCount=1 DisableParallelization=true
+          arguments: -c ${{ parameters.configuration }} --no-build --no-restore $(_TestArgs) -- MaxCpuCount=1 DisableParallelization=true
           testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
+
+    - ${{ if eq(parameters.testBlameMode, true) }}:
+        - task: PublishBuildArtifacts@1
+          displayName: Publish Blame Files
+          inputs:
+            PathtoPublish: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
+            PublishLocation: Container
+            ArtifactName: TestBlameResults_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
+          continueOnError: true
+          condition: succeededOrFailed()
