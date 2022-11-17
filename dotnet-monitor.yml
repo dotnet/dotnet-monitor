@@ -40,8 +40,9 @@ parameters:
 variables:
 - name: _TeamName
   value: DotNetCore
-- name: Codeql.Enabled
-  value: true
+- ${{ if notin(variables['Build.Reason'], 'PullRequest') }}:
+  - name: Codeql.Enabled
+    value: true
   
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   # DotNet-Diagnostics-SDL-Params provides Tsa* variables for SDL checks.
