@@ -29,17 +29,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public static async Task<HttpClient> CreateHttpClientAsync(this MonitorCollectRunner runner, IHttpClientFactory factory, string address, TimeSpan timeout)
         {
             using CancellationTokenSource cancellation = new(timeout);
-
-            return await runner.CreateHttpClientAsync(factory, address, Extensions.Options.Options.DefaultName, cancellation.Token);
+            return await runner.CreateHttpClientAsync(factory, address, Extensions.Options.Options.DefaultName, cancellation.Token, timeout);
         }
 
         /// <summary>
         /// Creates a named <see cref="HttpClient"/> over the address of the <paramref name="runner"/>.
         /// </summary>
-        public static async Task<HttpClient> CreateHttpClientAsync(this MonitorCollectRunner runner, IHttpClientFactory factory, string address, string name, CancellationToken token)
+        public static async Task<HttpClient> CreateHttpClientAsync(this MonitorCollectRunner runner, IHttpClientFactory factory, string address, string name, CancellationToken token, TimeSpan? timeout = null)
         {
             HttpClient client = factory.CreateClient(name);
-
+            if (timeout.HasValue)
+            {
+                client.Timeout = timeout.Value;
+            }
             client.BaseAddress = new Uri(address, UriKind.Absolute);
 
             if (runner.UseTempApiKey)
@@ -84,7 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
             string address = await runner.GetDefaultAddressAsync(cancellation.Token);
 
-            return await runner.CreateHttpClientAsync(factory, address, name, cancellation.Token);
+            return await runner.CreateHttpClientAsync(factory, address, name, cancellation.Token, timeout);
         }
 
         /// <summary>

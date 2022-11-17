@@ -8,7 +8,6 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -113,7 +112,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     break;
                 }
-                catch (CollectionRuleActionException ex) when (attemptIteration < attemptCount && ex.InnerException is InvalidOperationException)
+                catch (Exception ex) when (attemptIteration < attemptCount && (ex.InnerException is InvalidOperationException || ex is TaskCanceledException))
                 {
                     // GC dumps can fail to be produced from the runtime because the pipeline doesn't get the expected
                     // start, data, and stop events. The pipeline will throw an InvalidOperationException, which is

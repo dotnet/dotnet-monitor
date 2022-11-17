@@ -81,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     string egressPath = ActionTestsHelper.ValidateEgressPath(result);
 
-                    using FileStream dumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
+                    await using FileStream dumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
                     Assert.NotNull(dumpStream);
 
                     await DumpTestUtilities.ValidateDump(runner.Environment.ContainsKey(DumpTestUtilities.EnableElfDumpOnMacOS), dumpStream);
@@ -93,10 +93,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private async Task Retry(DumpType type, Func<Task> func, int attemptCount = 3)
         {
-            bool isMacOSFullDump =
-                RuntimeInformation.IsOSPlatform(OSPlatform.OSX) &&
-                type == DumpType.Full;
-
             int attemptIteration = 0;
             while (true)
             {
@@ -108,9 +104,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     break;
                 }
-                catch (TaskCanceledException) when (attemptIteration < attemptCount && isMacOSFullDump)
+                catch (TaskCanceledException) when (attemptIteration < attemptCount)
                 {
-                    // Full dumps on MacOS sometimes take a very long time (longer than 100 seconds, the default
+                    // Full dumps on sometimes take a very long time (longer than 100 seconds, the default
                     // HttpClient timeout). Retry the test when this condition is detected.
                 }
             }
