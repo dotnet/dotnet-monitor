@@ -97,10 +97,5 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// See: https://github.com/dotnet/runtime/issues/76704
         /// </remarks>
         public static readonly TimeSpan EventSourceBufferAvoidanceTimeout = TimeSpan.FromMilliseconds(250);
-
-        /// <summary>
-        /// Default timeout when waiting for another task to run or handle a signal.
-        /// </summary>
-        public static readonly TimeSpan AwaitForTaskToProcessTimeout = TimeSpan.FromMinutes(3);
     }
 }
