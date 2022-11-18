@@ -10,7 +10,7 @@ Captures the call stacks of the currently running process. Note that only manage
 ## HTTP Route
 
 ```http
-GET /stacks?pid={pid}&uid={uid}&name={name}&egressProvider={egressProvider} HTTP/1.1
+GET /stacks?pid={pid}&uid={uid}&name={name}&egressProvider={egressProvider}&tag={tag} HTTP/1.1
 ```
 
 > **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
