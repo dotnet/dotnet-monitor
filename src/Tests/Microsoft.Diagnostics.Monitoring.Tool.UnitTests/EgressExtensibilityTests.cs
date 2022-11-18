@@ -50,17 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public void FoundExtension_Failure()
         {
-            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
-            using TemporaryDirectory userConfigDir = new(_outputHelper);
-            using TemporaryDirectory dotnetToolsConfigDir = new(_outputHelper);
-
-            // Set up the initial settings used to create the host builder.
-            HostBuilderSettings settings = new()
-            {
-                SharedConfigDirectory = sharedConfigDir.FullName,
-                UserConfigDirectory = userConfigDir.FullName,
-                DotnetToolsExtensionDirectory = dotnetToolsConfigDir.FullName
-            };
+            HostBuilderSettings settings = CreateHostBuilderSettings();
 
             IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
 
