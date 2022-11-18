@@ -24,7 +24,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 }
                 catch (Exception ex) when (attemptIteration < maxRetryCount && shouldRetry(ex))
                 {
-                    // JSFIX: Log
                 }
             }
         }
@@ -43,7 +42,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 }
                 catch (Exception ex) when (attemptIteration < maxRetryCount && shouldRetry(ex))
                 {
-                    // JSFIX: Log
                 }
             }
         }
