@@ -75,7 +75,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     {
                         State = Models.OperationState.Running,
                         EgressRequest = request,
-                        OperationId = operationId
+                        OperationId = operationId,
+                        Tag = request.EgressOperation.Tag
                     });
             }
             await _taskQueue.EnqueueAsync(request);
@@ -173,7 +174,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     requests = requests.Where((kvp) =>
                     {
-                        return tag == kvp.Value.EgressRequest.EgressOperation.Tag;
+                        return tag == kvp.Value.Tag;
                     });
                 }
 
@@ -223,7 +224,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                                 ProcessId = processInfo.ProcessId,
                                 Uid = processInfo.RuntimeInstanceCookie
                             } : null,
-                        Tag = kvp.Value.EgressRequest.EgressOperation.Tag
+                        Tag = kvp.Value.Tag
                     };
                 }).ToList();
             }

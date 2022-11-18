@@ -654,7 +654,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 egressProvider,
                 traceOperation,
                 processInfo,
-                tag: tag);
+                tag);
         }
 
         private Task<ActionResult> StartLogs(

@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     egressProvider,
                     _metricsOperationFactory.Create(processInfo.EndpointInfo, settings),
                     processInfo,
-                    tag: tag),
+                    tag),
                 processKey,
                 Utilities.ArtifactType_Metrics);
         }
@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     egressProvider,
                     _metricsOperationFactory.Create(processInfo.EndpointInfo, settings),
                     processInfo,
-                    tag: tag),
+                    tag),
                 processKey,
                 Utilities.ArtifactType_Metrics);
         }
