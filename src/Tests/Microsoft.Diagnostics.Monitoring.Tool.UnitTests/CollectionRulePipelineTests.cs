@@ -100,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// <summary>
         /// Test that the pipeline works with the EventCounter trigger.
         /// </summary>
-        [Theory]
+        [Theory(Skip = "Nondeterministic")]
         [MemberData(nameof(GetTfmsSupportingPortListener))]
         public Task CollectionRulePipeline_EventCounterTriggerTest(TargetFrameworkMoniker appTfm)
         {

@@ -50,10 +50,8 @@
                 "command": ".\\test.cmd"
             },
             "args": [
-                "-ci",
                 "-c",
-                "${input:configuration}",
-                "/p:TestGroup=${input:testgroup}"
+                "${input:configuration}"
             ],
             "group": {
                 "kind": "test",
@@ -105,17 +103,6 @@
             "options": [
                 "Debug",
                 "Release"
-            ]
-        },
-        {
-            "id": "testgroup",
-            "type": "pickString",
-            "default": "PR",
-            "description": "The test group",
-            "options": [
-                "CI",
-                "PR",
-                "All"
             ]
         }
     ]

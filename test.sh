@@ -13,4 +13,4 @@ while [[ -h $source ]]; do
 done
 
 scriptroot="$( cd -P "$( dirname "$source" )" && pwd )"
-"$scriptroot/eng/common/build.sh" --test $@
+"$scriptroot/dotnet.sh" test --no-build --no-restore --results-directory "$scriptroot/artifacts/TestResults" $@

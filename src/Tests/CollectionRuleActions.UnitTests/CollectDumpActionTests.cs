@@ -39,7 +39,10 @@ namespace CollectionRuleActions.UnitTests
         [MemberData(nameof(ActionTestsHelper.GetTfmsAndDumpTypes), MemberType = typeof(ActionTestsHelper))]
         public Task CollectDumpAction_Success(TargetFrameworkMoniker tfm, DumpType dumpType)
         {
-            return Retry(dumpType, () => CollectDumpAction_SuccessCore(tfm, dumpType));
+            return RetryUtilities.RetryAsync(
+                func: () => CollectDumpAction_SuccessCore(tfm, dumpType),
+                shouldRetry: (Exception ex) => ex is TaskCanceledException,
+                outputHelper: _outputHelper);
         }
 
         private async Task CollectDumpAction_SuccessCore(TargetFrameworkMoniker tfm, DumpType dumpType)
@@ -91,31 +94,6 @@ namespace CollectionRuleActions.UnitTests
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
             });
-        }
-
-        private async Task Retry(DumpType type, Func<Task> func, int attemptCount = 3)
-        {
-            bool isMacOSFullDump =
-                RuntimeInformation.IsOSPlatform(OSPlatform.OSX) &&
-                type == DumpType.Full;
-
-            int attemptIteration = 0;
-            while (true)
-            {
-                attemptIteration++;
-                _outputHelper.WriteLine("===== Attempt #{0} =====", attemptIteration);
-                try
-                {
-                    await func();
-
-                    break;
-                }
-                catch (TaskCanceledException) when (attemptIteration < attemptCount && isMacOSFullDump)
-                {
-                    // Full dumps on MacOS sometimes take a very long time (longer than 100 seconds, the default
-                    // HttpClient timeout). Retry the test when this condition is detected.
-                }
-            }
         }
     }
 }

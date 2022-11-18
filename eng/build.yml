@@ -9,18 +9,12 @@ parameters:
   variables: {}
   # Optional: Job timeout
   timeoutInMinutes: 180
-  # Depends on 
+  # Depends on
   dependsOn: ''
   # Sub paths under 'artifacts' folder from which files are published to artifacts location
   publishArtifactsSubPaths: []
   # Group of tests to be run
   testGroup: Default
-  # TFMs for which test results are uploaded
-  testResultTfms:
-  - key: net6.0
-    value: .NET 6
-  - key: net7.0
-    value: .NET 7
 
 jobs:
 - template: /eng/common/templates/job/job.yml
@@ -88,14 +82,14 @@ jobs:
     - _HelixType: build/product
     - _HelixBuildConfig: ${{ parameters.configuration }}
     - _CrossBuildArgs: ''
-    - _TestArgs: ''
+    - _TestFilter: ''
     - _InternalInstallArgs: ''
     - _InternalBuildArgs: ''
 
     # Component Governance does not work on Musl
     - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
       - skipComponentGovernanceDetection: true
-    
+
     # Cross build for arm64 non-Windows builds
     - ${{ if and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')) }}:
       - _CrossBuildArgs: '-cross'
@@ -104,13 +98,9 @@ jobs:
       # If TestGroup == 'Default', choose the test group based on the type of pipeline run
       - ${{ if eq(parameters.testGroup, 'Default') }}:
         - ${{ if in(variables['Build.Reason'], 'BatchedCI', 'IndividualCI') }}:
-          - _TestArgs: '-test -testgroup CI'
+          - _TestFilter: 'TargetFrameworkMoniker!=NetCoreApp31&TargetFrameworkMoniker!=Net50'
         - ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
-          - _TestArgs: '-test -testgroup PR'
-        - ${{ else }}:
-          - _TestArgs: '-test -testgroup All'
-      - ${{ else }}:
-          - _TestArgs: '-test -testgroup ${{ parameters.testGroup }}'
+          - _TestFilter: 'TargetFrameworkMoniker!=NetCoreApp31&TargetFrameworkMoniker!=Net50'
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - group: DotNet-MSRC-Storage
@@ -155,7 +145,7 @@ jobs:
           env:
             Token: $(dn-bot-dnceng-artifact-feeds-rw)
 
-    - ${{ if ne(parameters.osGroup, 'Windows') }}:
+    - ${{ if and(ne(parameters.testGroup, 'None'), ne(parameters.osGroup, 'Windows')) }}:
       - task: NodeTool@0
         displayName: Install Node.js
         inputs:
@@ -176,7 +166,7 @@ jobs:
     # are not discoverable by the test infrastructure.
     #
     # Add the azurite installation location to PATH to workaround this.
-    - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
+    - ${{ if and(ne(parameters.testGroup, 'None'), eq(parameters.osGroup, 'Linux_Musl')) }}:
       - script: echo "##vso[task.prependpath]/usr/share/node/bin"
         displayName: Add Azurite to PATH
 
@@ -185,10 +175,9 @@ jobs:
         -configuration ${{ parameters.configuration }}
         -architecture ${{ parameters.architecture }}
         $(_CrossBuildArgs)
-        $(_TestArgs)
         $(_InternalInstallArgs)
         $(_InternalBuildArgs)
-      displayName: Build and Test
+      displayName: Build
       ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
         env:
           ROOTFS_DIR: '/crossrootfs/arm64'
@@ -208,29 +197,25 @@ jobs:
           pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
           artifactName: Build_${{ parameters.configuration }}
 
-    # Publish test results to Azure Pipelines
     - ${{ if ne(parameters.testGroup, 'None') }}:
-      - ${{ each testResultTfm in parameters.testResultTfms }}:
-        - task: PublishTestResults@2
-          displayName: Publish Test Results (${{ testResultTfm.value }})
-          inputs:
-            testResultsFormat: VSTest
-            testResultsFiles: '**/*Tests*${{ testResultTfm.key }}*.trx'
-            searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
-            failTaskOnFailedTests: true
-            testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} ${{ testResultTfm.value }}'
-            publishRunAttachments: true
-            mergeTestResults: true
-            buildConfiguration: ${{ parameters.name }}
-          continueOnError: true
-          condition: succeededOrFailed()
+      - task: DotNetCoreCLI@2
+        displayName: Test
+        timeoutInMinutes: 45
+        inputs:
+          command: 'test'
+          publishTestResults: true
+          arguments: -c ${{ parameters.configuration }} --blame-hang-timeout 15m --no-build --no-restore --filter "$(_TestFilter)" -- MaxCpuCount=1 DisableParallelization=true
+          testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
 
-      - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-        - task: PublishBuildArtifacts@1
-          displayName: Publish Test Result Files
-          inputs:
-            PathtoPublish: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
-            PublishLocation: Container
-            ArtifactName: TestResults_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
-          continueOnError: true
-          condition: succeededOrFailed()
+      # The current way our tests are being processed in dnceng results in aborted test runs to not be properly shown,
+      # so manually upload any blame dumps.
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Blame Artifacts
+        inputs:
+          ArtifactType: FilePath
+          PathtoPublish: $(Agent.TempDirectory)
+          FileCopyOptions: '**/*.dmp'
+          PublishLocation: Container
+          ArtifactName: TestBlameArtifacts_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
+        continueOnError: true
+        condition: Failed()
