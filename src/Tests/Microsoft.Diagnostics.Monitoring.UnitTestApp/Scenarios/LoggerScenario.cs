@@ -135,14 +135,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         private static void LogWarningMessage(ILogger logger)
         {
             logger.Log(
-            LogLevel.Warning,
-            new EventId(5, "EventIdWarning"),
-            new CustomLogState(
-            "Warning message with custom state.",
-            new string[] { "KeyA", "Key2", "KeyZ" },
-            new object[] { 4, 'p', LogLevel.Error }),
-            null,
-            CustomLogState.Formatter);
+                LogLevel.Warning,
+                new EventId(5, "EventIdWarning"),
+                new CustomLogState(
+                "Warning message with custom state.",
+                new string[] { "KeyA", "Key2", "KeyZ" },
+                new object[] { 4, 'p', LogLevel.Error }),
+                null,
+                CustomLogState.Formatter);
         }
 
         private static void LogErrorMessage(ILogger logger)
