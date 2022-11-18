@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Dia2Lib;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -164,11 +163,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public IEnumerable<Models.OperationSummary> GetOperations(ProcessKey? processKey)
+        public IEnumerable<Models.OperationSummary> GetOperations(ProcessKey? processKey, string tag)
         {
             lock (_requests)
             {
                 IEnumerable<KeyValuePair<Guid, EgressEntry>> requests = _requests;
+
+                if (null != tag)
+                {
+                    requests = requests.Where((kvp) =>
+                    {
+                        return tag == kvp.Value.EgressRequest.EgressOperation.Tag;
+                    });
+                }
 
                 if (null != processKey)
                 {
