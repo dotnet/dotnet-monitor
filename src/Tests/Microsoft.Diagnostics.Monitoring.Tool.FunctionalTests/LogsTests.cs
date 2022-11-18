@@ -466,9 +466,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        private async Task Retry(Func<Task> func, int attemptCount = 5)
+        private Task Retry(Func<Task> func, int attemptCount = 5)
         {
-            await RetryUtilities.RetryAsync(
+            return RetryUtilities.RetryAsync(
                 func,
                 shouldRetry: (Exception ex) => ex is ChannelClosedException,
                 maxRetryCount: attemptCount,
