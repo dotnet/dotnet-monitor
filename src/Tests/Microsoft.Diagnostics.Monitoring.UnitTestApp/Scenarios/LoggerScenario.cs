@@ -27,8 +27,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         {
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
-                // Building changed configurations has a race condition that can cause an internal runtime exception to be thrown.
-
                 ServiceProvider services = null;
                 try
                 {
