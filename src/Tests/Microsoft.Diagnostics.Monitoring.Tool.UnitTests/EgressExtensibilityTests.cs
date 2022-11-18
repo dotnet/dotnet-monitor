@@ -52,12 +52,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             using TemporaryDirectory sharedConfigDir = new(_outputHelper);
             using TemporaryDirectory userConfigDir = new(_outputHelper);
+            using TemporaryDirectory dotnetToolsConfigDir = new(_outputHelper);
 
             // Set up the initial settings used to create the host builder.
             HostBuilderSettings settings = new()
             {
                 SharedConfigDirectory = sharedConfigDir.FullName,
-                UserConfigDirectory = userConfigDir.FullName
+                UserConfigDirectory = userConfigDir.FullName,
+                DotnetToolsExtensionDirectory = dotnetToolsConfigDir.FullName
             };
 
             IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
@@ -76,100 +78,32 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [InlineData(ConfigDirectory.SharedConfigDirectory)]
         //[InlineData(ConfigDirectory.DotnetToolsDirectory)]
         //[InlineData(ConfigDirectory.NextToMeDirectory)]
-        public async Task FoundExtension_Success(ConfigDirectory configDirectory)
+        public void FoundExtension_Success(ConfigDirectory configDirectory)
         {
-            //const string extensionDisplayName = "AzureBlobStorage"; // This has to be the same as the display name within the Extension.json file
-            //const string extensionDirectoryName = "dotnet-monitor-egress-azureblobstorage";
+            HostBuilderSettings settings = CreateHostBuilderSettings();
 
-            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
-            using TemporaryDirectory userConfigDir = new(_outputHelper);
-            using TemporaryDirectory dotnetToolsConfigDir = new(_outputHelper);
+            string directoryName = GetExtensionDirectoryName(settings, configDirectory);
 
-            // Set up the initial settings used to create the host builder.
-            HostBuilderSettings settings = new()
-            {
-                SharedConfigDirectory = sharedConfigDir.FullName,
-                UserConfigDirectory = userConfigDir.FullName,
-                //DotnetToolsExtensionDirectory = dotnetToolsConfigDir
-            };
-
-            string directoryName = string.Empty;
-
-            switch (configDirectory)
-            {
-                case ConfigDirectory.UserConfigDirectory:
-                    directoryName = userConfigDir.FullName;
-                    break;
-                case ConfigDirectory.SharedConfigDirectory:
-                    directoryName = sharedConfigDir.FullName;
-                    break;
-                case ConfigDirectory.DotnetToolsDirectory:
-                    directoryName = dotnetToolsConfigDir.FullName;
-                    break;
-                case ConfigDirectory.NextToMeDirectory:
-                    //directoryName = .FullName;
-                    // NOT HANDLING THIS YET
-                    break;
-                default:
-                    throw new Exception("Config Directory not found.");
-            }
-
-            string appName = "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp";
-
-            string destPath = Path.Combine(directoryName, ExtensionsFolder, appName);
-
-            Directory.CreateDirectory(destPath);
-
-            string testAppPath = AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), appName, TargetFrameworkMoniker.Net60);
-
-            string sourcePath = Path.GetDirectoryName(testAppPath);
-
-            foreach (string newPath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
-            {
-                string newFilePath = newPath.Replace(sourcePath, destPath);
-                string newDirPath = Path.GetDirectoryName(newFilePath);
-
-                Directory.CreateDirectory(newDirPath);
-
-                File.Copy(newPath, newFilePath, true);
-            }
+            CopyExtensionFiles(directoryName);
 
             IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
 
             var extensionDiscoverer = host.Services.GetService<ExtensionDiscoverer>();
 
-            var extension = extensionDiscoverer.FindExtension<IEgressExtension>(appName);
+            var extension = extensionDiscoverer.FindExtension<IEgressExtension>(TestAppName);
 
-            ExtensionEgressPayload payload = new();
-
-            payload.Configuration = new Dictionary<string, string>();
-            payload.Configuration.Add("ShouldSucceed", "true");
-
-            TimeSpan timeout = new(0, 0, 30); // do something real
-            CancellationTokenSource tokenSource = new(timeout);
-
-            EgressArtifactResult result = await extension.EgressArtifact(payload, GetStream, tokenSource.Token);
-
-            Assert.True(result.Succeeded);
-            Assert.Equal(SampleArtifactPath, result.ArtifactPath);
+            Assert.NotNull(extension);
         }
 
-        [Fact]
-        public async Task ExtensionResponse_Success()
+        [Theory]
+        [InlineData(ConfigDirectory.UserConfigDirectory)]
+        public async Task ExtensionResponse_Success(ConfigDirectory configDirectory)
         {
-            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
-            using TemporaryDirectory userConfigDir = new(_outputHelper);
-            using TemporaryDirectory dotnetToolsConfigDir = new(_outputHelper);
+            HostBuilderSettings settings = CreateHostBuilderSettings();
 
-            // Set up the initial settings used to create the host builder.
-            HostBuilderSettings settings = new()
-            {
-                SharedConfigDirectory = sharedConfigDir.FullName,
-                UserConfigDirectory = userConfigDir.FullName,
-                //DotnetToolsExtensionDirectory = dotnetToolsConfigDir
-            };
+            string directoryName = GetExtensionDirectoryName(settings, configDirectory);
 
-            CopyExtensionFiles(userConfigDir.FullName);
+            CopyExtensionFiles(directoryName);
 
             IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
 
@@ -219,6 +153,42 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 File.Copy(newPath, newFilePath, true);
             }
+        }
+
+        private HostBuilderSettings CreateHostBuilderSettings()
+        {
+            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            using TemporaryDirectory userConfigDir = new(_outputHelper);
+            using TemporaryDirectory dotnetToolsConfigDir = new(_outputHelper);
+
+            // Set up the initial settings used to create the host builder.
+            return new()
+            {
+                SharedConfigDirectory = sharedConfigDir.FullName,
+                UserConfigDirectory = userConfigDir.FullName,
+                DotnetToolsExtensionDirectory = dotnetToolsConfigDir.FullName
+            };
+        }
+
+        private string GetExtensionDirectoryName(HostBuilderSettings settings, ConfigDirectory configDirectory)
+        {
+            switch (configDirectory)
+            {
+                case ConfigDirectory.UserConfigDirectory:
+                    return settings.UserConfigDirectory;
+                case ConfigDirectory.SharedConfigDirectory:
+                    return settings.SharedConfigDirectory;
+                case ConfigDirectory.DotnetToolsDirectory:
+                    return settings.DotnetToolsExtensionDirectory;
+                case ConfigDirectory.NextToMeDirectory:
+                    //directoryName = .FullName;
+                    // NOT HANDLING THIS YET
+                    break;
+                default:
+                    throw new Exception("Config Directory not found.");
+            }
+
+            return null;
         }
 
         /// This is the order of configuration sources where a name with a lower

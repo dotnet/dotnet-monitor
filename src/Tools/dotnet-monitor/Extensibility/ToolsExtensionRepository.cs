@@ -18,17 +18,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         private readonly IFileProvider _fileSystem;
         private readonly ILogger<ProgramExtension> _logger;
 
-        private const string DotnetFolderName = "dotnet";
-        private const string ToolsFolderName = "tools";
-
-        // Location where extensions are stored by default.
-        // Windows: "%USERPROFILE%\.dotnet\Tools"
-        // Other: "%XDG_CONFIG_HOME%/.dotnet/tools" OR "%HOME%/.dotnet/tools" -> THIS HAS NOT BEEN TESTED YET ON LINUX
-        public static readonly string DotnetToolsExtensionDirectoryPath =
-            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + DotnetFolderName, ToolsFolderName) :
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "." + DotnetFolderName, ToolsFolderName);
-
         public ToolsExtensionRepository(IFileProvider fileSystem, ILogger<ProgramExtension> logger, string targetFolder)
             : base(string.Format(CultureInfo.CurrentCulture, Strings.Message_FolderExtensionRepoName, targetFolder))
         {
