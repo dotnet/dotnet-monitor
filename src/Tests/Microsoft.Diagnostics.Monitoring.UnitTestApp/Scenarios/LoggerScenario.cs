@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
@@ -30,13 +31,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 ServiceProvider services = null;
                 try
                 {
-                    ILoggerFactory loggerFactory;
-                    const int maxRetryCount = 3;
-                    int attemptIteration = 0;
-                    while (true)
-                    {
-                        attemptIteration++;
-                        try
+                    ILoggerFactory loggerFactory = null;
+
+                    RetryUtilities.Retry(
+                        func: () =>
                         {
                             services = new ServiceCollection()
                                 .AddLogging(builder =>
@@ -51,48 +49,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                                 }).BuildServiceProvider();
 
                             loggerFactory = services.GetRequiredService<ILoggerFactory>();
+                        },
+                        // TESTFIX - Chained configuration building appears to contain a race condition
+                        // https://github.com/dotnet/runtime/issues/36042
+                        shouldRetry: (Exception ex) => ex is InvalidOperationException && ex.Message.Equals("Somebody else set the _disposable field", StringComparison.OrdinalIgnoreCase),
+                        outputHelper: new ConsoleOutputHelper(ConsoleOutputHelper.OutputStream.Stderr));
 
-                            break;
-                        }
-                        catch (InvalidOperationException ex) when (
-                            attemptIteration < maxRetryCount &&
-                            ex.Message.Equals("Somebody else set the _disposable field", StringComparison.OrdinalIgnoreCase))
-                        {
-                            services?.Dispose();
-                            // TESTFIX - Chained configuration building appears to contain a race condition
-                            // https://github.com/dotnet/runtime/issues/36042
-                            /*
-                            [App1] Exception: System.InvalidOperationException: Somebody else set the _disposable field
-                            [App1]    at Microsoft.Extensions.Primitives.ChangeToken.ChangeTokenRegistration`1.SetDisposable(IDisposable disposable)
-                            [App1]    at Microsoft.Extensions.Primitives.ChangeToken.ChangeTokenRegistration`1.RegisterChangeTokenCallback(IChangeToken token)
-                            [App1]    at Microsoft.Extensions.Primitives.ChangeToken.ChangeTokenRegistration`1..ctor(Func`1 changeTokenProducer, Action`1 changeTokenConsumer, TState state)
-                            [App1]    at Microsoft.Extensions.Primitives.ChangeToken.OnChange[TState](Func`1 changeTokenProducer, Action`1 changeTokenConsumer, TState state)
-                            [App1]    at Microsoft.Extensions.Options.OptionsMonitor`1.<.ctor>g__RegisterSource|6_0(IOptionsChangeTokenSource`1 source)
-                            [App1]    at Microsoft.Extensions.Options.OptionsMonitor`1..ctor(IOptionsFactory`1 factory, IEnumerable`1 sources, IOptionsMonitorCache`1 cache)
-                            [App1]    at System.RuntimeMethodHandle.InvokeMethod(Object target, Span`1& arguments, Signature sig, Boolean constructor, Boolean wrapExceptions)
-                            [App1]    at System.Reflection.RuntimeConstructorInfo.Invoke(BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
-                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
-                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
-                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)
-                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
-                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
-                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
-                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)
-                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
-                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
-                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(Type serviceType)
-                            [App1]    at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)
-                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType, ServiceProviderEngineScope serviceProviderEngineScope)
-                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)
-                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
-                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
-                            [App1]    at Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.LoggerScenario.<>c.<<ExecuteAsync>b__1_0>d.MoveNext() in /Users/runner/work/1/s/src/Tests/Microsoft.Diagnostics.Monitoring.UnitTestApp/Scenarios/LoggerScenario.cs:line 30
-                            [App1] --- End of stack trace from previous location ---
-                            [App1]    at Microsoft.Diagnostics.Monitoring.UnitTestApp.ScenarioHelpers.RunScenarioAsync(Func`2 func, CancellationToken token, Action`1 beforeReadyCallback) in /Users/runner/work/1/s/src/Tests/Microsoft.Diagnostics.Monitoring.UnitTestApp/ScenarioHelpers.cs:line 59
-                            [App1] End Standard Error
-                            */
-                        }
-                    }
+                    Assert.NotNull(loggerFactory);
 
                     await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Logger.Commands.StartLogging, logger);
 

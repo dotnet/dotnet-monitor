@@ -8,8 +8,10 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -38,7 +40,12 @@ namespace CollectionRuleActions.UnitTests
         [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public Task CollectGCDumpAction_Success(TargetFrameworkMoniker tfm)
         {
-            return CollectGCDumpAction_SuccessCore(tfm);
+            return RetryUtilities.RetryAsync(
+                func: () => CollectGCDumpAction_SuccessCore(tfm),
+                shouldRetry: (Exception ex) => (
+                    ex is TaskCanceledException ||
+                    (ex is CollectionRuleActionException && ex.InnerException is InvalidOperationException)),
+                outputHelper: _outputHelper);
         }
 
         private async Task CollectGCDumpAction_SuccessCore(TargetFrameworkMoniker tfm)

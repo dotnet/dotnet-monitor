@@ -82,6 +82,7 @@ jobs:
     - _HelixType: build/product
     - _HelixBuildConfig: ${{ parameters.configuration }}
     - _CrossBuildArgs: ''
+    - _TestFilter: ''
     - _InternalInstallArgs: ''
     - _InternalBuildArgs: ''
 
@@ -92,6 +93,14 @@ jobs:
     # Cross build for arm64 non-Windows builds
     - ${{ if and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')) }}:
       - _CrossBuildArgs: '-cross'
+
+    - ${{ if ne(parameters.testGroup, 'None') }}:
+      # If TestGroup == 'Default', choose the test group based on the type of pipeline run
+      - ${{ if eq(parameters.testGroup, 'Default') }}:
+        - ${{ if in(variables['Build.Reason'], 'BatchedCI', 'IndividualCI') }}:
+          - _TestFilter: 'TargetFrameworkMoniker!=NetCoreApp31&TargetFrameworkMoniker!=Net50'
+        - ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
+          - _TestFilter: 'TargetFrameworkMoniker!=NetCoreApp31&TargetFrameworkMoniker!=Net50'
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - group: DotNet-MSRC-Storage
@@ -157,7 +166,7 @@ jobs:
     # are not discoverable by the test infrastructure.
     #
     # Add the azurite installation location to PATH to workaround this.
-    - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
+    - ${{ if and(ne(parameters.testGroup, 'None'), eq(parameters.osGroup, 'Linux_Musl') }}:
       - script: echo "##vso[task.prependpath]/usr/share/node/bin"
         displayName: Add Azurite to PATH
 
@@ -195,5 +204,18 @@ jobs:
         inputs:
           command: 'test'
           publishTestResults: true
-          arguments: -c ${{ parameters.configuration }} --no-build --no-restore -- MaxCpuCount=1 DisableParallelization=true
+          arguments: -c ${{ parameters.configuration }} --blame-hang-timeout 15m --no-build --no-restore --filter "$(_TestFilter)" -- MaxCpuCount=1 DisableParallelization=true
           testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
+
+      # The current way our tests are being processed in dnceng results in aborted test runs to not be properly shown,
+      # so manually upload any blame dumps.
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Blame Artifacts
+        inputs:
+          ArtifactType: FilePath
+          PathtoPublish: $(Agent.TempDirectory)
+          FileCopyOptions: '**/*.dmp'
+          PublishLocation: Container
+          ArtifactName: TestBlameArtifacts_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
+        continueOnError: true
+        condition: Failed()

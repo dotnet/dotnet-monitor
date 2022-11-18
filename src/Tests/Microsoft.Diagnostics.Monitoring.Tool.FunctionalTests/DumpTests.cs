@@ -11,6 +11,7 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.InteropServices;
@@ -46,7 +47,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 #endif
         public Task DumpTest(DiagnosticPortConnectionMode mode, DumpType type)
         {
-            return DumpTestCore(mode, type);
+            return RetryUtilities.RetryAsync(
+                func: () => DumpTestCore(mode, type),
+                shouldRetry: (Exception ex) => ex is TaskCanceledException,
+                outputHelper: _outputHelper);
         }
 
         private Task DumpTestCore(DiagnosticPortConnectionMode mode, DumpType type)

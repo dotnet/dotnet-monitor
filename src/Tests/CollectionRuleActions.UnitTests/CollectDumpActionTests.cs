@@ -11,6 +11,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -38,7 +39,10 @@ namespace CollectionRuleActions.UnitTests
         [MemberData(nameof(ActionTestsHelper.GetTfmsAndDumpTypes), MemberType = typeof(ActionTestsHelper))]
         public Task CollectDumpAction_Success(TargetFrameworkMoniker tfm, DumpType dumpType)
         {
-            return CollectDumpAction_SuccessCore(tfm, dumpType);
+            return RetryUtilities.RetryAsync(
+                func: () => CollectDumpAction_SuccessCore(tfm, dumpType),
+                shouldRetry: (Exception ex) => ex is TaskCanceledException,
+                outputHelper: _outputHelper);
         }
 
         private async Task CollectDumpAction_SuccessCore(TargetFrameworkMoniker tfm, DumpType dumpType)
@@ -82,7 +86,7 @@ namespace CollectionRuleActions.UnitTests
 
                     string egressPath = ActionTestsHelper.ValidateEgressPath(result);
 
-                    await using FileStream dumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
+                    using FileStream dumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
                     Assert.NotNull(dumpStream);
 
                     await DumpTestUtilities.ValidateDump(runner.Environment.ContainsKey(DumpTestUtilities.EnableElfDumpOnMacOS), dumpStream);

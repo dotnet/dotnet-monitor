@@ -32,7 +32,10 @@ parameters:
   default: Default
   values:
   - Default
+  - All
   - None
+  - CI
+  - PR
 
 variables:
 - name: _TeamName
