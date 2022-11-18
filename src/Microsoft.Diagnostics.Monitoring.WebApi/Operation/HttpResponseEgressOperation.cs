@@ -19,10 +19,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public EgressProcessInfo ProcessInfo { get; private set; }
         public string EgressProviderName { get { return null; } }
         public bool IsStoppable { get { return _operation?.IsStoppable ?? false; } }
+        public string Tag { get; private set; }
 
         private readonly IArtifactOperation _operation;
 
-        public HttpResponseEgressOperation(HttpContext context, IProcessInfo processInfo, IArtifactOperation operation = null)
+        public HttpResponseEgressOperation(HttpContext context, IProcessInfo processInfo, string tag, IArtifactOperation operation = null)
         {
             _httpContext = context;
             _httpContext.Response.OnCompleted(() =>
@@ -32,6 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             });
 
             _operation = operation;
+            Tag = tag;
 
             ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
         }

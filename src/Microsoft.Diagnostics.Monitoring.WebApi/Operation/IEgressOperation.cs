@@ -12,6 +12,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         public bool IsStoppable { get; }
 
+        public string Tag { get; }
+
         public string EgressProviderName { get; }
 
         public EgressProcessInfo ProcessInfo { get; }

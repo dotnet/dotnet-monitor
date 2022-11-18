@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Dia2Lib;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -31,6 +32,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             public DateTime CreatedDateTime { get; } = DateTime.UtcNow;
 
             public Guid OperationId { get; set; }
+
+            public string Tag { get; set; }
         }
 
         private readonly Dictionary<Guid, EgressEntry> _requests = new();
@@ -212,7 +215,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                                 Name = processInfo.ProcessName,
                                 ProcessId = processInfo.ProcessId,
                                 Uid = processInfo.RuntimeInstanceCookie
-                            } : null
+                            } : null,
+                        Tag = kvp.Value.EgressRequest.EgressOperation.Tag
                     };
                 }).ToList();
             }
@@ -241,7 +245,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                             Name = processInfo.ProcessName,
                             ProcessId = processInfo.ProcessId,
                             Uid = processInfo.RuntimeInstanceCookie
-                        } : null
+                        } : null,
+                    Tag = entry.Tag
                 };
 
                 if (entry.State == Models.OperationState.Succeeded)

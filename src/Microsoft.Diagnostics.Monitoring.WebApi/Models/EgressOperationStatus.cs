@@ -29,6 +29,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         [JsonPropertyName("isStoppable")]
         public bool IsStoppable { get; set; }
+
+        [JsonPropertyName("tag")]
+        public string Tag { get; set; }
     }
 
     /// <summary>
