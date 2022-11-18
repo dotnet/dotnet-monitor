@@ -10,17 +10,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     public sealed class ConsoleOutputHelper : ITestOutputHelper
     {
-        public enum OutputStream
-        {
-            Stdout,
-            Stderr
-        }
+        private readonly bool _stdout;
 
-        private readonly OutputStream _outputStream;
-
-        public ConsoleOutputHelper(OutputStream outputStream = OutputStream.Stdout)
+        public ConsoleOutputHelper(bool stdout = true)
         {
-            _outputStream = outputStream;
+            _stdout = stdout;
         }
 
         public void WriteLine(string message)
@@ -35,7 +29,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         private TextWriter GetOutputWriter()
         {
-            return (_outputStream == OutputStream.Stdout) ? Console.Out : Console.Error;
+            return (_stdout) ? Console.Out : Console.Error;
         }
     }
 }

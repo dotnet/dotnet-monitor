@@ -213,7 +213,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 }
             });
 
-            /* TESTFIX - Race condition on process termination and OS signalling
+            /* TESTFIX - Race condition on process termination and user-mode app processing of it.
             for (int i = 0; i < appCount; i++)
             {
                 Assert.True(0 == appRunners[i].ExitCode, $"App {i} exit code is non-zero.");

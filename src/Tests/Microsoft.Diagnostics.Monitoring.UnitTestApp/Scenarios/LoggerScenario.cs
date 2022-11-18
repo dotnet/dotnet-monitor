@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                         // TESTFIX - Chained configuration building appears to contain a race condition
                         // https://github.com/dotnet/runtime/issues/36042
                         shouldRetry: (Exception ex) => ex is InvalidOperationException && ex.Message.Equals("Somebody else set the _disposable field", StringComparison.OrdinalIgnoreCase),
-                        outputHelper: new ConsoleOutputHelper(ConsoleOutputHelper.OutputStream.Stderr));
+                        outputHelper: new ConsoleOutputHelper(stdout: false));
 
                     Assert.NotNull(loggerFactory);
 
