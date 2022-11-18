@@ -8,7 +8,7 @@ Captures a diagnostic trace of a process based on a predefined set of trace prof
 ## HTTP Route
 
 ```http
-GET /trace?pid={pid}&uid={uid}&name={name}&profile={profile}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
+GET /trace?pid={pid}&uid={uid}&name={name}&profile={profile}&durationSeconds={durationSeconds}&egressProvider={egressProvider}&tag={tag} HTTP/1.1
 ```
 
 > **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -27,6 +27,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `profile` | query | false | [TraceProfile](definitions.md#traceprofile) | The name of the profile(s) used to collect events. See [TraceProfile](definitions.md#traceprofile) for details on the list of event providers, levels, and keywords each profile represents. Multiple profiles may be specified by separating them with commas. Default is `Cpu,Http,Metrics` |
 | `durationSeconds` | query | false | int | The duration of the trace operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected trace. When not specified, the trace is written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
+| `tag` | query | false | string | (8.0+) A user-readable identifier for the operation. |
 
 See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
 

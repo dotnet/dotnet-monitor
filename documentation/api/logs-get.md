@@ -10,7 +10,7 @@ Captures log statements that are logged to the [ILogger<> infrastructure](https:
 ## HTTP Route
 
 ```http
-GET /logs?pid={pid}&uid={uid}&name={name}&level={level}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
+GET /logs?pid={pid}&uid={uid}&name={name}&level={level}&durationSeconds={durationSeconds}&egressProvider={egressProvider}&tag={tag} HTTP/1.1
 ```
 
 > **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -29,6 +29,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `level` | query | false | [LogLevel](definitions.md#loglevel) | The name of the log level at which log events are collected. If not specified, logs are collected levels as specified by the [application-defined configuration](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/#configure-logging). |
 | `durationSeconds` | query | false | int | The duration of the log collection operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected logs. When not specified, the logs are written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
+| `tag` | query | false | string | (8.0+) A user-readable identifier for the operation. |
 
 See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
 

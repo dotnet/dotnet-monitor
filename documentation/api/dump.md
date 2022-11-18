@@ -10,7 +10,7 @@ Captures a managed dump of a specified process without using a debugger.
 ## HTTP Route
 
 ```http
-GET /dump?pid={pid}&uid={uid}&name={name}&type={type}&egressProvider={egressProvider} HTTP/1.1
+GET /dump?pid={pid}&uid={uid}&name={name}&type={type}&egressProvider={egressProvider}&tag={tag} HTTP/1.1
 ```
 
 > **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -28,6 +28,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `name` | query | false | string | The name of the process. |
 | `type` | query | false | [DumpType](definitions.md#dumptype) | The type of dump to capture. Default value is `WithHeap` |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected dump. When not specified, the dump is written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
+| `tag` | query | false | string | (8.0+) A user-readable identifier for the operation. |
 
 See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
