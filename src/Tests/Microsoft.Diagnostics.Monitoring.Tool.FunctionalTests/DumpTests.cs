@@ -11,7 +11,6 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.InteropServices;
@@ -47,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 #endif
         public Task DumpTest(DiagnosticPortConnectionMode mode, DumpType type)
         {
-            return Retry(type, () => DumpTestCore(mode, type));
+            return DumpTestCore(mode, type);
         }
 
         private Task DumpTestCore(DiagnosticPortConnectionMode mode, DumpType type)
@@ -103,27 +102,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     runner.ConfigurationFromEnvironment.SetDumpTempFolder(dumpTempFolder);
                 });
-        }
-
-        private async Task Retry(DumpType type, Func<Task> func, int attemptCount = 3)
-        {
-            int attemptIteration = 0;
-            while (true)
-            {
-                attemptIteration++;
-                _outputHelper.WriteLine("===== Attempt #{0} =====", attemptIteration);
-                try
-                {
-                    await func();
-
-                    break;
-                }
-                catch (TaskCanceledException) when (attemptIteration < attemptCount)
-                {
-                    // Full dumps sometimes take a very long time (longer than 100 seconds, the default
-                    // HttpClient timeout). Retry the test when this condition is detected.
-                }
-            }
         }
     }
 }

@@ -10,7 +10,6 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -39,7 +38,7 @@ namespace CollectionRuleActions.UnitTests
         [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public Task CollectGCDumpAction_Success(TargetFrameworkMoniker tfm)
         {
-            return Retry(() => CollectGCDumpAction_SuccessCore(tfm));
+            return CollectGCDumpAction_SuccessCore(tfm);
         }
 
         private async Task CollectGCDumpAction_SuccessCore(TargetFrameworkMoniker tfm)
@@ -99,28 +98,6 @@ namespace CollectionRuleActions.UnitTests
             string headerText = enc8.GetString(buffer, 4, knownHeaderText.Length);
 
             Assert.Equal(knownHeaderText, headerText);
-        }
-
-        private async Task Retry(Func<Task> func, int attemptCount = 3)
-        {
-            int attemptIteration = 0;
-            while (true)
-            {
-                attemptIteration++;
-                _outputHelper.WriteLine("===== Attempt #{0} =====", attemptIteration);
-                try
-                {
-                    await func();
-
-                    break;
-                }
-                catch (Exception ex) when (attemptIteration < attemptCount && (ex.InnerException is InvalidOperationException || ex is TaskCanceledException))
-                {
-                    // GC dumps can fail to be produced from the runtime because the pipeline doesn't get the expected
-                    // start, data, and stop events. The pipeline will throw an InvalidOperationException, which is
-                    // wrapped in a CollectionRuleActionException by the action. Allow retries when this occurs.
-                }
-            }
         }
     }
 }
