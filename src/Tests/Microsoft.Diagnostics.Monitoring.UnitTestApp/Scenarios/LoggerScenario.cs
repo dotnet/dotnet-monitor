@@ -138,9 +138,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 LogLevel.Warning,
                 new EventId(5, "EventIdWarning"),
                 new CustomLogState(
-                "Warning message with custom state.",
-                new string[] { "KeyA", "Key2", "KeyZ" },
-                new object[] { 4, 'p', LogLevel.Error }),
+                    "Warning message with custom state.",
+                    new string[] { "KeyA", "Key2", "KeyZ" },
+                    new object[] { 4, 'p', LogLevel.Error }),
                 null,
                 CustomLogState.Formatter);
         }
