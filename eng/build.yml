@@ -212,7 +212,6 @@ jobs:
       - task: PublishBuildArtifacts@1
         displayName: Publish Blame Artifacts
         inputs:
-          ArtifactType: FilePath
           PathtoPublish: $(Agent.TempDirectory)
           FileCopyOptions: '**/*.dmp'
           PublishLocation: Container

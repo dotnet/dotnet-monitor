@@ -73,7 +73,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.AsyncWait.Name,
                 appValidate: async (runner, client) =>
                 {
+                    // Wait for the process to be discovered.
                     int processId = await runner.ProcessIdTask;
+                    _ = await client.GetProcessWithRetryAsync(_outputHelper, pid: processId);
 
                     using ResponseStreamHolder holder = await client.CaptureDumpAsync(processId, type);
                     Assert.NotNull(holder);
