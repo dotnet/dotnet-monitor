@@ -42,6 +42,9 @@ namespace CollectionRuleActions.UnitTests
         {
             return RetryUtilities.RetryAsync(
                 func: () => CollectGCDumpAction_SuccessCore(tfm),
+                // GC dumps can fail to be produced from the runtime because the pipeline doesn't get the expected
+                // start, data, and stop events. The pipeline will throw an InvalidOperationException, which is
+                // wrapped in a CollectionRuleActionException by the action.
                 shouldRetry: (Exception ex) => (
                     ex is TaskCanceledException ||
                     (ex is CollectionRuleActionException && ex.InnerException is InvalidOperationException)),
