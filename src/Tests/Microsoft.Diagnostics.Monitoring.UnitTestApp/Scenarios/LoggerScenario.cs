@@ -58,6 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                             attemptIteration < maxRetryCount &&
                             ex.Message.Equals("Somebody else set the _disposable field", StringComparison.OrdinalIgnoreCase))
                         {
+                            services?.Dispose();
                             // TESTFIX - Chained configuration building appears to contain a race condition
                             // https://github.com/dotnet/runtime/issues/36042
                             /*
