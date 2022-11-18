@@ -166,7 +166,7 @@ jobs:
     # are not discoverable by the test infrastructure.
     #
     # Add the azurite installation location to PATH to workaround this.
-    - ${{ if and(ne(parameters.testGroup, 'None'), eq(parameters.osGroup, 'Linux_Musl') }}:
+    - ${{ if and(ne(parameters.testGroup, 'None'), eq(parameters.osGroup, 'Linux_Musl')) }}:
       - script: echo "##vso[task.prependpath]/usr/share/node/bin"
         displayName: Add Azurite to PATH
 
