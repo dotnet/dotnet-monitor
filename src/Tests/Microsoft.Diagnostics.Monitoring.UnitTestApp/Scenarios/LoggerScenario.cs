@@ -27,69 +27,128 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         {
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
-                using ServiceProvider services = new ServiceCollection()
-                    .AddLogging(builder =>
-                    {
-                        builder.AddEventSourceLogger();
-                        builder.AddFilter(null, LogLevel.None); // Default
-                        builder.AddFilter(TestAppScenarios.Logger.Categories.LoggerCategory1, LogLevel.Debug);
-                        builder.AddFilter(TestAppScenarios.Logger.Categories.LoggerCategory2, LogLevel.Information);
-                        builder.AddFilter(TestAppScenarios.Logger.Categories.LoggerCategory3, LogLevel.Warning);
-                        builder.AddFilter(TestAppScenarios.Logger.Categories.SentinelCategory, LogLevel.Critical);
-                        builder.AddFilter(TestAppScenarios.Logger.Categories.FlushCategory, LogLevel.Critical);
-                    }).BuildServiceProvider();
+                // Building changed configurations has a race condition that can cause an internal runtime exception to be thrown.
 
-                ILoggerFactory loggerFactory = services.GetRequiredService<ILoggerFactory>();
-
-                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Logger.Commands.StartLogging, logger);
-
-                ILogger cat1Logger = loggerFactory.CreateLogger(TestAppScenarios.Logger.Categories.LoggerCategory1);
-                LogTraceMessage(cat1Logger);
-                LogDebugMessage(cat1Logger);
-                LogInformationMessage(cat1Logger);
-                LogWarningMessage(cat1Logger);
-                LogErrorMessage(cat1Logger);
-                LogCriticalMessage(cat1Logger);
-
-                ILogger cat2Logger = loggerFactory.CreateLogger(TestAppScenarios.Logger.Categories.LoggerCategory2);
-                LogTraceMessage(cat2Logger);
-                LogDebugMessage(cat2Logger);
-                LogInformationMessage(cat2Logger);
-                LogWarningMessage(cat2Logger);
-                LogErrorMessage(cat2Logger);
-                LogCriticalMessage(cat2Logger);
-
-                ILogger cat3Logger = loggerFactory.CreateLogger(TestAppScenarios.Logger.Categories.LoggerCategory3);
-                LogTraceMessage(cat3Logger);
-                LogDebugMessage(cat3Logger);
-                LogInformationMessage(cat3Logger);
-                LogWarningMessage(cat3Logger);
-                LogErrorMessage(cat3Logger);
-                LogCriticalMessage(cat3Logger);
-
-                ILogger sentinelCategory = loggerFactory.CreateLogger(TestAppScenarios.Logger.Categories.SentinelCategory);
-                // This sentinel entry helps the logs tests to understand that they will not receive
-                // any more logging data that should be checked.
-                LogCriticalMessage(sentinelCategory);
-
-                // See: https://github.com/dotnet/runtime/issues/76704
-                // The log entries above may get stuck in buffers in the runtime eventing infra or
-                // in the trace event library event processor due to their close proximity in being emitted.
-                // To mitigate this, repeatedly wait a short time and send another log entry, which will cause the buffer
-                // to flush the existing entries. These log entries should be ignored by the logs tests.
-                ILogger flushCategory = loggerFactory.CreateLogger(TestAppScenarios.Logger.Categories.FlushCategory);
-                // The number of times the flush entry is produced came about from imperical testing. Sending one seems
-                // to occassionally flush the entries through, but not often. Two entries "should" be enough: the first entry
-                // (if it doesn't flow through all the way) will initially get stuck in the runtime eventing buffer; the second
-                // entry will flush out the first entry. This second entry may be stuck in the runtime eventing buffer and
-                // the first one may be stuck in the trace event library buffer on the consumer side, however all of the relevant
-                // data entries that precede these flush entries should no longer be buffered. Sending any more "should" not
-                // be necessary unless another layer of buffering is in place.
-                for (int i = 0; i < 2; i++)
+                ServiceProvider services = null;
+                try
                 {
-                    await Task.Delay(CommonTestTimeouts.EventSourceBufferAvoidanceTimeout);
+                    ILoggerFactory loggerFactory;
+                    const int maxRetryCount = 3;
+                    int attemptIteration = 0;
+                    while (true)
+                    {
+                        attemptIteration++;
+                        try
+                        {
+                            services = new ServiceCollection()
+                                .AddLogging(builder =>
+                                {
+                                    builder.AddEventSourceLogger();
+                                    builder.AddFilter(null, LogLevel.None); // Default
+                                    builder.AddFilter(TestAppScenarios.Logger.Categories.LoggerCategory1, LogLevel.Debug);
+                                    builder.AddFilter(TestAppScenarios.Logger.Categories.LoggerCategory2, LogLevel.Information);
+                                    builder.AddFilter(TestAppScenarios.Logger.Categories.LoggerCategory3, LogLevel.Warning);
+                                    builder.AddFilter(TestAppScenarios.Logger.Categories.SentinelCategory, LogLevel.Critical);
+                                    builder.AddFilter(TestAppScenarios.Logger.Categories.FlushCategory, LogLevel.Critical);
+                                }).BuildServiceProvider();
 
-                    LogCriticalMessage(flushCategory);
+                            loggerFactory = services.GetRequiredService<ILoggerFactory>();
+
+                            break;
+                        }
+                        catch (InvalidOperationException ex) when (
+                            attemptIteration < maxRetryCount &&
+                            ex.Message.Equals("Somebody else set the _disposable field", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // TESTFIX - Chained configuration building appears to contain a race condition
+                            // https://github.com/dotnet/runtime/issues/36042
+                            /*
+                            [App1] Exception: System.InvalidOperationException: Somebody else set the _disposable field
+                            [App1]    at Microsoft.Extensions.Primitives.ChangeToken.ChangeTokenRegistration`1.SetDisposable(IDisposable disposable)
+                            [App1]    at Microsoft.Extensions.Primitives.ChangeToken.ChangeTokenRegistration`1.RegisterChangeTokenCallback(IChangeToken token)
+                            [App1]    at Microsoft.Extensions.Primitives.ChangeToken.ChangeTokenRegistration`1..ctor(Func`1 changeTokenProducer, Action`1 changeTokenConsumer, TState state)
+                            [App1]    at Microsoft.Extensions.Primitives.ChangeToken.OnChange[TState](Func`1 changeTokenProducer, Action`1 changeTokenConsumer, TState state)
+                            [App1]    at Microsoft.Extensions.Options.OptionsMonitor`1.<.ctor>g__RegisterSource|6_0(IOptionsChangeTokenSource`1 source)
+                            [App1]    at Microsoft.Extensions.Options.OptionsMonitor`1..ctor(IOptionsFactory`1 factory, IEnumerable`1 sources, IOptionsMonitorCache`1 cache)
+                            [App1]    at System.RuntimeMethodHandle.InvokeMethod(Object target, Span`1& arguments, Signature sig, Boolean constructor, Boolean wrapExceptions)
+                            [App1]    at System.Reflection.RuntimeConstructorInfo.Invoke(BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)
+                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)
+                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(Type serviceType)
+                            [App1]    at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)
+                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType, ServiceProviderEngineScope serviceProviderEngineScope)
+                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)
+                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
+                            [App1]    at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
+                            [App1]    at Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.LoggerScenario.<>c.<<ExecuteAsync>b__1_0>d.MoveNext() in /Users/runner/work/1/s/src/Tests/Microsoft.Diagnostics.Monitoring.UnitTestApp/Scenarios/LoggerScenario.cs:line 30
+                            [App1] --- End of stack trace from previous location ---
+                            [App1]    at Microsoft.Diagnostics.Monitoring.UnitTestApp.ScenarioHelpers.RunScenarioAsync(Func`2 func, CancellationToken token, Action`1 beforeReadyCallback) in /Users/runner/work/1/s/src/Tests/Microsoft.Diagnostics.Monitoring.UnitTestApp/ScenarioHelpers.cs:line 59
+                            [App1] End Standard Error
+                            */
+                        }
+                    }
+
+                    await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Logger.Commands.StartLogging, logger);
+
+                    ILogger cat1Logger = loggerFactory.CreateLogger(TestAppScenarios.Logger.Categories.LoggerCategory1);
+                    LogTraceMessage(cat1Logger);
+                    LogDebugMessage(cat1Logger);
+                    LogInformationMessage(cat1Logger);
+                    LogWarningMessage(cat1Logger);
+                    LogErrorMessage(cat1Logger);
+                    LogCriticalMessage(cat1Logger);
+
+                    ILogger cat2Logger = loggerFactory.CreateLogger(TestAppScenarios.Logger.Categories.LoggerCategory2);
+                    LogTraceMessage(cat2Logger);
+                    LogDebugMessage(cat2Logger);
+                    LogInformationMessage(cat2Logger);
+                    LogWarningMessage(cat2Logger);
+                    LogErrorMessage(cat2Logger);
+                    LogCriticalMessage(cat2Logger);
+
+                    ILogger cat3Logger = loggerFactory.CreateLogger(TestAppScenarios.Logger.Categories.LoggerCategory3);
+                    LogTraceMessage(cat3Logger);
+                    LogDebugMessage(cat3Logger);
+                    LogInformationMessage(cat3Logger);
+                    LogWarningMessage(cat3Logger);
+                    LogErrorMessage(cat3Logger);
+                    LogCriticalMessage(cat3Logger);
+
+                    ILogger sentinelCategory = loggerFactory.CreateLogger(TestAppScenarios.Logger.Categories.SentinelCategory);
+                    // This sentinel entry helps the logs tests to understand that they will not receive
+                    // any more logging data that should be checked.
+                    LogCriticalMessage(sentinelCategory);
+
+                    // See: https://github.com/dotnet/runtime/issues/76704
+                    // The log entries above may get stuck in buffers in the runtime eventing infra or
+                    // in the trace event library event processor due to their close proximity in being emitted.
+                    // To mitigate this, repeatedly wait a short time and send another log entry, which will cause the buffer
+                    // to flush the existing entries. These log entries should be ignored by the logs tests.
+                    ILogger flushCategory = loggerFactory.CreateLogger(TestAppScenarios.Logger.Categories.FlushCategory);
+                    // The number of times the flush entry is produced came about from imperical testing. Sending one seems
+                    // to occassionally flush the entries through, but not often. Two entries "should" be enough: the first entry
+                    // (if it doesn't flow through all the way) will initially get stuck in the runtime eventing buffer; the second
+                    // entry will flush out the first entry. This second entry may be stuck in the runtime eventing buffer and
+                    // the first one may be stuck in the trace event library buffer on the consumer side, however all of the relevant
+                    // data entries that precede these flush entries should no longer be buffered. Sending any more "should" not
+                    // be necessary unless another layer of buffering is in place.
+                    for (int i = 0; i < 2; i++)
+                    {
+                        await Task.Delay(CommonTestTimeouts.EventSourceBufferAvoidanceTimeout);
+
+                        LogCriticalMessage(flushCategory);
+                    }
+                }
+                finally
+                {
+                    services?.Dispose();
                 }
 
                 return 0;
@@ -114,14 +173,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         private static void LogWarningMessage(ILogger logger)
         {
             logger.Log(
-                LogLevel.Warning,
-                new EventId(5, "EventIdWarning"),
-                new CustomLogState(
-                    "Warning message with custom state.",
-                    new string[] { "KeyA", "Key2", "KeyZ" },
-                    new object[] { 4, 'p', LogLevel.Error }),
-                null,
-                CustomLogState.Formatter);
+            LogLevel.Warning,
+            new EventId(5, "EventIdWarning"),
+            new CustomLogState(
+            "Warning message with custom state.",
+            new string[] { "KeyA", "Key2", "KeyZ" },
+            new object[] { 4, 'p', LogLevel.Error }),
+            null,
+            CustomLogState.Formatter);
         }
 
         private static void LogErrorMessage(ILogger logger)
