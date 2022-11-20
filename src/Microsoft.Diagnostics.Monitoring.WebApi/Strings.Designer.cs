@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Thread: (0x{0:X}).
+        ///   Looks up a localized string similar to Thread: (0x{0:X}) {1}.
         /// </summary>
         internal static string CallstackThreadHeader {
             get {

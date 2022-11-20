@@ -10,6 +10,7 @@
 | Name | Type | Description |
 |---|---|---|
 | `threadId` | int | The native thread id of the managed thread. |
+| `threadName` | string | Optional name of the managed thread. |
 | `frames` | [CallStackFrame](#experimental-callstackframe-70)[] | Managed frame for the thread at the time of collection. |
 
 ## **[Experimental]** CallStackFormat (7.0+)

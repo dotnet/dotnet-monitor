@@ -9,7 +9,9 @@
 #include "../Environment/EnvironmentHelper.h"
 #include "../Logging/Logger.h"
 #include "../Communication/CommandServer.h"
+#include "../Utilities//ThreadNameCache.h"
 #include <memory>
+
 #ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
 #include "ThreadDataManager.h"
 #include "ExceptionTracker.h"
@@ -22,6 +24,7 @@ private:
     std::shared_ptr<IEnvironment> m_pEnvironment;
     std::shared_ptr<EnvironmentHelper> _environmentHelper;
     std::shared_ptr<ILogger> m_pLogger;
+    std::shared_ptr<ThreadNameCache> _threadNameCache;
 #ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
     std::shared_ptr<ThreadDataManager> _threadDataManager;
     std::unique_ptr<ExceptionTracker> _exceptionTracker;
@@ -34,6 +37,7 @@ public:
     STDMETHOD(Shutdown)() override;
     STDMETHOD(ThreadCreated)(ThreadID threadId) override;
     STDMETHOD(ThreadDestroyed)(ThreadID threadId) override;
+    STDMETHOD(ThreadNameChanged)(ThreadID threadId, ULONG cchName, WCHAR name[]) override;
     STDMETHOD(ExceptionThrown)(ObjectID thrownObjectId) override;
     STDMETHOD(ExceptionSearchCatcherFound)(FunctionID functionId) override;
     STDMETHOD(ExceptionUnwindFunctionEnter)(FunctionID functionId) override;

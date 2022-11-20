@@ -90,5 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         public List<CallStackFrame> Frames = new List<CallStackFrame>();
 
         public uint ThreadId { get; set; }
+
+        public string ThreadName { get; set; }
     }
 }

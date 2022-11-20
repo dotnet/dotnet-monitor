@@ -111,10 +111,13 @@ template<typename... Args>
 template<size_t index, typename T, typename... TArgs>
 HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const tstring& first, TArgs... rest)
 {
+    // Must be valid when next function is called
+    tstring empty;
+
     if (first.size() == 0)
     {
-        data[index].ptr = 0;
-        data[index].size = 0;
+        data[index].ptr = reinterpret_cast<UINT64>(empty.c_str());
+        data[index].size = sizeof(WCHAR);
         data[index].reserved = 0;
     }
     else

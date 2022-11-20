@@ -20,8 +20,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         public static class CallstackPayloads
         {
             public const int ThreadId = 0;
-            public const int FunctionIds = 1;
-            public const int IpOffsets = 2;
+            public const int ThreadName = 1;
+            public const int FunctionIds = 2;
+            public const int IpOffsets = 3;
         }
 
         public static class FunctionDescPayloads
