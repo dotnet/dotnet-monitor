@@ -232,7 +232,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     egressProvider,
                     _dumpOperationFactory.Create(processInfo.EndpointInfo, type),
                     processInfo,
-                    tag: tag),
+                    tag),
                 processKey,
                 Utilities.ArtifactType_Dump);
         }
@@ -294,7 +294,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     fileName,
                     ContentTypes.ApplicationOctetStream,
                     processInfo,
-                    tag: tag);
+                    tag);
             }, processKey, Utilities.ArtifactType_GCDump);
         }
 

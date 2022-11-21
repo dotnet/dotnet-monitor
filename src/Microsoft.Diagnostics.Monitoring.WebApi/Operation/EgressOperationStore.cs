@@ -170,7 +170,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 IEnumerable<KeyValuePair<Guid, EgressEntry>> requests = _requests;
 
-                if (null != tag)
+                if (!string.IsNullOrEmpty(tag))
                 {
                     requests = requests.Where((kvp) =>
                     {
