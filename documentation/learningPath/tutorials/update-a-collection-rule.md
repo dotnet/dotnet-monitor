@@ -1,3 +1,0 @@
-# Tutorial - Update A Collection Rule
-
-To avoid broken links as we make changes, we can link to a specific commit in time for the tutorial. After making changes, the tutorial may become slightly out of date until we update it, but it should still provide readers with a good idea of how things work -> we could pin files to certain versions, and add automation that suggests updates to those links when a linked file is changed. If the edits to the file don't impact anything, the number can be incremented automatically; otherwise, the contributor can make the change manually to point at the correct version and location in the code.
