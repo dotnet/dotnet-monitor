@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Amazon.Runtime;
+using Amazon.S3.Model;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
@@ -40,11 +42,44 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             _logger = factory.CreateLogger<MetricsStoreService>();
         }
 
-        /*
         [Fact]
         public async Task HistogramFormat_Test()
         {
-        }*/
+            List<ICounterPayload> payload = new();
+
+            Dictionary<string, string> metadataDict1 = new();
+            metadataDict1.Add("quantile", "0.5");
+            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", metadataDict1, Value, Timestamp));
+
+            Dictionary<string, string> metadataDict2 = new();
+            metadataDict2.Add("quantile", "0.95");
+            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", metadataDict2, Value, Timestamp));
+
+            Dictionary<string, string> metadataDict3 = new();
+            metadataDict3.Add("quantile", "0.99");
+            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", metadataDict3, Value, Timestamp));
+
+            MemoryStream stream = await GetMetrics(payload);
+
+            List<string> lines = ReadStream(stream);
+
+            // Question - this is manually recreating what PrometheusDataModel.GetPrometheusNormalizedName does to get the metric name;
+            // should we call this method, or should this also be implicitly testing its behavior by having this hard-coded?
+            string metricName = $"{MeterName.ToLowerInvariant()}_{payload[0].Name}";
+
+            const string quantile_50 = "{quantile=\"0.5\"}";
+            const string quantile_95 = "{quantile=\"0.95\"}";
+            const string quantile_99 = "{quantile=\"0.99\"}";
+
+            // This assumes the default quantiles of .5, .95, and .99
+            Assert.Equal(5, lines.Count);
+            Assert.Equal($"# HELP {metricName}{payload[0].Unit} {payload[0].DisplayName}", lines[0]);
+            Assert.Equal($"# TYPE {metricName} summary", lines[1]);
+            Assert.Equal($"{metricName}{quantile_50} {payload[0].Value}", lines[2]);
+            Assert.Equal($"{metricName}{quantile_95} {payload[1].Value}", lines[3]);
+            Assert.Equal($"{metricName}{quantile_99} {payload[2].Value}", lines[4]);
+
+        }
 
         [Fact]
         public async Task GaugeFormat_Test()
