@@ -15,6 +15,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -70,40 +71,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [InlineData(ConfigDirectory.DotnetToolsDirectory, DotnetToolsExeDir, TestAppExe)]
         public void FoundExtensionFile_Success(ConfigDirectory configDirectory, string exePath, string exeName)
         {
-            HostBuilderSettings settings = CreateHostBuilderSettings();
-
-            string directoryName = GetExtensionDirectoryName(settings, configDirectory);
-
-            string destinationPath = configDirectory != ConfigDirectory.DotnetToolsDirectory ? Path.Combine(directoryName, ExtensionsFolder, TestAppName) : Path.Combine(directoryName, DotnetToolsExtensionDir);
-
-            CopyExtensionFiles(directoryName, destinationPath, exePath, exeName);
-
-            IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
-
-            var extensionDiscoverer = host.Services.GetService<ExtensionDiscoverer>();
-
-            var extension = extensionDiscoverer.FindExtension<IEgressExtension>(TestAppName);
+            IEgressExtension extension = FindEgressExtension(configDirectory, exePath, exeName);
 
             Assert.NotNull(extension);
         }
 
-        [Theory]
-        [InlineData(ConfigDirectory.UserConfigDirectory)]
-        public async Task ExtensionResponse_Success(ConfigDirectory configDirectory)
+        [Fact]
+        public async Task ExtensionResponse_Success()
         {
-            HostBuilderSettings settings = CreateHostBuilderSettings();
-
-            string directoryName = GetExtensionDirectoryName(settings, configDirectory);
-
-            string destinationPath = Path.Combine(directoryName, ExtensionsFolder, TestAppName);
-
-            CopyExtensionFiles(directoryName, destinationPath);
-
-            IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
-
-            var extensionDiscoverer = host.Services.GetService<ExtensionDiscoverer>();
-
-            var extension = extensionDiscoverer.FindExtension<IEgressExtension>(TestAppName);
+            var extension = FindEgressExtension(ConfigDirectory.UserConfigDirectory, null, null);
 
             ExtensionEgressPayload payload = new();
 
@@ -117,6 +93,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             Assert.True(result.Succeeded);
             Assert.Equal(SampleArtifactPath, result.ArtifactPath);
+        }
+
+        private IEgressExtension FindEgressExtension(ConfigDirectory configDirectory, string exePath, string exeName)
+        {
+            HostBuilderSettings settings = CreateHostBuilderSettings();
+
+            string directoryName = GetExtensionDirectoryName(settings, configDirectory);
+
+            string destinationPath = configDirectory != ConfigDirectory.DotnetToolsDirectory ? Path.Combine(directoryName, ExtensionsFolder, TestAppName) : Path.Combine(directoryName, DotnetToolsExtensionDir);
+
+            CopyExtensionFiles(directoryName, destinationPath, exePath, exeName);
+
+            IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
+
+            var extensionDiscoverer = host.Services.GetService<ExtensionDiscoverer>();
+
+            return extensionDiscoverer.FindExtension<IEgressExtension>(TestAppName);
         }
 
         private static async Task GetStream(Stream stream, CancellationToken cancellationToken)

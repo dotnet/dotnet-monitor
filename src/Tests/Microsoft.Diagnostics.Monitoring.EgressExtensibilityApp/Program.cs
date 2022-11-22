@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
@@ -52,6 +53,8 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 
                 TestEgressProviderOptions options = BuildOptions(configPayload);
 
+                EmitLogs();
+
                 if (options.ShouldSucceed)
                 {
                     result.Succeeded = true;
@@ -76,6 +79,20 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 
             // return non-zero exit code when failed
             return result.Succeeded ? 0 : 1;
+        }
+
+        private static void EmitLogs()
+        {
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+            });
+
+            ILogger logger = loggerFactory.CreateLogger<Program>();
+
+            logger.LogInformation("INFORMATION"); // Not using these yet.
+            logger.LogWarning("WARNING");
+
         }
 
         private static TestEgressProviderOptions BuildOptions(ExtensionEgressPayload configPayload)
