@@ -12,7 +12,7 @@ Once configuration has been merged, any singletons that have been added to the `
 
 Any changes to the configuration need to be propagated to the [schema](https://github.com/dotnet/dotnet-monitor/blob/ba8c36235943562581b666e74ef07954313eda56/documentation/schema.json). **The updated schema should be generated automatically; you should never need to manually edit the JSON.** To update the schema in Visual Studio:
 * Set [Microsoft.Diagnostics.Monitoring.ConfigurationSchema](https://github.com/dotnet/dotnet-monitor/tree/ba8c36235943562581b666e74ef07954313eda56/src/Tests/Microsoft.Diagnostics.Monitoring.ConfigurationSchema) as the startup project
-* Build the project, with a single command-line argument for the schema's absolute path within your project
+* Build the project, with a single command-line argument for the schema's absolute path
 * Validate that the schema was correctly updated using the tests in [Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests](https://github.com/dotnet/dotnet-monitor/tree/ba8c36235943562581b666e74ef07954313eda56/src/Tests/Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests)
 
 ## Keeping Documentation Up-To-Date
