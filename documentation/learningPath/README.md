@@ -7,15 +7,15 @@ Our learning path is designed to help you get up-and-running with your first con
 
 ```mermaid
 graph TD
-    B[Start Here!] --> C[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/building.md'>Building Locally</a>]
-    C --> D[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/basic-usage.md'>Basic Usage</a>]
-    D --> E[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/architecture.md'>Architecture Overview</a>]
-    E --> G[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/sample-pull-request.md'>A Sample Pull Request</a>]
-    G --> |OPTIONAL| H[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/collectionrules.md'>Collection Rules</a>]
-    G --> |OPTIONAL| I[<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/api.md'>API</a>]
-    G --> |OPTIONAL| J["<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/testing.md'>Testing</a>"]
-    G --> |OPTIONAL| K["<a href='https://github.com/kkeirstead/dotnet-monitor/blob/kkeirstead/LearningPath/documentation/learningPath/configuration.md'>Configuration</a>"]
+    B[Start Here!] --> C[<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/building.md'>Building Locally</a>]
+    C --> D[<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/learningPath/basic-usage.md'>Basic Usage</a>]
+    D --> E[<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/learningPath/architecture.md'>Architecture Overview</a>]
+    E --> G[<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/learningPath/sample-pull-request.md'>A Sample Pull Request</a>]
+    G --> |OPTIONAL| H[<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/learningPath/collectionrules.md'>Collection Rules</a>]
+    G --> |OPTIONAL| I[<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/learningPath/api.md'>API</a>]
+    G --> |OPTIONAL| J["<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/learningPath/testing.md'>Testing</a>"]
+    G --> |OPTIONAL| K["<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/learningPath/configuration.md'>Configuration</a>"]
     G --> |OPTIONAL| L[Egress -> COMING SOON]
 ```
 
-*Note*: Need to update links to point to dotnet-monitor repo, not my branch
+*TODO*: Need to update links to point to main branch of dotnet-monitor repo, since it appears that [we can't do relative links in GitHub Mermaid]( https://gist.github.com/ChristopherA/bffddfdf7b1502215e44cec9fb766dfd#flowchart-with-hyperlinks).
