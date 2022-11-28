@@ -209,13 +209,19 @@ jobs:
 
       # The current way our tests are being processed in dnceng results in aborted test runs to not be properly shown,
       # so manually upload any blame dumps.
-      # JSFIX - FileCopyOptions is not respected
-      # - task: PublishBuildArtifacts@1
-      #   displayName: Publish Blame Artifacts
-      #   inputs:
-      #     PathtoPublish: $(Agent.TempDirectory)
-      #     FileCopyOptions: '**/*.dmp'
-      #     PublishLocation: Container
-      #     ArtifactName: TestBlameArtifacts_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
-      #   continueOnError: true
-      #   condition: Failed()
+      - task: CopyFiles@2
+        displayName: Stage Blame Artifacts
+        inputs:
+          contents: '$(Agent.TempDirectory)/**/*.dmp'
+          targetFolder: $(Build.ArtifactStagingDirectory)/test_blame
+        continueOnError: true
+        condition: Failed()
+
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Blame Artifacts
+        inputs:
+          PathtoPublish: $(Build.ArtifactStagingDirectory)/test_blame
+          PublishLocation: Container
+          ArtifactName: TestBlameArtifacts_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
+        continueOnError: true
+        condition: Failed()
