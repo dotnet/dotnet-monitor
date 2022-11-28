@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -33,6 +34,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private const string TestAppExe = TestAppName + ".exe";
         private const string DotnetToolsExtensionDir = ".store\\tool-name\\7.0\\tool-name\\7.0\\tools\\net7.0\\any";
         private const string DotnetToolsExeDir = "";
+
+        public const int PayloadSize = 2000;
+        public static byte[] ByteArray = Encoding.ASCII.GetBytes(string.Empty);
 
         public EgressExtensibilityTests(ITestOutputHelper outputHelper)
         {
@@ -119,11 +123,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private static async Task GetStream(Stream stream, CancellationToken cancellationToken)
         {
-            byte[] byteArray = Enumerable.Repeat((byte)0xDE, 2000).ToArray();
-
-            MemoryStream tempStream = new MemoryStream(byteArray);
-
-            await tempStream.CopyToAsync(stream);
+            await stream.WriteAsync(ByteArray);
         }
 
         private static void CopyExtensionFiles(string destinationPath, string exePath = null, string exeName = null)

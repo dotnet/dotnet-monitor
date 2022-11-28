@@ -7,45 +7,39 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
-using System.IO;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 {
     internal class Program
     {
-        const int DefaultBufferSize = 4000;
-
-        static int Main(string[] args)
+        static async Task<int> Main(string[] args)
         {
-            // Expected command line format is: dotnet-monitor-egress-azureblobstorage.exe Egress
-            RootCommand rootCommand = new RootCommand("Egresses an artifact to Azure Storage.");
+            RootCommand rootCommand = new RootCommand();
 
-            Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.");
+            Command egressCmd = new Command("Egress");
 
-            egressCmd.SetHandler(() => Egress());
+            egressCmd.SetHandler(Egress);
 
             rootCommand.Add(egressCmd);
 
-            return rootCommand.Invoke(args);
+            return await rootCommand.InvokeAsync(args);
         }
 
-        private static int Egress()
+        private static async Task<int> Egress()
         {
             EgressArtifactResult result = new();
             try
             {
                 string jsonConfig = Console.ReadLine();
+
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
-
-                Stream outputStream = new MemoryStream();
-
-                outputStream = GetStream();
-
-                Assert.Equal(outputStream.Length, DefaultBufferSize);
-
                 TestEgressProviderOptions options = BuildOptions(configPayload);
+
+                await Task.Delay(1000);
 
                 if (options.ShouldSucceed)
                 {
@@ -79,15 +73,6 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
             };
 
             return options;
-        }
-
-        private static Stream GetStream()
-        {
-            byte[] buffer = new byte[DefaultBufferSize];
-
-            Console.OpenStandardInput().Read(buffer, 0, DefaultBufferSize);
-
-            return new MemoryStream(buffer);
         }
 
         private static bool GetConfig(IDictionary<string, string> configDict, string propKey)
