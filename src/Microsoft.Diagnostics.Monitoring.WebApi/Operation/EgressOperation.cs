@@ -44,8 +44,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             Tags = Utilities.SplitTags(tags);
         }
 
-        public EgressOperation(IArtifactOperation operation, string endpointName, IProcessInfo processInfo, KeyValueLogScope scope, string tag, CollectionRuleMetadata collectionRuleMetadata = null)
-            : this(operation.ExecuteAsync, endpointName, operation.GenerateFileName(), processInfo, operation.ContentType, scope, tag, collectionRuleMetadata)
+        public EgressOperation(IArtifactOperation operation, string endpointName, IProcessInfo processInfo, KeyValueLogScope scope, string tags, CollectionRuleMetadata collectionRuleMetadata = null)
+            : this(operation.ExecuteAsync, endpointName, operation.GenerateFileName(), processInfo, operation.ContentType, scope, tags, collectionRuleMetadata)
         {
             _operation = operation;
         }
