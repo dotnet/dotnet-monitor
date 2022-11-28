@@ -199,9 +199,9 @@
             }
           },
           {
-            "name": "tag",
+            "name": "tags",
             "in": "query",
-            "description": "An optional identifier users can include to make an operation easier to identify",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify",
             "schema": {
               "type": "string"
             }
@@ -277,9 +277,9 @@
             }
           },
           {
-            "name": "tag",
+            "name": "tags",
             "in": "query",
-            "description": "An optional identifier users can include to make an operation easier to identify",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify",
             "schema": {
               "type": "string"
             }
@@ -375,9 +375,9 @@
             }
           },
           {
-            "name": "tag",
+            "name": "tags",
             "in": "query",
-            "description": "An optional identifier users can include to make an operation easier to identify",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify",
             "schema": {
               "type": "string"
             }
@@ -463,9 +463,9 @@
             }
           },
           {
-            "name": "tag",
+            "name": "tags",
             "in": "query",
-            "description": "An optional identifier users can include to make an operation easier to identify",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify",
             "schema": {
               "type": "string"
             }
@@ -582,9 +582,9 @@
             }
           },
           {
-            "name": "tag",
+            "name": "tags",
             "in": "query",
-            "description": "An optional identifier users can include to make an operation easier to identify",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify",
             "schema": {
               "type": "string"
             }
@@ -679,9 +679,9 @@
             }
           },
           {
-            "name": "tag",
+            "name": "tags",
             "in": "query",
-            "description": "An optional identifier users can include to make an operation easier to identify",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify",
             "schema": {
               "type": "string"
             }
@@ -930,7 +930,7 @@
             }
           },
           {
-            "name": "tag",
+            "name": "tags",
             "in": "query",
             "schema": {
               "type": "string"
@@ -1028,9 +1028,9 @@
             }
           },
           {
-            "name": "tag",
+            "name": "tags",
             "in": "query",
-            "description": "An optional identifier users can include to make an operation easier to identify",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify",
             "schema": {
               "type": "string"
             }
@@ -1105,9 +1105,9 @@
             }
           },
           {
-            "name": "tag",
+            "name": "tags",
             "in": "query",
-            "description": "An optional identifier users can include to make an operation easier to identify",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify",
             "schema": {
               "type": "string"
             }
@@ -1208,9 +1208,9 @@
             }
           },
           {
-            "name": "tag",
+            "name": "tags",
             "in": "query",
-            "description": "An optional identifier users can include to make an operation easier to identify",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify",
             "schema": {
               "type": "string"
             }
@@ -1620,8 +1620,12 @@
           "isStoppable": {
             "type": "boolean"
           },
-          "tag": {
-            "type": "string",
+          "tags": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "nullable": true
           },
           "resourceLocation": {
@@ -1659,8 +1663,12 @@
           "isStoppable": {
             "type": "boolean"
           },
-          "tag": {
-            "type": "string",
+          "tags": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "nullable": true
           }
         },

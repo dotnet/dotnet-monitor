@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
@@ -30,8 +31,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [JsonPropertyName("isStoppable")]
         public bool IsStoppable { get; set; }
 
-        [JsonPropertyName("tag")]
-        public string Tag { get; set; }
+        [JsonPropertyName("tags")]
+        public ISet<string> Tags { get; set; }
     }
 
     /// <summary>

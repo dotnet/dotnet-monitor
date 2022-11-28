@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             public Guid OperationId { get; set; }
 
-            public string Tag { get; set; }
+            public ISet<string> Tags { get; set; }
         }
 
         private readonly Dictionary<Guid, EgressEntry> _requests = new();
@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         State = Models.OperationState.Running,
                         EgressRequest = request,
                         OperationId = operationId,
-                        Tag = request.EgressOperation.Tag
+                        Tags = request.EgressOperation.Tags
                     });
             }
             await _taskQueue.EnqueueAsync(request);
@@ -164,17 +164,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public IEnumerable<Models.OperationSummary> GetOperations(ProcessKey? processKey, string tag)
+        public IEnumerable<Models.OperationSummary> GetOperations(ProcessKey? processKey, string tags)
         {
             lock (_requests)
             {
                 IEnumerable<KeyValuePair<Guid, EgressEntry>> requests = _requests;
 
-                if (!string.IsNullOrEmpty(tag))
+                if (!string.IsNullOrEmpty(tags))
                 {
+                    ISet<string> tagsSet = Utilities.SplitTags(tags);
+
                     requests = requests.Where((kvp) =>
                     {
-                        return tag == kvp.Value.Tag;
+                        return tagsSet.All(s => kvp.Value.Tags.Contains(s));
                     });
                 }
 
@@ -224,7 +226,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                                 ProcessId = processInfo.ProcessId,
                                 Uid = processInfo.RuntimeInstanceCookie
                             } : null,
-                        Tag = kvp.Value.Tag
+                        Tags = kvp.Value.Tags
                     };
                 }).ToList();
             }
@@ -254,7 +256,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                             ProcessId = processInfo.ProcessId,
                             Uid = processInfo.RuntimeInstanceCookie
                         } : null,
-                    Tag = entry.Tag
+                    Tags = entry.Tags
                 };
 
                 if (entry.State == Models.OperationState.Succeeded)

@@ -5,6 +5,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,29 +19,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public EgressProcessInfo ProcessInfo { get; private set; }
         public string EgressProviderName { get; private set; }
         public bool IsStoppable { get { return _operation?.IsStoppable ?? false; } }
-        public string Tag { get; private set; }
+        public ISet<string> Tags { get; private set; }
 
         private readonly IArtifactOperation _operation;
 
 
-        public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope, string tag, CollectionRuleMetadata collectionRuleMetadata = null)
+        public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope, string tags, CollectionRuleMetadata collectionRuleMetadata = null)
         {
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, processInfo.EndpointInfo, collectionRuleMetadata, token);
             _scope = scope;
 
             EgressProviderName = endpointName;
             ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
-            Tag = tag;
+            Tags = Utilities.SplitTags(tags);
         }
 
-        public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope, string tag, CollectionRuleMetadata collectionRuleMetadata = null)
+        public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope, string tags, CollectionRuleMetadata collectionRuleMetadata = null)
         {
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, processInfo.EndpointInfo, collectionRuleMetadata, token);
             EgressProviderName = endpointName;
             _scope = scope;
 
             ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
-            Tag = tag;
+            Tags = Utilities.SplitTags(tags);
         }
 
         public EgressOperation(IArtifactOperation operation, string endpointName, IProcessInfo processInfo, KeyValueLogScope scope, string tag, CollectionRuleMetadata collectionRuleMetadata = null)

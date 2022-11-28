@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         public bool IsStoppable { get; }
 
-        public string Tag { get; }
+        public ISet<string> Tags { get; }
 
         public string EgressProviderName { get; }
 

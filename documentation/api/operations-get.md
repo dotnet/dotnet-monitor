@@ -61,7 +61,7 @@ Content-Type: application/json
         "uid":"95b0202a-4ed3-44a6-98f1-767d270ec783",
         "name":"dotnet-monitor-demo"
     },
-    "tag": null
+    "tags": []
 }
 ```
 

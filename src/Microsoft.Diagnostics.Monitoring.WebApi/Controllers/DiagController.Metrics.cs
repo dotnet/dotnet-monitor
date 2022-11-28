@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="durationSeconds">The duration of the metrics session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the metrics are saved.</param>
-        /// <param name="tag">An optional identifier users can include to make an operation easier to identify</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify</param>
         [HttpGet("livemetrics", Name = nameof(CaptureMetrics))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null,
             [FromQuery]
-            string tag = null)
+            string tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     egressProvider,
                     _metricsOperationFactory.Create(processInfo.EndpointInfo, settings),
                     processInfo,
-                    tag),
+                    tags),
                 processKey,
                 Utilities.ArtifactType_Metrics);
         }
@@ -68,7 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="durationSeconds">The duration of the metrics session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the metrics are saved.</param>
-        /// <param name="tag">An optional identifier users can include to make an operation easier to identify</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify</param>
         [HttpPost("livemetrics", Name = nameof(CaptureMetricsCustom))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
@@ -88,7 +88,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string egressProvider = null,
             [FromQuery]
-            string tag = null)
+            string tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     egressProvider,
                     _metricsOperationFactory.Create(processInfo.EndpointInfo, settings),
                     processInfo,
-                    tag),
+                    tags),
                 processKey,
                 Utilities.ArtifactType_Metrics);
         }
