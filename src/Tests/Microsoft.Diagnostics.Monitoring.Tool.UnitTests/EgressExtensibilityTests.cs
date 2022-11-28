@@ -22,32 +22,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class EgressExtensibilityTests
     {
+        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
+
         private ITestOutputHelper _outputHelper;
         private const string ExtensionsFolder = "extensions";
         public const string SampleArtifactPath = "my/sample/path";
         public const string SampleFailureMessage = "the extension failed";
+        private const string TestProviderName = "TestingProvider";
         private const string TestAppName = "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp";
         private const string TestAppExe = TestAppName + ".exe";
         private const string DotnetToolsExtensionDir = ".store\\tool-name\\7.0\\tool-name\\7.0\\tools\\net7.0\\any";
         private const string DotnetToolsExeDir = "";
 
-        //private const string ExtensionDefinitionFile = "extension.json";
-        //private const string EgressExtensionsDirectory = "EgressExtensionResources";
-
         public EgressExtensibilityTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
         }
-
-        /* Test Coverage
-         * 
-         * Successfully finding extension in each location
-         * Fails properly if extension is not found
-         * Extension.json file is properly found and parsed to find extension and DisplayName
-         * Fails properly if Extension.json is not found / doesn't contain correct contents
-         * Logs from extension are properly passed through to dotnet monitor
-         * 
-         */
 
         [Fact]
         public void FoundExtension_Failure()
@@ -58,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             var extensionDiscoverer = host.Services.GetService<ExtensionDiscoverer>();
 
-            const string extensionDisplayName = "AzureBlobStorage";
+            const string extensionDisplayName = "InvalidProviderName";
 
             Assert.Throws<ExtensionException>(() => extensionDiscoverer.FindExtension<IEgressExtension>(extensionDisplayName));
         }
@@ -84,13 +74,30 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             payload.Configuration = new Dictionary<string, string>();
             payload.Configuration.Add("ShouldSucceed", "true");
 
-            TimeSpan timeout = new(0, 0, 30); // do something real
-            CancellationTokenSource tokenSource = new(timeout);
+            CancellationTokenSource tokenSource = new(DefaultTimeout);
 
             EgressArtifactResult result = await extension.EgressArtifact(payload, GetStream, tokenSource.Token);
 
             Assert.True(result.Succeeded);
             Assert.Equal(SampleArtifactPath, result.ArtifactPath);
+        }
+
+        [Fact]
+        public async Task ExtensionResponse_Failure()
+        {
+            var extension = FindEgressExtension(ConfigDirectory.UserConfigDirectory, null, null);
+
+            ExtensionEgressPayload payload = new();
+
+            payload.Configuration = new Dictionary<string, string>();
+            payload.Configuration.Add("ShouldSucceed", "false");
+
+            CancellationTokenSource tokenSource = new(DefaultTimeout);
+
+            EgressArtifactResult result = await extension.EgressArtifact(payload, GetStream, tokenSource.Token);
+
+            Assert.False(result.Succeeded);
+            Assert.Equal(SampleFailureMessage, result.FailureMessage);
         }
 
         private IEgressExtension FindEgressExtension(ConfigDirectory configDirectory, string exePath, string exeName)
@@ -107,7 +114,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             var extensionDiscoverer = host.Services.GetService<ExtensionDiscoverer>();
 
-            return extensionDiscoverer.FindExtension<IEgressExtension>(TestAppName);
+            return extensionDiscoverer.FindExtension<IEgressExtension>(TestProviderName);
         }
 
         private static async Task GetStream(Stream stream, CancellationToken cancellationToken)

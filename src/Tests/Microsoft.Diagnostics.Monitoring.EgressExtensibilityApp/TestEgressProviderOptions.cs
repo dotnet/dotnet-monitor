@@ -4,9 +4,6 @@
 
 namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 {
-    /// <summary>
-    /// Egress provider options for Azure blob storage.
-    /// </summary>
     internal sealed partial class TestEgressProviderOptions
     {
         public bool ShouldSucceed { get; set; }
