@@ -204,7 +204,7 @@ jobs:
         inputs:
           command: 'test'
           publishTestResults: true
-          arguments: -c ${{ parameters.configuration }} --blame-hang-timeout 30s --no-build --no-restore --filter "$(_TestFilter)" -- MaxCpuCount=1 DisableParallelization=true
+          arguments: -c ${{ parameters.configuration }} --blame-hang-timeout 15m --no-build --no-restore --filter "$(_TestFilter)" -- MaxCpuCount=1 DisableParallelization=true
           testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }}'
 
       # The current way our tests are being processed in dnceng results in aborted test runs to not be properly shown,
@@ -212,7 +212,8 @@ jobs:
       - task: CopyFiles@2
         displayName: Stage Blame Artifacts
         inputs:
-          contents: '$(Agent.TempDirectory)/**/*.dmp'
+          sourceFolder: $(Agent.TempDirectory)
+          contents: '**/*.dmp'
           targetFolder: $(Build.ArtifactStagingDirectory)/test_blame
         continueOnError: true
         condition: Failed()
