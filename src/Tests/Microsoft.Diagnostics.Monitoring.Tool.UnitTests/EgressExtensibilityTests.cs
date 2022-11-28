@@ -15,7 +15,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -43,7 +42,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /* Test Coverage
          * 
          * Successfully finding extension in each location
-         * Proper resolution if conflict in terms of priority
          * Fails properly if extension is not found
          * Extension.json file is properly found and parsed to find extension and DisplayName
          * Fails properly if Extension.json is not found / doesn't contain correct contents
@@ -103,7 +101,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             string destinationPath = configDirectory != ConfigDirectory.DotnetToolsDirectory ? Path.Combine(directoryName, ExtensionsFolder, TestAppName) : Path.Combine(directoryName, DotnetToolsExtensionDir);
 
-            CopyExtensionFiles(directoryName, destinationPath, exePath, exeName);
+            CopyExtensionFiles(destinationPath, exePath, exeName);
 
             IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
 
@@ -121,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await tempStream.CopyToAsync(stream);
         }
 
-        private static void CopyExtensionFiles(string directoryName, string destinationPath, string exePath = null, string exeName = null)
+        private static void CopyExtensionFiles(string destinationPath, string exePath = null, string exeName = null)
         {
             Directory.CreateDirectory(destinationPath);
 
@@ -137,9 +135,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             foreach (string sourceFilePath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
             {
-                string fileName = Path.GetFileName(sourceFilePath);
-
-                string replacementPath = separateExe && fileName == exeName ? exePath : destinationPath;
+                string replacementPath = separateExe && Path.GetFileName(sourceFilePath) == exeName ? exePath : destinationPath;
 
                 string destinationFilePath = sourceFilePath.Replace(sourcePath, replacementPath);
 

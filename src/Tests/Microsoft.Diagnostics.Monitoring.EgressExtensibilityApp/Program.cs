@@ -4,14 +4,11 @@
 
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.IO;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
@@ -20,21 +17,21 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
     {
         const int DefaultBufferSize = 4000;
 
-        static async Task<int> Main(string[] args)
+        static int Main(string[] args)
         {
             // Expected command line format is: dotnet-monitor-egress-azureblobstorage.exe Egress
             RootCommand rootCommand = new RootCommand("Egresses an artifact to Azure Storage.");
 
             Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.");
 
-            egressCmd.SetHandler(Egress);
+            egressCmd.SetHandler(() => Egress());
 
             rootCommand.Add(egressCmd);
 
-            return await rootCommand.InvokeAsync(args);
+            return rootCommand.Invoke(args);
         }
 
-        private static async Task<int> Egress()
+        private static int Egress()
         {
             EgressArtifactResult result = new();
             try
@@ -42,18 +39,13 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
                 string jsonConfig = Console.ReadLine();
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
 
-                Stream outputStream = new MemoryStream(); // might not be a good stream type
-
-                TimeSpan timeout = new TimeSpan(0, 0, 30); // Should do something real here
-                CancellationTokenSource timeoutSource = new(timeout);
+                Stream outputStream = new MemoryStream();
 
                 outputStream = GetStream();
 
                 Assert.Equal(outputStream.Length, DefaultBufferSize);
 
                 TestEgressProviderOptions options = BuildOptions(configPayload);
-
-                EmitLogs();
 
                 if (options.ShouldSucceed)
                 {
@@ -75,24 +67,8 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
             string jsonBlob = JsonSerializer.Serialize<EgressArtifactResult>(result);
             Console.Write(jsonBlob);
 
-            await Task.Delay(1); // TEMPORARY
-
             // return non-zero exit code when failed
             return result.Succeeded ? 0 : 1;
-        }
-
-        private static void EmitLogs()
-        {
-            using var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddConsole();
-            });
-
-            ILogger logger = loggerFactory.CreateLogger<Program>();
-
-            logger.LogInformation("INFORMATION"); // Not using these yet.
-            logger.LogWarning("WARNING");
-
         }
 
         private static TestEgressProviderOptions BuildOptions(ExtensionEgressPayload configPayload)
