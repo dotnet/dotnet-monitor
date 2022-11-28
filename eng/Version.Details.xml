@@ -1,10 +1,10 @@
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="6.0.0-preview.22574.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="6.0.0-preview.22575.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>ac9b0dcac13670a25028d1da34372fb6c131068d</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="6.0.0-preview.22574.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="6.0.0-preview.22575.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>ac9b0dcac13670a25028d1da34372fb6c131068d</Sha>
     </Dependency>
