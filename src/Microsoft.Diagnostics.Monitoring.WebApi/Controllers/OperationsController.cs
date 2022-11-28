@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="pid">Process ID used to identify the target process.</param>
         /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         [HttpGet]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(IEnumerable<Models.OperationSummary>), StatusCodes.Status200OK)]

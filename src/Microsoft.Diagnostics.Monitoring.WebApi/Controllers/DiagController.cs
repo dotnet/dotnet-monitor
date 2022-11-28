@@ -200,7 +200,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="type">The type of dump to capture.</param>
         /// <param name="egressProvider">The egress provider to which the dump is saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         /// <returns></returns>
         [HttpGet("dump", Name = nameof(CaptureDump))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
@@ -244,7 +244,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="egressProvider">The egress provider to which the GC dump is saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         /// <returns></returns>
         [HttpGet("gcdump", Name = nameof(CaptureGcDump))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
@@ -307,7 +307,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="profile">The profiles enabled for the trace session.</param>
         /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         [HttpGet("trace", Name = nameof(CaptureTrace))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
@@ -353,7 +353,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         [HttpPost("trace", Name = nameof(CaptureTraceCustom))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
@@ -408,7 +408,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
         /// <param name="level">The level of the logs to capture.</param>
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         [HttpGet("logs", Name = nameof(CaptureLogs))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
@@ -466,7 +466,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         [HttpPost("logs", Name = nameof(CaptureLogsCustom))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
