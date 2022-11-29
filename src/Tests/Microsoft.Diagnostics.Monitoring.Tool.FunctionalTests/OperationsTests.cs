@@ -48,8 +48,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 appValidate: async (appRunner, apiClient) =>
                 {
                     // Wait for the process to be discovered.
-                    int processId = await runner.ProcessIdTask;
-                    _ = await client.GetProcessWithRetryAsync(_outputHelper, pid: processId);
+                    int processId = await appRunner.ProcessIdTask;
+                    _ = await apiClient.GetProcessWithRetryAsync(_outputHelper, pid: processId);
 
                     string tagsQuery1 = "tag1,,tag2"; // Note that the extra comma is intentional
                     string tagsQuery2 = "tag2,tag3,tag4";
