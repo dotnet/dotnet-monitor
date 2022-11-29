@@ -16,7 +16,7 @@
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
 
     <!-- Third-party references -->
-    <NewtonsoftJsonVersion>13.0.1</NewtonsoftJsonVersion>
+    <NewtonsoftJsonVersion>13.0.2</NewtonsoftJsonVersion>
     <NJsonSchemaVersion>10.8.0</NJsonSchemaVersion>
     <SwashbuckleAspNetCoreSwaggerGenVersion>6.4.0</SwashbuckleAspNetCoreSwaggerGenVersion>
     <AwsSdkS3Version>3.5.8.1</AwsSdkS3Version>
