@@ -101,7 +101,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.ConfigureTemplates(context.Configuration);
                     services.AddSingleton<OperationTrackerService>();
                     services.ConfigureCollectionRules();
-                    services.ConfigureExtensions(settings); // settings could be null...how do we want to protect against this?
+
+                    if (settings != null)
+                    {
+                        services.ConfigureExtensions(settings);
+                    }
+
                     services.ConfigureEgress();
 
                     services.ConfigureDiagnosticPort(context.Configuration);

@@ -8,28 +8,25 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 {
     internal class Program
     {
-        static async Task<int> Main(string[] args)
+        static int Main(string[] args)
         {
             RootCommand rootCommand = new RootCommand();
 
             Command egressCmd = new Command("Egress");
 
-            egressCmd.SetHandler(Egress);
+            egressCmd.SetHandler(() => Egress());
 
             rootCommand.Add(egressCmd);
 
-            return await rootCommand.InvokeAsync(args);
+            return rootCommand.Invoke(args);
         }
 
-        private static async Task<int> Egress()
+        private static int Egress()
         {
             EgressArtifactResult result = new();
             try
@@ -38,8 +35,6 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
                 TestEgressProviderOptions options = BuildOptions(configPayload);
-
-                await Task.Delay(1000);
 
                 if (options.ShouldSucceed)
                 {
@@ -58,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
                 result.FailureMessage = ex.Message;
             }
 
-            string jsonBlob = JsonSerializer.Serialize<EgressArtifactResult>(result);
+            string jsonBlob = JsonSerializer.Serialize(result);
             Console.Write(jsonBlob);
 
             // return non-zero exit code when failed

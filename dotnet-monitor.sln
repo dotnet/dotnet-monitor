@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.ExecuteActionApp", "src\Tests\Microsoft.Diagnostics.Monitoring.ExecuteActionApp\Microsoft.Diagnostics.Monitoring.ExecuteActionApp.csproj", "{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp", "src\Tests\Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp\Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp.csproj", "{8f8a9a15-24d5-496c-b769-3caed25d1ba8}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureBlobStorage", "src\Extensions\AzureBlobStorage\AzureBlobStorage.csproj", "{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Profiler.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.Profiler.UnitTests\Microsoft.Diagnostics.Monitoring.Profiler.UnitTests.csproj", "{A25AC517-F7C6-43C6-B892-4A447914C42C}"
@@ -108,6 +110,10 @@ Global
 		{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8f8a9a15-24d5-496c-b769-3caed25d1ba8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8f8a9a15-24d5-496c-b769-3caed25d1ba8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8f8a9a15-24d5-496c-b769-3caed25d1ba8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8f8a9a15-24d5-496c-b769-3caed25d1ba8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -11,7 +11,6 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -35,7 +34,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private const string DotnetToolsExtensionDir = ".store\\tool-name\\7.0\\tool-name\\7.0\\tools\\net7.0\\any";
         private const string DotnetToolsExeDir = "";
 
-        public const int PayloadSize = 2000;
         public static byte[] ByteArray = Encoding.ASCII.GetBytes(string.Empty);
 
         public EgressExtensibilityTests(ITestOutputHelper outputHelper)
