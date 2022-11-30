@@ -17,11 +17,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal sealed class MetricsOperation : PipelineArtifactOperation<EventCounterPipeline>
     {
         private readonly EventPipeCounterPipelineSettings _settings;
+        private readonly ILogger _logger;
 
         public MetricsOperation(IEndpointInfo endpointInfo, EventPipeCounterPipelineSettings settings, ILogger logger)
             : base(logger, Utils.ArtifactType_Metrics, endpointInfo)
         {
             _settings = settings;
+            _logger = logger;
         }
 
         protected override EventCounterPipeline CreatePipeline(Stream outputStream)
@@ -31,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return new EventCounterPipeline(
                 client,
                 _settings,
-                loggers: new[] { new JsonCounterLogger(outputStream) });
+                loggers: new[] { new JsonCounterLogger(outputStream, _logger) });
         }
 
         protected override Task<Task> StartPipelineAsync(EventCounterPipeline pipeline, CancellationToken token)

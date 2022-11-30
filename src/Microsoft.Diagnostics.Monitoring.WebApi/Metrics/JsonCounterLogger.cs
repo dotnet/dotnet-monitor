@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
@@ -11,12 +12,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal sealed class JsonCounterLogger : StreamingCounterLogger
     {
-        public JsonCounterLogger(Stream stream) : base(stream)
+        ILogger _logger;
+
+        public JsonCounterLogger(Stream stream, ILogger logger) : base(stream)
         {
+            _logger = logger;
         }
 
         protected override void SerializeCounter(Stream stream, List<ICounterPayload> counter)
         {
+            if (counter[0] is ErrorPayload errorPayload)
+            {
+                _logger.LogWarning(errorPayload.ErrorMessage);
+
+                return;
+            }
+
             stream.WriteByte(StreamingLogger.JsonSequenceRecordSeparator);
             using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = false }))
             {
