@@ -66,7 +66,7 @@ if (-not $skipnative) {
 # Run the xunit tests
 if ($test) {
     if (-not $crossbuild) {
-        Invoke-Expression "& `"$engroot\common\build.ps1`" test -configuration $configuration -verbosity $verbosity /p:BuildArch=$architecture /bl:$logdir\Test.binlog /p:TestGroup=$testgroup $remainingargs"
+        Invoke-Expression "& `"$engroot\common\build.ps1`" -test -configuration $configuration -verbosity $verbosity /p:BuildArch=$architecture /bl:$logdir\Test.binlog /p:TestGroup=$testgroup $remainingargs"
         if ($lastExitCode -ne 0) {
             exit $lastExitCode
         }
