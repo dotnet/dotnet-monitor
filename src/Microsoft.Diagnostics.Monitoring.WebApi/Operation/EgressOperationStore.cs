@@ -176,7 +176,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                     requests = requests.Where((kvp) =>
                     {
-                        return tagsSet.All(tag => kvp.Value.Tags.Contains(tag));
+                        return tagsSet.IsSubsetOf(kvp.Value.Tags);
                     });
                 }
 
