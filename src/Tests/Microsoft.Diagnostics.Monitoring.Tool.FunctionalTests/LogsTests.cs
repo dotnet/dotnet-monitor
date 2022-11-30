@@ -470,6 +470,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         {
             return RetryUtilities.RetryAsync(
                 func,
+                // Test expected more log items than what was provided. This might be a timing issue where
+                // the /logs HTTP route is invoked before the test app writes the log messages; another possible
+                // cause is the log messages are buffered and not sent to dotnet-monitor until after the logs
+                // session is complete. Retry the test when this condition is detected.
                 shouldRetry: (Exception ex) => ex is ChannelClosedException,
                 maxRetryCount: attemptCount,
                 outputHelper: _outputHelper);

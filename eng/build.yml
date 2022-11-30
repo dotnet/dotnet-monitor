@@ -216,13 +216,9 @@ jobs:
           $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
           -configuration ${{ parameters.configuration }}
           -architecture ${{ parameters.architecture }}
-          $(_CrossBuildArgs)
           $(_TestArgs)
         displayName: Test
         timeoutInMinutes: 45
-        ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
-          env:
-            ROOTFS_DIR: '/crossrootfs/arm64'
 
     # Publish test results to Azure Pipelines
     - ${{ if ne(parameters.testGroup, 'None') }}:
