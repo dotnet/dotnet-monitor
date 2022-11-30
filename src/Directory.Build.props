@@ -19,6 +19,20 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(ContinuousIntegrationBuild)' == 'true'">
+    <TestRunnerAdditionalArguments>--blame "CollectHangDump;TestTimeout=3m"</TestRunnerAdditionalArguments>
+  </PropertyGroup>
+
+  <!-- Filter tests based on specified TestGroup -->
+  <PropertyGroup Condition="'$(TestGroup)' == 'CI'">
+    <!-- Exclude netcoreapp3.1 and net5.0 tests from CI builds -->
+    <TestRunnerAdditionalArguments>$(TestRunnerAdditionalArguments) --filter "TargetFrameworkMoniker!=NetCoreApp31&amp;TargetFrameworkMoniker!=Net50"</TestRunnerAdditionalArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TestGroup)' == 'PR'">
+    <!-- Exclude netcoreapp3.1 and net5.0 tests from PR builds -->
+    <TestRunnerAdditionalArguments>$(TestRunnerAdditionalArguments) --filter "TargetFrameworkMoniker!=NetCoreApp31&amp;TargetFrameworkMoniker!=Net50"</TestRunnerAdditionalArguments>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="System.Private.Uri" Version="$(SystemPrivateUriVersion)" />
   </ItemGroup>
