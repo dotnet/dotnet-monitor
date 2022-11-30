@@ -114,7 +114,7 @@ jobs:
           - _TestGroup: '${{ parameters.testGroup }}'
 
     - ${{ if ne(parameters.testGroup, 'None') }}:
-        - _TestArgs: '-test -testgroup $(_TestGroup) /m:1'
+        - _TestArgs: '-test -testgroup $(_TestGroup) -skipmanaged -skipnative /m:1'
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - group: DotNet-MSRC-Storage
@@ -218,7 +218,7 @@ jobs:
           -architecture ${{ parameters.architecture }}
           $(_TestArgs)
         displayName: Test
-        timeoutInMinutes: 45
+        timeoutInMinutes: 60
 
     # Publish test results to Azure Pipelines
     - ${{ if ne(parameters.testGroup, 'None') }}:
