@@ -3,8 +3,9 @@
   <Import Project="dependabot/Versions.props" />
   <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
-    <VersionPrefix>6.3.0</VersionPrefix>
-    <PreReleaseVersionLabel>rtm</PreReleaseVersionLabel>
+    <VersionPrefix>6.3.1</VersionPrefix>
+    <PreReleaseVersionLabel>servicing</PreReleaseVersionLabel>
+    <DotnetFinalVersionKind>release</DotnetFinalVersionKind>
     <DotNetFinalVersionKind>release</DotNetFinalVersionKind>
     <DotNetUseShippingVersions>true</DotNetUseShippingVersions>
     <!--
