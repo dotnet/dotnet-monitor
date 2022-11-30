@@ -76,9 +76,9 @@
   </PropertyGroup>
   <PropertyGroup Label="Manual">
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6>6.0.10</MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6>
-    <MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7>7.0.0-rc.2.22476.2</MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7>
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7>7.0.0</MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7>
     <MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6>6.0.10</MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6>
-    <MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7>7.0.0-rc.2.22476.2</MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7>7.0.0</MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7>
   </PropertyGroup>
   <PropertyGroup Label="Dev Workflow">
     <!-- These versions are not used directly. For Dev workflows, nuget requires these to properly follow
