@@ -6,8 +6,4 @@
     <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)..\..\xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
 </Project>
