@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 return new HashSet<string>();
             }
 
-            return tags.Split(',', StringSplitOptions.RemoveEmptyEntries).ToHashSet();
+            return tags.Split(',', StringSplitOptions.RemoveEmptyEntries).ToHashSet(StringComparer.Ordinal);
         }
     }
 }
