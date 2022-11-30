@@ -40,25 +40,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
-            return InvokeForProcess(async (processInfo) =>
-            {
-                string fileName = MetricsUtilities.GetMetricFilename(processInfo.EndpointInfo);
+            return InvokeForProcess(
+                processInfo =>
+                {
+                    EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                        _counterOptions.CurrentValue,
+                        includeDefaults: true,
+                        durationSeconds: durationSeconds);
 
-                EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
-                    _counterOptions.CurrentValue,
-                    includeDefaults: true,
-                    durationSeconds: durationSeconds);
+                    // Allow sync I/O on livemetrics routes due to JsonCounterLogger's usage.
+                    HttpContext.AllowSynchronousIO();
 
-                // Allow sync I/O on livemetrics routes due to JsonCounterLogger's usage.
-                HttpContext.AllowSynchronousIO();
+                    IArtifactOperation operation = _metricsOperationFactory.Create(
+                        processInfo.EndpointInfo,
+                        settings);
 
-                return await Result(Utilities.ArtifactType_Metrics,
-                    egressProvider,
-                    (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, settings, outputStream, token),
-                    fileName,
-                    ContentTypes.ApplicationJsonSequence,
-                    processInfo);
-            }, processKey, Utilities.ArtifactType_Metrics);
+                    return Result(
+                        Utilities.ArtifactType_Metrics,
+                        egressProvider,
+                        operation,
+                        processInfo);
+                },
+                processKey,
+                Utilities.ArtifactType_Metrics);
         }
 
         /// <summary>
@@ -91,25 +95,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
-            return InvokeForProcess(async (processInfo) =>
-            {
-                string fileName = MetricsUtilities.GetMetricFilename(processInfo.EndpointInfo);
+            return InvokeForProcess(
+                processInfo =>
+                {
+                    EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                        _counterOptions.CurrentValue,
+                        durationSeconds,
+                        configuration);
 
-                EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
-                    _counterOptions.CurrentValue,
-                    durationSeconds,
-                    configuration);
+                    // Allow sync I/O on livemetrics routes due to JsonCounterLogger's usage.
+                    HttpContext.AllowSynchronousIO();
 
-                // Allow sync I/O on livemetrics routes due to JsonCounterLogger's usage.
-                HttpContext.AllowSynchronousIO();
+                    IArtifactOperation operation = _metricsOperationFactory.Create(
+                            processInfo.EndpointInfo,
+                            settings);
 
-                return await Result(Utilities.ArtifactType_Metrics,
-                    egressProvider,
-                    (outputStream, token) => MetricsUtilities.CaptureLiveMetricsAsync(null, processInfo.EndpointInfo, settings, outputStream, token),
-                    fileName,
-                    ContentTypes.ApplicationJsonSequence,
-                    processInfo);
-            }, processKey, Utilities.ArtifactType_Metrics);
+                    return Result(
+                        Utilities.ArtifactType_Metrics,
+                        egressProvider,
+                        operation,
+                        processInfo);
+                },
+                processKey,
+                Utilities.ArtifactType_Metrics);
         }
     }
 }
