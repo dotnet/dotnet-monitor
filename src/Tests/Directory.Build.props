@@ -5,5 +5,4 @@
     <!-- Used to upgrade to a higher version than what is provided from indirect dependencies. -->
     <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
   </ItemGroup>
-
 </Project>
