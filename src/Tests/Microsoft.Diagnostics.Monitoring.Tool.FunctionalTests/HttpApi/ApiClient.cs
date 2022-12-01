@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Diagnostics.Monitoring.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
@@ -526,10 +527,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
-        public async Task<ResponseStreamHolder> CaptureStacksAsync(int processId, bool plainText, CancellationToken token)
+        public async Task<ResponseStreamHolder> CaptureStacksAsync(int processId, StackFormat format, CancellationToken token)
         {
             string uri = FormattableString.Invariant($"/stacks?pid={processId}");
-            var contentType = plainText ? ContentTypes.TextPlain : ContentTypes.ApplicationJson;
+            var contentType = ContentTypeUtilities.MapFormatToContentType(format);
             using HttpRequestMessage request = new(HttpMethod.Get, uri);
             request.Headers.Add(HeaderNames.Accept, contentType);
 

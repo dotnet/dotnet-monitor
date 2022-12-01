@@ -5,7 +5,7 @@
 
 Captures metrics for a chosen process.
 
-> **NOTE:** For Prometheus style metrics, use the [metrics](./metrics.md) endpoint.
+> **Note**: For Prometheus style metrics, use the [metrics](./metrics.md) endpoint.
 
 ## HTTP Route
 
@@ -13,7 +13,7 @@ Captures metrics for a chosen process.
 GET /livemetrics?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
-> **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 

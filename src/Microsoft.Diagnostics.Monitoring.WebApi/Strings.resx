@@ -128,6 +128,9 @@
     <value>HTTP egress is not enabled.</value>
     <comment>Gets a string similar to "HTTP egress is not enabled.".</comment>
   </data>
+  <data name="ErrorMessage_HttpOperationFailed" xml:space="preserve">
+    <value>HTTP request failed with status code: '{0}'</value>
+  </data>
   <data name="ErrorMessage_InvalidMetricCount" xml:space="preserve">
     <value>Invalid metric count.</value>
     <comment>Gets a string similar to "Invalid metric count.".</comment>
@@ -216,6 +219,18 @@
     <comment>Gets the format string that is printed in the 4:EgressedArtifact event.
 1 Format Parameter:
 1. location: The location that the artifact was egressed to</comment>
+  </data>
+  <data name="LogFormatString_MetricsAbandonCompletion" xml:space="preserve">
+    <value>Stopped waiting for metrics to complete writing.</value>
+  </data>
+  <data name="LogFormatString_MetricsDropped" xml:space="preserve">
+    <value>Some metrics were dropped. Count: {Count}</value>
+  </data>
+  <data name="LogFormatString_MetricsUnprocessed" xml:space="preserve">
+    <value>Some metrics may have not be processed. Count: {Count}</value>
+  </data>
+  <data name="LogFormatString_MetricsWriteFailed" xml:space="preserve">
+    <value>Failed to write metrics.</value>
   </data>
   <data name="LogFormatString_RequestCanceled" xml:space="preserve">
     <value>Request canceled.</value>

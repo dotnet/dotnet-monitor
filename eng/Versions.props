@@ -1,6 +1,9 @@
 <Project>
   <!-- Import references updated by Dependabot. This file is for package references updated manually or by Maestro. -->
   <Import Project="dependabot/Versions.props" />
+  <Import Project="dependabot/net6.0/Versions.props" />
+  <Import Project="dependabot/net7.0/Versions.props" />
+  <Import Project="dependabot/netcoreapp3.1/Versions.props" />
   <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
     <VersionPrefix>8.0.0</VersionPrefix>
@@ -14,6 +17,11 @@
     -->
     <BlobGroupBuildQuality>daily</BlobGroupBuildQuality>
   </PropertyGroup>
+
+  <PropertyGroup Label="Testing">
+    <XUnitCoreSettingsFile>$(MSBuildThisFileDirectory)xunit.runner.json</XUnitCoreSettingsFile>
+  </PropertyGroup>
+
   <PropertyGroup Label="TargetFrameworks">
     <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
     <ExcludeLatestTargetFramework>false</ExcludeLatestTargetFramework>
@@ -46,39 +54,30 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/arcade references -->
-    <MicrosoftDotNetCodeAnalysisVersion>8.0.0-beta.22554.2</MicrosoftDotNetCodeAnalysisVersion>
-    <MicrosoftDotNetXUnitExtensionsVersion>8.0.0-beta.22554.2</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetCodeAnalysisVersion>8.0.0-beta.22579.2</MicrosoftDotNetCodeAnalysisVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>8.0.0-beta.22579.2</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>7.0.0</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <VSRedistCommonAspNetCoreSharedFrameworkx6470Version>7.0.0-rtm.22513.7</VSRedistCommonAspNetCoreSharedFrameworkx6470Version>
     <!-- dotnet/command-line-api references -->
-    <SystemCommandLineVersion>2.0.0-beta4.22504.1</SystemCommandLineVersion>
+    <SystemCommandLineVersion>2.0.0-beta4.22568.1</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>6.0.0-preview.22557.1</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>6.0.0-preview.22557.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>6.0.0-preview.22580.1</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>6.0.0-preview.22580.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/roslyn-analyzers -->
-    <MicrosoftCodeAnalysisNetAnalyzersVersion>7.0.0-preview1.22553.2</MicrosoftCodeAnalysisNetAnalyzersVersion>
+    <MicrosoftCodeAnalysisNetAnalyzersVersion>7.0.0-preview1.22559.1</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
     <MicrosoftNETCoreAppRuntimewinx64Version>7.0.0</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6470Version>7.0.0-rtm.22512.2</VSRedistCommonNetCoreSharedFrameworkx6470Version>
     <!-- dotnet/symstore references -->
-    <MicrosoftFileFormatsVersion>1.0.355701</MicrosoftFileFormatsVersion>
+    <MicrosoftFileFormatsVersion>1.0.357801</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
-    <MicrosoftNETCoreApp31Version>3.1.30</MicrosoftNETCoreApp31Version>
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
     <MicrosoftNETCoreApp50Version>5.0.17</MicrosoftNETCoreApp50Version>
     <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
-    <MicrosoftNETCoreApp60Version>6.0.10</MicrosoftNETCoreApp60Version>
     <MicrosoftAspNetCoreApp60Version>$(MicrosoftNETCoreApp60Version)</MicrosoftAspNetCoreApp60Version>
-    <MicrosoftNETCoreApp70Version>$(MicrosoftNETCoreAppRuntimewinx64Version)</MicrosoftNETCoreApp70Version>
-    <MicrosoftAspNetCoreApp70Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp70Version>
-  </PropertyGroup>
-  <PropertyGroup Label="Manual">
-    <MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6>6.0.10</MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6>
-    <MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7>7.0.0-rc.2.22476.2</MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7>
-    <MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6>6.0.10</MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6>
-    <MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7>7.0.0-rc.2.22476.2</MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7>
+    <MicrosoftAspNetCoreApp70Version>$(MicrosoftNETCoreApp70Version)</MicrosoftAspNetCoreApp70Version>
   </PropertyGroup>
   <PropertyGroup Label="Dev Workflow">
     <!-- These versions are not used directly. For Dev workflows, nuget requires these to properly follow
@@ -88,11 +87,11 @@
     <MicrosoftExtensionsLoggingVersion>2.1.1</MicrosoftExtensionsLoggingVersion>
   </PropertyGroup>
   <PropertyGroup Label=".NET 6 Dependent" Condition=" '$(TargetFramework)' == 'net6.0' ">
-    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
-    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp60Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreApp60Version)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
   </PropertyGroup>
   <PropertyGroup Label=".NET 7 Dependent" Condition=" '$(TargetFramework)' == 'net7.0' ">
-    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
-    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp70Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreApp70Version)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
   </PropertyGroup>
 </Project>
