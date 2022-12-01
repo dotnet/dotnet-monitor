@@ -166,10 +166,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     WebApi.Models.CallStackResult result1 = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder1.Stream);
 
-                    // Wait for the operations to synchronize, this happens asynchronously from the http request returning
-                    // and may not be fast enough for this test on systems with limited resources.
-                    _ = await client.PollOperationToCompletion(holder1.Response.Headers.Location);
-
                     using ResponseStreamHolder holder2 = await client.CaptureStacksAsync(processId, plainText: false);
                     Assert.NotNull(holder2);
 
