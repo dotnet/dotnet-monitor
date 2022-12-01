@@ -8,6 +8,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal interface IRequestLimitTracker
     {
-        public IDisposable Increment(string key, out bool allowOperation);
+        IDisposable Increment(string key, out bool allowOperation);
     }
 }

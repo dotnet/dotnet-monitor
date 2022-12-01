@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal interface IEgressOperationQueue
     {
-        public ValueTask EnqueueAsync(EgressRequest workItem);
-        public ValueTask<EgressRequest> DequeueAsync(CancellationToken cancellationToken);
+        ValueTask EnqueueAsync(EgressRequest workItem);
+        ValueTask<EgressRequest> DequeueAsync(CancellationToken cancellationToken);
     }
 }

@@ -68,7 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
             store.StopOperation(operationId, (ex) => exceptionHit.TrySetResult(ex));
 
             // Assert
-            Exception hitException = await exceptionHit.Task.WaitAsync(CommonTestTimeouts.AwaitForTaskToProcessTimeout);
+            Exception hitException = await exceptionHit.Task.WaitAsync(CommonTestTimeouts.GeneralTimeout);
             Assert.NotNull(hitException);
             Assert.Equal(Models.OperationState.Stopping, store.GetOperationStatus(operationId).Status);
         }
@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
             store.CancelOperation(operationId);
 
             // Assert
-            await stopCancelled.Task.WaitAsync(CommonTestTimeouts.AwaitForTaskToProcessTimeout);
+            await stopCancelled.Task.WaitAsync(CommonTestTimeouts.GeneralTimeout);
             Assert.Equal(Models.OperationState.Cancelled, store.GetOperationStatus(operationId).Status);
         }
     }
