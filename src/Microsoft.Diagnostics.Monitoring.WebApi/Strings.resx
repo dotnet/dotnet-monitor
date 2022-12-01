@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="CallstackThreadHeader" xml:space="preserve">
-    <value>Thread: (0x{0:X}) {1}</value>
+    <value>Thread: (0x{0:X})</value>
   </data>
   <data name="ErrorMessage_CanNotGetEnvironment" xml:space="preserve">
     <value>Unable to get process environment.</value>

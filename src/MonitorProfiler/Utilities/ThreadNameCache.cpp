@@ -15,7 +15,7 @@ void ThreadNameCache::Set(ThreadID id, const tstring& name)
     Set(id, tstring(name));
 }
 
-bool ThreadNameCache::Get(ThreadID id, std::wstring& name)
+bool ThreadNameCache::Get(ThreadID id, tstring& name)
 {
     std::lock_guard<std::mutex> lock(_mutex);
 

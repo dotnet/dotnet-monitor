@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             {
                 token.ThrowIfCancellationRequested();
 
-                await writer.WriteLineAsync(string.Format(CultureInfo.CurrentCulture, Strings.CallstackThreadHeader, stack.ThreadId, stack.ThreadName));
+                await writer.WriteLineAsync(FormatThreadName(stack.ThreadId, stack.ThreadName));
                 foreach (var frame in stack.Frames)
                 {
                     builder.Clear();
