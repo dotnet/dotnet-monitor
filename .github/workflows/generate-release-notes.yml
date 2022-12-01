@@ -43,7 +43,7 @@ jobs:
           # Check if the aka.ms url existed
           if [[ "$qualified_release_version" =~ "<html" || -z "$qualified_release_version" ]]; then
             echo "Could not determine qualified release version, $version_url did not contain the expected information"
-            qualified_release_version="unknown"
+            exit 1
           fi
 
           # trim the return carriage
