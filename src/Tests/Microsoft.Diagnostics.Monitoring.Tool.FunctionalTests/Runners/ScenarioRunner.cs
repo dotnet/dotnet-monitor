@@ -9,7 +9,6 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.Net.Http;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
