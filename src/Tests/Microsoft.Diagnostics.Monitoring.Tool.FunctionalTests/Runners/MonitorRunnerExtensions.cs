@@ -86,7 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
             string address = await runner.GetDefaultAddressAsync(cancellation.Token);
 
-            return await runner.CreateHttpClientAsync(factory, address, name, cancellation.Token, timeout);
+            return await runner.CreateHttpClientAsync(factory, address, name, cancellation.Token, TestTimeouts.HttpApi);
         }
 
         /// <summary>
