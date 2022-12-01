@@ -145,7 +145,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task TestRepeatStackCalls(Architecture targetArchitecture)
@@ -166,7 +165,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     WebApi.Models.CallStackResult result1 = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder1.Stream);
 
-                    using ResponseStreamHolder holder2 = await client.CaptureStacksAsync(processId, WebApi.StackFormat.Json);
+                    using ResponseStreamHolder holder2 = await client.CaptureStacksAsync(processId, plainText: false);
                     Assert.NotNull(holder2);
 
                     WebApi.Models.CallStackResult result2 = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder2.Stream);
