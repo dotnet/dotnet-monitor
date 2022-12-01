@@ -228,6 +228,7 @@ if [[ "$__Test" == 1 ]]; then
       "$__RepoRootDir/eng/common/build.sh" \
         --test \
         --configuration "$__BuildType" \
+        -nobl \
         /bl:"$__LogsDir"/Test.binlog \
         /p:BuildArch="$__BuildArch" \
         /p:TestGroup="$__TestGroup" \

@@ -213,7 +213,7 @@ jobs:
 
     - ${{ if ne(parameters.testGroup, 'None') }}:
       - script: >-
-          $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
+          $(Build.SourcesDirectory)/eng/citest$(scriptExt)
           -configuration ${{ parameters.configuration }}
           -architecture ${{ parameters.architecture }}
           $(_TestArgs)
