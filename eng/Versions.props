@@ -16,6 +16,11 @@
     -->
     <BlobGroupBuildQuality>release</BlobGroupBuildQuality>
   </PropertyGroup>
+
+  <PropertyGroup Label="Testing">
+    <XUnitCoreSettingsFile>$(MSBuildThisFileDirectory)xunit.runner.json</XUnitCoreSettingsFile>
+  </PropertyGroup>
+
   <PropertyGroup Label="TargetFrameworks">
     <!-- The TFMs of the dotnet-monitor tool.  -->
     <ToolTargetFrameworks>netcoreapp3.1;net6.0</ToolTargetFrameworks>

@@ -89,6 +89,7 @@ jobs:
     - _HelixBuildConfig: ${{ parameters.configuration }}
     - _CrossBuildArgs: ''
     - _TestArgs: ''
+    - _TestGroup: ''
     - _InternalInstallArgs: ''
     - _InternalBuildArgs: ''
 
@@ -104,13 +105,16 @@ jobs:
       # If TestGroup == 'Default', choose the test group based on the type of pipeline run
       - ${{ if eq(parameters.testGroup, 'Default') }}:
         - ${{ if in(variables['Build.Reason'], 'BatchedCI', 'IndividualCI') }}:
-          - _TestArgs: '-test -testgroup CI'
+          - _TestGroup: 'CI'
         - ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
-          - _TestArgs: '-test -testgroup PR'
+          - _TestGroup: 'PR'
         - ${{ else }}:
-          - _TestArgs: '-test -testgroup All'
+          - _TestGroup: 'All'
       - ${{ else }}:
-          - _TestArgs: '-test -testgroup ${{ parameters.testGroup }}'
+          - _TestGroup: '${{ parameters.testGroup }}'
+
+    - ${{ if ne(parameters.testGroup, 'None') }}:
+        - _TestArgs: '-test -testgroup $(_TestGroup) -skipmanaged -skipnative /m:1'
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - group: DotNet-MSRC-Storage
@@ -185,10 +189,9 @@ jobs:
         -configuration ${{ parameters.configuration }}
         -architecture ${{ parameters.architecture }}
         $(_CrossBuildArgs)
-        $(_TestArgs)
         $(_InternalInstallArgs)
         $(_InternalBuildArgs)
-      displayName: Build and Test
+      displayName: Build
       ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
         env:
           ROOTFS_DIR: '/crossrootfs/arm64'
@@ -207,6 +210,15 @@ jobs:
         inputs:
           pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
           artifactName: Build_${{ parameters.configuration }}
+
+    - ${{ if ne(parameters.testGroup, 'None') }}:
+      - script: >-
+          $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
+          -configuration ${{ parameters.configuration }}
+          -architecture ${{ parameters.architecture }}
+          $(_TestArgs)
+        displayName: Test
+        timeoutInMinutes: 60
 
     # Publish test results to Azure Pipelines
     - ${{ if ne(parameters.testGroup, 'None') }}:
