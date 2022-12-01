@@ -65,12 +65,6 @@
     <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
     <MicrosoftAspNetCoreApp60Version>$(MicrosoftNETCoreApp60Version)</MicrosoftAspNetCoreApp60Version>
   </PropertyGroup>
-  <PropertyGroup Label="Manual">
-    <MicrosoftAspNetCoreAuthenticationJwtBearerVersionNetCore31>3.1.30</MicrosoftAspNetCoreAuthenticationJwtBearerVersionNetCore31>
-    <MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6>6.0.10</MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6>
-    <MicrosoftAspNetCoreAuthenticationNegotiateVersionNetCore31>3.1.30</MicrosoftAspNetCoreAuthenticationNegotiateVersionNetCore31>
-    <MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6>6.0.10</MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6>
-  </PropertyGroup>
   <PropertyGroup Label="Dev Workflow">
     <!-- These versions are not used directly. For Dev workflows, nuget requires these to properly follow
          project references for command line builds. They should match the values in the diagnostics repo. -->
@@ -79,11 +73,11 @@
     <MicrosoftExtensionsLoggingVersion>2.1.1</MicrosoftExtensionsLoggingVersion>
   </PropertyGroup>
   <PropertyGroup Label=".NET Core 3.1 Dependent" Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
-    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreAuthenticationJwtBearerVersionNetCore31)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
-    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreAuthenticationNegotiateVersionNetCore31)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp31Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreApp31Version)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
   </PropertyGroup>
   <PropertyGroup Label=".NET 6 Dependent" Condition=" '$(TargetFramework)' == 'net6.0' ">
-    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
-    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreAuthenticationNegotiateVersionNet6)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp60Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreApp60Version)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
   </PropertyGroup>
 </Project>
