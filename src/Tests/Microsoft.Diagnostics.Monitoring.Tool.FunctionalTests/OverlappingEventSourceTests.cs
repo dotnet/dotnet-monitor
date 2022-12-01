@@ -173,10 +173,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         {
             int processId = await runner.ProcessIdTask;
 
-            var _ = await client.GetProcessesWithRetryAsync(
-                _outputHelper,
-                new[] { processId });
-
             ResponseStreamHolder holder = await client.CaptureTraceAsync(processId, TraceDuration, WebApi.Models.TraceProfile.Http);
             Assert.NotNull(holder);
 
