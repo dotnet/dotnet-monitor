@@ -7,8 +7,10 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -57,6 +59,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
             await appRunner.ExecuteAsync(async () =>
             {
+                // Wait for the process to be discovered.
+                int processId = await appRunner.ProcessIdTask;
+                _ = await apiClient.GetProcessWithRetryAsync(outputHelper, pid: processId);
+
                 await appValidate(appRunner, apiClient);
             });
             Assert.Equal(0, appRunner.ExitCode);
