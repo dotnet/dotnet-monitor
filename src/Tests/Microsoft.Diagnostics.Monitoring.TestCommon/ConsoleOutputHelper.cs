@@ -10,26 +10,22 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     public sealed class ConsoleOutputHelper : ITestOutputHelper
     {
-        private readonly bool _stdout;
+        // This stores either stdout/stderr, no need to dispose.
+        private readonly TextWriter _outputWriter;
 
         public ConsoleOutputHelper(bool stdout = true)
         {
-            _stdout = stdout;
+            _outputWriter = (stdout) ? Console.Out : Console.Error;
         }
 
         public void WriteLine(string message)
         {
-            GetOutputWriter().WriteLine(message);
+            _outputWriter.WriteLine(message);
         }
 
         public void WriteLine(string format, params object[] args)
         {
-            GetOutputWriter().WriteLine(format, args);
-        }
-
-        private TextWriter GetOutputWriter()
-        {
-            return (_stdout) ? Console.Out : Console.Error;
+            _outputWriter.WriteLine(format, args);
         }
     }
 }
