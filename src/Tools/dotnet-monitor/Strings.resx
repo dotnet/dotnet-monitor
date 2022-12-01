@@ -179,6 +179,12 @@
 1 Format Parameter:
 0. providerType: The type of the provider that could not be found.</comment>
   </data>
+  <data name="ErrorMessage_EgressS3FailedDetailed" xml:space="preserve">
+    <value>S3 storage egress failed: {0}</value>
+    <comment>Gets the format string for egress failure to S3 storage (with an inner message).
+1 Format Parameter:
+0. innerMessage: The detailed inner message with additional error context.</comment>
+  </data>
   <data name="ErrorMessage_EgressUnableToCreateIntermediateFile" xml:space="preserve">
     <value>Unable to create unique intermediate file in '{0}' directory.</value>
     <comment>Gets the format string for file system egress provider failure due to inability to create an intermediate file.
@@ -269,6 +275,9 @@
 2 Format Parameters:
 0. stringName: The variable name for the provided string.
 1. stringValue: The value of the string that could not be parsed.</comment>
+  </data>
+  <data name="ErrorMessage_OperationIsNotStoppable" xml:space="preserve">
+    <value>This operation does not support being stopped.</value>
   </data>
   <data name="ErrorMessage_ParameterNotAllowed" xml:space="preserve">
     <value>The {0} parameter value '{1}' is not allowed.</value>

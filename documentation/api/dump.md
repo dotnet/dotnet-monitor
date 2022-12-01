@@ -5,7 +5,7 @@
 
 Captures a managed dump of a specified process without using a debugger.
 
-> **WARNING**: Capturing a dump of the process suspends the entire process while the dump is collected.
+> **Warning**: Capturing a dump of the process suspends the entire process while the dump is collected.
 
 ## HTTP Route
 
@@ -13,7 +13,7 @@ Captures a managed dump of a specified process without using a debugger.
 GET /dump?pid={pid}&uid={uid}&name={name}&type={type}&egressProvider={egressProvider} HTTP/1.1
 ```
 
-> **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 
@@ -45,11 +45,13 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | stream | A managed dump of the process. | `application/octet-stream` |
-| 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
+| 200 OK | stream | A managed dump of the process when no egress provider is specified. | `application/octet-stream` |
+| 202 Accepted | | When an egress provider is specified, the artifact has begun being collected. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many dump requests at this time. Try to request a dump at a later time. | |
+
+> **NOTE: (8.0+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
 
 ## Examples
 
@@ -77,6 +79,7 @@ The managed dump containing all memory of the process, chunk encoded, is returne
 HTTP/1.1 200 OK
 Content-Type: application/octet-stream
 Transfer-Encoding: chunked
+Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 ```
 
 ## Supported Runtimes
@@ -87,7 +90,7 @@ Transfer-Encoding: chunked
 | Linux | .NET Core 3.1, .NET 5+ |
 | MacOS | .NET 5+ |
 
-> **NOTE:** For .NET 5, only ELF core dumps are supported on MacOS and require setting an environment variable in the application. Starting in .NET 6, dumps will be in the MachO format, and this environment variable is deprecated. See [Minidump Generation on OS X](https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/botr/xplat-minidump-generation.md#os-x) for further details.
+> **Note**: For .NET 5, only ELF core dumps are supported on MacOS and require setting an environment variable in the application. Starting in .NET 6, dumps will be in the MachO format, and this environment variable is deprecated. See [Minidump Generation on OS X](https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/botr/xplat-minidump-generation.md#os-x) for further details.
 
 ## Additional Notes
 

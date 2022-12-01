@@ -3,7 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Diagnostics.Monitoring.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
@@ -525,10 +527,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
-        public async Task<ResponseStreamHolder> CaptureStacksAsync(int processId, bool plainText, CancellationToken token)
+        public async Task<ResponseStreamHolder> CaptureStacksAsync(int processId, StackFormat format, CancellationToken token)
         {
             string uri = FormattableString.Invariant($"/stacks?pid={processId}");
-            var contentType = plainText ? ContentTypes.TextPlain : ContentTypes.ApplicationJson;
+            var contentType = ContentTypeUtilities.MapFormatToContentType(format);
             using HttpRequestMessage request = new(HttpMethod.Get, uri);
             request.Headers.Add(HeaderNames.Accept, contentType);
 
@@ -561,6 +563,33 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             using HttpRequestMessage request = new(HttpMethod.Get, routeAndQuery);
             HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseHeadersRead, token).ConfigureAwait(false);
             return response;
+        }
+
+        public async Task<ResponseStreamHolder> HttpEgressTraceAsync(int processId, int durationSeconds, CancellationToken token)
+        {
+            string uri = FormattableString.Invariant($"/trace?pid={processId}&durationSeconds={durationSeconds}");
+            using HttpRequestMessage request = new(HttpMethod.Get, uri);
+
+            using DisposableBox<HttpResponseMessage> responseBox = new(
+                await SendAndLogAsync(
+                    request,
+                    HttpCompletionOption.ResponseHeadersRead,
+                    token).ConfigureAwait(false));
+
+            switch (responseBox.Value.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    return await ResponseStreamHolder.CreateAsync(responseBox).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                case HttpStatusCode.TooManyRequests:
+                    ValidateContentType(responseBox.Value, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(responseBox.Value).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                    ThrowIfNotSuccess(responseBox.Value);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
         public async Task<OperationResponse> EgressTraceAsync(int processId, int durationSeconds, string egressProvider, CancellationToken token)
@@ -617,6 +646,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
                 case HttpStatusCode.OK:
                     ValidateContentType(response, ContentTypes.ApplicationJson);
                     return new OperationStatusResponse(response.StatusCode, await ReadContentAsync<OperationStatus>(response).ConfigureAwait(false));
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                    ThrowIfNotSuccess(response);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
+        }
+
+        public async Task<HttpStatusCode> StopEgressOperation(Uri operation, CancellationToken token)
+        {
+            string operationUri = QueryHelpers.AddQueryString(operation.ToString(), "stop", "true");
+
+            using HttpRequestMessage request = new(HttpMethod.Delete, operationUri);
+            using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
+
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Accepted:
+                    return response.StatusCode;
                 case HttpStatusCode.BadRequest:
                     ValidateContentType(response, ContentTypes.ApplicationProblemJson);
                     throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);

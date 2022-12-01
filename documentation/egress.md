@@ -9,7 +9,7 @@ Egress providers must first be named and configured in `dotnet monitor` configur
 
 Egress providers use [operations](./api/operations.md) to provide status.
 
-> **NOTE:** The filesystem provider can be used to egress to [kubernetes volumes](https://kubernetes.io/docs/concepts/storage/volumes/).
+> **Note**: The filesystem provider can be used to egress to [kubernetes volumes](https://kubernetes.io/docs/concepts/storage/volumes/).
 
 ### Disabling HTTP Egress
 

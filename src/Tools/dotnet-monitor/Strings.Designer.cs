@@ -187,6 +187,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to S3 storage egress failed: {0}.
+        /// </summary>
+        internal static string ErrorMessage_EgressS3FailedDetailed {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressS3FailedDetailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to create unique intermediate file in &apos;{0}&apos; directory..
         /// </summary>
         internal static string ErrorMessage_EgressUnableToCreateIntermediateFile {
@@ -336,6 +345,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ErrorMessage_NotBase64 {
             get {
                 return ResourceManager.GetString("ErrorMessage_NotBase64", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This operation does not support being stopped..
+        /// </summary>
+        internal static string ErrorMessage_OperationIsNotStoppable {
+            get {
+                return ResourceManager.GetString("ErrorMessage_OperationIsNotStoppable", resourceCulture);
             }
         }
         

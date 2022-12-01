@@ -72,14 +72,31 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [HttpDelete("{operationId}")]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        public IActionResult CancelOperation(Guid operationId)
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
+        public IActionResult CancelOperation(
+            Guid operationId,
+            [FromQuery]
+            bool stop = false)
         {
             return this.InvokeService(() =>
             {
                 //Note that if the operation is not found, it will throw an InvalidOperationException and
                 //return an error code.
-                _operationsStore.CancelOperation(operationId);
-                return Ok();
+                if (stop)
+                {
+                    // If stopping an operation fails, it's undefined behavior.
+                    // Leave the operation in the "Stopping" state and it'll either complete on its own
+                    // or the user will cancel it.
+                    _operationsStore.StopOperation(operationId, (ex) => _logger.StopOperationFailed(operationId, ex));
+
+                    // Stop operations are not instant, they are instead queued and can take an indeterminate amount of time.
+                    return Accepted();
+                }
+                else
+                {
+                    _operationsStore.CancelOperation(operationId);
+                    return Ok();
+                }
             }, _logger);
         }
     }

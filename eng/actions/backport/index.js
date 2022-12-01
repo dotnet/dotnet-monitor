@@ -90,7 +90,8 @@ async function run() {
   
     await exec.exec(`curl -sSL "${patch_url}" --output changes.patch`);
 
-    const git_am_command = `git am --3way --ignore-whitespace --exclude="${excluded_path}" --keep-non-patch changes.patch`;
+    const git_am_command_without_patch = `git am --3way --ignore-whitespace --exclude="${excluded_path}" --keep-non-patch`;
+    const git_am_command = `${git_am_command_without_patch} changes.patch`;
     let git_am_output = `$ ${git_am_command}\n\n`;
     let git_am_failed = false;
     try {
@@ -106,7 +107,30 @@ async function run() {
     }
 
     if (git_am_failed) {
-      const git_am_failed_body = `@${github.context.payload.comment.user.login} backporting to ${target_branch} failed, the patch most likely resulted in conflicts:\n\n\`\`\`shell\n${git_am_output}\n\`\`\`\n\nPlease backport manually!`;
+      const git_am_failed_body = `
+@${github.context.payload.comment.user.login} backporting to ${target_branch} failed, the patch most likely resulted in conflicts.
+
+Please backport manually using one of the below commands, followed by \`git am --continue\` once the merge conflict has been resolved.
+        
+PowerShell
+\`\`\`ps1
+(Invoke-WebRequest "${patch_url}").Content | ${git_am_command_without_patch}
+\`\`\`
+
+Bash
+\`\`\`shell
+curl -sSL "${patch_url}" | ${git_am_command_without_patch}
+\`\`\`
+
+
+---
+\`git am\` error output:
+
+\`\`\`shell
+${git_am_output}
+\`\`\`
+`;
+
       await octokit.rest.issues.createComment({
         owner: repo_owner,
         repo: repo_name,

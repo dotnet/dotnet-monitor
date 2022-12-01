@@ -11,7 +11,7 @@ Captures metrics for a process, with the ability to specify custom metrics.
 POST /livemetrics?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
 ```
 
-> **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 
@@ -50,10 +50,12 @@ The expected content type is `application/json`.
 | Name | Type | Description | Content Type |
 |---|---|---|---|
 | 200 OK | [Metric](./definitions.md#metric) | The metrics from the process formatted as json sequence. Each JSON object is a [metrics object](./definitions.md#metric)| `application/json-seq` |
-| 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
+| 202 Accepted | | When an egress provider is specified, the artifact has begun being collected. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many requests at this time. Try to request metrics at a later time. | `application/problem+json` |
+
+> **NOTE: (8.0+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
 
 ## Examples
 
@@ -83,6 +85,7 @@ Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 ```http
 HTTP/1.1 200 OK
 Content-Type: application/json-seq
+Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 
 {
     "timestamp": "2021-08-31T16:58:39.7514031+00:00",

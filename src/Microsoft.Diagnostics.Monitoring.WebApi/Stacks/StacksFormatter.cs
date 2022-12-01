@@ -25,6 +25,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         protected const char GenericSeparator = ',';
         protected const char GenericEnd = ']';
 
+        protected const char ModuleSeparator = '!';
+        protected const char ClassSeparator = '.';
+
         protected Stream OutputStream { get; }
 
         public StacksFormatter(Stream outputStream)

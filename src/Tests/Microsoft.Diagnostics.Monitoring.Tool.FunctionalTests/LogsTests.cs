@@ -135,8 +135,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     {
                         { TestAppScenarios.Logger.Categories.LoggerCategory1, LogLevel.Error },
                         { TestAppScenarios.Logger.Categories.LoggerCategory2, null },
-                        { TestAppScenarios.Logger.Categories.LoggerCategory3, LogLevel.Warning },
-                        { TestAppScenarios.Logger.Categories.SentinelCategory, LogLevel.Critical }
+                        { TestAppScenarios.Logger.Categories.LoggerCategory3, LogLevel.Warning }
                     },
                     LogLevel = LogLevel.Information,
                     UseAppFilters = false
@@ -410,7 +409,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             LogFormat logFormat)
         {
             Func<ApiClient, int, Task<ResponseStreamHolder>> captureLogs =
-                (client, pid) => client.CaptureLogsAsync(pid, CommonTestTimeouts.LogsDuration, configuration, logFormat);
+                (client, pid) =>
+                {
+                    // The Sentinel and Flush categories are implementation details of the logs test infrastructure.
+                    // Instead of having each test understand to add these, add them to the configuration
+                    // if the test is using FilterSpecs.
+                    if (null != configuration.FilterSpecs)
+                    {
+                        configuration.FilterSpecs.Add(TestAppScenarios.Logger.Categories.SentinelCategory, LogLevel.Critical);
+                        configuration.FilterSpecs.Add(TestAppScenarios.Logger.Categories.FlushCategory, LogLevel.Critical);
+                    }
+                    return client.CaptureLogsAsync(pid, CommonTestTimeouts.LogsDuration, configuration, logFormat);
+                };
 
             return Retry(() => ValidateLogsAsyncCore(mode, captureLogs, callback, logFormat));
         }
@@ -445,6 +455,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.NotNull(holder);
 
                     await LogsTestUtilities.ValidateLogsEquality(holder.Stream, callback, logFormat, _outputHelper);
+
+                    // Note: Do not wait for completion of the HTTP response. No more relevant data will be produced;
+                    // the code would only be waiting for the response to end. Ideally the operation is gracefully stopped at
+                    // this point.
                 },
                 configureTool: runner =>
                 {
@@ -452,27 +466,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        private async Task Retry(Func<Task> func, int attemptCount = 5)
+        private Task Retry(Func<Task> func, int attemptCount = 5)
         {
-            int attemptIteration = 0;
-            while (true)
-            {
-                attemptIteration++;
-                _outputHelper.WriteLine("===== Attempt #{0} =====", attemptIteration);
-                try
-                {
-                    await func();
-
-                    break;
-                }
-                catch (ChannelClosedException) when (attemptIteration < attemptCount)
-                {
-                    // Test expected more log items than what was provided. This might be a timing issue where
-                    // the /logs HTTP route is invoked before the test app writes the log messages; another possible
-                    // cause is the log messages are buffered and not sent to dotnet-monitor until after the logs
-                    // session is complete. Retry the test when this condition is detected.
-                }
-            }
+            return RetryUtilities.RetryAsync(
+                func,
+                // Test expected more log items than what was provided. This might be a timing issue where
+                // the /logs HTTP route is invoked before the test app writes the log messages; another possible
+                // cause is the log messages are buffered and not sent to dotnet-monitor until after the logs
+                // session is complete. Retry the test when this condition is detected.
+                shouldRetry: (Exception ex) => ex is ChannelClosedException,
+                maxRetryCount: attemptCount,
+                outputHelper: _outputHelper);
         }
     }
 }

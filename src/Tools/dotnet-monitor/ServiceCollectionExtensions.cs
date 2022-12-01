@@ -21,6 +21,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
+using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -219,6 +220,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // Register regress providers
             services.RegisterProvider<AzureBlobEgressProviderOptions, AzureBlobEgressProvider>(EgressProviderTypes.AzureBlobStorage);
             services.RegisterProvider<FileSystemEgressProviderOptions, FileSystemEgressProvider>(EgressProviderTypes.FileSystem);
+            services.RegisterProvider<S3StorageEgressProviderOptions, S3StorageEgressProvider>(EgressProviderTypes.S3Storage);
 
             // Extra registrations for provider specific behavior
             services.AddSingleton<IPostConfigureOptions<AzureBlobEgressProviderOptions>, AzureBlobEgressPostConfigureOptions>();
@@ -256,7 +258,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        private static IServiceCollection RegisterProvider<TOptions, TProvider>(this IServiceCollection services, string name)
+        public static IServiceCollection RegisterProvider<TOptions, TProvider>(this IServiceCollection services, string name)
             where TProvider : class, IEgressProvider<TOptions>
             where TOptions : class
         {

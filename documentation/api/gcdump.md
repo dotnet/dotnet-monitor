@@ -17,7 +17,7 @@ Captures a GC dump of a specified process. These dumps are useful for several sc
 GET /gcdump?pid={pid}&uid={uid}&name={name}&egressProvider={egressProvider} HTTP/1.1
 ```
 
-> **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 
@@ -48,11 +48,13 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | stream | A GC dump of the process. | `application/octet-stream` |
-| 202 Accepted | | When an egress provider is specified, the Location header containers the URI of the operation for querying the egress status. | |
+| 200 OK | stream | A GC dump of the process when no egress provider is specified. | `application/octet-stream` |
+| 202 Accepted | | When an egress provider is specified, the artifact has begun being collected. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many GC dump requests at this time. Try to request a GC dump at a later time. | `application/problem+json` |
+
+> **NOTE: (8.0+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
 
 ## Examples
 
@@ -80,6 +82,7 @@ The GC dump, chunk encoded, is returned as the response body.
 HTTP/1.1 200 OK
 Content-Type: application/octet-stream
 Transfer-Encoding: chunked
+Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 ```
 
 ## Supported Runtimes
