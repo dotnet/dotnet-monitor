@@ -1,0 +1,8 @@
+<Project>
+  <!--
+    Packages in this file have versions updated periodically by Dependabot specifically for .NET 7.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETCore.App.Runtime.win-x64" Version="$(MicrosoftNETCoreApp70Version)" />
+  </ItemGroup>
+</Project>
