@@ -10,7 +10,7 @@
 #include "tstring.h"
 #include "Stack.h"
 #include "../Utilities/NameCache.h"
-#include "../Utilities//ThreadNameCache.h"
+#include "../Utilities/ThreadNameCache.h"
 
 class StackSamplerState
 {

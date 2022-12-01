@@ -15,6 +15,7 @@ class ThreadNameCache
 {
     public:
         void Set(ThreadID id, tstring&& name);
+        void Set(ThreadID id, const tstring& name);
         bool Get(ThreadID id, tstring& name);
         void Remove(ThreadID id);
     private:

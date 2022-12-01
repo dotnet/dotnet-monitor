@@ -4,10 +4,15 @@
 
 #include "ThreadNameCache.h"
 
-void ThreadNameCache::Set(ThreadID id, std::wstring&& name)
+void ThreadNameCache::Set(ThreadID id, tstring&& name)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     _threadNames[id] = std::move(name);
+}
+
+void ThreadNameCache::Set(ThreadID id, const tstring& name)
+{
+    Set(id, tstring(name));
 }
 
 bool ThreadNameCache::Get(ThreadID id, std::wstring& name)

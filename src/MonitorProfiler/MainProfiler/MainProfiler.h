@@ -9,7 +9,7 @@
 #include "../Environment/EnvironmentHelper.h"
 #include "../Logging/Logger.h"
 #include "../Communication/CommandServer.h"
-#include "../Utilities//ThreadNameCache.h"
+#include "../Utilities/ThreadNameCache.h"
 #include <memory>
 
 #ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
