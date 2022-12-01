@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(ContinuousIntegrationBuild)' == 'true'">
-    <TestRunnerAdditionalArguments>--blame "CollectHangDump;TestTimeout=3m"</TestRunnerAdditionalArguments>
+    <TestRunnerAdditionalArguments>--blame "CollectHangDump;TestTimeout=15m"</TestRunnerAdditionalArguments>
   </PropertyGroup>
 
   <!-- Filter tests based on specified TestGroup -->
