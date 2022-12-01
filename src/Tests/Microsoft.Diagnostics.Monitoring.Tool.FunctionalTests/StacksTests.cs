@@ -57,7 +57,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.Stacks.Name,
                 appValidate: async (runner, client) =>
                 {
+                    // Wait for the process to be discovered.
                     int processId = await runner.ProcessIdTask;
+                    _ = await client.GetProcessWithRetryAsync(_outputHelper, pid: processId);
 
                     using ResponseStreamHolder holder = await client.CaptureStacksAsync(processId, plainText: true);
                     Assert.NotNull(holder);
@@ -113,7 +115,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.Stacks.Name,
                 appValidate: async (runner, client) =>
                 {
+                    // Wait for the process to be discovered.
                     int processId = await runner.ProcessIdTask;
+                    _ = await client.GetProcessWithRetryAsync(_outputHelper, pid: processId);
 
                     using ResponseStreamHolder holder = await client.CaptureStacksAsync(processId, plainText: false);
                     Assert.NotNull(holder);
@@ -141,6 +145,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
+
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task TestRepeatStackCalls(Architecture targetArchitecture)
@@ -152,14 +157,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.Stacks.Name,
                 appValidate: async (runner, client) =>
                 {
+                    // Wait for the process to be discovered.
                     int processId = await runner.ProcessIdTask;
+                    _ = await client.GetProcessWithRetryAsync(_outputHelper, pid: processId);
 
                     using ResponseStreamHolder holder1 = await client.CaptureStacksAsync(processId, plainText: false);
                     Assert.NotNull(holder1);
 
                     WebApi.Models.CallStackResult result1 = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder1.Stream);
 
-                    using ResponseStreamHolder holder2 = await client.CaptureStacksAsync(processId, plainText: false);
+                    using ResponseStreamHolder holder2 = await client.CaptureStacksAsync(processId, WebApi.StackFormat.Json);
                     Assert.NotNull(holder2);
 
                     WebApi.Models.CallStackResult result2 = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder2.Stream);
@@ -198,7 +205,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.Stacks.Name,
                 appValidate: async (runner, client) =>
                 {
+                    // Wait for the process to be discovered.
                     int processId = await runner.ProcessIdTask;
+                    _ = await client.GetProcessWithRetryAsync(_outputHelper, pid: processId);
 
                     ApiStatusCodeException ex = await Assert.ThrowsAsync<ApiStatusCodeException>(() => client.CaptureStacksAsync(processId, plainText: false));
                     Assert.Equal(HttpStatusCode.NotFound, ex.StatusCode);
@@ -230,7 +239,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.Stacks.Name,
                 appValidate: async (runner, client) =>
                 {
+                    // Wait for the process to be discovered.
                     int processId = await runner.ProcessIdTask;
+                    _ = await client.GetProcessWithRetryAsync(_outputHelper, pid: processId);
 
                     ApiStatusCodeException ex = await Assert.ThrowsAsync<ApiStatusCodeException>(() => client.CaptureStacksAsync(processId, plainText: false));
                     Assert.Equal(HttpStatusCode.NotFound, ex.StatusCode);
