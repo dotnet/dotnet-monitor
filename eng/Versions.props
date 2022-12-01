@@ -17,6 +17,11 @@
     -->
     <BlobGroupBuildQuality>daily</BlobGroupBuildQuality>
   </PropertyGroup>
+
+  <PropertyGroup Label="Testing">
+    <XUnitCoreSettingsFile>$(MSBuildThisFileDirectory)xunit.runner.json</XUnitCoreSettingsFile>
+  </PropertyGroup>
+
   <PropertyGroup Label="TargetFrameworks">
     <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
     <ExcludeLatestTargetFramework>false</ExcludeLatestTargetFramework>
