@@ -1,6 +1,9 @@
 <Project>
   <!-- Import references updated by Dependabot. This file is for package references updated manually or by Maestro. -->
   <Import Project="dependabot/Versions.props" />
+  <Import Project="dependabot/net6.0/Versions.props" />
+  <Import Project="dependabot/net7.0/Versions.props" />
+  <Import Project="dependabot/netcoreapp3.1/Versions.props" />
   <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
     <VersionPrefix>7.0.1</VersionPrefix>
@@ -62,14 +65,11 @@
     <MicrosoftFileFormatsVersion>1.0.345501</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
-    <MicrosoftNETCoreApp31Version>3.1.30</MicrosoftNETCoreApp31Version>
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
     <MicrosoftNETCoreApp50Version>5.0.17</MicrosoftNETCoreApp50Version>
     <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
-    <MicrosoftNETCoreApp60Version>6.0.10</MicrosoftNETCoreApp60Version>
     <MicrosoftAspNetCoreApp60Version>$(MicrosoftNETCoreApp60Version)</MicrosoftAspNetCoreApp60Version>
-    <MicrosoftNETCoreApp70Version>$(MicrosoftNETCoreAppRuntimewinx64Version)</MicrosoftNETCoreApp70Version>
-    <MicrosoftAspNetCoreApp70Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp70Version>
+    <MicrosoftAspNetCoreApp70Version>$(MicrosoftNETCoreApp70Version)</MicrosoftAspNetCoreApp70Version>
   </PropertyGroup>
   <PropertyGroup Label="Manual">
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6>6.0.10</MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet6>
