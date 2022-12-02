@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -36,17 +37,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         }
 
         private readonly Dictionary<Guid, EgressEntry> _requests = new();
-        private readonly EgressOperationQueue _taskQueue;
-        private readonly RequestLimitTracker _requestLimits;
+        private readonly IEgressOperationQueue _taskQueue;
+        private readonly IRequestLimitTracker _requestLimits;
         private readonly IServiceProvider _serviceProvider;
 
-        public EgressOperationStore(
-            EgressOperationQueue queue,
-            RequestLimitTracker requestLimits,
-            IServiceProvider serviceProvider)
+        public EgressOperationStore(IServiceProvider serviceProvider)
         {
-            _taskQueue = queue;
-            _requestLimits = requestLimits;
+            _taskQueue = serviceProvider.GetRequiredService<IEgressOperationQueue>();
+            _requestLimits = serviceProvider.GetRequiredService<IRequestLimitTracker>();
             _serviceProvider = serviceProvider;
         }
 
