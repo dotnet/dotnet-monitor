@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -36,6 +37,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         }
 
         public abstract Task FormatStack(CallStackResult stackResult, CancellationToken token);
+
+        protected static string FormatThreadName(uint threadId, string threadName)
+        {
+            const string Separator = " ";
+
+            string fullThreadName = string.Format(CultureInfo.CurrentCulture, Strings.CallstackThreadHeader, threadId);
+
+            if (!string.IsNullOrEmpty(threadName))
+            {
+                return string.Concat(fullThreadName, Separator, threadName);
+            }
+            return fullThreadName;
+        }
 
         protected static string GetModuleName(NameCache cache, ulong moduleId)
         {
