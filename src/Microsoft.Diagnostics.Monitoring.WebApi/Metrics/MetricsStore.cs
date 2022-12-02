@@ -95,7 +95,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.Provider, metricInfo.Name, metricInfo.Unit);
                 string metricType = "gauge";
 
-                var keyValuePairs = from pair in metricInfo.Metadata select pair.Key + "=" + "\"" + pair.Value + "\"";
+                var keyValuePairs = from pair in metricInfo.Metadata select PrometheusDataModel.GetPrometheusNormalizedLabel(pair.Key, pair.Value);
                 string metricLabels = string.Join(", ", keyValuePairs);
 
                 //TODO Some clr metrics claim to be incrementing, but are really gauges.
