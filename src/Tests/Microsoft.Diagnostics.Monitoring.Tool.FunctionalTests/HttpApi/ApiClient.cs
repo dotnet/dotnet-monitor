@@ -592,9 +592,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
-        public async Task<OperationResponse> EgressTraceAsync(int processId, int durationSeconds, string egressProvider, CancellationToken token)
+        public async Task<OperationResponse> EgressTraceAsync(int processId, int durationSeconds, string egressProvider, string tags, CancellationToken token)
         {
-            string uri = FormattableString.Invariant($"/trace?pid={processId}&egressProvider={egressProvider}&durationSeconds={durationSeconds}");
+            string tagsQuery = string.IsNullOrEmpty(tags) ? string.Empty : $"&tags={tags}";
+            string uri = FormattableString.Invariant($"/trace?pid={processId}&egressProvider={egressProvider}&durationSeconds={durationSeconds}{tagsQuery}");
             using HttpRequestMessage request = new(HttpMethod.Get, uri);
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
 
@@ -614,9 +615,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
-        public async Task<List<OperationSummary>> GetOperations(CancellationToken token)
+        public async Task<List<OperationSummary>> GetOperations(string tags, CancellationToken token)
         {
-            using HttpRequestMessage request = new(HttpMethod.Get, "/operations");
+            string tagsQuery = string.IsNullOrEmpty(tags) ? string.Empty : $"?tags={tags}";
+            using HttpRequestMessage request = new(HttpMethod.Get, $"/operations{tagsQuery}");
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
 
             switch (response.StatusCode)

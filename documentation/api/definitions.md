@@ -286,6 +286,8 @@ Detailed information about an operation.
 | `status` | [OperationState](#operationstate) | The current status of operation. |
 | `egressProviderName` | string | (8.0+) The name of the egress provider that the artifact is being sent to. This will be null if the artifact is being sent directly back to the user from an HTTP request. |
 | `isStoppable` | bool | (8.0+) Whether this operation can be gracefully stopped using [Stop Operation](operations-stop.md). Not all operations support being stopped. |
+| `process` | [OperationProcessInfo](#operationprocessinfo) | (6.3+) The process on which the operation is performed. |
+| `tags` | set (of string) | (8.0+) A set of user-readable identifiers for the operation. |
 
 ### Example
 
@@ -298,6 +300,14 @@ Detailed information about an operation.
     "status": "Succeeded",
     "egressProviderName": "monitorBlob",
     "isStoppable": false,
+    "process": {
+        "pid": 21632,
+        "uid": "cd4da319-fa9e-4987-ac4e-e57b2aac248b",
+        "name": "dotnet"
+    },
+    "tags": [
+        "tag1"
+    ]
 }
 ```
 
@@ -313,6 +323,7 @@ Summary state of an operation.
 | `egressProviderName` | string | (8.0+) The name of the egress provider that the artifact is being sent to. This will be null if the artifact is being sent directly back to the user from an HTTP request. |
 | `isStoppable` | bool | (8.0+) Whether this operation can be gracefully stopped using [Stop Operation](operations-stop.md). Not all operations support being stopped. |
 | `process` | [OperationProcessInfo](#operationprocessinfo) | (6.3+) The process on which the operation is performed. |
+| `tags` | set (of string) | (8.0+) A set of user-readable identifiers for the operation. |
 
 ### Example
 
@@ -327,7 +338,11 @@ Summary state of an operation.
         "pid": 21632,
         "uid": "cd4da319-fa9e-4987-ac4e-e57b2aac248b",
         "name": "dotnet"
-    }
+    },
+    "tags": [
+        "tag1",
+        "tag2"
+    ]
 }
 ```
 

@@ -200,6 +200,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="type">The type of dump to capture.</param>
         /// <param name="egressProvider">The egress provider to which the dump is saved.</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         /// <returns></returns>
         [HttpGet("dump", Name = nameof(CaptureDump))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
@@ -219,7 +220,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Models.DumpType type = Models.DumpType.WithHeap,
             [FromQuery]
-            string egressProvider = null)
+            string egressProvider = null,
+            [FromQuery]
+            string tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -228,7 +231,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     Utilities.ArtifactType_Dump,
                     egressProvider,
                     _dumpOperationFactory.Create(processInfo.EndpointInfo, type),
-                    processInfo),
+                    processInfo,
+                    tags),
                 processKey,
                 Utilities.ArtifactType_Dump);
         }
@@ -240,6 +244,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="egressProvider">The egress provider to which the GC dump is saved.</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         /// <returns></returns>
         [HttpGet("gcdump", Name = nameof(CaptureGcDump))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
@@ -257,7 +262,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null,
             [FromQuery]
-            string egressProvider = null)
+            string egressProvider = null,
+            [FromQuery]
+            string tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -286,7 +293,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     },
                     fileName,
                     ContentTypes.ApplicationOctetStream,
-                    processInfo);
+                    processInfo,
+                    tags);
             }, processKey, Utilities.ArtifactType_GCDump);
         }
 
@@ -299,6 +307,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="profile">The profiles enabled for the trace session.</param>
         /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         [HttpGet("trace", Name = nameof(CaptureTrace))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
@@ -319,7 +328,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
-            string egressProvider = null)
+            string egressProvider = null,
+            [FromQuery]
+            string tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -329,7 +340,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 var aggregateConfiguration = TraceUtilities.GetTraceConfiguration(profile, _counterOptions.CurrentValue.GetIntervalSeconds());
 
-                return StartTrace(processInfo, aggregateConfiguration, duration, egressProvider);
+                return StartTrace(processInfo, aggregateConfiguration, duration, egressProvider, tags);
             }, processKey, Utilities.ArtifactType_Trace);
         }
 
@@ -342,6 +353,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         [HttpPost("trace", Name = nameof(CaptureTraceCustom))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
@@ -362,7 +374,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
-            string egressProvider = null)
+            string egressProvider = null,
+            [FromQuery]
+            string tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -381,7 +395,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 var traceConfiguration = TraceUtilities.GetTraceConfiguration(configuration.Providers, configuration.RequestRundown, configuration.BufferSizeInMB);
 
-                return StartTrace(processInfo, traceConfiguration, duration, egressProvider);
+                return StartTrace(processInfo, traceConfiguration, duration, egressProvider, tags);
             }, processKey, Utilities.ArtifactType_Trace);
         }
 
@@ -394,6 +408,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
         /// <param name="level">The level of the logs to capture.</param>
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         [HttpGet("logs", Name = nameof(CaptureLogs))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
@@ -412,7 +427,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             LogLevel? level = null,
             [FromQuery]
-            string egressProvider = null)
+            string egressProvider = null,
+            [FromQuery]
+            string tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -436,7 +453,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     settings.UseAppFilters = true;
                 }
 
-                return StartLogs(processInfo, settings, egressProvider);
+                return StartLogs(processInfo, settings, egressProvider, tags);
             }, processKey, Utilities.ArtifactType_Logs);
         }
 
@@ -449,6 +466,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         [HttpPost("logs", Name = nameof(CaptureLogsCustom))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
@@ -467,7 +485,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
-            string egressProvider = null)
+            string egressProvider = null,
+            [FromQuery]
+            string tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -483,7 +503,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     UseAppFilters = configuration.UseAppFilters
                 };
 
-                return StartLogs(processInfo, settings, egressProvider);
+                return StartLogs(processInfo, settings, egressProvider, tags);
             }, processKey, Utilities.ArtifactType_Logs);
         }
 
@@ -579,7 +599,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null,
             [FromQuery]
-            string egressProvider = null)
+            string egressProvider = null,
+            [FromQuery]
+            string tags = null)
         {
             if (!_inProcessFeatures.IsCallStacksEnabled)
             {
@@ -599,7 +621,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 {
                     await StackUtilities.CollectStacksAsync(null, processInfo.EndpointInfo, _profilerChannel, stackFormat, stream, token);
 
-                }, StackUtilities.GenerateStacksFilename(processInfo.EndpointInfo, plainText), ContentTypeUtilities.MapFormatToContentType(stackFormat), processInfo, asAttachment: false);
+                }, StackUtilities.GenerateStacksFilename(processInfo.EndpointInfo, plainText), ContentTypeUtilities.MapFormatToContentType(stackFormat), processInfo, tags, asAttachment: false);
 
             }, processKey, Utilities.ArtifactType_Stacks);
         }
@@ -613,7 +635,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             IProcessInfo processInfo,
             MonitoringSourceConfiguration configuration,
             TimeSpan duration,
-            string egressProvider)
+            string egressProvider,
+            string tags)
         {
             IArtifactOperation traceOperation = _traceOperationFactory.Create(
                 processInfo.EndpointInfo,
@@ -630,13 +653,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 Utilities.ArtifactType_Trace,
                 egressProvider,
                 traceOperation,
-                processInfo);
+                processInfo,
+                tags);
         }
 
         private Task<ActionResult> StartLogs(
             IProcessInfo processInfo,
             EventLogsPipelineSettings settings,
-            string egressProvider)
+            string egressProvider,
+            string tags)
         {
             LogFormat? format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
             if (null == format)
@@ -657,6 +682,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 egressProvider,
                 logsOperation,
                 processInfo,
+                tags,
                 format != LogFormat.PlainText);
         }
 
@@ -699,13 +725,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             string providerName,
             IArtifactOperation operation,
             IProcessInfo processInfo,
+            string tags,
             bool asAttachment = true)
         {
             KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
 
             if (string.IsNullOrEmpty(providerName))
             {
-                await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType, operation);
+                await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType, tags, operation);
                 return new OutputStreamResult(
                     operation,
                     asAttachment ? operation.GenerateFileName() : null,
@@ -717,7 +744,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     operation,
                     providerName,
                     processInfo,
-                    scope),
+                    scope,
+                    tags),
                     limitKey: artifactType);
             }
         }
@@ -729,13 +757,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             string fileName,
             string contentType,
             IProcessInfo processInfo,
+            string tags,
             bool asAttachment = true)
         {
             KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
 
             if (string.IsNullOrEmpty(providerName))
             {
-                await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType);
+                await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType, tags);
                 return new OutputStreamResult(
                     action,
                     contentType,
@@ -750,16 +779,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     fileName,
                     processInfo,
                     contentType,
-                    scope),
+                    scope,
+                    tags),
                     limitKey: artifactType);
             }
         }
 
-        private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, IArtifactOperation operation = null)
+        private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, string tags, IArtifactOperation operation = null)
         {
             // While not strictly a Location redirect, use the same header as externally egressed operations for consistency.
             HttpContext.Response.Headers["Location"] = await RegisterOperation(
-                new HttpResponseEgressOperation(HttpContext, processInfo, operation),
+                new HttpResponseEgressOperation(HttpContext, processInfo, tags, operation),
                 limitKey: artifactType);
         }
 

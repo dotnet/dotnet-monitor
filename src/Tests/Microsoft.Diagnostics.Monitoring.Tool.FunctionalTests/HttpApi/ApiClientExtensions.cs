@@ -405,10 +405,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return await client.GetCollectionRuleDetailedDescriptionAsync(collectionRuleName, pid, uid, name, timeoutSource.Token).ConfigureAwait(false);
         }
 
-        public static async Task<OperationResponse> EgressTraceAsync(this ApiClient client, int processId, int durationSeconds, string egressProvider)
+        public static async Task<OperationResponse> EgressTraceAsync(this ApiClient client, int processId, int durationSeconds, string egressProvider, string tags = null)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
-            return await client.EgressTraceAsync(processId, durationSeconds, egressProvider, timeoutSource.Token).ConfigureAwait(false);
+            return await client.EgressTraceAsync(processId, durationSeconds, egressProvider, tags, timeoutSource.Token).ConfigureAwait(false);
         }
 
         public static async Task<ResponseStreamHolder> HttpEgressTraceAsync(this ApiClient client, int processId, int durationSeconds)
@@ -423,10 +423,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return await client.GetOperationStatus(operation, timeoutSource.Token).ConfigureAwait(false);
         }
 
-        public static async Task<List<OperationSummary>> GetOperations(this ApiClient client)
+        public static async Task<List<OperationSummary>> GetOperations(this ApiClient client, string tags = null)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
-            return await client.GetOperations(timeoutSource.Token).ConfigureAwait(false);
+            return await client.GetOperations(tags, timeoutSource.Token).ConfigureAwait(false);
         }
 
         public static async Task<HttpStatusCode> StopEgressOperation(this ApiClient client, Uri operation)
