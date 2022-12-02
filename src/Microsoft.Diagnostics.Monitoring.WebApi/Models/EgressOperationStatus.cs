@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
@@ -28,6 +29,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         [JsonPropertyName("isStoppable")]
         public bool IsStoppable { get; set; }
+
+        [JsonPropertyName("tags")]
+        public ISet<string> Tags { get; set; }
     }
 
     /// <summary>
