@@ -74,7 +74,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             {
                 var stack = new CallStack
                 {
-                    ThreadId = action.GetPayload<uint>(CallStackEvents.CallstackPayloads.ThreadId)
+                    ThreadId = action.GetPayload<uint>(CallStackEvents.CallstackPayloads.ThreadId),
+                    ThreadName = action.GetPayload<string>(CallStackEvents.CallstackPayloads.ThreadName)
                 };
                 ulong[] functionIds = action.GetPayload<ulong[]>(CallStackEvents.CallstackPayloads.FunctionIds);
                 ulong[] offsets = action.GetPayload<ulong[]>(CallStackEvents.CallstackPayloads.IpOffsets);

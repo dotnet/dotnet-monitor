@@ -73,6 +73,7 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 
 {
     "threadId": 30860,
+    "threadName" : "Worker Thread"
     "frames": [
         {
             "methodName": "GetQueuedCompletionStatus",

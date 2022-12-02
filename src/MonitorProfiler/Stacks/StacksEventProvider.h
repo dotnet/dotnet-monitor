@@ -39,8 +39,8 @@ class StacksEventProvider
         ComPtr<ICorProfilerInfo12> _profilerInfo;
         std::unique_ptr<ProfilerEventProvider> _provider;
         
-        const WCHAR* CallstackPayloads[3] = { _T("ThreadId"), _T("FunctionIds"), _T("IpOffsets") };
-        std::unique_ptr<ProfilerEvent<UINT32, std::vector<UINT64>, std::vector<UINT64>>> _callstackEvent;
+        const WCHAR* CallstackPayloads[4] = { _T("ThreadId"), _T("ThreadName"), _T("FunctionIds"), _T("IpOffsets")};
+        std::unique_ptr<ProfilerEvent<UINT32, tstring, std::vector<UINT64>, std::vector<UINT64>>> _callstackEvent;
 
         //Note we will either send a ClassId or a ClassToken. For Shared generic functions, there is no ClassID.
         const WCHAR* FunctionPayloads[6] = { _T("FunctionId"), _T("ClassId"), _T("ClassToken"), _T("ModuleId"), _T("Name"), _T("TypeArgs") };

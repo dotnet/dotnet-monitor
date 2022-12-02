@@ -51,6 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
             //Background thread will create an expected callstack and pause.
             Thread thread = new Thread(Entrypoint);
+            thread.Name = "TestThread";
             thread.Start(worker);
 
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
