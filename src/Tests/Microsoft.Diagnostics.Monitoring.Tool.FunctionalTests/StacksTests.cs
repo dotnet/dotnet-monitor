@@ -38,6 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private const string ExpectedFunction = @"DoWork[System.Int64]";
         private const string ExpectedCallbackFunction = @"Callback";
         private const string NativeFrame = "[NativeFrame]";
+        private const string ExpectedThreadName = "TestThread";
 
         public StacksTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
@@ -124,8 +125,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     WebApi.Models.CallStackResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder.Stream);
                     WebApi.Models.CallStackFrame[] expectedFrames = ExpectedFrames();
-                    IList<WebApi.Models.CallStackFrame> actualFrames = GetActualFrames(result, expectedFrames.First(), expectedFrames.Length);
+                    (WebApi.Models.CallStack stack, IList<WebApi.Models.CallStackFrame> actualFrames) = GetActualFrames(result, expectedFrames.First(), expectedFrames.Length);
 
+                    Assert.NotNull(stack);
+                    Assert.Equal(ExpectedThreadName, stack.ThreadName);
                     Assert.Equal(expectedFrames.Length, actualFrames.Count);
                     for (int i = 0; i < expectedFrames.Length; i++)
                     {
@@ -169,9 +172,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     int topIndex = result.Shared.Frames.FindIndex(f => f.Name == topFrameName);
                     Assert.NotEqual(-1, topIndex);
 
-                    var expectedFrames = ExpectedSpeedscopeFrames(topIndex, bottomIndex);
-                    var actualFrames = GetActualFrames(result, topFrameName, 3);
+                    WebApi.Models.ProfileEvent[] expectedFrames = ExpectedSpeedscopeFrames(topIndex, bottomIndex);
+                    (WebApi.Models.Profile stack, IList<WebApi.Models.ProfileEvent> actualFrames) = GetActualFrames(result, topFrameName, 3);
 
+                    Assert.NotNull(stack);
+                    Assert.EndsWith(ExpectedThreadName, stack.Name);
                     Assert.Equal(expectedFrames.Length, actualFrames.Count);
                     for (int i = 0; i < expectedFrames.Length; i++)
                     {
@@ -329,8 +334,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     WebApi.Models.CallStackResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(stream);
                     WebApi.Models.CallStackFrame[] expectedFrames = ExpectedFrames();
-                    IList<WebApi.Models.CallStackFrame> actualFrames = GetActualFrames(result, expectedFrames.First(), expectedFrames.Length);
+                    (WebApi.Models.CallStack callstack, IList<WebApi.Models.CallStackFrame> actualFrames) = GetActualFrames(result, expectedFrames.First(), expectedFrames.Length);
 
+                    Assert.NotNull(callstack);
+                    Assert.Equal(ExpectedThreadName, callstack.ThreadName);
                     Assert.Equal(expectedFrames.Length, actualFrames.Count);
                     for (int i = 0; i < expectedFrames.Length; i++)
                     {
@@ -373,7 +380,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private static bool AreFramesEqual(WebApi.Models.ProfileEvent left, WebApi.Models.ProfileEvent right) =>
             (left.Frame == right.Frame) && (left.At == right.At) && (left.Type == right.Type);
 
-        private static IList<WebApi.Models.ProfileEvent> GetActualFrames(WebApi.Models.SpeedscopeResult result, string expectedFirstFrame, int expectedFrameCount)
+        private static (WebApi.Models.Profile, IList<WebApi.Models.ProfileEvent>) GetActualFrames(WebApi.Models.SpeedscopeResult result, string expectedFirstFrame, int expectedFrameCount)
         {
             int matchingFrameIndex = -1;
             var actualFrames = new List<WebApi.Models.ProfileEvent>();
@@ -396,15 +403,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         actualFrames.Add(frame);
                         if (actualFrames.Count == expectedFrameCount)
                         {
-                            return actualFrames;
+                            return (callstack, actualFrames);
                         }
                     }
                 }
             }
-            return actualFrames;
+            return (null, actualFrames);
         }
 
-        private static IList<WebApi.Models.CallStackFrame> GetActualFrames(WebApi.Models.CallStackResult result, WebApi.Models.CallStackFrame expectedFirstFrame, int expectedFrameCount)
+        private static (WebApi.Models.CallStack, IList<WebApi.Models.CallStackFrame>) GetActualFrames(WebApi.Models.CallStackResult result, WebApi.Models.CallStackFrame expectedFirstFrame, int expectedFrameCount)
         {
             var actualFrames = new List<WebApi.Models.CallStackFrame>();
             foreach (WebApi.Models.CallStack stack in result.Stacks)
@@ -417,12 +424,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         actualFrames.Add(frame);
                         if (actualFrames.Count == expectedFrameCount)
                         {
-                            return actualFrames;
+                            return (stack, actualFrames);
                         }
                     }
                 }
             }
-            return actualFrames;
+            return (null, actualFrames);
         }
 
         private static WebApi.Models.ProfileEvent[] ExpectedSpeedscopeFrames(int topFrameIndex, int bottomFrameIndex) => new WebApi.Models.ProfileEvent[]
