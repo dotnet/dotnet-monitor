@@ -84,6 +84,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         private string DotnetToolsExtensionDirectoryPath =>
             Path.Combine(TempPath, "DotnetToolsExtension");
 
+        private string ExecutingAssemblyDirectoryPath =>
+            Path.Combine(TempPath, "ExecutingAssembly");
+
         private string UserSettingsFilePath =>
             Path.Combine(UserConfigDirectoryPath, "settings.json");
 
@@ -100,6 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             Directory.CreateDirectory(SharedConfigDirectoryPath);
             Directory.CreateDirectory(UserConfigDirectoryPath);
             Directory.CreateDirectory(DotnetToolsExtensionDirectoryPath);
+            Directory.CreateDirectory(ExecutingAssemblyDirectoryPath);
         }
 
         public virtual async ValueTask DisposeAsync()
@@ -160,6 +164,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
             // Override the dotnet tools extension directory
             _adapter.Environment.Add("DotnetMonitorTestSettings__DotnetToolsExtensionDirectoryOverride", DotnetToolsExtensionDirectoryPath);
+            // Override the "next to me" executing assembly directory
+            _adapter.Environment.Add("DotnetMonitorTestSettings__ExecutingAssemblyDirectoryOverride", ExecutingAssemblyDirectoryPath);
 
             // Enable experimental stacks feature
             if (EnableCallStacksFeature)

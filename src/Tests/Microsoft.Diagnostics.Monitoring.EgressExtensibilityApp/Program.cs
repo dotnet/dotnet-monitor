@@ -77,8 +77,6 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
                 return bool.Parse(configDict[propKey]);
             }
 
-            // throw?
-
             return false;
         }
     }

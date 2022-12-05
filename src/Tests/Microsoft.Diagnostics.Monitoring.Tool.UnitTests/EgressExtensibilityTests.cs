@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class EgressExtensibilityTests
     {
-        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
+        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(3);
 
         private ITestOutputHelper _outputHelper;
         private const string ExtensionsFolder = "extensions";
@@ -56,6 +56,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Theory]
+        [InlineData(ConfigDirectory.ExecutingAssemblyDirectory, null, null)]
         [InlineData(ConfigDirectory.UserConfigDirectory, null, null)]
         [InlineData(ConfigDirectory.SharedConfigDirectory, null, null)]
         [InlineData(ConfigDirectory.DotnetToolsDirectory, DotnetToolsExeDir, TestAppExe)]
@@ -121,6 +122,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private static async Task GetStream(Stream stream, CancellationToken cancellationToken)
         {
+            // The test extension currently does not do anything with this stream.
             await stream.WriteAsync(ByteArray);
         }
 
@@ -134,7 +136,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Directory.CreateDirectory(exePath);
             }
 
-            string testAppPath = AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), TestAppName, TargetFrameworkMoniker.Net60); // set this?
+            string testAppPath = AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), TestAppName);
 
             string sourcePath = Path.GetDirectoryName(testAppPath);
 
@@ -154,6 +156,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private HostBuilderSettings CreateHostBuilderSettings()
         {
+            using TemporaryDirectory executingAssemblyDir = new(_outputHelper);
             using TemporaryDirectory sharedConfigDir = new(_outputHelper);
             using TemporaryDirectory userConfigDir = new(_outputHelper);
             using TemporaryDirectory dotnetToolsConfigDir = new(_outputHelper);
@@ -161,6 +164,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Set up the initial settings used to create the host builder.
             return new()
             {
+                ExecutingAssemblyDirectory = executingAssemblyDir.FullName,
                 SharedConfigDirectory = sharedConfigDir.FullName,
                 UserConfigDirectory = userConfigDir.FullName,
                 DotnetToolsExtensionDirectory = dotnetToolsConfigDir.FullName
@@ -182,22 +186,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     return settings.SharedConfigDirectory;
                 case ConfigDirectory.DotnetToolsDirectory:
                     return settings.DotnetToolsExtensionDirectory;
-                case ConfigDirectory.NextToMeDirectory:
-                    //directoryName = .FullName;
-                    // NOT HANDLING THIS YET
-                    break;
+                case ConfigDirectory.ExecutingAssemblyDirectory:
+                    return settings.ExecutingAssemblyDirectory;
                 default:
                     throw new Exception("Config Directory not found.");
             }
-
-            return null;
         }
 
         /// This is the order of configuration sources where a name with a lower
         /// enum value has a lower precedence in configuration.
         public enum ConfigDirectory
         {
-            NextToMeDirectory,
+            ExecutingAssemblyDirectory,
             SharedConfigDirectory,
             UserConfigDirectory,
             DotnetToolsDirectory

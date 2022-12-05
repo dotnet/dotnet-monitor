@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
@@ -28,6 +29,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         // is better control and access of what is visible during test.
         private const string DotnetToolsExtensionDirectoryOverrideEnvironmentVariable
             = "DotnetMonitorTestSettings__DotnetToolsExtensionDirectoryOverride";
+
+        // Allows tests to override the user configuration directory so there
+        // is better control and access of what is visible during test.
+        private const string ExecutingAssemblyDirectoryOverrideEnvironmentVariable
+            = "DotnetMonitorTestSettings__ExecutingAssemblyDirectoryOverride";
 
         // Location where shared dotnet-monitor configuration is stored.
         // Windows: "%ProgramData%\dotnet-monitor
@@ -59,6 +65,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + DotnetFolderName, ToolsFolderName) :
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "." + DotnetFolderName, ToolsFolderName));
 
+        // Location for dotnet-monitor's executing assembly.
+        public static readonly string ExecutingAssemblyDirectoryPath =
+            GetEnvironmentOverrideOrValue(
+                ExecutingAssemblyDirectoryOverrideEnvironmentVariable,
+                Assembly.GetExecutingAssembly().Location);
+
         public string[] Urls { get; set; }
 
         public string[] MetricsUrls { get; set; }
@@ -76,6 +88,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public string UserConfigDirectory { get; set; }
 
         public string DotnetToolsExtensionDirectory { get; set; }
+
+        public string ExecutingAssemblyDirectory { get; set; }
 
         public FileInfo UserProvidedConfigFilePath { get; set; }
 
@@ -101,7 +115,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 SharedConfigDirectory = SharedConfigDirectoryPath,
                 UserConfigDirectory = UserConfigDirectoryPath,
                 UserProvidedConfigFilePath = userProvidedConfigFilePath,
-                DotnetToolsExtensionDirectory = DotnetToolsExtensionDirectoryPath
+                DotnetToolsExtensionDirectory = DotnetToolsExtensionDirectoryPath,
+                ExecutingAssemblyDirectory = ExecutingAssemblyDirectoryPath
             };
         }
 
