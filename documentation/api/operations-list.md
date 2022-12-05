@@ -8,7 +8,7 @@ Lists all operations that have been created, as well as their status.
 ## HTTP Route
 
 ```http
-GET /operations?pid={pid}&uid={uid}&name={name} HTTP/1.1
+GET /operations?pid={pid}&uid={uid}&name={name}&tags={tags} HTTP/1.1
 ```
 
 ## Host Address
@@ -22,12 +22,15 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `pid` | query | false | int | (6.3+) The ID of the process. |
 | `uid` | query | false | guid | (6.3+) A value that uniquely identifies a runtime instance within a process. |
 | `name` | query | false | string | (6.3+) The name of the process. |
+| `tags` | query | false | string | (8.0+) A comma-separated list of user-readable identifiers for the operation. |
 
 See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
 If none of `pid`, `uid`, or `name` are specified, all operations will be listed.
 
 > **Note**: If multiple processes match the provided parameters (e.g., two processes named "MyProcess"), the operations for all matching processes will be listed.
+
+> **Note**: An operation must include all of the provided tags to be shown in the results (e.g., tags=tag1,tag2 only includes operations with tag1 and tag2, not one or the other). 
 
 ## Authentication
 
@@ -73,7 +76,8 @@ Content-Type: application/json
             "pid":1,
             "uid":"95b0202a-4ed3-44a6-98f1-767d270ec783",
             "name":"dotnet-monitor-demo"
-        }
+        },
+        "tags": []
     },
     {
         "operationId": "06ac07e2-f7cd-45ad-80c6-e38160bc5881",
@@ -86,7 +90,11 @@ Content-Type: application/json
             "pid":1,
             "uid":"95b0202a-4ed3-44a6-98f1-767d270ec783",
             "name":"dotnet-monitor-demo"
-        }
+        },
+        "tags": [
+            "tag1",
+            "tag2"
+        ]
     },
     {
         "operationId": "26e74e52-0a16-4e84-84bb-27f904bfaf85",
@@ -99,7 +107,8 @@ Content-Type: application/json
             "pid":11782,
             "uid":"23c289b3-b5ce-428a-aaa8-c864b3766bc2",
             "name":"dotnet-monitor-demo2"
-        }
+        },
+        "tags": []
     }
 ]
 ```
@@ -130,7 +139,43 @@ Content-Type: application/json
             "pid":1,
             "uid":"95b0202a-4ed3-44a6-98f1-767d270ec783",
             "name":"dotnet-monitor-demo"
-        }
+        },
+        "tags": []
+    }
+]
+```
+
+### Sample Request 3
+
+```http
+GET /operations?tags=tag1 HTTP/1.1
+Host: localhost:52323
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
+```
+
+### Sample Response 3
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[
+    {
+        "operationId": "06ac07e2-f7cd-45ad-80c6-e38160bc5881",
+        "createdDateTime": "2021-07-21T20:22:15.315861Z",
+        "status": "Stopping",
+        "egressProviderName": null,
+        "isStoppable": false,
+        "process":
+        {
+            "pid":1,
+            "uid":"95b0202a-4ed3-44a6-98f1-767d270ec783",
+            "name":"dotnet-monitor-demo"
+        },
+        "tags": [
+            "tag1",
+            "tag2"
+        ]
     }
 ]
 ```
