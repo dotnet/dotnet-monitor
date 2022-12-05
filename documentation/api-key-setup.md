@@ -15,7 +15,7 @@ Run the command:
 
 The output from this command will display the API key (a bearer JWT token) formatted as an `Authorization` header along with its corresponding configuration for `dotnet monitor`. You will need to store the `Subject` and `PublicKey` in the configuration for `dotnet monitor` and use the `Authorization` header value when making requests to the `dotnet monitor` HTTPS endpoint.
 
->**Note:** The `Authorization` header value is the string `Bearer` (representing the type) + the JWT, separated by a space. In some applications (like Postman), you fill in the `Authorization` header type in a separate field from the JWT.
+>**Note**: The `Authorization` header value is the string `Bearer` (representing the type) + the JWT, separated by a space. In some applications (like Postman), you fill in the `Authorization` header type in a separate field from the JWT.
 
 ```yaml
 Tell us about your experience with dotnet monitor: https://aka.ms/dotnet-monitor-survey
@@ -35,7 +35,7 @@ Settings in Json format:
 }
 ```
 
->**Note:** The actual values provided in this document will never work as valid configuration. All values provided in this document are the correct length and format, but the raw values have been edited to prevent this public example being used to configure authentication for a dotnet-monitor installation.
+>**Note**: The actual values provided in this document will never work as valid configuration. All values provided in this document are the correct length and format, but the raw values have been edited to prevent this public example being used to configure authentication for a dotnet-monitor installation.
 
 The `generatekey` command supports 1 parameter `--output`/`-o` to specify the configuration format. By default, `dotnet monitor generatekey` will use the `--output json` format. Currently, the values in the list below are supported values for `--output`.
 
@@ -59,7 +59,7 @@ The easiest way to configure `dotnet-monitor` on a local dev box is by using the
   - If `XDG_CONFIG_HOME` is defined: `$XDG_CONFIG_HOME/dotnet-monitor/settings.json`
   - Otherwise: `$HOME/.config/dotnet-monitor/settings.json`
 
-> **Note:** You probably need to create the directory and `settings.json` file within.
+> **Note**: You probably need to create the directory and `settings.json` file within.
 
 Run the command `dotnet monitor generatekey --output json` and copy the json blob into `settings.json`. A typical settings file might look like this:
 
@@ -75,7 +75,7 @@ Run the command `dotnet monitor generatekey --output json` and copy the json blo
 }
 ```
 
->**Note:** The example above is not valid configuration, use the provided command to get a unique authentication key.
+>**Note**: The example above is not valid configuration, use the provided command to get a unique authentication key.
 
 ### Docker
 
@@ -85,13 +85,13 @@ The easiest way to configure `docker` is to pass environment variables for the r
 > docker run --rm --entrypoint dotnet-monitor mcr.microsoft.com/dotnet/monitor generatekey --output Text
 ```
 
->**Note:** You'll need 3 parameters from the above execution. Grab the value in `Subject` and `PublicKey` and fill in `<Subject>` and `<PublicKey>` in the command below; save the value in `Authorization` for [step 3](#3-using-an-api-key-to-access-the-http-api).
+>**Note**: You'll need 3 parameters from the above execution. Grab the value in `Subject` and `PublicKey` and fill in `<Subject>` and `<PublicKey>` in the command below; save the value in `Authorization` for [step 3](#3-using-an-api-key-to-access-the-http-api).
 
 ```bash
 > docker run --rm -p 127.0.0.1:52323:52323/tcp --entrypoint dotnet-monitor --env DOTNETMONITOR_Authentication__MonitorApiKey__Subject=<Subject> --env DOTNETMONITOR_Authentication__MonitorApiKey__PublicKey=<PublicKey> mcr.microsoft.com/dotnet/monitor collect --urls http://+:52323 --metricUrls http://+:52325
 ```
 
->**Note:** This command disables TLS, and should only be used for testing.
+>**Note**: This command disables TLS, and should only be used for testing.
 
 ### Configuring an API Key in a Kubernetes Cluster
 
@@ -122,7 +122,7 @@ spec:
 
 ```
 
-> **NOTE:** For a complete example of running dotnet-monitor in Kubernetes, see [Running in a Kubernetes Cluster](./kubernetes.md) in the Getting Started guide.
+> **Note**: For a complete example of running dotnet-monitor in Kubernetes, see [Running in a Kubernetes Cluster](./kubernetes.md) in the Getting Started guide.
 
 ## 3. Using an API Key to access the HTTP API
 
