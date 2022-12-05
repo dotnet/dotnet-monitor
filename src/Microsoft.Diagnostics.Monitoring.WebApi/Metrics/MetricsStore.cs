@@ -20,9 +20,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         private sealed class MetricKey
         {
-            private List<ICounterPayload> _metric;
+            private ICounterPayload _metric;
 
-            public MetricKey(List<ICounterPayload> metric)
+            public MetricKey(ICounterPayload metric)
             {
                 _metric = metric;
             }
@@ -30,8 +30,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             public override int GetHashCode()
             {
                 HashCode code = new HashCode();
-                code.Add(_metric[0].Provider); // Might not be safe to do this...
-                code.Add(_metric[0].Name);
+                code.Add(_metric.Provider);
+                code.Add(_metric.Name);
                 return code.ToHashCode();
             }
 
@@ -39,27 +39,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 if (obj is MetricKey metricKey)
                 {
-                    if (_metric.Count != metricKey._metric.Count)
-                    {
-                        return false;
-                    }
-
-                    for (int i = 0; i < _metric.Count; i += 1)
-                    {
-                        bool isSame = CompareMetrics(_metric[i], metricKey._metric[i]);
-                        if (!isSame)
-                        {
-                            return false;
-                        }
-                    }
-
-                    return true;
+                    return CompareMetrics(_metric, metricKey._metric);
                 }
                 return false;
             }
         }
 
-        private Dictionary<MetricKey, Queue<List<ICounterPayload>>> _allMetrics = new Dictionary<MetricKey, Queue<List<ICounterPayload>>>();
+        private Dictionary<MetricKey, Queue<ICounterPayload>> _allMetrics = new Dictionary<MetricKey, Queue<ICounterPayload>>();
         private readonly int _maxMetricCount;
         private ILogger<MetricsStoreService> _logger;
 
@@ -74,14 +60,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         }
 
 
-        public void AddMetric(List<ICounterPayload> metric)
+        public void AddMetric(ICounterPayload metric)
         {
             lock (_allMetrics)
             {
                 var metricKey = new MetricKey(metric);
-                if (!_allMetrics.TryGetValue(metricKey, out Queue<List<ICounterPayload>> metrics))
+                if (!_allMetrics.TryGetValue(metricKey, out Queue<ICounterPayload> metrics))
                 {
-                    metrics = new Queue<List<ICounterPayload>>();
+                    metrics = new Queue<ICounterPayload>();
                     _allMetrics.Add(metricKey, metrics);
                 }
                 metrics.Enqueue(metric);
@@ -94,13 +80,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public async Task SnapshotMetrics(Stream outputStream, CancellationToken token)
         {
-            Dictionary<MetricKey, Queue<List<ICounterPayload>>> copy = null;
+            Dictionary<MetricKey, Queue<ICounterPayload>> copy = null;
             lock (_allMetrics)
             {
-                copy = new Dictionary<MetricKey, Queue<List<ICounterPayload>>>();
+                copy = new Dictionary<MetricKey, Queue<ICounterPayload>>();
                 foreach (var metricGroup in _allMetrics)
                 {
-                    copy.Add(metricGroup.Key, new Queue<List<ICounterPayload>>(metricGroup.Value));
+                    copy.Add(metricGroup.Key, new Queue<ICounterPayload>(metricGroup.Value));
                 }
             }
 
@@ -109,22 +95,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             foreach (var metricGroup in copy)
             {
-                List<ICounterPayload> metricInfo = metricGroup.Value.First();
+                ICounterPayload metricInfo = metricGroup.Value.First();
 
-                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo[0].Provider, metricInfo[0].Name, metricInfo[0].Unit);
+                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.Provider, metricInfo.Name, metricInfo.Unit);
 
-                await WriteMetricHeader(metricInfo[0], writer, metricName);
+                await WriteMetricHeader(metricInfo, writer, metricName);
 
                 foreach (var metric in metricGroup.Value)
                 {
-                    foreach (var individualMetric in metric)
-                    {
-                        var keyValuePairs = from pair in individualMetric.Metadata select pair.Key + "=" + "\"" + pair.Value + "\"";
-                        string metricLabels = string.Join(", ", keyValuePairs);
+                    var keyValuePairs = from pair in metric.Metadata select pair.Key + "=" + "\"" + pair.Value + "\"";
+                    string metricLabels = string.Join(", ", keyValuePairs);
 
-                        string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(individualMetric.Unit, individualMetric.Value);
-                        await WriteMetricDetails(writer, individualMetric, metricName, metricValue, metricLabels);
-                    }
+                    string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(metric.Unit, metric.Value);
+                    await WriteMetricDetails(writer, metric, metricName, metricValue, metricLabels);
                 }
             }
         }

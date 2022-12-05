@@ -19,9 +19,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _logger = logger;
         }
 
-        protected override void SerializeCounter(Stream stream, List<ICounterPayload> counter)
+        protected override void SerializeCounter(Stream stream, ICounterPayload counter)
         {
-            if (counter[0] is ErrorPayload errorPayload)
+            if (counter is ErrorPayload errorPayload)
             {
                 _logger.LogWarning(errorPayload.ErrorMessage);
 
@@ -32,30 +32,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = false }))
             {
                 writer.WriteStartObject();
-                writer.WriteString("timestamp", counter[0].Timestamp);
-                writer.WriteString("provider", counter[0].Provider);
-                writer.WriteString("name", counter[0].Name);
-                writer.WriteString("displayName", counter[0].DisplayName);
-                writer.WriteString("unit", counter[0].Unit);
-                writer.WriteString("counterType", counter[0].CounterType.ToString());
+                writer.WriteString("timestamp", counter.Timestamp);
+                writer.WriteString("provider", counter.Provider);
+                writer.WriteString("name", counter.Name);
+                writer.WriteString("displayName", counter.DisplayName);
+                writer.WriteString("unit", counter.Unit);
+                writer.WriteString("counterType", counter.CounterType.ToString());
 
-                // Histogram - show quantiles
-                if (counter.Count > 1)
+                string tagsVal = string.Empty;
+
+                if (counter.Metadata.TryGetValue("quantile", out string percentile))
                 {
-                    writer.WriteStartObject("value");
-                    foreach (var individualCounter in counter)
-                    {
-                        string quantile = individualCounter.Metadata["quantile"]; // need to make this cleaner/safer
-                        //Some versions of .Net return invalid metric numbers. See https://github.com/dotnet/runtime/pull/46938
-                        writer.WriteNumber(quantile, double.IsNaN(individualCounter.Value) ? 0.0 : individualCounter.Value);
-                    }
-                    writer.WriteEndObject();
+                    tagsVal = "Percentile=" + percentile; // note that this is currently decimal not percentile
                 }
-                else
-                {
-                    //Some versions of .Net return invalid metric numbers. See https://github.com/dotnet/runtime/pull/46938
-                    writer.WriteNumber("value", double.IsNaN(counter[0].Value) ? 0.0 : counter[0].Value);
-                }
+
+                writer.WriteString("tags", tagsVal);
+
+                //Some versions of .Net return invalid metric numbers. See https://github.com/dotnet/runtime/pull/46938
+                writer.WriteNumber("value", double.IsNaN(counter.Value) ? 0.0 : counter.Value);
 
                 writer.WriteEndObject();
             }

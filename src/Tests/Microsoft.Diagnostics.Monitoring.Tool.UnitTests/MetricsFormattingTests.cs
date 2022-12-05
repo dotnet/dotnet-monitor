@@ -122,7 +122,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private async Task<MemoryStream> GetMetrics(List<ICounterPayload> payloads)
         {
             IMetricsStore metricsStore = new MetricsStore(_logger, MetricCount);
-            metricsStore.AddMetric(payloads);
+
+            foreach (var payload in payloads)
+            {
+                metricsStore.AddMetric(payload);
+            }
 
             var outputStream = new MemoryStream();
             await metricsStore.SnapshotMetrics(outputStream, CancellationToken.None);
