@@ -16,6 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private const char EqualsChar = '=';
         private const char QuotationChar = '"';
         private const char SlashChar = '\\';
+        private const char NewlineChar = '\n';
 
         private static readonly Dictionary<string, string> KnownUnits = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -81,25 +82,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 if (value[i] == SlashChar)
                 {
                     builder.Append(SlashChar);
-                    if (i < value.Length - 1 && value[i + 1] == SlashChar)
-                    {
-                        builder.Append(SlashChar);
-                        ++i; // Skip over the second (already escaped) slash
-                    }
-                    else if (i < value.Length - 1 && value[i + 1] == 'n')
-                    {
-                        builder.Append('n');
-                        ++i; // Skip over the 'n' in the newline
-                    }
-                    else if (i < value.Length - 1 && value[i + 1] == QuotationChar)
-                    {
-                        builder.Append(QuotationChar);
-                        ++i; // Skip over the '"'
-                    }
-                    else
-                    {
-                        builder.Append(SlashChar);
-                    }
+                    builder.Append(SlashChar);
+                }
+                else if (value[i] == NewlineChar)
+                {
+                    builder.Append(SlashChar);
+                    builder.Append('n');
                 }
                 else if (value[i] == QuotationChar)
                 {
