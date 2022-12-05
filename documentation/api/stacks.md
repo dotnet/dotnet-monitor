@@ -10,7 +10,7 @@ Captures the call stacks of the currently running process. Note that only manage
 ## HTTP Route
 
 ```http
-GET /stacks?pid={pid}&uid={uid}&name={name}&egressProvider={egressProvider} HTTP/1.1
+GET /stacks?pid={pid}&uid={uid}&name={name}&egressProvider={egressProvider}&tags={tags} HTTP/1.1
 ```
 
 > **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
@@ -27,6 +27,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `uid` | query | false | guid | A value that uniquely identifies a runtime instance within a process. |
 | `name` | query | false | string | The name of the process. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected stacks. When not specified, the stacks are written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
+| `tags` | query | false | string | (8.0+) A comma-separated list of user-readable identifiers for the operation. |
 
 See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
@@ -73,6 +74,7 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 
 {
     "threadId": 30860,
+    "threadName" : "Worker Thread"
     "frames": [
         {
             "methodName": "GetQueuedCompletionStatus",

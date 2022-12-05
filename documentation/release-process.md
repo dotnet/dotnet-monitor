@@ -46,14 +46,11 @@ The `channel` value is used by the `dotnet-docker` repository to consume the cor
 The `dotnet-docker` repository runs an update process each day that detects the latest version of a given `dotnet-monitor` channel. During the stabilization/testing/release period for a release of `dotnet-monitor`, the update process should be changed to pick up builds for the release branch.
 
 **Known issues**
-* You may not have permissions to change these variables.
 * Currently docker only supports updating one minor version for each major version. We have to manually update any additional versions. See [instructions](#manually-updating-docker-versions) for manually updating.
 
-The following variables for [dotnet-docker-update-dependencies](https://dev.azure.com/dnceng/internal/_build?definitionId=470) need to be updated for release:
-* `monitorXMinorVersion`: Make sure these are set to the correct values.
-* `monitorXQuality`: Normally this is daily, but should be set to release.
-* `update-monitor-enabled`: Make sure this is true.
-* `update-dotnet-enabled`: When doing an ad-hoc run, make sure to **disable** this.
+The following variables for [dotnet-docker-update-dependencies-monitor](https://dev.azure.com/dnceng/internal/_build?definitionId=1207) need to be updated for release:
+* `monitorXMinorVersion`: Make sure these are set to the correct minor version values (e.g. `monitor7MinorVersion=1` for the 7.1.X version).
+* `monitorXQuality`: This should be `daily` for picking builds from the `main` branch, otherwise should be set to `release` for builds from release branches (e.g. `monitor8Quality=daily`, `monitor7Quality=release`).
 
 ### Updating tags
 
@@ -65,7 +62,7 @@ If you are releasing a new minor version, you may need to update the current/pre
 
 ### Revert Pipeline Variable After Release
 
-After the release has been completed, this pipeline variable should be changed to the appropriate daily channel (e.g. `6.0/daily`).
+After the release has been completed, this pipeline variable should be changed to the appropriate build quality (e.g. `daily` to pick up builds from the `main` branch); for servicing releases, this typically stays as `release`.
 
 ### Manually updating docker versions
 1. Run `\eng\Set-DotnetVersions.ps1`. Example:
