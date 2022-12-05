@@ -3,13 +3,14 @@
 
 # Definitions
 
->**NOTE:** Some features are [experimental](./../experimental.md) and are denoted as `**[Experimental]**` in this document.
+>**Note**: Some features are [experimental](./../experimental.md) and are denoted as `**[Experimental]**` in this document.
 
 ## **[Experimental]** CallStack (7.0+)
 
 | Name | Type | Description |
 |---|---|---|
 | `threadId` | int | The native thread id of the managed thread. |
+| `threadName` | string | Optional name of the managed thread. |
 | `frames` | [CallStackFrame](#experimental-callstackframe-70)[] | Managed frame for the thread at the time of collection. |
 
 ## **[Experimental]** CallStackFormat (7.0+)
@@ -20,6 +21,7 @@ Enumeration that describes the output format of the collected call stacks.
 |---|---|
 | `Json` | Stacks are formatted in Json. See [CallStackResult](#experimental-callstackresult-70). |
 | `PlainText` | Stacks are formatted in plain text. |
+| `Speedscope` | Stacks are formatted in [speedscope](https://www.speedscope.app). Note that performance data is not present. |
 
 ## **[Experimental]** CallStackFrame (7.0+)
 
@@ -267,6 +269,7 @@ Status of the egress operation.
 |---|---|
 | `Running` | Operation has been started. This is the initial state. |
 | `Cancelled` | The operation was cancelled by the user. |
+| `Stopping` | The operation is in the process of stopping at the request of the user. |
 | `Succeeded` | Egress operation has been successful. Querying the operation will return the location of the egressed artifact. |
 | `Failed` | Egress operation failed. Querying the operation will return detailed error information. |
 
@@ -281,6 +284,10 @@ Detailed information about an operation.
 | `operationId` | guid | Unique identifier for the operation. |
 | `createdDateTime` | datetime string | UTC DateTime string of when the operation was created. |
 | `status` | [OperationState](#operationstate) | The current status of operation. |
+| `egressProviderName` | string | (8.0+) The name of the egress provider that the artifact is being sent to. This will be null if the artifact is being sent directly back to the user from an HTTP request. |
+| `isStoppable` | bool | (8.0+) Whether this operation can be gracefully stopped using [Stop Operation](operations-stop.md). Not all operations support being stopped. |
+| `process` | [OperationProcessInfo](#operationprocessinfo) | (6.3+) The process on which the operation is performed. |
+| `tags` | set (of string) | (8.0+) A set of user-readable identifiers for the operation. |
 
 ### Example
 
@@ -290,7 +297,17 @@ Detailed information about an operation.
     "error": null,
     "operationId": "67f07e40-5cca-4709-9062-26302c484f18",
     "createdDateTime": "2021-07-21T06:21:15.315861Z",
-    "status": "Succeeded"
+    "status": "Succeeded",
+    "egressProviderName": "monitorBlob",
+    "isStoppable": false,
+    "process": {
+        "pid": 21632,
+        "uid": "cd4da319-fa9e-4987-ac4e-e57b2aac248b",
+        "name": "dotnet"
+    },
+    "tags": [
+        "tag1"
+    ]
 }
 ```
 
@@ -303,7 +320,10 @@ Summary state of an operation.
 | `operationId` | guid | Unique identifier for the operation. |
 | `createdDateTime` | datetime string | UTC DateTime string of when the operation was created. |
 | `status` | [OperationState](#operationstate) | The current status of operation. |
+| `egressProviderName` | string | (8.0+) The name of the egress provider that the artifact is being sent to. This will be null if the artifact is being sent directly back to the user from an HTTP request. |
+| `isStoppable` | bool | (8.0+) Whether this operation can be gracefully stopped using [Stop Operation](operations-stop.md). Not all operations support being stopped. |
 | `process` | [OperationProcessInfo](#operationprocessinfo) | (6.3+) The process on which the operation is performed. |
+| `tags` | set (of string) | (8.0+) A set of user-readable identifiers for the operation. |
 
 ### Example
 
@@ -312,11 +332,17 @@ Summary state of an operation.
     "operationId": "67f07e40-5cca-4709-9062-26302c484f18",
     "createdDateTime": "2021-07-21T06:21:15.315861Z",
     "status": "Succeeded",
+    "egressProviderName": null,
+    "isStoppable": false,
     "process": {
         "pid": 21632,
         "uid": "cd4da319-fa9e-4987-ac4e-e57b2aac248b",
         "name": "dotnet"
-    }
+    },
+    "tags": [
+        "tag1",
+        "tag2"
+    ]
 }
 ```
 

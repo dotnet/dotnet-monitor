@@ -5,7 +5,7 @@
 
 `dotnet monitor` has extensive configuration to control various aspects of its behavior. Ordinarily, you are not required to specify most of this configuration and only exists if you wish to change the default behavior in `dotnet monitor`.
 
->**NOTE:** Some features are [experimental](./experimental.md) and are denoted as `**[Experimental]**` in this document.
+>**Note**: Some features are [experimental](./experimental.md) and are denoted as `**[Experimental]**` in this document.
 
 ## Configuration Sources
 
@@ -361,7 +361,7 @@ The default shared path option (`DefaultSharedPath`) can be set, which allows ar
 
 Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't streamed back from the target process to `dotnet monitor`. Instead, they are written directly to disk by the runtime. After successful collection of a process dump, `dotnet monitor` will read the process dump directly from disk. In the default configuration, the directory that the runtime writes its process dump to is the temp directory (`%TMP%` on Windows, `/tmp` on \*nix). It is possible to change to the ephemeral directory that these dump files get written to via the following configuration:
 
->**Note:** This option is optional if `dotnet monitor` is running in the same process namespace as the target processes or if `DefaultSharedPath` is specified.
+>**Note**: This option is optional if `dotnet monitor` is running in the same process namespace as the target processes or if `DefaultSharedPath` is specified.
 
 <details>
   <summary>JSON</summary>
@@ -396,7 +396,7 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
 
 The shared library path option (`SharedLibraryPath`) allows specifying the path to where shared libraries are copied from the `dotnet monitor` installation to make them available to target applications for in-process diagnostics scenarios, such as call stack collection.
 
->**Note:** This option is not required if `DefaultSharedPath` is specified. This option provides an alternative directory path compared to the behavior of specifying `DefaultSharedPath`.
+>**Note**: This option is not required if `DefaultSharedPath` is specified. This option provides an alternative directory path compared to the behavior of specifying `DefaultSharedPath`.
 
 <details>
   <summary>JSON</summary>
@@ -811,7 +811,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 | queueSharedAccessSignatureName | string | false | (6.3+) Name of the property in the Properties section that will contain the queue SAS token; if using SAS, must be specified if `queueSharedAccessSignature` is not specified.|
 | metadata | Dictionary<string, string> | false | A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.|
 
-***Note:*** Starting with `dotnet monitor` 7.0, all built-in metadata keys are prefixed with `DotnetMonitor_`; to avoid metadata naming conflicts, avoid prefixing your metadata keys with `DotnetMonitor_`.
+> **Note**: Starting with `dotnet monitor` 7.0, all built-in metadata keys are prefixed with `DotnetMonitor_`; to avoid metadata naming conflicts, avoid prefixing your metadata keys with `DotnetMonitor_`.
 
 ### Example azureBlobStorage provider
 
@@ -930,6 +930,61 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 #### azureBlobStorage Queue Message Format
 
 The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`; using the above example with an artifact named `mydump.dmp`, this would be `artifacts/mydump.dmp`) that is being egressed to blob storage. This is designed to be easily integrated into an Azure Function that triggers whenever a new message is added to the queue, providing you with the contents of the artifact as a stream. See [Azure Blob storage input binding for Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-input?tabs=csharp#example) for an example.
+
+### S3 storage egress provider
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| endpoint | string | false | An optional endpoint of S3 storage service. Can be left empty in case of using AWS. |
+| bucketName | string | true | The name of the S3 Bucket to which the blob will be egressed |
+| accessKeyId | string | false | The AWS AccessKeyId for IAM user to login.  |
+| secretAccessKey | string | false | The AWS SecretAccessKey associated AccessKeyId for IAM user to login. To login by access key id either the 'secretAccessKeyFile' or 'secretAccessKey' must be set. |
+| awsProfileName | string | false | The AWS profile name to be used for login. |
+| awsProfilePath | string | false | The AWS profile path, if profile details not stored in default path. |
+| generatePreSignedUrl | bool | false | A boolean flag to control if either a pre-signed url is returned after successful upload or only the name of bucket and the artifacts S3 object key. |
+| regionName | string | false | A Region is a named set of AWS resources in the same geographical area. This option specifies the region to connect to. |
+| preSignedUrlExpiry | TimeStamp? | false | The amount of time the generated pre-signed url should be accessible. The value has to be between 1 minute and 1 day. |
+| forcePathStyle | bool | false | The boolean flag set for AWS connection configuration ForcePathStyle option. |
+| copyBufferSize | int | false | The buffer size to use when copying data from the original artifact to the blob stream. There is a minimum size of 5 MB which is set when the given value is lower.|
+
+### Example S3 storage provider
+
+<details>
+  <summary>JSON with password</summary>
+
+  ```json
+  {
+      "Egress": {
+          "S3Storage": {
+              "monitorS3Blob": {
+                  "endpoint": "http://localhost:9000",
+                  "bucketName": "myS3Bucket",
+                  "accessKeyId": "minioUser",
+                  "secretAccessKey": "mySecretPassword",
+                  "regionName": "us-east-1",
+                  "generatePresSignedUrl" : true,
+                  "preSignedUrlExpiry" : "00:15:00",
+                  "copyBufferSize": 1024
+              }
+          }
+      }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Secret</summary>
+  
+  ```sh
+  #!/bin/sh
+  kubectl create secret generic my-s3-secrets \
+  --from-literal=Egress__S3Storage__monitorS3Blob__bucketName=myS3Bucket \
+  --from-literal=Egress__S3Storage__monitorS3Blob__accessKeyId=minioUser \
+  --from-literal=Egress__S3Storage__monitorS3Blob__secretAccessKey=mySecretPassword \
+  --from-literal=Egress__S3Storage__monitorS3Blob__regionName=us-east-1 \
+  --dry-run=client -o yaml | kubectl apply -f -
+ ```
+</details>
 
 ### Filesystem egress provider
 
@@ -1760,7 +1815,7 @@ Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
 
 Collect call stacks from the target process.
 
->**NOTE:** This feature is [experimental](./experimental.md). To enable this feature, set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. Additionally, the [in-process features](#experimental-in-process-features-configuration-70) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
+>**Note**: This feature is [experimental](./experimental.md). To enable this feature, set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. Additionally, the [in-process features](#experimental-in-process-features-configuration-70) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
 
 ##### Properties
 
@@ -1889,7 +1944,7 @@ An action that gets an environment variable from the target process. Its value i
 
 Usage that gets a token your app has access to and uses it to send a trace.
 
-***Note:*** the example below is of an entire action list to provide context, only the second json entry represents the `GetEnvironmentVariable` Action.
+> **Note**: the example below is of an entire action list to provide context, only the second json entry represents the `GetEnvironmentVariable` Action.
 
 <details>
   <summary>JSON</summary>
