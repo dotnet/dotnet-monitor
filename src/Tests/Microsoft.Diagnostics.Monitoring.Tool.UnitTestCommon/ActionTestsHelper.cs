@@ -25,15 +25,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static TargetFrameworkMoniker[] tfmsToTest = new TargetFrameworkMoniker[]
         {
             TargetFrameworkMoniker.Net60,
+            TargetFrameworkMoniker.Net70,
 #if INCLUDE_NEXT_DOTNET
-            TargetFrameworkMoniker.Net70
+            TargetFrameworkMoniker.Net80
 #endif
         };
         public static TargetFrameworkMoniker[] tfms6PlusToTest = new TargetFrameworkMoniker[]
         {
             TargetFrameworkMoniker.Net60,
+            TargetFrameworkMoniker.Net70,
 #if INCLUDE_NEXT_DOTNET
-            TargetFrameworkMoniker.Net70
+            TargetFrameworkMoniker.Net80
 #endif
         };
 
@@ -72,7 +74,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 // Capturing non-full dumps via diagnostic command works inconsistently
                 // on Alpine for .NET 5 and lower (the dump command will return successfully, but)
                 // the dump file will not exist). Only test other dump types on .NET 6+
-                if (!DistroInformation.IsAlpineLinux || tfm == TargetFrameworkMoniker.Net60)
+                if (!DistroInformation.IsAlpineLinux
+                    || tfm == TargetFrameworkMoniker.Net60
+                    || tfm == TargetFrameworkMoniker.Net70
+                    || tfm == TargetFrameworkMoniker.Net80)
                 {
                     yield return new object[] { tfm, DumpType.WithHeap };
                     yield return new object[] { tfm, DumpType.Triage };
