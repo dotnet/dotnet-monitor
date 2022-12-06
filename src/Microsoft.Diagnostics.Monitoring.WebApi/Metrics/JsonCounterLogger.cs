@@ -51,6 +51,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 //Some versions of .Net return invalid metric numbers. See https://github.com/dotnet/runtime/pull/46938
                 writer.WriteNumber("value", double.IsNaN(counter.Value) ? 0.0 : counter.Value);
+
+                writer.WriteStartObject("metadata");
+                foreach (var kvPair in counter.Metadata)
+                {
+                    writer.WriteString(kvPair.Key, kvPair.Value);
+                }
+                writer.WriteEndObject();
+
                 writer.WriteEndObject();
             }
             await _stream.WriteAsync(_bufferWriter.WrittenMemory);
