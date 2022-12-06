@@ -66,5 +66,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
             var normalizedValue = PrometheusDataModel.GetPrometheusNormalizedValue(metricUnit, metricValue);
             Assert.Equal(normalizedValue, expectedValue);
         }
+
+        [Theory()]
+        [InlineData("key", "value", "key=\"value\"")]
+        [InlineData("key*1", "value*1", "key_1=\"value*1\"")]
+        [InlineData("key 1", "value 1", "key_1=\"value 1\"")]
+        [InlineData("&*()", "Test\nice", "____=\"Test\\nice\"")]
+        [InlineData("", "Test\\nice", "=\"Test\\\\nice\"")]
+        [InlineData("Test\\test", "Test\\test", "Test_test=\"Test\\\\test\"")]
+        [InlineData("UnicodeάήΰLetter", "Test\\\nice", "Unicode___Letter=\"Test\\\\\\nice\"")]
+        [InlineData("ά", "Test\"quotes\"", "_=\"Test\\\"quotes\\\"\"")]
+        [InlineData("_key", "Test\\\"quotes\\\"", "_key=\"Test\\\\\\\"quotes\\\\\\\"\"")]
+        public void TestGetPrometheusNormalizedMetadataValue(string key, string value, string expectedLabel)
+        {
+            var normalizedLabel = PrometheusDataModel.GetPrometheusNormalizedLabel(key, value);
+            Assert.Equal(expectedLabel, normalizedLabel);
+        }
     }
 }
