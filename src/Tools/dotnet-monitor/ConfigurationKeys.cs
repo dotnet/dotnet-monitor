@@ -6,7 +6,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class ConfigurationKeys
     {
-        public const string Authentication = nameof(RootOptions.Authentication);
+             public const string Authentication = nameof(RootOptions.Authentication);
 
         public const string CollectionRules = nameof(CollectionRules);
 
