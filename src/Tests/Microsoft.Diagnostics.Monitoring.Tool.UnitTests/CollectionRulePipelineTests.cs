@@ -375,8 +375,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public static IEnumerable<object[]> GetTfmsSupportingPortListener()
         {
             yield return new object[] { TargetFrameworkMoniker.Net60 };
-#if INCLUDE_NEXT_DOTNET
             yield return new object[] { TargetFrameworkMoniker.Net70 };
+#if INCLUDE_NEXT_DOTNET
+            yield return new object[] { TargetFrameworkMoniker.Net80 };
 #endif
         }
     }

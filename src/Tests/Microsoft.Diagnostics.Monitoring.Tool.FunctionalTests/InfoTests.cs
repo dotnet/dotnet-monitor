@@ -55,7 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.True(Version.TryParse(info.RuntimeVersion, out Version runtimeVersion), "Unable to parse version from RuntimeVersion property.");
 
 #if NET7_0_OR_GREATER
-                    Version currentAspNetVersion = TargetFrameworkMoniker.Current.GetAspNetCoreFrameworkVersion();
+                    Version currentAspNetVersion = TargetFrameworkMoniker.Net80.GetAspNetCoreFrameworkVersion();
 #else
                     Version currentAspNetVersion = TargetFrameworkMoniker.Net60.GetAspNetCoreFrameworkVersion();
 #endif
