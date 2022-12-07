@@ -134,7 +134,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 string extensionFilePath = string.Empty;
 
-                if (hasSeparateExe && Path.GetFileName(testAppFilePath) == AppName)
+                if (hasSeparateExe && IsExecutablePath(testAppFilePath))
                 {
                     Directory.CreateDirectory(exePath);
                     extensionFilePath = testAppFilePath.Replace(testAppDirPath, exePath);
@@ -148,6 +148,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 File.Copy(testAppFilePath, extensionFilePath, true);
             }
+        }
+
+        private static bool IsExecutablePath(string path)
+        {
+            if (Path.GetFileNameWithoutExtension(path) == AppName)
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Path.GetExtension(path) == ".exe")
+                {
+                    return true;
+                }
+                else
+                {
+                    return Path.GetExtension(path) == string.Empty;
+                }
+            }
+
+            return false;
         }
 
         private HostBuilderSettings CreateHostBuilderSettings()
