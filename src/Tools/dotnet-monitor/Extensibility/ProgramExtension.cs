@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -65,7 +66,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             // This is really weird, yes, but this is one of 2 overloads for [Stream].WriteAsync(...) that supports a CancellationToken, so we use a ReadOnlyMemory<char> instead of a string.
             ReadOnlyMemory<char> NewLine = new ReadOnlyMemory<char>("\r\n".ToCharArray());
 
-            string programRelPath = Path.Combine(Path.GetDirectoryName(_exePath), Declaration.Program);
+            string exeName = Declaration.Program;
+
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                exeName = Path.GetFileNameWithoutExtension(exeName);
+            }
+
+            string programRelPath = Path.Combine(Path.GetDirectoryName(_exePath), exeName);
+
             IFileInfo progInfo = _fileSystem.GetFileInfo(programRelPath);
             if (!progInfo.Exists || progInfo.IsDirectory || progInfo.PhysicalPath == null)
             {
