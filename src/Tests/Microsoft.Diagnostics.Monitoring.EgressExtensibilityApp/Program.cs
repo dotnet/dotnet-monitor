@@ -80,5 +80,4 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
             return false;
         }
     }
-
 }

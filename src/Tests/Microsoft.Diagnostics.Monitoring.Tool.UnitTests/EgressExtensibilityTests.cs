@@ -25,12 +25,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(3);
 
         private ITestOutputHelper _outputHelper;
+
         private const string ExtensionsFolder = "extensions";
-        public const string SampleArtifactPath = "my/sample/path";
+        public const string SampleArtifactPath = "sample\\path";
         public const string SampleFailureMessage = "the extension failed";
-        private const string TestProviderName = "TestingProvider";
-        private const string TestAppName = "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp";
-        private const string TestAppExe = TestAppName + ".exe";
+        private const string ProviderName = "TestingProvider"; // Must match the name in extension.json
+        private const string AppName = "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp";
+        private const string AppExe = AppName + ".exe";
         private const string DotnetToolsExtensionDir = ".store\\tool-name\\7.0\\tool-name\\7.0\\tools\\net7.0\\any";
         private const string DotnetToolsExeDir = "";
         private readonly static byte[] ByteArray = Encoding.ASCII.GetBytes(string.Empty);
@@ -49,16 +50,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             var extensionDiscoverer = host.Services.GetService<ExtensionDiscoverer>();
 
-            const string extensionDisplayName = "InvalidProviderName";
-
-            Assert.Throws<ExtensionException>(() => extensionDiscoverer.FindExtension<IEgressExtension>(extensionDisplayName));
+            Assert.Throws<ExtensionException>(() => extensionDiscoverer.FindExtension<IEgressExtension>("InvalidProviderName"));
         }
 
         [Theory]
         [InlineData(ConfigDirectory.ExecutingAssemblyDirectory, null, null)]
         [InlineData(ConfigDirectory.UserConfigDirectory, null, null)]
         [InlineData(ConfigDirectory.SharedConfigDirectory, null, null)]
-        [InlineData(ConfigDirectory.DotnetToolsDirectory, DotnetToolsExeDir, TestAppExe)]
+        [InlineData(ConfigDirectory.DotnetToolsExtensionDirectory, DotnetToolsExeDir, AppExe)]
         public void FoundExtensionFile_Success(ConfigDirectory configDirectory, string exePath, string exeName)
         {
             IEgressExtension extension = FindEgressExtension(configDirectory, exePath, exeName);
@@ -69,16 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ExtensionResponse_Success()
         {
-            var extension = FindEgressExtension(ConfigDirectory.UserConfigDirectory, null, null);
-
-            ExtensionEgressPayload payload = new();
-
-            payload.Configuration = new Dictionary<string, string>();
-            payload.Configuration.Add("ShouldSucceed", "true");
-
-            CancellationTokenSource tokenSource = new(DefaultTimeout);
-
-            EgressArtifactResult result = await extension.EgressArtifact(payload, GetStream, tokenSource.Token);
+            EgressArtifactResult result = await GetExtensionResponse(true);
 
             Assert.True(result.Succeeded);
             Assert.Equal(SampleArtifactPath, result.ArtifactPath);
@@ -87,36 +77,42 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ExtensionResponse_Failure()
         {
-            var extension = FindEgressExtension(ConfigDirectory.UserConfigDirectory, null, null);
-
-            ExtensionEgressPayload payload = new();
-
-            payload.Configuration = new Dictionary<string, string>();
-            payload.Configuration.Add("ShouldSucceed", "false");
-
-            CancellationTokenSource tokenSource = new(DefaultTimeout);
-
-            EgressArtifactResult result = await extension.EgressArtifact(payload, GetStream, tokenSource.Token);
+            EgressArtifactResult result = await GetExtensionResponse(false);
 
             Assert.False(result.Succeeded);
             Assert.Equal(SampleFailureMessage, result.FailureMessage);
         }
 
-        private IEgressExtension FindEgressExtension(ConfigDirectory configDirectory, string exePath, string exeName)
+        private async Task<EgressArtifactResult> GetExtensionResponse(bool shouldSucceed)
+        {
+            var extension = FindEgressExtension(ConfigDirectory.UserConfigDirectory);
+
+            ExtensionEgressPayload payload = new();
+            payload.Configuration = new Dictionary<string, string>
+            {
+                { "ShouldSucceed", shouldSucceed.ToString() }
+            };
+
+            CancellationTokenSource tokenSource = new(DefaultTimeout);
+
+            return await extension.EgressArtifact(payload, GetStream, tokenSource.Token);
+        }
+
+        private IEgressExtension FindEgressExtension(ConfigDirectory configDirectory, string exePath = null, string exeName = null)
         {
             HostBuilderSettings settings = CreateHostBuilderSettings();
 
             string directoryName = GetExtensionDirectoryName(settings, configDirectory);
 
-            string destinationPath = configDirectory != ConfigDirectory.DotnetToolsDirectory ? Path.Combine(directoryName, ExtensionsFolder, TestAppName) : Path.Combine(directoryName, DotnetToolsExtensionDir);
+            string extensionDirPath = configDirectory != ConfigDirectory.DotnetToolsExtensionDirectory ? Path.Combine(directoryName, ExtensionsFolder, AppName) : Path.Combine(directoryName, DotnetToolsExtensionDir);
 
-            CopyExtensionFiles(destinationPath, exePath, exeName);
+            CopyExtensionFiles(extensionDirPath, exePath, exeName);
 
             IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
 
             var extensionDiscoverer = host.Services.GetService<ExtensionDiscoverer>();
 
-            return extensionDiscoverer.FindExtension<IEgressExtension>(TestProviderName);
+            return extensionDiscoverer.FindExtension<IEgressExtension>(ProviderName);
         }
 
         private static async Task GetStream(Stream stream, CancellationToken cancellationToken)
@@ -125,31 +121,31 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await stream.WriteAsync(ByteArray);
         }
 
-        private static void CopyExtensionFiles(string destinationPath, string exePath = null, string exeName = null)
+        private static void CopyExtensionFiles(string extensionDirPath, string exePath = null, string exeName = null)
         {
-            Directory.CreateDirectory(destinationPath);
+            Directory.CreateDirectory(extensionDirPath);
 
-            bool separateExe = HasSeparateExe(exePath, exeName);
-            if (separateExe)
+            string testAppDirPath = Path.GetDirectoryName(AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), AppName));
+
+            bool hasSeparateExe = !string.IsNullOrEmpty(exePath) && !string.IsNullOrEmpty(exeName);
+
+            foreach (string testAppFilePath in Directory.GetFiles(testAppDirPath, "*.*", SearchOption.AllDirectories))
             {
-                Directory.CreateDirectory(exePath);
-            }
+                string extensionFilePath = string.Empty;
 
-            string testAppPath = AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), TestAppName);
+                if (hasSeparateExe && Path.GetFileName(testAppFilePath) == exeName)
+                {
+                    Directory.CreateDirectory(exePath);
+                    extensionFilePath = testAppFilePath.Replace(testAppDirPath, exePath);
+                }
+                else
+                {
+                    extensionFilePath = testAppFilePath.Replace(testAppDirPath, extensionDirPath);
+                }
 
-            string sourcePath = Path.GetDirectoryName(testAppPath);
+                Directory.CreateDirectory(Path.GetDirectoryName(extensionFilePath));
 
-            foreach (string sourceFilePath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
-            {
-                string replacementPath = separateExe && Path.GetFileName(sourceFilePath) == exeName ? exePath : destinationPath;
-
-                string destinationFilePath = sourceFilePath.Replace(sourcePath, replacementPath);
-
-                string destinationDirPath = Path.GetDirectoryName(destinationFilePath);
-
-                Directory.CreateDirectory(destinationDirPath);
-
-                File.Copy(sourceFilePath, destinationFilePath, true);
+                File.Copy(testAppFilePath, extensionFilePath, true);
             }
         }
 
@@ -170,11 +166,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             };
         }
 
-        private static bool HasSeparateExe(string directory, string exe)
-        {
-            return !string.IsNullOrEmpty(directory) && !string.IsNullOrEmpty(exe);
-        }
-
         private string GetExtensionDirectoryName(HostBuilderSettings settings, ConfigDirectory configDirectory)
         {
             switch (configDirectory)
@@ -183,12 +174,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     return settings.UserConfigDirectory;
                 case ConfigDirectory.SharedConfigDirectory:
                     return settings.SharedConfigDirectory;
-                case ConfigDirectory.DotnetToolsDirectory:
+                case ConfigDirectory.DotnetToolsExtensionDirectory:
                     return settings.DotnetToolsExtensionDirectory;
                 case ConfigDirectory.ExecutingAssemblyDirectory:
                     return settings.ExecutingAssemblyDirectory;
                 default:
-                    throw new Exception("Config Directory not found.");
+                    throw new ArgumentException("configDirectory not found.");
             }
         }
 
@@ -197,7 +188,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ExecutingAssemblyDirectory,
             SharedConfigDirectory,
             UserConfigDirectory,
-            DotnetToolsDirectory
+            DotnetToolsExtensionDirectory
         }
     }
 }
