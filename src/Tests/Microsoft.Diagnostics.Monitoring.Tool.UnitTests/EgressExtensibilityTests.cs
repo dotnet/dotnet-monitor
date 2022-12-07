@@ -33,8 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private const string TestAppExe = TestAppName + ".exe";
         private const string DotnetToolsExtensionDir = ".store\\tool-name\\7.0\\tool-name\\7.0\\tools\\net7.0\\any";
         private const string DotnetToolsExeDir = "";
-
-        public static byte[] ByteArray = Encoding.ASCII.GetBytes(string.Empty);
+        private readonly static byte[] ByteArray = Encoding.ASCII.GetBytes(string.Empty);
 
         public EgressExtensibilityTests(ITestOutputHelper outputHelper)
         {
@@ -193,8 +192,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
         }
 
-        /// This is the order of configuration sources where a name with a lower
-        /// enum value has a lower precedence in configuration.
         public enum ConfigDirectory
         {
             ExecutingAssemblyDirectory,

@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static readonly string ExecutingAssemblyDirectoryPath =
             GetEnvironmentOverrideOrValue(
                 ExecutingAssemblyDirectoryOverrideEnvironmentVariable,
-                Assembly.GetExecutingAssembly().Location);
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
         public string[] Urls { get; set; }
 
