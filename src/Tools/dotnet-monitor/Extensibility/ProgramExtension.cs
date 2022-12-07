@@ -68,7 +68,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
             string exeName = Declaration.Program;
 
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Path.GetExtension(exeName) == ".exe")
             {
                 exeName = Path.GetFileNameWithoutExtension(exeName);
             }
