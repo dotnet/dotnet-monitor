@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsDumpSupported))]
+        [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Full)]
         [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Mini)]
         [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Triage)]
