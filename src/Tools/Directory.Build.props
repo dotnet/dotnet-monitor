@@ -9,7 +9,6 @@
     <PackAsTool>true</PackAsTool>
     <PackAsToolShimRuntimeIdentifiers>win-x64;win-x86;win-arm64;win-arm;osx-x64;linux-x64;linux-musl-x64;linux-arm64;linux-musl-arm64;linux-arm</PackAsToolShimRuntimeIdentifiers>
     <PackagedShimOutputRootDirectory>$(OutputPath)</PackagedShimOutputRootDirectory>
-    <ThirdPartyNotice></ThirdPartyNotice>
   </PropertyGroup>
   <ItemGroup>
     <NativeArtifactDirectories Include="$(ArtifactsBinDir)Linux.arm64.$(Configuration)" TargetRid="linux-arm64" LibraryPrefix="lib" LibraryExtension=".so" SymbolsExtension=".so.dbg" />
@@ -23,7 +22,7 @@
     <NativeArtifactDirectories Include="$(ArtifactsBinDir)Windows_NT.x86.$(Configuration)" TargetRid="win-x86" LibraryPrefix="" LibraryExtension=".dll" SymbolsExtension=".pdb" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(IsPackable)' == 'true' and '$(ThirdPartyNotice)' != ''">
-    <None Include="$(ThirdPartyNotice)" Pack="true" PackagePath="notices" Visible="false" />
+  <ItemGroup Condition=" '$(IsPackable)' == 'true' and '$(ThirdPartyNoticesFilePath)' != ''">
+    <None Include="$(ThirdPartyNoticesFilePath)" Pack="true" PackagePath="notices" Visible="false" />
   </ItemGroup>
 </Project>
