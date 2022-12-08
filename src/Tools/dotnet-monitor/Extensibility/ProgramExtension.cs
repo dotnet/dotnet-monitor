@@ -126,6 +126,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             _logger.ExtensionEgressPayloadCompleted(p.Id);
 
             EgressArtifactResult result = await parser.ReadResult();
+
+            p.Kill();
+
+            while (!p.HasExited)
+            {
+                Thread.Sleep(5); // Arbitrary - testing to see if this resolves timing issue seen in testing.
+            }
+
             _logger.ExtensionExited(p.Id, p.ExitCode);
 
             return result;

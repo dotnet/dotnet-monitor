@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public const string SampleFailureMessage = "the extension failed";
         private const string ProviderName = "TestingProvider"; // Must match the name in extension.json
         private const string AppName = "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp";
-        private const string DotnetToolsExtensionDir = ".store\\tool-name\\7.0\\tool-name\\7.0\\tools\\net7.0\\any"; // TODO: Don't have this be a fixed version
+        private static readonly string DotnetToolsExtensionDir = Path.Combine(".store", "tool-name", "7.0", "tool-name", "7.0", "tools", "net7.0", "any");
         private const string DotnetToolsExeDir = "";
         private readonly static byte[] ByteArray = Encoding.ASCII.GetBytes(string.Empty);
 
@@ -105,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             string directoryName = GetExtensionDirectoryName(settings, configDirectory);
 
-            string extensionDirPath = configDirectory != ConfigDirectory.DotnetToolsExtensionDirectory ? Path.Combine(directoryName, ExtensionsFolder, AppName) : Path.Combine(directoryName, DotnetToolsExtensionDir);
+            string extensionDirPath = configDirectory == ConfigDirectory.DotnetToolsExtensionDirectory ? Path.Combine(directoryName, DotnetToolsExtensionDir) : Path.Combine(directoryName, ExtensionsFolder, AppName);
 
             CopyExtensionFiles(extensionDirPath, exePath);
 
