@@ -35,10 +35,12 @@ StackSampler::StackSampler(ICorProfilerInfo12* profilerInfo) : _profilerInfo(pro
 
 void StackSampler::AddProfilerEventMask(DWORD& eventsLow)
 {
-    eventsLow |= COR_PRF_MONITOR::COR_PRF_ENABLE_STACK_SNAPSHOT;
+    eventsLow |= COR_PRF_MONITOR::COR_PRF_ENABLE_STACK_SNAPSHOT | COR_PRF_MONITOR_THREADS;
 }
 
-HRESULT StackSampler::CreateCallstack(std::vector<std::unique_ptr<StackSamplerState>>& stackStates, std::shared_ptr<NameCache>& nameCache)
+HRESULT StackSampler::CreateCallstack(std::vector<std::unique_ptr<StackSamplerState>>& stackStates,
+    std::shared_ptr<NameCache>& nameCache,
+    std::shared_ptr<ThreadNameCache>& threadNames)
 {
     HRESULT hr;
 
@@ -63,6 +65,12 @@ HRESULT StackSampler::CreateCallstack(std::vector<std::unique_ptr<StackSamplerSt
         DWORD nativeThreadId = 0;
         IfFailRet(_profilerInfo->GetThreadInfo(threadID, &nativeThreadId));
         stackState->GetStack().SetThreadId(nativeThreadId);
+
+        tstring name;
+        if (threadNames->Get(threadID, name))
+        {
+            stackState->GetStack().SetName(name);
+        }
 
         //TODO According to docs, need to block ThreadDestroyed while stack walking. Is this still a  requirement?
         hr = _profilerInfo->DoStackSnapshot(threadID, DoStackSnapshotCallbackWrapper, COR_PRF_SNAPSHOT_REGISTER_CONTEXT, stackState.get(), nullptr, 0);

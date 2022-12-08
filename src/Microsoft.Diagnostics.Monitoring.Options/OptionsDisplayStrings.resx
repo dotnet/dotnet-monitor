@@ -677,6 +677,56 @@
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientId" xml:space="preserve">
     <value>Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage.</value>
   </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_BucketName" xml:space="preserve">
+    <value>The name of the bucket used for storage</value>
+    <comment>The description provided for the BucketName parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_Endpoint" xml:space="preserve">
+    <value>The endpoint of S3 to connect to. This is optional in case of using AWS storage.</value>
+    <comment>The description provided for the Endpoint parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfileName" xml:space="preserve">
+    <value>The AWS profile name to be used for login</value>
+    <comment>The description provided for the AWSProfileName parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfilePath" xml:space="preserve">
+    <value>The AWS profile path, if profile details not stored in default path</value>
+    <comment>The description provided for the AWSProfilePath parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_RegionName" xml:space="preserve">
+    <value>The name of the S3 region</value>
+    <comment>The description provided for the RegionName parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_AccessKeyId" xml:space="preserve">
+    <value>The AWS AccessKeyId for IAM user to login</value>
+    <comment>The description provided for the AccessKeyId parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey" xml:space="preserve">
+    <value>The AWS SecretAccessKey associated AccessKeyId for IAM user to login</value>
+    <comment>The description provided for the SecretAccessKey parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_GeneratePreSignedUrl" xml:space="preserve">
+    <value>A boolean flag indicates if the return value of egress provider should be a pre-signed URL or only the bucket name and object id of uploaded entry.</value>
+    <comment>The description provided for the GeneratePresSignedUrl parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiry" xml:space="preserve">
+    <value>The amount of time the generated pre-signed url will be accessible.</value>
+    <comment>The description provided for the PreSignedUrlExpiry parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_ForcePathStyle" xml:space="preserve">
+    <value>The boolean flag set for AWS connection configuration ForcePathStyle option.</value>
+    <comment>The description provided for the ForcePathStyle parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="ErrorMessage_EgressS3FailedMissingSecrets" xml:space="preserve">
+    <value>S3 storage egress failed: Neither the secrets file nor the password are specified.</value>
+    <comment>Gets the string for rejecting validation due to missing credentials for S3 options.</comment>
+  </data>
+  <data name="ErrorMessage_EgressS3FailedMissingOption" xml:space="preserve">
+    <value>The {0} field is required.</value>
+    <comment>Gets the string for rejecting validation due to missing field.
+1 Format Parameter:
+0. fieldName: The name of the field that is missing</comment>
+  </data>
   <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_Duration" xml:space="preserve">
     <value>The duration of time in which live metrics are collected.</value>
     <comment>The description provided for the Duration parameter on CollectLiveMetricsOptions.</comment>
@@ -707,6 +757,10 @@
   <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignatureName" xml:space="preserve">
     <value>The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map.</value>
     <comment>The description provided for the QueueSharedAccessSignatureName parameter on AzureBlobEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EgressOptions_S3Storage" xml:space="preserve">
+    <value>Mapping of S3 storage egress provider names to their options.</value>
+    <comment>The description provided for the S3Storage parameter on EgressOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_StorageOptions_SharedLibraryPath" xml:space="preserve">
     <value>The location to which libraries shared with target processes will be copied at startup.</value>

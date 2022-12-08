@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
 {
-    internal class StatusCodeStrings
+    internal static class StatusCodeStrings
     {
         public static readonly string Status400BadRequest = StatusCodes.Status400BadRequest.ToString(CultureInfo.InvariantCulture);
         public static readonly string Status401Unauthorized = StatusCodes.Status401Unauthorized.ToString(CultureInfo.InvariantCulture);

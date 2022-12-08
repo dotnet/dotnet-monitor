@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private sealed class OperationsTracker : IDisposable
         {
-            private int _count = 0;
+            private int _count;
 
             public IDisposable Register()
             {

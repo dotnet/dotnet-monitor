@@ -36,13 +36,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         private Dictionary<string, TaskCompletionSource<string>> _waitingForEnvironmentVariables;
 
-        private bool _isDiposed;
+        private long _disposedState;
 
         public Architecture? Architecture
         {
             get => _runner.Architecture;
             set => _runner.Architecture = value;
         }
+
+        public string BoundUrl { get; private set; }
 
         /// <summary>
         /// The mode of the diagnostic port connection. Default is <see cref="DiagnosticPortConnectionMode.Listen"/>
@@ -73,7 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public bool SetRuntimeIdentifier { get; set; } = true;
 
-        public string ProfilerLogLevel { get; set; } = null;
+        public string ProfilerLogLevel { get; set; }
 
         public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current)
         {
@@ -94,13 +96,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public async ValueTask DisposeAsync()
         {
-            lock (_adapter)
+            if (!DisposableHelper.CanDispose(ref _disposedState))
             {
-                if (_isDiposed)
-                {
-                    return;
-                }
-                _isDiposed = true;
+                return;
             }
 
             _adapter.ReceivedStandardOutputLine -= StandardOutputCallback;
@@ -116,7 +114,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         {
             if (string.IsNullOrEmpty(ScenarioName))
             {
-                throw new ArgumentNullException(nameof(ScenarioName));
+                throw new InvalidOperationException($"'{nameof(ScenarioName)}' is required.");
             }
 
             if (!File.Exists(_appPath))
@@ -134,7 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             {
                 if (string.IsNullOrEmpty(DiagnosticPortPath))
                 {
-                    throw new ArgumentNullException(nameof(DiagnosticPortPath));
+                    throw new InvalidOperationException($"'{nameof(DiagnosticPortPath)}' is required.");
                 }
 
                 _adapter.Environment.Add("DOTNET_DiagnosticPorts", DiagnosticPortPath);
@@ -155,6 +153,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             await _adapter.StartAsync(token).ConfigureAwait(false);
 
             await _readySource.WithCancellation(token);
+        }
+
+        public Task StopAsync(CancellationToken token)
+        {
+            return _adapter.StopAsync(token);
         }
 
         public Task<int> WaitForExitAsync(CancellationToken token)
@@ -209,7 +212,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             switch ((TestAppLogEventIds)logEvent.EventId)
             {
                 case TestAppLogEventIds.ScenarioState:
-                    Assert.True(logEvent.State.TryGetValue("state", out TestAppScenarios.ScenarioState state));
+                    Assert.True(logEvent.State.TryGetValue("State", out TestAppScenarios.ScenarioState state));
                     switch (state)
                     {
                         case TestAppScenarios.ScenarioState.Ready:
@@ -219,8 +222,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                     break;
                 case TestAppLogEventIds.ReceivedCommand:
                     Assert.NotNull(_currentCommandSource);
-                    Assert.True(logEvent.State.TryGetValue("expected", out bool expected));
-                    Assert.True(logEvent.State.TryGetValue("command", out _));
+                    Assert.True(logEvent.State.TryGetValue("Expected", out bool expected));
+                    Assert.True(logEvent.State.TryGetValue("Command", out _));
                     if (expected)
                     {
                         Assert.True(_currentCommandSource.TrySetResult(null));
@@ -231,8 +234,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                     }
                     break;
                 case TestAppLogEventIds.EnvironmentVariable:
-                    Assert.True(logEvent.State.TryGetValue("name", out string name));
-                    Assert.True(logEvent.State.TryGetValue("value", out string value));
+                    Assert.True(logEvent.State.TryGetValue("Name", out string name));
+                    Assert.True(logEvent.State.TryGetValue("Value", out string value));
                     lock (_waitingForEnvironmentVariables)
                     {
                         if (_waitingForEnvironmentVariables.TryGetValue(name, out TaskCompletionSource<string> completedGettingVal))
@@ -242,6 +245,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                             _waitingForEnvironmentVariables.Remove(name);
                         }
                     }
+                    break;
+                case TestAppLogEventIds.BoundUrl:
+                    Assert.True(logEvent.State.TryGetValue("Url", out string url));
+                    BoundUrl = url;
                     break;
             }
         }

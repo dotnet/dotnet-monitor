@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
             return new Factory();
         }
 
-        private class Factory : INativeFileProviderFactory
+        private sealed class Factory : INativeFileProviderFactory
         {
             public IFileProvider Create(string runtimeIdentifier)
             {

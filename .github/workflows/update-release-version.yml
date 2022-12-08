@@ -1,4 +1,5 @@
 name: 'Update release version'
+run-name: '[${{ github.ref_name }}] Update version to ${{ inputs.release_version }} ${{ inputs.release_type }}'
 
 on:
   workflow_dispatch:

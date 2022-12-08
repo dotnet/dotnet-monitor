@@ -228,10 +228,12 @@ if [[ "$__Test" == 1 ]]; then
       "$__RepoRootDir/eng/common/build.sh" \
         --test \
         --configuration "$__BuildType" \
+        -nobl \
         /bl:"$__LogsDir"/Test.binlog \
         /p:BuildArch="$__BuildArch" \
         /p:TestGroup="$__TestGroup" \
-        $__CommonMSBuildArgs
+        $__CommonMSBuildArgs \
+        $__UnprocessedBuildArgs
 
       if [ $? != 0 ]; then
           exit 1

@@ -21,7 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -101,6 +101,43 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     operationResult = await apiClient.GetOperationStatus(response.OperationUri);
                     Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
                     Assert.Equal(OperationState.Cancelled, operationResult.OperationStatus.Status);
+                    Assert.False(operationResult.OperationStatus.IsStoppable);
+
+                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: (toolRunner) =>
+                {
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
+                });
+        }
+
+        [Fact]
+        public async Task EgressStopTest()
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    int processId = await appRunner.ProcessIdTask;
+
+                    OperationResponse response = await apiClient.EgressTraceAsync(processId, durationSeconds: -1, FileProviderName);
+                    Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
+
+                    OperationStatusResponse operationResult = await apiClient.GetOperationStatus(response.OperationUri);
+                    Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
+                    Assert.Equal(OperationState.Running, operationResult.OperationStatus.Status);
+                    Assert.True(operationResult.OperationStatus.IsStoppable);
+
+                    HttpStatusCode deleteStatus = await apiClient.StopEgressOperation(response.OperationUri);
+                    Assert.Equal(HttpStatusCode.Accepted, deleteStatus);
+
+                    OperationStatusResponse pollOperationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
+                    Assert.Equal(HttpStatusCode.Created, pollOperationResult.StatusCode);
+                    Assert.Equal(OperationState.Succeeded, pollOperationResult.OperationStatus.Status);
+                    Assert.False(pollOperationResult.OperationStatus.IsStoppable);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -133,10 +170,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     OperationStatusResponse status1 = await apiClient.GetOperationStatus(response1.OperationUri);
                     OperationSummary summary1 = result.First(os => os.OperationId == status1.OperationStatus.OperationId);
                     ValidateOperation(status1.OperationStatus, summary1);
+                    Assert.True(summary1.IsStoppable);
+                    Assert.Equal(FileProviderName, summary1.EgressProviderName);
 
                     OperationStatusResponse status2 = await apiClient.GetOperationStatus(response2.OperationUri);
                     OperationSummary summary2 = result.First(os => os.OperationId == status2.OperationStatus.OperationId);
                     ValidateOperation(status2.OperationStatus, summary2);
+                    Assert.False(summary2.IsStoppable);
+                    Assert.Equal(FileProviderName, summary2.EgressProviderName);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -226,6 +267,103 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
+        [Fact]
+        public async Task HttpEgressCancelTest()
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    int processId = await appRunner.ProcessIdTask;
+
+                    using ResponseStreamHolder responseBox = await apiClient.HttpEgressTraceAsync(processId, durationSeconds: -1);
+
+                    Uri operationUri = responseBox.Response.Headers.Location;
+                    Assert.NotNull(operationUri);
+
+                    // Start consuming the stream
+                    Task drainResponseTask = responseBox.Stream.CopyToAsync(Stream.Null);
+
+                    // Make sure the operation exists
+                    OperationStatusResponse operationResult = await apiClient.GetOperationStatus(operationUri);
+                    Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
+                    Assert.True(operationResult.OperationStatus.Status == OperationState.Running);
+
+                    // Cancel the trace operation
+                    HttpStatusCode deleteStatus = await apiClient.CancelEgressOperation(operationUri);
+                    Assert.Equal(HttpStatusCode.OK, deleteStatus);
+
+                    operationResult = await apiClient.GetOperationStatus(operationUri);
+                    Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
+                    Assert.Equal(OperationState.Cancelled, operationResult.OperationStatus.Status);
+
+                    await Assert.ThrowsAsync<IOException>(() => drainResponseTask);
+
+                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: (toolRunner) =>
+                {
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
+                });
+        }
+
+        [Fact]
+        public async Task HttpEgressStopTest()
+        {
+            using TemporaryDirectory tempDir = new(_outputHelper);
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    int processId = await appRunner.ProcessIdTask;
+
+                    using ResponseStreamHolder responseBox = await apiClient.HttpEgressTraceAsync(processId, durationSeconds: -1);
+
+                    Uri operationUri = responseBox.Response.Headers.Location;
+                    Assert.NotNull(operationUri);
+
+                    // Start saving the stream
+                    string traceFile = Path.Combine(tempDir.FullName, "test.nettrace");
+                    using FileStream traceFileWriter = File.OpenWrite(traceFile);
+
+                    Task drainResponseTask = responseBox.Stream.CopyToAsync(traceFileWriter);
+
+                    // Make sure the operation exists
+                    OperationStatusResponse operationResult = await apiClient.GetOperationStatus(operationUri);
+                    Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
+                    Assert.True(operationResult.OperationStatus.Status == OperationState.Running);
+
+                    // Stop the trace operation
+                    HttpStatusCode deleteStatus = await apiClient.StopEgressOperation(operationUri);
+                    Assert.Equal(HttpStatusCode.Accepted, deleteStatus);
+
+                    using CancellationTokenSource timeoutCancellation = new(CommonTestTimeouts.TraceTimeout);
+                    await drainResponseTask.WaitAsync(timeoutCancellation.Token);
+                    await traceFileWriter.DisposeAsync();
+
+                    operationResult = await apiClient.PollOperationToCompletion(operationUri);
+                    Assert.Equal(HttpStatusCode.Created, operationResult.StatusCode);
+                    Assert.Equal(OperationState.Succeeded, operationResult.OperationStatus.Status);
+
+                    // Verify the resulting trace has rundown information
+                    using FileStream traceStream = File.OpenRead(traceFile);
+                    await TraceTestUtilities.ValidateTrace(traceStream, expectRundown: true);
+
+                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: (toolRunner) =>
+                {
+                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
+                });
+        }
+
         /// <summary>
         /// Tests that turning off HTTP egress results in an error for dumps and logs (gcdumps and traces are currently not tested)
         /// </summary>
@@ -297,7 +435,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 #endif
         }
 
-        private async Task<HttpResponseMessage> TraceWithDelay(ApiClient client, int processId, bool delay = true)
+        private static async Task<HttpResponseMessage> TraceWithDelay(ApiClient client, int processId, bool delay = true)
         {
             HttpResponseMessage message = await client.ApiCall(FormattableString.Invariant($"/trace?pid={processId}&durationSeconds=-1"));
             if (delay)
@@ -307,12 +445,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             return message;
         }
 
-        private Task<HttpResponseMessage> EgressDirect(ApiClient client, int processId)
+        private static Task<HttpResponseMessage> EgressDirect(ApiClient client, int processId)
         {
             return client.ApiCall(FormattableString.Invariant($"/trace?pid={processId}&egressProvider={FileProviderName}"));
         }
 
-        private async Task<OperationResponse> EgressTraceWithDelay(ApiClient apiClient, int processId, bool delay = true)
+        private static async Task<OperationResponse> EgressTraceWithDelay(ApiClient apiClient, int processId, bool delay = true)
         {
             try
             {
@@ -329,17 +467,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         }
 
-        private async Task CancelEgressOperation(ApiClient apiClient, OperationResponse response)
+        private static async Task CancelEgressOperation(ApiClient apiClient, OperationResponse response)
         {
             HttpStatusCode deleteStatus = await apiClient.CancelEgressOperation(response.OperationUri);
             Assert.Equal(HttpStatusCode.OK, deleteStatus);
         }
 
-        private void ValidateOperation(OperationStatus expected, OperationSummary summary)
+        private static void ValidateOperation(OperationStatus expected, OperationSummary summary)
         {
             Assert.Equal(expected.OperationId, summary.OperationId);
             Assert.Equal(expected.Status, summary.Status);
             Assert.Equal(expected.CreatedDateTime, summary.CreatedDateTime);
+            Assert.Equal(expected.EgressProviderName, summary.EgressProviderName);
+            Assert.Equal(expected.IsStoppable, summary.IsStoppable);
         }
 
         public void Dispose()

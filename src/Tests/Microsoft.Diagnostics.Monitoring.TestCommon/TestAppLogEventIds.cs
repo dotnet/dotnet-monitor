@@ -12,6 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         ScenarioState = 1,
         ReceivedCommand = 2,
         EnvironmentVariable = 3,
+        BoundUrl = 4,
     }
     public static class TestAppLogEventIdExtensions
     {

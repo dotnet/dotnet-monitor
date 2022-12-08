@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    internal class LimitsTestsConstants
+    internal static class LimitsTestsConstants
     {
         public const int ExpectedActionCount = 4;
         public const int UnknownActionCount = 40;

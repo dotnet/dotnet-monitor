@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         /// Creates a collection rule trigger sourced from the event pipe of the target
         /// process represented by the specified endpoint.
         /// </summary>
-        public ICollectionRuleTrigger Create<TSettings>(
+        public static ICollectionRuleTrigger Create<TSettings>(
             IEndpointInfo endpointInfo,
             MonitoringSourceConfiguration configuration,
             ITraceEventTriggerFactory<TSettings> factory,

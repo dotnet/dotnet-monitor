@@ -15,25 +15,25 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
     /// </summary>
     internal class ResponseStreamHolder : IDisposable
     {
-        private readonly HttpResponseMessage _response;
+        public HttpResponseMessage Response { get; }
 
         public Stream Stream { get; private set; }
 
         private ResponseStreamHolder(HttpResponseMessage response)
         {
-            _response = response ?? throw new ArgumentNullException(nameof(response));
+            Response = response ?? throw new ArgumentNullException(nameof(response));
         }
 
         public void Dispose()
         {
             // The response disposes the stream when disposed.
-            _response.Dispose();
+            Response.Dispose();
         }
 
         public static async Task<ResponseStreamHolder> CreateAsync(DisposableBox<HttpResponseMessage> responseBox)
         {
             using DisposableBox<ResponseStreamHolder> holderBox = new(new(responseBox.Release()));
-            holderBox.Value.Stream = await holderBox.Value._response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            holderBox.Value.Stream = await holderBox.Value.Response.Content.ReadAsStreamAsync().ConfigureAwait(false);
             return holderBox.Release();
         }
     }

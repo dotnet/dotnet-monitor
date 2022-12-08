@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         // String returned for a process field when its value could not be retrieved. This is the same
         // value that is returned by the runtime when it could not determine the value for each of those fields.
-        private static readonly string ProcessFieldUnknownValue = "unknown";
+        private const string ProcessFieldUnknownValue = "unknown";
 
         // The value of the operating system field of the ProcessInfo result when the target process is running
         // on a Windows operating system.
@@ -41,12 +41,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             // when the extra process information was not provided.
             CommandLine = commandLine ?? ProcessFieldUnknownValue;
             ProcessName = processName ?? ProcessFieldUnknownValue;
-        }
-
-        public static async Task<IProcessInfo> FromEndpointInfoAsync(IEndpointInfo endpointInfo)
-        {
-            using CancellationTokenSource extendedInfoCancellation = new(ExtendedProcessInfoTimeout);
-            return await FromEndpointInfoAsync(endpointInfo, extendedInfoCancellation.Token);
         }
 
         // Creates an IProcessInfo object from the IEndpointInfo. Attempts to get the command line using event pipe
@@ -102,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     if (null != pipeline)
                     {
-                        _ = Task.Run(() => pipeline.DisposeAsync());
+                        _ = Task.Run(pipeline.DisposeAsync);
                     }
                 }
             }

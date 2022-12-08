@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Validation
             {
                 // AllowHexSpecifier requires that the "0x" is removed before attempting to parse.
                 // It parses the actual value, not the "0x" syntax prefix.
-                if (!long.TryParse(value.Substring(2), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out result))
+                if (!long.TryParse(value.AsSpan(2), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out result))
                 {
                     error = string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_ValueNotHex, value);
                     return false;

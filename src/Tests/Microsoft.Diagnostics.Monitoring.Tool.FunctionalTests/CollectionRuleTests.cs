@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent);
+                        .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), "TextFileOutput", ExpectedFilePath, ExpectedFileContent);
 
                     ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName);
                 });
@@ -116,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             options.GreaterThan = 5;
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
                         })
-                        .AddExecuteActionAppAction("TextFileOutput", ExpectedFilePath, ExpectedFileContent)
+                        .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), "TextFileOutput", ExpectedFilePath, ExpectedFileContent)
                         .SetActionLimits(count: 1);
 
                     ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName);
@@ -278,7 +278,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             await toolRunner.StartAsync();
 
-            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
+            await using AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
             appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;
@@ -342,7 +342,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             await toolRunner.StartAsync();
 
-            AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
+            await using AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
             appRunner.ScenarioName = TestAppScenarios.AsyncWait.Name;

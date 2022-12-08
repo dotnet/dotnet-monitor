@@ -29,6 +29,8 @@ set(SOURCES
     Stacks/StacksEventProvider.cpp
     Stacks/StackSampler.cpp
     Utilities/NameCache.cpp
+    Utilities/ThreadNameCache.cpp
+    Utilities/ThreadUtilities.cpp
     Utilities/TypeNameUtilities.cpp
     ClassFactory.cpp
     DllMain.cpp
