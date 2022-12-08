@@ -19,6 +19,7 @@ using DisposableHelper = Microsoft.Diagnostics.Monitoring.TestCommon.DisposableH
 
 namespace CollectionRuleActions.UnitTests
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     [Collection(TestCollections.CollectionRuleActions)]
     public sealed class ExecuteActionTests
     {
