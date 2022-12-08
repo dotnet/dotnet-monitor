@@ -36,9 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect)]
-#if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen)]
-#endif
         public Task InfoEndpointValidationTest(DiagnosticPortConnectionMode mode)
         {
             return ScenarioRunner.SingleTarget(

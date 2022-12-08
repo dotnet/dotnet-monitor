@@ -20,6 +20,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -476,7 +477,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.True(false, "Unknown algorithm");
                 }
 
-                JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonSerializerOptionsFactory.JsonIgnoreCondition.WhenWritingNull);
+                JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonIgnoreCondition.WhenWritingNull);
                 serializerOptions.IgnoreReadOnlyProperties = true;
                 string privateKeyJson = JsonSerializer.Serialize(exportableJwk, serializerOptions);
                 string privateKeyEncoded = Base64UrlEncoder.Encode(privateKeyJson);

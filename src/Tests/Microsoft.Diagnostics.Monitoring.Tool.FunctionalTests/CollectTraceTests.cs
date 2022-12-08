@@ -36,7 +36,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-#if NET5_0_OR_GREATER
         [Fact]
         public Task StopOnEvent_Succeeds_WithMatchingOpcode()
         {
@@ -185,6 +184,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 return (didSeeStoppingEvent, didSeeRundownEvents);
             });
         }
-#endif // NET5_0_OR_GREATER
     }
 }
