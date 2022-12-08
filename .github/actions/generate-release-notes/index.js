@@ -90,7 +90,7 @@ async function getPrsToMention(octokit, branch, repoOwner, repoName, minMergeDat
     const commitObjects = await octokit.paginate(octokit.rest.repos.listCommits, {
         owner: repoOwner,
         repo: repoName,
-        sha: branch,
+        sha: branch, // To filter by branch, set the sha field to the branch name.
         since: minMergeDate
     });
 
