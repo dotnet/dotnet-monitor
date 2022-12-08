@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
-#if NET6_0_OR_GREATER
     internal sealed class AspNetScenario
     {
         public static Command Command()
@@ -66,5 +65,4 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             }
         }
     }
-#endif
 }

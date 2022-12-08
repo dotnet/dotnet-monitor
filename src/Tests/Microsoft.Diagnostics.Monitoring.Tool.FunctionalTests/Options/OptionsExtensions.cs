@@ -13,6 +13,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
@@ -185,7 +186,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             string resultToken = tokenHandler.WriteToken(newToken);
 
-            JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonSerializerOptionsFactory.JsonIgnoreCondition.WhenWritingNull);
+            JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonIgnoreCondition.WhenWritingNull);
             string publicKeyJson = JsonSerializer.Serialize(exportableJwk, serializerOptions);
 
             string publicKeyEncoded = Base64UrlEncoder.Encode(publicKeyJson);

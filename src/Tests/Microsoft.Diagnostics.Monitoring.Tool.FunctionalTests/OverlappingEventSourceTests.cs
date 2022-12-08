@@ -34,7 +34,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-#if NET6_0_OR_GREATER
         private const string DefaultRuleName = "FunctionalTestRule";
         private readonly TimeSpan TraceDuration = Timeout.InfiniteTimeSpan;
         private const string AppUrl = "http://+:0";
@@ -179,6 +178,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             return holder;
         }
-#endif
     }
 }

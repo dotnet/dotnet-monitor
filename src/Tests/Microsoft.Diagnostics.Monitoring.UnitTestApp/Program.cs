@@ -15,9 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
         {
             return new CommandLineBuilder(new RootCommand()
             {
-#if NET6_0_OR_GREATER
                 AspNetScenario.Command(),
-#endif
                 AsyncWaitScenario.Command(),
                 ExecuteScenario.Command(),
                 LoggerScenario.Command(),

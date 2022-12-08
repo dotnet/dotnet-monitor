@@ -34,7 +34,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-#if NET5_0_OR_GREATER
         private const string DefaultRuleName = "FunctionalTestRule";
 
         /// <summary>
@@ -369,7 +368,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private static bool IsNotNet5OrGreaterOnUnix =>
             DotNetHost.RuntimeVersion.Major < 5 ||
             RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-
-#endif
     }
 }
