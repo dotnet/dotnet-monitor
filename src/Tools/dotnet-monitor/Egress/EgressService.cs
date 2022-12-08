@@ -118,7 +118,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             return typedServiceReference;
         }
 
-        private async static Task<EgressArtifactSettings> CreateSettings(IEndpointInfo source, string fileName, string contentType, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
+        private static async Task<EgressArtifactSettings> CreateSettings(IEndpointInfo source, string fileName, string contentType, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
             EgressArtifactSettings settings = new();
             settings.Name = fileName;
