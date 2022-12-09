@@ -16,7 +16,8 @@ graph TD
     G --> |OPTIONAL| I[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/api.md'>API</a>]
     G --> |OPTIONAL| J["<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/testing.md'>Testing</a>"]
     G --> |OPTIONAL| K["<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/configuration.md'>Configuration</a>"]
-    G --> |OPTIONAL| L[Egress -> COMING SOON]
+    G --> |OPTIONAL| L["<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/aks.md'>AKS</a>"]
+    G --> |OPTIONAL| M[Egress -> COMING SOON]
 ```
 
 *TODO*: Need to update links to point to main branch of dotnet-monitor repo, since it appears that [we can't do relative links in GitHub Mermaid]( https://gist.github.com/ChristopherA/bffddfdf7b1502215e44cec9fb766dfd#flowchart-with-hyperlinks).
