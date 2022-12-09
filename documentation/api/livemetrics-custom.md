@@ -63,7 +63,7 @@ The expected content type is `application/json`.
 ### Sample Request
 
 ```http
-GET /livemetrics?pid=21632&durationSeconds=60 HTTP/1.1
+POST /livemetrics?pid=21632&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 
@@ -95,7 +95,11 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
     "displayName": "Counter 1",
     "unit": "B",
     "counterType": "Metric",
-    "value": 3
+    "value": 3,
+    "metadata": {
+        "MyKey 1": "MyValue 1",
+        "MyKey 2": "MyValue 2"
+    }
 }
 {
     "timestamp": "2021-08-31T16:58:39.7515128+00:00",
@@ -104,7 +108,8 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
     "displayName": "Counter 2",
     "unit": "MB",
     "counterType": "Metric",
-    "value": 126
+    "value": 126,
+    "metadata": {}
 }
 ```
 
