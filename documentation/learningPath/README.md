@@ -14,8 +14,8 @@ graph TD
     F --> G[Explore Different Topics]
     G --> |OPTIONAL| H[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/collectionrules.md'>Collection Rules</a>]
     G --> |OPTIONAL| I[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/api.md'>API</a>]
-    G --> |OPTIONAL| J["<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/testing.md'>Testing</a>"]
-    G --> |OPTIONAL| K["<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/configuration.md'>Configuration</a>"]
-    G --> |OPTIONAL| L["<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/aks.md'>AKS</a>"]
+    G --> |OPTIONAL| J[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/testing.md'>Testing</a>]
+    G --> |OPTIONAL| K[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/configuration.md'>Configuration</a>]
+    G --> |OPTIONAL| L[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/aks.md'>AKS</a>]
     G --> |OPTIONAL| M[Egress -> COMING SOON]
 ```
