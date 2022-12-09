@@ -96,7 +96,7 @@ The nightly image is `mcr.microsoft.com/dotnet/nightly/monitor`. The tag list is
 
 ## Release to nuget.org and Add GitHub Release
 
-1. Run the [Generate release notes](https://github.com/dotnet/dotnet-monitor/actions/workflows/generate-release-notes.yml) workflow, setting `Use workflow from` to the release branch and checking `Include PRs that were merged into main?` if you merged `main` into the release branch. Review and merge in the PR created by this workflow.
+1. Run the [Generate release notes](https://github.com/dotnet/dotnet-monitor/actions/workflows/generate-release-notes.yml) workflow, setting `Use workflow from` to the release branch. Review and merge in the PR created by this workflow.
 1. Start [release pipeline](https://dev.azure.com/dnceng/internal/_release?_a=releases&view=mine&definitionId=105). Allow the stages to trigger automatically (do not check the boxes in the associated dropdown). During creation of the release you must select the dotnet-monitor build to release from the list of available builds. This must be a build with the tag `MonitorRelease` and the associated `MonitorRelease` artifact (set `dotnet-monitor_build` to the pipeline run of `dotnet monitor` that is being released; set `dotnet-monitor_source` to the latest commit from `main`).
 1. The release will start the stage "Pre-Release Verification"; this will check that the above steps were done as expected. The name of the release will be updated automatically.
 1. Approve the sign-off step the day before the release after 8:45 AM PDT, when ready to publish.
