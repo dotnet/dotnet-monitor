@@ -27,8 +27,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
     [Collection(DefaultCollectionFixture.Name)]
     public class StacksTests
     {
-#if NET6_0_OR_GREATER
-
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
         private readonly TemporaryDirectory _tempDirectory;
@@ -466,6 +464,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             MethodName = ExpectedFunction
                         }
             };
-#endif
     }
 }

@@ -148,7 +148,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         // https://github.com/dotnet/dotnet-monitor/issues/1285
-        [ConditionalFact(nameof(IsNotCore31OnOSX))]
+        [Fact]
         public async Task EgressListTest()
         {
             await ScenarioRunner.SingleTarget(
@@ -424,15 +424,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
-        }
-
-        public static bool IsNotCore31OnOSX()
-        {
-#if NET5_0_OR_GREATER
-            return true;
-#else
-            return !RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
-#endif
         }
 
         private static async Task<HttpResponseMessage> TraceWithDelay(ApiClient client, int processId, bool delay = true)

@@ -36,7 +36,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-#if NET5_0_OR_GREATER
         private const string NonStartupRuleName = "NonStartupTestRule";
         private const string StartupRuleName = "StartupTestRule";
 
@@ -360,6 +359,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 Assert.Equal(expectedDescription, actualDescription);
             }
         }
-#endif
     }
 }

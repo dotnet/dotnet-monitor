@@ -12,13 +12,11 @@ namespace Microsoft.Diagnostics.Monitoring.Options
 {
     internal sealed class SimpleConsoleFormatterOptions
     {
-#if NET5_0_OR_GREATER
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_SimpleConsoleFormatterOptions_ColorBehavior))]
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public LoggerColorBehavior ColorBehavior { get; set; }
-#endif
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

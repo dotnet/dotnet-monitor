@@ -17,14 +17,6 @@ pr:
     - eng/actions
     - '**.md'
 
-schedules:
-- cron: 15 11 * * 6
-  displayName: Weekly Full Test Run
-  branches:
-    include:
-    - main
-  always: true
-
 parameters:
 - name: TestGroup
   displayName: 'Test Group'
@@ -40,6 +32,8 @@ parameters:
 variables:
 - name: _TeamName
   value: DotNetCore
+- name: _TPNFile
+  value: THIRD-PARTY-NOTICES.TXT
 - ${{ if notin(variables['Build.Reason'], 'PullRequest') }}:
   - name: Codeql.Enabled
     value: true
@@ -175,6 +169,37 @@ stages:
         - source: 'bin/OSX.arm64.Release'
         testGroup: None
   - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+    # Generate a TPN for only the dotnet-monitor project
+    - template: /eng/common/templates/job/job.yml
+      parameters:
+        name: Generate_TPN
+        displayName: Generate TPN
+        disableComponentGovernance: true
+        enableSbom: false
+        pool:
+          name: NetCore1ESPool-Internal
+          demands: ImageOverride -equals 1es-windows-2019
+        steps:
+        # Only restore the dotnet-monitor project so only packages we ship get included in the below CG scan
+        - script: >-
+            $(Build.SourcesDirectory)/restore.cmd -ci -projects $(Build.SourcesDirectory)/src/Tools/dotnet-monitor/dotnet-monitor.csproj
+          displayName: Restore dotnet-monitor tool packages
+            
+        - task: ComponentGovernanceComponentDetection@0
+          displayName: Component Detection (dotnet-monitor tool)
+
+        - task: notice@0
+          displayName: Generate TPN file
+          inputs:
+            outputfile: '$(Build.ArtifactStagingDirectory)/$(_TPNFile)'
+            outputformat: text
+
+        - task: PublishPipelineArtifact@1
+          displayName: Publish TPN
+          inputs:
+            artifactName: 'THIRD-PARTY-NOTICES'
+            targetPath: '$(Build.ArtifactStagingDirectory)/$(_TPNFile)'
+
     # Pack, sign, and publish
     - template: /eng/common/templates/job/job.yml
       parameters:
@@ -190,6 +215,7 @@ stages:
         - Linux_Musl_arm64_Release
         - MacOS_x64_Release
         - MacOS_arm64_Release
+        - Generate_TPN
         pool:
           name: NetCore1ESPool-Internal
           demands: ImageOverride -equals 1es-windows-2019
@@ -208,12 +234,19 @@ stages:
         - _BuildConfig: Release
         - _SignType: real
         steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: Download TPN
+          inputs:
+            buildType: current
+            artifactName: 'THIRD-PARTY-NOTICES'
+            targetPath: '$(Build.SourcesDirectory)'
         - script: >-
             $(Build.SourcesDirectory)/eng/cipacksignpublish.cmd
             /p:TeamName=$(_TeamName)
             /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
             /p:DotNetSignType=real
             /p:DotNetPublishUsingPipelines=true
+            /p:ThirdPartyNoticesFilePath='$(Build.SourcesDirectory)/$(_TPNFile)'
           displayName: Pack, Sign, and Publish
     # Register with BAR
     - template: /eng/common/templates/job/publish-build-assets.yml

@@ -43,11 +43,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-
-#if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
         public Task LogsAllCategoriesTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
@@ -89,10 +86,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
         public Task LogsDefaultLevelTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
@@ -121,10 +116,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
         public Task LogsDefaultLevelFallbackTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
@@ -162,10 +155,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
         public Task LogsDefaultLevelNoneNotSupportedViaQueryTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ScenarioRunner.SingleTarget(
@@ -198,10 +189,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
         public Task LogsDefaultLevelNoneNotSupportedViaBodyTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ScenarioRunner.SingleTarget(
@@ -234,10 +223,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
         public Task LogsUseAppFiltersViaQueryTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
@@ -268,10 +255,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
         public Task LogsUseAppFiltersViaBodyTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
@@ -307,10 +292,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
         public Task LogsUseAppFiltersAndFilterSpecsTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(
@@ -351,10 +334,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
-#if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Listen, LogFormat.NewlineDelimitedJson)]
-#endif
         public Task LogsWildcardTest(DiagnosticPortConnectionMode mode, LogFormat logFormat)
         {
             return ValidateLogsAsync(

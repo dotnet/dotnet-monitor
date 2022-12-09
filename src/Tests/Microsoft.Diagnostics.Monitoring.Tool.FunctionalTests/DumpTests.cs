@@ -34,17 +34,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsDumpSupported))]
+        [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Full)]
         [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Mini)]
         [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Triage)]
         [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.WithHeap)]
-#if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen, DumpType.Full)]
         [InlineData(DiagnosticPortConnectionMode.Listen, DumpType.Mini)]
         [InlineData(DiagnosticPortConnectionMode.Listen, DumpType.Triage)]
         [InlineData(DiagnosticPortConnectionMode.Listen, DumpType.WithHeap)]
-#endif
         public Task DumpTest(DiagnosticPortConnectionMode mode, DumpType type)
         {
             return RetryUtilities.RetryAsync(
@@ -55,17 +53,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         private Task DumpTestCore(DiagnosticPortConnectionMode mode, DumpType type)
         {
-#if !NET6_0_OR_GREATER
-            // Capturing non-full dumps via diagnostic command works inconsistently
-            // on Alpine for .NET 5 and lower (the dump command will return successfully, but)
-            // the dump file will not exist). Only test other dump types on .NET 6+
-            if (DistroInformation.IsAlpineLinux && type != DumpType.Full)
-            {
-                _outputHelper.WriteLine("Skipped on Alpine for .NET 5 and lower.");
-                return Task.CompletedTask;
-            }
-#endif
-
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,

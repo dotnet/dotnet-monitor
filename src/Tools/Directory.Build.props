@@ -21,4 +21,8 @@
     <NativeArtifactDirectories Include="$(ArtifactsBinDir)Windows_NT.x64.$(Configuration)" TargetRid="win-x64" LibraryPrefix="" LibraryExtension=".dll" SymbolsExtension=".pdb" />
     <NativeArtifactDirectories Include="$(ArtifactsBinDir)Windows_NT.x86.$(Configuration)" TargetRid="win-x86" LibraryPrefix="" LibraryExtension=".dll" SymbolsExtension=".pdb" />
   </ItemGroup>
+
+  <ItemGroup Condition=" '$(IsPackable)' == 'true' and '$(ThirdPartyNoticesFilePath)' != ''">
+    <None Include="$(ThirdPartyNoticesFilePath)" Pack="true" PackagePath="notices" Visible="false" />
+  </ItemGroup>
 </Project>
