@@ -22,6 +22,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public sealed class LoadProfilerActionTests
     {
         private const string DefaultRuleName = "ProfilerTestRule";

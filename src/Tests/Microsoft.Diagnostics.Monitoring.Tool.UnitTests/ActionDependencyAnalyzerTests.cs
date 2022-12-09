@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor;
@@ -22,6 +23,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public sealed class ActionDependencyAnalyzerTests
     {
         private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);

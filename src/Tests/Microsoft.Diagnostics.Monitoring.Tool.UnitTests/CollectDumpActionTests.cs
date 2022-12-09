@@ -20,6 +20,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public sealed class CollectDumpActionTests
     {
         private const string DefaultRuleName = nameof(CollectDumpActionTests);
