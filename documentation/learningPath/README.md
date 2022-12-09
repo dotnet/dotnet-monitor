@@ -7,15 +7,15 @@ Our learning path is designed to help you get up-and-running with your first con
 
 ```mermaid
 graph TD
-    B[Start Here!] --> C[<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/building.md'>Building Locally</a>]
-    C --> D[<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/learningPath/basic-usage.md'>Basic Usage</a>]
-    D --> E[<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/learningPath/architecture.md'>Architecture Overview</a>]
-    E --> F[<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/learningPath/sample-pull-request.md'>A Sample Pull Request</a>]
+    B[Start Here!] --> C[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/building.md'>Building Locally</a>]
+    C --> D[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/basic-usage.md'>Basic Usage</a>]
+    D --> E[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/architecture.md'>Architecture Overview</a>]
+    E --> F[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/sample-pull-request.md'>A Sample Pull Request</a>]
     F --> G[Explore Different Topics]
-    G --> |OPTIONAL| H[<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/learningPath/collectionrules.md'>Collection Rules</a>]
-    G --> |OPTIONAL| I[<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/learningPath/api.md'>API</a>]
-    G --> |OPTIONAL| J["<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/learningPath/testing.md'>Testing</a>"]
-    G --> |OPTIONAL| K["<a href='https://github.com/dotnet/dotnet-monitor/blob/feature/LearningPaths/documentation/learningPath/configuration.md'>Configuration</a>"]
+    G --> |OPTIONAL| H[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/collectionrules.md'>Collection Rules</a>]
+    G --> |OPTIONAL| I[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/api.md'>API</a>]
+    G --> |OPTIONAL| J["<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/testing.md'>Testing</a>"]
+    G --> |OPTIONAL| K["<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/configuration.md'>Configuration</a>"]
     G --> |OPTIONAL| L[Egress -> COMING SOON]
 ```
 
