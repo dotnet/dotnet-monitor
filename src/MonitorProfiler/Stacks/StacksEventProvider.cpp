@@ -37,7 +37,7 @@ HRESULT StacksEventProvider::DefineEvents()
 
 HRESULT StacksEventProvider::WriteCallstack(const Stack& stack)
 {
-    return _callstackEvent->WritePayload(stack.GetThreadId(), stack.GetFunctionIds(), stack.GetOffsets());
+    return _callstackEvent->WritePayload(stack.GetThreadId(), stack.GetName(), stack.GetFunctionIds(), stack.GetOffsets());
 }
 
 HRESULT StacksEventProvider::WriteClassData(ClassID classId, const ClassData& classData)

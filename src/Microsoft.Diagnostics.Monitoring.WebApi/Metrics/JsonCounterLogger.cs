@@ -4,9 +4,11 @@
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
+using System;
+using System.Buffers;
 using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -14,12 +16,28 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         ILogger _logger;
 
-        public JsonCounterLogger(Stream stream, ILogger logger) : base(stream)
+        // The default metrics providers will produce about 470 bytes of data
+        // at most per counter value. Set the buffer to be slightly larger to
+        // avoid reallocation.
+        private const int InitialBufferCapacity = 500;
+
+        private static readonly ReadOnlyMemory<byte> JsonSequenceRecordSeparator =
+            new byte[] { StreamingLogger.JsonSequenceRecordSeparator };
+        private static readonly ReadOnlyMemory<byte> NewLineSeparator =
+            new byte[] { (byte)'\n' };
+
+        private readonly ArrayBufferWriter<byte> _bufferWriter;
+        private readonly Stream _stream;
+
+        public JsonCounterLogger(Stream stream, ILogger logger)
+            : base(logger)
         {
+            _bufferWriter = new(InitialBufferCapacity);
+            _stream = stream;
             _logger = logger;
         }
 
-        protected override void SerializeCounter(Stream stream, ICounterPayload counter)
+        protected override async Task SerializeAsync(ICounterPayload counter)
         {
             if (counter is ErrorPayload errorPayload)
             {
@@ -28,8 +46,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 return;
             }
 
-            stream.WriteByte(StreamingLogger.JsonSequenceRecordSeparator);
-            using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = false }))
+            await _stream.WriteAsync(JsonSequenceRecordSeparator);
+
+            _bufferWriter.Clear();
+            using (var writer = new Utf8JsonWriter(_bufferWriter, new JsonWriterOptions { Indented = false }))
             {
                 writer.WriteStartObject();
                 writer.WriteString("timestamp", counter.Timestamp);
@@ -51,9 +71,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 //Some versions of .Net return invalid metric numbers. See https://github.com/dotnet/runtime/pull/46938
                 writer.WriteNumber("value", double.IsNaN(counter.Value) ? 0.0 : counter.Value);
 
-                writer.WriteEndObject();
+                writer.WriteStartObject("metadata");
+                foreach (var kvPair in counter.Metadata)
+                {
+                    // This is a temporary workaround - we'll be making adjustments to how tags/metadata works shortly.
+                    if (kvPair.Key != "quantile")
+                    {
+                        writer.WriteString(kvPair.Key, kvPair.Value);
+                    }
+                }
+                writer.WriteEndObject(); // Metadata object
+
+                writer.WriteEndObject(); // Entire object
             }
-            stream.WriteByte((byte)'\n');
+            await _stream.WriteAsync(_bufferWriter.WrittenMemory);
+
+            await _stream.WriteAsync(NewLineSeparator);
         }
     }
 }

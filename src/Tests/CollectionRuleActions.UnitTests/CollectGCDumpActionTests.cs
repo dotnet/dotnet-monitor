@@ -40,7 +40,15 @@ namespace CollectionRuleActions.UnitTests
         [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public Task CollectGCDumpAction_Success(TargetFrameworkMoniker tfm)
         {
-            return Retry(() => CollectGCDumpAction_SuccessCore(tfm));
+            return RetryUtilities.RetryAsync(
+                func: () => CollectGCDumpAction_SuccessCore(tfm),
+                // GC dumps can fail to be produced from the runtime because the pipeline doesn't get the expected
+                // start, data, and stop events. The pipeline will throw an InvalidOperationException, which is
+                // wrapped in a CollectionRuleActionException by the action.
+                shouldRetry: (Exception ex) => (
+                    ex is TaskCanceledException ||
+                    (ex is CollectionRuleActionException && ex.InnerException is InvalidOperationException)),
+                outputHelper: _outputHelper);
         }
 
         private async Task CollectGCDumpAction_SuccessCore(TargetFrameworkMoniker tfm)
@@ -100,28 +108,6 @@ namespace CollectionRuleActions.UnitTests
             string headerText = enc8.GetString(buffer, 4, knownHeaderText.Length);
 
             Assert.Equal(knownHeaderText, headerText);
-        }
-
-        private async Task Retry(Func<Task> func, int attemptCount = 3)
-        {
-            int attemptIteration = 0;
-            while (true)
-            {
-                attemptIteration++;
-                _outputHelper.WriteLine("===== Attempt #{0} =====", attemptIteration);
-                try
-                {
-                    await func();
-
-                    break;
-                }
-                catch (CollectionRuleActionException ex) when (attemptIteration < attemptCount && ex.InnerException is InvalidOperationException)
-                {
-                    // GC dumps can fail to be produced from the runtime because the pipeline doesn't get the expected
-                    // start, data, and stop events. The pipeline will throw an InvalidOperationException, which is
-                    // wrapped in a CollectionRuleActionException by the action. Allow retries when this occurs.
-                }
-            }
         }
     }
 }

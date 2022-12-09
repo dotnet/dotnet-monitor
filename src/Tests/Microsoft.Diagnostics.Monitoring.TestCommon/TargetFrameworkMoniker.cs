@@ -13,7 +13,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         NetCoreApp31,
         Net50,
         Net60,
-        Net70
+        Net70,
+        Net80
     }
 
     public static class TargetFrameworkMonikerExtensions
@@ -37,6 +38,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     return DotNetHost.AspNetCore60VersionString;
                 case TargetFrameworkMoniker.Net70:
                     return DotNetHost.AspNetCore70VersionString;
+                case TargetFrameworkMoniker.Net80:
+                    return DotNetHost.AspNetCore80VersionString;
             }
             throw CreateUnsupportedException(moniker);
         }
@@ -55,6 +58,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     return DotNetHost.NetCore60VersionString;
                 case TargetFrameworkMoniker.Net70:
                     return DotNetHost.NetCore70VersionString;
+                case TargetFrameworkMoniker.Net80:
+                    return DotNetHost.NetCore80VersionString;
             }
             throw CreateUnsupportedException(moniker);
         }
@@ -83,6 +88,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     return "net6.0";
                 case TargetFrameworkMoniker.Net70:
                     return "net7.0";
+                case TargetFrameworkMoniker.Net80:
+                    return "net8.0";
             }
             throw CreateUnsupportedException(moniker);
         }
@@ -104,7 +111,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         }
 
         public const TargetFrameworkMoniker CurrentTargetFrameworkMoniker =
-#if NET7_0
+#if NET8_0
+            TargetFrameworkMoniker.Net80;
+#elif NET7_0
             TargetFrameworkMoniker.Net70;
 #elif NET6_0
             TargetFrameworkMoniker.Net60;

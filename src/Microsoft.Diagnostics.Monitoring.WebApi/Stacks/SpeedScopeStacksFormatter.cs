@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                     StartValue = FixedStart,
                     EndValue = FixedEnd,
                     Unit = UnitType.none,
-                    Name = string.Format(CultureInfo.CurrentCulture, Strings.CallstackThreadHeader, stack.ThreadId),
+                    Name = FormatThreadName(stack.ThreadId, stack.ThreadName)
                 };
 
                 speedscopeResult.Profiles.Add(profile);

@@ -60,7 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 Assembly.GetExecutingAssembly(),
                 "dotnet-monitor",
 #if NET7_0_OR_GREATER
-                TargetFrameworkMoniker.Net70
+                TargetFrameworkMoniker.Net80
 #else
                 TargetFrameworkMoniker.Net60
 #endif
@@ -71,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 Assembly.GetExecutingAssembly(),
                 TestStartupHookAssemblyName,
 #if NET7_0_OR_GREATER
-                TargetFrameworkMoniker.Net70
+                TargetFrameworkMoniker.Net80
 #else
                 TargetFrameworkMoniker.Net60
 #endif

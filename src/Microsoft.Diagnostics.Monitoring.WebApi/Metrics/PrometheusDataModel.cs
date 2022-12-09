@@ -13,6 +13,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     internal static class PrometheusDataModel
     {
         private const char SeparatorChar = '_';
+        private const char EqualsChar = '=';
+        private const char QuotationChar = '"';
+        private const char SlashChar = '\\';
+        private const char NewlineChar = '\n';
 
         private static readonly Dictionary<string, string> KnownUnits = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -49,6 +53,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return builder.ToString();
         }
 
+        public static string GetPrometheusNormalizedLabel(string key, string value)
+        {
+            StringBuilder builder = new StringBuilder(key.Length + 2 * value.Length + 3); // Includes =,", and ", as well as extra padding for potential escape characters in the value
+
+            NormalizeString(builder, key, isProvider: false);
+            builder.Append(EqualsChar);
+            builder.Append(QuotationChar);
+            NormalizeLabelValue(builder, value);
+            builder.Append(QuotationChar);
+
+            return builder.ToString();
+        }
+
         public static string GetPrometheusNormalizedValue(string unit, double value)
         {
             if (string.Equals(unit, "MB", StringComparison.OrdinalIgnoreCase))
@@ -56,6 +73,32 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 value *= 1_000_000; //Note that the metric uses MB not MiB
             }
             return value.ToString(CultureInfo.InvariantCulture);
+        }
+
+        private static void NormalizeLabelValue(StringBuilder builder, string value)
+        {
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (value[i] == SlashChar)
+                {
+                    builder.Append(SlashChar);
+                    builder.Append(SlashChar);
+                }
+                else if (value[i] == NewlineChar)
+                {
+                    builder.Append(SlashChar);
+                    builder.Append('n');
+                }
+                else if (value[i] == QuotationChar)
+                {
+                    builder.Append(SlashChar);
+                    builder.Append(QuotationChar);
+                }
+                else
+                {
+                    builder.Append(value[i]);
+                }
+            }
         }
 
         private static void NormalizeString(StringBuilder builder, string entity, bool isProvider)

@@ -9,7 +9,7 @@ If you are migrating your usage to `dotnet monitor` 7.0, the following changes m
 
 | Area | Title | Introduced |
 |--|--|--|
-| Deployment | [The tool will not run on .NET Core 3.1 or .NET 5 due to removal of `netcoreapp3.1` target framework](#deployment-removal-of-netcoreapp31-tfm); **NOTE:** The tool will still be able to monitor applications running these .NET versions. | Preview 1 |
+| Deployment | [The tool will not run on .NET Core 3.1 or .NET 5 due to removal of `netcoreapp3.1` target framework](#deployment-removal-of-netcoreapp31-tfm); **Note**: The tool will still be able to monitor applications running these .NET versions. | Preview 1 |
 | Docker | [Docker container entrypoint has been split among entrypoint and cmd instructions](#docker-container-entrypoint-split) | Preview 3 |
 | Egress | [Built-in metadata keys for Azure Blob egress now prefixed with `DotnetMonitor_`](#egress-built-in-metadata-is-prefixed-for-azure-blob-egress) | Preview 8 |
 
@@ -51,4 +51,4 @@ When egressing an artifact to Azure blob storage, several metadata keys and valu
 - `ArtifactSource_ProcessId` -> `DotnetMonitor_ArtifactSource_ProcessId`
 - `ArtifactSource_RuntimeInstanceCookie` -> `DotnetMonitor_ArtifactSource_RuntimeInstanceCookie`
 
-***Note:*** The custom metadata keys as specified in the [Azure blob storage](../../configuration.md#azure-blob-storage-egress-provider) egress provider are not prefixed.
+> **Note**: The custom metadata keys as specified in the [Azure blob storage](../../configuration.md#azure-blob-storage-egress-provider) egress provider are not prefixed.

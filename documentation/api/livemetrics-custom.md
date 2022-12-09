@@ -8,10 +8,10 @@ Captures metrics for a process, with the ability to specify custom metrics.
 ## HTTP Route
 
 ```http
-POST /livemetrics?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider} HTTP/1.1
+POST /livemetrics?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider}&tags={tags} HTTP/1.1
 ```
 
-> **NOTE:** Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 
@@ -26,6 +26,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `name` | query | false | string | The name of the process. |
 | `durationSeconds` | query | false | int | The duration of the metrics operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected metrics. When not specified, the metrics are written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
+| `tags` | query | false | string | (8.0+) A comma-separated list of user-readable identifiers for the operation. |
 
 See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
@@ -64,7 +65,7 @@ The expected content type is `application/json`.
 #### Sample Request
 
 ```http
-GET /livemetrics?pid=21632&durationSeconds=60 HTTP/1.1
+POST /livemetrics?pid=21632&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 
@@ -96,7 +97,11 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
     "displayName": "Counter 1",
     "unit": "B",
     "counterType": "Metric",
-    "value": 3
+    "value": 3,
+    "metadata": {
+        "MyKey 1": "MyValue 1",
+        "MyKey 2": "MyValue 2"
+    }
 }
 {
     "timestamp": "2021-08-31T16:58:39.7515128+00:00",
@@ -105,7 +110,8 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
     "displayName": "Counter 2",
     "unit": "MB",
     "counterType": "Metric",
-    "value": 126
+    "value": 126,
+    "metadata": {}
 }
 ```
 

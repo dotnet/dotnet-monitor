@@ -59,7 +59,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _logger = logger;
         }
 
-
         public void AddMetric(ICounterPayload metric)
         {
             List<ICounterPayload> metricAsList = new();

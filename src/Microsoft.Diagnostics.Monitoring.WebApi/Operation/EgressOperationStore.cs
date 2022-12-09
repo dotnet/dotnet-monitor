@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -31,20 +32,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             public DateTime CreatedDateTime { get; } = DateTime.UtcNow;
 
             public Guid OperationId { get; set; }
+
+            public ISet<string> Tags { get; set; }
         }
 
         private readonly Dictionary<Guid, EgressEntry> _requests = new();
-        private readonly EgressOperationQueue _taskQueue;
-        private readonly RequestLimitTracker _requestLimits;
+        private readonly IEgressOperationQueue _taskQueue;
+        private readonly IRequestLimitTracker _requestLimits;
         private readonly IServiceProvider _serviceProvider;
 
-        public EgressOperationStore(
-            EgressOperationQueue queue,
-            RequestLimitTracker requestLimits,
-            IServiceProvider serviceProvider)
+        public EgressOperationStore(IServiceProvider serviceProvider)
         {
-            _taskQueue = queue;
-            _requestLimits = requestLimits;
+            _taskQueue = serviceProvider.GetRequiredService<IEgressOperationQueue>();
+            _requestLimits = serviceProvider.GetRequiredService<IRequestLimitTracker>();
             _serviceProvider = serviceProvider;
         }
 
@@ -73,7 +73,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     {
                         State = Models.OperationState.Running,
                         EgressRequest = request,
-                        OperationId = operationId
+                        OperationId = operationId,
+                        Tags = request.EgressOperation.Tags
                     });
             }
             await _taskQueue.EnqueueAsync(request);
@@ -161,11 +162,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public IEnumerable<Models.OperationSummary> GetOperations(ProcessKey? processKey)
+        public IEnumerable<Models.OperationSummary> GetOperations(ProcessKey? processKey, string tags)
         {
             lock (_requests)
             {
                 IEnumerable<KeyValuePair<Guid, EgressEntry>> requests = _requests;
+
+                if (!string.IsNullOrEmpty(tags))
+                {
+                    ISet<string> tagsSet = Utilities.SplitTags(tags);
+
+                    requests = requests.Where((kvp) =>
+                    {
+                        return tagsSet.IsSubsetOf(kvp.Value.Tags);
+                    });
+                }
 
                 if (null != processKey)
                 {
@@ -212,7 +223,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                                 Name = processInfo.ProcessName,
                                 ProcessId = processInfo.ProcessId,
                                 Uid = processInfo.RuntimeInstanceCookie
-                            } : null
+                            } : null,
+                        Tags = kvp.Value.Tags
                     };
                 }).ToList();
             }
@@ -241,7 +253,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                             Name = processInfo.ProcessName,
                             ProcessId = processInfo.ProcessId,
                             Uid = processInfo.RuntimeInstanceCookie
-                        } : null
+                        } : null,
+                    Tags = entry.Tags
                 };
 
                 if (entry.State == Models.OperationState.Succeeded)
