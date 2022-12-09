@@ -91,7 +91,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return true;
         }
 
-        public IEnumerable<PropertyInfo> GetPropertiesFromSettings(object settings, Predicate<PropertyInfo> predicate = null) =>
+        public static IEnumerable<PropertyInfo> GetPropertiesFromSettings(object settings, Predicate<PropertyInfo> predicate = null) =>
             settings?.GetType()
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.PropertyType == typeof(string) && (predicate?.Invoke(p) ?? true)) ??

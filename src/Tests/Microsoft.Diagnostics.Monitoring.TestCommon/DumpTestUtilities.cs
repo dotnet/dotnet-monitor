@@ -84,13 +84,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         public class MinidumpHeader : TStruct
         {
-            public uint Signature = 0;
-            public uint Version = 0;
-            public uint NumberOfStreams = 0;
-            public uint StreamDirectoryRva = 0;
-            public uint CheckSum = 0;
-            public uint TimeDateStamp = 0;
-            public ulong Flags = 0;
+            public uint Signature;
+            public uint Version;
+            public uint NumberOfStreams;
+            public uint StreamDirectoryRva;
+            public uint CheckSum;
+            public uint TimeDateStamp;
+            public ulong Flags;
 
             // 50,4D,44,4D = PMDM
             public ValidationRule IsSignatureValid => new ValidationRule("Invalid Signature", () => Signature == 0x504D444DU);

@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
-    internal class LogsTestUtilities
+    internal static class LogsTestUtilities
     {
         const char JsonSequenceRecordSeparator = '\u001E';
 
@@ -115,7 +115,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 outputHelper.WriteLine("Log entry: {0}", line);
                 try
                 {
-                    await channel.Writer.WriteAsync(JsonSerializer.Deserialize<LogEntry>(line, options));
+                    LogEntry entry = JsonSerializer.Deserialize<LogEntry>(line, options);
+                    if (null != entry)
+                    {
+                        // If the sentinel entry is encountered, stop processing more entries as
+                        // any remaining entries are meant to mitigate event buffering in the runtime
+                        // and trace event library.
+                        if (entry.Category == TestAppScenarios.Logger.Categories.SentinelCategory)
+                        {
+                            break;
+                        }
+                        await channel.Writer.WriteAsync(entry);
+                    }
                 }
                 catch (JsonException ex)
                 {
@@ -140,10 +151,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 Message = "Trace message with values 3 and True.",
                 State = new Dictionary<string, string>()
                 {
-                    { "{OriginalFormat}", "Trace message with values {value1} and {value2}." },
+                    { "{OriginalFormat}", "Trace message with values {Value1} and {Value2}." },
                     { "Message", "Trace message with values 3 and True." },
-                    { "value1", "3" },
-                    { "value2", "True" }
+                    { "Value1", "3" },
+                    { "Value2", "True" }
                 }
             };
         }
@@ -160,10 +171,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 Message = "Debug message with values f39a5065-732b-4cce-89d1-52e4af39e233 and (null).",
                 State = new Dictionary<string, string>()
                 {
-                    { "{OriginalFormat}", "Debug message with values {value1} and {value2}." },
+                    { "{OriginalFormat}", "Debug message with values {Value1} and {Value2}." },
                     { "Message", "Debug message with values f39a5065-732b-4cce-89d1-52e4af39e233 and (null)." },
-                    { "value1", "f39a5065-732b-4cce-89d1-52e4af39e233" },
-                    { "value2", "(null)" }
+                    { "Value1", "f39a5065-732b-4cce-89d1-52e4af39e233" },
+                    { "Value2", "(null)" }
                 }
             };
         }
@@ -180,10 +191,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 Message = "Information message with values hello and goodbye.",
                 State = new Dictionary<string, string>()
                 {
-                    { "{OriginalFormat}", "Information message with values {value1} and {value2}." },
+                    { "{OriginalFormat}", "Information message with values {Value1} and {Value2}." },
                     { "Message", "Information message with values hello and goodbye." },
-                    { "value1", "hello" },
-                    { "value2", "goodbye" }
+                    { "Value1", "hello" },
+                    { "Value2", "goodbye" }
                 }
             };
         }
@@ -220,10 +231,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 Message = "Error message with values a and 42.",
                 State = new Dictionary<string, string>()
                 {
-                    { "{OriginalFormat}", "Error message with values {value1} and {value2}." },
+                    { "{OriginalFormat}", "Error message with values {Value1} and {Value2}." },
                     { "Message", "Error message with values a and 42." },
-                    { "value1", "a" },
-                    { "value2", "42" }
+                    { "Value1", "a" },
+                    { "Value2", "42" }
                 }
             };
         }

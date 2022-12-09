@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 {
-    internal class ExperimentalSchemaProcessor : ISchemaProcessor
+    internal sealed class ExperimentalSchemaProcessor : ISchemaProcessor
     {
         private const string ExperimentalPrefix = "[Experimental]";
 

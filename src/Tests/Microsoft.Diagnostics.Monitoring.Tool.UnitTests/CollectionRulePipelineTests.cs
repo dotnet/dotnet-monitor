@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions;
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Triggers;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -101,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// <summary>
         /// Test that the pipeline works with the EventCounter trigger.
         /// </summary>
-        [Theory]
+        [Theory(Skip = "Nondeterministic")]
         [MemberData(nameof(GetTfmsSupportingPortListener))]
         public Task CollectionRulePipeline_EventCounterTriggerTest(TargetFrameworkMoniker appTfm)
         {
@@ -364,7 +363,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(expectedCount, service.ExecutionTimestamps.Count);
         }
 
-        private async Task ManualTriggerBurstAsync(ManualTriggerService service, int count = 10)
+        private static async Task ManualTriggerBurstAsync(ManualTriggerService service, int count = 10)
         {
             for (int i = 0; i < count; i++)
             {
@@ -376,8 +375,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public static IEnumerable<object[]> GetTfmsSupportingPortListener()
         {
             yield return new object[] { TargetFrameworkMoniker.Net60 };
-#if INCLUDE_NEXT_DOTNET
             yield return new object[] { TargetFrameworkMoniker.Net70 };
+#if INCLUDE_NEXT_DOTNET
+            yield return new object[] { TargetFrameworkMoniker.Net80 };
 #endif
         }
     }

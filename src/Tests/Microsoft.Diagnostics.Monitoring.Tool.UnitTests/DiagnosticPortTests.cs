@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
@@ -74,7 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, overrideSource: GetConfigurationSources(DiagnosticPortTestsConstants.AllListen_EnvironmentVariables));
         }
 
-        private List<IConfigurationSource> GetConfigurationSources(IDictionary<string, string> initialData)
+        private static List<IConfigurationSource> GetConfigurationSources(IDictionary<string, string> initialData)
         {
             List<IConfigurationSource> sources = new();
 

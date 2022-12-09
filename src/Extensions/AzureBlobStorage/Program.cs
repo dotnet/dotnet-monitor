@@ -8,12 +8,12 @@ using System.Text.Json;
 
 namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 {
-    internal class Program
+    internal sealed class Program
     {
-        private static Stream StdInStream = null;
+        private static Stream StdInStream;
         private static CancellationTokenSource CancelSource = new CancellationTokenSource();
 
-        protected static ILogger Logger { get; set; }
+        public static ILogger Logger { get; set; }
 
         static async Task<int> Main(string[] args)
         {
@@ -142,14 +142,15 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
         {
             const int DefaultBufferSize = 0x10000;
 
-            await Console.OpenStandardInput().CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
+            StdInStream = Console.OpenStandardInput();
+            await StdInStream.CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
         }
 
         private static string GetConfig(Dictionary<string, string> configDict, string propKey)
         {
-            if (configDict.ContainsKey(propKey))
+            if (configDict.TryGetValue(propKey, out string value))
             {
-                return configDict[propKey];
+                return value;
             }
             return null;
         }
@@ -165,7 +166,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
         }
     }
 
-    internal class ExtensionEgressPayload
+    internal sealed class ExtensionEgressPayload
     {
         public EgressArtifactSettings Settings { get; set; }
         public Dictionary<string, string> Properties { get; set; }

@@ -3,7 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Diagnostics.Monitoring.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
@@ -216,7 +218,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         private async Task<ResponseStreamHolder> CaptureDumpAsync(string processQuery, DumpType dumpType, CancellationToken token)
         {
-            using HttpRequestMessage request = new(HttpMethod.Get, $"/dump?{processQuery}&type={dumpType.ToString("G")}");
+            using HttpRequestMessage request = new(HttpMethod.Get, $"/dump?{processQuery}&type={dumpType:G}");
             request.Headers.Add(HeaderNames.Accept, ContentTypes.ApplicationOctetStream);
 
             using DisposableBox<HttpResponseMessage> responseBox = new(
@@ -403,6 +405,55 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
+        /// GET /trace?pid={pid}&profile={profile}&durationSeconds={duration}
+        /// </summary>
+        public Task<ResponseStreamHolder> CaptureTraceAsync(int pid, TimeSpan duration, TraceProfile? profile, CancellationToken token)
+        {
+            return CaptureTraceAsync(GetProcessQuery(pid: pid), duration, profile, token);
+        }
+
+        private Task<ResponseStreamHolder> CaptureTraceAsync(string processQuery, TimeSpan duration, TraceProfile? profile, CancellationToken token)
+        {
+            return CaptureTraceAsync(
+                HttpMethod.Get,
+                CreateTraceUriString(processQuery, duration, profile),
+                content: null,
+                token);
+        }
+
+        private async Task<ResponseStreamHolder> CaptureTraceAsync(HttpMethod method, string uri, HttpContent content, CancellationToken token)
+        {
+            string contentType = ContentTypes.ApplicationOctetStream;
+
+            using HttpRequestMessage request = new(method, uri);
+            request.Headers.Add(HeaderNames.Accept, contentType);
+            request.Content = content;
+
+            using DisposableBox<HttpResponseMessage> responseBox = new(
+                await SendAndLogAsync(
+                    request,
+                    HttpCompletionOption.ResponseHeadersRead,
+                    token).ConfigureAwait(false));
+
+            switch (responseBox.Value.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    ValidateContentType(responseBox.Value, contentType);
+                    return await ResponseStreamHolder.CreateAsync(responseBox).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(responseBox.Value, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(responseBox.Value).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                case HttpStatusCode.NotFound:
+                case HttpStatusCode.TooManyRequests:
+                    ThrowIfNotSuccess(responseBox.Value);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// GET /metrics
         /// </summary>
         public async Task<string> GetMetricsAsync(CancellationToken token)
@@ -416,7 +467,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             {
                 case HttpStatusCode.OK:
                     ValidateContentType(response, ContentTypes.TextPlain);
-                    return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    return await response.Content.ReadAsStringAsync(token).ConfigureAwait(false);
                 case HttpStatusCode.BadRequest:
                     ValidateContentType(response, ContentTypes.ApplicationProblemJson);
                     throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
@@ -476,10 +527,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
-        public async Task<ResponseStreamHolder> CaptureStacksAsync(int processId, bool plainText, CancellationToken token)
+        public async Task<ResponseStreamHolder> CaptureStacksAsync(int processId, StackFormat format, CancellationToken token)
         {
             string uri = FormattableString.Invariant($"/stacks?pid={processId}");
-            var contentType = plainText ? ContentTypes.TextPlain : ContentTypes.ApplicationJson;
+            var contentType = ContentTypeUtilities.MapFormatToContentType(format);
             using HttpRequestMessage request = new(HttpMethod.Get, uri);
             request.Headers.Add(HeaderNames.Accept, contentType);
 
@@ -514,9 +565,37 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return response;
         }
 
-        public async Task<OperationResponse> EgressTraceAsync(int processId, int durationSeconds, string egressProvider, CancellationToken token)
+        public async Task<ResponseStreamHolder> HttpEgressTraceAsync(int processId, int durationSeconds, CancellationToken token)
         {
-            string uri = FormattableString.Invariant($"/trace?pid={processId}&egressProvider={egressProvider}&durationSeconds={durationSeconds}");
+            string uri = FormattableString.Invariant($"/trace?pid={processId}&durationSeconds={durationSeconds}");
+            using HttpRequestMessage request = new(HttpMethod.Get, uri);
+
+            using DisposableBox<HttpResponseMessage> responseBox = new(
+                await SendAndLogAsync(
+                    request,
+                    HttpCompletionOption.ResponseHeadersRead,
+                    token).ConfigureAwait(false));
+
+            switch (responseBox.Value.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    return await ResponseStreamHolder.CreateAsync(responseBox).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                case HttpStatusCode.TooManyRequests:
+                    ValidateContentType(responseBox.Value, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(responseBox.Value).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                    ThrowIfNotSuccess(responseBox.Value);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
+        }
+
+        public async Task<OperationResponse> EgressTraceAsync(int processId, int durationSeconds, string egressProvider, string tags, CancellationToken token)
+        {
+            string tagsQuery = string.IsNullOrEmpty(tags) ? string.Empty : $"&tags={tags}";
+            string uri = FormattableString.Invariant($"/trace?pid={processId}&egressProvider={egressProvider}&durationSeconds={durationSeconds}{tagsQuery}");
             using HttpRequestMessage request = new(HttpMethod.Get, uri);
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
 
@@ -536,9 +615,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 
-        public async Task<List<OperationSummary>> GetOperations(CancellationToken token)
+        public async Task<List<OperationSummary>> GetOperations(string tags, CancellationToken token)
         {
-            using HttpRequestMessage request = new(HttpMethod.Get, "/operations");
+            string tagsQuery = string.IsNullOrEmpty(tags) ? string.Empty : $"?tags={tags}";
+            using HttpRequestMessage request = new(HttpMethod.Get, $"/operations{tagsQuery}");
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
 
             switch (response.StatusCode)
@@ -568,6 +648,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
                 case HttpStatusCode.OK:
                     ValidateContentType(response, ContentTypes.ApplicationJson);
                     return new OperationStatusResponse(response.StatusCode, await ReadContentAsync<OperationStatus>(response).ConfigureAwait(false));
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                    ThrowIfNotSuccess(response);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
+        }
+
+        public async Task<HttpStatusCode> StopEgressOperation(Uri operation, CancellationToken token)
+        {
+            string operationUri = QueryHelpers.AddQueryString(operation.ToString(), "stop", "true");
+
+            using HttpRequestMessage request = new(HttpMethod.Delete, operationUri);
+            using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
+
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Accepted:
+                    return response.StatusCode;
                 case HttpStatusCode.BadRequest:
                     ValidateContentType(response, ContentTypes.ApplicationProblemJson);
                     throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
@@ -655,7 +757,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             }
         }
 
-        private void ValidateContentType(HttpResponseMessage responseMessage, string expectedMediaType)
+        private static void ValidateContentType(HttpResponseMessage responseMessage, string expectedMediaType)
         {
             Assert.Equal(expectedMediaType, responseMessage.Content.Headers.ContentType?.MediaType);
         }
@@ -665,12 +767,27 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             StringBuilder routeBuilder = new();
             routeBuilder.Append("/logs?");
             routeBuilder.Append(processIdentifierQuery);
-            routeBuilder.Append("&");
+            routeBuilder.Append('&');
             AppendDuration(routeBuilder, duration);
             if (logLevel.HasValue)
             {
                 routeBuilder.Append("&level=");
                 routeBuilder.Append(logLevel.Value.ToString("G"));
+            }
+            return routeBuilder.ToString();
+        }
+
+        private static string CreateTraceUriString(string processIdentifierQuery, TimeSpan duration, TraceProfile? profile = null)
+        {
+            StringBuilder routeBuilder = new();
+            routeBuilder.Append("/trace?");
+            routeBuilder.Append(processIdentifierQuery);
+            routeBuilder.Append('&');
+            AppendDuration(routeBuilder, duration);
+            if (profile.HasValue)
+            {
+                routeBuilder.Append("&profile=");
+                routeBuilder.Append(profile.Value.ToString("G"));
             }
             return routeBuilder.ToString();
         }

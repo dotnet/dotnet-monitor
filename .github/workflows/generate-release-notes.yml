@@ -1,4 +1,5 @@
 name: 'Generate release notes'
+run-name: '[${{ github.ref_name }}] Generate release notes'
 
 on:
   workflow_dispatch:

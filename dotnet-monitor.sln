@@ -33,8 +33,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Tool.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\Microsoft.Diagnostics.Monitoring.Tool.UnitTests.csproj", "{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.ExecuteActionApp", "src\Tests\Microsoft.Diagnostics.Monitoring.ExecuteActionApp\Microsoft.Diagnostics.Monitoring.ExecuteActionApp.csproj", "{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureBlobStorage", "src\Extensions\AzureBlobStorage\AzureBlobStorage.csproj", "{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Profiler.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.Profiler.UnitTests\Microsoft.Diagnostics.Monitoring.Profiler.UnitTests.csproj", "{A25AC517-F7C6-43C6-B892-4A447914C42C}"
@@ -48,7 +46,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup\Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup.csproj", "{F324BAD6-C9C0-42DE-9150-D8307D972E9A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook\Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook.csproj", "{9BEB8058-7EE4-4EE2-B83D-592E85236E78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook\Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook.csproj", "{9BEB8058-7EE4-4EE2-B83D-592E85236E78}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon.csproj", "{E438C0E0-0301-4A8F-9153-BFE4839F213E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CollectionRuleActions.UnitTests", "src\Tests\CollectionRuleActions.UnitTests\CollectionRuleActions.UnitTests.csproj", "{2FD0A2A3-D7DA-4458-9084-E195102B9D5B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -104,10 +106,6 @@ Global
 		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A5A0CAAB-C200-44D2-BC93-8445C6E748AD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -128,6 +126,14 @@ Global
 		{9BEB8058-7EE4-4EE2-B83D-592E85236E78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BEB8058-7EE4-4EE2-B83D-592E85236E78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BEB8058-7EE4-4EE2-B83D-592E85236E78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E438C0E0-0301-4A8F-9153-BFE4839F213E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E438C0E0-0301-4A8F-9153-BFE4839F213E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E438C0E0-0301-4A8F-9153-BFE4839F213E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E438C0E0-0301-4A8F-9153-BFE4839F213E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FD0A2A3-D7DA-4458-9084-E195102B9D5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FD0A2A3-D7DA-4458-9084-E195102B9D5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FD0A2A3-D7DA-4458-9084-E195102B9D5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FD0A2A3-D7DA-4458-9084-E195102B9D5B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -147,12 +153,13 @@ Global
 		{3AD0A40B-C569-4712-9764-7A788B9CD811} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{173F959B-231B-45D1-8328-9460D4C5BC71} = {19FAB78C-3351-4911-8F0C-8C6056401740}
 		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB} = {C7568468-1C79-4944-8136-18812A7F9EA7}
-		{A5A0CAAB-C200-44D2-BC93-8445C6E748AD} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278} = {B62728C8-1267-4043-B46F-5537BBAEC692}
 		{A25AC517-F7C6-43C6-B892-4A447914C42C} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{1CA2284B-A3A0-476A-9A93-A95E665E78BE} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{F324BAD6-C9C0-42DE-9150-D8307D972E9A} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{9BEB8058-7EE4-4EE2-B83D-592E85236E78} = {C7568468-1C79-4944-8136-18812A7F9EA7}
+		{E438C0E0-0301-4A8F-9153-BFE4839F213E} = {C7568468-1C79-4944-8136-18812A7F9EA7}
+		{2FD0A2A3-D7DA-4458-9084-E195102B9D5B} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46465737-C938-44FC-BE1A-4CE139EBB5E0}

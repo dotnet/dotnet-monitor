@@ -22,15 +22,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         private readonly List<string> _standardOutputLines = new();
 
         private bool _finishReads;
-        private int? _exitCode;
-        private bool _isDisposed;
-        private int? _processId;
+        private long _disposedState;
         private Task _standardErrorTask;
         private Task _standardOutputTask;
 
         public Dictionary<string, string> Environment { get; } = new();
-        public int ExitCode => _exitCode.HasValue ?
-            _exitCode.Value : throw new InvalidOperationException("Must call WaitForExitAsync before getting exit code.");
+        public int ExitCode => _runner.HasExited ?
+            _runner.ExitCode : throw new InvalidOperationException("Must call WaitForExitAsync before getting exit code.");
 
         public Task<int> ProcessIdTask => _processIdSource.Task;
 
@@ -46,13 +44,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public async ValueTask DisposeAsync()
         {
-            lock (_cancellation)
+            if (!DisposableHelper.CanDispose(ref _disposedState))
             {
-                if (_isDisposed)
-                {
-                    return;
-                }
-                _isDisposed = true;
+                return;
             }
 
             _cancellation.SafeCancel();
@@ -60,8 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             _processIdSource.TrySetCanceled(_cancellation.Token);
 
             // Shutdown the runner
-            _outputHelper.WriteLine("Stopping...");
-            _runner.ForceClose();
+            await StopAsync(CancellationToken.None).SafeAwait(_outputHelper).ConfigureAwait(false);
 
             // Wait for it to exit
             await WaitForExitAsync(CancellationToken.None).SafeAwait(_outputHelper, -1).ConfigureAwait(false);
@@ -106,11 +99,24 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             }
 
             _outputHelper.WriteLine("Process ID: {0}", _runner.ProcessId);
-            _processId = _runner.ProcessId;
             _processIdSource.TrySetResult(_runner.ProcessId);
 
             _standardErrorTask = ReadLinesAsync(_runner.StandardError, _standardErrorLines, ReceivedStandardErrorLine, _cancellation.Token);
             _standardOutputTask = ReadLinesAsync(_runner.StandardOutput, _standardOutputLines, ReceivedStandardOutputLine, _cancellation.Token);
+        }
+
+        public async Task StopAsync(CancellationToken token)
+        {
+            if (_runner.HasExited)
+            {
+                _outputHelper.WriteLine("Already stopped.");
+            }
+            else
+            {
+                _outputHelper.WriteLine("Stopping...");
+
+                await _runner.StopAsync(token);
+            }
         }
 
         public async Task<int> WaitForExitAsync(CancellationToken token)
@@ -133,7 +139,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 exitCode = _runner.ExitCode;
             }
             _outputHelper.WriteLine("Exit Code: {0}", exitCode);
-            _exitCode = exitCode;
             return exitCode.Value;
         }
 
@@ -153,20 +158,26 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         private async Task ReadLinesAsync(StreamReader reader, List<string> lines, Action<string> callback, CancellationToken cancelToken)
         {
+#if !NET7_0_OR_GREATER
             // Closing the reader to cancel the async await will dispose the underlying stream.
             // Technically, this means the reader/stream cannot be used after canceling reading of lines
             // from the process, but this is probably okay since the adapter is already logging each line
             // and providing a callback to callers to read each line. It's unlikely the reader/stream will
             // be accessed after this adapter is disposed.
-            using var cancelReg = cancelToken.Register(() => reader.Close());
+            using var cancelReg = cancelToken.Register(reader.Close);
+#endif
 
             try
             {
                 bool readAborted = false;
                 while (!_finishReads)
                 {
-                    // ReadLineAsync does not have cancellation
+#if NET7_0_OR_GREATER
+                    string line = await reader.ReadLineAsync(cancelToken).ConfigureAwait(false);
+#else
+                    // ReadLineAsync does not have cancellation in 6.0 or lower
                     string line = await reader.ReadLineAsync().ConfigureAwait(false);
+#endif
 
                     if (null == line)
                     {
@@ -179,10 +190,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 }
 
                 // If the loop ended because _finishReads was set, we should read to the end of the
-                // stream if readAborded is not set. This is so we can ensure that the entire stream is read.
+                // stream if readAborted is not set. This is so we can ensure that the entire stream is read.
                 if (!readAborted && _finishReads)
                 {
+#if NET7_0_OR_GREATER
+                    string remainder = await reader.ReadToEndAsync(cancelToken).ConfigureAwait(false);
+#else
+                    // ReadToEndAsync does not have cancellation in 6.0 or lower
                     string remainder = await reader.ReadToEndAsync().ConfigureAwait(false);
+#endif
                     foreach (string line in remainder.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None))
                     {
                         lines.Add(line);

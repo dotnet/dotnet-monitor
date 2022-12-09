@@ -14,14 +14,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     internal enum CallStackFormat
     {
         Json,
-        PlainText
+        PlainText,
+        Speedscope
     }
 
     [DebuggerDisplay("CollectStacks")]
 #if SCHEMAGEN
     [NJsonSchema.Annotations.JsonSchemaFlatten]
 #endif
-    internal partial record class CollectStacksOptions : BaseRecordOptions, IEgressProviderProperties
+    internal sealed partial record class CollectStacksOptions : BaseRecordOptions, IEgressProviderProperties
     {
         [Experimental]
         [Display(

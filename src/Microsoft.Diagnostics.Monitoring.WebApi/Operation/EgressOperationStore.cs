@@ -2,10 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
@@ -14,6 +16,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         private sealed class EgressEntry
         {
+            public bool IsStoppable
+            {
+                get
+                {
+                    return State == Models.OperationState.Running && EgressRequest.EgressOperation.IsStoppable;
+                }
+            }
+
             public ExecutionResult<EgressResult> ExecutionResult { get; set; }
             public Models.OperationState State { get; set; }
 
@@ -22,20 +32,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             public DateTime CreatedDateTime { get; } = DateTime.UtcNow;
 
             public Guid OperationId { get; set; }
+
+            public ISet<string> Tags { get; set; }
         }
 
         private readonly Dictionary<Guid, EgressEntry> _requests = new();
-        private readonly EgressOperationQueue _taskQueue;
-        private readonly RequestLimitTracker _requestLimits;
+        private readonly IEgressOperationQueue _taskQueue;
+        private readonly IRequestLimitTracker _requestLimits;
         private readonly IServiceProvider _serviceProvider;
 
-        public EgressOperationStore(
-            EgressOperationQueue queue,
-            RequestLimitTracker requestLimits,
-            IServiceProvider serviceProvider)
+        public EgressOperationStore(IServiceProvider serviceProvider)
         {
-            _taskQueue = queue;
-            _requestLimits = requestLimits;
+            _taskQueue = serviceProvider.GetRequiredService<IEgressOperationQueue>();
+            _requestLimits = serviceProvider.GetRequiredService<IRequestLimitTracker>();
             _serviceProvider = serviceProvider;
         }
 
@@ -64,14 +73,43 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     {
                         State = Models.OperationState.Running,
                         EgressRequest = request,
-                        OperationId = operationId
+                        OperationId = operationId,
+                        Tags = request.EgressOperation.Tags
                     });
             }
-
-            //Kick off work to attempt egress
             await _taskQueue.EnqueueAsync(request);
 
             return operationId;
+        }
+
+        public void StopOperation(Guid operationId, Action<Exception> onStopException)
+        {
+            lock (_requests)
+            {
+                if (!_requests.TryGetValue(operationId, out EgressEntry entry))
+                {
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
+                }
+
+                if (entry.State != Models.OperationState.Running)
+                {
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
+                }
+
+                if (!entry.EgressRequest.EgressOperation.IsStoppable)
+                {
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationDoesNotSupportBeingStopped);
+                }
+
+                entry.State = Models.OperationState.Stopping;
+
+                CancellationToken token = entry.EgressRequest.CancellationTokenSource.Token;
+                _ = Task.Run(() => entry.EgressRequest.EgressOperation.StopAsync(token), token)
+                    .ContinueWith(task => onStopException(task.Exception),
+                    token,
+                    TaskContinuationOptions.OnlyOnFaulted,
+                    TaskScheduler.Default);
+            }
         }
 
         public void CancelOperation(Guid operationId)
@@ -83,7 +121,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
 
-                if (entry.State != Models.OperationState.Running)
+                if (entry.State != Models.OperationState.Running &&
+                    entry.State != Models.OperationState.Stopping)
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
                 }
@@ -102,7 +141,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
-                if (entry.State != Models.OperationState.Running)
+
+                if (entry.State != Models.OperationState.Running &&
+                    entry.State != Models.OperationState.Stopping)
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
                 }
@@ -121,11 +162,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public IEnumerable<Models.OperationSummary> GetOperations(ProcessKey? processKey)
+        public IEnumerable<Models.OperationSummary> GetOperations(ProcessKey? processKey, string tags)
         {
             lock (_requests)
             {
                 IEnumerable<KeyValuePair<Guid, EgressEntry>> requests = _requests;
+
+                if (!string.IsNullOrEmpty(tags))
+                {
+                    ISet<string> tagsSet = Utilities.SplitTags(tags);
+
+                    requests = requests.Where((kvp) =>
+                    {
+                        return tagsSet.IsSubsetOf(kvp.Value.Tags);
+                    });
+                }
 
                 if (null != processKey)
                 {
@@ -164,13 +215,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         OperationId = kvp.Key,
                         CreatedDateTime = kvp.Value.CreatedDateTime,
                         Status = kvp.Value.State,
+                        EgressProviderName = kvp.Value.EgressRequest.EgressOperation.EgressProviderName,
+                        IsStoppable = kvp.Value.IsStoppable,
                         Process = processInfo != null ?
                             new Models.OperationProcessInfo
                             {
                                 Name = processInfo.ProcessName,
                                 ProcessId = processInfo.ProcessId,
                                 Uid = processInfo.RuntimeInstanceCookie
-                            } : null
+                            } : null,
+                        Tags = kvp.Value.Tags
                     };
                 }).ToList();
             }
@@ -191,13 +245,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     OperationId = entry.EgressRequest.OperationId,
                     Status = entry.State,
                     CreatedDateTime = entry.CreatedDateTime,
+                    EgressProviderName = entry.EgressRequest.EgressOperation.EgressProviderName,
+                    IsStoppable = entry.IsStoppable,
                     Process = processInfo != null ?
                         new Models.OperationProcessInfo
                         {
                             Name = processInfo.ProcessName,
                             ProcessId = processInfo.ProcessId,
                             Uid = processInfo.RuntimeInstanceCookie
-                        } : null
+                        } : null,
+                    Tags = entry.Tags
                 };
 
                 if (entry.State == Models.OperationState.Succeeded)

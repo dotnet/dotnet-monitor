@@ -64,6 +64,42 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_StoppingTraceEventPayloadFilterMismatch);
 
+        private static readonly Action<ILogger, int, Exception> _diagnosticRequestFailed =
+            LoggerMessage.Define<int>(
+                eventId: new EventId(10, "DiagnosticRequestFailed"),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_DiagnosticRequestFailed);
+
+        private static readonly Action<ILogger, Guid, Exception> _stopOperationFailed =
+            LoggerMessage.Define<Guid>(
+                eventId: new EventId(11, "StopOperationFailed"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_StopOperationFailed);
+
+        private static readonly Action<ILogger, long, Exception> _metricsDropped =
+            LoggerMessage.Define<long>(
+                eventId: new EventId(12, "MetricsDropped"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_MetricsDropped);
+
+        private static readonly Action<ILogger, Exception> _metricsWriteFailed =
+            LoggerMessage.Define(
+                eventId: new EventId(13, "MetricsWriteFailed"),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_MetricsWriteFailed);
+
+        private static readonly Action<ILogger, Exception> _metricsAbandonCompletion =
+            LoggerMessage.Define(
+                eventId: new EventId(14, "MetricsAbandonCompletion"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_MetricsAbandonCompletion);
+
+        private static readonly Action<ILogger, int, Exception> _metricsUnprocessed =
+            LoggerMessage.Define<int>(
+                eventId: new EventId(15, "MetricsUnprocessed"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_MetricsUnprocessed);
+
         public static void RequestFailed(this ILogger logger, Exception ex)
         {
             _requestFailed(logger, ex);
@@ -107,6 +143,36 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static void StoppingTraceEventPayloadFilterMismatch(this ILogger logger, TraceEvent traceEvent)
         {
             _stoppingTraceEventPayloadFilterMismatch(logger, traceEvent.ProviderName, traceEvent.EventName, string.Join(' ', traceEvent.PayloadNames), null);
+        }
+
+        public static void DiagnosticRequestFailed(this ILogger logger, int processId, Exception ex)
+        {
+            _diagnosticRequestFailed(logger, processId, ex);
+        }
+
+        public static void StopOperationFailed(this ILogger logger, Guid operationId, Exception ex)
+        {
+            _stopOperationFailed(logger, operationId, ex);
+        }
+
+        public static void MetricsDropped(this ILogger logger, long count)
+        {
+            _metricsDropped(logger, count, null);
+        }
+
+        public static void MetricsWriteFailed(this ILogger logger, Exception ex)
+        {
+            _metricsWriteFailed(logger, ex);
+        }
+
+        public static void MetricsAbandonCompletion(this ILogger logger)
+        {
+            _metricsAbandonCompletion(logger, null);
+        }
+
+        public static void MetricsUnprocessed(this ILogger logger, int count)
+        {
+            _metricsUnprocessed(logger, count, null);
         }
     }
 }

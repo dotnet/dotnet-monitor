@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 {
-    partial class AzureBlobEgressProvider
+    internal sealed partial class AzureBlobEgressProvider
     {
         /// <summary>
         /// Automatically flushes the stream after a certain amount of bytes have been written.
@@ -37,6 +37,8 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
                 _baseStream.CopyToAsync(destination, bufferSize, cancellationToken);
             public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
                 _baseStream.ReadAsync(buffer, offset, count, cancellationToken);
+            public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) =>
+                _baseStream.ReadAsync(buffer, cancellationToken);
             public override int ReadByte() => _baseStream.ReadByte();
 
             //CONSIDER These are not really used, but should still autoflush.
@@ -61,8 +63,13 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 
             public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
             {
-                await _baseStream.WriteAsync(buffer, offset, count, cancellationToken);
-                await ProcessWriteAsync(count, cancellationToken);
+                await WriteAsync(buffer.AsMemory(offset, count), cancellationToken);
+            }
+
+            public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
+            {
+                await _baseStream.WriteAsync(buffer, cancellationToken);
+                await ProcessWriteAsync(buffer.Length, cancellationToken);
             }
 
             public override void Flush()

@@ -58,10 +58,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public async ValueTask DisposeAsync()
         {
-            if (DisposableHelper.CanDispose(ref _disposalState))
+            if (!DisposableHelper.CanDispose(ref _disposalState))
             {
-                await StopRulesCore(CancellationToken.None);
+                return;
             }
+
+            await StopRulesCore(CancellationToken.None);
         }
 
         public async Task StartRulesAsync(
@@ -242,7 +244,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
         }
 
-        private bool TrySetCanceledAndReturnTrue(OperationCanceledException ex, TaskCompletionSource<object> source)
+        private static bool TrySetCanceledAndReturnTrue(OperationCanceledException ex, TaskCompletionSource<object> source)
         {
             // Always attempt to cancel the completion source
             source.TrySetCanceled(ex.CancellationToken);

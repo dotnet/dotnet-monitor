@@ -12,8 +12,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 {
     internal sealed class TextStacksFormatter : StacksFormatter
     {
-        private const char ModuleSeparator = '!';
-        private const char ClassSeparator = '.';
         private const string Indent = "  ";
 
         public TextStacksFormatter(Stream outputStream) : base(outputStream)
@@ -28,7 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             {
                 token.ThrowIfCancellationRequested();
 
-                await writer.WriteLineAsync(string.Format(CultureInfo.CurrentCulture, Strings.CallstackThreadHeader, stack.ThreadId));
+                await writer.WriteLineAsync(FormatThreadName(stack.ThreadId, stack.ThreadName));
                 foreach (var frame in stack.Frames)
                 {
                     builder.Clear();
@@ -38,6 +36,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 }
                 await writer.WriteLineAsync();
             }
+
+            await writer.FlushAsync();
         }
 
         private void BuildFrame(StringBuilder builder, NameCache cache, CallStackFrame frame)
@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
             else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
             {
-                builder.Append(base.GetModuleName(cache, functionData.ModuleId));
+                builder.Append(GetModuleName(cache, functionData.ModuleId));
                 builder.Append(ModuleSeparator);
                 BuildClassName(builder, cache, functionData);
                 builder.Append(ClassSeparator);

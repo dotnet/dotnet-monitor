@@ -47,7 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(httpClientFactory);
             ApiClient apiClient = new(outputHelper, httpClient);
 
-            AppRunner appRunner = new(outputHelper, Assembly.GetExecutingAssembly());
+            await using AppRunner appRunner = new(outputHelper, Assembly.GetExecutingAssembly());
             appRunner.ProfilerLogLevel = profilerLogLevel;
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
@@ -57,6 +57,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
             await appRunner.ExecuteAsync(async () =>
             {
+                // Wait for the process to be discovered.
+                int processId = await appRunner.ProcessIdTask;
+                _ = await apiClient.GetProcessWithRetryAsync(outputHelper, pid: processId);
+
                 await appValidate(appRunner, apiClient);
             });
             Assert.Equal(0, appRunner.ExitCode);

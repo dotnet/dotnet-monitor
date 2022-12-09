@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
-    internal class ShowSourcesTestsConstants
+    internal static class ShowSourcesTestsConstants
     {
         // The values used here correspond to the ones used in SampleConfigurations
 

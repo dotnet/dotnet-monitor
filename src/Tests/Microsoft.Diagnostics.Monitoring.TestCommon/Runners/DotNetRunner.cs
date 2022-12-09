@@ -1,6 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information
+// See the LICENSE file in the project root for more information.
 
 using System;
 using System.Collections.Generic;
@@ -27,10 +27,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         // The process object of the started process
         private readonly Process _process;
 
+        private long _disposedState;
+
         /// <summary>
         /// The architecture of the dotnet host.
         /// </summary>
-        public Architecture? Architecture { get; set; } = null;
+        public Architecture? Architecture { get; set; }
 
         /// <summary>
         /// The arguments to the entrypoint method.
@@ -50,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// <summary>
         /// Gets a <see cref="bool"/> indicating if <see cref="StartAsync(CancellationToken)"/> has been called and the process has been started.
         /// </summary>
-        public bool HasStarted { get; private set; } = false;
+        public bool HasStarted { get; private set; }
 
         /// <summary>
         /// Retrieves the exit code of the process.
@@ -109,7 +111,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public void Dispose()
         {
-            ForceClose();
+            if (!DisposableHelper.CanDispose(ref _disposedState))
+            {
+                return;
+            }
+
+            Stop();
 
             _process.Dispose();
         }
@@ -126,7 +133,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 argsBuilder.Append(Path.ChangeExtension(EntrypointAssemblyPath, ".runtimeconfig.test.json"));
                 argsBuilder.Append("\" ");
             }
-            argsBuilder.Append("\"");
+            argsBuilder.Append('\"');
             argsBuilder.Append(EntrypointAssemblyPath);
             argsBuilder.Append("\" ");
             argsBuilder.Append(Arguments);
@@ -156,10 +163,20 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                             break;
                         }
 
-                        await Task.Delay(TimeSpan.FromMilliseconds(100));
+                        await Task.Delay(TimeSpan.FromMilliseconds(100), token);
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Forces the process to stop and waits for it to exit.
+        /// </summary>
+        public async Task StopAsync(CancellationToken token)
+        {
+            Stop();
+
+            await WaitForExitAsync(token);
         }
 
         /// <summary>
@@ -174,9 +191,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         }
 
         /// <summary>
-        /// Forces the process to exit.
+        /// Forces the process to stop
         /// </summary>
-        public void ForceClose()
+        private void Stop()
         {
             if (HasStarted && !_process.HasExited)
             {

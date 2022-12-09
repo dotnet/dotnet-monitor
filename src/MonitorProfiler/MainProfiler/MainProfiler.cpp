@@ -10,6 +10,7 @@
 #include "../Logging/StdErrLogger.h"
 #include "../Stacks/StacksEventProvider.h"
 #include "../Stacks/StackSampler.h"
+#include "../Utilities/ThreadUtilities.h"
 #include "corhlpr.h"
 #include "macros.h"
 #include <memory>
@@ -66,6 +67,18 @@ STDMETHODIMP MainProfiler::ThreadDestroyed(ThreadID threadId)
 #ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
     IfFailLogRet(_threadDataManager->ThreadDestroyed(threadId));
 #endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
+
+    _threadNameCache->Remove(threadId);
+
+    return S_OK;
+}
+
+STDMETHODIMP MainProfiler::ThreadNameChanged(ThreadID threadId, ULONG cchName, WCHAR name[])
+{
+    if (name != nullptr && cchName > 0)
+    {
+        _threadNameCache->Set(threadId, tstring(name, cchName));
+    }
 
     return S_OK;
 }
@@ -151,8 +164,6 @@ HRESULT MainProfiler::InitializeCommon()
     IfNullRet(_exceptionTracker);
 #endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
 
-    IfFailLogRet(InitializeCommandServer());
-
     // Set product version environment variable to allow discovery of if the profiler
     // as been applied to a target process. Diagnostic tools must use the diagnostic
     // communication channel's GetProcessEnvironment command to get this value.
@@ -165,9 +176,14 @@ HRESULT MainProfiler::InitializeCommon()
 #endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
     StackSampler::AddProfilerEventMask(eventsLow);
 
+    _threadNameCache = make_shared<ThreadNameCache>();
+
     IfFailRet(m_pCorProfilerInfo->SetEventMask2(
         eventsLow,
         COR_PRF_HIGH_MONITOR::COR_PRF_HIGH_MONITOR_NONE));
+
+    //Initialize this last. The CommandServer creates secondary threads, which will be difficult to cleanup if profiler initialization fails.
+    IfFailLogRet(InitializeCommandServer());
 
     return S_OK;
 }
@@ -262,7 +278,7 @@ HRESULT MainProfiler::ProcessCallstackMessage()
     std::vector<std::unique_ptr<StackSamplerState>> stackStates;
     std::shared_ptr<NameCache> nameCache;
 
-    IfFailLogRet(stackSampler.CreateCallstack(stackStates, nameCache));
+    IfFailLogRet(stackSampler.CreateCallstack(stackStates, nameCache, _threadNameCache));
 
     std::unique_ptr<StacksEventProvider> eventProvider;
     IfFailLogRet(StacksEventProvider::CreateProvider(m_pCorProfilerInfo, eventProvider));
@@ -289,6 +305,11 @@ HRESULT MainProfiler::ProcessCallstackMessage()
     {
         IfFailLogRet(eventProvider->WriteCallstack(stackState->GetStack()));
     }
+
+    //HACK See https://github.com/dotnet/runtime/issues/76704
+    // We sleep here for 200ms to ensure that our event is timestamped. Since we are on a dedicated message
+    // thread we should not be interfering with the app itself.
+    ThreadUtilities::Sleep(200);
 
     IfFailLogRet(eventProvider->WriteEndEvent());
 

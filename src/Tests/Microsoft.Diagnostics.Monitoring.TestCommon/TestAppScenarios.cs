@@ -23,6 +23,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             Finished
         }
 
+        public static class AspNet
+        {
+            public const string Name = nameof(AspNet);
+
+            public static class Commands
+            {
+                public const string Continue = nameof(Continue);
+            }
+        }
+
         public static class AsyncWait
         {
             public const string Name = nameof(AsyncWait);
@@ -55,6 +65,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             }
         }
 
+        public static class Execute
+        {
+            public const string Name = nameof(Execute);
+        }
+
         public static class Logger
         {
             public const string Name = nameof(Logger);
@@ -64,6 +79,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string LoggerCategory1 = nameof(LoggerCategory1);
                 public const string LoggerCategory2 = nameof(LoggerCategory2);
                 public const string LoggerCategory3 = nameof(LoggerCategory3);
+                // Used to denote that no more relevant data will be sent via logging.
+                public const string SentinelCategory = nameof(SentinelCategory);
+                // Use to flush the event entries through eventing buffers.
+                public const string FlushCategory = nameof(FlushCategory);
             }
 
             public static class Commands

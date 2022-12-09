@@ -7,5 +7,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     internal static class EgressProviderTypes
     {
         public const string FileSystem = nameof(FileSystem);
+
+        public const string S3Storage = nameof(S3Storage);
     }
 }

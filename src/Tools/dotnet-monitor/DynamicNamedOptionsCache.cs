@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return base.TryRemove(name);
         }
 
-        private bool IsDefaultName(string name)
+        private static bool IsDefaultName(string name)
         {
             return string.Equals(name, Options.DefaultName, StringComparison.Ordinal);
         }

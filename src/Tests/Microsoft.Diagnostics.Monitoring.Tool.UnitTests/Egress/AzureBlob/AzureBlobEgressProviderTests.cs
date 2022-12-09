@@ -71,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
-            string identifier = await EgressAsync(uploadAction, egressProvider, providerOptions, artifactSettings, CancellationToken.None);
+            await EgressAsync(uploadAction, egressProvider, providerOptions, artifactSettings, CancellationToken.None);
 
             // Assert
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
@@ -100,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
-            string identifier = await EgressAsync(uploadAction, egressProvider, providerOptions, artifactSettings, CancellationToken.None);
+            await EgressAsync(uploadAction, egressProvider, providerOptions, artifactSettings, CancellationToken.None);
 
             // Assert
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
@@ -128,7 +128,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
-            string identifier = await EgressAsync(uploadAction, egressProvider, providerOptions, artifactSettings, CancellationToken.None);
+            await EgressAsync(uploadAction, egressProvider, providerOptions, artifactSettings, CancellationToken.None);
 
             // Assert
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
@@ -158,7 +158,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
-            string identifier = await EgressAsync(uploadAction, egressProvider, providerOptions, artifactSettings, CancellationToken.None);
+            await EgressAsync(uploadAction, egressProvider, providerOptions, artifactSettings, CancellationToken.None);
 
             // Assert
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
@@ -190,7 +190,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
-            string identifier = await EgressAsync(uploadAction, egressProvider, providerOptions, artifactSettings, CancellationToken.None);
+            await EgressAsync(uploadAction, egressProvider, providerOptions, artifactSettings, CancellationToken.None);
 
             // Assert
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
@@ -199,7 +199,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             ValidateQueue(blobs, messages, expectedCount: 1);
         }
 
-        [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
+        [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs, Skip = "https://github.com/dotnet/dotnet-monitor/issues/2754")]
         [InlineData(UploadAction.ProvideUploadStream)]
         [InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_ThrowsWhen_ContainerDoesNotExistAndUsingRestrictiveSasToken(UploadAction uploadAction)
@@ -242,7 +242,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
-            string identifier = await EgressAsync(uploadAction, egressProvider, providerOptions, artifactSettings, CancellationToken.None);
+            await EgressAsync(uploadAction, egressProvider, providerOptions, artifactSettings, CancellationToken.None);
 
             // Assert
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
@@ -263,12 +263,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             await fs.CopyToAsync(stream, token);
         }
 
-        private async Task<string> EgressAsync(UploadAction uploadAction, AzureBlobEgressProvider egressProvider, AzureBlobEgressProviderOptions options, EgressArtifactSettings artifactSettings, CancellationToken token)
+        private Task EgressAsync(UploadAction uploadAction, AzureBlobEgressProvider egressProvider, AzureBlobEgressProviderOptions options, EgressArtifactSettings artifactSettings, CancellationToken token)
         {
             return uploadAction switch
             {
-                UploadAction.ProvideUploadStream => await egressProvider.EgressAsync(options, ProvideUploadStreamAsync, artifactSettings, token),
-                UploadAction.WriteToProviderStream => await egressProvider.EgressAsync(options, WriteToEgressStreamAsync, artifactSettings, token),
+                UploadAction.ProvideUploadStream => egressProvider.EgressAsync(options, ProvideUploadStreamAsync, artifactSettings, token),
+                UploadAction.WriteToProviderStream => egressProvider.EgressAsync(options, WriteToEgressStreamAsync, artifactSettings, token),
                 _ => throw new ArgumentException(nameof(uploadAction)),
             };
         }
@@ -303,7 +303,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             return queueClient;
         }
 
-        private EgressArtifactSettings ConstructArtifactSettings(int numberOfMetadataEntries = 2)
+        private static EgressArtifactSettings ConstructArtifactSettings(int numberOfMetadataEntries = 2)
         {
             EgressArtifactSettings settings = new()
             {
@@ -343,7 +343,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             return options;
         }
 
-        private async Task<List<BlobItem>> GetAllBlobsAsync(BlobContainerClient containerClient)
+        private static async Task<List<BlobItem>> GetAllBlobsAsync(BlobContainerClient containerClient)
         {
             List<BlobItem> blobs = new();
 
@@ -366,7 +366,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             return blobs;
         }
 
-        private async Task<List<QueueMessage>> GetAllMessagesAsync(QueueClient queueClient)
+        private static async Task<List<QueueMessage>> GetAllMessagesAsync(QueueClient queueClient)
         {
             try
             {
@@ -382,7 +382,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             return new List<QueueMessage>();
         }
 
-        private string DecodeQueueMessageBody(BinaryData body)
+        private static string DecodeQueueMessageBody(BinaryData body)
         {
             // Our queue messages are UTF-8 encoded text that is then Base64 encoded and then stored as a byte array.
             return Encoding.UTF8.GetString(Convert.FromBase64String(body.ToString()));
@@ -400,14 +400,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             return downloadPath;
         }
 
-        private string GetFileSHA256(string filePath)
+        private static string GetFileSHA256(string filePath)
         {
             using SHA256 sha = SHA256.Create();
             using FileStream fileStream = File.OpenRead(filePath);
             return BitConverter.ToString(sha.ComputeHash(fileStream));
         }
 
-        private void ValidateQueue(List<BlobItem> blobs, List<QueueMessage> messages, int expectedCount)
+        private static void ValidateQueue(List<BlobItem> blobs, List<QueueMessage> messages, int expectedCount)
         {
             Assert.Equal(expectedCount, messages.Count);
             Assert.Equal(expectedCount, blobs.Count);
@@ -419,7 +419,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             }
         }
 
-        private string ConstructBlobContainerSasToken(BlobContainerClient containerClient)
+        private static string ConstructBlobContainerSasToken(BlobContainerClient containerClient)
         {
             // Requires:
             // - Add for UploadAction.ProvideUploadStream
@@ -435,7 +435,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             return sasUri.Query;
         }
 
-        private string ConstructQueueSasToken(QueueClient queueClient)
+        private static string ConstructQueueSasToken(QueueClient queueClient)
         {
             QueueSasBuilder sasBuilder = new(QueueSasPermissions.Add, DateTimeOffset.MaxValue)
             {
