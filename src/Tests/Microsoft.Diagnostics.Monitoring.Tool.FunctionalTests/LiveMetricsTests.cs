@@ -96,11 +96,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
+#if NET7_0_OR_GREATER
         [Fact]
         public async Task TestSystemDiagnosticsMetrics()
         {
-            var counterNamesP1 = new[] { "test-counter", "test-gauge", "test-histogram" };
-            var counterNamesP2 = new[] { "test-histogram" };
+            var counterNamesP1 = new[] { "test-counter", "test-gauge" };
+            var counterNamesP2 = new[] { "test-counter" };
 
             MetricProvider p1 = new MetricProvider()
             {
@@ -172,5 +173,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     });
                 });
         }
+#endif
     }
 }

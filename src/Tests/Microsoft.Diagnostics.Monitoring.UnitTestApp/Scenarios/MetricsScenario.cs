@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
-#if NET6_0_OR_GREATER
     internal static class MetricsScenario
     {
         public static Command Command()
@@ -31,22 +30,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 Random rd = new();
 
                 Meter meter1 = new Meter("P1", "1.0.0");
-                Counter<int> counter1 = meter1.CreateCounter<int>("test-counter");
+                ObservableCounter<int> counter1 = meter1.CreateObservableCounter("test-counter", () => 1);
                 Histogram<int> histogram1 = meter1.CreateHistogram<int>("test-histogram");
                 _ = meter1.CreateObservableGauge<int>("test-gauge", () => rd.Next(1, 100));
 
                 Meter meter2 = new Meter("P2", "1.0.0");
-                Histogram<int> histogram2 = meter2.CreateHistogram<int>("test-histogram");
+                ObservableCounter<int> counter2 = meter2.CreateObservableCounter("test-counter", () => 1);
 
                 for (int index = 0; index < 20; ++index)
                 {
-                    await Task.Delay(100);
-                    counter1.Add(1);
-
                     for (int i = 0; i < 20; ++i)
                     {
                         histogram1.Record(rd.Next(5000));
-                        histogram2.Record(rd.Next(5000));
                     }
                 }
 
@@ -56,5 +51,4 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             }, context.GetCancellationToken());
         }
     }
-#endif
 }

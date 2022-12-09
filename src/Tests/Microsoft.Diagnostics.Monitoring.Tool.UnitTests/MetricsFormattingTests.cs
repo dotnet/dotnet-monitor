@@ -2,16 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Amazon.Runtime;
-using Amazon.S3.Model;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
-using Microsoft.FileFormats.PDB;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,7 +26,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private readonly ILogger<MetricsStoreService> _logger;
 
         private const int MetricCount = 1;
-        private const int Value = 50;
+        private const int Value1 = 1;
+        private const int Value2 = 2;
+        private const int Value3 = 3;
         private const int IntervalSeconds = 10;
 
         public MetricsFormattingTests(ITestOutputHelper outputHelper)
@@ -49,15 +46,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             Dictionary<string, string> metadataDict1 = new();
             metadataDict1.Add("quantile", "0.5");
-            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", metadataDict1, Value, Timestamp));
+            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", metadataDict1, Value1, Timestamp));
 
             Dictionary<string, string> metadataDict2 = new();
             metadataDict2.Add("quantile", "0.95");
-            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", metadataDict2, Value, Timestamp));
+            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", metadataDict2, Value2, Timestamp));
 
             Dictionary<string, string> metadataDict3 = new();
             metadataDict3.Add("quantile", "0.99");
-            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", metadataDict3, Value, Timestamp));
+            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", metadataDict3, Value3, Timestamp));
 
             MemoryStream stream = await GetMetrics(payload);
 
@@ -84,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task GaugeFormat_Test()
         {
-            ICounterPayload payload = new GaugePayload(MeterName, InstrumentName, "DisplayName", "", new(), Value, Timestamp);
+            ICounterPayload payload = new GaugePayload(MeterName, InstrumentName, "DisplayName", "", new(), Value1, Timestamp);
 
             MemoryStream stream = await GetMetrics(new() { payload });
 
@@ -103,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task CounterFormat_Test()
         {
-            ICounterPayload payload = new RatePayload(MeterName, InstrumentName, "DisplayName", "", new(), Value, IntervalSeconds, Timestamp);
+            ICounterPayload payload = new RatePayload(MeterName, InstrumentName, "DisplayName", "", new(), Value1, IntervalSeconds, Timestamp);
 
             MemoryStream stream = await GetMetrics(new() { payload });
 
