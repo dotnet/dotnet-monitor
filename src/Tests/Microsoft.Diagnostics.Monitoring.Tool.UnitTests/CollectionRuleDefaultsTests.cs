@@ -17,6 +17,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public sealed class CollectionRuleDefaultsTests
     {
         private const string DefaultRuleName = nameof(CollectionRuleDefaultsTests);

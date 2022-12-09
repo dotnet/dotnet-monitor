@@ -21,6 +21,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public class CollectionRuleDescriptionPipelineTests
     {
         private readonly TimeSpan DefaultPipelineTimeout = TimeSpan.FromSeconds(30);
