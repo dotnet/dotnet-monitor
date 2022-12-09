@@ -56,7 +56,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 string tagsVal = string.Empty;
 
-                if (counter.Metadata.TryGetValue("quantile", out string percentile))
+                writer.WriteStartObject("metadata");
+                foreach (var kvPair in Microsoft.Diagnostics.Monitoring.EventPipe.TraceEventExtensions.GetMetadata(counter.Metadata))
                 {
                     tagsVal = "Percentile=" + percentile; // note that this is currently decimal not percentile
                 }

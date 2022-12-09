@@ -138,7 +138,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     foreach (var individualMetric in metric)
                     {
-                        var keyValuePairs = from pair in individualMetric.Metadata select pair.Key + "=" + "\"" + pair.Value + "\"";
+                        var keyValuePairs = from pair in Microsoft.Diagnostics.Monitoring.EventPipe.TraceEventExtensions.GetMetadata(individualMetric.Metadata)
+                                            select pair.Key + "=" + "\"" + pair.Value + "\"";
                         string metricLabels = string.Join(", ", keyValuePairs);
 
                         string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(individualMetric.Unit, individualMetric.Value);
