@@ -757,6 +757,8 @@ Additional metrics providers and counter names to return from this route can be 
 
 When `CounterNames` are not specified, all the counters associated with the `ProviderName` are collected.
 
+[7.1+] Custom metrics support labels for metadata. Metadata cannot include commas (`,`); the inclusion of a comma in metadata will result in all metadata being removed from the custom metric.
+
 ### Disable default providers
 
 In addition to enabling custom providers, `dotnet monitor` also allows you to disable collection of the default providers. You can do so via the following configuration:
