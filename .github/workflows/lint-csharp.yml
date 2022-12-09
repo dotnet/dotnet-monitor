@@ -29,21 +29,14 @@ jobs:
           echo "Files to validate: '${changed_source_files}'"
           echo "updated_files=$(echo ${changed_source_files})" >> $GITHUB_ENV
 
-      - name: Get dotnet version
-        run: echo 'dotnet_version='$(jq -r '.tools.dotnet' global.json) >> $GITHUB_ENV
+      - name: Run dotnet restore
+        run: ./dotnet.sh restore
 
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v3.0.3
-        with:
-          dotnet-version: ${{ env.dotnet_version }}
-          include-prerelease: true
+      - name: Run dotnet format (whitespace)
+        run: ./dotnet.sh format whitespace --no-restore --include ${{ env.updated_files }}
 
-      # Workaround for a bug in the dotnet-format build shipped in .NET 7.0 Preview 5. Ref: https://github.com/dotnet/core/blob/main/release-notes/7.0/known-issues.md#unhandled-exception-in-dotnet-format-app-in-net-70-preview-5
-      - name: Setup dotnet format
-        run: dotnet tool install -g dotnet-format --version "7.*" --configfile ./NuGet.config
-
-      - name: Run dotnet format
-        run: dotnet-format --include ${{ env.updated_files }}
+      - name: Run dotnet format (style)
+        run: ./dotnet.sh format style --no-restore --include ${{ env.updated_files }}
 
       - name: Generate artifacts
         run: |
