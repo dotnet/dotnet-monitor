@@ -17,14 +17,6 @@ pr:
     - eng/actions
     - '**.md'
 
-schedules:
-- cron: 15 11 * * 6
-  displayName: Weekly Full Test Run
-  branches:
-    include:
-    - main
-  always: true
-
 parameters:
 - name: TestGroup
   displayName: 'Test Group'
