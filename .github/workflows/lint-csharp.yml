@@ -2,7 +2,6 @@ name: 'C# linting'
 on:
   pull_request:
     paths: ['src/**.cs']
-    # Disable on 'main' as dotnet-format does not work for .NET 8
     branches: ['main', 'release/6.x', 'release/7.*']
 
 permissions:
