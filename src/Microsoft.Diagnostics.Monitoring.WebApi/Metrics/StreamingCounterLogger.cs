@@ -14,13 +14,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         private const int CounterBacklog = 1000;
 
-        // The amount of time to wait for serialization to finish before stopping the pipeline
-        private static readonly TimeSpan FinishSerializationTimeout = TimeSpan.FromSeconds(3);
-
         private readonly Channel<ICounterPayload> _channel;
         private readonly ChannelReader<ICounterPayload> _channelReader;
         private readonly ChannelWriter<ICounterPayload> _channelWriter;
-        private readonly ManualResetEvent _finishedSerialization = new(false);
+        private Task _processingTask;
         private readonly ILogger _logger;
 
         protected ILogger Logger => _logger;
@@ -50,12 +47,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _channelWriter.TryWrite(counter);
         }
 
-        public void PipelineStarted()
+        public Task PipelineStarted(CancellationToken token)
         {
-            _ = ReadAndSerializeAsync();
+            _processingTask = ReadAndSerializeAsync(token);
+            return Task.CompletedTask;
         }
 
-        public void PipelineStopped()
+        public async Task PipelineStopped(CancellationToken token)
         {
             _channelWriter.Complete();
 
@@ -64,10 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 _logger.MetricsDropped(_dropCount);
             }
 
-            if (!_finishedSerialization.WaitOne(FinishSerializationTimeout))
-            {
-                _logger.MetricsAbandonCompletion();
-            }
+            await _processingTask;
 
             try
             {
@@ -87,22 +82,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _dropCount++;
         }
 
-        private async Task ReadAndSerializeAsync()
+        private async Task ReadAndSerializeAsync(CancellationToken token)
         {
             try
             {
-                while (await _channelReader.WaitToReadAsync())
+                while (await _channelReader.WaitToReadAsync(token))
                 {
-                    await SerializeAsync(await _channelReader.ReadAsync());
+                    await SerializeAsync(await _channelReader.ReadAsync(token));
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 _logger.MetricsWriteFailed(ex);
-            }
-            finally
-            {
-                _finishedSerialization.Set();
             }
         }
     }
