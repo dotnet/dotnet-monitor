@@ -16,6 +16,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public sealed class ProfilerInitializationTests
     {
         private readonly ITestOutputHelper _outputHelper;
