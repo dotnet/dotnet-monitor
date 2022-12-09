@@ -19,5 +19,3 @@ graph TD
     G --> |OPTIONAL| L["<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/aks.md'>AKS</a>"]
     G --> |OPTIONAL| M[Egress -> COMING SOON]
 ```
-
-*TODO*: Need to update links to point to main branch of dotnet-monitor repo, since it appears that [we can't do relative links in GitHub Mermaid]( https://gist.github.com/ChristopherA/bffddfdf7b1502215e44cec9fb766dfd#flowchart-with-hyperlinks).
