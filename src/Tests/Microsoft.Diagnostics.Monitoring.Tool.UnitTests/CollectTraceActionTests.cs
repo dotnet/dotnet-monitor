@@ -23,6 +23,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public sealed class CollectTraceActionTests
     {
         private const string DefaultRuleName = "TraceTestRule";
