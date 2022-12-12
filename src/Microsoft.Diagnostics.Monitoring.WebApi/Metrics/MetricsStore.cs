@@ -94,6 +94,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.Provider, metricInfo.Name, metricInfo.Unit);
                 string metricType = "gauge";
 
+                var keyValuePairs = from pair in metricInfo.Metadata select PrometheusDataModel.GetPrometheusNormalizedLabel(pair.Key, pair.Value);
+                string metricLabels = string.Join(", ", keyValuePairs);
+
                 //TODO Some clr metrics claim to be incrementing, but are really gauges.
 
                 await writer.WriteLineAsync(FormattableString.Invariant($"# HELP {metricName} {metricInfo.DisplayName}"));
@@ -102,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 foreach (var metric in metricGroup.Value)
                 {
                     string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(metric.Unit, metric.Value);
-                    await WriteMetricDetails(writer, metric, metricName, metricValue);
+                    await WriteMetricDetails(writer, metric, metricName, metricValue, metricLabels);
                 }
             }
         }
@@ -111,9 +114,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     StreamWriter writer,
                     ICounterPayload metric,
                     string metricName,
-                    string metricValue)
+                    string metricValue,
+                    string metricLabels)
         {
             await writer.WriteAsync(metricName);
+            if (!string.IsNullOrWhiteSpace(metricLabels))
+            {
+                await writer.WriteAsync("{" + metricLabels + "}");
+            }
             await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
         }
 
