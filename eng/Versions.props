@@ -16,6 +16,7 @@
       - 'release': sets the blob group release name to 'release'. Can be used for prereleases and full releases.
     -->
     <BlobGroupBuildQuality>release</BlobGroupBuildQuality>
+    <UseMicrosoftDiagnosticsMonitoringShippedVersion>false</UseMicrosoftDiagnosticsMonitoringShippedVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="Testing">
@@ -61,6 +62,8 @@
     <VSRedistCommonAspNetCoreSharedFrameworkx6470Version>7.0.0-rtm.22513.7</VSRedistCommonAspNetCoreSharedFrameworkx6470Version>
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta4.22568.1</SystemCommandLineVersion>
+    <!-- dotnet/diagnostics references -->
+    <MicrosoftDiagnosticsMonitoringVersion>6.0.0-preview.22609.1</MicrosoftDiagnosticsMonitoringVersion>
     <!-- dotnet/roslyn-analyzers -->
     <MicrosoftCodeAnalysisNetAnalyzersVersion>7.0.0-preview1.22559.1</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
@@ -96,5 +99,9 @@
   <PropertyGroup Label=".NET 7 Dependent" Condition=" '$(TargetFramework)' == 'net7.0' ">
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreAuthenticationJwtBearerVersionNet7)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
     <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreAuthenticationNegotiateVersionNet7)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MicrosoftDiagnosticsMonitoringLibrariesVersion Condition="'$(UseMicrosoftDiagnosticsMonitoringShippedVersion)' == 'true'">$(MicrosoftDiagnosticsMonitoringShippedVersion)</MicrosoftDiagnosticsMonitoringLibrariesVersion>
+    <MicrosoftDiagnosticsMonitoringLibrariesVersion Condition="'$(UseMicrosoftDiagnosticsMonitoringShippedVersion)' != 'true'">$(MicrosoftDiagnosticsMonitoringVersion)</MicrosoftDiagnosticsMonitoringLibrariesVersion>
   </PropertyGroup>
 </Project>

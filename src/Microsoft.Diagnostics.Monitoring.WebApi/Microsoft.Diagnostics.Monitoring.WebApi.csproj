@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">
-    <PackageReference Include="Microsoft.Diagnostics.Monitoring.EventPipe" Version="$(MicrosoftDiagnosticsMonitoringVersion)" />
+    <PackageReference Include="Microsoft.Diagnostics.Monitoring.EventPipe" Version="$(MicrosoftDiagnosticsMonitoringLibrariesVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' != ''">
