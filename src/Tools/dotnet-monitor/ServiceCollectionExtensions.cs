@@ -326,7 +326,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        private static IServiceCollection RegisterEgressType<TOptions, TProvider>(this IServiceCollection services)
+        public static IServiceCollection RegisterEgressType<TOptions, TProvider>(this IServiceCollection services)
             where TProvider : class, IEgressProvider<TOptions>
             where TOptions : class
         {

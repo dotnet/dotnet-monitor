@@ -16,10 +16,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
     /// Continously emits trace events and a unique one on request.
     /// Only stops once an exit request is received.
     /// </summary>
-    internal class TraceEventsScenario
+    internal static class TraceEventsScenario
     {
         [EventSource(Name = "TestScenario")]
-        class TestScenarioEventSource : EventSource
+        private sealed class TestScenarioEventSource : EventSource
         {
             public static TestScenarioEventSource Log { get; } = new TestScenarioEventSource();
 

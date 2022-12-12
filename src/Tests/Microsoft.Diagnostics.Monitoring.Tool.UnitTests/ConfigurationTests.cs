@@ -361,12 +361,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
         }
 
-        private string CleanWhitespace(string rawText)
+        private static string CleanWhitespace(string rawText)
         {
             return string.Concat(rawText.Where(c => !char.IsWhiteSpace(c)));
         }
 
-        private string ConstructSettingsJson(params string[] permittedFileNames)
+        private static string ConstructSettingsJson(params string[] permittedFileNames)
         {
             string[] filePaths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), SampleConfigurationsDirectory));
 
@@ -390,7 +390,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return generatedUserSettings;
         }
 
-        private string ConstructExpectedOutput(bool redact, string directoryNameLocation)
+        private static string ConstructExpectedOutput(bool redact, string directoryNameLocation)
         {
             Dictionary<string, string> categoryMapping = GetConfigurationFileNames(redact);
 
@@ -421,7 +421,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return Encoding.UTF8.GetString(stream.ToArray());
         }
 
-        private Dictionary<string, string> GetConfigurationFileNames(bool redact)
+        private static Dictionary<string, string> GetConfigurationFileNames(bool redact)
         {
             return new Dictionary<string, string>()
             {

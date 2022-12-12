@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
             }
 
             throw new ArgumentException(
-                String.Format(Strings.ErrorMessage_FieldNotAllowed,
+                string.Format(Strings.ErrorMessage_FieldNotAllowed,
                     nameof(optionsType),
                     optionsType.FullName), 
                 nameof(optionsType));
@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         /// </summary>
         /// <param name="s">The <see cref="IConfigurationSection"/> to evaluate, this should be one of the children of the "Egress" section.</param>
         /// <returns><see langword="true"/> if and only if the given section is one of of the pre-defined</returns>
-        private bool IsBuiltInSection(IConfigurationSection s)
+        private static bool IsBuiltInSection(IConfigurationSection s)
         {
             Type egressType = typeof(EgressOptions);
             return egressType.GetProperty(s.Key) != null;

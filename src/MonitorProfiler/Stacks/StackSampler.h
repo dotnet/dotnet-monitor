@@ -10,6 +10,7 @@
 #include "tstring.h"
 #include "Stack.h"
 #include "../Utilities/NameCache.h"
+#include "../Utilities/ThreadNameCache.h"
 
 class StackSamplerState
 {
@@ -28,7 +29,9 @@ class StackSampler
 {
     public:
         StackSampler(ICorProfilerInfo12* profilerInfo);
-        HRESULT CreateCallstack(std::vector<std::unique_ptr<StackSamplerState>>& stackStates, std::shared_ptr<NameCache>& nameCache);
+        HRESULT CreateCallstack(std::vector<std::unique_ptr<StackSamplerState>>& stackStates,
+            std::shared_ptr<NameCache>& nameCache,
+            std::shared_ptr<ThreadNameCache>& threadNames);
         static void AddProfilerEventMask(DWORD& eventsLow);
     private:
         static HRESULT __stdcall DoStackSnapshotCallbackWrapper(

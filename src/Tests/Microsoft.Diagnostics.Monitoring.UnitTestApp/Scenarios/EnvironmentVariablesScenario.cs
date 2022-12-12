@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
     /// <summary>
     /// Prints out the environment variables.
     /// </summary>
-    internal class EnvironmentVariablesScenario
+    internal static class EnvironmentVariablesScenario
     {
         public static Command Command()
         {

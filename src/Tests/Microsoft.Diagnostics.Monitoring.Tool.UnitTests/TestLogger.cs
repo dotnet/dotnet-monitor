@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public IList<(EventId EventId, string Message)> Events => _events;
     }
 
-    internal class TestLoggerProvider : ILoggerProvider
+    internal sealed class TestLoggerProvider : ILoggerProvider
     {
         private readonly LogRecord _logRecord;
 
@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public void Dispose() { }
     }
 
-    internal class TestLogger : ILogger
+    internal sealed class TestLogger : ILogger
     {
         private readonly string _categoryName;
         private readonly LogRecord _logRecord;

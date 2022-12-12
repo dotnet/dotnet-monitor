@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal class MetricsOptionsDefaults
+    internal static class MetricsOptionsDefaults
     {
         public const bool Enabled = true;
 

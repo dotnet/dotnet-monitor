@@ -1537,11 +1537,13 @@
       "description": "",
       "x-enumNames": [
         "Json",
-        "PlainText"
+        "PlainText",
+        "Speedscope"
       ],
       "enum": [
         "Json",
-        "PlainText"
+        "PlainText",
+        "Speedscope"
       ]
     },
     "CollectTraceOptions": {
@@ -2148,6 +2150,10 @@
         },
         "Indented": {
           "type": "boolean"
+        },
+        "MaxDepth": {
+          "type": "integer",
+          "format": "int32"
         },
         "SkipValidation": {
           "type": "boolean"

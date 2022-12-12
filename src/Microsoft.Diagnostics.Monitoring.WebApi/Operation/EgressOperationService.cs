@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading;
@@ -11,15 +12,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal sealed class EgressOperationService : BackgroundService
     {
-        private EgressOperationQueue _queue;
+        private IEgressOperationQueue _queue;
         private IServiceProvider _serviceProvider;
         private EgressOperationStore _operationsStore;
 
-        public EgressOperationService(EgressOperationQueue taskQueue,
-            IServiceProvider serviceProvider,
+        public EgressOperationService(IServiceProvider serviceProvider,
             EgressOperationStore operationStore)
         {
-            _queue = taskQueue;
+            _queue = serviceProvider.GetRequiredService<IEgressOperationQueue>();
             _serviceProvider = serviceProvider;
             _operationsStore = operationStore;
         }
@@ -47,13 +47,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 try
                 {
-                    var result = await egressRequest.EgressOperation.ExecuteAsync(_serviceProvider, token);
+                    ExecutionResult<EgressResult> result = await egressRequest.EgressOperation.ExecuteAsync(_serviceProvider, token);
 
                     //It is possible that this operation never completes, due to infinite duration operations.
                     _operationsStore.CompleteOperation(egressRequest.OperationId, result);
                 }
-                //This is unexpected, but an unhandled exception should still fail the operation.
-                catch (Exception e) when (!(e is OperationCanceledException))
+                catch (OperationCanceledException)
+                {
+                    try
+                    {
+                        // Mirror the state in the operations store incase the operation was cancelled via another means besides
+                        // the operations API.
+                        _operationsStore.CancelOperation(egressRequest.OperationId);
+                    }
+                    // Expected if the state already reflects the cancellation.
+                    catch (InvalidOperationException)
+                    {
+
+                    }
+
+                    throw;
+                }
+                // This is unexpected, but an unhandled exception should still fail the operation.
+                catch (Exception e)
                 {
                     _operationsStore.CompleteOperation(egressRequest.OperationId, ExecutionResult<EgressResult>.Failed(e));
                 }

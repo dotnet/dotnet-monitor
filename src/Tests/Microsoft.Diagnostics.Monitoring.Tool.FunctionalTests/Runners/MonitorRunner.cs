@@ -32,7 +32,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         private readonly LoggingRunnerAdapter _adapter;
 
-        private bool _isDisposed;
+        private readonly TemporaryDirectory _tempDir;
+
+        private long _disposedState;
 
         /// <summary>
         /// Sets configuration values via environment variables.
@@ -58,7 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 Assembly.GetExecutingAssembly(),
                 "dotnet-monitor",
 #if NET7_0_OR_GREATER
-                TargetFrameworkMoniker.Net70
+                TargetFrameworkMoniker.Net80
 #else
                 TargetFrameworkMoniker.Net60
 #endif
@@ -69,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 Assembly.GetExecutingAssembly(),
                 TestStartupHookAssemblyName,
 #if NET7_0_OR_GREATER
-                TargetFrameworkMoniker.Net70
+                TargetFrameworkMoniker.Net80
 #else
                 TargetFrameworkMoniker.Net60
 #endif
@@ -90,12 +92,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         private string UserSettingsFilePath =>
             Path.Combine(UserConfigDirectoryPath, "settings.json");
 
-        public string TempPath { get; } =
-            Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
+        public string TempPath => _tempDir.FullName;
 
         public MonitorRunner(ITestOutputHelper outputHelper)
         {
             _outputHelper = new PrefixedOutputHelper(outputHelper, "[Monitor] ");
+
+            _tempDir = new TemporaryDirectory(_outputHelper);
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
             _adapter.ReceivedStandardOutputLine += StandardOutputCallback;
@@ -108,13 +111,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public virtual async ValueTask DisposeAsync()
         {
-            lock (_lock)
+            if (!DisposableHelper.CanDispose(ref _disposedState))
             {
-                if (_isDisposed)
-                {
-                    return;
-                }
-                _isDisposed = true;
+                return;
             }
 
             _adapter.ReceivedStandardOutputLine -= StandardOutputCallback;
@@ -122,14 +121,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
             _runner.Dispose();
 
-            try
-            {
-                Directory.Delete(TempPath, recursive: true);
-            }
-            catch (Exception ex)
-            {
-                _outputHelper.WriteLine("Unable to delete '{0}': {1}", TempPath, ex);
-            }
+            _tempDir.Dispose();
         }
 
         public virtual async Task StartAsync(string command, string[] args, CancellationToken token)
@@ -193,6 +185,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             _outputHelper.WriteLine("User Settings Path: {0}", UserSettingsFilePath);
 
             await _adapter.StartAsync(token);
+        }
+
+        public Task StopAsync(CancellationToken token)
+        {
+            return _adapter.StopAsync(token);
         }
 
         public virtual async Task WaitForExitAsync(CancellationToken token)

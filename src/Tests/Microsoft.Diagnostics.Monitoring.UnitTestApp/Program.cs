@@ -9,13 +9,17 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
 {
-    internal class Program
+    internal sealed class Program
     {
         public static Task<int> Main(string[] args)
         {
             return new CommandLineBuilder(new RootCommand()
             {
+#if NET6_0_OR_GREATER
+                AspNetScenario.Command(),
+#endif
                 AsyncWaitScenario.Command(),
+                ExecuteScenario.Command(),
                 LoggerScenario.Command(),
                 SpinWaitScenario.Command(),
                 EnvironmentVariablesScenario.Command(),

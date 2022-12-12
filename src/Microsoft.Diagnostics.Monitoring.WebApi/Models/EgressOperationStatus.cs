@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
@@ -23,6 +24,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         [JsonPropertyName("process")]
         public OperationProcessInfo Process { get; set; }
+
+        [JsonPropertyName("egressProviderName")]
+        public string EgressProviderName { get; set; }
+
+        [JsonPropertyName("isStoppable")]
+        public bool IsStoppable { get; set; }
+
+        [JsonPropertyName("tags")]
+        public ISet<string> Tags { get; set; }
     }
 
     /// <summary>
@@ -62,7 +72,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         Running,
         Succeeded,
         Failed,
-        Cancelled
+        Cancelled,
+        Stopping
     }
 
     public class OperationError

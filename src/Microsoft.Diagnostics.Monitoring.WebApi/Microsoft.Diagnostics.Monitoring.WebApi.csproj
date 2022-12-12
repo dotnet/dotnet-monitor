@@ -16,11 +16,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <OutputType>Library</OutputType>
-    <!--
-      Workaround for https://github.com/dotnet/aspnetcore/issues/42200
-      Required as of 7.0 Preview 5 SDK
-      -->
-    <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">
@@ -34,8 +29,12 @@
   <ItemGroup>
     <InternalsVisibleTo Include="dotnet-monitor" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.OpenApiGen" />
+    <InternalsVisibleTo Include="CollectionRuleActions.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.WebApi.UnitTests" />
+    <InternalsVisibleTo Include="$(MoqInternalsVisibleTo)" Key="$(MoqInternalsVisibleToKey)" />
   </ItemGroup>
 
   <ItemGroup>

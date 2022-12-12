@@ -119,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private static async Task GetStream(Stream stream, CancellationToken cancellationToken)
         {
             // The test extension currently does not do anything with this stream.
-            await stream.WriteAsync(ByteArray);
+            await stream.WriteAsync(ByteArray, cancellationToken);
         }
 
         private static void CopyExtensionFiles(string extensionDirPath, string exePath = null)
@@ -184,7 +184,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             };
         }
 
-        private string GetExtensionDirectoryName(HostBuilderSettings settings, ConfigDirectory configDirectory)
+        private static string GetExtensionDirectoryName(HostBuilderSettings settings, ConfigDirectory configDirectory)
         {
             switch (configDirectory)
             {

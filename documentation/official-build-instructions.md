@@ -3,7 +3,7 @@
 
 # Official Build Instructions
 
-> *WARNING*: These instructions will only work internally at Microsoft.
+> **Warning**: These instructions will only work internally at Microsoft.
 
 To produce an official build, invoke the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954).
 

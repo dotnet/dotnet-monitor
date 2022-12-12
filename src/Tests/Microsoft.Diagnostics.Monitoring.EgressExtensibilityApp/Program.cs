@@ -11,7 +11,7 @@ using System.Text.Json;
 
 namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 {
-    internal class Program
+    internal sealed class Program
     {
         static int Main(string[] args)
         {
@@ -72,9 +72,9 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 
         private static bool GetConfig(IDictionary<string, string> configDict, string propKey)
         {
-            if (configDict.ContainsKey(propKey))
+            if (configDict.TryGetValue(propKey, out string value))
             {
-                return bool.Parse(configDict[propKey]);
+                return bool.Parse(value);
             }
 
             return false;

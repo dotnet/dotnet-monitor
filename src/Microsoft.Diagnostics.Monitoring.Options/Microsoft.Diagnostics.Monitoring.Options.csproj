@@ -14,10 +14,13 @@
     <InternalsVisibleTo Include="dotnet-monitor" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.ConfigurationSchema" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.OpenApiGen" />
+    <InternalsVisibleTo Include="CollectionRuleActions.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.WebApi" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.WebApi.UnitTests" />
+    <InternalsVisibleTo Include="$(MoqInternalsVisibleTo)" Key="$(MoqInternalsVisibleToKey)" />
   </ItemGroup>
 
   <ItemGroup>

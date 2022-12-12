@@ -59,7 +59,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             EgressOperation egressOperation = new EgressOperation(
                 async (outputStream, token) =>
                 {
-                    await StackUtilities.CollectStacksAsync(startCompletionSource, EndpointInfo, _profilerChannel, isPlainText, outputStream, token);
+                    await StackUtilities.CollectStacksAsync(startCompletionSource, EndpointInfo, _profilerChannel, MapCallstackFormat(Options.GetFormat()), outputStream, token);
                 },
                 Options.Egress,
                 fileName,
@@ -82,5 +82,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 }
             };
         }
+
+        private static StackFormat MapCallstackFormat(CallStackFormat format) =>
+            format switch
+            {
+                CallStackFormat.Json => StackFormat.Json,
+                CallStackFormat.PlainText => StackFormat.PlainText,
+                CallStackFormat.Speedscope => StackFormat.Speedscope,
+                _ => throw new InvalidOperationException()
+            };
     }
 }

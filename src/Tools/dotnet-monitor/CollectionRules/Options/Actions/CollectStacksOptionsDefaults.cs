@@ -6,6 +6,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 {
     internal static class CollectStacksOptionsDefaults
     {
-        public static readonly CallStackFormat Format = CallStackFormat.Json;
+        public const CallStackFormat Format = CallStackFormat.Json;
     }
 }

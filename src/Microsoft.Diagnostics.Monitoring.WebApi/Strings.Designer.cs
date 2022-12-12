@@ -88,6 +88,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP request failed with status code: &apos;{0}&apos;.
+        /// </summary>
+        internal static string ErrorMessage_HttpOperationFailed {
+            get {
+                return ResourceManager.GetString("ErrorMessage_HttpOperationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid metric count..
         /// </summary>
         internal static string ErrorMessage_InvalidMetricCount {
@@ -138,6 +147,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         internal static string ErrorMessage_NoTargetProcess {
             get {
                 return ResourceManager.GetString("ErrorMessage_NoTargetProcess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operation does not support being stopped..
+        /// </summary>
+        internal static string ErrorMessage_OperationDoesNotSupportBeingStopped {
+            get {
+                return ResourceManager.GetString("ErrorMessage_OperationDoesNotSupportBeingStopped", resourceCulture);
             }
         }
         
@@ -250,11 +268,56 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to get diagnostic response from runtime in process {processId}..
+        /// </summary>
+        internal static string LogFormatString_DiagnosticRequestFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_DiagnosticRequestFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Egressed artifact to {location}.
         /// </summary>
         internal static string LogFormatString_EgressedArtifact {
             get {
                 return ResourceManager.GetString("LogFormatString_EgressedArtifact", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stopped waiting for metrics to complete writing..
+        /// </summary>
+        internal static string LogFormatString_MetricsAbandonCompletion {
+            get {
+                return ResourceManager.GetString("LogFormatString_MetricsAbandonCompletion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some metrics were dropped. Count: {Count}.
+        /// </summary>
+        internal static string LogFormatString_MetricsDropped {
+            get {
+                return ResourceManager.GetString("LogFormatString_MetricsDropped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some metrics may have not be processed. Count: {Count}.
+        /// </summary>
+        internal static string LogFormatString_MetricsUnprocessed {
+            get {
+                return ResourceManager.GetString("LogFormatString_MetricsUnprocessed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to write metrics..
+        /// </summary>
+        internal static string LogFormatString_MetricsWriteFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_MetricsWriteFailed", resourceCulture);
             }
         }
         
@@ -282,6 +345,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         internal static string LogFormatString_ResolvedTargetProcess {
             get {
                 return ResourceManager.GetString("LogFormatString_ResolvedTargetProcess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to stop the &apos;{operationId}&apos; operation..
+        /// </summary>
+        internal static string LogFormatString_StopOperationFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_StopOperationFailed", resourceCulture);
             }
         }
         

@@ -471,6 +471,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ExperimentalFeatureEnabled);
 
+        private static readonly Action<ILogger, string, Exception> _startCollectArtifact =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.StartCollectArtifact.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_StartCollectArtifact);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -864,6 +870,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ExperimentalFeatureEnabled(this ILogger logger, string name)
         {
             _experimentalFeatureEnabled(logger, name, null);
+        }
+
+        public static void StartCollectArtifact(this ILogger logger, string artifactType)
+        {
+            _startCollectArtifact(logger, artifactType, null);
         }
     }
 }

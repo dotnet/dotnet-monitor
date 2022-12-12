@@ -60,14 +60,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 }
                 finally
                 {
-                    if (host is IAsyncDisposable asyncDisposable)
-                    {
-                        await asyncDisposable.DisposeAsync();
-                    }
-                    else
-                    {
-                        host.Dispose();
-                    }
+                    await DisposableHelper.DisposeAsync(host);
                 }
             }
             catch (FormatException ex)
@@ -161,7 +154,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
                 services.AddSingleton<IDumpService, DumpService>();
                 services.AddSingleton<IEndpointInfoSourceCallbacks, OperationTrackerServiceEndpointInfoSourceCallback>();
-                services.AddSingleton<RequestLimitTracker>();
+                services.AddSingleton<IRequestLimitTracker, RequestLimitTracker>();
                 services.ConfigureOperationStore();
                 services.ConfigureExtensions(settings);
                 services.ConfigureEgress();
@@ -175,6 +168,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<IExperimentalFlags, ExperimentalFlags>();
                 services.ConfigureInProcessFeatures(context.Configuration);
                 services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
+                services.AddSingleton<IDumpOperationFactory, DumpOperationFactory>();
+                services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
+                services.AddSingleton<IMetricsOperationFactory, MetricsOperationFactory>();
+                services.AddSingleton<ITraceOperationFactory, TraceOperationFactory>();
             })
             .ConfigureContainer((HostBuilderContext context, IServiceCollection services) =>
             {

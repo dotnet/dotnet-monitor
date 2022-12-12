@@ -2,6 +2,7 @@ name: 'Check markdown links'
 on:
   pull_request:
     paths: ['**.md']
+    branches: ['main']
 
 permissions:
   pull-requests: read
