@@ -18,9 +18,9 @@
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>3cae41037ae3c6fd83f8aa6dcbddc9dc457f18b9</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0-preview1.22610.3">
+    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0-preview1.22612.1">
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
-      <Sha>f016189fe1769889f8b247863ef809f12a6c1996</Sha>
+      <Sha>fde49330aa324d488fe6f02a5d7cd5c4870d2534</Sha>
     </Dependency>
     <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="8.0.0-beta.22612.4">
       <Uri>https://github.com/dotnet/arcade</Uri>
