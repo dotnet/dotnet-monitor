@@ -16,6 +16,10 @@
       - 'release': sets the blob group release name to 'release'. Can be used for prereleases and full releases.
     -->
     <BlobGroupBuildQuality>daily</BlobGroupBuildQuality>
+    <!--
+      This should be set to true for official releases.
+    -->
+    <UseMicrosoftDiagnosticsMonitoringShippedVersion>false</UseMicrosoftDiagnosticsMonitoringShippedVersion>
   </PropertyGroup>
   <PropertyGroup Label="Testing">
     <XUnitCoreSettingsFile>$(MSBuildThisFileDirectory)xunit.runner.json</XUnitCoreSettingsFile>
@@ -93,5 +97,13 @@
   <PropertyGroup Label=".NET 8 Dependent" Condition=" '$(TargetFramework)' == 'net8.0' ">
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp80Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
     <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreApp80Version)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(UseMicrosoftDiagnosticsMonitoringShippedVersion)' == 'true'">
+    <MicrosoftDiagnosticsMonitoringLibraryVersion>$(MicrosoftDiagnosticsMonitoringShippedVersion)</MicrosoftDiagnosticsMonitoringLibraryVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeLibraryVersion>$(MicrosoftDiagnosticsMonitoringShippedVersion)</MicrosoftDiagnosticsMonitoringEventPipeLibraryVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(UseMicrosoftDiagnosticsMonitoringShippedVersion)' != 'true'">
+    <MicrosoftDiagnosticsMonitoringLibraryVersion>$(MicrosoftDiagnosticsMonitoringVersion)</MicrosoftDiagnosticsMonitoringLibraryVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeLibraryVersion>$(MicrosoftDiagnosticsMonitoringEventPipeVersion)</MicrosoftDiagnosticsMonitoringEventPipeLibraryVersion>
   </PropertyGroup>
 </Project>
