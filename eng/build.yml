@@ -24,7 +24,6 @@ jobs:
     name: ${{ parameters.name }}
     displayName: ${{ coalesce(parameters.displayName, parameters.name) }}
     timeoutInMinutes: ${{ parameters.timeoutInMinutes }}
-    enableMicrobuild: true
     enableTelemetry: true
     disableComponentGovernance: ${{ eq(parameters.osGroup, 'Linux_Musl') }}
     helixRepo: dotnet/dotnet-monitor
