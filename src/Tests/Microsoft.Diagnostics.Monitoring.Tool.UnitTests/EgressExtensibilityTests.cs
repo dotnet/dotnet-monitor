@@ -23,9 +23,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public sealed class EgressExtensibilityTests
     {
-        // TODO: Use CommonTestTimeouts.GeneralTimeout
-        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(3);
-
         private ITestOutputHelper _outputHelper;
 
         private const string ExtensionsFolder = "extensions";
@@ -35,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private const string AppName = "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp";
         private static readonly string DotnetToolsExtensionDir = Path.Combine(".store", "tool-name", "7.0", "tool-name", "7.0", "tools", "net7.0", "any");
         private const string DotnetToolsExeDir = "";
-        private readonly static byte[] ByteArray = Encoding.ASCII.GetBytes(string.Empty);
+        private static readonly byte[] ByteArray = Encoding.ASCII.GetBytes(string.Empty);
 
         public EgressExtensibilityTests(ITestOutputHelper outputHelper)
         {
@@ -94,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 { "ShouldSucceed", shouldSucceed.ToString() }
             };
 
-            CancellationTokenSource tokenSource = new(DefaultTimeout);
+            CancellationTokenSource tokenSource = new(CommonTestTimeouts.GeneralTimeout);
 
             return await extension.EgressArtifact(payload, GetStream, tokenSource.Token);
         }
@@ -132,7 +129,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             foreach (string testAppFilePath in Directory.GetFiles(testAppDirPath, "*.*", SearchOption.AllDirectories))
             {
-                string extensionFilePath = string.Empty;
+                string extensionFilePath;
 
                 if (hasSeparateExe && IsExecutablePath(testAppFilePath))
                 {
@@ -169,10 +166,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private HostBuilderSettings CreateHostBuilderSettings()
         {
-            using TemporaryDirectory executingAssemblyDir = new(_outputHelper);
-            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
-            using TemporaryDirectory userConfigDir = new(_outputHelper);
-            using TemporaryDirectory dotnetToolsConfigDir = new(_outputHelper);
+            TemporaryDirectory executingAssemblyDir = new(_outputHelper);
+            TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            TemporaryDirectory userConfigDir = new(_outputHelper);
+            TemporaryDirectory dotnetToolsConfigDir = new(_outputHelper);
 
             // Set up the initial settings used to create the host builder.
             return new()
