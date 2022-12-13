@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
@@ -145,7 +144,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        private async Task ValidateAspNetTriggerCollected(Task ruleTask, ApiClient client, string hostName, string[] paths, string expectedFilePath, string expectedFileContent)
+        private async static Task ValidateAspNetTriggerCollected(Task ruleTask, ApiClient client, string hostName, string[] paths, string expectedFilePath, string expectedFileContent)
         {
             await ApiCallHelper(hostName, paths, client);
 
@@ -158,7 +157,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             File.Delete(expectedFilePath);
         }
 
-        private async Task ApiCallHelper(string hostName, string[] paths, ApiClient client)
+        private async static Task ApiCallHelper(string hostName, string[] paths, ApiClient client)
         {
             foreach (string path in paths)
             {

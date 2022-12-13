@@ -779,7 +779,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             StringBuilder routeBuilder = new();
             routeBuilder.Append("/trace?");
             routeBuilder.Append(processIdentifierQuery);
-            routeBuilder.Append("&");
+            routeBuilder.Append('&');
             AppendDuration(routeBuilder, duration);
             if (profile.HasValue)
             {

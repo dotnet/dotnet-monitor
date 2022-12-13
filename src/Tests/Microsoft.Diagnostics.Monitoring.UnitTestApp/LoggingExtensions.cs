@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             LoggerMessage.Define<string>(
                 eventId: TestAppLogEventIds.BoundUrl.EventId(),
                 logLevel: LogLevel.Information,
-                formatString: "Bound URL: {url}");
+                formatString: "Bound URL: {Url}");
 
         public static void ScenarioState(this ILogger logger, TestAppScenarios.ScenarioState state)
         {
