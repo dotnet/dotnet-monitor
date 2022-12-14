@@ -4,7 +4,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
-using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
@@ -14,12 +13,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
+namespace CollectionRuleActions.UnitTests
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public sealed class ActionListExecutorTests
@@ -41,8 +41,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddExecuteActionAppAction(new string[] { ActionTestsConstants.ZeroExitCode })
-                    .AddExecuteActionAppAction(new string[] { ActionTestsConstants.ZeroExitCode })
+                    .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), ActionTestsConstants.ZeroExitCode)
+                    .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), ActionTestsConstants.ZeroExitCode)
                     .SetStartupTrigger();
             }, async host =>
             {
@@ -82,8 +82,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.ZeroExitCode })
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.NonZeroExitCode })
+                    .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), waitForCompletion, ActionTestsConstants.ZeroExitCode)
+                    .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), waitForCompletion, ActionTestsConstants.NonZeroExitCode)
                     .SetStartupTrigger();
             }, async host =>
             {
@@ -128,8 +128,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.NonZeroExitCode })
-                    .AddExecuteActionAppAction(waitForCompletion, new string[] { ActionTestsConstants.ZeroExitCode })
+                    .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), waitForCompletion, ActionTestsConstants.NonZeroExitCode)
+                    .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), waitForCompletion, ActionTestsConstants.ZeroExitCode)
                     .SetStartupTrigger();
             }, async host =>
             {

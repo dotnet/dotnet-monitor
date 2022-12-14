@@ -8,12 +8,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     internal static class ExecuteActionTestHelper
     {
-        public static string GenerateArgumentsString(string[] additionalArgs)
+        public static string GenerateArgumentsString(Assembly testAssembly, params string[] additionalArgs)
         {
             List<string> args = new()
             {
                 // Entrypoint assembly
-                AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), "Microsoft.Diagnostics.Monitoring.UnitTestApp"),
+                AssemblyHelper.GetAssemblyArtifactBinPath(testAssembly, "Microsoft.Diagnostics.Monitoring.UnitTestApp"),
                 // Add scenario name
                 TestAppScenarios.Execute.Name
             };

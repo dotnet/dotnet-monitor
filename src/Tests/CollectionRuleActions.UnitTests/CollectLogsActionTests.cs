@@ -5,7 +5,6 @@ using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.Pipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor;
@@ -21,14 +20,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using DisposableHelper = Microsoft.Diagnostics.Monitoring.TestCommon.DisposableHelper;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
+namespace CollectionRuleActions.UnitTests
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public class CollectLogsActionTests
@@ -240,7 +241,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 EndpointInfoSourceCallback endpointInfoCallback = new(_outputHelper);
                 await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(endpointInfoCallback);
 
-                await using AppRunner runner = _endpointUtilities.CreateAppRunner(sourceHolder.TransportName, tfm);
+                await using AppRunner runner = _endpointUtilities.CreateAppRunner(Assembly.GetExecutingAssembly(), sourceHolder.TransportName, tfm);
                 runner.ScenarioName = TestAppScenarios.Logger.Name;
 
                 Task<IEndpointInfo> newEndpointInfoTask = endpointInfoCallback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
@@ -269,7 +270,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     }
                     finally
                     {
-                        await Tools.Monitor.DisposableHelper.DisposeAsync(action);
+                        await DisposableHelper.DisposeAsync(action);
                     }
                 });
             },

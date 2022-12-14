@@ -4,7 +4,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
-using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
@@ -245,7 +244,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.Equal(3, a2result.OutputValues.Count);
 
                 Assert.True(a2result.OutputValues.TryGetValue(Output1, out string a2output1));
-                Assert.Equal(FormattableString.Invariant($"a1input1 with rid: {instanceId.ToString("D")} and a1input2"), a2output1);
+                Assert.Equal(FormattableString.Invariant($"a1input1 with rid: {instanceId:D} and a1input2"), a2output1);
                 Assert.True(a2result.OutputValues.TryGetValue(Output2, out string a2output2));
                 Assert.Equal("a1input2", a2output2);
                 Assert.True(a2result.OutputValues.TryGetValue(Output3, out string a2output3));
