@@ -54,13 +54,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 writer.WriteString("unit", counter.Unit);
                 writer.WriteString("counterType", counter.CounterType.ToString());
 
-                string tagsVal = string.Empty;
-
-                writer.WriteStartObject("metadata");
-                foreach (var kvPair in Microsoft.Diagnostics.Monitoring.EventPipe.TraceEventExtensions.GetMetadata(counter.Metadata))
-                {
-                    tagsVal = "Percentile=" + percentile; // note that this is currently decimal not percentile
-                }
+                //HACK Match dotnet-counters?
+                string tagsVal = counter.Metadata.Replace("quantile=", "Percentile=");
 
                 writer.WriteString("tags", tagsVal);
 

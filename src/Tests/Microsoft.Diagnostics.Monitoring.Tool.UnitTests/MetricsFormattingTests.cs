@@ -44,20 +44,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             List<ICounterPayload> payload = new();
 
-            Dictionary<string, string> metadataDict1 = new();
-            metadataDict1.Add("quantile", "0.5");
-            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", metadataDict1, Value1, Timestamp));
+            string tags1 = "quantile=0.5";
+            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", tags1, Value1, Timestamp));
 
-            Dictionary<string, string> metadataDict2 = new();
-            metadataDict2.Add("quantile", "0.95");
-            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", metadataDict2, Value2, Timestamp));
+            string tags2 = "quantile=0.95";
+            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", tags2, Value2, Timestamp));
 
-            Dictionary<string, string> metadataDict3 = new();
-            metadataDict3.Add("quantile", "0.99");
-            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", metadataDict3, Value3, Timestamp));
+            string tags3 = "quantile=0.99";
+            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", tags3, Value3, Timestamp));
 
             MemoryStream stream = await GetMetrics(payload);
-
             List<string> lines = ReadStream(stream);
 
             // Question - this is manually recreating what PrometheusDataModel.GetPrometheusNormalizedName does to get the metric name;
@@ -81,7 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task GaugeFormat_Test()
         {
-            ICounterPayload payload = new GaugePayload(MeterName, InstrumentName, "DisplayName", "", new(), Value1, Timestamp);
+            ICounterPayload payload = new GaugePayload(MeterName, InstrumentName, "DisplayName", "", null, Value1, Timestamp);
 
             MemoryStream stream = await GetMetrics(new() { payload });
 
@@ -100,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task CounterFormat_Test()
         {
-            ICounterPayload payload = new RatePayload(MeterName, InstrumentName, "DisplayName", "", new(), Value1, IntervalSeconds, Timestamp);
+            ICounterPayload payload = new RatePayload(MeterName, InstrumentName, "DisplayName", "", null, Value1, IntervalSeconds, Timestamp);
 
             MemoryStream stream = await GetMetrics(new() { payload });
 
