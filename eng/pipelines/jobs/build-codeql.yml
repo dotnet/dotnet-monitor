@@ -1,4 +1,4 @@
-# Builds dotnet-monitor for a specific platform and configuratoin with CodeQL analysis enabled
+# Builds dotnet-monitor for a specific platform and configuration with CodeQL analysis enabled
 
 parameters:
   # Job name (required)
