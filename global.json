@@ -4,19 +4,19 @@
     "runtimes": {
       "aspnetcore": [
         "$(MicrosoftAspNetCoreApp60Version)",
-        "$(VSRedistCommonAspNetCoreSharedFrameworkx6470Version)"
+        "$(MicrosoftAspNetCoreApp70Version)"
       ],
       "aspnetcore/x86": [
         "$(MicrosoftAspNetCoreApp60Version)",
-        "$(VSRedistCommonAspNetCoreSharedFrameworkx6470Version)"
+        "$(MicrosoftAspNetCoreApp70Version)"
       ],
       "dotnet": [
         "$(MicrosoftNETCoreApp60Version)",
-        "$(VSRedistCommonNetCoreSharedFrameworkx6470Version)"
+        "$(MicrosoftNETCoreApp70Version)"
       ],
       "dotnet/x86": [
         "$(MicrosoftNETCoreApp60Version)",
-        "$(VSRedistCommonNetCoreSharedFrameworkx6470Version)"
+        "$(MicrosoftNETCoreApp70Version)"
       ]
     }
   },
