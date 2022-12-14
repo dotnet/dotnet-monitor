@@ -56,6 +56,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
             await appRunner.ExecuteAsync(async () =>
             {
+                // Wait for the process to be discovered.
+                int processId = await appRunner.ProcessIdTask;
+                _ = await apiClient.GetProcessWithRetryAsync(outputHelper, pid: processId);
+
                 await appValidate(appRunner, apiClient);
             });
             Assert.Equal(0, appRunner.ExitCode);
