@@ -99,6 +99,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 UseShellExecute = false,
             };
             pStart.ArgumentList.Add(ExtensionTypes.Egress);
+            string dotnetPath = Directory.GetParent(RuntimeEnvironment.GetRuntimeDirectory()).Parent.Parent.Parent.FullName;
+            _logger.LogInformation("DOTNET PATH: " + dotnetPath); // THIS IS ONLY FOR TESTING RIGHT NOW
+            pStart.EnvironmentVariables["DOTNET_ROOT"] = dotnetPath;
 
             using Process p = new Process()
             {
