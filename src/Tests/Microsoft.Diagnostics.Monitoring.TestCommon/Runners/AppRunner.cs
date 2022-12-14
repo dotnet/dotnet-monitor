@@ -246,7 +246,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                     }
                     break;
                 case TestAppLogEventIds.BoundUrl:
-                    Assert.True(logEvent.State.TryGetValue("url", out string url));
+                    Assert.True(logEvent.State.TryGetValue("Url", out string url));
                     BoundUrl = url;
                     break;
             }
