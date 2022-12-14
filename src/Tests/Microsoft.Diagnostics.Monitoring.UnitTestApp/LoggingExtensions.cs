@@ -27,6 +27,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                 logLevel: LogLevel.Information,
                 formatString: "Environment Variable: {Name} = {Value}");
 
+        private static readonly Action<ILogger, string, Exception> _boundUrl =
+            LoggerMessage.Define<string>(
+                eventId: TestAppLogEventIds.BoundUrl.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: "Bound URL: {Url}");
+
         public static void ScenarioState(this ILogger logger, TestAppScenarios.ScenarioState state)
         {
             _scenarioState(logger, state, null);
@@ -40,6 +46,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
         public static void EnvironmentVariable(this ILogger logger, string name, string value)
         {
             _environmentVariable(logger, name, value, null);
+        }
+
+        public static void BoundUrl(this ILogger logger, string url)
+        {
+            _boundUrl(logger, url, null);
         }
     }
 }

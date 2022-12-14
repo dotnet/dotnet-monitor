@@ -43,6 +43,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             set => _runner.Architecture = value;
         }
 
+        public string BoundUrl { get; private set; }
+
         /// <summary>
         /// The mode of the diagnostic port connection. Default is <see cref="DiagnosticPortConnectionMode.Listen"/>
         /// (the application is listening for connections).
@@ -242,6 +244,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                             _waitingForEnvironmentVariables.Remove(name);
                         }
                     }
+                    break;
+                case TestAppLogEventIds.BoundUrl:
+                    Assert.True(logEvent.State.TryGetValue("Url", out string url));
+                    BoundUrl = url;
                     break;
             }
         }

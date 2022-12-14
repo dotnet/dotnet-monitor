@@ -404,6 +404,55 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
+        /// GET /trace?pid={pid}&profile={profile}&durationSeconds={duration}
+        /// </summary>
+        public Task<ResponseStreamHolder> CaptureTraceAsync(int pid, TimeSpan duration, TraceProfile? profile, CancellationToken token)
+        {
+            return CaptureTraceAsync(GetProcessQuery(pid: pid), duration, profile, token);
+        }
+
+        private Task<ResponseStreamHolder> CaptureTraceAsync(string processQuery, TimeSpan duration, TraceProfile? profile, CancellationToken token)
+        {
+            return CaptureTraceAsync(
+                HttpMethod.Get,
+                CreateTraceUriString(processQuery, duration, profile),
+                content: null,
+                token);
+        }
+
+        private async Task<ResponseStreamHolder> CaptureTraceAsync(HttpMethod method, string uri, HttpContent content, CancellationToken token)
+        {
+            string contentType = ContentTypes.ApplicationOctetStream;
+
+            using HttpRequestMessage request = new(method, uri);
+            request.Headers.Add(HeaderNames.Accept, contentType);
+            request.Content = content;
+
+            using DisposableBox<HttpResponseMessage> responseBox = new(
+                await SendAndLogAsync(
+                    request,
+                    HttpCompletionOption.ResponseHeadersRead,
+                    token).ConfigureAwait(false));
+
+            switch (responseBox.Value.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    ValidateContentType(responseBox.Value, contentType);
+                    return await ResponseStreamHolder.CreateAsync(responseBox).ConfigureAwait(false);
+                case HttpStatusCode.BadRequest:
+                    ValidateContentType(responseBox.Value, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(responseBox.Value).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                case HttpStatusCode.NotFound:
+                case HttpStatusCode.TooManyRequests:
+                    ThrowIfNotSuccess(responseBox.Value);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// GET /metrics
         /// </summary>
         public async Task<string> GetMetricsAsync(CancellationToken token)
@@ -721,6 +770,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             {
                 routeBuilder.Append("&level=");
                 routeBuilder.Append(logLevel.Value.ToString("G"));
+            }
+            return routeBuilder.ToString();
+        }
+
+        private static string CreateTraceUriString(string processIdentifierQuery, TimeSpan duration, TraceProfile? profile = null)
+        {
+            StringBuilder routeBuilder = new();
+            routeBuilder.Append("/trace?");
+            routeBuilder.Append(processIdentifierQuery);
+            routeBuilder.Append('&');
+            AppendDuration(routeBuilder, duration);
+            if (profile.HasValue)
+            {
+                routeBuilder.Append("&profile=");
+                routeBuilder.Append(profile.Value.ToString("G"));
             }
             return routeBuilder.ToString();
         }

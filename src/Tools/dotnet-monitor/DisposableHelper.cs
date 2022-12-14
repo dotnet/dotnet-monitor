@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
 {
-    internal static class DisposableHelper
+    public static class DisposableHelper
     {
         private const long DisposeStateActive = default(long);
         private const long DisposeStateDisposed = 1;
