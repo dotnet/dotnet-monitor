@@ -76,7 +76,7 @@ After the release has been completed, this pipeline variable should be changed t
 ### Updating dependencies
 
 If necessary, update dependencies in the release branch.
->**Note**: This is no longer needed for the diagnostics packages. They are kept up-to-date by dependabot.
+>**Note**: This is typically not needed for the diagnostics packages. They are kept up-to-date by dependabot if `UseMicrosoftDiagnosticsMonitoringShippedVersion` in [../eng/Versions.props](../eng/Versions.props) is set to `true`. It might be set to `false` if feature development requiring unreleased diagnostics libraries was merged into the branch. Official releases should use the released diagnostics libraries per agreed upon policy.
 
 1. For new branches only, you need to setup a subscription using darc: `darc add-subscription --channel ".NET Core Tooling Release" --source-repo https://github.com/dotnet/diagnostics --target-repo https://github.com/dotnet/dotnet-monitor --target-branch release/8.x --update-frequency None --standard-automerge`
 1. Use `darc get-subscriptions --target-repo monitor` to see existing subscriptions.
