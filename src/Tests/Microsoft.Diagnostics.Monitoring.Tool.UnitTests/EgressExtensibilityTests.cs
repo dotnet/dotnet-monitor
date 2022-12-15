@@ -83,7 +83,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private async Task<EgressArtifactResult> GetExtensionResponse(bool shouldSucceed)
         {
-            var extension = FindEgressExtension(ConfigDirectory.UserConfigDirectory);
+            ProgramExtension extension = (ProgramExtension)FindEgressExtension(ConfigDirectory.UserConfigDirectory);
+
+            // This addresses an issue with the extension process not being able to find the required version of dotnet
+            // Runtime Directory example: 'C:\\Users\\abc\\dotnet-monitor\\.dotnet\\shared\\Microsoft.NETCore.App\\6.0.11\\
+            string dotnetPath = Directory.GetParent(RuntimeEnvironment.GetRuntimeDirectory()).Parent.Parent.Parent.FullName;
+            extension.AddEnvironmentVariable("DOTNET_ROOT", dotnetPath);
 
             ExtensionEgressPayload payload = new();
             payload.Configuration = new Dictionary<string, string>

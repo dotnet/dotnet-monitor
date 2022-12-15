@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         private readonly IFileProvider _fileSystem;
         private readonly ILogger<ProgramExtension> _logger;
         private Lazy<ExtensionDeclaration> _extensionDeclaration;
+        private IDictionary<string, string> _processEnvironmentVariables = new Dictionary<string, string>();
 
         public ProgramExtension(string extensionName, string targetFolder, IFileProvider fileSystem, string declarationPath, ILogger<ProgramExtension> logger)
         {
@@ -53,6 +55,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             {
                 return _extensionDeclaration.Value;
             }
+        }
+
+        public void AddEnvironmentVariable(string key, string value)
+        {
+            _processEnvironmentVariables[key] = value;
         }
 
         /// <inheritdoc/>
@@ -99,9 +106,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 UseShellExecute = false,
             };
             pStart.ArgumentList.Add(ExtensionTypes.Egress);
-            string dotnetPath = Directory.GetParent(RuntimeEnvironment.GetRuntimeDirectory()).Parent.Parent.Parent.FullName;
-            _logger.LogInformation("DOTNET PATH: " + dotnetPath); // THIS IS ONLY FOR TESTING RIGHT NOW
-            pStart.EnvironmentVariables["DOTNET_ROOT"] = dotnetPath;
+            _processEnvironmentVariables.ToList().ForEach(x => pStart.EnvironmentVariables[x.Key] = x.Value);
 
             using Process p = new Process()
             {
