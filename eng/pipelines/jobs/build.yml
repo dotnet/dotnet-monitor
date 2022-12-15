@@ -1,22 +1,32 @@
+# Builds dotnet-monitor for a specific platform and configuration
+
 parameters:
-  # Job name
+  # Job name (required)
   name: ''
+  # Job display name
   displayName: ''
+  # Operating system group (Windows, Linux, MacOS, etc)
   osGroup: Windows
+  # Build configuration (Debug, Release)
   configuration: Release
+  # Build architecture (arm64, x64, x86, etc)
   architecture: x64
-  # Additional variables
+  # Additional job variables
   variables: []
-  # Additional prebuild steps
+  # Additional steps to execute before build
   preBuildSteps: []
-  # Additional postbuild steps
+  # Additional steps to execute after build
   postBuildSteps: []
-  # Optional: Job timeout
+  # Job timeout
   timeoutInMinutes: 180
-  # Depends on 
+  # Job dependencies
   dependsOn: ''
   # Sub paths under 'artifacts' folder from which files are published to artifacts location
   publishArtifactsSubPaths: []
+  # Disable Component Governance injection and analysis
+  disableComponentGovernance: false
+  # Disable SBOM generation
+  disableSbom: false
 
 jobs:
 - template: /eng/common/templates/job/job.yml
@@ -25,7 +35,9 @@ jobs:
     displayName: ${{ coalesce(parameters.displayName, parameters.name) }}
     timeoutInMinutes: ${{ parameters.timeoutInMinutes }}
     enableTelemetry: true
-    disableComponentGovernance: ${{ eq(parameters.osGroup, 'Linux_Musl') }}
+    disableComponentGovernance: ${{ or(parameters.disableComponentGovernance, eq(parameters.osGroup, 'Linux_Musl')) }}
+    ${{ if eq(parameters.disableSbom, 'true') }}:
+      enableSbom: false
     helixRepo: dotnet/dotnet-monitor
     artifacts:
       publish:
@@ -88,7 +100,7 @@ jobs:
       - ${{ variable }}
 
     # Component Governance does not work on Musl
-    - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
+    - ${{ if or(parameters.disableComponentGovernance, eq(parameters.osGroup, 'Linux_Musl')) }}:
       - skipComponentGovernanceDetection: true
     
     # Cross build for arm64 non-Windows builds
