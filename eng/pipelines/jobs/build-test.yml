@@ -1,9 +1,15 @@
+# Builds and tests dotnet-monitor for a specific platform and configuration
+
 parameters:
-  # Job name
+  # Job name (required)
   name: ''
+  # Job display name
   displayName: ''
+  # Operating system group (Windows, Linux, MacOS, etc)
   osGroup: Windows
+  # Build configuration (Debug, Release)
   configuration: Release
+  # Build architecture (arm64, x64, x86, etc)
   architecture: x64
   # Sub paths under 'artifacts' folder from which files are published to artifacts location
   publishArtifactsSubPaths: []
@@ -17,7 +23,7 @@ parameters:
     value: .NET 6
 
 jobs:
-- template: build.yml
+- template: /eng/pipelines/jobs/build.yml
   parameters:
     name: ${{ parameters.name }}
     displayName: ${{ parameters.displayName }}
@@ -26,7 +32,7 @@ jobs:
     architecture: ${{ parameters.architecture }}
     publishArtifactsSubPaths: ${{ parameters.publishArtifactsSubPaths }}
     variables:
-    - ${{ if ne(parameters.testGroup, 'None') }}:
+    - ${{ if and(ne(parameters.testGroup, 'None'), ne(parameters.architecture, 'arm64')) }}:
       # If TestGroup == 'Default', choose the test group based on the type of pipeline run
       - ${{ if eq(parameters.testGroup, 'Default') }}:
         - ${{ if in(variables['Build.Reason'], 'BatchedCI', 'IndividualCI') }}:
@@ -39,7 +45,7 @@ jobs:
         - _TestGroup: '${{ parameters.testGroup }}'
 
     preBuildSteps:
-    - ${{ if ne(parameters.testGroup, 'None') }}:
+    - ${{ if and(ne(parameters.testGroup, 'None'), ne(parameters.architecture, 'arm64')) }}:
       - ${{ if ne(parameters.osGroup, 'Windows') }}:
         - task: NodeTool@0
           displayName: Install Node.js
@@ -69,7 +75,10 @@ jobs:
 
     postBuildSteps:
     # Execute tests
-    - ${{ if ne(parameters.testGroup, 'None') }}:
+    - ${{ if and(ne(parameters.testGroup, 'None'), eq(parameters.architecture, 'arm64')) }}:
+      - script: echo "Running tests for arm64 binaries is currently not supported."
+        displayName: Skipped ARM64 tests
+    - ${{ if and(ne(parameters.testGroup, 'None'), ne(parameters.architecture, 'arm64')) }}:
       - script: >-
           $(Build.SourcesDirectory)/eng/citest$(scriptExt)
           -configuration ${{ parameters.configuration }}
