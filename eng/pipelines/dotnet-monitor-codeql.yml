@@ -1,0 +1,30 @@
+variables:
+- name: _TeamName
+  value: DotNetCore
+    
+trigger: none
+
+schedules:
+- cron: 0 12 * * 1-5
+  displayName: Weekday CodeQL Run
+  branches:
+    include:
+    - main
+  always: true
+
+parameters:
+- name: enableTsa
+  displayName: 'Enable TSA'
+  type: boolean
+  default: true
+
+stages:
+- stage: Build
+  displayName: Build and Analyze
+  jobs:
+  - template: /eng/pipelines/jobs/platform-matrix.yml
+    parameters:
+      jobTemplate: /eng/pipelines/jobs/build-codeql.yml
+      includeArm64: true
+      jobParameters:
+        enableTsa: ${{ parameters.enableTsa }}
