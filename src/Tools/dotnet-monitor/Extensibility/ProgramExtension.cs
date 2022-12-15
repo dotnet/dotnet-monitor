@@ -29,6 +29,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         private Lazy<ExtensionDeclaration> _extensionDeclaration;
         private IDictionary<string, string> _processEnvironmentVariables = new Dictionary<string, string>();
 
+        private static readonly TimeSpan WaitForProcessExitTimeout = TimeSpan.FromMilliseconds(2000);
+
         public ProgramExtension(string extensionName, string targetFolder, IFileProvider fileSystem, string declarationPath, ILogger<ProgramExtension> logger)
         {
             _extensionName = extensionName;
@@ -75,9 +77,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
             string exeName = Declaration.Program;
 
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Path.GetExtension(exeName) == ".exe")
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                exeName = Path.GetFileNameWithoutExtension(exeName);
+                exeName += ".exe";
             }
 
             string programRelPath = Path.Combine(Path.GetDirectoryName(_exePath), exeName);
@@ -106,7 +108,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 UseShellExecute = false,
             };
             pStart.ArgumentList.Add(ExtensionTypes.Egress);
-            _processEnvironmentVariables.ToList().ForEach(x => pStart.EnvironmentVariables[x.Key] = x.Value);
+
+            foreach ((string key, string value) in _processEnvironmentVariables)
+            {
+                pStart.Environment.Add(key, value);
+            }
 
             using Process p = new Process()
             {
@@ -135,11 +141,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
             EgressArtifactResult result = await parser.ReadResult();
 
-            p.Kill();
+            using var timeoutSource = new CancellationTokenSource();
 
-            while (!p.HasExited)
+            try
             {
-                Thread.Sleep(5); // Arbitrary - testing to see if this resolves timing issue seen in testing.
+                timeoutSource.CancelAfter(WaitForProcessExitTimeout);
+
+                using CancellationTokenSource linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token, timeoutSource.Token);
+
+                await p.WaitForExitAsync(linkedTokenSource.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (timeoutSource.IsCancellationRequested)
+            {
+                p.Kill();
+
+                while (!p.HasExited)
+                {
+                    Thread.Sleep(5);
+                }
             }
 
             _logger.ExtensionExited(p.Id, p.ExitCode);

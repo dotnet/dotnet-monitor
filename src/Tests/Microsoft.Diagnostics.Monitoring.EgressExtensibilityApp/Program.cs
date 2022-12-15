@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
             }
 
             string jsonBlob = JsonSerializer.Serialize(result);
-            Console.Write(jsonBlob);
+            Console.WriteLine(jsonBlob);
 
             // return non-zero exit code when failed
             return result.Succeeded ? 0 : 1;

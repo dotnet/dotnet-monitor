@@ -1,7 +1,7 @@
 {
     "Id": "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp",
     "Version": "1.0.0",
-    "Program": "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp.exe",
+    "Program": "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp",
     "Name": "TestingProvider",
     "SupportedExtensionTypes": [
         "Egress"

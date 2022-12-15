@@ -105,16 +105,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             HostBuilderSettings settings = CreateHostBuilderSettings();
 
-            string directoryName = GetExtensionDirectoryName(settings, configDirectory);
+            IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
 
+            using TemporaryDirectory dotnetToolsConfigDir = new(_outputHelper);
+            var dotnetToolsFileSystem = host.Services.GetService<IDotnetToolsFileSystem>();
+            dotnetToolsFileSystem.Path = dotnetToolsConfigDir.FullName;
+
+            string directoryName = GetExtensionDirectoryName(settings, dotnetToolsFileSystem, configDirectory);
             string extensionDirPath = configDirectory == ConfigDirectory.DotnetToolsExtensionDirectory ? Path.Combine(directoryName, DotnetToolsExtensionDir) : Path.Combine(directoryName, ExtensionsFolder, AppName);
 
             CopyExtensionFiles(extensionDirPath, exePath);
 
-            IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
-
             var extensionDiscoverer = host.Services.GetService<ExtensionDiscoverer>();
-
             return extensionDiscoverer.FindExtension<IEgressExtension>(ProviderName);
         }
 
@@ -171,22 +173,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private HostBuilderSettings CreateHostBuilderSettings()
         {
-            TemporaryDirectory executingAssemblyDir = new(_outputHelper);
-            TemporaryDirectory sharedConfigDir = new(_outputHelper);
-            TemporaryDirectory userConfigDir = new(_outputHelper);
-            TemporaryDirectory dotnetToolsConfigDir = new(_outputHelper);
+            using TemporaryDirectory executingAssemblyDir = new(_outputHelper);
+            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            using TemporaryDirectory userConfigDir = new(_outputHelper);
 
             // Set up the initial settings used to create the host builder.
             return new()
             {
                 ExecutingAssemblyDirectory = executingAssemblyDir.FullName,
                 SharedConfigDirectory = sharedConfigDir.FullName,
-                UserConfigDirectory = userConfigDir.FullName,
-                DotnetToolsExtensionDirectory = dotnetToolsConfigDir.FullName
+                UserConfigDirectory = userConfigDir.FullName
             };
         }
 
-        private static string GetExtensionDirectoryName(HostBuilderSettings settings, ConfigDirectory configDirectory)
+        private static string GetExtensionDirectoryName(HostBuilderSettings settings, IDotnetToolsFileSystem dotnetToolsFileSystem, ConfigDirectory configDirectory)
         {
             switch (configDirectory)
             {
@@ -195,7 +195,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 case ConfigDirectory.SharedConfigDirectory:
                     return settings.SharedConfigDirectory;
                 case ConfigDirectory.DotnetToolsExtensionDirectory:
-                    return settings.DotnetToolsExtensionDirectory;
+                    return dotnetToolsFileSystem.Path;
                 case ConfigDirectory.ExecutingAssemblyDirectory:
                     return settings.ExecutingAssemblyDirectory;
                 default:

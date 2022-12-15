@@ -4,11 +4,9 @@
 
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {

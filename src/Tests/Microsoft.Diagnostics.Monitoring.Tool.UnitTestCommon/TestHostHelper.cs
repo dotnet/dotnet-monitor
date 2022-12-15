@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -104,6 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
                     if (settings != null)
                     {
+                        services.AddSingleton<IDotnetToolsFileSystem, TestDotnetToolsFileSystem>();
                         services.ConfigureExtensions(settings);
                     }
 
