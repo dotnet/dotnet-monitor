@@ -47,14 +47,14 @@ stages:
   displayName: Build and Test
   jobs:
   # Build and test binaries
-  - template: /eng/build.yml
+  - template: /eng/build-test.yml
     parameters:
       name: Windows_x64_Debug
       displayName: Windows x64 Debug
       osGroup: Windows
       configuration: Debug
       testGroup: ${{ parameters.TestGroup }}
-  - template: /eng/build.yml
+  - template: /eng/build-test.yml
     parameters:
       name: Windows_x64_Release
       displayName: Windows x64 Release
@@ -64,7 +64,7 @@ stages:
       - source: 'bin'
       - source: 'obj'
       testGroup: ${{ parameters.TestGroup }}
-  - template: /eng/build.yml
+  - template: /eng/build-test.yml
     parameters:
       name: Windows_x86_Release
       displayName: Windows x86 Release
@@ -75,7 +75,7 @@ stages:
       - source: 'bin/Windows_NT.x86.Release'
       testGroup: ${{ parameters.TestGroup }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-    - template: /eng/build.yml
+    - template: /eng/build-test.yml
       parameters:
         name: Windows_arm64_Release
         displayName: Windows arm64 Release
@@ -85,14 +85,14 @@ stages:
         publishArtifactsSubPaths:
         - source: 'bin/Windows_NT.arm64.Release'
         testGroup: None
-  - template: /eng/build.yml
+  - template: /eng/build-test.yml
     parameters:
       name: Linux_x64_Debug
       displayName: Linux x64 Debug
       osGroup: Linux
       configuration: Debug
       testGroup: ${{ parameters.TestGroup }}
-  - template: /eng/build.yml
+  - template: /eng/build-test.yml
     parameters:
       name: Linux_x64_Release
       displayName: Linux x64 Release
@@ -102,7 +102,7 @@ stages:
       - source: 'bin/Linux.x64.Release'
       testGroup: ${{ parameters.TestGroup }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-    - template: /eng/build.yml
+    - template: /eng/build-test.yml
       parameters:
         name: Linux_arm64_Release
         displayName: Linux arm64 Release
@@ -112,14 +112,14 @@ stages:
         publishArtifactsSubPaths:
         - source: 'bin/Linux.arm64.Release'
         testGroup: None
-  - template: /eng/build.yml
+  - template: /eng/build-test.yml
     parameters:
       name: Linux_Musl_x64_Debug
       displayName: Linux Musl x64 Debug
       osGroup: Linux_Musl
       configuration: Debug
       testGroup: ${{ parameters.TestGroup }}
-  - template: /eng/build.yml
+  - template: /eng/build-test.yml
     parameters:
       name: Linux_Musl_x64_Release
       displayName: Linux Musl x64 Release
@@ -130,7 +130,7 @@ stages:
         target: 'bin/Linux-musl.x64.Release'
       testGroup: ${{ parameters.TestGroup }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-    - template: /eng/build.yml
+    - template: /eng/build-test.yml
       parameters:
         name: Linux_Musl_arm64_Release
         displayName: Linux Musl arm64 Release
@@ -141,14 +141,14 @@ stages:
         - source: 'bin/Linux.arm64.Release'
           target: 'bin/Linux-musl.arm64.Release'
         testGroup: None
-  - template: /eng/build.yml
+  - template: /eng/build-test.yml
     parameters:
       name: MacOS_x64_Debug
       displayName: MacOS x64 Debug
       osGroup: MacOS
       configuration: Debug
       testGroup: ${{ parameters.TestGroup }}
-  - template: /eng/build.yml
+  - template: /eng/build-test.yml
     parameters:
       name: MacOS_x64_Release
       displayName: MacOS x64 Release
@@ -158,7 +158,7 @@ stages:
       - source: 'bin/OSX.x64.Release'
       testGroup: ${{ parameters.TestGroup }}
   - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-    - template: /eng/build.yml
+    - template: /eng/build-test.yml
       parameters:
         name: MacOS_arm64_Release
         displayName: MacOS arm64 Release
