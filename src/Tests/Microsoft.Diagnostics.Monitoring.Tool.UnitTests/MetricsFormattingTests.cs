@@ -43,16 +43,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             List<ICounterPayload> payload = new();
 
-            string tags1 = "quantile=0.5";
-            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", tags1, Value1, Timestamp));
+            string tags1 = "quantile:0.5";
+            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, tags1, Value1, Timestamp));
 
-            string tags2 = "quantile=0.95";
-            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", tags2, Value2, Timestamp));
+            string tags2 = "quantile:0.95";
+            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, tags2, Value2, Timestamp));
 
-            string tags3 = "quantile=0.99";
-            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", "", tags3, Value3, Timestamp));
+            string tags3 = "quantile:0.99";
+            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, tags3, Value3, Timestamp));
 
-            MemoryStream stream = await GetMetrics(payload);
+            using MemoryStream stream = await GetMetrics(payload);
             List<string> lines = ReadStream(stream);
 
             // Question - this is manually recreating what PrometheusDataModel.GetPrometheusNormalizedName does to get the metric name;
