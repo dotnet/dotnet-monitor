@@ -43,13 +43,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             List<ICounterPayload> payload = new();
 
-            string tags1 = "quantile:0.5";
+            string tags1 = "quantile=0.5";
             payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, tags1, Value1, Timestamp));
 
-            string tags2 = "quantile:0.95";
+            string tags2 = "quantile=0.95";
             payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, tags2, Value2, Timestamp));
 
-            string tags3 = "quantile:0.99";
+            string tags3 = "quantile=0.99";
             payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, tags3, Value3, Timestamp));
 
             using MemoryStream stream = await GetMetrics(payload);

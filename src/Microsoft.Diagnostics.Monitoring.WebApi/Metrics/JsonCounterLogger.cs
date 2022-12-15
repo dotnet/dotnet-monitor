@@ -41,6 +41,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 return;
             }
+            if (counter is CounterEndedPayload)
+            {
+                //Don't do anything for now
+                return;
+            }
 
             await _stream.WriteAsync(JsonSequenceRecordSeparator);
             _bufferWriter.Clear();
