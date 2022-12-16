@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -19,12 +21,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _store.AddMetric(metric);
         }
 
-        public void PipelineStarted()
-        {
-        }
+        public Task PipelineStarted(CancellationToken token) => Task.CompletedTask;
 
-        public void PipelineStopped()
-        {
-        }
+        public Task PipelineStopped(CancellationToken token) => Task.CompletedTask;
     }
 }

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -138,7 +139,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     foreach (var individualMetric in metric)
                     {
-                        var keyValuePairs = from pair in individualMetric.Metadata select pair.Key + "=" + "\"" + pair.Value + "\"";
+                        char separator = IsMeter(individualMetric) ? '=' : ':';
+                        var keyValuePairs = from pair in Microsoft.Diagnostics.Monitoring.EventPipe.TraceEventExtensions.GetMetadata(individualMetric.Metadata, separator)
+                                            select pair.Key + "=" + "\"" + pair.Value + "\"";
                         string metricLabels = string.Join(", ", keyValuePairs);
 
                         string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(individualMetric.Unit, individualMetric.Value);
@@ -147,6 +150,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
             }
         }
+
+        //HACK We should make this easier in the base api
+        private static bool IsMeter(ICounterPayload payload) =>
+            payload switch
+            {
+                GaugePayload or PercentilePayload or CounterEndedPayload or RatePayload => true,
+                _ => false
+            };
 
         private static async Task WriteMetricHeader(ICounterPayload metricInfo, StreamWriter writer, string metricName)
         {
@@ -212,6 +223,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             else if (metric is ErrorPayload errorMetric)
             {
                 _logger.LogWarning(errorMetric.ErrorMessage);
+            }
+            else if (metric is CounterEndedPayload)
+            {
+                //Ignore this for now
             }
             else
             {

@@ -41,6 +41,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 return;
             }
+            if (counter is CounterEndedPayload)
+            {
+                //Don't do anything for now
+                return;
+            }
 
             await _stream.WriteAsync(JsonSequenceRecordSeparator);
             _bufferWriter.Clear();
@@ -54,12 +59,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 writer.WriteString("unit", counter.Unit);
                 writer.WriteString("counterType", counter.CounterType.ToString());
 
-                string tagsVal = string.Empty;
-
-                if (counter.Metadata.TryGetValue("quantile", out string percentile))
-                {
-                    tagsVal = "Percentile=" + percentile; // note that this is currently decimal not percentile
-                }
+                //HACK Match dotnet-counters?
+                string tagsVal = counter.Metadata.Replace("quantile=", "Percentile=");
 
                 writer.WriteString("tags", tagsVal);
 
