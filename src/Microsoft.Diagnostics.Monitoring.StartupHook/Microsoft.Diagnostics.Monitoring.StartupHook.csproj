@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <IsShippingAssembly>true</IsShippingAssembly>
+    <OutputType>Library</OutputType>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests"/>
+  </ItemGroup>
+  
+</Project>
