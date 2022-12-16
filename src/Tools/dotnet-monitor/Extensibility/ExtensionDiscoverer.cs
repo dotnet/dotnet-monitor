@@ -31,11 +31,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             _logger.ExtensionProbeStart(extensionName);
             foreach (ExtensionRepository repo in _extensionRepos)
             {
-                if (repo == null)
-                {
-                    continue;
-                }
-
                 bool found = repo.TryFindExtension(extensionName, out IExtension genericResult);
                 if (found)
                 {

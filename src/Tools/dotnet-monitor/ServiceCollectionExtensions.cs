@@ -218,7 +218,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<ExtensionDiscoverer>();
             services.TryAddSingleton<IDotnetToolsFileSystem, DefaultDotnetToolsFileSystem>();
 
-            string executingAssemblyFolder = Assembly.GetExecutingAssembly().Location;
+            string executingAssemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string progDataFolder = settings.SharedConfigDirectory;
             string settingsFolder = settings.UserConfigDirectory;
 
@@ -246,12 +246,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             Func<IServiceProvider, ExtensionRepository> createDelegate =
                 (IServiceProvider serviceProvider) =>
                 {
-                    if (!Directory.Exists(targetExtensionFolder))
-                    {
-                        return null;
-                    }
-
-                    PhysicalFileProvider fileProvider = new(targetExtensionFolder);
+                    IFileProvider fileProvider = GetFileProvider(targetExtensionFolder);
                     ILogger<ProgramExtension> logger = serviceProvider.GetRequiredService<ILogger<ProgramExtension>>();
                     return new FolderExtensionRepository(fileProvider, logger, targetExtensionFolder);
                 };
@@ -268,12 +263,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     var targetExtensionFolder = serviceProvider.GetService<IDotnetToolsFileSystem>().Path;
 
-                    if (!Directory.Exists(targetExtensionFolder))
-                    {
-                        return null;
-                    }
-
-                    PhysicalFileProvider fileProvider = new(targetExtensionFolder);
+                    IFileProvider fileProvider = GetFileProvider(targetExtensionFolder);
                     ILogger<ProgramExtension> logger = serviceProvider.GetRequiredService<ILogger<ProgramExtension>>();
                     return new ToolsExtensionRepository(fileProvider, logger, targetExtensionFolder);
                 };
@@ -281,6 +271,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<ExtensionRepository>(createDelegate);
 
             return services;
+        }
+
+        private static IFileProvider GetFileProvider(string targetExtensionFolder)
+        {
+            if (Directory.Exists(targetExtensionFolder))
+            {
+                return new PhysicalFileProvider(targetExtensionFolder);
+            }
+
+            return new NullFileProvider();
         }
 
         public static IServiceCollection ConfigureEgress(this IServiceCollection services)
