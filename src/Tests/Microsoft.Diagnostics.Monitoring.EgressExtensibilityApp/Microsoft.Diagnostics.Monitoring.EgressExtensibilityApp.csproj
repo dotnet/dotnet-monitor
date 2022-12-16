@@ -11,9 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
-    <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj" />
-    <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\Microsoft.Diagnostics.Monitoring.Tool.UnitTests.csproj" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Egress\Extension\EgressArtifactResult.cs" Link="Options\Egress\Extension\EgressArtifactResult.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Extensibility\IExtensionResult.cs" Link="Options\Extensibility\IExtensionResult.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Egress\Extension\ExtensionEgressPayload.cs" Link="Options\Egress\Extension\ExtensionEgressPayload.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Egress\EgressArtifactSettings.cs" Link="Options\Egress\EgressArtifactSettings.cs" />
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\EgressExtensibilityTestsConstants.cs" Link="EgressExtensibilityTestsConstants.cs" />
   </ItemGroup>
 
   <ItemGroup>

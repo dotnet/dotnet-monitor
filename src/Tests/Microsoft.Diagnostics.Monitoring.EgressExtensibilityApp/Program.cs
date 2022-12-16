@@ -39,12 +39,12 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
                 if (options.ShouldSucceed)
                 {
                     result.Succeeded = true;
-                    result.ArtifactPath = EgressExtensibilityTests.SampleArtifactPath;
+                    result.ArtifactPath = EgressExtensibilityTestsConstants.SampleArtifactPath;
                 }
                 else
                 {
                     result.Succeeded = false;
-                    result.FailureMessage = EgressExtensibilityTests.SampleFailureMessage;
+                    result.FailureMessage = EgressExtensibilityTestsConstants.SampleFailureMessage;
                 }
             }
             catch (Exception ex)

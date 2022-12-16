@@ -4,7 +4,6 @@
 
 using System;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
@@ -59,8 +58,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public string UserConfigDirectory { get; set; }
 
-        public string ExecutingAssemblyDirectory { get; set; }
-
         public FileInfo UserProvidedConfigFilePath { get; set; }
 
         /// <summary>
@@ -84,8 +81,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ContentRootDirectory = AppContext.BaseDirectory,
                 SharedConfigDirectory = SharedConfigDirectoryPath,
                 UserConfigDirectory = UserConfigDirectoryPath,
-                UserProvidedConfigFilePath = userProvidedConfigFilePath,
-                ExecutingAssemblyDirectory = Assembly.GetExecutingAssembly().Location
+                UserProvidedConfigFilePath = userProvidedConfigFilePath
             };
         }
 

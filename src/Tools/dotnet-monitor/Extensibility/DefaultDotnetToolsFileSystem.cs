@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
     internal sealed class DefaultDotnetToolsFileSystem :
         IDotnetToolsFileSystem
     {
-        private const string DotnetFolderName = "dotnet";
+        private const string DotnetFolderName = ".dotnet";
         private const string ToolsFolderName = "tools";
 
         // Location where extensions are stored by default.
@@ -18,8 +18,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         // Other: "%XDG_CONFIG_HOME%/.dotnet/tools" OR "%HOME%/.dotnet/tools" -> THIS HAS NOT BEEN TESTED YET ON LINUX
         private static readonly string DotnetToolsExtensionDirectoryPath =
             RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + DotnetFolderName, ToolsFolderName) :
-                System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "." + DotnetFolderName, ToolsFolderName);
+                System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), DotnetFolderName, ToolsFolderName) :
+                System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), DotnetFolderName, ToolsFolderName);
 
         public string Path { get => DotnetToolsExtensionDirectoryPath; set => throw new NotImplementedException(); }
     }

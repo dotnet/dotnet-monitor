@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -25,15 +24,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private ITestOutputHelper _outputHelper;
 
-        private const string ExtensionsFolder = "extensions";
-        public const string SampleArtifactPath = "sample\\path";
-        public const string SampleFailureMessage = "the extension failed";
-        private const string ProviderName = "TestingProvider"; // Must match the name in extension.json
-        private const string AppName = "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp";
-        private static readonly string DotnetToolsExtensionDir = Path.Combine(".store", "tool-name", "7.0", "tool-name", "7.0", "tools", "net7.0", "any");
-        private const string DotnetToolsExeDir = "";
-        private static readonly byte[] ByteArray = Encoding.ASCII.GetBytes(string.Empty);
-
         public EgressExtensibilityTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
@@ -42,7 +32,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public void FoundExtension_Failure()
         {
-            HostBuilderSettings settings = CreateHostBuilderSettings();
+            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            using TemporaryDirectory userConfigDir = new(_outputHelper);
+
+            // Set up the initial settings used to create the host builder.
+            HostBuilderSettings settings = new()
+            {
+                SharedConfigDirectory = sharedConfigDir.FullName,
+                UserConfigDirectory = userConfigDir.FullName
+            };
 
             IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
 
@@ -52,13 +50,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Theory]
-        [InlineData(ConfigDirectory.ExecutingAssemblyDirectory, null)]
         [InlineData(ConfigDirectory.UserConfigDirectory, null)]
         [InlineData(ConfigDirectory.SharedConfigDirectory, null)]
-        [InlineData(ConfigDirectory.DotnetToolsExtensionDirectory, DotnetToolsExeDir)]
+        [InlineData(ConfigDirectory.DotnetToolsExtensionDirectory, EgressExtensibilityTestsConstants.DotnetToolsExeDir)]
         public void FoundExtensionFile_Success(ConfigDirectory configDirectory, string exePath)
         {
-            IEgressExtension extension = FindEgressExtension(configDirectory, exePath);
+            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            using TemporaryDirectory userConfigDir = new(_outputHelper);
+
+            // Set up the initial settings used to create the host builder.
+            HostBuilderSettings settings = new()
+            {
+                SharedConfigDirectory = sharedConfigDir.FullName,
+                UserConfigDirectory = userConfigDir.FullName
+            };
+
+            IEgressExtension extension = FindEgressExtension(configDirectory, settings, exePath);
 
             Assert.NotNull(extension);
         }
@@ -69,7 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             EgressArtifactResult result = await GetExtensionResponse(true);
 
             Assert.True(result.Succeeded);
-            Assert.Equal(SampleArtifactPath, result.ArtifactPath);
+            Assert.Equal(EgressExtensibilityTestsConstants.SampleArtifactPath, result.ArtifactPath);
         }
 
         [Fact]
@@ -78,12 +85,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             EgressArtifactResult result = await GetExtensionResponse(false);
 
             Assert.False(result.Succeeded);
-            Assert.Equal(SampleFailureMessage, result.FailureMessage);
+            Assert.Equal(EgressExtensibilityTestsConstants.SampleFailureMessage, result.FailureMessage);
         }
 
         private async Task<EgressArtifactResult> GetExtensionResponse(bool shouldSucceed)
         {
-            ProgramExtension extension = (ProgramExtension)FindEgressExtension(ConfigDirectory.UserConfigDirectory);
+            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            using TemporaryDirectory userConfigDir = new(_outputHelper);
+
+            // Set up the initial settings used to create the host builder.
+            HostBuilderSettings settings = new()
+            {
+                SharedConfigDirectory = sharedConfigDir.FullName,
+                UserConfigDirectory = userConfigDir.FullName
+            };
+
+            ProgramExtension extension = (ProgramExtension)FindEgressExtension(ConfigDirectory.UserConfigDirectory, settings);
 
             // This addresses an issue with the extension process not being able to find the required version of dotnet
             // Runtime Directory example: 'C:\\Users\\abc\\dotnet-monitor\\.dotnet\\shared\\Microsoft.NETCore.App\\6.0.11\\
@@ -101,10 +118,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return await extension.EgressArtifact(payload, GetStream, tokenSource.Token);
         }
 
-        private IEgressExtension FindEgressExtension(ConfigDirectory configDirectory, string exePath = null)
+        private IEgressExtension FindEgressExtension(ConfigDirectory configDirectory, HostBuilderSettings settings, string exePath = null)
         {
-            HostBuilderSettings settings = CreateHostBuilderSettings();
-
             IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
 
             using TemporaryDirectory dotnetToolsConfigDir = new(_outputHelper);
@@ -112,25 +127,25 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             dotnetToolsFileSystem.Path = dotnetToolsConfigDir.FullName;
 
             string directoryName = GetExtensionDirectoryName(settings, dotnetToolsFileSystem, configDirectory);
-            string extensionDirPath = configDirectory == ConfigDirectory.DotnetToolsExtensionDirectory ? Path.Combine(directoryName, DotnetToolsExtensionDir) : Path.Combine(directoryName, ExtensionsFolder, AppName);
+            string extensionDirPath = configDirectory == ConfigDirectory.DotnetToolsExtensionDirectory ? Path.Combine(directoryName, EgressExtensibilityTestsConstants.DotnetToolsExtensionDir) : Path.Combine(directoryName, EgressExtensibilityTestsConstants.ExtensionsFolder, EgressExtensibilityTestsConstants.AppName);
 
             CopyExtensionFiles(extensionDirPath, exePath);
 
             var extensionDiscoverer = host.Services.GetService<ExtensionDiscoverer>();
-            return extensionDiscoverer.FindExtension<IEgressExtension>(ProviderName);
+            return extensionDiscoverer.FindExtension<IEgressExtension>(EgressExtensibilityTestsConstants.ProviderName);
         }
 
         private static async Task GetStream(Stream stream, CancellationToken cancellationToken)
         {
             // The test extension currently does not do anything with this stream.
-            await stream.WriteAsync(ByteArray, cancellationToken);
+            await stream.WriteAsync(EgressExtensibilityTestsConstants.ByteArray, cancellationToken);
         }
 
         private static void CopyExtensionFiles(string extensionDirPath, string exePath = null)
         {
             Directory.CreateDirectory(extensionDirPath);
 
-            string testAppDirPath = Path.GetDirectoryName(AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), AppName));
+            string testAppDirPath = Path.GetDirectoryName(AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), EgressExtensibilityTestsConstants.AppName));
 
             bool hasSeparateExe = !string.IsNullOrEmpty(exePath);
 
@@ -156,7 +171,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private static bool IsExecutablePath(string path)
         {
-            if (Path.GetFileNameWithoutExtension(path) == AppName)
+            if (Path.GetFileNameWithoutExtension(path) == EgressExtensibilityTestsConstants.AppName)
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Path.GetExtension(path) == ".exe")
                 {
@@ -171,21 +186,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return false;
         }
 
-        private HostBuilderSettings CreateHostBuilderSettings()
-        {
-            using TemporaryDirectory executingAssemblyDir = new(_outputHelper);
-            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
-            using TemporaryDirectory userConfigDir = new(_outputHelper);
-
-            // Set up the initial settings used to create the host builder.
-            return new()
-            {
-                ExecutingAssemblyDirectory = executingAssemblyDir.FullName,
-                SharedConfigDirectory = sharedConfigDir.FullName,
-                UserConfigDirectory = userConfigDir.FullName
-            };
-        }
-
         private static string GetExtensionDirectoryName(HostBuilderSettings settings, IDotnetToolsFileSystem dotnetToolsFileSystem, ConfigDirectory configDirectory)
         {
             switch (configDirectory)
@@ -196,8 +196,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     return settings.SharedConfigDirectory;
                 case ConfigDirectory.DotnetToolsExtensionDirectory:
                     return dotnetToolsFileSystem.Path;
-                case ConfigDirectory.ExecutingAssemblyDirectory:
-                    return settings.ExecutingAssemblyDirectory;
                 default:
                     throw new ArgumentException("configDirectory not found.");
             }
@@ -205,7 +203,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         public enum ConfigDirectory
         {
-            ExecutingAssemblyDirectory,
             SharedConfigDirectory,
             UserConfigDirectory,
             DotnetToolsExtensionDirectory

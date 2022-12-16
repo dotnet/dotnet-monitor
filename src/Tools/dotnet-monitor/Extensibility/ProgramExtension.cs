@@ -155,10 +155,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             {
                 p.Kill();
 
-                while (!p.HasExited)
-                {
-                    Thread.Sleep(5);
-                }
+                await p.WaitForExitAsync(token);
             }
 
             _logger.ExtensionExited(p.Id, p.ExitCode);

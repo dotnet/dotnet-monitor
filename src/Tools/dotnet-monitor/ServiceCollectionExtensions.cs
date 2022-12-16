@@ -31,6 +31,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.IO;
+using System.Reflection;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -217,7 +218,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<ExtensionDiscoverer>();
             services.TryAddSingleton<IDotnetToolsFileSystem, DefaultDotnetToolsFileSystem>();
 
-            string executingAssemblyFolder = settings.ExecutingAssemblyDirectory;
+            string executingAssemblyFolder = Assembly.GetExecutingAssembly().Location;
             string progDataFolder = settings.SharedConfigDirectory;
             string settingsFolder = settings.UserConfigDirectory;
 
