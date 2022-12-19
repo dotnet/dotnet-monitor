@@ -71,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 
         private static AzureBlobEgressProviderOptions BuildOptions(ExtensionEgressPayload configPayload)
         {
-            AzureBlobEgressProviderOptions options = new AzureBlobEgressProviderOptions()
+            _ = new AzureBlobEgressProviderOptions()
             {
                 AccountUri = GetUriConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.AccountUri)),
                 AccountKey = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.AccountKey)),
@@ -86,6 +86,12 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
                 QueueSharedAccessSignatureName = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.QueueSharedAccessSignatureName)),
                 ManagedIdentityClientId = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.ManagedIdentityClientId))
             };
+
+            IConfigurationSection configurationSection = configPayload.ConfigurationSection;
+
+            AzureBlobEgressProviderOptions options = new();
+
+            configurationSection.Bind(options);
 
             // If account key was not provided but the name was provided,
             // lookup the account key property value from EgressOptions.Properties
@@ -171,6 +177,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
         public EgressArtifactSettings Settings { get; set; }
         public Dictionary<string, string> Properties { get; set; }
         public Dictionary<string, string> Configuration { get; set; }
+        public IConfigurationSection ConfigurationSection { get; set; }
         public string ProviderName { get; set; }
     }
 }

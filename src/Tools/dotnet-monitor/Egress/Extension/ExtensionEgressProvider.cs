@@ -4,8 +4,10 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,12 +25,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     {
         private readonly IEgressPropertiesProvider _propertyProvider;
         private readonly ExtensionDiscoverer _extensionDiscoverer;
+        private readonly IEgressProviderConfigurationProvider _configurationProvider;
 
-        public ExtensionEgressProvider(IEgressPropertiesProvider propertyProvider, ExtensionDiscoverer extensionDiscoverer, ILogger<ExtensionEgressProvider> logger)
+        public ExtensionEgressProvider(IEgressPropertiesProvider propertyProvider, ExtensionDiscoverer extensionDiscoverer, ILogger<ExtensionEgressProvider> logger, IEgressProviderConfigurationProvider configurationProvider)
             : base(logger)
         {
             _propertyProvider = propertyProvider;
             _extensionDiscoverer = extensionDiscoverer;
+            _configurationProvider = configurationProvider;
         }
 
         public override async Task<string> EgressAsync(
@@ -45,6 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 Configuration = options,
                 Properties = _propertyProvider.GetAllProperties(),
                 ProviderName = providerName,
+                ConfigurationSection = GetConfigurationSection(providerName, providerType)
             };
 
             IEgressExtension ext = _extensionDiscoverer.FindExtension<IEgressExtension>(providerType);
@@ -56,6 +61,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             }
 
             return result.ArtifactPath;
+        }
+
+        private IConfigurationSection GetConfigurationSection(string providerName, string providerType)
+        {
+            IConfigurationSection providerTypeSection = _configurationProvider.GetConfigurationSection(providerType);
+            return providerTypeSection.GetSection(providerName);
+
+            throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
         }
     }
 }
