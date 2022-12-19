@@ -26,6 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
         {
             // Prevent rethrows from being evaluated; only care about origination of exceptions.
             builder.Add(next => new FilterRepeatExceptionPipelineStep(next).Invoke);
+            builder.Add(next => new ExceptionEventsPipelineStep(next).Invoke);
         }
     }
 }
