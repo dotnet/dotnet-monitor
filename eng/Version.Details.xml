@@ -14,9 +14,9 @@
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="8.0.0-alpha.1.22616.6">
+    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="8.0.0-alpha.1.22619.1">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>d2f7bd0b37b7fed379d694b3231e6c5ddd177819</Sha>
+      <Sha>c94c3b1995aef88008ba52063f8c5fb8b776e890</Sha>
     </Dependency>
     <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0-preview1.22614.3">
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
@@ -42,9 +42,9 @@
       <Uri>https://github.com/dotnet/runtime</Uri>
       <Sha>c0ebf2bdcdcef90f82c67d357750c34bb56c3f4c</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.8.0" Version="8.0.0-alpha.1.22616.6">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.8.0" Version="8.0.0-alpha.1.22619.1">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>d2f7bd0b37b7fed379d694b3231e6c5ddd177819</Sha>
+      <Sha>c94c3b1995aef88008ba52063f8c5fb8b776e890</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.8.0" Version="8.0.0-alpha.1.22615.5" CoherentParentDependency="VS.Redist.Common.AspNetCore.SharedFramework.x64.8.0">
       <Uri>https://github.com/dotnet/runtime</Uri>
