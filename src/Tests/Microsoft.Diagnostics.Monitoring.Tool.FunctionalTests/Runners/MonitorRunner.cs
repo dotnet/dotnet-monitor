@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 #endif
                 );
 
-        private string SharedConfigDirectoryPath =>
+        public string SharedConfigDirectoryPath =>
             Path.Combine(TempPath, "SharedConfig");
 
         private string UserConfigDirectoryPath =>

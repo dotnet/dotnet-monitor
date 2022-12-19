@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
@@ -10,8 +11,11 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -43,8 +47,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     using ResponseStreamHolder holder = await apiClient.CaptureMetricsAsync(await appRunner.ProcessIdTask,
                         durationSeconds: 10);
 
-                    var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
-                    await LiveMetricsTestUtilities.ValidateMetrics(new[] { EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
+                    var metrics = LiveMetricsTestUtilities.GetAllSystemDiagnosticsMetrics(holder.Stream);
+                    await LiveMetricsTestUtilities.ValidateMetrics(new[] { MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
                         new[]
                         {
                             "cpu-usage",
@@ -79,14 +83,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             {
                                 new EventMetricsProvider
                                 {
-                                    ProviderName = EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName,
+                                    ProviderName = MonitoringSourceConfiguration.SystemRuntimeEventSourceName,
                                     CounterNames = counterNames,
                                 }
                             }
                         });
 
-                    var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
-                    await LiveMetricsTestUtilities.ValidateMetrics(new[] { EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
+                    var metrics = LiveMetricsTestUtilities.GetAllSystemDiagnosticsMetrics(holder.Stream);
+                    await LiveMetricsTestUtilities.ValidateMetrics(new[] { MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
                         counterNames,
                         metrics,
                         strict: true);
@@ -99,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public async Task TestSystemDiagnosticsMetrics()
         {
-            var counterNamesP1 = new[] { "test-counter", "test-gauge" };
+            var counterNamesP1 = new[] { "test-counter", "test-gauge", "test-histogram", "test-histogram-2" };
             var counterNamesP2 = new[] { "test-counter" };
 
             MetricProvider p1 = new MetricProvider()
@@ -124,10 +128,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.Metrics.Name,
                 appValidate: async (runner, client) =>
                 {
-                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                    //await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
 
                     using ResponseStreamHolder holder = await client.CaptureMetricsAsync(await runner.ProcessIdTask,
-                        durationSeconds: 2,
+                        durationSeconds: 8,
                         metricsConfiguration: new EventMetricsConfiguration
                         {
                             IncludeDefaultProviders = false,
@@ -148,12 +152,36 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
 
-                    var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
+                    var metrics = LiveMetricsTestUtilities.GetAllSystemDiagnosticsMetrics(holder.Stream);
 
-                    await LiveMetricsTestUtilities.ValidateMetrics(new[] { p1.ProviderName, p2.ProviderName },
+                    List<string> actualProviders = new();
+                    List<string> actualNames = new();
+                    List<string> actualMetadata = new();
+
+                    await LiveMetricsTestUtilities.AggregateMetrics(metrics, actualProviders, actualNames, actualMetadata);
+
+                    LiveMetricsTestUtilities.ValidateMetrics(new[] { p1.ProviderName, p2.ProviderName },
                         counterNamesP1,
-                        metrics,
+                        actualProviders.ToHashSet(),
+                        actualNames.ToHashSet(),
                         strict: true);
+
+                    Regex regex = new Regex(@"\b[Percentile=]\w+?\d{0,2}");
+
+                    for (int index = 0; index < actualProviders.Count; ++index)
+                    {
+                        if (actualNames[index] == "test-histogram")
+                        {
+                            Assert.Matches(regex, actualMetadata[index]);
+                        }
+                        else if (actualNames[index] == "test-histogram-2")
+                        {
+                            var metadata = actualMetadata[index].Split(',');
+                            Assert.Equal(2, metadata.Length);
+                            Assert.Equal("key1=value1", metadata[0]);
+                            Assert.Matches(regex, metadata[1]);
+                        }
+                    }
                 },
                 configureTool: runner =>
                 {

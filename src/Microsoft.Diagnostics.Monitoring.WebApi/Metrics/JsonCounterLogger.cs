@@ -59,10 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 writer.WriteString("unit", counter.Unit);
                 writer.WriteString("counterType", counter.CounterType.ToString());
 
-                //HACK Match dotnet-counters?
-                string tagsVal = counter.Metadata.Replace("quantile=", "Percentile=");
-
-                writer.WriteString("tags", tagsVal);
+                writer.WriteString("tags", counter.Metadata);
 
                 //Some versions of .Net return invalid metric numbers. See https://github.com/dotnet/runtime/pull/46938
                 writer.WriteNumber("value", double.IsNaN(counter.Value) ? 0.0 : counter.Value);
