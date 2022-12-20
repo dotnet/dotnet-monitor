@@ -9,6 +9,13 @@ internal sealed class StartupHook
 
     public static void Initialize()
     {
-        s_exceptionProcessor.Start();
+        try
+        {
+            s_exceptionProcessor.Start();
+        }
+        catch
+        {
+            // TODO: Log failure
+        }
     }
 }

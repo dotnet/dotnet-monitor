@@ -25,6 +25,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline
 
         public ExceptionPipelineDelegate Build()
         {
+            // DESIGN: Chaining delegates together could natively be done using multicast delegates,
+            // however that would eliminate the ability for one pipeline step to short-circuit the
+            // execution of the remaining steps, thus allowing exception filtering. Alternate designs
+            // that allow for this would still require to not use multicast delegates or would need
+            // to throw specialized exceptions.
             ExceptionPipelineDelegate next = Empty;
             for (int index = _steps.Count - 1; index >= 0; index--)
             {

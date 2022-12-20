@@ -11,13 +11,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
     /// Produces first chance exceptions from the current app domain.
     /// </summary>
     internal sealed class CurrentAppDomainExceptionSource :
-        IExceptionSource,
+        ExceptionSourceBase,
         IDisposable
     {
-        private long _disposedState;
-        private ThreadLocal<bool> _handlingException = new();
+        private readonly ThreadLocal<bool> _handlingException = new();
 
-        public event EventHandler<Exception>? ExceptionThrown;
+        private long _disposedState;
 
         public CurrentAppDomainExceptionSource()
         {
@@ -34,12 +33,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
                 return;
             }
 
-            // Prevent exeptions from unwinding into user code.
+            // Prevent exceptions from unwinding into user code.
             try
             {
                 _handlingException.Value = true;
 
-                ExceptionThrown?.Invoke(sender, e.Exception);
+                RaiseExceptionThrown(e.Exception);
             }
             catch
             {
@@ -53,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 
         public void Dispose()
         {
-            if (0 != Interlocked.CompareExchange(ref _disposedState, 1, 0))
+            if (!DisposableHelper.CanDispose(ref _disposedState))
                 return;
 
             AppDomain.CurrentDomain.FirstChanceException -= CurrentDomain_FirstChanceException;

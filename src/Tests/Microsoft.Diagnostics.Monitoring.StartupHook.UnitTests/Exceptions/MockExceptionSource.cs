@@ -6,11 +6,9 @@ using System;
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 {
     internal sealed class MockExceptionSource :
-        IExceptionSource,
+        ExceptionSourceBase,
         IDisposable
     {
-        public event EventHandler<Exception>? ExceptionThrown;
-
         public bool IsDisposed { get; private set; }
 
         public void Dispose()
@@ -20,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 
         public void ProvideException(Exception exception)
         {
-            ExceptionThrown?.Invoke(this, exception);
+            RaiseExceptionThrown(exception);
         }
     }
 }

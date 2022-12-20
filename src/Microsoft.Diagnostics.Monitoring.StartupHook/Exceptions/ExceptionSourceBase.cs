@@ -6,13 +6,18 @@ using System;
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 {
     /// <summary>
-    /// Interface representing a source of thrown exceptions.
+    /// Represents a source of thrown exceptions.
     /// </summary>
-    internal interface IExceptionSource
+    internal abstract class ExceptionSourceBase
     {
+        protected void RaiseExceptionThrown(Exception ex)
+        {
+            ExceptionThrown?.Invoke(this, ex);
+        }
+
         /// <summary>
         /// Event that is raised each time an exception is thrown.
         /// </summary>
-        event EventHandler<Exception>? ExceptionThrown;
+        public event EventHandler<Exception>? ExceptionThrown;
     }
 }
