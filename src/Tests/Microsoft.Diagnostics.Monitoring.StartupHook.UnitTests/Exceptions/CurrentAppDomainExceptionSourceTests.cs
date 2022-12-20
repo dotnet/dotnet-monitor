@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
                 }
             };
 
-            Exception thrownException = new ();
+            Exception thrownException = new();
             using (CurrentAppDomainExceptionSource source = new())
             {
                 source.ExceptionThrown += handler;
