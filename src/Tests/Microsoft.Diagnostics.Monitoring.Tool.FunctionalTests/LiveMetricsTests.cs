@@ -210,7 +210,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             IncludeDefaultProviders = false,
                             Providers = providers
                         },
-                        GlobalCounter = new GlobalCounterOptions() {
+                        GlobalCounter = new GlobalCounterOptions()
+                        {
                             IntervalSeconds = 1
                         }
                     });

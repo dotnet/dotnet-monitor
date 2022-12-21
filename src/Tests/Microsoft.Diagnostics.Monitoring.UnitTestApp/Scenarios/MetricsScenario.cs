@@ -37,26 +37,25 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 Meter meter2 = new Meter(Constants.ProviderName2, "1.0.0");
                 Counter<int> counter2 = meter2.CreateCounter<int>(Constants.CounterName);
 
-                var dict = new Dictionary<string, object>
+                var metadata = new Dictionary<string, object>
                 {
                     { Constants.MetadataKey, Constants.MetadataValue }
                 };
 
                 Task continueCommand = Task.Run(() => ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Metrics.Commands.Continue, logger));
 
-                do
+                while (!continueCommand.IsCompleted)
                 {
                     for (int i = 0; i < 20; ++i)
                     {
                         histogram1.Record(rd.Next(5000));
-                        histogram2.Record(rd.Next(5000), dict.ToArray());
+                        histogram2.Record(rd.Next(5000), metadata.ToArray());
                     }
 
                     counter2.Add(1);
 
                     await Task.Delay(100);
                 }
-                while (!continueCommand.IsCompleted);
 
                 return 0;
             }, context.GetCancellationToken());
