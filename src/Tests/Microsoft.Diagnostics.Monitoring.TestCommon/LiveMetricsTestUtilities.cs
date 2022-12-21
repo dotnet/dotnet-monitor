@@ -73,18 +73,5 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 yield return JsonSerializer.Deserialize<CounterPayload>(entry.Substring(1));
             }
         }
-
-        internal static async IAsyncEnumerable<CounterPayload> GetAllSystemDiagnosticsMetrics(Stream liveMetricsStream)
-        {
-            using var reader = new StreamReader(liveMetricsStream);
-
-            string entry = string.Empty;
-            while ((entry = await reader.ReadLineAsync()) != null)
-            {
-                Assert.Equal(StreamingLogger.JsonSequenceRecordSeparator, (byte)entry[0]);
-                CounterPayload payload = JsonSerializer.Deserialize<CounterPayload>(entry.Substring(1));
-                yield return payload;
-            }
-        }
     }
 }

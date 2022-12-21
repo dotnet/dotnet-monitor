@@ -94,7 +94,7 @@ namespace CollectionRuleActions.UnitTests
                     using FileStream liveMetricsStream = new(egressPath, FileMode.Open, FileAccess.Read);
                     Assert.NotNull(liveMetricsStream);
 
-                    var metrics = LiveMetricsTestUtilities.GetAllSystemDiagnosticsMetrics(liveMetricsStream);
+                    var metrics = LiveMetricsTestUtilities.GetAllMetrics(liveMetricsStream);
 
                     await LiveMetricsTestUtilities.ValidateMetrics(new[] { providerName },
                         counterNames,
