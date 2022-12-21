@@ -8,7 +8,7 @@ using System.Diagnostics;
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 {
     [DebuggerDisplay("{Succeeded?\"Succeeded\":\"Failed\",nq}: {Succeeded?ArtifactPath:FailureMessage}")]
-    internal class EgressArtifactResult : IExtensionResult
+    internal sealed class EgressArtifactResult : IExtensionResult
     {
         public bool Succeeded { get; set; }
         public string FailureMessage { get; set; }

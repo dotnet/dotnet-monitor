@@ -216,24 +216,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             // Add the services to discover extensions
             services.AddSingleton<ExtensionDiscoverer>();
+            services.TryAddSingleton<IDotnetToolsFileSystem, DefaultDotnetToolsFileSystem>();
 
-            string nextToMeFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string executingAssemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string progDataFolder = settings.SharedConfigDirectory;
             string settingsFolder = settings.UserConfigDirectory;
-            string dotnetToolsFolder = ToolsExtensionRepository.DotnetToolsExtensionDirectoryPath;
 
             if (string.IsNullOrWhiteSpace(progDataFolder)
-                || string.IsNullOrWhiteSpace(settingsFolder)
-                || string.IsNullOrWhiteSpace(dotnetToolsFolder))
+                || string.IsNullOrWhiteSpace(settingsFolder))
             {
                 throw new InvalidOperationException();
             }
 
             // Add the folders we search to get extensions from
-            services.AddFolderExtensionRepository(nextToMeFolder);
+            services.AddFolderExtensionRepository(executingAssemblyFolder);
             services.AddFolderExtensionRepository(progDataFolder);
             services.AddFolderExtensionRepository(settingsFolder);
-            services.AddToolsExtensionRepository(dotnetToolsFolder);
+            services.AddToolsExtensionRepository();
 
             return services;
         }
@@ -244,38 +243,44 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             string targetExtensionFolder = Path.Combine(path, ExtensionFolder);
 
-            if (Directory.Exists(targetExtensionFolder))
-            {
-                Func<IServiceProvider, ExtensionRepository> createDelegate =
-                    (IServiceProvider serviceProvider) =>
-                    {
-                        PhysicalFileProvider fileProvider = new(targetExtensionFolder);
-                        ILogger<ProgramExtension> logger = serviceProvider.GetRequiredService<ILogger<ProgramExtension>>();
-                        return new FolderExtensionRepository(fileProvider, logger, targetExtensionFolder);
-                    };
+            Func<IServiceProvider, ExtensionRepository> createDelegate =
+                (IServiceProvider serviceProvider) =>
+                {
+                    IFileProvider fileProvider = GetFileProvider(targetExtensionFolder);
+                    ILogger<ProgramExtension> logger = serviceProvider.GetRequiredService<ILogger<ProgramExtension>>();
+                    return new FolderExtensionRepository(fileProvider, logger, targetExtensionFolder);
+                };
 
-                services.AddSingleton<ExtensionRepository>(createDelegate);
-            }
+            services.AddSingleton<ExtensionRepository>(createDelegate);
 
             return services;
         }
 
-        public static IServiceCollection AddToolsExtensionRepository(this IServiceCollection services, string targetExtensionFolder)
+        public static IServiceCollection AddToolsExtensionRepository(this IServiceCollection services)
+        {
+            Func<IServiceProvider, ExtensionRepository> createDelegate =
+                (IServiceProvider serviceProvider) =>
+                {
+                    var targetExtensionFolder = serviceProvider.GetService<IDotnetToolsFileSystem>().Path;
+
+                    IFileProvider fileProvider = GetFileProvider(targetExtensionFolder);
+                    ILogger<ProgramExtension> logger = serviceProvider.GetRequiredService<ILogger<ProgramExtension>>();
+                    return new ToolsExtensionRepository(fileProvider, logger, targetExtensionFolder);
+                };
+
+            services.AddSingleton<ExtensionRepository>(createDelegate);
+
+            return services;
+        }
+
+        private static IFileProvider GetFileProvider(string targetExtensionFolder)
         {
             if (Directory.Exists(targetExtensionFolder))
             {
-                Func<IServiceProvider, ExtensionRepository> createDelegate =
-                    (IServiceProvider serviceProvider) =>
-                    {
-                        PhysicalFileProvider fileProvider = new(targetExtensionFolder);
-                        ILogger<ProgramExtension> logger = serviceProvider.GetRequiredService<ILogger<ProgramExtension>>();
-                        return new ToolsExtensionRepository(fileProvider, logger, targetExtensionFolder);
-                    };
-
-                services.AddSingleton<ExtensionRepository>(createDelegate);
+                return new PhysicalFileProvider(targetExtensionFolder);
             }
 
-            return services;
+            return new NullFileProvider();
         }
 
         public static IServiceCollection ConfigureEgress(this IServiceCollection services)

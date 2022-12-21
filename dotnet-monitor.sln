@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Tool.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\Microsoft.Diagnostics.Monitoring.Tool.UnitTests.csproj", "{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp", "src\Tests\Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp\Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp.csproj", "{8f8a9a15-24d5-496c-b769-3caed25d1ba8}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureBlobStorage", "src\Extensions\AzureBlobStorage\AzureBlobStorage.csproj", "{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Profiler.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.Profiler.UnitTests\Microsoft.Diagnostics.Monitoring.Profiler.UnitTests.csproj", "{A25AC517-F7C6-43C6-B892-4A447914C42C}"
@@ -106,6 +108,10 @@ Global
 		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8f8a9a15-24d5-496c-b769-3caed25d1ba8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8f8a9a15-24d5-496c-b769-3caed25d1ba8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8f8a9a15-24d5-496c-b769-3caed25d1ba8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8f8a9a15-24d5-496c-b769-3caed25d1ba8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -153,6 +159,7 @@ Global
 		{3AD0A40B-C569-4712-9764-7A788B9CD811} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{173F959B-231B-45D1-8328-9460D4C5BC71} = {19FAB78C-3351-4911-8F0C-8C6056401740}
 		{0DBE362D-82F1-4740-AE6A-40C1A82EDCDB} = {C7568468-1C79-4944-8136-18812A7F9EA7}
+		{8f8a9a15-24d5-496c-b769-3caed25d1ba8} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278} = {B62728C8-1267-4043-B46F-5537BBAEC692}
 		{A25AC517-F7C6-43C6-B892-4A447914C42C} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{1CA2284B-A3A0-476A-9A93-A95E665E78BE} = {C7568468-1C79-4944-8136-18812A7F9EA7}

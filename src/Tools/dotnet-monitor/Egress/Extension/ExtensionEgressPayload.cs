@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 {
-    internal class ExtensionEgressPayload
+    internal sealed class ExtensionEgressPayload
     {
         public EgressArtifactSettings Settings { get; set; }
         public IDictionary<string, string> Properties { get; set; }

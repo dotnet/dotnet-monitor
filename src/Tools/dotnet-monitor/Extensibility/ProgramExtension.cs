@@ -6,9 +6,11 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,6 +27,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         private readonly IFileProvider _fileSystem;
         private readonly ILogger<ProgramExtension> _logger;
         private Lazy<ExtensionDeclaration> _extensionDeclaration;
+        private IDictionary<string, string> _processEnvironmentVariables = new Dictionary<string, string>();
+
+        private static readonly TimeSpan WaitForProcessExitTimeout = TimeSpan.FromMilliseconds(2000);
 
         public ProgramExtension(string extensionName, string targetFolder, IFileProvider fileSystem, string declarationPath, ILogger<ProgramExtension> logger)
         {
@@ -54,6 +59,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             }
         }
 
+        public void AddEnvironmentVariable(string key, string value)
+        {
+            _processEnvironmentVariables[key] = value;
+        }
+
         /// <inheritdoc/>
         public async Task<EgressArtifactResult> EgressArtifact(ExtensionEgressPayload configPayload, Func<Stream, CancellationToken, Task> getStreamAction, CancellationToken token)
         {
@@ -65,7 +75,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             // This is really weird, yes, but this is one of 2 overloads for [Stream].WriteAsync(...) that supports a CancellationToken, so we use a ReadOnlyMemory<char> instead of a string.
             ReadOnlyMemory<char> NewLine = new ReadOnlyMemory<char>("\r\n".ToCharArray());
 
-            string programRelPath = Path.Combine(Path.GetDirectoryName(_exePath), Declaration.Program);
+            string exeName = Declaration.Program;
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                exeName += ".exe";
+            }
+
+            string programRelPath = Path.Combine(Path.GetDirectoryName(_exePath), exeName);
+
             IFileInfo progInfo = _fileSystem.GetFileInfo(programRelPath);
             if (!progInfo.Exists || progInfo.IsDirectory || progInfo.PhysicalPath == null)
             {
@@ -90,6 +108,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 UseShellExecute = false,
             };
             pStart.ArgumentList.Add(ExtensionTypes.Egress);
+
+            foreach ((string key, string value) in _processEnvironmentVariables)
+            {
+                pStart.Environment.Add(key, value);
+            }
 
             using Process p = new Process()
             {
@@ -117,6 +140,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             _logger.ExtensionEgressPayloadCompleted(p.Id);
 
             EgressArtifactResult result = await parser.ReadResult();
+
+            using var timeoutSource = new CancellationTokenSource();
+
+            try
+            {
+                timeoutSource.CancelAfter(WaitForProcessExitTimeout);
+
+                using CancellationTokenSource linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token, timeoutSource.Token);
+
+                await p.WaitForExitAsync(linkedTokenSource.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (timeoutSource.IsCancellationRequested)
+            {
+                p.Kill();
+
+                await p.WaitForExitAsync(token);
+            }
+
             _logger.ExtensionExited(p.Id, p.ExitCode);
 
             return result;
