@@ -18,7 +18,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private ITestOutputHelper _outputHelper;
 
-
         private readonly string MeterName = "MeterName";
         private readonly string InstrumentName = "InstrumentName";
         private readonly DateTime Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(10000000).DateTime;
@@ -43,13 +42,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             List<ICounterPayload> payload = new();
 
-            string tags1 = "quantile=0.5";
+            string tags1 = "Percentile=50";
             payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, tags1, Value1, Timestamp));
 
-            string tags2 = "quantile=0.95";
+            string tags2 = "Percentile=95";
             payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, tags2, Value2, Timestamp));
 
-            string tags3 = "quantile=0.99";
+            string tags3 = "Percentile=99";
             payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, tags3, Value3, Timestamp));
 
             using MemoryStream stream = await GetMetrics(payload);
@@ -59,17 +58,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // should we call this method, or should this also be implicitly testing its behavior by having this hard-coded?
             string metricName = $"{MeterName.ToLowerInvariant()}_{payload[0].Name}";
 
-            const string quantile_50 = "{quantile=\"0.5\"}";
-            const string quantile_95 = "{quantile=\"0.95\"}";
-            const string quantile_99 = "{quantile=\"0.99\"}";
+            const string percentile_50 = "{Percentile=\"50\"}";
+            const string percentile_95 = "{Percentile=\"95\"}";
+            const string percentile_99 = "{Percentile=\"99\"}";
 
-            // This assumes the default quantiles of .5, .95, and .99
+            // This assumes the default percentiles of 50, 95, and 99
             Assert.Equal(5, lines.Count);
             Assert.Equal($"# HELP {metricName}{payload[0].Unit} {payload[0].DisplayName}", lines[0]);
             Assert.Equal($"# TYPE {metricName} summary", lines[1]);
-            Assert.Equal($"{metricName}{quantile_50} {payload[0].Value}", lines[2]);
-            Assert.Equal($"{metricName}{quantile_95} {payload[1].Value}", lines[3]);
-            Assert.Equal($"{metricName}{quantile_99} {payload[2].Value}", lines[4]);
+            Assert.Equal($"{metricName}{percentile_50} {payload[0].Value}", lines[2]);
+            Assert.Equal($"{metricName}{percentile_95} {payload[1].Value}", lines[3]);
+            Assert.Equal($"{metricName}{percentile_99} {payload[2].Value}", lines[4]);
 
         }
 
