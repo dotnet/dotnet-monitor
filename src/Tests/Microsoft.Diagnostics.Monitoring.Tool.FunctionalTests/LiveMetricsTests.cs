@@ -11,10 +11,13 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using Constants = Microsoft.Diagnostics.Monitoring.TestCommon.LiveMetricsTestConstants;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
@@ -41,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 async (appRunner, apiClient) =>
                 {
                     using ResponseStreamHolder holder = await apiClient.CaptureMetricsAsync(await appRunner.ProcessIdTask,
-                        durationSeconds: 10);
+                        durationSeconds: 2);
 
                     var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
                     await LiveMetricsTestUtilities.ValidateMetrics(new[] { EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
@@ -56,6 +59,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     metrics, strict: false);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: runner =>
+                {
+                    runner.WriteKeyPerValueConfiguration(new RootOptions()
+                    {
+                        GlobalCounter = new GlobalCounterOptions()
+                        {
+                            IntervalSeconds = 1
+                        }
+                    });
                 });
         }
 
@@ -71,7 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     var counterNames = new[] { "cpu-usage", "working-set" };
 
                     using ResponseStreamHolder holder = await apiClient.CaptureMetricsAsync(await appRunner.ProcessIdTask,
-                        durationSeconds: 10,
+                        durationSeconds: 2,
                         metricsConfiguration: new EventMetricsConfiguration
                         {
                             IncludeDefaultProviders = false,
@@ -92,6 +105,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         strict: true);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: runner =>
+                {
+                    runner.WriteKeyPerValueConfiguration(new RootOptions()
+                    {
+                        GlobalCounter = new GlobalCounterOptions()
+                        {
+                            IntervalSeconds = 1
+                        }
+                    });
                 });
         }
 
@@ -99,17 +122,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public async Task TestSystemDiagnosticsMetrics()
         {
-            var counterNamesP1 = new[] { "test-counter", "test-gauge" };
-            var counterNamesP2 = new[] { "test-counter" };
+            var counterNamesP1 = new[] { Constants.CounterName, Constants.GaugeName, Constants.HistogramName1, Constants.HistogramName2 };
+            var counterNamesP2 = new[] { Constants.CounterName };
 
             MetricProvider p1 = new MetricProvider()
             {
-                ProviderName = "P1"
+                ProviderName = Constants.ProviderName1
             };
 
             MetricProvider p2 = new MetricProvider()
             {
-                ProviderName = "P2"
+                ProviderName = Constants.ProviderName2
             };
 
             var providers = new List<MetricProvider>()
@@ -124,8 +147,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.Metrics.Name,
                 appValidate: async (runner, client) =>
                 {
-                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-
                     using ResponseStreamHolder holder = await client.CaptureMetricsAsync(await runner.ProcessIdTask,
                         durationSeconds: 2,
                         metricsConfiguration: new EventMetricsConfiguration
@@ -146,14 +167,38 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             }
                         });
 
-                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                    await runner.SendCommandAsync(TestAppScenarios.Metrics.Commands.Continue);
 
                     var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
 
-                    await LiveMetricsTestUtilities.ValidateMetrics(new[] { p1.ProviderName, p2.ProviderName },
+                    List<string> actualProviders = new();
+                    List<string> actualNames = new();
+                    List<string> actualMetadata = new();
+
+                    await LiveMetricsTestUtilities.AggregateMetrics(metrics, actualProviders, actualNames, actualMetadata);
+
+                    LiveMetricsTestUtilities.ValidateMetrics(new[] { p1.ProviderName, p2.ProviderName },
                         counterNamesP1,
-                        metrics,
+                        actualProviders.ToHashSet(),
+                        actualNames.ToHashSet(),
                         strict: true);
+
+                    Regex regex = new Regex(@"\b[Percentile=]\w+?\d{0,2}");
+
+                    for (int index = 0; index < actualProviders.Count; ++index)
+                    {
+                        if (actualNames[index] == Constants.HistogramName1)
+                        {
+                            Assert.Matches(regex, actualMetadata[index]);
+                        }
+                        else if (actualNames[index] == Constants.HistogramName2)
+                        {
+                            var metadata = actualMetadata[index].Split(',');
+                            Assert.Equal(2, metadata.Length);
+                            Assert.Equal($"{Constants.MetadataKey}={Constants.MetadataValue}", metadata[0]);
+                            Assert.Matches(regex, metadata[1]);
+                        }
+                    }
                 },
                 configureTool: runner =>
                 {
