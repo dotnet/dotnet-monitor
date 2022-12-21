@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,6 +11,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     internal interface IEgressOperation
     {
         public bool IsStoppable { get; }
+
+        public ISet<string> Tags { get; }
 
         public string EgressProviderName { get; }
 
