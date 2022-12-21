@@ -9,6 +9,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
     /// </summary>
     internal interface IDotnetToolsFileSystem
     {
-        public string Path { get; set; }
+        string Path { get; set; }
     }
 }

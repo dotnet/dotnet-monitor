@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
-    <PackageReference Include="xunit.assert" Version="$(XUnitVersion)" />
   </ItemGroup>
 
   <ItemGroup>
