@@ -1,6 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.EventPipe;
+using System;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
@@ -12,5 +14,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         [JsonPropertyName("name")]
         public string Name { get; set; }
+
+        [JsonPropertyName("value")]
+        public double Value { get; set; }
+
+        [JsonPropertyName("timestamp")]
+        public DateTime Timestamp { get; set; }
+
+        [JsonPropertyName("tags")]
+        public string Metadata { get; set; }
     }
 }

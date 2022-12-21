@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
@@ -15,11 +16,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         internal static async Task ValidateMetrics(IEnumerable<string> expectedProviders, IEnumerable<string> expectedNames,
             IAsyncEnumerable<CounterPayload> actualMetrics, bool strict)
         {
-            HashSet<string> actualProviders = new();
-            HashSet<string> actualNames = new();
+            List<string> actualProviders = new();
+            List<string> actualNames = new();
+            List<string> actualMetadata = new();
 
-            await AggregateMetrics(actualMetrics, actualProviders, actualNames);
+            await AggregateMetrics(actualMetrics, actualProviders, actualNames, actualMetadata);
 
+            ValidateMetrics(expectedProviders, expectedNames, actualProviders.ToHashSet(), actualNames.ToHashSet(), strict);
+        }
+
+        internal static void ValidateMetrics(IEnumerable<string> expectedProviders, IEnumerable<string> expectedNames,
+            HashSet<string> actualProviders, HashSet<string> actualNames, bool strict)
+        {
             CompareSets(new HashSet<string>(expectedProviders), actualProviders, strict);
             CompareSets(new HashSet<string>(expectedNames), actualNames, strict);
         }
@@ -41,14 +49,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             Assert.True(matched, "Missing or unexpected elements: " + string.Join(",", expected));
         }
 
-        private static async Task AggregateMetrics(IAsyncEnumerable<CounterPayload> actualMetrics,
-            HashSet<string> providers,
-            HashSet<string> names)
+        internal static async Task AggregateMetrics(IAsyncEnumerable<CounterPayload> actualMetrics,
+            List<string> providers,
+            List<string> names,
+            List<string> metadata)
         {
             await foreach (CounterPayload counter in actualMetrics)
             {
                 providers.Add(counter.Provider);
                 names.Add(counter.Name);
+                metadata.Add(counter.Metadata);
             }
         }
 
