@@ -284,10 +284,10 @@ Detailed information about an operation.
 | `operationId` | guid | Unique identifier for the operation. |
 | `createdDateTime` | datetime string | UTC DateTime string of when the operation was created. |
 | `status` | [OperationState](#operationstate) | The current status of operation. |
-| `egressProviderName` | string | (8.0+) The name of the egress provider that the artifact is being sent to. This will be null if the artifact is being sent directly back to the user from an HTTP request. |
-| `isStoppable` | bool | (8.0+) Whether this operation can be gracefully stopped using [Stop Operation](operations-stop.md). Not all operations support being stopped. |
+| `egressProviderName` | string | (7.1+) The name of the egress provider that the artifact is being sent to. This will be null if the artifact is being sent directly back to the user from an HTTP request. |
+| `isStoppable` | bool | (7.1+) Whether this operation can be gracefully stopped using [Stop Operation](operations-stop.md). Not all operations support being stopped. |
 | `process` | [OperationProcessInfo](#operationprocessinfo) | (6.3+) The process on which the operation is performed. |
-| `tags` | set (of string) | (8.0+) A set of user-readable identifiers for the operation. |
+| `tags` | set (of string) | (7.1+) A set of user-readable identifiers for the operation. |
 
 ### Example
 
@@ -320,10 +320,10 @@ Summary state of an operation.
 | `operationId` | guid | Unique identifier for the operation. |
 | `createdDateTime` | datetime string | UTC DateTime string of when the operation was created. |
 | `status` | [OperationState](#operationstate) | The current status of operation. |
-| `egressProviderName` | string | (8.0+) The name of the egress provider that the artifact is being sent to. This will be null if the artifact is being sent directly back to the user from an HTTP request. |
-| `isStoppable` | bool | (8.0+) Whether this operation can be gracefully stopped using [Stop Operation](operations-stop.md). Not all operations support being stopped. |
+| `egressProviderName` | string | (7.1+) The name of the egress provider that the artifact is being sent to. This will be null if the artifact is being sent directly back to the user from an HTTP request. |
+| `isStoppable` | bool | (7.1+) Whether this operation can be gracefully stopped using [Stop Operation](operations-stop.md). Not all operations support being stopped. |
 | `process` | [OperationProcessInfo](#operationprocessinfo) | (6.3+) The process on which the operation is performed. |
-| `tags` | set (of string) | (8.0+) A set of user-readable identifiers for the operation. |
+| `tags` | set (of string) | (7.1+) A set of user-readable identifiers for the operation. |
 
 ### Example
 
