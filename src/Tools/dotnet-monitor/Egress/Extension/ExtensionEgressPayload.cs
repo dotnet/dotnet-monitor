@@ -11,7 +11,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     {
         public EgressArtifactSettings Settings { get; set; }
         public IDictionary<string, string> Properties { get; set; }
+<<<<<<< HEAD
         public string Configuration { get; set; }
+=======
+        public IDictionary<string, string> Configuration { get; set; }
+        public IConfigurationSection ConfigurationSection { get; set; }
+>>>>>>> e21fe0fe2a5f15c2d65b34a7991dde7b0ca5ddf3
         public string ProviderName { get; set; }
     }
 }
