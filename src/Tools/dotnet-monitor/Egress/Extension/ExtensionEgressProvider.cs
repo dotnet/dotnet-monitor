@@ -5,10 +5,13 @@
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,13 +29,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private readonly IEgressPropertiesProvider _propertyProvider;
         private readonly ExtensionDiscoverer _extensionDiscoverer;
         private readonly IEgressProviderConfigurationProvider _configurationProvider;
+        private readonly IConfiguration _configuration;
 
-        public ExtensionEgressProvider(IEgressPropertiesProvider propertyProvider, ExtensionDiscoverer extensionDiscoverer, ILogger<ExtensionEgressProvider> logger, IEgressProviderConfigurationProvider configurationProvider)
+        public ExtensionEgressProvider(IEgressPropertiesProvider propertyProvider, ExtensionDiscoverer extensionDiscoverer, ILogger<ExtensionEgressProvider> logger, IEgressProviderConfigurationProvider configurationProvider, IServiceProvider serviceProvider)
             : base(logger)
         {
             _propertyProvider = propertyProvider;
             _extensionDiscoverer = extensionDiscoverer;
             _configurationProvider = configurationProvider;
+            _configuration = serviceProvider.GetRequiredService<IConfiguration>();
         }
 
         public override async Task<string> EgressAsync(
@@ -46,10 +51,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             ExtensionEgressPayload payload = new ExtensionEgressPayload()
             {
                 Settings = artifactSettings,
-                Configuration = options,
                 Properties = _propertyProvider.GetAllProperties(),
                 ProviderName = providerName,
-                ConfigurationSection = GetConfigurationSection(providerName, providerType)
+                Configuration = GetConfigurationSection(providerName, providerType)
             };
 
             IEgressExtension ext = _extensionDiscoverer.FindExtension<IEgressExtension>(providerType);
@@ -63,12 +67,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             return result.ArtifactPath;
         }
 
-        private IConfigurationSection GetConfigurationSection(string providerName, string providerType)
+        private string GetConfigurationSection(string providerName, string providerType)
         {
-            IConfigurationSection providerTypeSection = _configurationProvider.GetConfigurationSection(providerType);
-            return providerTypeSection.GetSection(providerName);
+            try
+            {
+                IConfigurationSection providerTypeSection = _configurationProvider.GetConfigurationSection(providerType);
+                IConfigurationSection providerNameSection = providerTypeSection.GetSection(providerName);
 
-            throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
+                var configAsDict = providerNameSection.AsEnumerable().ToDictionary(c => c.Key.Replace($"{ConfigurationKeys.Egress}:{providerType}:{providerName}:", string.Empty), c => c.Value);
+                var json = JsonSerializer.Serialize(configAsDict);
+
+                return json; // Could this return as empty instead of throwing an exception?
+            }
+            catch (Exception)
+            {
+                throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
+            }
         }
     }
 }

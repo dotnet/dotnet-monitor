@@ -4,9 +4,11 @@
 
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.IO;
 using System.Text.Json;
 
 namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
@@ -33,8 +35,15 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
             {
                 string jsonConfig = Console.ReadLine();
 
+                Console.WriteLine("Initial");
+
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
+
+                Console.WriteLine("Config Payload: " + configPayload.Configuration.ToString());
+
                 TestEgressProviderOptions options = BuildOptions(configPayload);
+
+                Console.WriteLine("Options: " + options.ShouldSucceed);
 
                 if (options.ShouldSucceed)
                 {
@@ -62,22 +71,21 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 
         private static TestEgressProviderOptions BuildOptions(ExtensionEgressPayload configPayload)
         {
-            TestEgressProviderOptions options = new TestEgressProviderOptions()
-            {
-                ShouldSucceed = GetConfig(configPayload.Configuration, nameof(TestEgressProviderOptions.ShouldSucceed)),
-            };
+            IConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.SetBasePath(Directory.GetCurrentDirectory());
+
+            Dictionary<string, string> configAsDict =
+                JsonSerializer.Deserialize<Dictionary<string, string>>(configPayload.Configuration);
+
+            var config = builder.AddInMemoryCollection(configAsDict).Build();
+
+            IConfigurationSection section = config.GetSection("root");
+
+            TestEgressProviderOptions options = new();
+
+            section.Bind(options);
 
             return options;
-        }
-
-        private static bool GetConfig(IDictionary<string, string> configDict, string propKey)
-        {
-            if (configDict.TryGetValue(propKey, out string value))
-            {
-                return bool.Parse(value);
-            }
-
-            return false;
         }
     }
 }

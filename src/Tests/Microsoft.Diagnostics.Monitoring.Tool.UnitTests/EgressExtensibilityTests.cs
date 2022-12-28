@@ -6,13 +6,19 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.KeyPerFile;
+using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.CommandLine.Parsing;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -108,10 +114,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             extension.AddEnvironmentVariable("DOTNET_ROOT", dotnetPath);
 
             ExtensionEgressPayload payload = new();
-            payload.Configuration = new Dictionary<string, string>
+
+            IConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.SetBasePath(Directory.GetCurrentDirectory());
+            var config = builder.AddInMemoryCollection(new Dictionary<string, string>
             {
-                { "ShouldSucceed", shouldSucceed.ToString() }
-            };
+                ["root:ShouldSucceed"] = $"{shouldSucceed}"
+            }).Build();
+
+            var configAsDict = config.GetSection("root").AsEnumerable().ToDictionary(c => c.Key, c => c.Value);
+
+            payload.Configuration = JsonSerializer.Serialize(configAsDict);
 
             CancellationTokenSource tokenSource = new(CommonTestTimeouts.GeneralTimeout);
 
