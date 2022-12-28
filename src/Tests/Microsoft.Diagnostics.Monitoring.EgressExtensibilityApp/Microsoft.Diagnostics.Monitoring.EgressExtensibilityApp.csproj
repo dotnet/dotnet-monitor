@@ -18,6 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="extension.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

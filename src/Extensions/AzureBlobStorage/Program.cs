@@ -72,16 +72,14 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
         private static AzureBlobEgressProviderOptions BuildOptions(ExtensionEgressPayload configPayload)
         {
             IConfigurationBuilder builder = new ConfigurationBuilder();
-            //builder.SetBasePath(Directory.GetCurrentDirectory());
 
-            Dictionary<string, string> configAsDict =
-                JsonSerializer.Deserialize<Dictionary<string, string>>(configPayload.Configuration);
+            var configAsDict = JsonSerializer.Deserialize<Dictionary<string, string>>(configPayload.Configuration);
 
-            var config = builder.AddInMemoryCollection(configAsDict).Build();
+            var configurationRoot = builder.AddInMemoryCollection(configAsDict).Build();
 
             AzureBlobEgressProviderOptions options = new();
 
-            config.Bind(options);
+            configurationRoot.Bind(options);
 
             // If account key was not provided but the name was provided,
             // lookup the account key property value from EgressOptions.Properties

@@ -8,8 +8,8 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
-using System.IO;
 using System.Text.Json;
+using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 {
@@ -35,15 +35,12 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
             {
                 string jsonConfig = Console.ReadLine();
 
-                Console.WriteLine("Initial");
-
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
-
-                Console.WriteLine("Config Payload: " + configPayload.Configuration.ToString());
 
                 TestEgressProviderOptions options = BuildOptions(configPayload);
 
-                Console.WriteLine("Options: " + options.ShouldSucceed);
+                Assert.Single(options.Metadata.Keys);
+                Assert.Equal(options.Metadata["Key1"], "Value1");
 
                 if (options.ShouldSucceed)
                 {
@@ -72,18 +69,14 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
         private static TestEgressProviderOptions BuildOptions(ExtensionEgressPayload configPayload)
         {
             IConfigurationBuilder builder = new ConfigurationBuilder();
-            builder.SetBasePath(Directory.GetCurrentDirectory());
 
-            Dictionary<string, string> configAsDict =
-                JsonSerializer.Deserialize<Dictionary<string, string>>(configPayload.Configuration);
+            var configAsDict = JsonSerializer.Deserialize<Dictionary<string, string>>(configPayload.Configuration);
 
-            var config = builder.AddInMemoryCollection(configAsDict).Build();
-
-            IConfigurationSection section = config.GetSection("root");
+            var configurationRoot = builder.AddInMemoryCollection(configAsDict).Build();
 
             TestEgressProviderOptions options = new();
 
-            section.Bind(options);
+            configurationRoot.Bind(options);
 
             return options;
         }
