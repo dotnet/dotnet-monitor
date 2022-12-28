@@ -5,10 +5,6 @@
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
-<<<<<<< HEAD
-using Microsoft.Extensions.DependencyInjection;
-=======
->>>>>>> e21fe0fe2a5f15c2d65b34a7991dde7b0ca5ddf3
 using Microsoft.Extensions.Logging;
 using System;
 using System.Globalization;
@@ -32,23 +28,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private readonly IEgressPropertiesProvider _propertyProvider;
         private readonly ExtensionDiscoverer _extensionDiscoverer;
         private readonly IEgressProviderConfigurationProvider _configurationProvider;
-<<<<<<< HEAD
-        private readonly IConfiguration _configuration;
-
-        public ExtensionEgressProvider(IEgressPropertiesProvider propertyProvider, ExtensionDiscoverer extensionDiscoverer, ILogger<ExtensionEgressProvider> logger, IEgressProviderConfigurationProvider configurationProvider, IServiceProvider serviceProvider)
-=======
 
         public ExtensionEgressProvider(IEgressPropertiesProvider propertyProvider, ExtensionDiscoverer extensionDiscoverer, ILogger<ExtensionEgressProvider> logger, IEgressProviderConfigurationProvider configurationProvider)
->>>>>>> e21fe0fe2a5f15c2d65b34a7991dde7b0ca5ddf3
             : base(logger)
         {
             _propertyProvider = propertyProvider;
             _extensionDiscoverer = extensionDiscoverer;
             _configurationProvider = configurationProvider;
-<<<<<<< HEAD
-            _configuration = serviceProvider.GetRequiredService<IConfiguration>();
-=======
->>>>>>> e21fe0fe2a5f15c2d65b34a7991dde7b0ca5ddf3
         }
 
         public override async Task<string> EgressAsync(
@@ -64,11 +50,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 Settings = artifactSettings,
                 Properties = _propertyProvider.GetAllProperties(),
                 ProviderName = providerName,
-<<<<<<< HEAD
                 Configuration = GetConfigurationSection(providerName, providerType)
-=======
-                ConfigurationSection = GetConfigurationSection(providerName, providerType)
->>>>>>> e21fe0fe2a5f15c2d65b34a7991dde7b0ca5ddf3
             };
 
             IEgressExtension ext = _extensionDiscoverer.FindExtension<IEgressExtension>(providerType);
@@ -82,7 +64,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             return result.ArtifactPath;
         }
 
-<<<<<<< HEAD
         private string GetConfigurationSection(string providerName, string providerType)
         {
             try
@@ -99,14 +80,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             {
                 throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
             }
-=======
-        private IConfigurationSection GetConfigurationSection(string providerName, string providerType)
-        {
-            IConfigurationSection providerTypeSection = _configurationProvider.GetConfigurationSection(providerType);
-            return providerTypeSection.GetSection(providerName);
-
-            throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
->>>>>>> e21fe0fe2a5f15c2d65b34a7991dde7b0ca5ddf3
         }
     }
 }
