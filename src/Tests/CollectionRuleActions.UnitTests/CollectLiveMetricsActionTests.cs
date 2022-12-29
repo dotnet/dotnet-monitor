@@ -21,6 +21,7 @@ using Xunit.Abstractions;
 namespace CollectionRuleActions.UnitTests
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
+    [Collection(TestCollections.CollectionRuleActions)]
     public class CollectLiveMetricsActionTests
     {
         private readonly ITestOutputHelper _outputHelper;

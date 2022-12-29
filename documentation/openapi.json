@@ -197,6 +197,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -264,6 +272,14 @@
             "name": "egressProvider",
             "in": "query",
             "description": "The egress provider to which the GC dump is saved.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
               "type": "string"
             }
@@ -357,6 +373,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -434,6 +458,14 @@
             "name": "egressProvider",
             "in": "query",
             "description": "The egress provider to which the trace is saved.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
               "type": "string"
             }
@@ -548,6 +580,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -634,6 +674,14 @@
             "name": "egressProvider",
             "in": "query",
             "description": "The egress provider to which the logs are saved.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
               "type": "string"
             }
@@ -880,6 +928,13 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -971,6 +1026,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1037,6 +1100,14 @@
             "name": "egressProvider",
             "in": "query",
             "description": "The egress provider to which the metrics are saved.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
               "type": "string"
             }
@@ -1132,6 +1203,14 @@
             "name": "name",
             "in": "query",
             "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
               "type": "string"
             }
@@ -1541,6 +1620,14 @@
           "isStoppable": {
             "type": "boolean"
           },
+          "tags": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
           "resourceLocation": {
             "type": "string",
             "nullable": true
@@ -1575,6 +1662,14 @@
           },
           "isStoppable": {
             "type": "boolean"
+          },
+          "tags": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false,

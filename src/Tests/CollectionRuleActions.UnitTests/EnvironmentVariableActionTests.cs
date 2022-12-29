@@ -20,6 +20,7 @@ using Xunit.Abstractions;
 namespace CollectionRuleActions.UnitTests
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
+    [Collection(TestCollections.CollectionRuleActions)]
     public class EnvironmentVariableActionTests
     {
         private readonly ITestOutputHelper _outputHelper;
