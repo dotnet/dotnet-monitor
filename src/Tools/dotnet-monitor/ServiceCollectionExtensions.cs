@@ -30,6 +30,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.CommandLine;
 using System.IO;
 using System.Reflection;
 
@@ -296,6 +297,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             // Register egress providers
             services.RegisterEgressType<FileSystemEgressProviderOptions, FileSystemEgressProvider>();
+            services.AddSingleton<IConfigureOptions<FileSystemEgressProviderOptions>, EgressProviderConfigureNamedOptions<FileSystemEgressProviderOptions>>();
 
             services.RegisterEgressType<ExtensionEgressProviderOptions, ExtensionEgressProvider>();
 
@@ -347,7 +349,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressProviderConfigurationChangeTokenSource<TOptions>>();
 
             // Add options services for configuring the options type
-            services.AddSingleton<IConfigureOptions<TOptions>, EgressProviderConfigureNamedOptions<TOptions>>();
             services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
 
             // Add custom options cache to override behavior of default named options

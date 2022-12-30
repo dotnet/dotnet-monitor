@@ -28,7 +28,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
 
         public void Configure(string name, TOptions options)
         {
-            /*
             foreach (string providerType in _provider.ProviderTypes)
             {
                 IConfigurationSection providerTypeSection = _provider.GetConfigurationSection(providerType);
@@ -40,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
                 }
             }
 
-            throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, name));*/
+            throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, name));
         }
 
         public void Configure(TOptions options)

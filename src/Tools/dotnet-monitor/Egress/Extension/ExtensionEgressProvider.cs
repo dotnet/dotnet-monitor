@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Globalization;
 using System.IO;
@@ -66,20 +67,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         private string GetConfigurationSection(string providerName, string providerType)
         {
-            try
-            {
-                IConfigurationSection providerTypeSection = _configurationProvider.GetConfigurationSection(providerType);
-                IConfigurationSection providerNameSection = providerTypeSection.GetSection(providerName);
+            IConfigurationSection providerTypeSection = _configurationProvider.GetConfigurationSection(providerType);
+            IConfigurationSection providerNameSection = providerTypeSection.GetSection(providerName);
 
+            if (providerNameSection.Exists())
+            {
                 var configAsDict = providerNameSection.AsEnumerable().ToDictionary(c => c.Key.Replace($"{ConfigurationKeys.Egress}:{providerType}:{providerName}:", string.Empty), c => c.Value);
                 var json = JsonSerializer.Serialize(configAsDict);
 
-                return json; // Could this return as empty instead of throwing an exception?
+                return json;
             }
-            catch (Exception)
-            {
-                throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
-            }
+
+            throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
         }
     }
 }
