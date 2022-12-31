@@ -14,9 +14,9 @@
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="8.0.0-alpha.1.22628.3">
+    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="8.0.0-alpha.1.22630.1">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>0467d031e798d596420dcf54a056bc6ab690e437</Sha>
+      <Sha>ee2cf073d1d030473a96f0d677e5a927cce02943</Sha>
     </Dependency>
     <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0-preview1.22614.3">
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
@@ -38,17 +38,17 @@
       <Uri>https://github.com/dotnet/symstore</Uri>
       <Sha>cc922ef582a5ad01da21fc3cf435ba061581d074</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="8.0.0-alpha.1.22627.5" CoherentParentDependency="Microsoft.AspNetCore.App.Runtime.win-x64">
+    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="8.0.0-alpha.1.22629.3" CoherentParentDependency="Microsoft.AspNetCore.App.Runtime.win-x64">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>2bd38ad775766937849255f319ef924fd57091ff</Sha>
+      <Sha>5e45fb1d67e868b0ca67f819261cf5d8ff8652c5</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.8.0" Version="8.0.0-alpha.1.22628.3">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.8.0" Version="8.0.0-alpha.1.22630.1">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>0467d031e798d596420dcf54a056bc6ab690e437</Sha>
+      <Sha>ee2cf073d1d030473a96f0d677e5a927cce02943</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.8.0" Version="8.0.0-alpha.1.22627.5" CoherentParentDependency="VS.Redist.Common.AspNetCore.SharedFramework.x64.8.0">
+    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.8.0" Version="8.0.0-alpha.1.22629.3" CoherentParentDependency="VS.Redist.Common.AspNetCore.SharedFramework.x64.8.0">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>2bd38ad775766937849255f319ef924fd57091ff</Sha>
+      <Sha>5e45fb1d67e868b0ca67f819261cf5d8ff8652c5</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
