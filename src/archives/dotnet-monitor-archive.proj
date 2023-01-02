@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.Build.NoTargets">
+  <PropertyGroup>
+    <ArchiveName>dotnet-monitor</ArchiveName>
+    <TargetFramework>net7.0</TargetFramework>
+    <RuntimeIdentifiers>$(DefaultRuntimeIdentifiers)</RuntimeIdentifiers>
+    <CreateSymbolsArchive>true</CreateSymbolsArchive>
+    <IsShipping>false</IsShipping>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.DotNet.Build.Tasks.Archives" Version="$(MicrosoftDotNetBuildTasksArchivesVersion)" />
+  </ItemGroup>
+  <PropertyGroup>
+    <SharedPublishProjectProperties>SelfContained=false</SharedPublishProjectProperties>
+    <SharedPublishProjectProperties>$(SharedPublishProjectProperties);UseAppHost=false</SharedPublishProjectProperties>
+    <SharedPublishProjectProperties>$(SharedPublishProjectProperties);PackAsTool=false</SharedPublishProjectProperties>
+    <SharedPublishProjectProperties>$(SharedPublishProjectProperties);TargetFramework=$(TargetFramework)</SharedPublishProjectProperties>
+    <SharedPublishProjectProperties>$(SharedPublishProjectProperties);RuntimeIdentifier=$(RuntimeIdentifier)</SharedPublishProjectProperties>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackagePublishProjectProperties>$(SharedPublishProjectProperties)</PackagePublishProjectProperties>
+    <PackagePublishProjectProperties>$(PackagePublishProjectProperties);PublishDir=$(OutputPath)</PackagePublishProjectProperties>
+    <!-- Remove all files that are symbols files. -->
+    <PackagePublishProjectProperties>$(PackagePublishProjectProperties);ExcludeSymbolFiles=true</PackagePublishProjectProperties>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SymbolsPublishProjectProperties>$(SharedPublishProjectProperties)</SymbolsPublishProjectProperties>
+    <SymbolsPublishProjectProperties>$(SymbolsPublishProjectProperties);PublishDir=$(SymbolsOutputPath)</SymbolsPublishProjectProperties>
+    <!-- Remove all files that are not symbol files. -->
+    <SymbolsPublishProjectProperties>$(SymbolsPublishProjectProperties);ExcludeNonSymbolFiles=true</SymbolsPublishProjectProperties>
+    <!-- Disable web.config transforms so it doesn't end up in the symbols package. -->
+    <SymbolsPublishProjectProperties>$(SymbolsPublishProjectProperties);IsWebConfigTransformDisabled=true</SymbolsPublishProjectProperties>
+  </PropertyGroup>
+  <!-- TODO: TPN is not included due to build ordering (archives are created in build job, TPN created in separate job) -->
+  <Target Name="PublishToDisk">
+    <MSBuild Projects="$(RepoRoot)\src\Tools\dotnet-monitor\dotnet-monitor.csproj"
+             Targets="Publish"
+             Properties="$(PackagePublishProjectProperties)"
+             RemoveProperties="OutputPath" />
+  </Target>
+  <Target Name="PublishSymbolsToDisk">
+    <MSBuild Projects="$(RepoRoot)\src\Tools\dotnet-monitor\dotnet-monitor.csproj"
+             Targets="Publish"
+             Properties="$(SymbolsPublishProjectProperties)"
+             RemoveProperties="OutputPath" />
+  </Target>
+</Project>

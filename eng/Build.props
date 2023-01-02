@@ -1,0 +1,7 @@
+<Project>
+  <ItemGroup Condition="'$(CreateArchives)' == 'true'">
+    <ProjectToBuild Include="$(RepoRoot)src\archives\dotnet-monitor-archive.proj">
+      <AdditionalProperties>RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
+    </ProjectToBuild>
+  </ItemGroup>
+</Project>

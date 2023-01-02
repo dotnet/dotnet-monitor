@@ -9,6 +9,7 @@
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DebugSymbols>true</DebugSymbols>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <DefaultRuntimeIdentifiers>linux-arm64;linux-x64;linux-musl-arm64;linux-musl-x64;win-arm64;win-x64;win-x86;osx-arm64;osx-x64</DefaultRuntimeIdentifiers>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">
