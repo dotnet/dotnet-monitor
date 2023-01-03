@@ -157,6 +157,7 @@ jobs:
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
         -configuration ${{ parameters.configuration }}
         -architecture ${{ parameters.architecture }}
+        -archive
         $(_CrossBuildArgs)
         $(_InternalInstallArgs)
         $(_InternalBuildArgs)
