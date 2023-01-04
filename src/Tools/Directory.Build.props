@@ -8,7 +8,7 @@
     <IsPackable>true</IsPackable>
     <IsShipping>true</IsShipping>
     <PackAsTool>true</PackAsTool>
-    <PackAsToolShimRuntimeIdentifiers Condition="'$(PackAsTool)' == 'true'">$(RuntimeIdentifiers)</PackAsToolShimRuntimeIdentifiers>
+    <PackAsToolShimRuntimeIdentifiers Condition="'$(PackAsTool)' == 'true'">$(SignOnlyRuntimeIdentifiers)</PackAsToolShimRuntimeIdentifiers>
     <PackagedShimOutputRootDirectory>$(OutputPath)</PackagedShimOutputRootDirectory>
   </PropertyGroup>
   <ItemGroup>
