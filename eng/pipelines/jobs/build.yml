@@ -35,7 +35,7 @@ jobs:
     displayName: ${{ coalesce(parameters.displayName, parameters.name) }}
     timeoutInMinutes: ${{ parameters.timeoutInMinutes }}
     enableTelemetry: true
-    disableComponentGovernance: ${{ or(parameters.disableComponentGovernance, eq(parameters.osGroup, 'Linux_Musl')) }}
+    disableComponentGovernance: ${{ or(eq(parameters.disableComponentGovernance, 'true'), eq(parameters.osGroup, 'Linux_Musl')) }}
     ${{ if eq(parameters.disableSbom, 'true') }}:
       enableSbom: false
     helixRepo: dotnet/dotnet-monitor
@@ -100,7 +100,7 @@ jobs:
       - ${{ variable }}
 
     # Component Governance does not work on Musl
-    - ${{ if or(parameters.disableComponentGovernance, eq(parameters.osGroup, 'Linux_Musl')) }}:
+    - ${{ if or(eq(parameters.disableComponentGovernance, 'true'), eq(parameters.osGroup, 'Linux_Musl')) }}:
       - skipComponentGovernanceDetection: true
     
     # Cross build for arm64 non-Windows builds
