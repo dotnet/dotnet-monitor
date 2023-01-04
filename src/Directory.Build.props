@@ -9,6 +9,8 @@
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DebugSymbols>true</DebugSymbols>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <DefaultRuntimeIdentifiers>linux-arm64;linux-x64;linux-musl-arm64;linux-musl-x64;win-arm64;win-x64;win-x86;osx-x64</DefaultRuntimeIdentifiers>
+    <DefaultRuntimeIdentifiers Condition=" '$(TargetFramework)' != 'netcoreapp3.1' ">$(DefaultRuntimeIdentifiers);osx-arm64</DefaultRuntimeIdentifiers>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">
