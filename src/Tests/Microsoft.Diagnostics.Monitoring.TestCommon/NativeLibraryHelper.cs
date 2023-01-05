@@ -17,28 +17,44 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             "Release";
 #endif
 
+        private const string OSReleasePath = "/etc/os-release";
+
         public static string GetSharedLibraryPath(Architecture architecture, string rootName)
         {
             string artifactsBinPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..", "..", ".."));
             return Path.Combine(artifactsBinPath, GetNativeBinDirectoryName(architecture), GetSharedLibraryName(rootName));
         }
 
-        private static string GetNativeBinDirectoryName(Architecture architecture)
+        public static string GetTargetRuntimeIdentifier(Architecture? architecture)
         {
-            string architectureString = GetArchitectureFolderName(architecture);
+            string architectureString = GetArchitectureFolderName(architecture ?? RuntimeInformation.OSArchitecture);
+
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return $"Windows_NT.{architectureString}.{ConfigurationName}";
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                return $"Linux.{architectureString}.{ConfigurationName}";
+                return FormattableString.Invariant($"win-{architectureString}");
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                return $"OSX.{architectureString}.{ConfigurationName}";
+                return FormattableString.Invariant($"osx-{architectureString}");
             }
-            throw new PlatformNotSupportedException();
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                if (File.Exists(OSReleasePath) && File.ReadAllText(OSReleasePath).Contains("Alpine", StringComparison.OrdinalIgnoreCase))
+                {
+                    return FormattableString.Invariant($"linux-musl-{architectureString}");
+                }
+                else
+                {
+                    return FormattableString.Invariant($"linux-{architectureString}");
+                }
+            }
+
+            throw new PlatformNotSupportedException("Unable to determine OS platform.");
+        }
+
+        private static string GetNativeBinDirectoryName(Architecture architecture)
+        {
+            return $"{GetTargetRuntimeIdentifier(architecture)}.{ConfigurationName}";
         }
 
         private static string GetSharedLibraryName(string rootName)
