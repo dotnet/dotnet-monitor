@@ -118,18 +118,6 @@ if [[ "$__BuildArch" == "armel" ]]; then
 fi
 
 #
-# Managed build
-#
-
-if [[ "$__ManagedBuild" == 1 ]]; then
-    echo "Commencing managed build for $__BuildType in $__RootBinDir/bin"
-    "$__RepoRootDir/eng/common/build.sh" --build --configuration "$__BuildType" $__CommonMSBuildArgs $__ManagedBuildArgs $__ArcadeScriptArgs $__UnprocessedBuildArgs
-    if [ "$?" != 0 ]; then
-        exit 1
-    fi
-fi
-
-#
 # Initialize the target distro name
 #
 
@@ -139,6 +127,7 @@ echo "RID: $__DistroRid"
 
 __BinDir="$__RootBinDir/bin/$__DistroRid.$__BuildType"
 __IntermediatesDir="$__ArtifactsIntermediatesDir/$__DistroRid.$__BuildType"
+__CommonMSBuildArgs="/p:PackageRid=$__DistroRid"
 
 # Specify path to be set for CMAKE_INSTALL_PREFIX.
 # This is where all built libraries will copied to.
@@ -202,6 +191,18 @@ if [[ "$__NativeBuild" == 1 ]]; then
 fi
 
 #
+# Managed build
+#
+
+if [[ "$__ManagedBuild" == 1 ]]; then
+    echo "Commencing managed build for $__BuildType in $__RootBinDir/bin"
+    "$__RepoRootDir/eng/common/build.sh" --build --configuration "$__BuildType" $__CommonMSBuildArgs $__ManagedBuildArgs $__ArcadeScriptArgs $__UnprocessedBuildArgs
+    if [ "$?" != 0 ]; then
+        exit 1
+    fi
+fi
+
+#
 # Archive build
 #
 
@@ -213,7 +214,6 @@ if [[ "$__CreateArchives" == 1 ]]; then
       -nobl \
       /bl:"$__LogsDir"/Archive.binlog \
       /p:CreateArchives=true \
-      /p:PackageRid=$__DistroRid \
       $__CommonMSBuildArgs \
       $__ManagedBuildArgs \
       $__ArcadeScriptArgs \

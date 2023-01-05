@@ -1,0 +1,13 @@
+<Project>
+  <!-- Import ProjectToPublish items; all projects that would participate in publishing should be listed here. -->
+  <Import Project="$(MSBuildThisFileDirectory)DotnetMonitorProjectToPublish.props" />
+
+  <!-- Only publish projects after build if opt-in -->
+  <Target Name="PublishProjectsAfterBuild"
+          AfterTargets="Build"
+          Condition="'$(PublishProjectsAfterBuild)' == 'true' and '$(CreateArchives)' != 'true'">
+    <CallTarget Targets="PublishProjects" />
+  </Target>
+
+  <Import Project="$(MSBuildThisFileDirectory)PublishProjects.targets" />
+</Project>

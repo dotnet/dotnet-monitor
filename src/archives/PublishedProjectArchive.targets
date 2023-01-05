@@ -1,0 +1,14 @@
+<Project>
+  <Import Project="$(RepositoryEngineeringDir)PublishProjects.targets" />
+
+  <PropertyGroup>
+    <PublishToDiskDependsOn>PublishProjectsBeforeArchive</PublishToDiskDependsOn>
+    <PublishSymbolsToDiskDependsOn>PublishProjectsBeforeArchive</PublishSymbolsToDiskDependsOn>
+  </PropertyGroup>
+
+  <!-- Publish projects if they were not published after build -->
+  <Target Name="PublishProjectsBeforeArchive"
+          Condition="'$(PublishProjectsAfterBuild)' != 'true'">
+    <CallTarget Targets="PublishProjects" />
+  </Target>
+</Project>

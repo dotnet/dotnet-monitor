@@ -1,0 +1,16 @@
+<Project>
+
+  <PropertyGroup>
+    <SharedPublishProjectProperties>SelfContained=false</SharedPublishProjectProperties>
+    <SharedPublishProjectProperties>$(SharedPublishProjectProperties);UseAppHost=false</SharedPublishProjectProperties>
+    <SharedPublishProjectProperties>$(SharedPublishProjectProperties);PackAsTool=false</SharedPublishProjectProperties>
+  </PropertyGroup>
+
+  <Target Name="PublishProjects">
+    <MSBuild Projects="@(ProjectToPublish)"
+             Properties="$(SharedPublishProjectProperties)"
+             RemoveProperties="OutputPath"
+             Targets="Publish" />
+  </Target>
+
+</Project>
