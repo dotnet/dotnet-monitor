@@ -110,26 +110,7 @@ handle_arguments() {
 source "$__RepoRootDir"/eng/native/build-commons.sh
 
 __LogsDir="$__RootBinDir/log/$__BuildType"
-__ConfigTriplet="$__TargetOS.$__BuildArch.$__BuildType"
-__BinDir="$__RootBinDir/bin/$__ConfigTriplet"
 __ArtifactsIntermediatesDir="$__RootBinDir/obj"
-__IntermediatesDir="$__ArtifactsIntermediatesDir/$__ConfigTriplet"
-
-# Specify path to be set for CMAKE_INSTALL_PREFIX.
-# This is where all built libraries will copied to.
-__CMakeBinDir="$__BinDir"
-export __CMakeBinDir
-
-mkdir -p "$__IntermediatesDir"
-mkdir -p "$__LogsDir"
-mkdir -p "$__CMakeBinDir"
-
-__ExtraCmakeArgs="$__ExtraCmakeArgs -DCLR_MANAGED_BINARY_DIR=$__RootBinDir/bin -DCLR_BUILD_TYPE=$__BuildType"
-
-# Specify path to be set for CMAKE_INSTALL_PREFIX.
-# This is where all built native libraries will copied to.
-export __CMakeBinDir="$__BinDir"
-
 
 if [[ "$__BuildArch" == "armel" ]]; then
     # Armel cross build is Tizen specific and does not support Portable RID build
@@ -155,6 +136,24 @@ fi
 initTargetDistroRid
 
 echo "RID: $__DistroRid"
+
+__BinDir="$__RootBinDir/bin/$__DistroRid.$__BuildType"
+__IntermediatesDir="$__ArtifactsIntermediatesDir/$__DistroRid.$__BuildType"
+
+# Specify path to be set for CMAKE_INSTALL_PREFIX.
+# This is where all built libraries will copied to.
+__CMakeBinDir="$__BinDir"
+export __CMakeBinDir
+
+mkdir -p "$__IntermediatesDir"
+mkdir -p "$__LogsDir"
+mkdir -p "$__CMakeBinDir"
+
+__ExtraCmakeArgs="$__ExtraCmakeArgs -DCLR_MANAGED_BINARY_DIR=$__RootBinDir/bin -DCLR_BUILD_TYPE=$__BuildType"
+
+# Specify path to be set for CMAKE_INSTALL_PREFIX.
+# This is where all built native libraries will copied to.
+export __CMakeBinDir="$__BinDir"
 
 #
 # Setup LLDB paths for native build
