@@ -1,0 +1,16 @@
+{
+    "$schema": "../../../documentation/schema.json",
+    "CollectionRuleDefaults": {
+        "Actions": {
+            "Egress": "artifacts"
+        }
+    },
+    "Egress": {
+        "FileSystem": {
+            "artifacts": {
+                "DirectoryPath": "./artifacts",
+                "IntermediateDirectoryPath": "./intermediateArtifacts"
+            }
+        }
+    }
+}
