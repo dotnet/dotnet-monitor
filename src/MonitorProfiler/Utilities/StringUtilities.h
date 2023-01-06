@@ -5,11 +5,13 @@
 
 #include <string.h>
 
-#if defined(TARGET_LINUX) && !defined(TARGET_ALPINE_LINUX) && !defined(_DEFINE_STRNCPY_S)
+#if !defined(_IMPLEMENT_STRNCPY_S)
+#if defined(TARGET_LINUX) && !defined(TARGET_ALPINE_LINUX) /* glibc */
 #define _IMPLEMENT_STRNCPY_S 1
-#else
+#else /* glibc */
 #define _IMPLEMENT_STRNCPY_S 0
-#endif
+#endif /* glibc */
+#endif /* !defined(_IMPLEMENT_STRNCPY_S) */
 
 #if _IMPLEMENT_STRNCPY_S && !defined(STRUNCATE)
 #define STRUNCATE       80
@@ -105,5 +107,5 @@ class StringUtilities
 
             return 0;
         }
-#endif // _IMPLEMENT_STRNCPY_S
+#endif /* _IMPLEMENT_STRNCPY_S */
 };
