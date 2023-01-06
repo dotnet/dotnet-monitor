@@ -12,7 +12,9 @@
             "type": "command",
             "command": "extension.commandvariable.file.content",
             "args": {
-                "fileName": "${workspaceFolder}/eng/default_tfm"
+                "fileName": "${workspaceFolder}/eng/branch-defaults",
+                "key": "TFM",
+                "default": "net6.0"
             }
         }
     ],
