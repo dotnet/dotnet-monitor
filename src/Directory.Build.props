@@ -9,6 +9,11 @@
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DebugSymbols>true</DebugSymbols>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <!-- Executables for these runtime identifiers do not require notarization. -->
+    <SignOnlyRuntimeIdentifiers>linux-arm64;linux-x64;linux-musl-arm64;linux-musl-x64;win-arm64;win-x64;win-x86</SignOnlyRuntimeIdentifiers>
+    <!-- OSX requires executables to be notarized; separate these out from the others so they can be excluded when producing executable shims -->
+    <SignAndNotarizeRuntimeIdentifiers>osx-arm64;osx-x64</SignAndNotarizeRuntimeIdentifiers>
+    <DefaultRuntimeIdentifiers>$(SignOnlyRuntimeIdentifiers);$(SignAndNotarizeRuntimeIdentifiers)</DefaultRuntimeIdentifiers>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">

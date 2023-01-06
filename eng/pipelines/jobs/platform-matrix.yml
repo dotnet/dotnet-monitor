@@ -31,6 +31,7 @@ jobs:
       publishArtifactsSubPaths:
       - source: 'bin'
       - source: 'obj'
+      - source: 'packages'
     ${{ insert }}: ${{ parameters.jobParameters }}
 - template: ${{ parameters.jobTemplate }}
   parameters:
@@ -41,7 +42,8 @@ jobs:
     architecture: x86
     ${{ if parameters.publishBuildArtifacts }}:
       publishArtifactsSubPaths:
-      - source: 'bin/Windows_NT.x86.Release'
+      - source: 'bin/win-x86.Release'
+      - source: 'packages'
     ${{ insert }}: ${{ parameters.jobParameters }}
 - ${{ if eq(parameters.includeArm64, 'true') }}:
   - template: ${{ parameters.jobTemplate }}
@@ -53,7 +55,8 @@ jobs:
       architecture: arm64
       ${{ if parameters.publishBuildArtifacts }}:
         publishArtifactsSubPaths:
-        - source: 'bin/Windows_NT.arm64.Release'
+        - source: 'bin/win-arm64.Release'
+        - source: 'packages'
       ${{ insert }}: ${{ parameters.jobParameters }}
 - ${{ if eq(parameters.includeDebug, 'true') }}:
   - template: ${{ parameters.jobTemplate }}
@@ -71,7 +74,8 @@ jobs:
     configuration: Release
     ${{ if parameters.publishBuildArtifacts }}:
       publishArtifactsSubPaths:
-      - source: 'bin/Linux.x64.Release'
+      - source: 'bin/linux-x64.Release'
+      - source: 'packages'
     ${{ insert }}: ${{ parameters.jobParameters }}
 - ${{ if eq(parameters.includeArm64, 'true') }}:
   - template: ${{ parameters.jobTemplate }}
@@ -83,7 +87,8 @@ jobs:
       architecture: arm64
       ${{ if parameters.publishBuildArtifacts }}:
         publishArtifactsSubPaths:
-        - source: 'bin/Linux.arm64.Release'
+        - source: 'bin/linux-arm64.Release'
+        - source: 'packages'
       ${{ insert }}: ${{ parameters.jobParameters }}
 - ${{ if eq(parameters.includeDebug, 'true') }}:
   - template: ${{ parameters.jobTemplate }}
@@ -101,8 +106,8 @@ jobs:
     configuration: Release
     ${{ if parameters.publishBuildArtifacts }}:
       publishArtifactsSubPaths:
-      - source: 'bin/Linux.x64.Release'
-        target: 'bin/Linux-musl.x64.Release'
+      - source: 'bin/linux-musl-x64.Release'
+      - source: 'packages'
     ${{ insert }}: ${{ parameters.jobParameters }}
 - ${{ if eq(parameters.includeArm64, 'true') }}:
   - template: ${{ parameters.jobTemplate }}
@@ -114,8 +119,8 @@ jobs:
       architecture: arm64
       ${{ if parameters.publishBuildArtifacts }}:
         publishArtifactsSubPaths:
-        - source: 'bin/Linux.arm64.Release'
-          target: 'bin/Linux-musl.arm64.Release'
+        - source: 'bin/linux-musl-arm64.Release'
+        - source: 'packages'
       ${{ insert }}: ${{ parameters.jobParameters }}
 - ${{ if eq(parameters.includeDebug, 'true') }}:
   - template: ${{ parameters.jobTemplate }}
@@ -133,7 +138,8 @@ jobs:
     configuration: Release
     ${{ if parameters.publishBuildArtifacts }}:
       publishArtifactsSubPaths:
-      - source: 'bin/OSX.x64.Release'
+      - source: 'bin/osx-x64.Release'
+      - source: 'packages'
     ${{ insert }}: ${{ parameters.jobParameters }}
 - ${{ if eq(parameters.includeArm64, 'true') }}:
   - template: ${{ parameters.jobTemplate }}
@@ -145,5 +151,6 @@ jobs:
       architecture: arm64
       ${{ if parameters.publishBuildArtifacts }}:
         publishArtifactsSubPaths:
-        - source: 'bin/OSX.arm64.Release'
+        - source: 'bin/osx-arm64.Release'
+        - source: 'packages'
       ${{ insert }}: ${{ parameters.jobParameters }}
