@@ -59,6 +59,7 @@ class StringUtilities
             /* validation section */
             if (dst == NULL || size == 0)
             {
+                errno = EINVAL;
                 return EINVAL;
             }
 
@@ -72,6 +73,7 @@ class StringUtilities
             if (src == NULL)
             {
                 *dst = 0;
+                errno = EINVAL;
                 return EINVAL;
             }
 
@@ -102,6 +104,7 @@ class StringUtilities
                     return STRUNCATE;
                 }
                 *dst = 0;
+                errno = ERANGE;
                 return ERANGE;
             }
 
