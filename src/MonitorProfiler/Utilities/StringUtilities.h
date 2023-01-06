@@ -45,7 +45,7 @@ class StringUtilities
     private:
         // Derived from https://github.com/dotnet/runtime/blob/6dd808ff7ae62512330d2f111eb1f60f1ae40125/src/coreclr/pal/src/safecrt/strncpy_s.cpp
         // One deviation is that in debug builds this modified version will not fill any remaining space in the dst buffer with 0xFE.
-        static int strncpy_s(char *dst, size_t size, const char *src, size_t count)
+        static errno_t strncpy_s(char *dst, size_t size, const char *src, size_t count)
         {
             char *p;
             size_t available;
