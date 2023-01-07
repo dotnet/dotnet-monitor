@@ -10,8 +10,9 @@
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
     <ServerGarbageCollection>false</ServerGarbageCollection>
+    <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="$(AwsSdkS3Version)" />
     <PackageReference Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
@@ -23,6 +24,10 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(MicrosoftIdentityModelTokensVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+  
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">
     <PackageReference Include="Microsoft.Diagnostics.Monitoring" Version="$(MicrosoftDiagnosticsMonitoringVersion)" />
   </ItemGroup>
@@ -47,6 +52,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\swagger\v1"/>
+  </ItemGroup>
+  
+  <ItemGroup>
     <Compile Update="Strings.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -61,7 +70,7 @@
   <PropertyGroup>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);GatherNativeFilesForTfm</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
-
+  
   <Target Name="GatherNativeFilesForTfm">
     <ItemGroup>
       <!-- Create profiler library items for all of the native platforms. -->
@@ -83,4 +92,9 @@
     </ItemGroup>
   </Target>
 
+  <Target Name="OpenAPI" AfterTargets="Build" Condition="$(Configuration)=='Debug' AND '$(TargetFramework)' == 'net6.0'">
+    <Exec Command="dotnet swagger tofile --output ./wwwroot/swagger/v1/swagger.yaml --yaml $(OutputPath)$(AssemblyName).dll v1" WorkingDirectory="$(ProjectDir)" />
+    <Exec Command="dotnet swagger tofile --output ./wwwroot/swagger/v1/swagger.json $(OutputPath)$(AssemblyName).dll v1" WorkingDirectory="$(ProjectDir)" />
+  </Target>
+  
 </Project>

@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
@@ -41,6 +42,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(EgressValidationUnhandledExceptionFilter));
+            });
+
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen(sg =>
+            {
+                sg.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "dotnet-monitor"
+                });
             });
 
             services.Configure<ApiBehaviorOptions>(options =>
@@ -80,7 +91,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 app.UseHsts();
             }
 
+            app.UseStaticFiles();
+            //app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "dotnet-monitor v1");
+                options.RoutePrefix = string.Empty;
+            });
+
+
             app.UseRouting();
+
+      
+
 
             app.UseAuthentication();
             app.UseAuthorization();
