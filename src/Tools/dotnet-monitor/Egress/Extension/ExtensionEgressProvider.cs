@@ -48,9 +48,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             ExtensionEgressPayload payload = new ExtensionEgressPayload()
             {
                 Settings = artifactSettings,
+                Configuration = GetConfigurationSection(providerName, providerType),
                 Properties = _propertyProvider.GetAllProperties(),
                 ProviderName = providerName,
-                Configuration = GetConfigurationSection(providerName, providerType)
             };
 
             IEgressExtension ext = _extensionDiscoverer.FindExtension<IEgressExtension>(providerType);

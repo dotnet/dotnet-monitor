@@ -36,11 +36,10 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
                 string jsonConfig = Console.ReadLine();
 
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
-
                 TestEgressProviderOptions options = BuildOptions(configPayload);
 
                 Assert.Single(options.Metadata.Keys);
-                Assert.Equal(options.Metadata["Key1"], "Value1");
+                Assert.Equal(options.Metadata[EgressExtensibilityTestsConstants.Key], EgressExtensibilityTestsConstants.Value);
 
                 if (options.ShouldSucceed)
                 {
