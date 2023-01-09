@@ -1,0 +1,39 @@
+{
+    "files.associations": {
+        "*.csproj": "msbuild",
+        "*.targets": "msbuild",
+        "*.vbproj": "msbuild",
+        "*.props": "msbuild",
+        "*.resx": "xml"
+    },
+
+    "remote.portsAttributes": {
+        "52323": {
+            "label": "dotnet-monitor"
+        },
+        "52325": {
+            "label": "dotnet-monitor: metrics"
+        }
+    },
+
+    // ms-dotnettools.csharp settings
+    "csharp.format.enable": true,
+    "csharp.semanticHighlighting.enabled": true,
+
+    // ms-dotnettools.csharp settings
+    "omnisharp.path": "latest",
+    "omnisharp.defaultLaunchSolution": "dotnet-monitor.sln",
+    "omnisharp.disableMSBuildDiagnosticWarning": true,
+    "omnisharp.useModernNet": true,
+    "omnisharp.enableAsyncCompletion": true,
+    "omnisharp.enableEditorConfigSupport": true,
+    "omnisharp.enableImportCompletion": true,
+    "omnisharp.enableRoslynAnalyzers": true,
+    "omnisharp.organizeImportsOnFormat": true,
+    "omnisharp.autoStart": true,
+
+    // ms-vscode.powershell settings
+    "powershell.promptToUpdatePowerShell": false,
+    "powershell.integratedConsole.showOnStartup": false,
+    "powershell.startAutomatically": false
+}
