@@ -15,7 +15,9 @@
             "request": "launch",
             "preLaunchTask": "Build (Debug)",
             "program": "${workspaceFolder}/artifacts/bin/dotnet-monitor/Debug/net7.0/dotnet-monitor.dll",
-            "args": "${input:args}",
+            "args": "${input:args} --configuration-file-path \"${workspaceFolder}/.vscode/innerloop/config/settings.json\"",
+            "envFile": "${workspaceFolder}/.vscode/innerloop/config/.env",
+            "cwd": "${workspaceFolder}/.vscode/innerloop",
             "stopAtEntry": false,
             "justMyCode": false
         },
@@ -24,7 +26,9 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/artifacts/bin/dotnet-monitor/Debug/net7.0/dotnet-monitor.dll",
-            "args": "${input:args}",
+            "args": "${input:args} --configuration-file-path \"${workspaceFolder}/.vscode/innerloop/config/settings.json\"",
+            "envFile": "${workspaceFolder}/.vscode/innerloop/config/.env",
+            "cwd": "${workspaceFolder}/.vscode/innerloop",
             "stopAtEntry": false,
             "justMyCode": false
         },
