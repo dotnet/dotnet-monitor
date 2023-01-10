@@ -71,15 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 
         private static AzureBlobEgressProviderOptions BuildOptions(ExtensionEgressPayload configPayload)
         {
-            IConfigurationBuilder builder = new ConfigurationBuilder();
-
-            var configAsDict = JsonSerializer.Deserialize<Dictionary<string, string>>(configPayload.Configuration);
-
-            var configurationRoot = builder.AddInMemoryCollection(configAsDict).Build();
-
-            AzureBlobEgressProviderOptions options = new();
-
-            configurationRoot.Bind(options);
+            AzureBlobEgressProviderOptions options = GetOptions<AzureBlobEgressProviderOptions>(configPayload);
 
             // If account key was not provided but the name was provided,
             // lookup the account key property value from EgressOptions.Properties
@@ -122,6 +114,21 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
                     Logger.EgressProviderUnableToFindPropertyKey(Constants.AzureBlobStorageProviderName, options.QueueSharedAccessSignatureName);
                 }
             }
+
+            return options;
+        }
+
+        private static T GetOptions<T>(ExtensionEgressPayload payload) where T : class, new()
+        {
+            IConfigurationBuilder builder = new ConfigurationBuilder();
+
+            var configAsDict = JsonSerializer.Deserialize<Dictionary<string, string>>(payload.Configuration);
+
+            var configurationRoot = builder.AddInMemoryCollection(configAsDict).Build();
+
+            T options = new();
+
+            configurationRoot.Bind(options);
 
             return options;
         }

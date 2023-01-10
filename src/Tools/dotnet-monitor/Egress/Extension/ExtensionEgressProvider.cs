@@ -71,9 +71,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
             if (providerNameSection.Exists())
             {
+                // Trim prefix for binding options on the extension side
                 // Format Example: {[Egress:AzureBlobStorage:monitorBlob:BlobPrefix, artifacts]} becomes {[BlobPrefix, artifacts]}
-                var configAsDict = providerNameSection.AsEnumerable().ToDictionary(c => c.Key.Replace($"{ConfigurationKeys.Egress}:{providerType}:{providerName}:", string.Empty), c => c.Value);
-                configAsDict = (from kvp in configAsDict where kvp.Value != null select kvp).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                string prefix = FormattableString.Invariant($"{ConfigurationKeys.Egress}:{providerType}:{providerName}:");
+
+                var configAsDict = providerNameSection.AsEnumerable().ToDictionary(c => c.Key.Length > prefix.Length ? c.Key.Remove(0, prefix.Length) : c.Key.Remove(0, c.Key.Length), c => c.Value);
 
                 var json = JsonSerializer.Serialize(configAsDict);
 
