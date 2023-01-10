@@ -22,12 +22,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiateVersion)" />
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(MicrosoftIdentityModelTokensVersion)" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="$(SwashbuckleAspNetCoreSwaggerGenVersion)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-  </ItemGroup>
-  
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">
     <PackageReference Include="Microsoft.Diagnostics.Monitoring" Version="$(MicrosoftDiagnosticsMonitoringVersion)" />
   </ItemGroup>
@@ -49,10 +46,6 @@
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
     <InternalsVisibleTo Include="$(MoqInternalsVisibleTo)" Key="$(MoqInternalsVisibleToKey)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\swagger\v1"/>
   </ItemGroup>
   
   <ItemGroup>
@@ -92,9 +85,6 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="OpenAPI" AfterTargets="Build" Condition="$(Configuration)=='Debug' AND '$(TargetFramework)' == 'net6.0'">
-    <Exec Command="dotnet swagger tofile --output ./wwwroot/swagger/v1/swagger.yaml --yaml $(OutputPath)$(AssemblyName).dll v1" WorkingDirectory="$(ProjectDir)" />
-    <Exec Command="dotnet swagger tofile --output ./wwwroot/swagger/v1/swagger.json $(OutputPath)$(AssemblyName).dll v1" WorkingDirectory="$(ProjectDir)" />
-  </Target>
+  
   
 </Project>

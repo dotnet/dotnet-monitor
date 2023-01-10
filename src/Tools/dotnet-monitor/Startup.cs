@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +10,11 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using System;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
@@ -44,6 +47,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 options.Filters.Add(typeof(EgressValidationUnhandledExceptionFilter));
             });
 
+            //Swagger API explorer
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(sg =>
             {
@@ -51,6 +55,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     Version = "v1",
                     Title = "dotnet-monitor"
+                });
+
+                sg.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
+                {
+                    Name = "JWT Authentication",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme. Put only the JWT Token in the textbox when prompted using Swagger UI."
+                }) ;
+                sg.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "bearerAuth" }
+                        },
+                        Array.Empty<string>()
+                    }
                 });
             });
 
@@ -91,8 +115,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 app.UseHsts();
             }
 
-            app.UseStaticFiles();
-            //app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "dotnet-monitor v1");
@@ -101,9 +123,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
 
             app.UseRouting();
-
-      
-
 
             app.UseAuthentication();
             app.UseAuthorization();
