@@ -1,0 +1,149 @@
+# Executes a specified job on each supported platform and configuration
+
+parameters:
+  # Job template to run on applicable platforms
+  jobTemplate: ''
+  # Extra job template parameters to pass to the job template
+  jobParameters: {}
+  # Determines if build artifacts should be uploaded as pipeline artifacts
+  publishBuildArtifacts: false
+  # Determines if debug configurations should be included
+  includeDebug: false
+  # Determines if ARM64 architectures should be included
+  includeArm64: false
+
+jobs:
+- ${{ if eq(parameters.includeDebug, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      name: Windows_x64_Debug
+      displayName: Windows x64 Debug
+      osGroup: Windows
+      configuration: Debug
+      ${{ insert }}: ${{ parameters.jobParameters }}
+- template: ${{ parameters.jobTemplate }}
+  parameters:
+    name: Windows_x64_Release
+    displayName: Windows x64 Release
+    osGroup: Windows
+    configuration: Release
+    ${{ if parameters.publishBuildArtifacts }}:
+      publishArtifactsSubPaths:
+      - source: 'bin'
+      - source: 'obj'
+    ${{ insert }}: ${{ parameters.jobParameters }}
+- template: ${{ parameters.jobTemplate }}
+  parameters:
+    name: Windows_x86_Release
+    displayName: Windows x86 Release
+    osGroup: Windows
+    configuration: Release
+    architecture: x86
+    ${{ if parameters.publishBuildArtifacts }}:
+      publishArtifactsSubPaths:
+      - source: 'bin/Windows_NT.x86.Release'
+    ${{ insert }}: ${{ parameters.jobParameters }}
+- ${{ if eq(parameters.includeArm64, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      name: Windows_arm64_Release
+      displayName: Windows arm64 Release
+      osGroup: Windows
+      configuration: Release
+      architecture: arm64
+      ${{ if parameters.publishBuildArtifacts }}:
+        publishArtifactsSubPaths:
+        - source: 'bin/Windows_NT.arm64.Release'
+      ${{ insert }}: ${{ parameters.jobParameters }}
+- ${{ if eq(parameters.includeDebug, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      name: Linux_x64_Debug
+      displayName: Linux x64 Debug
+      osGroup: Linux
+      configuration: Debug
+      ${{ insert }}: ${{ parameters.jobParameters }}
+- template: ${{ parameters.jobTemplate }}
+  parameters:
+    name: Linux_x64_Release
+    displayName: Linux x64 Release
+    osGroup: Linux
+    configuration: Release
+    ${{ if parameters.publishBuildArtifacts }}:
+      publishArtifactsSubPaths:
+      - source: 'bin/Linux.x64.Release'
+    ${{ insert }}: ${{ parameters.jobParameters }}
+- ${{ if eq(parameters.includeArm64, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      name: Linux_arm64_Release
+      displayName: Linux arm64 Release
+      osGroup: Linux
+      configuration: Release
+      architecture: arm64
+      ${{ if parameters.publishBuildArtifacts }}:
+        publishArtifactsSubPaths:
+        - source: 'bin/Linux.arm64.Release'
+      ${{ insert }}: ${{ parameters.jobParameters }}
+- ${{ if eq(parameters.includeDebug, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      name: Linux_Musl_x64_Debug
+      displayName: Linux Musl x64 Debug
+      osGroup: Linux_Musl
+      configuration: Debug
+      ${{ insert }}: ${{ parameters.jobParameters }}
+- template: ${{ parameters.jobTemplate }}
+  parameters:
+    name: Linux_Musl_x64_Release
+    displayName: Linux Musl x64 Release
+    osGroup: Linux_Musl
+    configuration: Release
+    ${{ if parameters.publishBuildArtifacts }}:
+      publishArtifactsSubPaths:
+      - source: 'bin/Linux.x64.Release'
+        target: 'bin/Linux-musl.x64.Release'
+    ${{ insert }}: ${{ parameters.jobParameters }}
+- ${{ if eq(parameters.includeArm64, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      name: Linux_Musl_arm64_Release
+      displayName: Linux Musl arm64 Release
+      osGroup: Linux_Musl
+      configuration: Release
+      architecture: arm64
+      ${{ if parameters.publishBuildArtifacts }}:
+        publishArtifactsSubPaths:
+        - source: 'bin/Linux.arm64.Release'
+          target: 'bin/Linux-musl.arm64.Release'
+      ${{ insert }}: ${{ parameters.jobParameters }}
+- ${{ if eq(parameters.includeDebug, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      name: MacOS_x64_Debug
+      displayName: MacOS x64 Debug
+      osGroup: MacOS
+      configuration: Debug
+      ${{ insert }}: ${{ parameters.jobParameters }}
+- template: ${{ parameters.jobTemplate }}
+  parameters:
+    name: MacOS_x64_Release
+    displayName: MacOS x64 Release
+    osGroup: MacOS
+    configuration: Release
+    ${{ if parameters.publishBuildArtifacts }}:
+      publishArtifactsSubPaths:
+      - source: 'bin/OSX.x64.Release'
+    ${{ insert }}: ${{ parameters.jobParameters }}
+- ${{ if eq(parameters.includeArm64, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      name: MacOS_arm64_Release
+      displayName: MacOS arm64 Release
+      osGroup: MacOS
+      configuration: Release
+      architecture: arm64
+      ${{ if parameters.publishBuildArtifacts }}:
+        publishArtifactsSubPaths:
+        - source: 'bin/OSX.arm64.Release'
+      ${{ insert }}: ${{ parameters.jobParameters }}

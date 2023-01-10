@@ -18,7 +18,7 @@ pr:
     - '**.md'
 
 parameters:
-- name: TestGroup
+- name: testGroup
   displayName: 'Test Group'
   type: string
   default: Default
@@ -34,9 +34,6 @@ variables:
   value: DotNetCore
 - name: _TPNFile
   value: THIRD-PARTY-NOTICES.TXT
-- ${{ if notin(variables['Build.Reason'], 'PullRequest') }}:
-  - name: Codeql.Enabled
-    value: true
   
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   # DotNet-Diagnostics-SDL-Params provides Tsa* variables for SDL checks.
@@ -47,127 +44,14 @@ stages:
   displayName: Build and Test
   jobs:
   # Build and test binaries
-  - template: /eng/build.yml
+  - template: /eng/pipelines/jobs/platform-matrix.yml
     parameters:
-      name: Windows_x64_Debug
-      displayName: Windows x64 Debug
-      osGroup: Windows
-      configuration: Debug
-      testGroup: ${{ parameters.TestGroup }}
-  - template: /eng/build.yml
-    parameters:
-      name: Windows_x64_Release
-      displayName: Windows x64 Release
-      osGroup: Windows
-      configuration: Release
-      publishArtifactsSubPaths:
-      - source: 'bin'
-      - source: 'obj'
-      testGroup: ${{ parameters.TestGroup }}
-  - template: /eng/build.yml
-    parameters:
-      name: Windows_x86_Release
-      displayName: Windows x86 Release
-      osGroup: Windows
-      configuration: Release
-      architecture: x86
-      publishArtifactsSubPaths:
-      - source: 'bin/Windows_NT.x86.Release'
-      testGroup: ${{ parameters.TestGroup }}
-  - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-    - template: /eng/build.yml
-      parameters:
-        name: Windows_arm64_Release
-        displayName: Windows arm64 Release
-        osGroup: Windows
-        configuration: Release
-        architecture: arm64
-        publishArtifactsSubPaths:
-        - source: 'bin/Windows_NT.arm64.Release'
-        testGroup: None
-  - template: /eng/build.yml
-    parameters:
-      name: Linux_x64_Debug
-      displayName: Linux x64 Debug
-      osGroup: Linux
-      configuration: Debug
-      testGroup: ${{ parameters.TestGroup }}
-  - template: /eng/build.yml
-    parameters:
-      name: Linux_x64_Release
-      displayName: Linux x64 Release
-      osGroup: Linux
-      configuration: Release
-      publishArtifactsSubPaths:
-      - source: 'bin/Linux.x64.Release'
-      testGroup: ${{ parameters.TestGroup }}
-  - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-    - template: /eng/build.yml
-      parameters:
-        name: Linux_arm64_Release
-        displayName: Linux arm64 Release
-        osGroup: Linux
-        configuration: Release
-        architecture: arm64
-        publishArtifactsSubPaths:
-        - source: 'bin/Linux.arm64.Release'
-        testGroup: None
-  - template: /eng/build.yml
-    parameters:
-      name: Linux_Musl_x64_Debug
-      displayName: Linux Musl x64 Debug
-      osGroup: Linux_Musl
-      configuration: Debug
-      testGroup: ${{ parameters.TestGroup }}
-  - template: /eng/build.yml
-    parameters:
-      name: Linux_Musl_x64_Release
-      displayName: Linux Musl x64 Release
-      osGroup: Linux_Musl
-      configuration: Release
-      publishArtifactsSubPaths:
-      - source: 'bin/Linux.x64.Release'
-        target: 'bin/Linux-musl.x64.Release'
-      testGroup: ${{ parameters.TestGroup }}
-  - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-    - template: /eng/build.yml
-      parameters:
-        name: Linux_Musl_arm64_Release
-        displayName: Linux Musl arm64 Release
-        osGroup: Linux_Musl
-        configuration: Release
-        architecture: arm64
-        publishArtifactsSubPaths:
-        - source: 'bin/Linux.arm64.Release'
-          target: 'bin/Linux-musl.arm64.Release'
-        testGroup: None
-  - template: /eng/build.yml
-    parameters:
-      name: MacOS_x64_Debug
-      displayName: MacOS x64 Debug
-      osGroup: MacOS
-      configuration: Debug
-      testGroup: ${{ parameters.TestGroup }}
-  - template: /eng/build.yml
-    parameters:
-      name: MacOS_x64_Release
-      displayName: MacOS x64 Release
-      osGroup: MacOS
-      configuration: Release
-      publishArtifactsSubPaths:
-      - source: 'bin/OSX.x64.Release'
-      testGroup: ${{ parameters.TestGroup }}
-  - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-    - template: /eng/build.yml
-      parameters:
-        name: MacOS_arm64_Release
-        displayName: MacOS arm64 Release
-        osGroup: MacOS
-        configuration: Release
-        architecture: arm64
-        publishArtifactsSubPaths:
-        - source: 'bin/OSX.arm64.Release'
-        testGroup: None
+      jobTemplate: /eng/pipelines/jobs/build-test.yml
+      includeArm64: ${{ ne(variables['System.TeamProject'], 'public') }}
+      includeDebug: true
+      publishBuildArtifacts: true
+      jobParameters:
+        testGroup: ${{ parameters.testGroup }}
   - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
     # Generate a TPN for only the dotnet-monitor project
     - template: /eng/common/templates/job/job.yml
@@ -287,4 +171,4 @@ stages:
         artifactNames:
         - 'PackageArtifacts'
 # This sets up the bits to do a Release.
-- template: /eng/PrepareRelease.yml
+- template: /eng/pipelines/stages/preparerelease.yml

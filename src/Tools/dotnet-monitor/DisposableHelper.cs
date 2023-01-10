@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
+#elif STARTUPHOOK
+namespace Microsoft.Diagnostics.Monitoring.StartupHook
 #else
 namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
