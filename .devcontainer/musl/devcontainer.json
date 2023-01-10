@@ -2,10 +2,7 @@
 {
     "name": "Development (Alpine)",
     "build": {
-        "dockerfile": "Dockerfile",
-        "args": {
-            "VARIANT": "3.17"
-        }
+        "dockerfile": "Dockerfile"
     },
     "hostRequirements": {
         "cpus": 4
