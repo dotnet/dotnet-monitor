@@ -3,7 +3,7 @@
 
 # 📖 `dotnet monitor` documentation
 
-`dotnet monitor` is a tool that makes it easier to get access to diagnostics information in a dotnet process.
+`dotnet monitor` is a tool that makes it easier to get access to diagnostics information in a dotnet process. ttest
 
 When running a dotnet application, differences in diverse local and production environments can make collecting diagnostics artifacts (e.g., logs, traces, process dumps) challenging. `dotnet monitor` aims to simplify the process by exposing a consistent HTTP API regardless of where your application is run.
 
