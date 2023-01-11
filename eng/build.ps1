@@ -40,20 +40,12 @@ if ($ci) {
     $remainingargs = "-ci " + $remainingargs
 }
 
-$managedArgs = ""
+$managedArgs = "/p:PackageRid=win-$architecture"
 if ($runtimesourcefeed) {
     $managedArgs = $managedArgs + " /p:DotNetRuntimeSourceFeed=$runtimesourcefeed"
 }
 if ($runtimesourcefeedkey) {
     $managedArgs = $managedArgs + " /p:DotNetRuntimeSourceFeedKey=$runtimesourcefeedkey"
-}
-
-# Install sdk for building, restore and build managed components.
-if (-not $skipmanaged) {
-    Invoke-Expression "& `"$engroot\common\build.ps1`" -build -configuration $configuration -verbosity $verbosity /p:BuildArch=$architecture $managedArgs $remainingargs"
-    if ($lastExitCode -ne 0) {
-        exit $lastExitCode
-    }
 }
 
 # Build native components
@@ -64,9 +56,17 @@ if (-not $skipnative) {
     }
 }
 
+# Install sdk for building, restore and build managed components.
+if (-not $skipmanaged) {
+    Invoke-Expression "& `"$engroot\common\build.ps1`" -build -configuration $configuration -verbosity $verbosity /p:BuildArch=$architecture $managedArgs $remainingargs"
+    if ($lastExitCode -ne 0) {
+        exit $lastExitCode
+    }
+}
+
 # Create archives
 if ($archive) {
-    Invoke-Expression "& `"$engroot\common\build.ps1`" -build -configuration $configuration -verbosity $verbosity /p:BuildArch=$architecture -nobl /bl:$logDir\Archive.binlog /p:CreateArchives=true /p:PackageRid=win-$architecture $managedArgs $remainingargs"
+    Invoke-Expression "& `"$engroot\common\build.ps1`" -build -configuration $configuration -verbosity $verbosity /p:BuildArch=$architecture -nobl /bl:$logDir\Archive.binlog /p:CreateArchives=true $managedArgs $remainingargs"
     if ($lastExitCode -ne 0) {
         exit $lastExitCode
     }
@@ -75,7 +75,7 @@ if ($archive) {
 # Run the xunit tests
 if ($test) {
     if (-not $crossbuild) {
-        Invoke-Expression "& `"$engroot\common\build.ps1`" -test -configuration $configuration -verbosity $verbosity /p:BuildArch=$architecture -nobl /bl:$logdir\Test.binlog /p:TestGroup=$testgroup $remainingargs"
+        Invoke-Expression "& `"$engroot\common\build.ps1`" -test -configuration $configuration -verbosity $verbosity /p:BuildArch=$architecture -nobl /bl:$logdir\Test.binlog /p:TestGroup=$testgroup $managedArgs $remainingargs"
         if ($lastExitCode -ne 0) {
             exit $lastExitCode
         }

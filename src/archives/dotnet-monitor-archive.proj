@@ -1,66 +1,14 @@
 <Project Sdk="Microsoft.Build.NoTargets">
   <PropertyGroup>
     <ArchiveName>dotnet-monitor</ArchiveName>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
     <RuntimeIdentifiers>$(DefaultRuntimeIdentifiers)</RuntimeIdentifiers>
-    <CreateSymbolsArchive>true</CreateSymbolsArchive>
     <IsShipping>false</IsShipping>
+    <CreateSymbolsArchive>true</CreateSymbolsArchive>
+    <ArchiveContentRootPath>$(ArtifactsBinDir)dotnet-monitor\$(Configuration)\$(TargetFramework)\$(PackageRid)\publish\</ArchiveContentRootPath>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.DotNet.Build.Tasks.Archives" Version="$(MicrosoftDotNetBuildTasksArchivesVersion)" />
-  </ItemGroup>
-  <PropertyGroup>
-    <SharedPublishProjectProperties>SelfContained=false</SharedPublishProjectProperties>
-    <SharedPublishProjectProperties>$(SharedPublishProjectProperties);UseAppHost=false</SharedPublishProjectProperties>
-    <SharedPublishProjectProperties>$(SharedPublishProjectProperties);PackAsTool=false</SharedPublishProjectProperties>
-    <SharedPublishProjectProperties>$(SharedPublishProjectProperties);TargetFramework=$(TargetFramework)</SharedPublishProjectProperties>
-    <SharedPublishProjectProperties>$(SharedPublishProjectProperties);RuntimeIdentifier=$(RuntimeIdentifier)</SharedPublishProjectProperties>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PackagePublishProjectProperties>$(SharedPublishProjectProperties)</PackagePublishProjectProperties>
-    <PackagePublishProjectProperties>$(PackagePublishProjectProperties);PublishDir=$(OutputPath)</PackagePublishProjectProperties>
-    <!-- Remove all files that are symbols files. -->
-    <PackagePublishProjectProperties>$(PackagePublishProjectProperties);ExcludeSymbolFiles=true</PackagePublishProjectProperties>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SymbolsPublishProjectProperties>$(SharedPublishProjectProperties)</SymbolsPublishProjectProperties>
-    <SymbolsPublishProjectProperties>$(SymbolsPublishProjectProperties);PublishDir=$(SymbolsOutputPath)</SymbolsPublishProjectProperties>
-    <!-- Remove all files that are not symbol files. -->
-    <SymbolsPublishProjectProperties>$(SymbolsPublishProjectProperties);ExcludeNonSymbolFiles=true</SymbolsPublishProjectProperties>
-    <!-- Disable web.config transforms so it doesn't end up in the symbols package. -->
-    <SymbolsPublishProjectProperties>$(SymbolsPublishProjectProperties);IsWebConfigTransformDisabled=true</SymbolsPublishProjectProperties>
-  </PropertyGroup>
-  <!-- TODO: TPN is not included due to build ordering (archives are created in build job, TPN created in separate job) -->
-  <Target Name="PublishToDisk">
-    <MSBuild Projects="$(RepoRoot)\src\Tools\dotnet-monitor\dotnet-monitor.csproj"
-             Targets="Publish"
-             Properties="$(PackagePublishProjectProperties)"
-             RemoveProperties="OutputPath" />
-    <!-- Make executable files readable by all, writable by the user, and executable by all. -->
-    <ItemGroup>
-      <_ArchiveExecutableContent Remove="@(_ArchiveExecutableContent)" />
-      <_ArchiveExecutableContent Include="$(OutputPath)**\*.dylib" />
-      <_ArchiveExecutableContent Include="$(OutputPath)**\*.so" />
-    </ItemGroup>
-    <Exec Command="chmod 755 %(_ArchiveExecutableContent.Identity)" Condition="!$([MSBuild]::IsOSPlatform(Windows)) and '@(_ArchiveExecutableContent)' != ''" />
-    <!-- Make non-executable files readable by all and writable by the user. -->
-    <ItemGroup>
-      <_ArchiveNonExecutableContent Remove="@(_ArchiveNonExecutableContent)" />
-      <_ArchiveNonExecutableContent Include="$(OutputPath)**" />
-      <_ArchiveNonExecutableContent Remove="@(_ArchiveExecutableContent)" />
-    </ItemGroup>
-    <Exec Command="chmod 644 %(_ArchiveNonExecutableContent.Identity)" Condition="!$([MSBuild]::IsOSPlatform(Windows)) and '@(_ArchiveNonExecutableContent)' != ''" />
-  </Target>
-  <Target Name="PublishSymbolsToDisk">
-    <MSBuild Projects="$(RepoRoot)\src\Tools\dotnet-monitor\dotnet-monitor.csproj"
-             Targets="Publish"
-             Properties="$(SymbolsPublishProjectProperties)"
-             RemoveProperties="OutputPath" />
-    <!-- Make non-executable files readable by all and writable by the user. -->
-    <ItemGroup>
-      <_SymbolsNonExecutableContent Remove="@(_SymbolsNonExecutableContent)" />
-      <_SymbolsNonExecutableContent Include="$(SymbolsOutputPath)**" />
-    </ItemGroup>
-    <Exec Command="chmod 644 %(_SymbolsNonExecutableContent.Identity)" Condition="!$([MSBuild]::IsOSPlatform(Windows)) and '@(_SymbolsNonExecutableContent)' != ''" />
-  </Target>
+  <!-- Import ProjectToPublish items -->
+  <Import Project="$(RepositoryEngineeringDir)DotnetMonitorProjectToPublish.props" />
+  <!-- Import archive creation from published project -->
+  <Import Project="$(MSBuildThisFileDirectory)PublishedProjectArchive.targets" />
 </Project>

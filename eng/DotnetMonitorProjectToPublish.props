@@ -1,0 +1,7 @@
+<Project>
+  <ItemGroup>
+    <ProjectToPublish Include="$(RepoRoot)src\Tools\dotnet-monitor\dotnet-monitor.csproj">
+      <AdditionalProperties>TargetFramework=net6.0;RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
+    </ProjectToPublish>
+  </ItemGroup>
+</Project>
