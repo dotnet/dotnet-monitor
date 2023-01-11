@@ -7,10 +7,10 @@ using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -64,22 +64,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             return result.ArtifactPath;
         }
 
-        private string GetConfigurationSection(string providerName, string providerType)
+        private Dictionary<string, string> GetConfigurationSection(string providerName, string providerType)
         {
             IConfigurationSection providerTypeSection = _configurationProvider.GetConfigurationSection(providerType);
             IConfigurationSection providerNameSection = providerTypeSection.GetSection(providerName);
 
             if (providerNameSection.Exists())
             {
-                // Trim prefix for binding options on the extension side
-                // Format Example: {[Egress:AzureBlobStorage:monitorBlob:BlobPrefix, artifacts]} becomes {[BlobPrefix, artifacts]}
-                string prefix = FormattableString.Invariant($"{ConfigurationKeys.Egress}:{providerType}:{providerName}:");
+                var configAsDict = new Dictionary<string, string>();
 
-                var configAsDict = providerNameSection.AsEnumerable().ToDictionary(c => c.Key.Length > prefix.Length ? c.Key.Remove(0, prefix.Length) : c.Key.Remove(0, c.Key.Length), c => c.Value);
+                foreach (var kvp in providerNameSection.AsEnumerable(true))
+                {
+                    if (kvp.Value != null)
+                    {
+                        configAsDict[kvp.Key] = kvp.Value;
+                    }
+                }
 
-                var json = JsonSerializer.Serialize(configAsDict);
-
-                return json;
+                return configAsDict;
             }
 
             throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));

@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -110,13 +109,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             ExtensionEgressPayload payload = new();
 
-            var configDictionary = new Dictionary<string, string>()
+            payload.Configuration = new Dictionary<string, string>()
             {
                 { "ShouldSucceed", shouldSucceed.ToString() },
                 { $"Metadata:{EgressExtensibilityTestsConstants.Key}", EgressExtensibilityTestsConstants.Value }
             };
-
-            payload.Configuration = JsonSerializer.Serialize(configDictionary);
 
             CancellationTokenSource tokenSource = new(CommonTestTimeouts.GeneralTimeout);
 

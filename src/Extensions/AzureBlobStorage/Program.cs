@@ -122,9 +122,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
         {
             IConfigurationBuilder builder = new ConfigurationBuilder();
 
-            var configAsDict = JsonSerializer.Deserialize<Dictionary<string, string>>(payload.Configuration);
-
-            var configurationRoot = builder.AddInMemoryCollection(configAsDict).Build();
+            var configurationRoot = builder.AddInMemoryCollection(payload.Configuration).Build();
 
             T options = new();
 
@@ -152,7 +150,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
     {
         public EgressArtifactSettings Settings { get; set; }
         public Dictionary<string, string> Properties { get; set; }
-        public string Configuration { get; set; }
+        public Dictionary<string, string> Configuration { get; set; }
         public string ProviderName { get; set; }
     }
 }

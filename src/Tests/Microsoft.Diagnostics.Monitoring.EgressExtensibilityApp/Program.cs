@@ -6,7 +6,6 @@ using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.CommandLine;
 using System.Text.Json;
 using Xunit;
@@ -69,9 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
         {
             IConfigurationBuilder builder = new ConfigurationBuilder();
 
-            var configAsDict = JsonSerializer.Deserialize<Dictionary<string, string>>(configPayload.Configuration);
-
-            var configurationRoot = builder.AddInMemoryCollection(configAsDict).Build();
+            var configurationRoot = builder.AddInMemoryCollection(configPayload.Configuration).Build();
 
             TestEgressProviderOptions options = new();
 
