@@ -30,15 +30,32 @@ https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2
 
 ### Filters
 
+Filter options - used not only for collection rules but also for default process filter for all of dotnet monitor
+https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Microsoft.Diagnostics.Monitoring.Options/ProcessFilterOptions.cs
+
 ### Limits
+
+Limits options
+https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/CollectionRuleLimitsOptions.cs
 
 ## Miscellaneous
 
 ### Trigger Shortcuts
 
+Directory that holds all of the EventCounter shortcuts
+https://github.com/dotnet/dotnet-monitor/tree/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/Triggers/EventCounterShortcuts
+
 ### Templates
 
+
+
 ### Collection Rule Defaults
+
+Defaults can be set for certain properties on Triggers, Actions, and Limits.
+https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/CollectionRuleDefaultsOptions.cs
+
+Checks to see if a value is provided for a property - if it has a default and no value, the default is used
+https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/DefaultCollectionRulePostConfigureOptions.cs
 
 ### Collection Rule API Endpoint
 
@@ -54,4 +71,24 @@ https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2
 
 ## Testing
 
+Tests to confirm options behave as expected -> if adding new trigger/action, add this to make sure options are validated correctly
+https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tests/Microsoft.Diagnostics.Monitoring.Tool.UnitTests/CollectionRuleOptionsTests.cs
+
+Tests for Collection Rule Defaults
+https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tests/Microsoft.Diagnostics.Monitoring.Tool.UnitTests/CollectionRuleDefaultsTests.cs
+
+Tests for collection rules endpoint
+https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tests/Microsoft.Diagnostics.Monitoring.Tool.UnitTests/CollectionRuleDescriptionPipelineTests.cs
+https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tests/Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests/CollectionRuleDescriptionTests.cs
+
+Tests for collection rules
+https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tests/Microsoft.Diagnostics.Monitoring.Tool.UnitTests/CollectionRulePipelineTests.cs
+https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tests/Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests/CollectionRuleTests.cs
+
 ## Keeping Documentation Up-To-Date
+
+Information about how to write configuration
+https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/documentation/configuration.md#collection-rule-configuration
+
+More Info and examples
+https://github.com/dotnet/dotnet-monitor/tree/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/documentation/collectionrules
