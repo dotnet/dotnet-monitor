@@ -20,7 +20,8 @@
                 "ms-dotnettools.csharp",
                 "EditorConfig.EditorConfig",
                 "tintoy.msbuild-project-tools",
-                "streetsidesoftware.code-spell-checker"
+                "streetsidesoftware.code-spell-checker",
+                "rioj7.command-variable"
             ]
         }
     },

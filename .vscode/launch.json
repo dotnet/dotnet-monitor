@@ -12,7 +12,7 @@
             "type": "command",
             "command": "extension.commandvariable.file.content",
             "args": {
-                "fileName": "${workspaceFolder}/eng/branch-config",
+                "fileName": "${workspaceFolder}/eng/branch-vscode-config",
                 "key": "TFM",
                 "default": "net6.0"
             }
