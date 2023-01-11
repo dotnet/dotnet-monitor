@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
                     Description = "JWT Authorization header using the Bearer scheme. Put only the JWT Token in the textbox when prompted using Swagger UI."
-                }) ;
+                });
                 sg.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
