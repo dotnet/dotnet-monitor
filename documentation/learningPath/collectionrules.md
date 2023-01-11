@@ -11,6 +11,10 @@ You can learn more about how collection rules work [here](https://github.com/dot
 
 ### General
 
+This section pertains to collection rules as a whole - the following sections provide more specific information about working with specific components of collection rules.
+
+Collection rules are written in configuration by the user and 
+
 A lot of set-up and registration takes place here; if adding a new trigger/action, it needs to be registered here
 https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs#L100
 
@@ -43,8 +47,7 @@ https://github.com/dotnet/dotnet-monitor/tree/ac10d93babcc5388a3c19d19e6c58258c2
 
 ### Filters
 
-Filter options - used not only for collection rules but also for default process filter for all of dotnet monitor
-https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Microsoft.Diagnostics.Monitoring.Options/ProcessFilterOptions.cs
+Filters can optionally be applied to a collection rule to limit which processes can trigger the rule. This uses the same set of [options](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Microsoft.Diagnostics.Monitoring.Options/ProcessFilterOptions.cs#L47) as setting the default process for `dotnet-monitor`. When starting a collection rule, [these filters are used to check if the current process should have the collection rule applied to it](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/CollectionRuleContainer.cs#L188); if so, the collection rule starts. Filters can also be populated by [Templates](#templates).
 
 ### Limits
 
