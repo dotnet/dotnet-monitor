@@ -6,6 +6,16 @@
             "description": "Enter arguments for dotnet-monitor",
             "default": "collect --no-auth",
             "type": "promptString",
+        },
+        {
+            "id": "tfm",
+            "type": "command",
+            "command": "extension.commandvariable.file.content",
+            "args": {
+                "fileName": "${workspaceFolder}/eng/branch-vscode-config",
+                "key": "TFM",
+                "default": "net6.0"
+            }
         }
     ],
     "configurations": [
@@ -14,18 +24,18 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build (Debug)",
-            "program": "${workspaceFolder}/artifacts/bin/dotnet-monitor/Debug/net7.0/dotnet-monitor.dll",
+            "program": "${workspaceFolder}/artifacts/bin/dotnet-monitor/Debug/${input:tfm}/dotnet-monitor.dll",
             "args": "${input:args} --configuration-file-path \"${workspaceFolder}/.vscode/innerloop/config/settings.json\"",
             "envFile": "${workspaceFolder}/.vscode/innerloop/config/.env",
             "cwd": "${workspaceFolder}/.vscode/innerloop",
             "stopAtEntry": false,
-            "justMyCode": false
+            "justMyCode": false,
         },
         {
             "name": "Launch",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/artifacts/bin/dotnet-monitor/Debug/net7.0/dotnet-monitor.dll",
+            "program": "${workspaceFolder}/artifacts/bin/dotnet-monitor/Debug/${input:tfm}/dotnet-monitor.dll",
             "args": "${input:args} --configuration-file-path \"${workspaceFolder}/.vscode/innerloop/config/settings.json\"",
             "envFile": "${workspaceFolder}/.vscode/innerloop/config/.env",
             "cwd": "${workspaceFolder}/.vscode/innerloop",
