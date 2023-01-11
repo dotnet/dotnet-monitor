@@ -1,14 +1,12 @@
 {
     "version": "0.2",
-    "ignorePaths": [],
-    "dictionaryDefinitions": [],
     "words": [
-        "Callstacks",
+        "callstacks",
         "CLSID",
-        "CORECLR",
+        "coreclr",
         "darc",
         "discoverability",
-        "Dockerfiles",
+        "dockerfiles",
         "ESRP",
         "exfiltrate",
         "gcdump",
@@ -19,9 +17,9 @@
         "livemetrics",
         "minidump",
         "MSRC",
-        "Newtonsoft",
+        "newtonsoft",
         "respecifying",
-        "Runtimes",
+        "runtimes",
         "speedscope",
         "threadpool",
         "upvoting",
@@ -37,7 +35,6 @@
             "pattern": "/[^`]`[^`]*`/gmx"
         }
     ],
-    "ignoreWords": [],
     "languageSettings": [
         {
             "languageId": [
