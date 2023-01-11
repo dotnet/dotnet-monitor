@@ -1843,7 +1843,7 @@ No outputs
 
 ##### Example
 
-Usage that loads one of the sample profilers from [`dotnet/runtime: src/tests/profiler/native/gcallocateprofiler/gcallocateprofiler.cpp`](https://github.com/dotnet/runtime/blob/9ddd58a58d14a7bec5ed6eb777c6703c48aca15d/src/tests/profiler/native/gcallocateprofiler/gcallocateprofiler.cpp).
+Usage that loaads one of the sample profilers from [`dotnet/runtime: src/tests/profiler/native/gcallocateprofiler/gcallocateprofiler.cpp`](https://github.com/dotnet/runtime/blob/9ddd58a58d14a7bec5ed6eb777c6703c48aca15d/src/tests/profiler/native/gcallocateprofiler/gcallocateprofiler.cpp).
 
 <details>
   <summary>JSON</summary>
