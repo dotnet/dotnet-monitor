@@ -52,8 +52,8 @@ We use and recommend the following workflow:
     - Get agreement from the team and the community that your proposed change is a good one.
     - Clearly state that you are going to take on implementing it, if that's the case. You can request that the issue be assigned to you. Note: The issue filer and the implementer don't have to be the same person.
 2. Create a personal fork of the repository on GitHub (if you don't already have one).
-3. In your fork, create a branch off of main (`git checkout -b my-branch`).
-    - Name the branch so that it clearly communicates your intentions, such as `issue-123` or `GitHubHandle-issue`.
+3. In your fork, create a branch off of main (`git checkout -b mybranch`).
+    - Name the branch so that it clearly communicates your intentions, such as `issue-123` or `githubhandle-issue`.
     - Branches are useful since they isolate your changes from incoming changes from upstream. They also enable you to create multiple PRs from the same fork.
 4. Make and commit your changes to your branch.
 5. Add new tests corresponding to your change, if applicable.
