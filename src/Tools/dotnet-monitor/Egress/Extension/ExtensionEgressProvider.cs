@@ -75,10 +75,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
                 foreach (var kvp in providerNameSection.AsEnumerable(true))
                 {
-                    if (kvp.Value != null)
+                    // Only exclude null values that have children.
+                    if (kvp.Value == null)
                     {
-                        configAsDict[kvp.Key] = kvp.Value;
+                        if (providerNameSection.GetSection(kvp.Key).GetChildren().Any())
+                        {
+                            continue;
+                        }
                     }
+
+                    configAsDict[kvp.Key] = kvp.Value;
                 }
 
                 return configAsDict;
