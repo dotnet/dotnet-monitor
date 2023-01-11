@@ -38,5 +38,8 @@
     "powershell.startAutomatically": false,
 
     // streetsidesoftware.code-spell-checker
+
+    // Increase the text buffer size to 1000 characters instead of the default of 500.
+    // Parts of our documentation include large text blobs, such as examples of public keys.
     "cSpell.blockCheckingWhenTextChunkSizeGreaterThan": 1000
 }

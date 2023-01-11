@@ -32,7 +32,7 @@
         },
         {
             "name": "markdown_inline_code",
-            "pattern": "/[^`\\n\\r]*`[^`\\n\\r]*`/gmx"
+            "pattern": "/`[^`\\n\\r]*`/gmx"
         }
     ],
     "languageSettings": [
