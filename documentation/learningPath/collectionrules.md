@@ -25,4 +25,8 @@ You can learn more about how collection rules work [here](https://github.com/dot
 
 ### Collection Rule Defaults
 
+### Collection Rule API Endpoint
+
+## Testing
+
 ## Keeping Documentation Up-To-Date
