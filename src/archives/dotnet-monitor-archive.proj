@@ -4,6 +4,7 @@
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
     <RuntimeIdentifiers>$(DefaultRuntimeIdentifiers)</RuntimeIdentifiers>
     <IsShipping>false</IsShipping>
+    <IsArchivable>true</IsArchivable>
     <CreateSymbolsArchive>true</CreateSymbolsArchive>
     <ArchiveContentRootPath>$(ArtifactsBinDir)dotnet-monitor\$(Configuration)\$(TargetFramework)\$(PackageRid)\publish\</ArchiveContentRootPath>
   </PropertyGroup>
