@@ -1,4 +1,4 @@
-name: 'Documentation spellchecker'
+name: 'Documentation spellcheck'
 on:
   pull_request:
     paths: ['**/*.md']
@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   spellcheck:
-    name: 'Documentation spellchecker'
+    name: 'Documentation spellcheck'
     runs-on: ubuntu-latest
 
     steps:
