@@ -2,8 +2,42 @@
     "version": "0.2",
     "ignorePaths": [],
     "dictionaryDefinitions": [],
-    "dictionaries": [],
-    "words": [],
+    "words": [
+        "Callstacks",
+        "darc",
+        "Dockerfiles",
+        "exfiltrate",
+        "gcdump",
+        "gcdumps",
+        "globbing",
+        "JWTs",
+        "MSRC",
+        "Newtonsoft",
+        "Runtimes",
+        "threadpool",
+        "upvoting",
+        "walkthroughs"
+    ],
+    "patterns": [
+        {
+            "name": "markdown_code_block",
+            "pattern": "/^(\\s*`{3,}).*[^```]*?^\\1/gmx"
+        },
+        {
+            "name": "markdown_inline_code",
+            "pattern": "/^(\\s*`{3,}).*[^```]*?^\\1/gmx"
+        }
+    ],
     "ignoreWords": [],
-    "import": []
+    "languageSettings": [
+        {
+            "languageId": [
+                "markdown"
+            ],
+            "ignoreRegExpList": [
+                "markdown_code_block",
+                "markdown_inline_code"
+            ]
+        }
+    ]
 }

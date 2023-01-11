@@ -448,7 +448,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 
 ### Examples
 
-#### Match the iisexpress process by name
+#### Match the IIS Express process by name
 
 <details>
   <summary>JSON</summary>
@@ -485,7 +485,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
   ```
 </details>
 
-#### Match the iisexpress process by name (Shorthand)
+#### Match the IIS Express process by name (Shorthand)
 
 <details>
   <summary>JSON</summary>
@@ -985,7 +985,7 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
   --from-literal=Egress__S3Storage__monitorS3Blob__secretAccessKey=mySecretPassword \
   --from-literal=Egress__S3Storage__monitorS3Blob__regionName=us-east-1 \
   --dry-run=client -o yaml | kubectl apply -f -
- ```
+  ```
 </details>
 
 ### Filesystem egress provider
@@ -1143,7 +1143,7 @@ Each collection rule can specify a set of process filters to select which proces
 
 #### Example
 
-The following example shows the `Filters` portion of a collection rule that has the rule only apply to processes named "dotnet" and whose command line contains "myapp.dll".
+The following example shows the `Filters` portion of a collection rule that has the rule only apply to processes named `dotnet` and whose command line contains `myapp.dll`.
 
 <details>
   <summary>JSON</summary>
@@ -1430,7 +1430,7 @@ These [trigger shortcuts](collectionrules/triggershortcuts.md) simplify configur
 
 #### ASP.NET Request Path Wildcards and Globbing
 
-The `IncludePaths` and `ExcludePaths` properties of the ASP.NET triggers allow for wildcards and globbing so that every included or excluded path does not necessarily need to be explicitly specified. For these triggers, a match with an `ExcludePaths` pattern will supercede a match with an `IncludePaths` pattern.
+The `IncludePaths` and `ExcludePaths` properties of the ASP.NET triggers allow for wildcards and globbing so that every included or excluded path does not necessarily need to be explicitly specified. For these triggers, a match with an `ExcludePaths` pattern will supersede a match with an `IncludePaths` pattern.
 
 The globstar `**/` will match zero or more path segments including the forward slash `/` character at the end of the segment.
 
