@@ -43,8 +43,6 @@ https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2
 Test actions that directly implement ICollectionRuleAction
 https://github.com/dotnet/dotnet-monitor/tree/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tests/Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon/CollectionRules/Actions
 
-
-
 ### Filters
 
 Filters can optionally be applied to a collection rule to choose which processes can trigger the rule. This uses the same set of [options](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Microsoft.Diagnostics.Monitoring.Options/ProcessFilterOptions.cs#L47) as setting the default process for `dotnet-monitor`. When starting a collection rule, [these filters are used to check if the current process should have the collection rule applied to it](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/CollectionRuleContainer.cs#L188); if so, the collection rule starts. Filters can also be populated by [Templates](#templates).
@@ -61,14 +59,7 @@ Trigger Shortcuts provide improved defaults, range validation, and a simpler syn
 
 ### Templates
 
-Template Options
-https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/TemplateOptions.cs
-
-Checks to see if a trigger/action/filter/limit is a name (string), instead of an object with children - if so, populates from the correspondingly named template
-https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Configuration/CollectionRulePostConfigureNamedOptions.cs
-
-Binding triggers/actions
-https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Configuration/TemplatesConfigureNamedOptions.cs
+Templates allow users to design reusable collection rule components by associating a referencable name with a piece of configuration. Options for templates can be found [here](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/TemplateOptions.cs). Before collection rules undergo validation, `dotnet monitor` checks to see if any of the components of the rule in configuration [list the name of a template](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Configuration/CollectionRulePostConfigureNamedOptions.cs) - if so, the collection rule's options are populated from the correspondingly named template. Note that templates undergo the same binding process for triggers/actions as standard collection rules; however, since templates are treated as separate parts of configuration, this binding instead happens [here](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Configuration/TemplatesConfigureNamedOptions.cs).
 
 ### Collection Rule Defaults
 
