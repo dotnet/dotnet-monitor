@@ -155,13 +155,6 @@ REM ============================================================================
 
 @if defined _echo @echo on
 
-:: Parse the optdata package versions out of msbuild so that we can pass them on to CMake
-set __DotNetCli=%__ProjectDir%\.dotnet\dotnet.exe
-if not exist "%__DotNetCli%" (
-    echo %__MsgPrefix%Assertion failed: dotnet cli not found at path "%__DotNetCli%"
-    goto ExitWithError
-)
-
 REM =========================================================================================
 REM ===
 REM === Build Cross-Architecture Native Components (if applicable)
@@ -214,7 +207,7 @@ if /i %__BuildCrossArch% EQU 1 (
 
     set __BuildLog="%__LogDir%\Cross.Build.binlog"
 
-    :: MSBuild.exe is the only one that has the C++ targets. "%__DotNetCli% msbuild" fails because VCTargetsPath isn't defined.
+    :: MSBuild.exe is the only one that has the C++ targets. "dotnet msbuild" fails because VCTargetsPath isn't defined.
     msbuild.exe %__CrossCompIntermediatesDir%\install.vcxproj /bl:!__BuildLog! %__CommonBuildArgs%
 
     if not !ERRORLEVEL! == 0 (
@@ -287,7 +280,7 @@ if %__Build% EQU 1 (
     )
     set __BuildLog="%__LogDir%\Native.Build.binlog"
 
-    :: MSBuild.exe is the only one that has the C++ targets. "%__DotNetCli% msbuild" fails because VCTargetsPath isn't defined.
+    :: MSBuild.exe is the only one that has the C++ targets. "dotnet msbuild" fails because VCTargetsPath isn't defined.
     msbuild.exe %__IntermediatesDir%\install.vcxproj /bl:!__BuildLog! %__CommonBuildArgs%
 
     if not !ERRORLEVEL! == 0 (
