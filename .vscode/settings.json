@@ -35,5 +35,8 @@
     // ms-vscode.powershell settings
     "powershell.promptToUpdatePowerShell": false,
     "powershell.integratedConsole.showOnStartup": false,
-    "powershell.startAutomatically": false
+    "powershell.startAutomatically": false,
+
+    // streetsidesoftware.code-spell-checker
+    "cSpell.blockCheckingWhenTextChunkSizeGreaterThan": 1000
 }

@@ -1256,7 +1256,7 @@ A trigger that has its condition satisfied when the number of HTTP requests have
 | Name | Type | Required | Description | Default Value | Min Value | Max Value |
 |---|---|---|---|---|---|---|
 | `RequestCount` | int | true | The threshold of the number of slow requests that start within the sliding window of time. | | | |
-| `RequestDuration` | Timespan? | false | The threshold of the amount of time in which a request is considered to be slow. | `"00:00:05"` (5 seconds) | `"00:00:00"` (zero seconds) | `"01:00:00"` (1 hour) |
+| `RequestDuration `  | TimeSpan? | false | The threshold of the amount of time in which a request is considered to be slow. | `"00:00:05"` (5 seconds) | `"00:00:00"` (zero seconds) | `"01:00:00"` (1 hour) |
 | `SlidingWindowDuration` | TimeSpan? | false | The sliding time window in which the the number of slow requests are counted. | `"00:01:00"` (one minute) | `"00:00:01"` (one second) | `"1.00:00:00"` (1 day) |
 | `IncludePaths` | string[] | false | The list of request path patterns to monitor. If not specified, all request paths are considered. If specified, only request paths matching one of the patterns in this list will be considered. Request paths matching a pattern in the `ExcludePaths` list will be ignored. | `null` | | |
 | `ExcludePaths` | string[] | false | The list of request path patterns to ignore. Request paths matching a pattern in this list will be ignored. | `null` | | |
@@ -1780,7 +1780,7 @@ An action that executes an executable found in the file system. Non-zero exit co
 
 ##### Example
 
-Usage that executes a .NET executable named "myapp.dll" using `dotnet`.
+Usage that executes a .NET executable named `myapp.dll` using `dotnet`.
 
 <details>
   <summary>JSON</summary>
@@ -1843,7 +1843,7 @@ No outputs
 
 ##### Example
 
-Usage that loads one of the sample profilers from [`dotnet/runtime`: src/tests/profiler/native/gcallocateprofiler/gcallocateprofiler.cpp](https://github.com/dotnet/runtime/blob/9ddd58a58d14a7bec5ed6eb777c6703c48aca15d/src/tests/profiler/native/gcallocateprofiler/gcallocateprofiler.cpp).
+Usage that loads one of the sample profilers from [`dotnet/runtime: src/tests/profiler/native/gcallocateprofiler/gcallocateprofiler.cpp`](https://github.com/dotnet/runtime/blob/9ddd58a58d14a7bec5ed6eb777c6703c48aca15d/src/tests/profiler/native/gcallocateprofiler/gcallocateprofiler.cpp).
 
 <details>
   <summary>JSON</summary>

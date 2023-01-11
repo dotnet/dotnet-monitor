@@ -4,16 +4,25 @@
     "dictionaryDefinitions": [],
     "words": [
         "Callstacks",
+        "CLSID",
+        "CORECLR",
         "darc",
+        "discoverability",
         "Dockerfiles",
+        "ESRP",
         "exfiltrate",
         "gcdump",
         "gcdumps",
         "globbing",
+        "globstar",
         "JWTs",
+        "livemetrics",
+        "minidump",
         "MSRC",
         "Newtonsoft",
+        "respecifying",
         "Runtimes",
+        "speedscope",
         "threadpool",
         "upvoting",
         "walkthroughs"
@@ -25,7 +34,7 @@
         },
         {
             "name": "markdown_inline_code",
-            "pattern": "/^(\\s*`{3,}).*[^```]*?^\\1/gmx"
+            "pattern": "/[^`]`[^`]*`/gmx"
         }
     ],
     "ignoreWords": [],
