@@ -57,8 +57,7 @@ Limits can optionally be applied to a collection rule to constrain the lifetime 
 
 ### Trigger Shortcuts
 
-Directory that holds all of the EventCounter shortcuts
-https://github.com/dotnet/dotnet-monitor/tree/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/Triggers/EventCounterShortcuts
+Trigger Shortcuts provide improved defaults, range validation, and a simpler syntax for [several commonly used `EventCounter` triggers](https://github.com/dotnet/dotnet-monitor/tree/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/Triggers/EventCounterShortcuts). These shortcuts provide the same functionality as using the standard `EventCounter` syntax, but have fewer available options (since there is no need to specify the `ProviderName` or the `CounterName`) - as a result, shortcuts do not inherit from `EventCounterOptions`, but rather [IEventCounterShortcuts](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/Triggers/EventCounterShortcuts/IEventCounterShortcuts.cs). Each type of shortcut is registered independently [here](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs#L117). After binding with configuration and undergoing validation, shortcuts are then converted to be treated as `EventCounter` triggers [here](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Triggers/EventCounterTriggerFactory.cs), using their respective defaults instead of the generic ones.
 
 ### Templates
 
