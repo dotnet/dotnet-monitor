@@ -9,11 +9,9 @@ You can learn more about how collection rules work [here](https://github.com/dot
 
 ## Collection Rule Architecture
 
-### General
+### Collection Rules Flow
 
 The implementation of collection rules is distributed between the `dotnet monitor` repo and the [`dotnet diagnostics` repo](https://github.com/dotnet/diagnostics). The flowchart below shows a simplified version of how `dotnet monitor` and `dotnet diagnostics` interact to run collection rules.
-
-#### Collection Rules Flow
 
 ```mermaid
 graph LR
@@ -35,7 +33,7 @@ graph LR
     T[Events] --> |EventPipeEventSource| U{.NET Diagnostics}
 ```
 
-#### Key Areas Of The Code
+### Key Areas Of The Code
 
 * Registration for collection rules can be found [here](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs#L100). When adding a new trigger or action, these types need to be registered here. This section is also responsible for making sure options get configured and validated.
 * Options for collection rules can be found [here](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/CollectionRuleOptions.cs).
