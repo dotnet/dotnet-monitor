@@ -13,7 +13,29 @@ You can learn more about how collection rules work [here](https://github.com/dot
 
 This section pertains to collection rules as a whole - the following sections provide more specific information about working with specific components of collection rules.
 
-Collection rules are written in configuration by the user and 
+The implementation of collection rules is distributed between the `dotnet monitor` repo and the [`dotnet diagnostics` repo](https://github.com/dotnet/diagnostics).
+
+#### Collection Rules Flow
+
+```mermaid
+graph TD
+    A[Collection Rules] --> |Configuration| N{.NET Monitor}
+    B[Diagnostic Port] --> |Configuration| N{.NET Monitor}
+    C[Other Configuration] --> |Configuration| N{.NET Monitor}
+    N --> |1| O[Load Configuration and Bind Options]    
+    C --> D[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/basic-usage.md'>Basic Usage</a>]
+    D --> E[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/architecture.md'>Architecture Overview</a>]
+    E --> F[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/sample-pull-request.md'>A Sample Pull Request</a>]
+    F --> G[Explore Different Topics]
+    G --> |OPTIONAL| H[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/collectionrules.md'>Collection Rules</a>]
+    G --> |OPTIONAL| I[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/api.md'>API</a>]
+    G --> |OPTIONAL| J[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/testing.md'>Testing</a>]
+    G --> |OPTIONAL| K[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/configuration.md'>Configuration</a>]
+    G --> |OPTIONAL| L[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/aks.md'>AKS</a>]
+    G --> |OPTIONAL| M[Egress -> COMING SOON]
+```
+
+
 
 A lot of set-up and registration takes place here; if adding a new trigger/action, it needs to be registered here
 https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs#L100
@@ -26,6 +48,11 @@ https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2
 
 Responsible for running the collection rule pipeline for a single collection rule:
 https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/CollectionRulePipeline.cs#L54
+
+Need to be in Listen mode for collection rules
+https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/EndpointInfo/ServerEndpointInfoSource.cs#L84
+https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Microsoft.Diagnostics.Monitoring.Options/DiagnosticPortOptions.cs
+
 
 
 ### Triggers
