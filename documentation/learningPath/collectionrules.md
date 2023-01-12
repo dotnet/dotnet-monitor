@@ -40,9 +40,20 @@ graph LR
 * Rules are applied, removed, restarted, and monitored for the `/collectionrules` API Endpoint [here](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/CollectionRuleService.cs).
 * The pipeline responsible for the lifetime of a single collection rule running against a single process can be found [here](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/CollectionRulePipeline.cs#L54).
 * To run collection rules, `dotnet monitor` must be in `Listen` mode - this is set via [DiagnosticPortOptions](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Microsoft.Diagnostics.Monitoring.Options/DiagnosticPortOptions.cs).
-* For each type of trigger, [this](https://github.com/dotnet/diagnostics/blob/main/src/Microsoft.Diagnostics.Monitoring.EventPipe/Triggers/ITraceEventTrigger.cs#L29) is responsible for determining whether the triggering conditions have been satisfied.
+* For each type of trigger, [this](https://github.com/dotnet/diagnostics/blob/f66f2a9d70fba32b1639cd3bd2702866128c1031/src/Microsoft.Diagnostics.Monitoring.EventPipe/Triggers/ITraceEventTrigger.cs#L29) is responsible for determining whether the triggering conditions have been satisfied.
 
 ### Triggers
+
+A trigger will monitor for a specific condition in the target application and raise a notification when that condition has been observed. Options for triggers can be found [here](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/CollectionRuleTriggerOptions.cs).
+
+All individual trigger factories all end up here - this creates the pipeline on the .NET Diagnostics side:
+https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Triggers/EventPipeTriggerFactory.cs
+This is where the trigger factory is called: https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/CollectionRulePipeline.cs#L99
+
+When events are received, this checks to see if the condition has been satisfied
+https://github.com/dotnet/diagnostics/blob/f66f2a9d70fba32b1639cd3bd2702866128c1031/src/Microsoft.Diagnostics.Monitoring.EventPipe/Triggers/Pipelines/TraceEventTriggerPipeline.cs#L107
+
+
 
 ### Actions
 
