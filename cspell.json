@@ -1,31 +1,55 @@
 {
     "version": "0.2",
     "words": [
+        "apos",
+        "appsettings",
+        "ASPNETCORE",
+        "Brotli",
+        "Callstack",
         "callstacks",
         "CLSID",
         "codespace",
+        "collectionrules",
         "coreclr",
         "darc",
+        "dbug",
         "discoverability",
+        "Distro",
         "dockerfiles",
+        "DOTNETCORE",
+        "DOTNETMONITOR",
+        "dylib",
         "ESRP",
+        "evented",
         "exfiltrate",
+        "fwlink",
         "gcdump",
         "gcdumps",
+        "generatekey",
         "globbing",
         "globstar",
+        "hmac",
         "JWTs",
         "libc",
         "livemetrics",
         "minidump",
         "MSRC",
+        "Nettrace",
         "newtonsoft",
+        "NTLM",
+        "openapi",
+        "Pids",
         "respecifying",
+        "resx",
+        "runtimeconfig",
         "runtimes",
         "speedscope",
+        "Tfms",
         "threadpool",
+        "trce",
         "upvoting",
-        "walkthroughs"
+        "walkthroughs",
+        "Xunit"
     ],
     "patterns": [
         {
@@ -35,6 +59,18 @@
         {
             "name": "markdown_inline_code",
             "pattern": "/`[^`\\n\\r]*`/gmx"
+        },
+        {
+            "name": "preprocessor_conditional",
+            "pattern": "/^[^\\S\\n\\r]*\\#(el)?if (.)*$/gmx"
+        },
+        {
+            "name": "test_data",
+            "pattern": "/^[^\\S\\n\\r]*\\[(Inline|Member)Data\\(.*$/gmx"
+        },
+        {
+            "name": "using_statement",
+            "pattern": "/^[^\\S\\n\\r]*using .*;$/gmx"
         }
     ],
     "languageSettings": [
@@ -45,6 +81,16 @@
             "ignoreRegExpList": [
                 "markdown_code_block",
                 "markdown_inline_code"
+            ]
+        },
+        {
+            "languageId": [
+                "csharp"
+            ],
+            "ignoreRegExpList": [
+                "preprocessor_conditional",
+                "test_data",
+                "using_statement"
             ]
         }
     ]

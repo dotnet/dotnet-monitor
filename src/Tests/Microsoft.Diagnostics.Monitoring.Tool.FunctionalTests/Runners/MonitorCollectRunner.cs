@@ -78,7 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public bool DisableMetricsViaCommandLine { get; set; }
 
         /// <summary>
-        /// Reports whether the server URLs were overriden by UseKestrel/ConfigureKestrel code.
+        /// Reports whether the server URLs were overridden by UseKestrel/ConfigureKestrel code.
         /// </summary>
         public bool OverrodeServerUrls { get; private set; }
 
