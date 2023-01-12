@@ -9,9 +9,7 @@ You can learn more about how collection rules work [here](https://github.com/dot
 
 ## Collection Rule Architecture
 
-### Collection Rules Flow
-
-The implementation of collection rules is distributed between the `dotnet monitor` repo and the [`dotnet diagnostics` repo](https://github.com/dotnet/diagnostics). The flowchart below shows a simplified version of how `dotnet monitor` and `dotnet diagnostics` interact to run collection rules.
+Collection rules' implementation is distributed between the `dotnet monitor` repo and the [`dotnet diagnostics` repo](https://github.com/dotnet/diagnostics). The flowchart below shows a simplified version of how `dotnet monitor` and `dotnet diagnostics` interact to run collection rules.
 
 ```mermaid
 graph LR
