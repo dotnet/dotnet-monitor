@@ -105,8 +105,8 @@ The remainder of the release will automatically push NuGet packages to nuget.org
 
 ## Release to Storage Accounts
 
-1. Approximately 3 days before Docker image release, execute a dry-run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (`Branch` should be set to `main`; `IsDryRun` should be checked; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will validate that the nupkg files can be published to the `dotnetcli` storage account and checksums can be published to the `dotnetclichecksums` storage account.
-1. The day before Docker image release, execute run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (`Branch` should be set to `main`; uncheck `IsDryRun`; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will publish the nupkg files to the `dotnetcli` storage account and the checksums to the `dotnetclichecksums` storage account.
+1. Approximately 3 days before Docker image release, execute a dry-run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (`Branch` should be set to `main`; `IsDryRun` should be checked; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will validate that the `.nupkg` files can be published to the `dotnetcli` storage account and checksums can be published to the `dotnetclichecksums` storage account.
+1. The day before Docker image release, execute run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (`Branch` should be set to `main`; uncheck `IsDryRun`; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will publish the `.nupkg` files to the `dotnetcli` storage account and the checksums to the `dotnetclichecksums` storage account.
 
 ## Release Docker Images
 
