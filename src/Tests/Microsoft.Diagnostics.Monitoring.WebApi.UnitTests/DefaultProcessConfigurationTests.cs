@@ -125,18 +125,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
         }
 
         private static void ValidateProcessFilter(DiagProcessFilterCriteria expectedCriteria,
-            string expectedValue,
+            string expectedvalue,
             DiagProcessFilterEntry actualFilter)
         {
-            ValidateProcessFilter(expectedCriteria, expectedValue, DiagProcessFilterMatchType.Exact, actualFilter);
+            ValidateProcessFilter(expectedCriteria, expectedvalue, DiagProcessFilterMatchType.Exact, actualFilter);
         }
 
         private static void ValidateProcessFilter(DiagProcessFilterCriteria expectedCriteria,
-            string expectedValue,
+            string expectedvalue,
             DiagProcessFilterMatchType expectedMatchType,
             DiagProcessFilterEntry actualFilter)
         {
-            Assert.Equal(expectedValue, actualFilter.Value);
+            Assert.Equal(expectedvalue, actualFilter.Value);
             Assert.Equal(expectedCriteria, actualFilter.Criteria);
             Assert.Equal(expectedMatchType, actualFilter.MatchType);
         }
