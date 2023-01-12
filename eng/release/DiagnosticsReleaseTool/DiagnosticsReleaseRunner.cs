@@ -48,7 +48,7 @@ namespace DiagnosticsReleaseTool.Impl
 
             IPublisher releasePublisher = dryRun ?
                 new SkipPublisher() :
-                new AzureBlobPublisher(releaseConfig.AccountName, releaseConfig.AccountKey, releaseConfig.ContainerName, releaseConfig.ReleaseName, releaseConfig.SasValidDays, logger);
+                new AzureBlobBublisher(releaseConfig.AccountName, releaseConfig.AccountKey, releaseConfig.ContainerName, releaseConfig.ReleaseName, releaseConfig.SasValidDays, logger);
             IManifestGenerator manifestGenerator = new DiagnosticsManifestGenerator(releaseMetadata, releaseConfig.ToolManifest, logger);
 
             using var diagnosticsRelease = new Release(

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace ReleaseTool.Core
 {
-    public class AzureBlobPublisher : IPublisher
+    public class AzureBlobBublisher : IPublisher
     {
         private const int ClockSkewSec = 15 * 60;
         private const int MaxRetries = 15;
@@ -66,7 +66,7 @@ namespace ReleaseTool.Core
             }
         }
 
-        public AzureBlobPublisher(string accountName, string accountKey, string containerName, string releaseName, int sasValidDays, ILogger logger)
+        public AzureBlobBublisher(string accountName, string accountKey, string containerName, string releaseName, int sasValidDays, ILogger logger)
         {
             _accountName = accountName;
             _accountKey = accountKey;

@@ -1,10 +1,15 @@
 {
     "version": "0.2",
+    "ignorePaths": [
+        "src/external",
+        "eng/release/DiagnosticsReleaseTool"
+    ],
     "words": [
         "apos",
         "appsettings",
         "ASPNETCORE",
         "Brotli",
+        "Browsable",
         "Callstack",
         "callstacks",
         "CLSID",
