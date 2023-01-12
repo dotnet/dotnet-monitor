@@ -1,9 +1,9 @@
 {
     "version": "0.2",
     "ignorePaths": [
+        "eng/release/DiagnosticsReleaseTool",
         "src/external",
-        "src/inc",
-        "eng/release/DiagnosticsReleaseTool"
+        "src/inc"
     ],
     "words": [
         "Bldr",
