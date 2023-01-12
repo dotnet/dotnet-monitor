@@ -18,7 +18,7 @@ The implementation of collection rules is distributed between the `dotnet monito
 #### Collection Rules Flow
 
 ```mermaid
-graph TD
+graph LR
     A[Collection Rules] --> |Configuration| N{.NET Monitor}
     B[Diagnostic Port] --> |Configuration| N{.NET Monitor}
     C[Other Configuration] --> |Configuration| N{.NET Monitor}
@@ -34,7 +34,7 @@ graph TD
     N --> |8| X[Repeat until Rule Limits Reached]
 
 
-    T[Events From EventPipeEventSource] --> |Configuration| U{.NET Diagnostics}
+    T[Events] --> |EventPipeEventSource| U{.NET Diagnostics}
 ```
 
 
