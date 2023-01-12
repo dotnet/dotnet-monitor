@@ -48,16 +48,7 @@ graph LR
 
 ### Actions
 
-Action options - the Settings are going to be one of https://github.com/dotnet/dotnet-monitor/tree/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/Actions
-https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/CollectionRuleActionOptions.cs
-
-Interface for all actions instead of needing to know/use a specific type of action. Lets you start the action, wait for it to complete, and get its output values. https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Actions/ICollectionRuleAction.cs
-
-Base class for all real actions (non-testing)
-https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Actions/CollectionRuleActionBase.cs
-
-Test actions that directly implement ICollectionRuleAction
-https://github.com/dotnet/dotnet-monitor/tree/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tests/Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon/CollectionRules/Actions
+Actions allow executing an operation or an external executable in response to a trigger condition being satisfied. Options for actions can be found [here](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/CollectionRuleActionOptions.cs); the type of `Settings` is determined by which action is being used (possible action types can be found [here](https://github.com/dotnet/dotnet-monitor/tree/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/Actions)). The interface for all actions can be found [here](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Actions/ICollectionRuleAction.cs) - this allows `dotnet monitor` to start an action, wait for it to complete, and get its output values regardless of the action's behavior. The action list is [executed](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/CollectionRulePipeline.cs#L142) once the triggering condition has been met (assuming the action list isn't [throttled](#Limits)), with each action by default starting without waiting for prior actions to complete.
 
 ### Filters
 
