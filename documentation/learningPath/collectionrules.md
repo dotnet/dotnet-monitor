@@ -22,17 +22,19 @@ graph TD
     A[Collection Rules] --> |Configuration| N{.NET Monitor}
     B[Diagnostic Port] --> |Configuration| N{.NET Monitor}
     C[Other Configuration] --> |Configuration| N{.NET Monitor}
-    N --> |1| O[Load Configuration and Bind Options]    
-    C --> D[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/basic-usage.md'>Basic Usage</a>]
-    D --> E[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/architecture.md'>Architecture Overview</a>]
-    E --> F[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/sample-pull-request.md'>A Sample Pull Request</a>]
-    F --> G[Explore Different Topics]
-    G --> |OPTIONAL| H[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/collectionrules.md'>Collection Rules</a>]
-    G --> |OPTIONAL| I[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/api.md'>API</a>]
-    G --> |OPTIONAL| J[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/testing.md'>Testing</a>]
-    G --> |OPTIONAL| K[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/configuration.md'>Configuration</a>]
-    G --> |OPTIONAL| L[<a href='https://github.com/dotnet/dotnet-monitor/blob/main/documentation/learningPath/aks.md'>AKS</a>]
-    G --> |OPTIONAL| M[Egress -> COMING SOON]
+    N --> |1| O[Load Configuration and Bind Options]
+    N --> |2| P[Connect to Processes in Reverse Mode]    
+    N --> |3| Q[Start Pipelines For Processes That Match Filters]
+    N --> |4| R[Wait To Satisfy Trigger]
+    R --> U
+    U --> |5| S[Trigger Conditions Met]
+    S --> N
+    N --> |6| V[Check For Throttling]
+    N --> |7| W[Execute Action List]
+    N --> |8| X[Repeat until Rule Limits Reached]
+
+
+    T[Events From EventPipeEventSource] --> |Configuration| U{.NET Diagnostics}
 ```
 
 
