@@ -2,6 +2,7 @@
     "version": "0.2",
     "ignorePaths": [
         "src/external",
+        "src/inc",
         "*.Designer.cs",
         "eng/release/DiagnosticsReleaseTool"
     ],
@@ -38,8 +39,11 @@
         "globstar",
         "hmac",
         "HMACSHA",
+        "hresult",
         "Hsts",
         "Impls",
+        "jit",
+        "JITID",
         "JWTs",
         "libc",
         "livemetrics",
@@ -49,15 +53,22 @@
         "netcoreapp",
         "Nettrace",
         "newtonsoft",
+        "Notfication",
         "NTLM",
         "openapi",
         "Pids",
         "PKCS",
+        "rclsid",
         "reentrancy",
+        "REFCLSID",
+        "REFIID",
+        "rejit",
+        "Remoting",
         "Renormalize",
         "respecifying",
         "resx",
         "rethrown",
+        "riid",
         "RSASSA",
         "runtimeconfig",
         "runtimes",
@@ -65,6 +76,8 @@
         "Tfms",
         "threadpool",
         "trce",
+        "tstr",
+        "ukwn",
         "upvoting",
         "USERPROFILE",
         "VSAPPIDDIR",
@@ -82,15 +95,19 @@
         },
         {
             "name": "preprocessor_conditional",
-            "pattern": "/^[^\\S\\n\\r]*\\#(el)?if (.)*$/gmx"
+            "pattern": "/^[^\\S\\n\\r]*\\#(el)?if (.)*$/gm"
         },
         {
             "name": "test_data",
-            "pattern": "/^[^\\S\\n\\r]*\\[(Inline|Member)Data\\(.*$/gmx"
+            "pattern": "/^[^\\S\\n\\r]*\\[(Inline|Member)Data\\(.*$/gm"
         },
         {
             "name": "using_statement",
-            "pattern": "/^[^\\S\\n\\r]*using .*;$/gmx"
+            "pattern": "/^[^\\S\\n\\r]*using .*;$/gm"
+        },
+        {
+            "name": "error_codes",
+            "pattern": "/(_| )E_\\w+/gm"
         }
     ],
     "languageSettings": [
@@ -112,6 +129,16 @@
                 "preprocessor_conditional",
                 "test_data",
                 "using_statement"
+            ]
+        },
+        {
+            "languageId": [
+                "cpp"
+            ],
+            "allowCompoundWords": true,
+            "ignoreRegExpList": [
+                "preprocessor_conditional",
+                "error_codes"
             ]
         }
     ]
