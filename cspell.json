@@ -3,7 +3,6 @@
     "ignorePaths": [
         "src/external",
         "src/inc",
-        "*.Designer.cs",
         "eng/release/DiagnosticsReleaseTool"
     ],
     "words": [
