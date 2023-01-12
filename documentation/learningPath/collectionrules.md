@@ -22,16 +22,16 @@ graph LR
     A[Collection Rules] --> |Configuration| N{.NET Monitor}
     B[Diagnostic Port] --> |Configuration| N{.NET Monitor}
     C[Other Configuration] --> |Configuration| N{.NET Monitor}
-    N --> |1| O[Load Configuration and Bind Options]
-    N --> |2| P[Connect to Processes in Reverse Mode]    
-    N --> |3| Q[Start Pipelines For Processes That Match Filters]
-    N --> |4| R[Wait To Satisfy Trigger]
-    R --> U
-    U --> |5| S[Trigger Conditions Met]
-    S --> N
-    N --> |6| V[Check For Throttling]
-    N --> |7| W[Execute Action List]
-    N --> |8| X[Repeat until Rule Limits Reached]
+    N ---> |1| O[Load Configuration and Bind Options]
+    N ---> |2| P[Connect to Processes in Reverse Mode]    
+    N ---> |3| Q[Start Pipelines For Processes That Match Filters]
+    N ---> |4| R[Wait To Satisfy Trigger]
+    R ---> U
+    U ---> |5| S[Trigger Conditions Met]
+    S ---> N
+    N ---> |6| V[Check For Throttling]
+    N ---> |7| W[Execute Action List]
+    N ---> |8| X[Repeat 4-7 until Rule Limits Reached]
 
 
     T[Events] --> |EventPipeEventSource| U{.NET Diagnostics}
