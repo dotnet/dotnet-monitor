@@ -3,15 +3,13 @@
     "ignorePaths": [
         "src/external",
         "src/inc",
+        "*.Designer.cs",
         "eng/release/DiagnosticsReleaseTool"
     ],
     "words": [
-        "appsettings",
-        "ASPNETCORE",
         "Bldr",
         "Brotli",
         "Browsable",
-        "Callstack",
         "callstacks",
         "CLSID",
         "codespace",
@@ -36,7 +34,6 @@
         "hresult",
         "Hsts",
         "Impls",
-        "jit",
         "JITID",
         "JWTs",
         "libc",
