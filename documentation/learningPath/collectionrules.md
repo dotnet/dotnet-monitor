@@ -11,9 +11,7 @@ You can learn more about how collection rules work [here](https://github.com/dot
 
 ### General
 
-This section pertains to collection rules as a whole - the following sections provide more specific information about working with specific components of collection rules.
-
-The implementation of collection rules is distributed between the `dotnet monitor` repo and the [`dotnet diagnostics` repo](https://github.com/dotnet/diagnostics).
+The implementation of collection rules is distributed between the `dotnet monitor` repo and the [`dotnet diagnostics` repo](https://github.com/dotnet/diagnostics). The flowchart below shows a simplified version of how `dotnet monitor` and `dotnet diagnostics` interact to run collection rules.
 
 #### Collection Rules Flow
 
@@ -37,25 +35,14 @@ graph LR
     T[Events] --> |EventPipeEventSource| U{.NET Diagnostics}
 ```
 
+#### Key Areas Of The Code
 
-
-A lot of set-up and registration takes place here; if adding a new trigger/action, it needs to be registered here
-https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs#L100
-
-Representation of a collection rule - note that the only required piece is the Trigger
-https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/CollectionRuleOptions.cs
-
-Where rules are applied, removed, restarted, and monitored for the API endpoint
-https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/CollectionRuleService.cs
-
-Responsible for running the collection rule pipeline for a single collection rule:
-https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/CollectionRulePipeline.cs#L54
-
-Need to be in Listen mode for collection rules
-https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/EndpointInfo/ServerEndpointInfoSource.cs#L84
-https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Microsoft.Diagnostics.Monitoring.Options/DiagnosticPortOptions.cs
-
-
+* Registration for collection rules can be found [here](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs#L100). When adding a new trigger or action, these types need to be registered here. This section is also responsible for making sure options get configured and validated.
+* Options for collection rules can be found [here](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/Options/CollectionRuleOptions.cs).
+* Rules are applied, removed, restarted, and monitored for the `/collectionrules` API Endpoint [here](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/CollectionRuleService.cs).
+* The pipeline responsible for the lifetime of a single collection rule running against a single process can be found [here](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Tools/dotnet-monitor/CollectionRules/CollectionRulePipeline.cs#L54).
+* To run collection rules, `dotnet monitor` must be in `Listen` mode - this is set via [DiagnosticPortOptions](https://github.com/dotnet/dotnet-monitor/blob/ac10d93babcc5388a3c19d19e6c58258c2e21eb8/src/Microsoft.Diagnostics.Monitoring.Options/DiagnosticPortOptions.cs).
+* For each type of trigger, [this](https://github.com/dotnet/diagnostics/blob/main/src/Microsoft.Diagnostics.Monitoring.EventPipe/Triggers/ITraceEventTrigger.cs#L29) is responsible for determining whether the triggering conditions have been satisfied.
 
 ### Triggers
 
