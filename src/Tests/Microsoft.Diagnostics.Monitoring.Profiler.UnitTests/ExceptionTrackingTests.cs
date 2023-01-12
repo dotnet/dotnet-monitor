@@ -140,7 +140,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
                 while (TryReadNextLine(baselineLines, out baselineLine, ref baselineIndex, ref baselineCount)) { }
                 while (TryReadNextLine(outputLines, out outputLine, ref outputIndex, ref outputCount)) { }
 
-                // The total unignored line count should be equal
+                // The total un-ignored line count should be equal
                 Assert.Equal(baselineCount, outputCount);
             }
             catch (XunitException)
