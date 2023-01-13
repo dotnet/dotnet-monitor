@@ -1,10 +1,6 @@
 # Builds dotnet-monitor for a specific platform and configuration with CodeQL analysis enabled
 
 parameters:
-  # Job name (required)
-  name: ''
-  # Job display name
-  displayName: ''
   # Operating system group (Windows, Linux, MacOS, etc)
   osGroup: Windows
   # Build configuration (Debug, Release)
@@ -21,8 +17,7 @@ parameters:
 jobs:
 - template: /eng/pipelines/jobs/build.yml
   parameters:
-    name: ${{ parameters.name }}
-    displayName: ${{ parameters.displayName }}
+    prefix: CodeQL
     osGroup: ${{ parameters.osGroup }}
     configuration: ${{ parameters.configuration }}
     architecture: ${{ parameters.architecture }}
@@ -30,7 +25,7 @@ jobs:
     disableSbom: true
 
     variables:
-    - Codeql.BuildIdentifier: ${{ parameters.name }}
+    - Codeql.BuildIdentifier: $(JobName)
       # Do not let CodeQL 3000 Extension gate scan frequency
     - Codeql.Cadence: 0
     # Force CodeQL enabled so it may be run on any branch
