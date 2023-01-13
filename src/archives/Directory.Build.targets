@@ -6,7 +6,6 @@
     <PackageReference Include="Microsoft.DotNet.Build.Tasks.Archives" Version="$(MicrosoftDotNetBuildTasksArchivesVersion)" />
   </ItemGroup>
   
-  <!-- TODO: TPN is not included due to build ordering (archives are created in build job, TPN created in separate job) -->
   <Target Name="PublishToDisk"
           DependsOnTargets="$(PublishToDiskDependsOn)">
     <Error Message="The 'ArchiveContentRootPath' property must be set to the path of the root of the files to archive."
@@ -15,19 +14,20 @@
            Condition="!Exists($(ArchiveContentRootPath))" />
     <!-- Collect non-symbol files and copy to staging directory -->
     <ItemGroup>
-      <FileToArchive Remove="@(FileToArchive)" />
-      <FileToArchive Include="$(ArchiveContentRootPath)**" />
+      <_FileToArchive Remove="@(_FileToArchive)" />
+      <_FileToArchive Include="$(ArchiveContentRootPath)**" />
+      <_FileToArchive Include="@(FileToArchive)" />
     </ItemGroup>
     <ItemGroup Condition="'$(CreateSymbolsArchive)' == 'true'">
-      <FileToArchive Remove="$(ArchiveContentRootPath)**\*.dbg" />
-      <FileToArchive Remove="$(ArchiveContentRootPath)**\*.dwarf" />
-      <FileToArchive Remove="$(ArchiveContentRootPath)**\*.pdb" />
+      <_FileToArchive Remove="$(ArchiveContentRootPath)**\*.dbg" />
+      <_FileToArchive Remove="$(ArchiveContentRootPath)**\*.dwarf" />
+      <_FileToArchive Remove="$(ArchiveContentRootPath)**\*.pdb" />
     </ItemGroup>
-    <Copy SourceFiles="@(FileToArchive)" DestinationFiles="$(OutputPath)%(RecursiveDir)%(Filename)%(Extension)" />
+    <Copy SourceFiles="@(_FileToArchive)" DestinationFiles="$(OutputPath)%(RecursiveDir)%(Filename)%(Extension)" />
     <!-- Make executable files readable by all, writable by the user, and executable by all. -->
     <ItemGroup>
       <_ArchiveExecutableContent Remove="@(_ArchiveExecutableContent)" />
-      <_ArchiveExecutableContent Include="@(FileToArchive)"
+      <_ArchiveExecutableContent Include="@(_FileToArchive)"
                                  Condition="'%(Extension)' == '.dylib' or '%(Extension)' == '.so'" />
     </ItemGroup>
     <Exec Command="chmod 755 %(_ArchiveExecutableContent.Identity)"
@@ -35,7 +35,7 @@
     <!-- Make non-executable files readable by all and writable by the user. -->
     <ItemGroup>
       <_ArchiveNonExecutableContent Remove="@(_ArchiveNonExecutableContent)" />
-      <_ArchiveNonExecutableContent Include="@(FileToArchive)" />
+      <_ArchiveNonExecutableContent Include="@(_FileToArchive)" />
       <_ArchiveNonExecutableContent Remove="@(_ArchiveExecutableContent)" />
     </ItemGroup>
     <Exec Command="chmod 644 %(_ArchiveNonExecutableContent.Identity)"
@@ -46,16 +46,17 @@
           DependsOnTargets="$(PublishSymbolsToDiskDependsOn)">
     <!-- Collect symbol files and copy to staging directory -->
     <ItemGroup>
-      <FileToArchive Remove="@(FileToArchive)" />
-      <FileToArchive Include="$(ArchiveContentRootPath)**\*.dbg" />
-      <FileToArchive Include="$(ArchiveContentRootPath)**\*.dwarf" />
-      <FileToArchive Include="$(ArchiveContentRootPath)**\*.pdb" />
+      <_SymbolFileToArchive Remove="@(_SymbolFileToArchive)" />
+      <_SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.dbg" />
+      <_SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.dwarf" />
+      <_SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.pdb" />
+      <_SymbolFileToArchive Include="@(SymbolFileToArchive)" />
     </ItemGroup>
-    <Copy SourceFiles="@(FileToArchive)" DestinationFiles="$(SymbolsOutputPath)%(RecursiveDir)%(Filename)%(Extension)" />
+    <Copy SourceFiles="@(_SymbolFileToArchive)" DestinationFiles="$(SymbolsOutputPath)%(RecursiveDir)%(Filename)%(Extension)" />
     <!-- Make non-executable files readable by all and writable by the user. -->
     <ItemGroup>
       <_SymbolsNonExecutableContent Remove="@(_SymbolsNonExecutableContent)" />
-      <_SymbolsNonExecutableContent Include="@(FileToArchive)" />
+      <_SymbolsNonExecutableContent Include="@(_SymbolFileToArchive)" />
     </ItemGroup>
     <Exec Command="chmod 644 %(_SymbolsNonExecutableContent.Identity)"
           Condition="!$([MSBuild]::IsOSPlatform(Windows)) and '@(_SymbolsNonExecutableContent)' != ''" />

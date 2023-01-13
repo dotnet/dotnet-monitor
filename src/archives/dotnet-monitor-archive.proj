@@ -8,6 +8,11 @@
     <CreateSymbolsArchive>true</CreateSymbolsArchive>
     <ArchiveContentRootPath>$(ArtifactsBinDir)dotnet-monitor\$(Configuration)\$(TargetFramework)\$(PackageRid)\publish\</ArchiveContentRootPath>
   </PropertyGroup>
+  <!-- These items are included in addition to those from publishing the dotnet-monitor project. -->
+  <ItemGroup>
+    <FileToArchive Include="$(RepoRoot)LICENSE.TXT" />
+    <FileToArchive Include="$(ThirdPartyNoticesFilePath)" Condition="Exists('$(ThirdPartyNoticesFilePath)')" />
+  </ItemGroup>
   <!-- Import ProjectToPublish items -->
   <Import Project="$(RepositoryEngineeringDir)DotnetMonitorProjectToPublish.props" />
   <!-- Import archive creation from published project -->
