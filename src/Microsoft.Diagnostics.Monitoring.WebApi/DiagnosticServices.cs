@@ -75,7 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             catch (UnauthorizedAccessException)
             {
-                throw new InvalidOperationException(Strings.ErrorMessage_ProcessEnumeratuinFailed);
+                throw new InvalidOperationException(Strings.ErrorMessage_ProcessEnumerationFailed);
             }
 
             if (processFilterConfig != null)
