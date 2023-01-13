@@ -10,6 +10,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -195,7 +196,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         {
                             var metadata = actualMetadata[index].Split(',');
                             Assert.Equal(2, metadata.Length);
-                            Assert.Equal($"{Constants.MetadataKey}={Constants.MetadataValue}", metadata[0]);
+                            Assert.Equal(FormattableString.Invariant($"{Constants.MetadataKey}={Constants.MetadataValue}"), metadata[0]);
                             Assert.Matches(regex, metadata[1]);
                         }
                     }
