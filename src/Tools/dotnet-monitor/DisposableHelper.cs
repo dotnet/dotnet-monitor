@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         }
 
         /// <summary>
-        /// Throws an <see cref="ObjectDisposedException"/> for the specified type if the state claims that the object is dipsoed.
+        /// Throws an <see cref="ObjectDisposedException"/> for the specified type if the state claims that the object is disposed.
         /// </summary>
         public static void ThrowIfDisposed<T>(ref long state)
         {
@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         }
 
         /// <summary>
-        /// Throws an <see cref="ObjectDisposedException"/> for the specified type if the state claims that the object is dipsoed.
+        /// Throws an <see cref="ObjectDisposedException"/> for the specified type if the state claims that the object is disposed.
         /// </summary>
         public static void ThrowIfDisposed(ref long state, Type owner)
         {
