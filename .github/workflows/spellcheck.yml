@@ -17,7 +17,7 @@ jobs:
 
       - uses: streetsidesoftware/cspell-action@v2
         name: Documentation spellcheck
-        if: ${{ always() && !cancelled() }}
+        if: ${{ !cancelled() }}
         with:
             files: '**/*.md'
             inline: error
@@ -25,7 +25,7 @@ jobs:
 
       - uses: streetsidesoftware/cspell-action@v2
         name: Resx spellcheck
-        if: ${{ always() && !cancelled() }}
+        if: ${{ !cancelled() }}
         with:
             files: 'src/**/*.resx'
             inline: error
@@ -33,7 +33,7 @@ jobs:
 
       - uses: streetsidesoftware/cspell-action@v2
         name: Source code spellcheck
-        if: ${{ always() && !cancelled() }}
+        if: ${{ !cancelled() }}
         with:
             files: 'src/**/*{.cs,.cpp,.h}'
             inline: warning
