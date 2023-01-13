@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class Program
     {
-        private static Command GenerateApiKeyCommand()
+        private static Command GenerateApiKeyCommannd()
         {
             Command command = new Command(
                 name: "generatekey",
