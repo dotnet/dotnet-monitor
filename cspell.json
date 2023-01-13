@@ -3,7 +3,14 @@
     "ignorePaths": [
         "eng/release/DiagnosticsReleaseTool",
         "src/external",
-        "src/inc"
+        "src/inc",
+        "*.Designer.cs"
+    ],
+    "overrides": [
+        {
+            "filename": "*.resx",
+            "languageId": "xml"
+        }
     ],
     "words": [
         "Bldr",
@@ -35,9 +42,11 @@
         "Impls",
         "JITID",
         "JWTs",
+        "LCID",
         "libc",
         "livemetrics",
         "minidump",
+        "msdata",
         "MSRC",
         "ndjson",
         "newtonsoft",
@@ -64,6 +73,8 @@
         "trce",
         "tstr",
         "ukwn",
+        "Unlocalized",
+        "Unredacted",
         "upvoting",
         "VSAPPIDDIR",
         "walkthroughs",
@@ -93,6 +104,10 @@
         {
             "name": "error_codes",
             "pattern": "/(_| )E_\\w+/gm"
+        },
+        {
+            "name": "xml_comment_block",
+            "pattern": "/<!--[\\s\\S]*?-->/gm"
         }
     ],
     "languageSettings": [
@@ -124,6 +139,15 @@
             "ignoreRegExpList": [
                 "preprocessor_conditional",
                 "error_codes"
+            ]
+        },
+        {
+            "languageId": [
+                "xml"
+            ],
+            "allowCompoundWords": true,
+            "ignoreRegExpList": [
+                "xml_comment_block"
             ]
         }
     ]
