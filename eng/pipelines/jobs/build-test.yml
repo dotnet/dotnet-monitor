@@ -1,18 +1,16 @@
 # Builds and tests dotnet-monitor for a specific platform and configuration
 
 parameters:
-  # Job name (required)
-  name: ''
-  # Job display name
-  displayName: ''
   # Operating system group (Windows, Linux, MacOS, etc)
   osGroup: Windows
   # Build configuration (Debug, Release)
   configuration: Release
   # Build architecture (arm64, x64, x86, etc)
   architecture: x64
-  # Sub paths under 'artifacts' folder from which files are published to artifacts location
-  publishArtifactsSubPaths: []
+  # RID (runtime identifier) of build output
+  targetRid: win-x64
+  # Enable/disable of publishing build output
+  publishArtifacts: false
   # Group of tests to be run
   testGroup: Default
   # TFMs for which test results are uploaded
@@ -27,12 +25,11 @@ parameters:
 jobs:
 - template: /eng/pipelines/jobs/build.yml
   parameters:
-    name: ${{ parameters.name }}
-    displayName: ${{ parameters.displayName }}
+    prefix: Build
     osGroup: ${{ parameters.osGroup }}
     configuration: ${{ parameters.configuration }}
     architecture: ${{ parameters.architecture }}
-    publishArtifactsSubPaths: ${{ parameters.publishArtifactsSubPaths }}
+
     variables:
     - ${{ if and(ne(parameters.testGroup, 'None'), ne(parameters.architecture, 'arm64')) }}:
       # If TestGroup == 'Default', choose the test group based on the type of pipeline run
@@ -75,7 +72,46 @@ jobs:
         - script: echo "##vso[task.prependpath]/usr/share/node/bin"
           displayName: Add Azurite to PATH
 
+    buildArgs: '/p:PublishProjectsAfterBuild=true'
+
     postBuildSteps:
+    - ${{ if and(eq(parameters.publishArtifacts, 'true'), eq(parameters.configuration, 'Release')) }}:
+      - task: CopyFiles@2
+        displayName: Gather Artifacts (bin/dotnet-monitor)
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin/dotnet-monitor'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/bin/dotnet-monitor'
+
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Artifacts
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
+          artifactName: Build_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
+
+      - ${{ if eq(parameters.targetRid, 'win-x64') }}:
+        - task: CopyFiles@2
+          displayName: Gather Artifacts (bin)
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/unified/bin'
+        - task: CopyFiles@2
+          displayName: Gather Artifacts (obj)
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)/artifacts/obj'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/unified/obj'
+      - ${{ else }}:
+        - task: CopyFiles@2
+          displayName: Gather Artifacts (bin/${{ parameters.targetRid }}.${{ parameters.configuration }})
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/unified/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
+      
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Artifacts (Unified)
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)/unified'
+          artifactName: Build_${{ parameters.configuration }}
+
     # Execute tests
     - ${{ if and(ne(parameters.testGroup, 'None'), eq(parameters.architecture, 'arm64')) }}:
       - script: echo "Running tests for arm64 binaries is currently not supported."
@@ -102,10 +138,10 @@ jobs:
             testResultsFiles: '**/*Tests*${{ testResultTfm.key }}*.trx'
             searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
             failTaskOnFailedTests: true
-            testRunTitle: '${{ coalesce(parameters.displayName, parameters.name) }} ${{ testResultTfm.value }}'
+            testRunTitle: '${{ parameters.configuration }} ${{ parameters.osGroup }} ${{ parameters.architecture }} ${{ testResultTfm.value }}'
             publishRunAttachments: true
             mergeTestResults: true
-            buildConfiguration: ${{ parameters.name }}
+            buildConfiguration: $(JobName)
           continueOnError: true
           condition: succeededOrFailed()
 
@@ -114,7 +150,6 @@ jobs:
           displayName: Publish Test Result Files
           inputs:
             PathtoPublish: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
-            PublishLocation: Container
-            ArtifactName: TestResults_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
+            ArtifactName: TestResults_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
           continueOnError: true
           condition: succeededOrFailed()
