@@ -30,7 +30,6 @@ jobs:
             files: 'src/**/*.resx'
             inline: error
             incremental_files_only: true
-            strict: true
 
       - uses: streetsidesoftware/cspell-action@v2
         name: Source code spellcheck
