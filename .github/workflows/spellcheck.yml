@@ -1,4 +1,4 @@
-name: 'Source code spellcheck'
+name: 'Spellcheck'
 on:
   pull_request:
     paths: ['src/**', '**/*.md']
