@@ -184,7 +184,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         actualNames.ToHashSet(),
                         strict: true);
 
-                    Regex regex = new Regex(@"\b[Percentile=]\w+?\d{0,2}");
+                    Regex regex = new Regex(@"\bPercentile=(50|95|99)");
 
                     for (int index = 0; index < actualProviders.Count; ++index)
                     {
