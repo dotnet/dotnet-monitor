@@ -43,6 +43,7 @@
     // Parts of our documentation include large text blobs, such as examples of public keys.
     "cSpell.blockCheckingWhenTextChunkSizeGreaterThan": 1000,
     "cSpell.enableFiletypes": [
-        "xml"
+        "xml",
+        "msbuild"
     ]
 }

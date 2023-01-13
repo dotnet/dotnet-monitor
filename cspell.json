@@ -10,6 +10,10 @@
         {
             "filename": "*.resx",
             "languageId": "xml"
+        },
+        {
+            "filename": "*{.targets,.props,.proj}",
+            "languageId": "msbuild"
         }
     ],
     "words": [
@@ -46,12 +50,14 @@
         "libc",
         "livemetrics",
         "minidump",
+        "msbuild",
         "msdata",
         "MSRC",
         "ndjson",
         "newtonsoft",
         "Notfication",
         "NTLM",
+        "nupkg",
         "Pids",
         "PKCS",
         "rclsid",
@@ -149,6 +155,12 @@
             "ignoreRegExpList": [
                 "xml_comment_block"
             ]
+        },
+        {
+            "languageId": [
+                "msbuild"
+            ],
+            "allowCompoundWords": true
         }
     ]
 }

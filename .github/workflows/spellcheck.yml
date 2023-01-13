@@ -35,7 +35,7 @@ jobs:
         name: Source code spellcheck
         if: ${{ !cancelled() }}
         with:
-            files: 'src/**/*{.cs,.cpp,.h}'
+            files: 'src/**/*{.cs,.cpp,.h,.targets,.props,.proj}'
             inline: warning
             incremental_files_only: true
             # Do not cause the gate to fail if potential typos in source code are found.
