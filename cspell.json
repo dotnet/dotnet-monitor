@@ -12,7 +12,7 @@
             "languageId": "xml"
         },
         {
-            "filename": "*{.targets,.props,.proj}",
+            "filename": "*{.targets,.props,.*proj}",
             "languageId": "msbuild"
         }
     ],
