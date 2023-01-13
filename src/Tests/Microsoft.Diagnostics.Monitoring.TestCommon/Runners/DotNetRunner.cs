@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public string EntrypointAssemblyPath { get; set; }
 
         /// <summary>
-        /// Retrives the starting environment block of the process.
+        /// Retrieves the starting environment block of the process.
         /// </summary>
         public IDictionary<string, string> Environment => _process.StartInfo.Environment;
 

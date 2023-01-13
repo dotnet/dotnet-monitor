@@ -1656,7 +1656,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     const string fileEgress = nameof(fileEgress);
                     rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
-                        .EnableInProcessFeatures() //Enable inproc features but don't set the flag
+                        .EnableInProcessFeatures() //Enable in-proc features but don't set the flag
                         .CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
                         .AddCollectStacksAction(fileEgress);
