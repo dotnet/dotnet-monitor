@@ -38,6 +38,10 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>74b7648c106865057c78ca1e4b2ffcb5e9bce071</Sha>
     </Dependency>
+    <Dependency Name="Microsoft.DotNet.BuildTasks.Archives" Version="6.0.0-beta.23060.6">
+      <Uri>https://github.com/dotnet/arcade</Uri>
+      <Sha>74b7648c106865057c78ca1e4b2ffcb5e9bce071</Sha>
+    </Dependency>
     <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="6.0.0-beta.23060.6">
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>74b7648c106865057c78ca1e4b2ffcb5e9bce071</Sha>
