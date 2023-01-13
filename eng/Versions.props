@@ -59,8 +59,8 @@
     <MicrosoftDotNetCodeAnalysisVersion>8.0.0-beta.23062.3</MicrosoftDotNetCodeAnalysisVersion>
     <MicrosoftDotNetXUnitExtensionsVersion>8.0.0-beta.23062.3</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
-    <MicrosoftAspNetCoreAppRuntimewinx64Version>8.0.0-alpha.1.23061.25</MicrosoftAspNetCoreAppRuntimewinx64Version>
-    <VSRedistCommonAspNetCoreSharedFrameworkx6480Version>8.0.0-alpha.1.23061.25</VSRedistCommonAspNetCoreSharedFrameworkx6480Version>
+    <MicrosoftAspNetCoreAppRuntimewinx64Version>8.0.0-alpha.1.23062.23</MicrosoftAspNetCoreAppRuntimewinx64Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx6480Version>8.0.0-alpha.1.23062.23</VSRedistCommonAspNetCoreSharedFrameworkx6480Version>
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta4.22613.1</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
