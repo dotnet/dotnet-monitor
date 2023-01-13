@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _logger = logger;
         }
 
-        public IArtifactOperation Create(IEndpointInfo endpointInfo, EventPipeCounterPipelineSettings settings)
+        public IArtifactOperation Create(IEndpointInfo endpointInfo, CounterPipelineSettings settings)
         {
             return new MetricsOperation(endpointInfo, settings, _logger);
         }

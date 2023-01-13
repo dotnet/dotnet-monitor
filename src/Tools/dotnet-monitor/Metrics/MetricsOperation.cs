@@ -13,27 +13,27 @@ using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class MetricsOperation : PipelineArtifactOperation<EventCounterPipeline>
+    internal sealed class MetricsOperation : PipelineArtifactOperation<CounterPipeline>
     {
-        private readonly EventPipeCounterPipelineSettings _settings;
+        private readonly CounterPipelineSettings _settings;
 
-        public MetricsOperation(IEndpointInfo endpointInfo, EventPipeCounterPipelineSettings settings, ILogger logger)
+        public MetricsOperation(IEndpointInfo endpointInfo, CounterPipelineSettings settings, ILogger logger)
             : base(logger, Utils.ArtifactType_Metrics, endpointInfo)
         {
             _settings = settings;
         }
 
-        protected override EventCounterPipeline CreatePipeline(Stream outputStream)
+        protected override CounterPipeline CreatePipeline(Stream outputStream)
         {
             var client = new DiagnosticsClient(EndpointInfo.Endpoint);
 
-            return new EventCounterPipeline(
+            return new CounterPipeline(
                 client,
                 _settings,
                 loggers: new[] { new JsonCounterLogger(outputStream, Logger) });
         }
 
-        protected override Task<Task> StartPipelineAsync(EventCounterPipeline pipeline, CancellationToken token)
+        protected override Task<Task> StartPipelineAsync(CounterPipeline pipeline, CancellationToken token)
         {
             return pipeline.StartAsync(token);
         }
