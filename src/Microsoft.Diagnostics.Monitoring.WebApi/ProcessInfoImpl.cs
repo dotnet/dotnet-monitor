@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         }
 
         // Creates an IProcessInfo object from the IEndpointInfo. Attempts to get the command line using event pipe
-        // if the endpoint information doesn't provide it. The cancelation token can be used to timebox this fallback
+        // if the endpoint information doesn't provide it. The cancellation token can be used to timebox this fallback
         // mechanism.
         public static async Task<IProcessInfo> FromEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken extendedInfoCancellationToken)
         {

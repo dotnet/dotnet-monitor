@@ -1,31 +1,73 @@
 {
     "version": "0.2",
+    "ignorePaths": [
+        "eng/release/DiagnosticsReleaseTool",
+        "src/external",
+        "src/inc"
+    ],
     "words": [
+        "Bldr",
+        "Brotli",
+        "Browsable",
         "callstacks",
         "CLSID",
         "codespace",
         "coreclr",
         "darc",
+        "dbug",
+        "disambiguator",
         "discoverability",
+        "Distro",
         "dockerfiles",
+        "dylib",
         "ESRP",
+        "evented",
         "exfiltrate",
+        "fwlink",
         "gcdump",
         "gcdumps",
         "globbing",
         "globstar",
+        "hmac",
+        "HMACSHA",
+        "hresult",
+        "Hsts",
+        "Impls",
+        "JITID",
         "JWTs",
         "libc",
         "livemetrics",
         "minidump",
         "MSRC",
+        "ndjson",
         "newtonsoft",
+        "Notfication",
+        "NTLM",
+        "Pids",
+        "PKCS",
+        "rclsid",
+        "reentrancy",
+        "REFCLSID",
+        "REFIID",
+        "rejit",
+        "Remoting",
+        "Renormalize",
         "respecifying",
+        "resx",
+        "rethrown",
+        "riid",
+        "RSASSA",
         "runtimes",
         "speedscope",
+        "Tfms",
         "threadpool",
+        "trce",
+        "tstr",
+        "ukwn",
         "upvoting",
-        "walkthroughs"
+        "VSAPPIDDIR",
+        "walkthroughs",
+        "Xunit"
     ],
     "patterns": [
         {
@@ -35,6 +77,22 @@
         {
             "name": "markdown_inline_code",
             "pattern": "/`[^`\\n\\r]*`/gmx"
+        },
+        {
+            "name": "preprocessor_conditional",
+            "pattern": "/^[^\\S\\n\\r]*\\#(el)?if (.)*$/gm"
+        },
+        {
+            "name": "test_data",
+            "pattern": "/^[^\\S\\n\\r]*\\[(Inline|Member)Data\\(.*$/gm"
+        },
+        {
+            "name": "using_statement",
+            "pattern": "/^[^\\S\\n\\r]*using .*;$/gm"
+        },
+        {
+            "name": "error_codes",
+            "pattern": "/(_| )E_\\w+/gm"
         }
     ],
     "languageSettings": [
@@ -45,6 +103,27 @@
             "ignoreRegExpList": [
                 "markdown_code_block",
                 "markdown_inline_code"
+            ]
+        },
+        {
+            "languageId": [
+                "csharp"
+            ],
+            "allowCompoundWords": true,
+            "ignoreRegExpList": [
+                "preprocessor_conditional",
+                "test_data",
+                "using_statement"
+            ]
+        },
+        {
+            "languageId": [
+                "cpp"
+            ],
+            "allowCompoundWords": true,
+            "ignoreRegExpList": [
+                "preprocessor_conditional",
+                "error_codes"
             ]
         }
     ]

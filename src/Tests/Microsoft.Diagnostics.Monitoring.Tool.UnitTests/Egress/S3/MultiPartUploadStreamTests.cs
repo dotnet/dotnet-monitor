@@ -121,7 +121,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
         }
 
         [Fact]
-        public async Task ItShouldWriteSingleFulllPart()
+        public async Task ItShouldWriteSingleFullPart()
         {
             var uploadId = (await _s3.InitMultiPartUploadAsync(null, CancellationToken.None));
             await using var stream = new MultiPartUploadStream(_s3, "bucket", "key", uploadId, 1024);
