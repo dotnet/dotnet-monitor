@@ -13,7 +13,11 @@
 
   <ItemGroup>
     <PackageFile Include="$(ArtifactsShippingPackagesDir)**/*.nupkg" IsShipping="true" />
+    <PackageFile Include="$(ArtifactsShippingPackagesDir)**/*.tar.gz" IsShipping="true" />
+    <PackageFile Include="$(ArtifactsShippingPackagesDir)**/*.zip" IsShipping="true" />
     <PackageFile Include="$(ArtifactsNonShippingPackagesDir)**/*.nupkg" IsShipping="false" />
+    <PackageFile Include="$(ArtifactsNonShippingPackagesDir)**/*.tar.gz" IsShipping="false" />
+    <PackageFile Include="$(ArtifactsNonShippingPackagesDir)**/*.zip" IsShipping="false" />
   </ItemGroup>
 
   <Target Name="CalculateBlobGroupAndBuildVersion">
@@ -99,25 +103,42 @@
 
     <!-- Read in project file name -->
     <ReadLinesFromFile File="%(PackageToPublish.FullPath).projectpath">
-      <Output TaskParameter="Lines" PropertyName="_ProjectPath"/>
+      <Output TaskParameter="Lines" PropertyName="_RelativeProjectPath"/>
+    </ReadLinesFromFile>
+    
+    <!-- Read in project props -->
+    <ReadLinesFromFile File="%(PackageToPublish.FullPath).projectprops"
+                       Condition="Exists('%(PackageToPublish.FullPath).projectprops')">
+      <Output TaskParameter="Lines" PropertyName="_ProjectProps"/>
     </ReadLinesFromFile>
 
     <!-- Get package name from project as if its version was set to the build version -->
-    <MSBuild Projects="$(_ProjectPath)"
+    <ItemGroup>
+      <GetPackageFileNameProps Remove="@(GetPackageFileNameProps)" />
+      <GetPackageFileNameProps Include="Version=$(_BuildVersion)" />
+      <GetPackageFileNameProps Include="$(_ProjectProps)" />
+    </ItemGroup>
+    <MSBuild Projects="$(RepoRoot)$(_RelativeProjectPath)"
              Targets="GetPackageFileName"
-             Properties="Version=$(_BuildVersion)">
+             Properties="@(GetPackageFileNameProps)">
       <Output ItemName="_PackageWithBuildVersionFileName" TaskParameter="TargetOutputs" />
     </MSBuild>
 
     <!-- Get package version from project -->
-    <MSBuild Projects="$(_ProjectPath)"
-             Targets="GetPackageVersion">
+    <ItemGroup>
+      <GetPackageVersionProps Remove="@(GetPackageVersionProps)" />
+      <GetPackageVersionProps Include="$(_ProjectProps)" />
+    </ItemGroup>
+    <MSBuild Projects="$(RepoRoot)$(_RelativeProjectPath)"
+             Targets="GetPackageVersion"
+             Properties="@(GetPackageVersionProps)">
       <Output ItemName="_PackageVersion" TaskParameter="TargetOutputs" />
     </MSBuild>
 
     <!-- Package artifact file paths -->
     <PropertyGroup>
-      <!-- Example file name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg -->
+      <!-- Example nupkg file name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg -->
+      <!-- Example archive file name: dotnet-monitor-7.0.0-rtm.12345.6-win-x64.zip -->
       <_PackageWithBuildVersionFileName>@(_PackageWithBuildVersionFileName)</_PackageWithBuildVersionFileName>
       <_PackageWithBuildVersionFilePath>%(PackageToPublish.RootDir)%(PackageToPublish.Directory)$(_PackageWithBuildVersionFileName)</_PackageWithBuildVersionFilePath>
       <_ChecksumFilePath>%(PackageToPublish.FullPath).sha512</_ChecksumFilePath>
@@ -127,7 +148,8 @@
 
     <!--
       A file that contains the version of the package.
-      Example name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg.version
+      Example nupkg name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg.version
+      Example archive name: dotnet-monitor-7.0.0-rtm.12345.6-win-x64.zip.version
       -->
     <WriteLinesToFile File="$(_PackageVersionFilePath)"
                       Lines="@(_PackageVersion)"
@@ -136,7 +158,8 @@
     <!--
       A file that contains the build version of the package. The name of this file contains the build
       version in order to avoid collisions when uploaded to blob storage.
-      Example name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg.buildversion
+      Example nupkg name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg.buildversion
+      Example archive name: dotnet-monitor-7.0.0-rtm.12345.6-win-x64.zip.buildversion
       -->
     <WriteLinesToFile File="$(_BuildVersionFilePath)"
                       Lines="$(_BuildVersion)"
@@ -148,8 +171,8 @@
     </ItemGroup>
     <ItemGroup>
       <_PackageArtifactData Include="@(_CommonArtifactData)" />
-      <!-- Set Category to OTHER so that packages are also published to blob storage. -->
-      <_PackageArtifactData Include="Category=OTHER" />
+      <!-- Set Category to OTHER so that nupkgs are also published to blob storage. -->
+      <_PackageArtifactData Include="Category=OTHER" Condition="'%(PackageToPublish.Extension)' == 'nupkg'" />
     </ItemGroup>
 
     <!-- Capture items that need to be published under the blob group. -->
