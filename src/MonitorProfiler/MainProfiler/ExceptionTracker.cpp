@@ -43,8 +43,8 @@ using namespace std;
 
     Unhandled Exception Detection Algorithm
 
-    A subset of the aboved described callbacks is used to determine if an unhandled exception has occurred:
-    - ExceptionThrown: Record the originating FunctionID and the existance of the exception.
+    A subset of the above described callbacks is used to determine if an unhandled exception has occurred:
+    - ExceptionThrown: Record the originating FunctionID and the existence of the exception.
     - ExceptionSearchCatcherFound: Record that the exception will be handled in a catching FunctionID.
     - ExceptionUnwindFunctionEnter: If the exception was not handled (ExceptionSearchCatcherFound was not invoked),
       then the exception is unhandled at this point. Do some extra bookkeeping in the case when the exception is

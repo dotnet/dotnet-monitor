@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal static class ArtifactOperationExetensions
+    internal static class ArtifactOperationExtensions
     {
         public static Task ExecuteAsync(this IArtifactOperation operation, Stream outputStream, CancellationToken token)
         {

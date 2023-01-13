@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         }
 
         /// <summary>
-        /// Returns Named config instance. <see cref="AuthenticationHander&lt;JwtBearerOptions>" /> expects
+        /// Returns Named config instance. <see cref="JwtBearerOptions>" /> expects
         /// its configuration to be named after the AuthenticationScheme it's using, not <see cref="Options.DefaultName"/>.
         /// </summary>
         public string Name => JwtBearerDefaults.AuthenticationScheme;

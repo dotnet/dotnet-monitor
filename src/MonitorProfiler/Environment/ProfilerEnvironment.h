@@ -15,7 +15,7 @@
 /// </summary>
 /// <remarks>
 /// On non-Windows platforms, the runtime will cache the initial environment variable block. Managed
-/// caled to Environment::[Get|Set]EnvironmentVariable will only mutate the cache, not the real
+/// called to Environment::[Get|Set]EnvironmentVariable will only mutate the cache, not the real
 /// environment block. Additionally, diagnostic commands for accessing the environment variables
 /// only mutate and get from the cache, not the real environment block.
 /// 
