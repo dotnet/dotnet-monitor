@@ -348,7 +348,7 @@ Summary state of an operation.
 
 ## ProcessIdentifier
 
-Object with process identifying information. The properties on this object describe indentifying aspects for a found process; these values can be used in other API calls to perform operations on specific processes.
+Object with process identifying information. The properties on this object describe identifying aspects for a found process; these values can be used in other API calls to perform operations on specific processes.
 
 | Name | Type | Description |
 |---|---|---|
@@ -373,7 +373,7 @@ The `name` property may not be a unique identifier if the application was built 
 
 Object with detailed information about a specific process.
 
-Some properties will have non-null values for procesess that are running on .NET 5 or newer (denoted with `.NET 5+`). These properties will be null for runtime versions prior to .NET 5.
+Some properties will have non-null values for processes that are running on .NET 5 or newer (denoted with `.NET 5+`). These properties will be null for runtime versions prior to .NET 5.
 
 | Name | Type | Description |
 |---|---|---|
