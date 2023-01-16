@@ -1,25 +1,24 @@
 // For format details, see https://aka.ms/devcontainer.json.
 {
-    "name": "Development (Debian)",
+    "name": "Development (Alpine)",
     "build": {
-        "dockerfile": "glibc/Dockerfile",
-        "args": {
-            "VARIANT": "6.0-bullseye",
-            "INSTALL_NODE": "true",
-            "INSTALL_AZURITE": "true",
-            "NODE_VERSION": "lts/*"
-        }
+        "dockerfile": "Dockerfile"
     },
     "hostRequirements": {
         "cpus": 4
     },
     "customizations": {
+        "codespaces": {
+            "openFiles": [
+                ".devcontainer/musl/Alpine-DevContainer.md",
+                "README.md"
+            ]
+        },
         "vscode": {
             "extensions": [
                 "ms-vscode.cpptools",
                 "ms-dotnettools.csharp",
                 "EditorConfig.EditorConfig",
-                "ms-vscode.powershell",
                 "tintoy.msbuild-project-tools",
                 "streetsidesoftware.code-spell-checker",
                 "rioj7.command-variable"
@@ -28,23 +27,6 @@
     },
     "postCreateCommand": "bash -i ${containerWorkspaceFolder}/.devcontainer/shared/scripts/container-creation.sh",
     "remoteUser": "vscode",
-    "features": {
-        "ghcr.io/devcontainers/features/github-cli:1": {
-            "version": "latest"
-        },
-        "ghcr.io/devcontainers/features/azure-cli:1": {
-            "version": "latest"
-        },
-        "ghcr.io/devcontainers/features/powershell:1": {
-            "version": "latest"
-        },
-        "ghcr.io/devcontainers/features/docker-in-docker:1": {
-            "version": "latest"
-        },
-        "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
-            "version": "latest"
-        }
-    },
     "remoteEnv": {
         "PATH": "${containerWorkspaceFolder}/.dotnet:${containerEnv:PATH}",
         "DOTNET_ROOT": "${containerWorkspaceFolder}/.dotnet",

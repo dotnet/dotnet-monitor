@@ -3,49 +3,11 @@
 
 # Running in Docker
 
-In addition to its availability as a .NET CLI tool, the `dotnet monitor` tool is available as a prebuilt Docker image that can be run in container runtimes and orchestrators.
+In addition to its availability as a .NET CLI tool, the `dotnet monitor` tool is available as a prebuilt Docker image that can be run in container runtimes and orchestrators. See [Releases](releases.md) for information on how long each image version will be supported.
 
 ## Dockerfile Source
-
-### Shipping Dockerfiles
-
-#### 7.x (Standard Support)
-
-| Version | Platform | Architecture | Link |
-|---|---|---|---|
-| 7.0 | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/main/src/monitor/7.0/alpine/amd64/Dockerfile |
-| 7.0 | Linux (Alpine) | arm64 | https://github.com/dotnet/dotnet-docker/blob/main/src/monitor/7.0/alpine/arm64v8/Dockerfile |
-
-#### 6.x (Long Term Support)
-
-| Version | Platform | Architecture | Link |
-|---|---|---|---|
-| 6.3 | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/main/src/monitor/6.3/alpine/amd64/Dockerfile |
-| 6.3 | Linux (Alpine) | arm64 | https://github.com/dotnet/dotnet-docker/blob/main/src/monitor/6.3/alpine/arm64v8/Dockerfile |
-| 6.2 | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/main/src/monitor/6.2/alpine/amd64/Dockerfile |
-| 6.2 | Linux (Alpine) | arm64 | https://github.com/dotnet/dotnet-docker/blob/main/src/monitor/6.2/alpine/arm64v8/Dockerfile |
-
-### Nightly Dockerfiles
-
-#### 7.x (Standard Support)
-
-| Version | Platform | Architecture | Link |
-|---|---|---|---|
-| 7.0 | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/7.0/alpine/amd64/Dockerfile |
-| 7.0 | Linux (Alpine) | arm64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/7.0/alpine/arm64v8/Dockerfile |
-| 7.0 | Linux (Ubuntu, Chiseled) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/7.0/ubuntu-chiseled/amd64/Dockerfile |
-| 7.0 | Linux (Ubuntu, Chiseled) | arm64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/7.0/ubuntu-chiseled/arm64v8/Dockerfile |
-
-#### 6.x (Long Term Support)
-
-| Version | Platform | Architecture | Link |
-|---|---|---|---|
-| 6.3 | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/6.3/alpine/amd64/Dockerfile |
-| 6.3 | Linux (Alpine) | arm64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/6.3/alpine/arm64v8/Dockerfile |
-| 6.3 | Linux (Ubuntu, Chiseled) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/6.3/ubuntu-chiseled/amd64/Dockerfile |
-| 6.3 | Linux (Ubuntu, Chiseled) | arm64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/6.3/ubuntu-chiseled/arm64v8/Dockerfile |
-| 6.2 | Linux (Alpine) | amd64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/6.2/alpine/amd64/Dockerfile |
-| 6.2 | Linux (Alpine) | arm64 | https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/6.2/alpine/arm64v8/Dockerfile |
+- [Shipping Dockerfiles](https://github.com/dotnet/dotnet-docker/tree/main/src/monitor)
+- [Nightly Dockerfiles](https://github.com/dotnet/dotnet-docker/tree/nightly/src/monitor)
 
 ## Image Repositories
 
