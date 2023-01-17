@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
-    <RuntimeIdentifiers>linux-x64;linux-musl-x64;win-x64</RuntimeIdentifiers>
-    <PackAsToolShimRuntimeIdentifiers>linux-x64;linux-musl-x64;win-x64</PackAsToolShimRuntimeIdentifiers>
     <RootNamespace>Microsoft.Diagnostics.Tools.Monitor</RootNamespace>
     <ToolCommandName>dotnet-monitor</ToolCommandName>
     <Description>.NET Core Diagnostic Monitoring Tool</Description>
@@ -54,28 +52,83 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Profiler library items for all of the native platforms. -->
+    <MonitorProfilerLibraryFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(LibraryExtension)')">
+      <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
+      <PublishSubPath>shared/%(TargetRid)/native</PublishSubPath>
+    </MonitorProfilerLibraryFile>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Profiler symbols items for all of the native platforms. -->
+    <MonitorProfilerSymbolsFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(SymbolsExtension)')">
+      <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
+      <PublishSubPath>shared/%(TargetRid)/native</PublishSubPath>
+    </MonitorProfilerSymbolsFile>
+  </ItemGroup>
+
   <PropertyGroup>
-    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);GatherNativeFilesForTfm</TargetsForTfmSpecificContentInPackage>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);GatherTfmNativeFilesInPackage</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
 
-  <Target Name="GatherNativeFilesForTfm">
-    <ItemGroup>
-      <!-- Create profiler library items for all of the native platforms. -->
-      <MonitorProfilerLibraryFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(LibraryExtension)')">
-        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
-      </MonitorProfilerLibraryFile>
-    </ItemGroup>
-    <ItemGroup>
-      <!-- Create profiler symbols items for all of the native platforms. -->
-      <MonitorProfilerSymbolsFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(SymbolsExtension)')">
-        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
-      </MonitorProfilerSymbolsFile>
-    </ItemGroup>
+  <Target Name="GatherTfmNativeFilesInPackage">
     <ItemGroup>
       <!-- Pack the profiler library for each platform if it exists. -->
       <TfmSpecificPackageFile Include="@(MonitorProfilerLibraryFile-&gt;Exists())" />
       <!-- Pack the profiler symbols for each platform if it exists. -->
       <TfmSpecificPackageFile Include="@(MonitorProfilerSymbolsFile-&gt;Exists())" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="IncludeNonSymbolFilesToPublish"
+          AfterTargets="ComputeFilesToPublish"
+          Condition="'$(ExcludeNonSymbolFiles)' != 'true'">
+    <ItemGroup>
+      <!-- Include the profiler library for the corresponding platform if it exists. -->
+      <ResolvedFileToPublish Include="@(MonitorProfilerLibraryFile-&gt;Exists())"
+                             Condition="'%(MonitorProfilerLibraryFile.TargetRid)' == '$(RuntimeIdentifier)'">
+        <RelativePath>%(MonitorProfilerLibraryFile.PublishSubPath)\%(Filename)%(Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="IncludeSymbolFilesToPublish"
+          AfterTargets="ComputeFilesToPublish"
+          Condition="'$(ExcludeSymbolFiles)' != 'true'">
+    <ItemGroup>
+      <!-- Include the profiler symbols for the corresponding platform if it exists. -->
+      <ResolvedFileToPublish Include="@(MonitorProfilerSymbolsFile-&gt;Exists())"
+                             Condition="'%(MonitorProfilerSymbolsFile.TargetRid)' == '$(RuntimeIdentifier)'">
+        <RelativePath>%(MonitorProfilerSymbolsFile.PublishSubPath)\%(Filename)%(Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="CalculateSymbolsFilesToPublish">
+    <ItemGroup>
+      <ResolvedSymbolFileToPublish Include="@(ResolvedFileToPublish)"
+                                   Condition="'%(Extension)' == '.dbg' or '%(Extension)' == '.dwarf' or '%(Extension)' == '.pdb'" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="ExcludeNonSymbolFilesFromPublish"
+          AfterTargets="ComputeFilesToPublish"
+          DependsOnTargets="CalculateSymbolsFilesToPublish"
+          Condition="'$(ExcludeNonSymbolFiles)' == 'true'">
+    <ItemGroup>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" />
+      <ResolvedFileToPublish Include="@(ResolvedSymbolFileToPublish)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="ExcludeSymbolFilesFromPublish"
+          AfterTargets="ComputeFilesToPublish"
+          DependsOnTargets="CalculateSymbolsFilesToPublish"
+          Condition="'$(ExcludeSymbolFiles)' == 'true'">
+    <ItemGroup>
+      <ResolvedFileToPublish Remove="@(ResolvedSymbolFileToPublish)" />
     </ItemGroup>
   </Target>
 

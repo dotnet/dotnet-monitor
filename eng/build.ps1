@@ -8,6 +8,7 @@ Param(
     [switch] $ci,
     [switch] $skipmanaged,
     [switch] $skipnative,
+    [switch] $archive,
     [string] $runtimesourcefeed = '',
     [string] $runtimesourcefeedkey = '',
     [Parameter(ValueFromRemainingArguments=$true)][String[]] $remainingargs
@@ -33,7 +34,7 @@ $reporoot = Join-Path $PSScriptRoot ".."
 $engroot = Join-Path $reporoot "eng"
 $artifactsdir = Join-Path $reporoot "artifacts"
 $logdir = Join-Path $artifactsdir "log"
-$logdir = Join-Path $logdir Windows_NT.$architecture.$configuration
+$logdir = Join-Path $logdir $configuration
 
 if ($ci) {
     $remainingargs = "-ci " + $remainingargs
@@ -63,10 +64,18 @@ if (-not $skipnative) {
     }
 }
 
+# Create archives
+if ($archive) {
+    Invoke-Expression "& `"$engroot\common\build.ps1`" -build -configuration $configuration -verbosity $verbosity /p:BuildArch=$architecture -nobl /bl:$logDir\Archive.binlog /p:CreateArchives=true /p:PackageRid=win-$architecture $managedArgs $remainingargs"
+    if ($lastExitCode -ne 0) {
+        exit $lastExitCode
+    }
+}
+
 # Run the xunit tests
 if ($test) {
     if (-not $crossbuild) {
-        Invoke-Expression "& `"$engroot\common\build.ps1`" -test -configuration $configuration -verbosity $verbosity -nobl /p:BuildArch=$architecture /bl:$logdir\Test.binlog /p:TestGroup=$testgroup $remainingargs"
+        Invoke-Expression "& `"$engroot\common\build.ps1`" -test -configuration $configuration -verbosity $verbosity /p:BuildArch=$architecture -nobl /bl:$logdir\Test.binlog /p:TestGroup=$testgroup $remainingargs"
         if ($lastExitCode -ne 0) {
             exit $lastExitCode
         }
