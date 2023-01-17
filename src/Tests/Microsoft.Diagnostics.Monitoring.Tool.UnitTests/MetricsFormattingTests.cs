@@ -64,11 +64,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             // This assumes the default percentiles of 50, 95, and 99
             Assert.Equal(5, lines.Count);
-            Assert.Equal($"# HELP {metricName}{payload[0].Unit} {payload[0].DisplayName}", lines[0]);
-            Assert.Equal($"# TYPE {metricName} summary", lines[1]);
-            Assert.Equal($"{metricName}{percentile_50} {payload[0].Value}", lines[2]);
-            Assert.Equal($"{metricName}{percentile_95} {payload[1].Value}", lines[3]);
-            Assert.Equal($"{metricName}{percentile_99} {payload[2].Value}", lines[4]);
+            Assert.Equal(FormattableString.Invariant($"# HELP {metricName}{payload[0].Unit} {payload[0].DisplayName}"), lines[0]);
+            Assert.Equal(FormattableString.Invariant($"# TYPE {metricName} summary"), lines[1]);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{percentile_50} {payload[0].Value}"), lines[2]);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{percentile_95} {payload[1].Value}"), lines[3]);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{percentile_99} {payload[2].Value}"), lines[4]);
 
         }
 
@@ -86,9 +86,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             string metricName = $"{MeterName.ToLowerInvariant()}_{payload.Name}";
 
             Assert.Equal(3, lines.Count);
-            Assert.Equal($"# HELP {metricName}{payload.Unit} {payload.DisplayName}", lines[0]);
-            Assert.Equal($"# TYPE {metricName} gauge", lines[1]);
-            Assert.Equal($"{metricName} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}", lines[2]);
+            Assert.Equal(FormattableString.Invariant($"# HELP {metricName}{payload.Unit} {payload.DisplayName}"), lines[0]);
+            Assert.Equal(FormattableString.Invariant($"# TYPE {metricName} gauge"), lines[1]);
+            Assert.Equal(FormattableString.Invariant($"{metricName} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}"), lines[2]);
         }
 
         [Fact]

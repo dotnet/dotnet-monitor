@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// </summary>
     internal sealed class MetricsService : BackgroundService
     {
-        private EventCounterPipeline _counterPipeline;
+        private CounterPipeline _counterPipeline;
         private readonly IDiagnosticServices _services;
         private readonly MetricsStoreService _store;
         private IOptionsMonitor<MetricsOptions> _optionsMonitor;
@@ -57,9 +57,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     //If metric options change, we need to cancel the existing metrics pipeline and restart with the new settings.
                     using IDisposable monitorListener = _optionsMonitor.OnChange((_, _) => optionsTokenSource.SafeCancel());
 
-                    EventPipeCounterPipelineSettings counterSettings = EventCounterSettingsFactory.CreateSettings(counterOptions, options);
+                    CounterPipelineSettings counterSettings = CounterSettingsFactory.CreateSettings(counterOptions, options);
 
-                    _counterPipeline = new EventCounterPipeline(client, counterSettings, loggers: new[] { new MetricsLogger(_store.MetricsStore) });
+                    _counterPipeline = new CounterPipeline(client, counterSettings, loggers: new[] { new MetricsLogger(_store.MetricsStore) });
 
                     using var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, optionsTokenSource.Token);
                     await _counterPipeline.RunAsync(linkedTokenSource.Token);
