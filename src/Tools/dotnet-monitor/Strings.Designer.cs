@@ -216,9 +216,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         /// <summary>
         ///   Looks up a localized string similar to The {0} field value length must be an even number..
         /// </summary>
-        internal static string ErrorMessage_FieldOddLengh {
+        internal static string ErrorMessage_FieldOddLength {
             get {
-                return ResourceManager.GetString("ErrorMessage_FieldOddLengh", resourceCulture);
+                return ResourceManager.GetString("ErrorMessage_FieldOddLength", resourceCulture);
             }
         }
         
@@ -799,7 +799,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attemping to delete diagnostic port file at &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Attempting to delete diagnostic port file at &apos;{0}&apos;..
         /// </summary>
         internal static string LogFormatString_DiagnosticPortDeleteAttempt {
             get {
@@ -1024,7 +1024,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid result refrence &apos;{actionToken}&apos;..
+        ///   Looks up a localized string similar to Invalid result reference &apos;{actionToken}&apos;..
         /// </summary>
         internal static string LogFormatString_InvalidActionResultReference {
             get {
@@ -1078,7 +1078,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The configuration field {fieldName} contains private key information. The private key information is not required for dotnet-monitor to verify a token signature and it is strongly recomended to only provide the public key..
+        ///   Looks up a localized string similar to The configuration field {fieldName} contains private key information. The private key information is not required for dotnet-monitor to verify a token signature and it is strongly recommended to only provide the public key..
         /// </summary>
         internal static string LogFormatString_NotifyPrivateKey {
             get {
