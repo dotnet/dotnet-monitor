@@ -1,0 +1,7 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />
+  <PropertyGroup>
+    <ArchiveFormat Condition="$(RuntimeIdentifier.Contains(win))">zip</ArchiveFormat>
+    <ArchiveFormat Condition="!$(RuntimeIdentifier.Contains(win))">tar.gz</ArchiveFormat>
+  </PropertyGroup>
+</Project>
