@@ -78,7 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public bool DisableMetricsViaCommandLine { get; set; }
 
         /// <summary>
-        /// Reports whether the server URLs were overriden by UseKestrel/ConfigureKestrel code.
+        /// Reports whether the server URLs were overridden by UseKestrel/ConfigureKestrel code.
         /// </summary>
         public bool OverrodeServerUrls { get; private set; }
 
@@ -217,7 +217,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             }
             catch (JsonException)
             {
-                // Unable to parse the output. These could be lines writen to stdout that are not JSON formatted.
+                // Unable to parse the output. These could be lines written to stdout that are not JSON formatted.
                 _outputHelper.WriteLine("Unable to JSON parse stdout line: {0}", line);
             }
         }
