@@ -541,13 +541,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return executeOptions;
         }
 
-        public static LoadProfilerOptions VerifyLoadProfilerAction(this CollectionRuleOptions ruleOptions, int actionIndex, string expectedPath, Guid expectecClsid)
+        public static LoadProfilerOptions VerifyLoadProfilerAction(this CollectionRuleOptions ruleOptions, int actionIndex, string expectedPath, Guid expectedClsid)
         {
             LoadProfilerOptions opts = ruleOptions.VerifyAction<LoadProfilerOptions>(
                 actionIndex, KnownCollectionRuleActions.LoadProfiler);
 
             Assert.Equal(expectedPath, opts.Path);
-            Assert.Equal(expectecClsid, opts.Clsid);
+            Assert.Equal(expectedClsid, opts.Clsid);
 
             return opts;
         }
