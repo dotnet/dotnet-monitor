@@ -31,6 +31,6 @@
 
     <!-- Release-branch specific reference -->
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringShippedVersion>6.0.405301</MicrosoftDiagnosticsMonitoringShippedVersion>
+    <MicrosoftDiagnosticsMonitoringShippedVersion>6.0.406601</MicrosoftDiagnosticsMonitoringShippedVersion>
   </PropertyGroup>
 </Project>
