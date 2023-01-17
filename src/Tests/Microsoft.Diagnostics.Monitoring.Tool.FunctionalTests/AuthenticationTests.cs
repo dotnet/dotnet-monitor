@@ -587,7 +587,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ApiClient client = new(_outputHelper, httpClient);
 
             // TODO: Split test into elevated vs non-elevated tests and skip
-            // when not running in the corresponding context. Possibly unelevate
+            // when not running in the corresponding context. Possibly un-elevate
             // dotnet-monitor when running tests elevated.
             if (EnvironmentInformation.IsElevated)
             {

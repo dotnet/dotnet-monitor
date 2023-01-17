@@ -25,6 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public static string GetFileNameTimeStampUtcNow()
         {
+            // spell-checker:disable-next
             return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss_fff");
         }
 

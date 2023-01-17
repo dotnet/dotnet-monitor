@@ -221,14 +221,14 @@ HRESULT TypeNameUtilities::GetModuleInfo(NameCache& nameCache, ModuleID moduleId
 
     WCHAR moduleFullName[256];
     ULONG nameLength = 0;
-    AssemblyID assemID;
+    AssemblyID assemblyID;
 
     IfFailRet(_profilerInfo->GetModuleInfo(moduleId,
         nullptr,
         256,
         &nameLength,
         moduleFullName,
-        &assemID));
+        &assemblyID));
 
     WCHAR* ptr = nullptr;
 

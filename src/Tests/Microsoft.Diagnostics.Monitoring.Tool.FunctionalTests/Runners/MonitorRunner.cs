@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public RootOptions ConfigurationFromEnvironment { get; } = new();
 
         /// <summary>
-        /// Determines whether the stacks feaure is enabled.
+        /// Determines whether the stacks feature is enabled.
         /// </summary>
         public bool EnableCallStacksFeature { get; set; }
 

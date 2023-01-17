@@ -92,6 +92,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             public uint TimeDateStamp;
             public ulong Flags;
 
+            // spell-checker:disable-next
             // 50,4D,44,4D = PMDM
             public ValidationRule IsSignatureValid => new ValidationRule("Invalid Signature", () => Signature == 0x504D444DU);
         }

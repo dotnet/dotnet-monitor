@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// Pulled from: https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
         /// </remarks>
         private static readonly string[] AllowedJwtAlgos = new string[]
-        {            
+        {
             // ECDSA using curves P-X and SHA-X
             SecurityAlgorithms.EcdsaSha256, SecurityAlgorithms.EcdsaSha256Signature,
             SecurityAlgorithms.EcdsaSha384, SecurityAlgorithms.EcdsaSha384Signature,

@@ -45,14 +45,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         public TimeSpan? SlidingWindowDuration { get; set; }
 
         // CONSIDER: Currently described that paths have to exactly match one item in the list.
-        // Consider allowing for wildcard/globbing to simplfy list of matchable paths.
+        // Consider allowing for wildcard/globbing to simplify list of matchable paths.
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_IncludePaths))]
         public string[] IncludePaths { get; set; }
 
         // CONSIDER: Currently described that paths have to exactly match one item in the list.
-        // Consider allowing for wildcard/globbing to simplfy list of matchable paths.
+        // Consider allowing for wildcard/globbing to simplify list of matchable paths.
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_ExcludePaths))]

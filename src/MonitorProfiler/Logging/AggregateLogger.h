@@ -20,7 +20,7 @@ private:
 
 public:
     /// <summary>
-    /// Adds an ILogger implemetation to the aggregation.
+    /// Adds an ILogger implementation to the aggregation.
     /// </summary>
     STDMETHOD(Add)(const std::shared_ptr<ILogger> pLogger);
 

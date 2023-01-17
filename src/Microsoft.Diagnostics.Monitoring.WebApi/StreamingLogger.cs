@@ -208,7 +208,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 foreach (IReadOnlyList<KeyValuePair<string, object>> scope in _scopes)
                 {
                     // The first scope should not have extra padding before the delimiter since
-                    // it was aleady padded by the padding added for every line.
+                    // it was already padded by the padding added for every line.
                     if (firstScope)
                     {
                         firstScope = false;

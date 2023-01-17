@@ -98,7 +98,7 @@ HRESULT LoggerHelper::SaveRestoreErrno(int (*func)(T...), T... args)
         }
         else
         {
-            // An error may not have actually occured since errno
+            // An error may not have actually occurred since errno
             // was not set. For example, string formatting APIs will
             // return -1 if truncation occurs, which may not be an error.
             hr = S_FALSE;

@@ -267,7 +267,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
-        /// Test that the CollectionRulePipeline thottles actions when action count limit is reached within window.
+        /// Test that the CollectionRulePipeline throttles actions when action count limit is reached within window.
         /// </summary>
         [Theory]
         [MemberData(nameof(GetTfmsSupportingPortListener))]
@@ -335,7 +335,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // Expect total action invocation count to be twice the limit
                     VerifyExecutionCount(callbackService, 2 * ExpectedActionExecutionCount);
 
-                    // Pipeline should not run to completion due to sliding window existance.
+                    // Pipeline should not run to completion due to sliding window existence.
                     Assert.False(runTask.IsCompleted);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
