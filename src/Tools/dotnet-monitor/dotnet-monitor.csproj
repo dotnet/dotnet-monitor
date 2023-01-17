@@ -63,19 +63,7 @@
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);GatherNativeFilesForTfm</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
   
-  <Target Name="GatherNativeFilesForTfm">
-    <ItemGroup>
-      <!-- Create profiler library items for all of the native platforms. -->
-      <MonitorProfilerLibraryFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(LibraryExtension)')">
-        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
-      </MonitorProfilerLibraryFile>
-    </ItemGroup>
-    <ItemGroup>
-      <!-- Create profiler symbols items for all of the native platforms. -->
-      <MonitorProfilerSymbolsFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(SymbolsExtension)')">
-        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
-      </MonitorProfilerSymbolsFile>
-    </ItemGroup>
+  <Target Name="GatherTfmNativeFilesInPackage">
     <ItemGroup>
       <!-- Pack the profiler library for each platform if it exists. -->
       <TfmSpecificPackageFile Include="@(MonitorProfilerLibraryFile-&gt;Exists())" />
