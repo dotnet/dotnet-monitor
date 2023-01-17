@@ -80,9 +80,8 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="IncludeNonSymbolFilesToPublish"
-          AfterTargets="ComputeFilesToPublish"
-          Condition="'$(ExcludeNonSymbolFiles)' != 'true'">
+  <Target Name="IncludeProfilerFilesToPublish"
+          AfterTargets="ComputeFilesToPublish">
     <ItemGroup>
       <!-- Include the profiler library for the corresponding platform if it exists. -->
       <ResolvedFileToPublish Include="@(MonitorProfilerLibraryFile-&gt;Exists())"
@@ -90,45 +89,12 @@
         <RelativePath>%(MonitorProfilerLibraryFile.PublishSubPath)\%(Filename)%(Extension)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ResolvedFileToPublish>
-    </ItemGroup>
-  </Target>
-
-  <Target Name="IncludeSymbolFilesToPublish"
-          AfterTargets="ComputeFilesToPublish"
-          Condition="'$(ExcludeSymbolFiles)' != 'true'">
-    <ItemGroup>
       <!-- Include the profiler symbols for the corresponding platform if it exists. -->
       <ResolvedFileToPublish Include="@(MonitorProfilerSymbolsFile-&gt;Exists())"
                              Condition="'%(MonitorProfilerSymbolsFile.TargetRid)' == '$(RuntimeIdentifier)'">
         <RelativePath>%(MonitorProfilerSymbolsFile.PublishSubPath)\%(Filename)%(Extension)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ResolvedFileToPublish>
-    </ItemGroup>
-  </Target>
-
-  <Target Name="CalculateSymbolsFilesToPublish">
-    <ItemGroup>
-      <ResolvedSymbolFileToPublish Include="@(ResolvedFileToPublish)"
-                                   Condition="'%(Extension)' == '.dbg' or '%(Extension)' == '.dwarf' or '%(Extension)' == '.pdb'" />
-    </ItemGroup>
-  </Target>
-
-  <Target Name="ExcludeNonSymbolFilesFromPublish"
-          AfterTargets="ComputeFilesToPublish"
-          DependsOnTargets="CalculateSymbolsFilesToPublish"
-          Condition="'$(ExcludeNonSymbolFiles)' == 'true'">
-    <ItemGroup>
-      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" />
-      <ResolvedFileToPublish Include="@(ResolvedSymbolFileToPublish)" />
-    </ItemGroup>
-  </Target>
-
-  <Target Name="ExcludeSymbolFilesFromPublish"
-          AfterTargets="ComputeFilesToPublish"
-          DependsOnTargets="CalculateSymbolsFilesToPublish"
-          Condition="'$(ExcludeSymbolFiles)' == 'true'">
-    <ItemGroup>
-      <ResolvedFileToPublish Remove="@(ResolvedSymbolFileToPublish)" />
     </ItemGroup>
   </Target>
 
