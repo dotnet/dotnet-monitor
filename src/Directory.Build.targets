@@ -14,7 +14,7 @@
   <!-- Creates artifact files related to the package that will be uploaded to blob storage during publish. -->
   <Target Name="GenerateNuGetPackageProjectFiles"
           AfterTargets="Pack"
-          Condition="'$(IsPackable)' == 'true' and '$(IsShipping)' == 'true'">
+          Condition="'$(IsPackable)' == 'true'">
     <!-- The path needs to be relative to the repository root to allow for correct path rooting across platforms and build machines. -->
     <WriteLinesToFile File="$(PackageOutputPath)\$(PackageId).$(PackageVersion).nupkg.projectpath"
                       Lines="$([MSBuild]::MakeRelative($(RepoRoot), $(MSBuildProjectFullPath)))"
@@ -22,7 +22,7 @@
   </Target>
   <Target Name="GenerateArchivePackageProjectFiles"
           AfterTargets="_CreateArchive"
-          Condition="'$(IsArchivable)' == 'true' and '$(IsShipping)' == 'true'">
+          Condition="'$(IsArchivable)' == 'true'">
     <!-- The path needs to be relative to the repository root to allow for correct path rooting across platforms and build machines. -->
     <WriteLinesToFile File="$(_DestinationFileName).projectpath"
                       Lines="$([MSBuild]::MakeRelative($(RepoRoot), $(MSBuildProjectFullPath)))"
@@ -38,7 +38,7 @@
   </Target>
   <Target Name="GenerateSymbolsArchivePackageProjectFiles"
           AfterTargets="_CreateSymbolsArchive"
-          Condition="'$(IsArchivable)' == 'true' and '$(CreateSymbolsArchive)' == 'true' and '$(IsShipping)' == 'true'">
+          Condition="'$(IsArchivable)' == 'true' and '$(CreateSymbolsArchive)' == 'true'">
     <!-- The path needs to be relative to the repository root to allow for correct path rooting across platforms and build machines. -->
     <WriteLinesToFile File="$(_DestinationFileName).projectpath"
                       Lines="$([MSBuild]::MakeRelative($(RepoRoot), $(MSBuildProjectFullPath)))"
