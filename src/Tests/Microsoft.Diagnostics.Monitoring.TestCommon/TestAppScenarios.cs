@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             public const string PrintEnvironmentVariables = nameof(PrintEnvironmentVariables);
         }
 
-        public enum SenarioState
+        public enum ScenarioState
         {
             Waiting,
             Ready,

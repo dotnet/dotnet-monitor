@@ -10,8 +10,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
 {
     internal static class LoggingExtensions
     {
-        private static readonly Action<ILogger, TestAppScenarios.SenarioState, Exception> _scenarioState =
-            LoggerMessage.Define<TestAppScenarios.SenarioState>(
+        private static readonly Action<ILogger, TestAppScenarios.ScenarioState, Exception> _scenarioState =
+            LoggerMessage.Define<TestAppScenarios.ScenarioState>(
                 eventId: TestAppLogEventIds.ScenarioState.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: "State: {State}");
@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                 logLevel: LogLevel.Information,
                 formatString: "Environment Variable: {Name} = {Value}");
 
-        public static void ScenarioState(this ILogger logger, TestAppScenarios.SenarioState state)
+        public static void ScenarioState(this ILogger logger, TestAppScenarios.ScenarioState state)
         {
             _scenarioState(logger, state, null);
         }
