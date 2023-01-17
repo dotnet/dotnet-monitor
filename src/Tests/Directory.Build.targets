@@ -5,7 +5,7 @@
     Arcade defines the _GetTestsToRunTarget property group solely based on whether TargetFrameworks
     is non-empty, which is not correct. MSBuild uses the IsCrossTargetingBuild property (which checks
     that TargetFrameworks is non-empty and that TargetFramework is empty). Use this as the condition
-    and reimplment the test targets to include the correct target dependencies.
+    and reimplement the test targets to include the correct target dependencies.
   -->
   <PropertyGroup>
     <_GetTestsToRunTarget Condition="'$(IsCrossTargetingBuild)' != 'true'">_InnerGetTestsToRun</_GetTestsToRunTarget>

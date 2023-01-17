@@ -401,7 +401,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         /// <summary>
-        /// Test that when requesting non-existant egress it immediately returns HTTP 400
+        /// Test that when requesting non-existent egress it immediately returns HTTP 400
         /// rather than queueing the request and having the operation report that it failed.
         /// </summary>
         /// <returns></returns>

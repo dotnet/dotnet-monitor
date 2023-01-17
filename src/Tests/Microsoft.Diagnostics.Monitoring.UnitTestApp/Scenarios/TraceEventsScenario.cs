@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
     /// <summary>
-    /// Continously emits trace events and a unique one on request.
+    /// Continuously emits trace events and a unique one on request.
     /// Only stops once an exit request is received.
     /// </summary>
     internal static class TraceEventsScenario

@@ -1,0 +1,35 @@
+// For format details, see https://aka.ms/devcontainer.json.
+{
+    "name": "Development (Alpine)",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "hostRequirements": {
+        "cpus": 4
+    },
+    "customizations": {
+        "codespaces": {
+            "openFiles": [
+                ".devcontainer/musl/Alpine-DevContainer.md",
+                "README.md"
+            ]
+        },
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-dotnettools.csharp",
+                "EditorConfig.EditorConfig",
+                "tintoy.msbuild-project-tools",
+                "streetsidesoftware.code-spell-checker",
+                "rioj7.command-variable"
+            ]
+        }
+    },
+    "postCreateCommand": "bash -i ${containerWorkspaceFolder}/.devcontainer/shared/scripts/container-creation.sh",
+    "remoteUser": "vscode",
+    "remoteEnv": {
+        "PATH": "${containerWorkspaceFolder}/.dotnet:${containerEnv:PATH}",
+        "DOTNET_ROOT": "${containerWorkspaceFolder}/.dotnet",
+        "DOTNET_MULTILEVEL_LOOKUP": "0"
+    }
+}

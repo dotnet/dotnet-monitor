@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             // The IOptionsChangeTokenSource<TOptions> implementations will notify when the TOptions need
             // to be recomputed, however the registrations of these sources will only notify for the default
-            // named option instance (because the names are not known at serivce configuration time). Nothing,
+            // named option instance (because the names are not known at service configuration time). Nothing,
             // except for OptionsMonitor<TOptions> change notification, should be attempting to create/cache
             // options for the default name. In this case, just return the default value (because there is no
             // way to get a valid set of options for the default name and the value isn't used by anything).
@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             // The IOptionsChangeTokenSource<TOptions> implementations will notify when the TOptions need
             // to be recomputed, however the registrations of these sources will only notify for the default
-            // named option instance (because the names are not known at serivce configuration time). Nothing
+            // named option instance (because the names are not known at service configuration time). Nothing
             // should be calling into this method, but handle the default name just in case.
             if (IsDefaultName(name))
             {
@@ -55,7 +55,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             // The IOptionsChangeTokenSource<TOptions> implementations will notify when the TOptions need
             // to be recomputed, however the registrations of these sources will only notify for the default
-            // named option instance (because the names are not known at serivce configuration time). Thus,
+            // named option instance (because the names are not known at service configuration time). Thus,
             // interpret a removal of the default named option as a removal of all of the options instances.
             if (IsDefaultName(name))
             {

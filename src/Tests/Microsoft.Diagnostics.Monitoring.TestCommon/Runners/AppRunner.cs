@@ -141,7 +141,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             {
                 _adapter.Environment.Add(
                     ToolIdentifiers.EnvironmentVariables.RuntimeIdentifier,
-                    ProfilerHelper.GetTargetRuntimeIdentifier(Architecture));
+                    NativeLibraryHelper.GetTargetRuntimeIdentifier(Architecture));
             }
             if (ProfilerLogLevel != null)
             {
@@ -179,7 +179,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             }
             catch (JsonException)
             {
-                // Unable to parse the output. These could be lines writen to stdout that are not JSON formatted.
+                // Unable to parse the output. These could be lines written to stdout that are not JSON formatted.
                 // For example, asking dotnet to create a dump will write a message to stdout that is not JSON formatted.
                 _outputHelper.WriteLine("Unable to JSON parse stdout line: {0}", line);
             }

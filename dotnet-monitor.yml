@@ -14,6 +14,7 @@ pr:
     - .github
     - .vscode
     - .gitignore
+    - cspell.json
     - eng/actions
     - '**.md'
 
@@ -43,95 +44,36 @@ stages:
 - stage: Build
   displayName: Build and Test
   jobs:
+  - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+    # Generate a TPN for only the dotnet-monitor project
+    - template: /eng/pipelines/jobs/tpn.yml
+
   # Build and test binaries
   - template: /eng/pipelines/jobs/platform-matrix.yml
     parameters:
       jobTemplate: /eng/pipelines/jobs/build-test.yml
       includeArm64: ${{ ne(variables['System.TeamProject'], 'public') }}
       includeDebug: true
-      publishBuildArtifacts: true
       jobParameters:
+        publishArtifacts: ${{ and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}
         testGroup: ${{ parameters.testGroup }}
+
   - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-    # Generate a TPN for only the dotnet-monitor project
-    - template: /eng/common/templates/job/job.yml
+    # Build RID (runtime identifier) archives
+    - template: /eng/pipelines/jobs/platform-matrix.yml
       parameters:
-        name: Generate_TPN
-        displayName: Generate TPN
-        disableComponentGovernance: true
-        enableSbom: false
-        pool:
-          name: NetCore1ESPool-Internal
-          demands: ImageOverride -equals 1es-windows-2019
-        steps:
-        # Only restore the dotnet-monitor project so only packages we ship get included in the below CG scan
-        - script: >-
-            $(Build.SourcesDirectory)/restore.cmd -ci -projects $(Build.SourcesDirectory)/src/Tools/dotnet-monitor/dotnet-monitor.csproj
-          displayName: Restore dotnet-monitor tool packages
-            
-        - task: ComponentGovernanceComponentDetection@0
-          displayName: Component Detection (dotnet-monitor tool)
+        jobTemplate: /eng/pipelines/jobs/build-archive.yml
+        includeArm64: ${{ ne(variables['System.TeamProject'], 'public') }}
+# This stage creates NuGet packages and generates the BAR manifests
+- ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+  - stage: PackSignPublish
+    displayName: Pack, Sign, and Generate Manifests
+    dependsOn:
+    - Build
+    jobs:
+    # Pack, sign, and publish manifest
+    - template: /eng/pipelines/jobs/pack-sign-publish.yml
 
-        - task: notice@0
-          displayName: Generate TPN file
-          inputs:
-            outputfile: '$(Build.ArtifactStagingDirectory)/$(_TPNFile)'
-            outputformat: text
-
-        - task: PublishPipelineArtifact@1
-          displayName: Publish TPN
-          inputs:
-            artifactName: 'THIRD-PARTY-NOTICES'
-            targetPath: '$(Build.ArtifactStagingDirectory)/$(_TPNFile)'
-
-    # Pack, sign, and publish
-    - template: /eng/common/templates/job/job.yml
-      parameters:
-        name: Pack_Sign
-        displayName: Pack and Sign
-        dependsOn:
-        - Windows_x64_Release
-        - Windows_x86_Release
-        - Windows_arm64_Release
-        - Linux_x64_Release
-        - Linux_arm64_Release
-        - Linux_Musl_x64_Release
-        - Linux_Musl_arm64_Release
-        - MacOS_x64_Release
-        - MacOS_arm64_Release
-        - Generate_TPN
-        pool:
-          name: NetCore1ESPool-Internal
-          demands: ImageOverride -equals 1es-windows-2019
-        enablePublishUsingPipelines: true
-        enableMicrobuild: true
-        artifacts:
-          download:
-            name: Build_Release
-          publish:
-            artifacts:
-              name: Artifacts_Pack_Sign
-            logs:
-              name: Logs_Pack_Sign
-            manifests: true
-        variables:
-        - _BuildConfig: Release
-        - _SignType: real
-        steps:
-        - task: DownloadPipelineArtifact@2
-          displayName: Download TPN
-          inputs:
-            buildType: current
-            artifactName: 'THIRD-PARTY-NOTICES'
-            targetPath: '$(Build.SourcesDirectory)'
-        - script: >-
-            $(Build.SourcesDirectory)/eng/cipacksignpublish.cmd
-            /p:TeamName=$(_TeamName)
-            /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
-            /p:DotNetSignType=real
-            /p:DotNetPublishUsingPipelines=true
-            /p:ThirdPartyNoticesFilePath='$(Build.SourcesDirectory)/$(_TPNFile)'
-          displayName: Pack, Sign, and Publish
     # Register with BAR
     - template: /eng/common/templates/job/publish-build-assets.yml
       parameters:
@@ -143,12 +85,13 @@ stages:
           name: NetCore1ESPool-Internal
           demands: ImageOverride -equals 1es-windows-2019
 # These are the stages that perform validation of several SDL requirements and publish the bits required to the designated feed.
-- ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   - template: /eng/common/templates/post-build/post-build.yml
     parameters:
       # This is to enable SDL runs part of Post-Build Validation Stage.
       # as well as NuGet, SourceLink, and signing validation.
       # The variables get imported from group dotnet-diagnostics-sdl-params
+      validateDependsOn:
+      - PackSignPublish
       publishingInfraVersion: 3
       enableSourceLinkValidation: true
       enableSigningValidation: true
@@ -158,16 +101,17 @@ stages:
       SDLValidationParameters:
         enable: true
         continueOnError: true
-        params: ' -SourceToolsList @("policheck","credscan")
-        -TsaInstanceURL $(_TsaInstanceURL)
-        -TsaProjectName $(_TsaProjectName)
-        -TsaNotificationEmail $(_TsaNotificationEmail)
-        -TsaCodebaseAdmin $(_TsaCodebaseAdmin)
-        -TsaBugAreaPath $(_TsaBugAreaPath)
-        -TsaIterationPath $(_TsaIterationPath)
-        -TsaRepositoryName "dotnet-monitor"
-        -TsaCodebaseName "dotnet-monitor"
-        -TsaPublish $True'
+        params: >-
+          -SourceToolsList @("policheck","credscan")
+          -TsaInstanceURL $(_TsaInstanceURL)
+          -TsaProjectName $(_TsaProjectName)
+          -TsaNotificationEmail $(_TsaNotificationEmail)
+          -TsaCodebaseAdmin $(_TsaCodebaseAdmin)
+          -TsaBugAreaPath $(_TsaBugAreaPath)
+          -TsaIterationPath $(_TsaIterationPath)
+          -TsaRepositoryName "dotnet-monitor"
+          -TsaCodebaseName "dotnet-monitor"
+          -TsaPublish $True
         artifactNames:
         - 'PackageArtifacts'
 # This sets up the bits to do a Release.
