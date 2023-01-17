@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "dotnet-monitor",
-    "version": "v1"
+    "version": "v1.0"
   },
   "paths": {
     "/processes": {

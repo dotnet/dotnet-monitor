@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// <summary>
         /// GET /
         /// </summary>
-        public static Task GetRootAsync(this ApiClient client)
+        public static Task<HttpResponseMessage> GetRootAsync(this ApiClient client)
         {
             return client.GetRootAsync(TestTimeouts.HttpApi);
         }
@@ -30,10 +30,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// <summary>
         /// GET /
         /// </summary>
-        public static async Task GetRootAsync(this ApiClient client, TimeSpan timeout)
+        public static async Task<HttpResponseMessage> GetRootAsync(this ApiClient client, TimeSpan timeout)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
-            await client.GetRootAsync(timeoutSource.Token).ConfigureAwait(false);
+            var resp=await client.GetRootAsync(timeoutSource.Token).ConfigureAwait(false);
+            return resp;
         }
 
         /// <summary>

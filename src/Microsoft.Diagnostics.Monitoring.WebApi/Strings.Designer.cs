@@ -187,6 +187,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Resource {0} cannot be found.
+        /// </summary>
+        internal static string ErrorMessage_ResourceNotFound {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ResourceNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to process stack in timely manner..
         /// </summary>
         internal static string ErrorMessage_StacksTimeout {

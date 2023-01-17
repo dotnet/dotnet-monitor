@@ -30,20 +30,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public FileStreamResult GetFile(string filename)
         {
-            _logger.LogInformation("Fetching {Filename} from resources", filename);
+            if (filename != "swagger.json") { throw new Exception(string.Format(Strings.ErrorMessage_ResourceNotFound, filename)); }
             var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Microsoft.Diagnostics.Monitoring.WebApi.swagger.v1." + filename);
-
-            string mimetype = "text/plain";
-
-            switch (filename.Substring(filename.LastIndexOf(".")))
-            {
-                case ".json":
-                    mimetype = "text/json";
-                    break;
-                case ".yaml":
-                    mimetype = "text/yaml";
-                    break;
-            }
+            string mimetype = "text/json";
 
             return new FileStreamResult(stream, mimetype)
             {
