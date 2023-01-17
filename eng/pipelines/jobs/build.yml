@@ -1,10 +1,8 @@
 # Builds dotnet-monitor for a specific platform and configuration
 
 parameters:
-  # Job name (required)
-  name: ''
-  # Job display name
-  displayName: ''
+  # Job prefix (required)
+  prefix: ''
   # Operating system group (Windows, Linux, MacOS, etc)
   osGroup: Windows
   # Build configuration (Debug, Release)
@@ -27,12 +25,13 @@ parameters:
   disableComponentGovernance: false
   # Disable SBOM generation
   disableSbom: false
+  buildArgs: ''
 
 jobs:
 - template: /eng/common/templates/job/job.yml
   parameters:
-    name: ${{ parameters.name }}
-    displayName: ${{ coalesce(parameters.displayName, parameters.name) }}
+    name: ${{ parameters.prefix }}_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
+    displayName: ${{ format('{0} {1} {2} {3}', parameters.prefix, parameters.osGroup, parameters.architecture, parameters.configuration) }}
     timeoutInMinutes: ${{ parameters.timeoutInMinutes }}
     enableTelemetry: true
     disableComponentGovernance: ${{ or(eq(parameters.disableComponentGovernance, 'true'), eq(parameters.osGroup, 'Linux_Musl')) }}
@@ -42,7 +41,7 @@ jobs:
     artifacts:
       publish:
         logs:
-          name: Logs_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
+          name: Logs_$(JobName)
 
     pool:
       # Public Linux Build Pool
@@ -90,6 +89,7 @@ jobs:
       clean: all
 
     variables:
+    - JobName: ${{ parameters.prefix }}_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
     - _BuildConfig: ${{ parameters.configuration }}
     - _HelixType: build/product
     - _HelixBuildConfig: ${{ parameters.configuration }}
@@ -155,9 +155,9 @@ jobs:
 
     - script: >-
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
+        ${{ parameters.buildArgs }}
         -configuration ${{ parameters.configuration }}
         -architecture ${{ parameters.architecture }}
-        -archive
         $(_CrossBuildArgs)
         $(_InternalInstallArgs)
         $(_InternalBuildArgs)
@@ -165,21 +165,6 @@ jobs:
       ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
         env:
           ROOTFS_DIR: '/crossrootfs/arm64'
-
-    - ${{ if and(ne(variables['System.TeamProject'], 'public'), gt(length(parameters.publishArtifactsSubPaths), 0)) }}:
-      - ${{ each subPath in parameters.publishArtifactsSubPaths }}:
-        - task: CopyFiles@2
-          displayName: Gather Artifacts (${{ subPath.source }})
-          inputs:
-            SourceFolder: '$(Build.SourcesDirectory)/artifacts/${{ subPath.source }}'
-            Contents: '**'
-            TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/${{ coalesce(subPath.target, subPath.source) }}'
-
-      - task: PublishBuildArtifacts@1
-        displayName: Publish Artifacts
-        inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
-          artifactName: Build_${{ parameters.configuration }}
 
     - ${{ each step in parameters.postBuildSteps }}:
       - ${{ step }}

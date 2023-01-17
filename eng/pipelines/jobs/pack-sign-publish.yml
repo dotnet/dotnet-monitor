@@ -1,0 +1,64 @@
+jobs:
+- template: /eng/common/templates/job/job.yml
+  parameters:
+    name: Pack_Sign
+    displayName: Pack and Sign
+    dependsOn:
+    - Build_Release_Windows_x64
+    - Build_Release_Windows_x86
+    - Build_Release_Windows_arm64
+    - Build_Release_Linux_x64
+    - Build_Release_Linux_arm64
+    - Build_Release_Linux_Musl_x64
+    - Build_Release_Linux_Musl_arm64
+    - Build_Release_MacOS_x64
+    - Build_Release_MacOS_arm64
+    - Archive_Release_Windows_x64
+    - Archive_Release_Windows_x86
+    - Archive_Release_Windows_arm64
+    - Archive_Release_Linux_x64
+    - Archive_Release_Linux_arm64
+    - Archive_Release_Linux_Musl_x64
+    - Archive_Release_Linux_Musl_arm64
+    - Archive_Release_MacOS_x64
+    - Archive_Release_MacOS_arm64
+    - Generate_TPN
+    pool:
+      name: NetCore1ESPool-Svc-Internal
+      demands: ImageOverride -equals 1es-windows-2019
+    enablePublishUsingPipelines: true
+    enableMicrobuild: true
+    artifacts:
+      publish:
+        artifacts:
+          name: Artifacts_Pack_Sign
+        logs:
+          name: Logs_Pack_Sign
+        manifests: true
+    variables:
+    - _BuildConfig: Release
+    - _SignType: real
+    steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Binaries
+      inputs:
+        artifactName: Build_Release
+        targetPath: '$(Build.SourcesDirectory)/artifacts'
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Archives
+      inputs:
+        artifactName: Archive_Release
+        targetPath: '$(Build.SourcesDirectory)/artifacts'
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Third Party Notice
+      inputs:
+        artifactName: 'THIRD-PARTY-NOTICES'
+        targetPath: '$(Build.SourcesDirectory)'
+    - script: >-
+        $(Build.SourcesDirectory)/eng/cipacksignpublish.cmd
+        /p:TeamName=$(_TeamName)
+        /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
+        /p:DotNetSignType=real
+        /p:DotNetPublishUsingPipelines=true
+        /p:ThirdPartyNoticesFilePath='$(Build.SourcesDirectory)/$(_TPNFile)'
+      displayName: Pack, Sign, and Publish
