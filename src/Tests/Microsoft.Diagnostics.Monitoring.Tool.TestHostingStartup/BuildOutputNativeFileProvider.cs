@@ -29,31 +29,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
         /// </summary>
         public static IFileProvider Create(string runtimeIdentifier, string sharedLibraryPath)
         {
-            int index = runtimeIdentifier.LastIndexOf('-');
-            if (index < 0)
-            {
-                throw new ArgumentException();
-            }
-            string osPlatform = runtimeIdentifier.Substring(0, index);
-            string architecture = runtimeIdentifier.Substring(index + 1);
-
-            string nativePlatformFolderPrefix = null;
-            switch (osPlatform)
-            {
-                case "linux":
-                case "linux-musl":
-                    nativePlatformFolderPrefix = "Linux";
-                    break;
-                case "osx":
-                    nativePlatformFolderPrefix = "OSX";
-                    break;
-                case "win":
-                    nativePlatformFolderPrefix = "Windows_NT";
-                    break;
-                default:
-                    throw new PlatformNotSupportedException();
-            }
-
             string configurationName =
 #if DEBUG
             "Debug";
@@ -61,7 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
             "Release";
 #endif
 
-            string nativeOutputPath = Path.Combine(sharedLibraryPath, $"{nativePlatformFolderPrefix}.{architecture}.{configurationName}");
+            string nativeOutputPath = Path.Combine(sharedLibraryPath, $"{runtimeIdentifier}.{configurationName}");
 
             return new BuildOutputNativeFileProvider(nativeOutputPath);
         }

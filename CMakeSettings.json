@@ -1,11 +1,11 @@
 ﻿{
   "configurations": [
     {
-      "name": "Windows_NT.arm64.Debug",
+      "name": "win-arm64.Debug",
       "generator": "Ninja",
       "configurationType": "Debug",
-      "buildRoot": "${projectDir}\\artifacts\\obj\\Windows_NT.arm64.Debug\\crossgen",
-      "installRoot": "${projectDir}\\artifacts\\bin\\Windows_NT.arm64.Debug",
+      "buildRoot": "${projectDir}\\artifacts\\obj\\win-arm64.Debug\\crossgen",
+      "installRoot": "${projectDir}\\artifacts\\bin\\win-arm64.Debug",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
@@ -29,11 +29,11 @@
       ]
     },
     {
-      "name": "Windows_NT.arm64.Release",
+      "name": "win-arm64.Release",
       "generator": "Ninja",
       "configurationType": "Release",
-      "buildRoot": "${projectDir}\\artifacts\\obj\\Windows_NT.arm64.Release\\crossgen",
-      "installRoot": "${projectDir}\\artifacts\\bin\\Windows_NT.arm64.Release",
+      "buildRoot": "${projectDir}\\artifacts\\obj\\win-arm64.Release\\crossgen",
+      "installRoot": "${projectDir}\\artifacts\\bin\\win-arm64.Release",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
@@ -57,12 +57,12 @@
       ]
     },
     {
-      "name": "Windows_NT.x64.Debug",
+      "name": "win-x64.Debug",
       "generator": "Ninja",
       "configurationType": "Debug",
       "inheritEnvironments": [ "msvc_x64" ],
-      "buildRoot": "${projectDir}\\artifacts\\obj\\Windows_NT.x64.Debug",
-      "installRoot": "${projectDir}\\artifacts\\bin\\Windows_NT.x64.Debug",
+      "buildRoot": "${projectDir}\\artifacts\\obj\\win-x64.Debug",
+      "installRoot": "${projectDir}\\artifacts\\bin\\win-x64.Debug",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
@@ -80,11 +80,11 @@
       ]
     },
     {
-      "name": "Windows_NT.x64.Release",
+      "name": "win-x64.Release",
       "generator": "Ninja",
       "configurationType": "Release",
-      "buildRoot": "${projectDir}\\artifacts\\obj\\Windows_NT.x64.Release",
-      "installRoot": "${projectDir}\\artifacts\\bin\\Windows_NT.x64.Release",
+      "buildRoot": "${projectDir}\\artifacts\\obj\\win-x64.Release",
+      "installRoot": "${projectDir}\\artifacts\\bin\\win-x64.Release",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
@@ -103,11 +103,11 @@
       ]
     },
     {
-      "name": "Windows_NT.x86.Debug",
+      "name": "win-x86.Debug",
       "generator": "Ninja",
       "configurationType": "Debug",
-      "buildRoot": "${projectDir}\\artifacts\\obj\\Windows_NT.x86.Debug",
-      "installRoot": "${projectDir}\\artifacts\\bin\\Windows_NT.x86.Debug",
+      "buildRoot": "${projectDir}\\artifacts\\obj\\win-x86.Debug",
+      "installRoot": "${projectDir}\\artifacts\\bin\\win-x86.Debug",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
@@ -131,11 +131,11 @@
       ]
     },
     {
-      "name": "Windows_NT.x86.Release",
+      "name": "win-x86.Release",
       "generator": "Ninja",
       "configurationType": "Release",
-      "buildRoot": "${projectDir}\\artifacts\\obj\\Windows_NT.x86.Release",
-      "installRoot": "${projectDir}\\artifacts\\bin\\Windows_NT.x86.Release",
+      "buildRoot": "${projectDir}\\artifacts\\obj\\win-x86.Release",
+      "installRoot": "${projectDir}\\artifacts\\bin\\win-x86.Release",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
