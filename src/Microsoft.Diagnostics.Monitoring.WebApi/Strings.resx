@@ -157,7 +157,7 @@
   <data name="ErrorMessage_OperationNotRunning" xml:space="preserve">
     <value>Operation is not running.</value>
   </data>
-  <data name="ErrorMessage_ProcessEnumeratuinFailed" xml:space="preserve">
+  <data name="ErrorMessage_ProcessEnumerationFailed" xml:space="preserve">
     <value>Unable to enumerate processes.</value>
     <comment>Gets a string similar to "Unable to enumerate processes.".</comment>
   </data>
