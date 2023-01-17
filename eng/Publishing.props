@@ -172,7 +172,7 @@
     <ItemGroup>
       <_PackageArtifactData Include="@(_CommonArtifactData)" />
       <!-- Set Category to OTHER so that nupkgs are also published to blob storage. -->
-      <_PackageArtifactData Include="Category=OTHER" Condition="'%(PackageToPublish.Extension)' == 'nupkg'" />
+      <_PackageArtifactData Include="Category=OTHER" Condition="'%(PackageToPublish.Extension)' == '.nupkg'" />
     </ItemGroup>
 
     <!-- Capture items that need to be published under the blob group. -->
