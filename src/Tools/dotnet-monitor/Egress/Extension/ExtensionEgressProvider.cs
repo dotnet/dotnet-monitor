@@ -69,28 +69,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             IConfigurationSection providerTypeSection = _configurationProvider.GetConfigurationSection(providerType);
             IConfigurationSection providerNameSection = providerTypeSection.GetSection(providerName);
 
-            if (providerNameSection.Exists())
+            if (!providerNameSection.Exists())
             {
-                var configAsDict = new Dictionary<string, string>();
-
-                foreach (var kvp in providerNameSection.AsEnumerable(true))
-                {
-                    // Only exclude null values that have children.
-                    if (kvp.Value == null)
-                    {
-                        if (providerNameSection.GetSection(kvp.Key).GetChildren().Any())
-                        {
-                            continue;
-                        }
-                    }
-
-                    configAsDict[kvp.Key] = kvp.Value;
-                }
-
-                return configAsDict;
+                throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
             }
 
-            throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
+            var configAsDict = new Dictionary<string, string>();
+
+            foreach (var kvp in providerNameSection.AsEnumerable(makePathsRelative: true))
+            {
+                // Only exclude null values that have children.
+                if (kvp.Value == null)
+                {
+                    if (providerNameSection.GetSection(kvp.Key).GetChildren().Any())
+                    {
+                        continue;
+                    }
+                }
+
+                configAsDict[kvp.Key] = kvp.Value;
+            }
+
+            return configAsDict;
         }
     }
 }
