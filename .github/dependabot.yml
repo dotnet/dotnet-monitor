@@ -1,127 +1,151 @@
 version: 2
 updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    target-branch: "main"
-  - package-ecosystem: "nuget"
-    directory: "/eng/dependabot"
-    schedule:
-      interval: "daily"
-    target-branch: "main"
-    ignore:
-      - dependency-name: "Microsoft.Extensions.*"
-        update-types: [ "version-update:semver-major" ]
-  - package-ecosystem: "nuget"
-    directory: "/eng/dependabot/net6.0"
-    schedule:
-      interval: "daily"
-    target-branch: "main"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
-  - package-ecosystem: "nuget"
-    directory: "/eng/dependabot/net7.0"
-    schedule:
-      interval: "daily"
-    target-branch: "main"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
-  - package-ecosystem: "nuget"
-    directory: "/eng/dependabot/netcoreapp3.1"
-    schedule:
-      interval: "daily"
-    target-branch: "main"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
-  - package-ecosystem: "nuget"
-    directory: "/eng/dependabot"
-    schedule:
-      interval: "daily"
-    target-branch: "release/6.x"
-    ignore:
-      - dependency-name: "Microsoft.Extensions.*"
-        update-types: [ "version-update:semver-major" ]
-  - package-ecosystem: "nuget"
-    directory: "/eng/dependabot/net6.0"
-    schedule:
-      interval: "daily"
-    target-branch: "release/6.x"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
-  - package-ecosystem: "nuget"
-    directory: "/eng/dependabot/netcoreapp3.1"
-    schedule:
-      interval: "daily"
-    target-branch: "release/6.x"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
-  - package-ecosystem: "nuget"
-    directory: "/eng/dependabot"
-    schedule:
-      interval: "daily"
-    target-branch: "release/7.0"
-    ignore:
-      - dependency-name: "Microsoft.Extensions.*"
-        update-types: [ "version-update:semver-major" ]
-  - package-ecosystem: "nuget"
-    directory: "/eng/dependabot/net6.0"
-    schedule:
-      interval: "daily"
-    target-branch: "release/7.0"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
-  - package-ecosystem: "nuget"
-    directory: "/eng/dependabot/net7.0"
-    schedule:
-      interval: "daily"
-    target-branch: "release/7.0"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
-  - package-ecosystem: "nuget"
-    directory: "/eng/dependabot/netcoreapp3.1"
-    schedule:
-      interval: "daily"
-    target-branch: "release/7.0"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
-  - package-ecosystem: "nuget"
-    directory: "/eng/dependabot"
-    schedule:
-      interval: "daily"
-    target-branch: "release/7.x"
-    ignore:
-      - dependency-name: "Microsoft.Extensions.*"
-        update-types: [ "version-update:semver-major" ]
-  - package-ecosystem: "nuget"
-    directory: "/eng/dependabot/net6.0"
-    schedule:
-      interval: "daily"
-    target-branch: "release/7.x"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
-  - package-ecosystem: "nuget"
-    directory: "/eng/dependabot/net7.0"
-    schedule:
-      interval: "daily"
-    target-branch: "release/7.x"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
-  - package-ecosystem: "nuget"
-    directory: "/eng/dependabot/netcoreapp3.1"
-    schedule:
-      interval: "daily"
-    target-branch: "release/7.x"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
+- package-ecosystem: github-actions
+  directory: /
+  schedule:
+    interval: daily
+  target-branch: main
+- package-ecosystem: nuget
+  directory: /eng/dependabot
+  schedule:
+    interval: daily
+  target-branch: main
+  ignore:
+  - dependency-name: Microsoft.Extensions.*
+    update-types:
+    - version-update:semver-major
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net7.0
+  schedule:
+    interval: daily
+  target-branch: main
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net6.0
+  schedule:
+    interval: daily
+  target-branch: main
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+- package-ecosystem: nuget
+  directory: /eng/dependabot/netcoreapp3.1
+  schedule:
+    interval: daily
+  target-branch: main
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+- package-ecosystem: nuget
+  directory: /eng/dependabot
+  schedule:
+    interval: daily
+  target-branch: release/7.x
+  ignore:
+  - dependency-name: Microsoft.Extensions.*
+    update-types:
+    - version-update:semver-major
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net7.0
+  schedule:
+    interval: daily
+  target-branch: release/7.x
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net6.0
+  schedule:
+    interval: daily
+  target-branch: release/7.x
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+- package-ecosystem: nuget
+  directory: /eng/dependabot/netcoreapp3.1
+  schedule:
+    interval: daily
+  target-branch: release/7.x
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+- package-ecosystem: nuget
+  directory: /eng/dependabot
+  schedule:
+    interval: daily
+  target-branch: release/7.0
+  ignore:
+  - dependency-name: Microsoft.Extensions.*
+    update-types:
+    - version-update:semver-major
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net7.0
+  schedule:
+    interval: daily
+  target-branch: release/7.0
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net6.0
+  schedule:
+    interval: daily
+  target-branch: release/7.0
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+- package-ecosystem: nuget
+  directory: /eng/dependabot/netcoreapp3.1
+  schedule:
+    interval: daily
+  target-branch: release/7.0
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+- package-ecosystem: nuget
+  directory: /eng/dependabot
+  schedule:
+    interval: daily
+  target-branch: release/6.x
+  ignore:
+  - dependency-name: Microsoft.Extensions.*
+    update-types:
+    - version-update:semver-major
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net7.0
+  schedule:
+    interval: daily
+  target-branch: release/6.x
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net6.0
+  schedule:
+    interval: daily
+  target-branch: release/6.x
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+- package-ecosystem: nuget
+  directory: /eng/dependabot/netcoreapp3.1
+  schedule:
+    interval: daily
+  target-branch: release/6.x
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major

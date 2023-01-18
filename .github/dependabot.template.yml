@@ -1,0 +1,29 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    target-branch: "main"
+#@ for branch in ["main", "release/7.x", "release/7.0", "release/6.x"]:
+  - package-ecosystem: "nuget"
+    directory: "/eng/dependabot"
+    schedule:
+      interval: "daily"
+    target-branch: #@ branch
+    ignore:
+      - dependency-name: "Microsoft.Extensions.*"
+        update-types: [ "version-update:semver-major" ]
+
+#@ for tfm in ["net7.0", "net6.0", "netcoreapp3.1"]:
+  - package-ecosystem: "nuget"
+    directory: #@ "/eng/dependabot/" + tfm
+    schedule:
+      interval: "daily"
+    target-branch: #@ branch
+    ignore:
+      - dependency-name: "*"
+        update-types: [ "version-update:semver-major" ]
+#@ end
+
+#@ end
