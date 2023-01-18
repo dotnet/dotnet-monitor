@@ -79,8 +79,7 @@ jobs:
       ${{ if eq(parameters.architecture, 'arm64') }}:
         container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-alpine
       ${{ else }}:
-        # CMake + Clang is broken on Alpine 3.14 prereqs image
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.13-WithNode
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-WithNode
 
     ${{ if ne(parameters.dependsOn, '') }}:
       dependsOn: ${{ parameters.dependsOn }}
