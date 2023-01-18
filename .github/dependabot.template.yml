@@ -17,8 +17,12 @@ updates:
     ignore:
       - dependency-name: "Microsoft.Extensions.*"
         update-types: [ "version-update:semver-major" ]
-
-#@ for tfm in ["public-feed", "net7.0", "net6.0", "netcoreapp3.1"]:
+  - package-ecosystem: "nuget"
+    directory: "/eng/dependabot/public-feed"
+    schedule:
+      interval: "daily"
+    target-branch: #@ branch
+#@ for tfm in ["net7.0", "net6.0", "netcoreapp3.1"]:
   - package-ecosystem: "nuget"
     directory: #@ "/eng/dependabot/" + tfm
     schedule:
