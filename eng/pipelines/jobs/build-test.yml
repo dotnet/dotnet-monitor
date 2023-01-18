@@ -9,6 +9,8 @@ parameters:
   architecture: x64
   # RID (runtime identifier) of build output
   targetRid: win-x64
+  # Enable/disable of publishing build output
+  publishArtifacts: false
   # Group of tests to be run
   testGroup: Default
   # TFMs for which test results are uploaded
@@ -71,7 +73,7 @@ jobs:
     buildArgs: '/p:PublishProjectsAfterBuild=true'
 
     postBuildSteps:
-    - ${{ if eq(parameters.configuration, 'Release') }}:
+    - ${{ if and(eq(parameters.publishArtifacts, 'true'), eq(parameters.configuration, 'Release')) }}:
       - task: CopyFiles@2
         displayName: Gather Artifacts (bin/dotnet-monitor)
         inputs:
