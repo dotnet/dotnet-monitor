@@ -1,4 +1,5 @@
 #! Use https://carvel.dev/ytt/ to generate this template.
+#! Either use the "Regenerate dependabot.yml" task in Codespaces, or run the following command:
 #! > ytt -f .github/dependabot.template.yml > .github/dependabot.yml
 
 version: 2

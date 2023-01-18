@@ -94,7 +94,21 @@
             "problemMatcher": [
                 "$msCompile"
             ]
-        }
+        },
+        {
+            "label": "Regenerate dependabot.yml",
+            "type": "shell",
+            "command": "ytt",
+            "args": [
+                "-f",
+                ".github/dependabot.template.yml",
+                ">",
+                ".github/dependabot.yml"
+            ],
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
     ],
     "inputs": [
         {

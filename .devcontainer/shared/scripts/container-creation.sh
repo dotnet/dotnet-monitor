@@ -11,6 +11,11 @@ set -e
 # Do **NOT** do this in base images.
 dotnet dev-certs https
 
+# Install ytt
+shasum -a 256 -c ./.devcontainer/shared/ytt-linux-amd64.sha
+chmod +x ./ytt-linux-amd64
+sudo mv ./ytt-linux-amd64 /usr/local/bin/ytt
+
 # The container creation script is executed in a new Bash instance
 # so we exit at the end to avoid the creation process lingering.
 exit
