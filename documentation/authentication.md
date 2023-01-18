@@ -19,31 +19,45 @@ Windows authentication doesn't require explicit configuration and is enabled aut
 
 ## API Key Authentication
 
-An API Key is the recommended authentication mechanism for `dotnet monitor`. API Keys are referred to as `MonitorApiKey` in configuration and source code but we will shorten the term to "API key" in this document. To enable it, you will need to generate a secret token, update the configuration of `dotnet monitor`, and then specify the secret token in the `Authorization` header on all requests to `dotnet monitor`. To configure API Key authentication using the integrated `generatekey` command see: [API Key Setup](./api-key-setup.md).
+An API Key is the recommended authentication mechanism for `dotnet monitor`. API Keys are referred to as `MonitorApiKey` in configuration and source code but we will shorten the term to "API key" in this document. To enable API key authenentication:
+
+- You will need to generate a secret token, update the configuration of `dotnet monitor`, and then specify the secret token in the `Authorization` header on all requests to `dotnet monitor`. To configure API Key authentication using the integrated `generatekey` command see: [API Key Setup](./api-key-setup.md).
+
+  or
+
+- Use the `--temp-api-key` command line option to generate a one-time API key for that instantiation of dotnet-monitor. The API key will be reported back as part of log output during the startup of the process.
 
 > **Note**: API Key Authentication should only be used when TLS is enabled to protect the key while in transit. `dotnet monitor` will emit a warning if authentication is enabled over an insecure transport medium.
 
 ## Authenticating requests
 
-When using Windows Authentication, your browser will automatically handle the Windows authentication challenge. If you are using an API Key, you must specify it via the `Authorization` header.
+### Windows authentication
 
-```sh
-curl -H "Authorization: Bearer <API Key from GenerateKey command>" https://localhost:52323/processes
-```
+- When using a web browser, it will automatically handle the Windows authentication challenge. 
 
-If using PowerShell, you can use `Invoke-WebRequest` but it does not accept the same parameters.
-
-```powershell
- (Invoke-WebRequest -Uri https://localhost:52323/processes -Headers @{ 'Authorization' = 'Bearer <API Key from GenerateKey command>' }).Content | ConvertFrom-Json
-```
-
-To use Windows authentication with PowerShell, you can specify the `-UseDefaultCredentials` flag for `Invoke-WebRequest` or `--negotiate` for `curl.exe`
+- To use Windows authentication with PowerShell, you can specify the `-UseDefaultCredentials` flag for `Invoke-WebRequest` or `--negotiate` for `curl.exe`
 ```powershell
 curl.exe --negotiate https://localhost:52323/processes -u $(whoami)
 ```
 ```powershell
 (Invoke-WebRequest -Uri https://localhost:52323/processes -UseDefaultCredentials).Content | ConvertFrom-Json
 ```
+
+### API Authentication
+
+- If you are using an API Key, you must specify it via the `Authorization` header.
+
+```sh
+curl -H "Authorization: Bearer <API Key from GenerateKey command>" https://localhost:52323/processes
+```
+
+- If using PowerShell, you can use `Invoke-WebRequest` but it does not accept the same parameters.
+
+```powershell
+ (Invoke-WebRequest -Uri https://localhost:52323/processes -Headers @{ 'Authorization' = 'Bearer <API Key from GenerateKey command>' }).Content | ConvertFrom-Json
+```
+
+
 
 ## Disabling Authentication
 

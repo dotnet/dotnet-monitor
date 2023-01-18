@@ -3,7 +3,7 @@
 
 # Collection Rule Examples
 
-The following examples provide sample scenarios for using a collection rule. These templates can be copied directly into your configuration file with minimal adjustments to work with your application (for more information on configuring an egress provider, see [egress providers](./../configuration.md#egress-configuration)), or they can be adjusted for your specific use-case. [Learn more about configuring collection rules](collectionrules.md).
+The following examples provide sample scenarios for using a collection rule. These templates can be copied directly into your configuration file with minimal adjustments to work with your application (for more information on configuring an egress provider, see [egress providers](../configuration/egress-configuration.md)), or they can be adjusted for your specific use-case. [Learn more about configuring collection rules](collectionrules.md).
 
 ## Collect Trace - Startup (`Startup` Trigger)
 
