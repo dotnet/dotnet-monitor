@@ -19,10 +19,6 @@ updates:
   schedule:
     interval: daily
   target-branch: main
-  ignore:
-  - dependency-name: '*'
-    update-types:
-    - version-update:semver-major
 - package-ecosystem: nuget
   directory: /eng/dependabot/net7.0
   schedule:
@@ -64,10 +60,6 @@ updates:
   schedule:
     interval: daily
   target-branch: release/7.x
-  ignore:
-  - dependency-name: '*'
-    update-types:
-    - version-update:semver-major
 - package-ecosystem: nuget
   directory: /eng/dependabot/net7.0
   schedule:
@@ -109,10 +101,6 @@ updates:
   schedule:
     interval: daily
   target-branch: release/7.0
-  ignore:
-  - dependency-name: '*'
-    update-types:
-    - version-update:semver-major
 - package-ecosystem: nuget
   directory: /eng/dependabot/net7.0
   schedule:
@@ -154,10 +142,6 @@ updates:
   schedule:
     interval: daily
   target-branch: release/6.x
-  ignore:
-  - dependency-name: '*'
-    update-types:
-    - version-update:semver-major
 - package-ecosystem: nuget
   directory: /eng/dependabot/net7.0
   schedule:
