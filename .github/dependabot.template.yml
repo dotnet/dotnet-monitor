@@ -1,3 +1,6 @@
+#! Use https://carvel.dev/ytt/ to generate this template.
+#! > ytt -f .github/dependabot.template.yml > .github/dependabot.yml
+
 version: 2
 updates:
   - package-ecosystem: "github-actions"
@@ -15,7 +18,7 @@ updates:
       - dependency-name: "Microsoft.Extensions.*"
         update-types: [ "version-update:semver-major" ]
 
-#@ for tfm in ["net7.0", "net6.0", "netcoreapp3.1"]:
+#@ for tfm in ["public-feed", "net7.0", "net6.0", "netcoreapp3.1"]:
   - package-ecosystem: "nuget"
     directory: #@ "/eng/dependabot/" + tfm
     schedule:
@@ -25,5 +28,4 @@ updates:
       - dependency-name: "*"
         update-types: [ "version-update:semver-major" ]
 #@ end
-
 #@ end

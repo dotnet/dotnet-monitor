@@ -1,0 +1,21 @@
+<Project>
+  <!--
+    Packages in this file have versions updated periodically by Dependabot specifically for .NET 6.
+  -->
+  <ItemGroup>
+    <!-- dotnet/diagnostics references -->
+    <!--
+      Keep MicrosoftDiagnosticsMonitoringShippedVersion in-sync with the latest publicly shipped version of dotnet-dump:
+      - In release branches we want to only use versions of Microsoft.Diagnostics.Monitoring.* packages that
+        were built together with other packages from dotnet/diagnostics that have publicly shipped on nuget.org.
+      - Microsoft.Diagnostics.Monitoring.* packages are not shipped via nuget.org, and instead are available via
+        the dotnet-tools feed, but it contains additional (often newer) versions that don't correspond to
+        the publicly shipped related packages.
+      - dotnet-dump, and select other packages from dotnet/diagnostics, share the same version tag as the
+        Microsoft.Diagnostics.Monitoring.* packages so we can use them to manage MicrosoftDiagnosticsMonitoring*LibraryVersion.
+      - This is part of a shim project for dependabot and will never actually be built or restored, so we
+        can add a package reference to the dotnet-dump tool.
+    -->
+    <PackageReference Include="dotnet-dump" Version="$(MicrosoftDiagnosticsMonitoringShippedVersion)" />
+  </ItemGroup>
+</Project>

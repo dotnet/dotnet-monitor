@@ -1,6 +1,7 @@
 <Project>
   <!-- Import references updated by Dependabot. This file is for package references updated manually or by Maestro. -->
   <Import Project="dependabot/Versions.props" />
+  <Import Project="dependabot/public-feed/Versions.props" />
   <Import Project="dependabot/net6.0/Versions.props" />
   <Import Project="dependabot/net7.0/Versions.props" />
   <Import Project="dependabot/netcoreapp3.1/Versions.props" />
@@ -48,10 +49,10 @@
   </PropertyGroup>
   <!--
     These versions should ONLY be updated by automation.
-    
+
     DO NOT UPDATE THESE MANUALLY. Use the `darc` command line tool to update this file so it stays in sync with
     Version.Details.xml.
-    
+
     See https://github.com/dotnet/arcade/blob/master/Documentation/Darc.md for instructions on using darc.
   -->
   <PropertyGroup Label="Automated">
