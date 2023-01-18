@@ -71,21 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 
         private static AzureBlobEgressProviderOptions BuildOptions(ExtensionEgressPayload configPayload)
         {
-            AzureBlobEgressProviderOptions options = new AzureBlobEgressProviderOptions()
-            {
-                AccountUri = GetUriConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.AccountUri)),
-                AccountKey = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.AccountKey)),
-                AccountKeyName = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.AccountKeyName)),
-                SharedAccessSignature = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.SharedAccessSignature)),
-                SharedAccessSignatureName = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.SharedAccessSignatureName)),
-                ContainerName = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.ContainerName)),
-                BlobPrefix = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.BlobPrefix)),
-                QueueName = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.QueueName)),
-                QueueAccountUri = GetUriConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.QueueAccountUri)),
-                QueueSharedAccessSignature = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.QueueSharedAccessSignature)),
-                QueueSharedAccessSignatureName = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.QueueSharedAccessSignatureName)),
-                ManagedIdentityClientId = GetConfig(configPayload.Configuration, nameof(AzureBlobEgressProviderOptions.ManagedIdentityClientId))
-            };
+            AzureBlobEgressProviderOptions options = GetOptions<AzureBlobEgressProviderOptions>(configPayload);
 
             // If account key was not provided but the name was provided,
             // lookup the account key property value from EgressOptions.Properties
@@ -132,6 +118,19 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
             return options;
         }
 
+        private static T GetOptions<T>(ExtensionEgressPayload payload) where T : class, new()
+        {
+            IConfigurationBuilder builder = new ConfigurationBuilder();
+
+            var configurationRoot = builder.AddInMemoryCollection(payload.Configuration).Build();
+
+            T options = new();
+
+            configurationRoot.Bind(options);
+
+            return options;
+        }
+
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
             CancelSource.Cancel();
@@ -144,25 +143,6 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 
             StdInStream = Console.OpenStandardInput();
             await StdInStream.CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
-        }
-
-        private static string GetConfig(Dictionary<string, string> configDict, string propKey)
-        {
-            if (configDict.TryGetValue(propKey, out string value))
-            {
-                return value;
-            }
-            return null;
-        }
-
-        private static Uri GetUriConfig(Dictionary<string, string> configDict, string propKey)
-        {
-            string uriStr = GetConfig(configDict, propKey);
-            if (uriStr == null)
-            {
-                return null;
-            }
-            return new Uri(uriStr);
         }
     }
 

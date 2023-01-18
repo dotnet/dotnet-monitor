@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -15,6 +15,10 @@
     <Compile Include="..\..\Tools\dotnet-monitor\Egress\Extension\ExtensionEgressPayload.cs" Link="Options\Egress\Extension\ExtensionEgressPayload.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Egress\EgressArtifactSettings.cs" Link="Options\Egress\EgressArtifactSettings.cs" />
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTests\EgressExtensibilityTestsConstants.cs" Link="EgressExtensibilityTestsConstants.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -9,6 +9,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     public static class EgressExtensibilityTestsConstants
     {
+        public const string Key = "Key1";
+        public const string Value = "Value1";
         public const string ExtensionsFolder = "extensions";
         public const string SampleArtifactPath = "sample\\path";
         public const string SampleFailureMessage = "the extension failed";

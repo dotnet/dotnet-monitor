@@ -4,10 +4,11 @@
 
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
+using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.CommandLine;
 using System.Text.Json;
+using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 {
@@ -36,6 +37,9 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
                 TestEgressProviderOptions options = BuildOptions(configPayload);
 
+                Assert.Single(options.Metadata.Keys);
+                Assert.Equal(options.Metadata[EgressExtensibilityTestsConstants.Key], EgressExtensibilityTestsConstants.Value);
+
                 if (options.ShouldSucceed)
                 {
                     result.Succeeded = true;
@@ -62,22 +66,15 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 
         private static TestEgressProviderOptions BuildOptions(ExtensionEgressPayload configPayload)
         {
-            TestEgressProviderOptions options = new TestEgressProviderOptions()
-            {
-                ShouldSucceed = GetConfig(configPayload.Configuration, nameof(TestEgressProviderOptions.ShouldSucceed)),
-            };
+            IConfigurationBuilder builder = new ConfigurationBuilder();
+
+            var configurationRoot = builder.AddInMemoryCollection(configPayload.Configuration).Build();
+
+            TestEgressProviderOptions options = new();
+
+            configurationRoot.Bind(options);
 
             return options;
-        }
-
-        private static bool GetConfig(IDictionary<string, string> configDict, string propKey)
-        {
-            if (configDict.TryGetValue(propKey, out string value))
-            {
-                return bool.Parse(value);
-            }
-
-            return false;
         }
     }
 }

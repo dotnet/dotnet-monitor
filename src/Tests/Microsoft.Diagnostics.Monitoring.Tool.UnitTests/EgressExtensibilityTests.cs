@@ -108,9 +108,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             extension.AddEnvironmentVariable("DOTNET_ROOT", dotnetPath);
 
             ExtensionEgressPayload payload = new();
-            payload.Configuration = new Dictionary<string, string>
+
+            payload.Configuration = new Dictionary<string, string>()
             {
-                { "ShouldSucceed", shouldSucceed.ToString() }
+                { "ShouldSucceed", shouldSucceed.ToString() },
+                { $"Metadata:{EgressExtensibilityTestsConstants.Key}", EgressExtensibilityTestsConstants.Value }
             };
 
             CancellationTokenSource tokenSource = new(CommonTestTimeouts.GeneralTimeout);
