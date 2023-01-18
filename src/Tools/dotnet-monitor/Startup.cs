@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,8 +12,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
-using System;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
@@ -45,37 +42,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(EgressValidationUnhandledExceptionFilter));
-            });
-
-            //Swagger API explorer
-            services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen(sg =>
-            {
-                sg.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Version = "v1.0",
-                    Title = "dotnet-monitor"
-                });
-
-                sg.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
-                {
-                    Name = "JWT Authentication",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = JwtBearerDefaults.AuthenticationScheme,
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = Strings.HelpDescription_JWT_Header
-                });
-                sg.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "bearerAuth" }
-                        },
-                        Array.Empty<string>()
-                    }
-                });
             });
 
             services.Configure<ApiBehaviorOptions>(options =>
