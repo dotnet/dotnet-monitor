@@ -1,6 +1,6 @@
 <Project>
   <!--
-    Packages in this file have versions updated periodically by Dependabot specifically for .NET 6.
+    Packages in this file have versions updated periodically by Dependabot specifically from public feeds.
   -->
   <ItemGroup>
     <!-- dotnet/diagnostics references -->
