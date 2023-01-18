@@ -6,7 +6,22 @@
 Collection rules are specified in configuration as a named item under the `CollectionRules` property at the root of the configuration. Each collection rule has four properties for describing the behavior of the rule:
 - [`Filters`](#filters) - A set of process filters to select which processes the rule should be applied
 - [`Trigger`](#triggers) - The metric and it's threshold that will be used to trigger the action
+  - [AspNetRequestCount](#aspnetrequestcount-trigger)
+  - [AspNetRequestDuration](#aspnetrequestduration-trigger)
+  - [AspNetResponseStatus](#aspnetresponsestatus-trigger)
+  - [EventCounter](#eventcounter-trigger)
+  - [Trigger shortcuts](../collectionrules/triggershortcuts.md) 
 - [`Actions`](#actions) - The action to be be performed
+  - [CollectDump](#collectdump-action)
+  - [CollectGCDump](#collectgcdump-action)
+  - [CollectTrace](#collecttrace-action)
+  - [CollectLiveMetrics](#collectlivemetrics-action)
+  - [CollectLogs](#collectlogs-action)
+  - [Execute](#execute-action)
+  - [CollectStacks](#experimental-collectstacks-action-70)
+  - [LoadProfiler](#loadprofiler-action)
+  - [SetEnvironmentVariable](#setenvironmentvariable-action)
+  - [GetEnvironmentVariable](#getenvironmentvariable-action)
 - [`Limits`](#limits) - Constrains the lifetime of the rule and how often its actions can be run before being throttled
 
 ## Example
@@ -110,7 +125,7 @@ The following is a collection rule that collects a 1 minute CPU trace and egress
 
 ## Filters
 
-Each collection rule can specify a set of process filters to select which processes the rule should be applied. The filter criteria are the same as those used for the [default process](#default-process-configuration) configuration.
+Each collection rule can specify a set of process filters to select which processes the rule should be applied. The filter criteria are the same as those used for the [default process](./default-process-configuration.md) configuration.
 
 ### Example
 
@@ -399,7 +414,7 @@ Usage that is satisfied when the CPU usage of the application is higher than 70%
 
 ### Built-In Default Triggers
 
-These [trigger shortcuts](collectionrules/triggershortcuts.md) simplify configuration for several common `EventCounter` providers.
+These [trigger shortcuts](../collectionrules/triggershortcuts.md) simplify configuration for several common `EventCounter` providers.
 
 ### ASP.NET Request Path Wildcards and Globbing
 

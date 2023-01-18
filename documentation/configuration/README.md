@@ -5,7 +5,7 @@
 
 `dotnet monitor` has extensive configuration to control various aspects of its behavior. Ordinarily, you are not required to specify most of this configuration and only exists if you wish to change the default behavior in `dotnet monitor`.
 
->**Note**: Some features are [experimental](./experimental.md) and are denoted as `**[Experimental]**` in these documents.
+>**Note**: Some features are [experimental](../experimental.md) and are denoted as `**[Experimental]**` in these documents.
 
 ## Configuration Reference
 
@@ -19,7 +19,7 @@
 - **[Metrics Configuration](./metrics-configuration.md)** - Configuration of the `/metrics` endpoint for live metrics collection
 - **[Egress Configuration](./egress-configuration.md)** - When `dotnet-monitor` is used to produce artifacts such as dumps or traces, an egress provider enables the artifacts to be stored in a manner suitable for the hosting environment rather than streamed back directly.]
 - **[In-Process Features Configuration](#experimental-in-process-features-configuration-70)** - Some features of `dotnet monitor` require loading libraries into target applications that may have performance impact on memory and CPU utilization
-
+- **[Garbage Collector Mode](#garbage-collector-mode)** - Configure which GC mode is used by the `dotnet monitor` process.
 
 ## Kestrel Configuration
 
