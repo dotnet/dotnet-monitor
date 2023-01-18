@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         public static async Task<HttpResponseMessage> GetRootAsync(this ApiClient client, TimeSpan timeout)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
-            var resp=await client.GetRootAsync(timeoutSource.Token).ConfigureAwait(false);
+            var resp = await client.GetRootAsync(timeoutSource.Token).ConfigureAwait(false);
             return resp;
         }
 
