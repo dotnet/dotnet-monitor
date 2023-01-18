@@ -41,6 +41,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="..\..\documentation\openapi.json" Link="swagger\v1\swagger.json" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <Compile Update="Strings.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

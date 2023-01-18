@@ -529,6 +529,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to JWT Authorization header using the Bearer scheme. Put only the JWT Token in the textbox when prompted using Swagger UI..
+        /// </summary>
+        internal static string HelpDescription_JWT_Header {
+            get {
+                return ResourceManager.GetString("HelpDescription_JWT_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The fully qualified path and filename of the json configuration file you&apos;d like to add to the list of configuration sources..
         /// </summary>
         internal static string HelpDescription_OptionConfigurationFilePath {
