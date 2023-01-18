@@ -12,11 +12,11 @@ set -e
 dotnet dev-certs https
 
 # Install ytt
-scriptRoot="$( cd -P "$( dirname "$0" )" && pwd )"
+repoRoot=$(git rev-parse --show-toplevel)
 tmpDir=$(mktemp -d)
 pushd "$tmpDir"
 curl -sSLO https://github.com/vmware-tanzu/carvel-ytt/releases/download/v0.44.1/ytt-linux-amd64
-shasum -a 256 -c "$scriptRoot/.devcontainer/shared/ytt-linux-amd64.sha"
+shasum -a 256 -c "$repoRoot/.devcontainer/shared/ytt-linux-amd64.sha"
 chmod +x ./ytt-linux-amd64
 mv ./ytt-linux-amd64 /usr/local/bin/ytt
 popd
