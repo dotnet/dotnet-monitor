@@ -18,7 +18,7 @@ pushd "$tmpDir"
 curl -sSLO https://github.com/vmware-tanzu/carvel-ytt/releases/download/v0.44.1/ytt-linux-amd64
 shasum -a 256 -c "$repoRoot/.devcontainer/shared/ytt-linux-amd64.sha"
 chmod +x ./ytt-linux-amd64
-mv ./ytt-linux-amd64 /usr/local/bin/ytt
+sudo -n mv ./ytt-linux-amd64 /usr/local/bin/ytt
 popd
 
 # The container creation script is executed in a new Bash instance
