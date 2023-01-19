@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -58,7 +57,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _maxMetricCount = maxMetricCount;
             _logger = logger;
         }
-
 
         public void AddMetric(ICounterPayload metric)
         {
@@ -226,7 +224,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             else if (metric is CounterEndedPayload)
             {
-                //Ignore this for now
+                _logger.CounterEndedPayload(metric.DisplayName);
             }
             else
             {
