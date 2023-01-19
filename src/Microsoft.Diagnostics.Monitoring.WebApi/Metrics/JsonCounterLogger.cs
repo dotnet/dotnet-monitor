@@ -38,12 +38,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             if (counter is ErrorPayload errorPayload)
             {
                 Logger.LogWarning(errorPayload.ErrorMessage);
-
                 return;
             }
-            if (counter is CounterEndedPayload)
+            else if (counter is CounterEndedPayload)
             {
-                //Don't do anything for now
+                Logger.CounterEndedPayload(counter.Name);
                 return;
             }
 

@@ -792,7 +792,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
   ```
 </details>
 
-### Limit How Many Histograms To Track (7.?+)
+### Limit How Many Histograms To Track (7.1+)
 
 For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum number of histograms that can be tracked. Each unique combination of provider name, histogram name, and dimension values counts as one histogram. Tracking more histograms uses more memory in the target process so this bound guards against unintentional high memory use. `MaxHistograms` has a default value of `10`.
 
@@ -825,7 +825,7 @@ For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum n
   ```
 </details>
 
-### Limit How Many Time Series To Track (7.?+)
+### Limit How Many Time Series To Track (7.1+)
 
 For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum number of time series that can be tracked. Each unique combination of provider name, metric name, and dimension values counts as one time series. Tracking more time series uses more memory in the target process so this bound guards against unintentional high memory use. `MaxTimeSeries` has a default value of `1000`.
 

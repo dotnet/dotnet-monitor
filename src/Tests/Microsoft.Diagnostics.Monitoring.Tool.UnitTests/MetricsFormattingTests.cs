@@ -62,14 +62,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             const string percentile_95 = "{Percentile=\"95\"}";
             const string percentile_99 = "{Percentile=\"99\"}";
 
-            // This assumes the default percentiles of 50, 95, and 99
             Assert.Equal(5, lines.Count);
             Assert.Equal(FormattableString.Invariant($"# HELP {metricName}{payload[0].Unit} {payload[0].DisplayName}"), lines[0]);
             Assert.Equal(FormattableString.Invariant($"# TYPE {metricName} summary"), lines[1]);
             Assert.Equal(FormattableString.Invariant($"{metricName}{percentile_50} {payload[0].Value}"), lines[2]);
             Assert.Equal(FormattableString.Invariant($"{metricName}{percentile_95} {payload[1].Value}"), lines[3]);
             Assert.Equal(FormattableString.Invariant($"{metricName}{percentile_99} {payload[2].Value}"), lines[4]);
-
         }
 
         [Fact]
@@ -140,18 +138,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             return lines;
         }
-
-        /*
-        [Fact]
-        public async Task MaxHistogramFailure_Test()
-        {
-
-        }
-
-        [Fact]
-        public async Task MaxTimeSeriesFailure_Test()
-        {
-
-        }*/
     }
 }

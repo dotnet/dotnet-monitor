@@ -17,16 +17,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static CounterPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, bool includeDefaults,
             int durationSeconds)
         {
-            return CreateSettings(includeDefaults, durationSeconds, counterOptions.GetIntervalSeconds(), MetricsOptionsDefaults.MaxHistograms,
-                MetricsOptionsDefaults.MaxTimeSeries, () => new List<EventPipeCounterGroup>(0));
+            return CreateSettings(includeDefaults,
+                durationSeconds,
+                counterOptions.GetIntervalSeconds(),
+                counterOptions.GetMaxHistograms(),
+                counterOptions.GetMaxTimeSeries(),
+                () => new List<EventPipeCounterGroup>(0));
         }
 
         public static CounterPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, MetricsOptions options)
         {
             return CreateSettings(options.IncludeDefaultProviders.GetValueOrDefault(MetricsOptionsDefaults.IncludeDefaultProviders),
                 Timeout.Infinite, counterOptions.GetIntervalSeconds(),
-                options.MaxHistograms.GetValueOrDefault(MetricsOptionsDefaults.MaxHistograms),
-                options.MaxTimeSeries.GetValueOrDefault(MetricsOptionsDefaults.MaxTimeSeries),
+                counterOptions.GetMaxHistograms(),
+                counterOptions.GetMaxTimeSeries(),
                 () => ConvertCounterGroups(options.Providers));
         }
 
@@ -36,8 +40,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return CreateSettings(configuration.IncludeDefaultProviders,
                 durationSeconds,
                 counterOptions.GetIntervalSeconds(),
-                MetricsOptionsDefaults.MaxHistograms,
-                MetricsOptionsDefaults.MaxTimeSeries,
+                counterOptions.GetMaxHistograms(),
+                counterOptions.GetMaxTimeSeries(),
                 () => ConvertCounterGroups(configuration.Providers));
         }
 

@@ -99,6 +99,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_MetricsUnprocessed);
 
+        private static readonly Action<ILogger, string, Exception> _counterEndedPayload =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(16, "CounterEndedPayload"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_CounterEndedPayload);
+
         public static void RequestFailed(this ILogger logger, Exception ex)
         {
             _requestFailed(logger, ex);
@@ -172,6 +178,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static void MetricsUnprocessed(this ILogger logger, int count)
         {
             _metricsUnprocessed(logger, count, null);
+        }
+
+        public static void CounterEndedPayload(this ILogger logger, string counterName)
+        {
+            _counterEndedPayload(logger, counterName, null);
         }
     }
 }
