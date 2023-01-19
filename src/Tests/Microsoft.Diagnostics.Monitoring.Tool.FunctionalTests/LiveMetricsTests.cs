@@ -119,7 +119,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-#if NET7_0_OR_GREATER
         [Fact]
         public async Task TestSystemDiagnosticsMetrics()
         {
@@ -184,6 +183,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         actualNames.ToHashSet(),
                         strict: true);
 
+                    // NOTE: This assumes the default percentiles of 50/95/99 - if this changes, this test
+                    // will fail and will need to be updated.
                     Regex regex = new Regex(@"\bPercentile=(50|95|99)");
 
                     for (int index = 0; index < actualProviders.Count; ++index)
@@ -218,6 +219,146 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     });
                 });
         }
-#endif
+
+        [Fact]
+        public async Task TestSystemDiagnosticsMetrics_MaxHistograms()
+        {
+            var counterNames = new[] { Constants.HistogramName1, Constants.HistogramName2 };
+
+            MetricProvider p1 = new MetricProvider()
+            {
+                ProviderName = Constants.ProviderName1
+            };
+
+            var providers = new List<MetricProvider>()
+            {
+                p1
+            };
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.Metrics.Name,
+                appValidate: async (runner, client) =>
+                {
+                    using ResponseStreamHolder holder = await client.CaptureMetricsAsync(await runner.ProcessIdTask,
+                        durationSeconds: 2,
+                        metricsConfiguration: new EventMetricsConfiguration
+                        {
+                            IncludeDefaultProviders = false,
+                            Providers = new[]
+                            {
+                                new EventMetricsProvider
+                                {
+                                    ProviderName = p1.ProviderName,
+                                    CounterNames = counterNames
+                                }
+                            }
+                        });
+
+                    await runner.SendCommandAsync(TestAppScenarios.Metrics.Commands.Continue);
+
+                    var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
+
+                    List<string> actualProviders = new();
+                    List<string> actualNames = new();
+                    List<string> actualMetadata = new();
+
+                    await LiveMetricsTestUtilities.AggregateMetrics(metrics, actualProviders, actualNames, actualMetadata);
+
+                    Assert.Contains(Constants.HistogramName1, actualNames);
+                    Assert.DoesNotContain(Constants.HistogramName2, actualNames);
+                },
+                configureTool: runner =>
+                {
+                    runner.WriteKeyPerValueConfiguration(new RootOptions()
+                    {
+                        Metrics = new MetricsOptions()
+                        {
+                            Enabled = true,
+                            IncludeDefaultProviders = false,
+                            Providers = providers,
+                        },
+                        GlobalCounter = new GlobalCounterOptions()
+                        {
+                            IntervalSeconds = 1,
+                            MaxHistograms = 1
+                        }
+                    });
+                });
+        }
+
+        [Fact]
+        public async Task TestSystemDiagnosticsMetrics_MaxTimeseries()
+        {
+            var counterNames = new[] { Constants.CounterName, Constants.GaugeName, Constants.HistogramName1, Constants.HistogramName2 };
+
+            const int maxTimeSeries = 3;
+
+            MetricProvider p1 = new MetricProvider()
+            {
+                ProviderName = Constants.ProviderName1
+            };
+
+            var providers = new List<MetricProvider>()
+            {
+                p1
+            };
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.Metrics.Name,
+                appValidate: async (runner, client) =>
+                {
+                    using ResponseStreamHolder holder = await client.CaptureMetricsAsync(await runner.ProcessIdTask,
+                        durationSeconds: 2,
+                        metricsConfiguration: new EventMetricsConfiguration
+                        {
+                            IncludeDefaultProviders = false,
+                            Providers = new[]
+                            {
+                                new EventMetricsProvider
+                                {
+                                    ProviderName = p1.ProviderName,
+                                    CounterNames = counterNames
+                                }
+                            }
+                        });
+
+                    await runner.SendCommandAsync(TestAppScenarios.Metrics.Commands.Continue);
+
+                    var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
+
+                    List<string> actualProviders = new();
+                    List<string> actualNames = new();
+                    List<string> actualMetadata = new();
+
+                    await LiveMetricsTestUtilities.AggregateMetrics(metrics, actualProviders, actualNames, actualMetadata);
+
+                    ISet<string> actualNamesSet = new HashSet<string>(actualNames);
+
+                    Assert.Equal(maxTimeSeries, actualNamesSet.Count);
+                },
+                configureTool: runner =>
+                {
+                    runner.WriteKeyPerValueConfiguration(new RootOptions()
+                    {
+                        Metrics = new MetricsOptions()
+                        {
+                            Enabled = true,
+                            IncludeDefaultProviders = false,
+                            Providers = providers
+                        },
+                        GlobalCounter = new GlobalCounterOptions()
+                        {
+                            IntervalSeconds = 1,
+                            MaxTimeSeries = maxTimeSeries
+                        }
+                    });
+                });
+        }
     }
 }

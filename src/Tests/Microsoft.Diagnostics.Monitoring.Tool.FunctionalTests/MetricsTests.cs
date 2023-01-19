@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
         }
-        
+
         /// <summary>
         /// Tests that turning off metrics via the command line will have the /metrics route not serve metrics.
         /// </summary>
