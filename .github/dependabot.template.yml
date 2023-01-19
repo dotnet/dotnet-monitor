@@ -19,7 +19,7 @@ updates:
       - dependency-name: "Microsoft.Extensions.*"
         update-types: [ "version-update:semver-major" ]
   - package-ecosystem: "nuget"
-    directory: "/eng/dependabot/public-feed"
+    directory: "/eng/dependabot/nuget.org"
     schedule:
       interval: "daily"
     target-branch: #@ branch
