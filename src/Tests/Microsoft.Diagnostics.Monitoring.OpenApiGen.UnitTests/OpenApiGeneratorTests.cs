@@ -18,6 +18,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public class OpenApiGeneratorTests
     {
         private static readonly TimeSpan GenerationTimeout = TimeSpan.FromSeconds(30);
