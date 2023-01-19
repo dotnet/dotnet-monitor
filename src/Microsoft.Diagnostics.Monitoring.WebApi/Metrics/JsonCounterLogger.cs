@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             else if (counter is CounterEndedPayload)
             {
-                Logger.CounterEndedPayload(counter.DisplayName);
+                Logger.CounterEndedPayload(counter.Name);
                 return;
             }
 

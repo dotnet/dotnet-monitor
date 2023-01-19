@@ -224,7 +224,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             else if (metric is CounterEndedPayload)
             {
-                _logger.CounterEndedPayload(metric.DisplayName);
+                _logger.CounterEndedPayload(metric.Name);
             }
             else
             {
