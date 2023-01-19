@@ -6,5 +6,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     internal static class GlobalCounterOptionsDefaults
     {
         public const float IntervalSeconds = 5.0f;
+
+        public const int MaxHistograms = 10;
+
+        public const int MaxTimeSeries = 1000;
     }
 }
