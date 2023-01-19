@@ -1,7 +1,7 @@
 <Project>
   <!-- Import references updated by Dependabot. This file is for package references updated manually or by Maestro. -->
   <Import Project="dependabot/Versions.props" />
-  <Import Project="dependabot/public-feed/Versions.props" />
+  <Import Project="dependabot/nuget.org/Versions.props" />
   <Import Project="dependabot/net6.0/Versions.props" />
   <Import Project="dependabot/net7.0/Versions.props" />
   <Import Project="dependabot/netcoreapp3.1/Versions.props" />
