@@ -22,24 +22,24 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
             Command sleepCommand = new Command(ActionTestsConstants.Sleep);
             Argument<int> delayArgument = new Argument<int>("delay");
-            sleepCommand.AddArgument(delayArgument);
+            sleepCommand.Arguments.Add(delayArgument);
             sleepCommand.SetHandler(Execute_Sleep, delayArgument);
 
             Command textFileOutputCommand = new Command(ActionTestsConstants.TextFileOutput);
             Argument<FileInfo> pathArgument = new Argument<FileInfo>("path");
-            textFileOutputCommand.AddArgument(pathArgument);
+            textFileOutputCommand.Arguments.Add(pathArgument);
             Argument<string> contentArgument = new Argument<string>("content");
-            textFileOutputCommand.AddArgument(contentArgument);
+            textFileOutputCommand.Arguments.Add(contentArgument);
             textFileOutputCommand.SetHandler(Execute_TextFileOutput, pathArgument, contentArgument);
 
             Command zeroExitCodeCommand = new Command(ActionTestsConstants.ZeroExitCode);
             zeroExitCodeCommand.SetHandler(Execute_ZeroExitCode);
 
             Command command = new(TestAppScenarios.Execute.Name);
-            command.AddCommand(nonZeroExitCodeCommand);
-            command.AddCommand(sleepCommand);
-            command.AddCommand(textFileOutputCommand);
-            command.AddCommand(zeroExitCodeCommand);
+            command.Subcommands.Add(nonZeroExitCodeCommand);
+            command.Subcommands.Add(sleepCommand);
+            command.Subcommands.Add(textFileOutputCommand);
+            command.Subcommands.Add(zeroExitCodeCommand);
             return command;
         }
 
