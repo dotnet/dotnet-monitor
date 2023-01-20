@@ -23,7 +23,12 @@
       <_FileToArchive Remove="$(ArchiveContentRootPath)**\*.dwarf" />
       <_FileToArchive Remove="$(ArchiveContentRootPath)**\*.pdb" />
     </ItemGroup>
-    <Copy SourceFiles="@(_FileToArchive)" DestinationFiles="$(OutputPath)%(RecursiveDir)%(Filename)%(Extension)" />
+    <ItemGroup>
+      <_FileToArchive Condition="'%(_FileToArchive.PackagePath)' == ''">
+        <PackagePath>%(RecursiveDir)</PackagePath>
+      </_FileToArchive>
+    </ItemGroup>
+    <Copy SourceFiles="@(_FileToArchive)" DestinationFiles="$(OutputPath)%(PackagePath)%(Filename)%(Extension)" />
     <!-- Make executable files readable by all, writable by the user, and executable by all. -->
     <ItemGroup>
       <_ArchiveExecutableContent Remove="@(_ArchiveExecutableContent)" />
@@ -52,7 +57,12 @@
       <_SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.pdb" />
       <_SymbolFileToArchive Include="@(SymbolFileToArchive)" />
     </ItemGroup>
-    <Copy SourceFiles="@(_SymbolFileToArchive)" DestinationFiles="$(SymbolsOutputPath)%(RecursiveDir)%(Filename)%(Extension)" />
+    <ItemGroup>
+      <_SymbolFileToArchive Condition="'%(_SymbolFileToArchive.PackagePath)' == ''">
+        <PackagePath>%(RecursiveDir)</PackagePath>
+      </_SymbolFileToArchive>
+    </ItemGroup>
+    <Copy SourceFiles="@(_SymbolFileToArchive)" DestinationFiles="$(SymbolsOutputPath)%(PackagePath)%(Filename)%(Extension)" />
     <!-- Make non-executable files readable by all and writable by the user. -->
     <ItemGroup>
       <_SymbolsNonExecutableContent Remove="@(_SymbolsNonExecutableContent)" />
