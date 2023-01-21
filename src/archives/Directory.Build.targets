@@ -15,13 +15,7 @@
     <!-- Collect non-symbol files and copy to staging directory -->
     <ItemGroup>
       <_FileToArchive Remove="@(_FileToArchive)" />
-      <_FileToArchive Include="$(ArchiveContentRootPath)**" />
       <_FileToArchive Include="@(FileToArchive)" />
-    </ItemGroup>
-    <ItemGroup Condition="'$(CreateSymbolsArchive)' == 'true'">
-      <_FileToArchive Remove="$(ArchiveContentRootPath)**\*.dbg" />
-      <_FileToArchive Remove="$(ArchiveContentRootPath)**\*.dwarf" />
-      <_FileToArchive Remove="$(ArchiveContentRootPath)**\*.pdb" />
     </ItemGroup>
     <ItemGroup>
       <_FileToArchive Condition="'%(_FileToArchive.PackagePath)' == ''">
@@ -52,9 +46,6 @@
     <!-- Collect symbol files and copy to staging directory -->
     <ItemGroup>
       <_SymbolFileToArchive Remove="@(_SymbolFileToArchive)" />
-      <_SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.dbg" />
-      <_SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.dwarf" />
-      <_SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.pdb" />
       <_SymbolFileToArchive Include="@(SymbolFileToArchive)" />
     </ItemGroup>
     <ItemGroup>

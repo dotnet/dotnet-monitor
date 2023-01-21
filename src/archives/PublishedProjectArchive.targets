@@ -10,5 +10,18 @@
   <Target Name="PublishProjectsBeforeArchive"
           Condition="'$(PublishProjectsAfterBuild)' != 'true'">
     <CallTarget Targets="PublishProjects" />
+    <ItemGroup>
+      <FileToArchive Include="$(ArchiveContentRootPath)**" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(CreateSymbolsArchive)' == 'true'">
+      <FileToArchive Remove="$(ArchiveContentRootPath)**\*.dbg" />
+      <FileToArchive Remove="$(ArchiveContentRootPath)**\*.dwarf" />
+      <FileToArchive Remove="$(ArchiveContentRootPath)**\*.pdb" />
+    </ItemGroup>
+    <ItemGroup>
+      <SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.dbg" />
+      <SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.dwarf" />
+      <SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.pdb" />
+    </ItemGroup>
   </Target>
 </Project>
