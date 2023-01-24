@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fconfiguration%2Fconfiguration-sources)
+
 # Configuration Sources
 
 `dotnet monitor` can read and combine configuration from multiple sources. The configuration sources are listed below in the order in which they are read (User-specified json file is highest precedence) :
