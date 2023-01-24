@@ -6,5 +6,6 @@
     <!-- By default, do not ship archives. -->
     <IsShipping>false</IsShipping>
     <IsArchivable>true</IsArchivable>
+    <CreateSymbolsArchive>true</CreateSymbolsArchive>
   </PropertyGroup>
 </Project>

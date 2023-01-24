@@ -2,7 +2,7 @@
   <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.targets" />
 
   <Target Name="GetTfmSymbolFilesForPackage"
-          DependsOnTargets="PublishProjectsBeforeArchive">
+          DependsOnTargets="CollectPublishedFilesToArchive">
     <ItemGroup>
       <_SymbolFileToPack Remove="@(_SymbolFileToPack)" />
       <_SymbolFileToPack Include="@(SymbolFileToArchive)">

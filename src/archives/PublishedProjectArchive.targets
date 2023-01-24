@@ -2,18 +2,22 @@
   <Import Project="$(RepositoryEngineeringDir)PublishProjects.targets" />
 
   <PropertyGroup>
-    <PublishToDiskDependsOn>PublishProjectsBeforeArchive</PublishToDiskDependsOn>
-    <PublishSymbolsToDiskDependsOn>PublishProjectsBeforeArchive</PublishSymbolsToDiskDependsOn>
+    <PublishToDiskDependsOn>CollectPublishedFilesToArchive</PublishToDiskDependsOn>
+    <PublishSymbolsToDiskDependsOn>CollectPublishedFilesToArchive</PublishSymbolsToDiskDependsOn>
   </PropertyGroup>
 
   <!-- Publish projects if they were not published after build -->
   <Target Name="PublishProjectsBeforeArchive"
           Condition="'$(PublishProjectsAfterBuild)' != 'true'">
     <CallTarget Targets="PublishProjects" />
+  </Target>
+
+  <Target Name="CollectPublishedFilesToArchive"
+          DependsOnTargets="PublishProjectsBeforeArchive">
     <ItemGroup>
       <FileToArchive Include="$(ArchiveContentRootPath)**" />
     </ItemGroup>
-    <ItemGroup Condition="'$(CreateSymbolsArchive)' == 'true'">
+    <ItemGroup>
       <FileToArchive Remove="$(ArchiveContentRootPath)**\*.dbg" />
       <FileToArchive Remove="$(ArchiveContentRootPath)**\*.dwarf" />
       <FileToArchive Remove="$(ArchiveContentRootPath)**\*.pdb" />
