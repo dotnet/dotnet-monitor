@@ -1,3 +1,6 @@
+
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fconfiguration%2Fmetrics-configuration)
+
 # Metrics Configuration
 
 ## Global Counter Interval
