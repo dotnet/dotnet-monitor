@@ -39,7 +39,7 @@ Settings in Json format:
 
 The `generatekey` command supports 1 parameter `--output`/`-o` to specify the configuration format. By default, `dotnet monitor generatekey` will use the `--output json` format. Currently, the values in the list below are supported values for `--output`.
 
-- `Json` output format will provide a json blob in the correct format to merge with a `settings.json` file that configures `dotnet-monitor`. See [Configuration Sources](./configuration.md#configuration-sources) for where to find or create a `settings.json` file.
+- `Json` output format will provide a json blob in the correct format to merge with a `settings.json` file that configures `dotnet-monitor`. See [Configuration Sources](./configuration/configuration-sources.md) for where to find or create a `settings.json` file.
 - `Text` output format writes the individual parameters in an easily human-readable format.
 - `Cmd` output format in environment variables for a `cmd.exe` prompt.
 - `PowerShell` output format in environment variables for a `powershell` or `pwsh` prompt.
@@ -48,7 +48,7 @@ The `generatekey` command supports 1 parameter `--output`/`-o` to specify the co
 
 ## 2. Configure `dotnet-monitor`
 
-Once you have the key material from [step 1](#1-using-the-integrated-generatekey-command), you then must provide that configuration `dotnet-monitor`. There are several ways to [configure dotnet-monitor](./configuration.md) and the easiest method usually depends on your platform.
+Once you have the key material from [step 1](#1-using-the-integrated-generatekey-command), you then must provide that configuration `dotnet-monitor`. There are several ways to [configure dotnet-monitor](./configuration/README.md) and the easiest method usually depends on your platform.
 
 ### A local dev box (Windows, OSX or Linux)
 
@@ -60,6 +60,10 @@ The easiest way to configure `dotnet-monitor` on a local dev box is by using the
   - Otherwise: `$HOME/.config/dotnet-monitor/settings.json`
 
 > **Note**: You probably need to create the directory and `settings.json` file within.
+
+  or
+
+- Use the `--configuration-file-path` switch to specify the location of the configuration file
 
 Run the command `dotnet monitor generatekey --output json` and copy the json blob into `settings.json`. A typical settings file might look like this:
 
@@ -95,7 +99,7 @@ The easiest way to configure `docker` is to pass environment variables for the r
 
 ### Configuring an API Key in a Kubernetes Cluster
 
-If you're running in Kubernetes, we recommend creating secrets and mounting them into the `dotnet monitor` sidecar container via a deployment manifest. You can use this `kubectl` command to either create or rotate the API Key.
+If you're running in Kubernetes, we recommend creating secrets and mounting them into the `dotnet monitor` sidecar container via a [deployment manifest](kubernetes.md). You can use this `kubectl` command to either create or rotate the API Key.
 
 ```sh
 kubectl create secret generic apikey \
@@ -122,7 +126,7 @@ spec:
 
 ```
 
-> **Note**: For a complete example of running dotnet-monitor in Kubernetes, see [Running in a Kubernetes Cluster](./kubernetes.md) in the Getting Started guide.
+> **Note**: For a complete example of running dotnet-monitor in Kubernetes, see [Running in a Kubernetes Cluster](./kubernetes.md)
 
 ## 3. Using an API Key to access the HTTP API
 

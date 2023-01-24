@@ -2,6 +2,15 @@
 
 This repository contains the source code for dotnet-monitor, a diagnostic tool for capturing diagnostic artifacts in an operator-driven or automated manner.
 
+## Overview
+
+Running a .NET application in diverse environments can make collecting diagnostics artifacts (e.g., logs, traces, process dumps) challenging. dotnet monitor is a tool that provides an unified way to collect these diagnostic artifacts regardless of where your application is run.
+
+There are two different mechanisms for collection of these diagnostic artifacts:
+
+- An [HTTP API](documentation/api/README.md) for on demand collection of artifacts. You can call these API endpoints when you already know your application is experiencing an issue and you are interested in gathering more information.
+- [Triggers](documentation/collectionrules/collectionrules.md) for rule-based configuration for always-on collection of artifacts. You may configure rules to collect diagnostic artifacts when a desired condition is met, for example, collect a process dump when you have sustained high CPU.
+
 ## Releases
 
 See [Releases](documentation/releases.md) for the release history.
