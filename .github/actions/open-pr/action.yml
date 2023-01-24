@@ -25,6 +25,9 @@ inputs:
   auth_token:
     description: 'The token used to authenticate to GitHub.'
     required: true
+  draft:
+    description: 'Open as a draft PR.'
+    required: false
 
 runs:
   using: "composite"
@@ -53,7 +56,16 @@ runs:
         git commit -m "${{ inputs.commit_message }}"
         git push --force --set-upstream origin "HEAD:$pr_branch_name"
 
-        gh pr create --repo "${{ github.repository }}" --base "$current_branch_name" -t "${{ inputs.title }}" -b  "${{ inputs.body }}" -l "${{ inputs.labels }}"
+        extraArgs=""
+        if [[ ! -z "${{ inputs.labels }}" ]]; then
+          extraArgs="${extraArgs} --label \"${{ inputs.labels }}\""
+        fi
+
+        if [[ "${{ inputs.draft }}" == "true" ]]; then
+          extraArgs="${extraArgs} --draft"
+        fi
+
+        gh pr create --repo "${{ github.repository }}" --base "$current_branch_name" -t "${{ inputs.title }}" -b "${{ inputs.body }}" $extraArgs
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.auth_token }}
