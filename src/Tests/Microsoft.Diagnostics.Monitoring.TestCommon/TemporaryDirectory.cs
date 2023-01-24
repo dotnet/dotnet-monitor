@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             string tempDir = Path.Combine(topLevelTempDir, Path.GetRandomFileName());
             Assert.False(Directory.Exists(tempDir));
 
-            _directoryInfo = Directory.CreateDirectory(Path.Combine(topLevelTempDir, Path.GetRandomFileName()));
+            _directoryInfo = Directory.CreateDirectory(tempDir);
             _outputHelper.WriteLine("Created temporary directory '{0}'", FullName);
         }
 
