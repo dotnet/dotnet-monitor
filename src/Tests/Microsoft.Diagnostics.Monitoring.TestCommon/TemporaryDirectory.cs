@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
@@ -17,9 +18,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             _outputHelper = outputhelper;
 
-            _directoryInfo = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
-            _directoryInfo.Create();
+            // AGENT_TEMPDIRECTORY is an AzureDevops variable which is set to a path
+            // that is cleaned up after every job.
+            string topLevelTempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY");
+            if (string.IsNullOrEmpty(topLevelTempDir))
+            {
+                topLevelTempDir = Path.GetTempPath();
+            }
 
+            string tempDir = Path.Combine(topLevelTempDir, Path.GetRandomFileName());
+            Assert.False(Directory.Exists(tempDir));
+
+            _directoryInfo = Directory.CreateDirectory(tempDir);
             _outputHelper.WriteLine("Created temporary directory '{0}'", FullName);
         }
 
