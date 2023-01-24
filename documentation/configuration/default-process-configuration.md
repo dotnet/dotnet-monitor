@@ -22,7 +22,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 
 ## Examples
 
-### Match the iisexpress process by name
+### Match the IISExpress process by name
 
 <details>
   <summary>JSON</summary>
@@ -59,7 +59,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
   ```
 </details>
 
-### Match the iisexpress process by name (Shorthand)
+### Match the IISExpress process by name (Shorthand)
 
 <details>
   <summary>JSON</summary>

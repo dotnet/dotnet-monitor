@@ -19,7 +19,7 @@ Windows authentication doesn't require explicit configuration and is enabled aut
 
 ## API Key Authentication
 
-An API Key is the recommended authentication mechanism for `dotnet monitor`. API Keys are referred to as `MonitorApiKey` in configuration and source code but we will shorten the term to "API key" in this document. To enable API key authenentication:
+An API Key is the recommended authentication mechanism for `dotnet monitor`. API Keys are referred to as `MonitorApiKey` in configuration and source code but we will shorten the term to "API key" in this document. To enable API key authentication:
 
 - You will need to generate a secret token, update the configuration of `dotnet monitor`, and then specify the secret token in the `Authorization` header on all requests to `dotnet monitor`. To configure API Key authentication using the integrated `generatekey` command see: [API Key Setup](./api-key-setup.md).
 

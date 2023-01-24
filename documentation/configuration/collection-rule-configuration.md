@@ -448,7 +448,7 @@ An action that collects a dump of the process that the collection rule is target
 
 | Name | Type | Required | Description | Default Value |
 |---|---|---|---|---|
-| `Type` | [DumpType](api/definitions.md#dumptype) | false | The type of dump to collect | `WithHeap` |
+| `Type` | [DumpType](../api/definitions.md#dumptype) | false | The type of dump to collect | `WithHeap` |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected dump. | |
 
 #### Outputs
@@ -500,7 +500,7 @@ An action that collects a gcdump of the process that the collection rule is targ
 
 | Name | Type | Required | Description | Default Value |
 |---|---|---|---|---|
-| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected gcdump. | |
+| `Egress` | string | true | The named [egress provider](../egress.md) for egressing the collected gcdump. | |
 
 #### Outputs
 
@@ -547,13 +547,13 @@ An action that collects a trace of the process that the collection rule is targe
 
 | Name | Type | Required | Description | Default Value | Min Value | Max Value |
 |---|---|---|---|---|---|---|
-| `Profile` | [TraceProfile](api/definitions.md#traceprofile)? | false | The name of the profile(s) used to collect events. See [TraceProfile](api/definitions.md#traceprofile) for details on the list of event providers, levels, and keywords each profile represents. Multiple profiles may be specified by separating them with commas. Either `Profile` or `Providers` must be specified, but not both. | `null` | | |
-| `Providers` | [EventProvider](api/definitions.md#eventprovider)[] | false | List of event providers from which to capture events. Either `Profile` or `Providers` must be specified, but not both. | `null` | | |
+| `Profile` | [TraceProfile](../api/definitions.md#traceprofile)? | false | The name of the profile(s) used to collect events. See [TraceProfile](../api/definitions.md#traceprofile) for details on the list of event providers, levels, and keywords each profile represents. Multiple profiles may be specified by separating them with commas. Either `Profile` or `Providers` must be specified, but not both. | `null` | | |
+| `Providers` | [EventProvider](../api/definitions.md#eventprovider)[] | false | List of event providers from which to capture events. Either `Profile` or `Providers` must be specified, but not both. | `null` | | |
 | `RequestRundown` | bool | false | The runtime may provide additional type information for certain types of events after the trace session is ended. This additional information is known as rundown events. Without this information, some events may not be parsable into useful information. Only applies when `Providers` is specified. | `true` | | |
 | `BufferSizeMegabytes` | int | false | The size (in megabytes) of the event buffer used in the runtime. If the event buffer is filled, events produced by event providers may be dropped until the buffer is cleared. Increase the buffer size to mitigate this or pair down the list of event providers, keywords, and level to filter out extraneous events. Only applies when `Providers` is specified. | `256` | `1` | `1024` |
 | `Duration` | TimeSpan? | false | The duration of the trace operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected trace. | | | |
-| `StoppingEvent` | [TraceEventFilter](api/definitions.md#traceeventfilter)? | false | The event to watch for while collecting the trace, and once either the event is hit or the `Duration` is reached the trace will be stopped. This can only be specified if `Providers` is set. | `null` | | |
+| `StoppingEvent` | [TraceEventFilter](../api/definitions.md#traceeventfilter)? | false | The event to watch for while collecting the trace, and once either the event is hit or the `Duration` is reached the trace will be stopped. This can only be specified if `Providers` is set. | `null` | | |
 
 #### Outputs
 
@@ -605,7 +605,7 @@ An action that collects live metrics for the process that the collection rule is
 | Name | Type | Required | Description | Default Value | Min Value | Max Value |
 |---|---|---|---|---|---|---|
 | `IncludeDefaultProviders` | bool | false | Determines if the default counter providers should be used. | `true` | | |
-| `Providers` | [EventMetricsProvider](api/definitions.md#eventmetricsprovider)[] | false | The array of providers for metrics to collect. | | | |
+| `Providers` | [EventMetricsProvider](../api/definitions.md#eventmetricsprovider)[] | false | The array of providers for metrics to collect. | | | |
 | `Duration` | TimeSpan? | false | The duration of the live metrics operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected live metrics. | | | |
 
@@ -701,10 +701,10 @@ An action that collects logs for the process that the collection rule is targeti
 
 | Name | Type | Required | Description | Default Value | Min Value | Max Value |
 |---|---|---|---|---|---|---|
-| `DefaultLevel` | [LogLevel](api/definitions.md#loglevel)? | false | The default log level at which logs are collected for entries in the FilterSpecs that do not have a specified LogLevel value. | `LogLevel.Warning` | | |
-| `FilterSpecs` | Dictionary<string, [LogLevel](api/definitions.md#loglevel)?> | false | A custom mapping of logger categories to log levels that describes at what level a log statement that matches one of the given categories should be captured. | `null` | | |
+| `DefaultLevel` | [LogLevel](../api/definitions.md#loglevel)? | false | The default log level at which logs are collected for entries in the FilterSpecs that do not have a specified LogLevel value. | `LogLevel.Warning` | | |
+| `FilterSpecs` | Dictionary<string, [LogLevel](../api/definitions.md#loglevel)?> | false | A custom mapping of logger categories to log levels that describes at what level a log statement that matches one of the given categories should be captured. | `null` | | |
 | `UseAppFilters` | bool | false | Specifies whether to capture log statements at the levels as specified in the application-defined filters. | `true` | | |
-| `Format` | [LogFormat](api/definitions.md#logformat)? | false | The format of the logs artifact. | `PlainText` | | |
+| `Format` | [LogFormat](../api/definitions.md#logformat)? | false | The format of the logs artifact. | `PlainText` | | |
 | `Duration` | TimeSpan? | false | The duration of the logs operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected logs. | | | |
 
@@ -816,7 +816,7 @@ Collect call stacks from the target process.
 
 | Name | Type | Required | Description | Default Value |
 |---|---|---|---|---|
-| `Format` | [CallStackFormat](api/definitions.md#experimental-callstackformat-70) | false | The format of the collected call stack. | `Json` |
+| `Format` | [CallStackFormat](../api/definitions.md#experimental-callstackformat-70) | false | The format of the collected call stack. | `Json` |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected stacks. | |
 
 ### `LoadProfiler` Action
