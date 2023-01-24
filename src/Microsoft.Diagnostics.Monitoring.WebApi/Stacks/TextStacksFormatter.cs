@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 builder.Append(functionData.Name);
                 NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
             }
-            else 
+            else
             {
                 builder.Append(UnknownFunction);
             }

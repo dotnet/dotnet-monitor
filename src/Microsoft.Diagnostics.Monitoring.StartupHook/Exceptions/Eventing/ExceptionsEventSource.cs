@@ -174,7 +174,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             data.Size = value.Size;
         }
 
-        private ref struct PinnedData
+        private struct PinnedData : IDisposable
         {
             private readonly GCHandle _handle;
 
