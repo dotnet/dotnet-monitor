@@ -22,12 +22,12 @@ jobs:
     - task: DownloadPipelineArtifact@2
       displayName: Download Binaries
       inputs:
-        artifactName: Build_Release
+        artifactName: Build_Unified_Release
         targetPath: '$(Build.SourcesDirectory)/artifacts'
     - task: DownloadPipelineArtifact@2
       displayName: Download Archives
       inputs:
-        artifactName: Archive_Release
+        artifactName: Archive_Unified_Release
         targetPath: '$(Build.SourcesDirectory)/artifacts'
     - task: DownloadPipelineArtifact@2
       displayName: Download Third Party Notice
