@@ -15,6 +15,7 @@
     <SignAndNotarizeRuntimeIdentifiers>osx-x64</SignAndNotarizeRuntimeIdentifiers>
     <SignAndNotarizeRuntimeIdentifiers Condition=" '$(TargetFramework)' != 'netcoreapp3.1' ">$(SignAndNotarizeRuntimeIdentifiers);osx-arm64</SignAndNotarizeRuntimeIdentifiers>
     <DefaultRuntimeIdentifiers>$(SignOnlyRuntimeIdentifiers);$(SignAndNotarizeRuntimeIdentifiers)</DefaultRuntimeIdentifiers>
+    <DisableCustomBlobStoragePublishing Condition="'$(DisableCustomBlobStoragePublishing)' == ''">false</DisableCustomBlobStoragePublishing>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">

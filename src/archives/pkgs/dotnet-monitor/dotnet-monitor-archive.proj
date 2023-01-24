@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.Build.NoTargets">
+  <!-- Create dotnet-monitor product archive (RID and TFM specific) -->
+  <PropertyGroup>
+    <ArchiveName>dotnet-monitor</ArchiveName>
+    <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
+    <RuntimeIdentifiers>$(DefaultRuntimeIdentifiers)</RuntimeIdentifiers>
+  </PropertyGroup>
+  <Import Project="$(RepositoryArchivesDir)dotnet-monitor.props" />
+</Project>
