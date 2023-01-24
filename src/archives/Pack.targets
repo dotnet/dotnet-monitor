@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <TargetsForTfmSpecificDebugSymbolsInPackage>$(TargetsForTfmSpecificDebugSymbolsInPackage);GetTfmSymbolFilesForPackage</TargetsForTfmSpecificDebugSymbolsInPackage>
+  </PropertyGroup>
+
+  <Target Name="GetTfmSymbolFilesForPackage"
+          DependsOnTargets="PublishProjectsBeforeArchive">
+    <ItemGroup>
+      <_SymbolFileToPack Remove="@(_SymbolFileToPack)" />
+      <_SymbolFileToPack Include="@(SymbolFileToArchive)">
+        <!-- The leading backslash is important to get the file rooted in the package -->
+        <TargetPath>\%(SymbolFileToArchive.PackagePath)%(Filename)%(Extension)</TargetPath>
+        <TargetFramework>$(TargetFramework)</TargetFramework>
+      </_SymbolFileToPack>
+    </ItemGroup>
+    <ItemGroup>
+      <!-- Pack the file if it exists. -->
+      <TfmSpecificDebugSymbolsFile Include="@(_SymbolFileToPack->Exists())" />
+    </ItemGroup>
+  </Target>
+</Project>

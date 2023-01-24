@@ -1,11 +1,5 @@
-<Project Sdk="Microsoft.Build.NoTargets">
+<Project>
   <PropertyGroup>
-    <ArchiveName>dotnet-monitor</ArchiveName>
-    <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
-    <RuntimeIdentifiers>$(DefaultRuntimeIdentifiers)</RuntimeIdentifiers>
-    <IsShipping>false</IsShipping>
-    <IsArchivable>true</IsArchivable>
-    <CreateSymbolsArchive>true</CreateSymbolsArchive>
     <ArchiveContentRootPath>$(ArtifactsBinDir)dotnet-monitor\$(Configuration)\$(TargetFramework)\$(PackageRid)\publish\</ArchiveContentRootPath>
   </PropertyGroup>
   <!-- These items are included in addition to those from publishing the dotnet-monitor project. -->
@@ -43,5 +37,5 @@
   <!-- Import ProjectToPublish items -->
   <Import Project="$(RepositoryEngineeringDir)DotnetMonitorProjectToPublish.props" />
   <!-- Import archive creation from published project -->
-  <Import Project="$(MSBuildThisFileDirectory)PublishedProjectArchive.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)..\PublishedProjectArchive.targets" />
 </Project>

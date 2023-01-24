@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.Build.NoTargets">
+  <!-- Create dotnet-monitor archive symbols package (RID and TFM specific). -->
+  <PropertyGroup>
+    <PackageId>dotnet-monitor-archive.$(RuntimeIdentifier)</PackageId>
+    <!--
+      Only include TargetFrameworks if a single TFM is not specified, otherwise nuget pack will include all TFMs in the same package.
+      Specify all TFMs to restore the project for all of them, but only build the symbols package for a single TFM.
+      -->
+    <TargetFrameworks Condition="'$(TargetFramework)' == ''">$(ToolTargetFrameworks)</TargetFrameworks>
+    <RuntimeIdentifiers>$(DefaultRuntimeIdentifiers)</RuntimeIdentifiers>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)dotnet-monitor-archive.props" />
+</Project>

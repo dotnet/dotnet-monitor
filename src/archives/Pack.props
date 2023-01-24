@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <!--
+      IncludeBuildOutput must be true otherwise callbacks for custom file gathering are not invoked.
+      -->
+    <IncludeBuildOutput>true</IncludeBuildOutput>
+    <IncludeSymbols>true</IncludeSymbols>
+  </PropertyGroup>
+</Project>
