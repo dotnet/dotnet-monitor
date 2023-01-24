@@ -14,6 +14,7 @@
     <!-- OSX requires executables to be notarized; separate these out from the others so they can be excluded when producing executable shims -->
     <SignAndNotarizeRuntimeIdentifiers>osx-arm64;osx-x64</SignAndNotarizeRuntimeIdentifiers>
     <DefaultRuntimeIdentifiers>$(SignOnlyRuntimeIdentifiers);$(SignAndNotarizeRuntimeIdentifiers)</DefaultRuntimeIdentifiers>
+    <DisableCustomBlobStoragePublishing Condition="'$(DisableCustomBlobStoragePublishing)' == ''">false</DisableCustomBlobStoragePublishing>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">

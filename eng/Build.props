@@ -1,6 +1,9 @@
 <Project>
   <ItemGroup Condition="'$(CreateArchives)' == 'true'">
-    <ProjectToBuild Include="$(RepoRoot)src\archives\dotnet-monitor-archive.proj">
+    <ProjectToBuild Include="$(RepoRoot)src\archives\pkgs\dotnet-monitor\dotnet-monitor-archive.proj">
+      <AdditionalProperties>TargetFramework=net7.0;RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
+    </ProjectToBuild>
+    <ProjectToBuild Include="$(RepoRoot)src\archives\symbols\dotnet-monitor\dotnet-monitor-symbols.proj">
       <AdditionalProperties>TargetFramework=net7.0;RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
     </ProjectToBuild>
   </ItemGroup>
