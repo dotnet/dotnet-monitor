@@ -14,6 +14,7 @@
     <!-- OSX requires executables to be notarized; separate these out from the others so they can be excluded when producing executable shims -->
     <SignAndNotarizeRuntimeIdentifiers>osx-arm64;osx-x64</SignAndNotarizeRuntimeIdentifiers>
     <DefaultRuntimeIdentifiers>$(SignOnlyRuntimeIdentifiers);$(SignAndNotarizeRuntimeIdentifiers)</DefaultRuntimeIdentifiers>
+    <DisableCustomBlobStoragePublishing Condition="'$(DisableCustomBlobStoragePublishing)' == ''">false</DisableCustomBlobStoragePublishing>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">
@@ -38,5 +39,28 @@
     <PackageReference Include="System.Private.Uri" Version="$(SystemPrivateUriVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <NativeArtifactDirectories Include="$(ArtifactsBinDir)linux-arm64.$(Configuration)" TargetRid="linux-arm64" LibraryPrefix="lib" LibraryExtension=".so" SymbolsExtension=".so.dbg" />
+    <NativeArtifactDirectories Include="$(ArtifactsBinDir)linux-x64.$(Configuration)" TargetRid="linux-x64" LibraryPrefix="lib" LibraryExtension=".so" SymbolsExtension=".so.dbg" />
+    <NativeArtifactDirectories Include="$(ArtifactsBinDir)linux-musl-arm64.$(Configuration)" TargetRid="linux-musl-arm64" LibraryPrefix="lib" LibraryExtension=".so" SymbolsExtension=".so.dbg" />
+    <NativeArtifactDirectories Include="$(ArtifactsBinDir)linux-musl-x64.$(Configuration)" TargetRid="linux-musl-x64" LibraryPrefix="lib" LibraryExtension=".so" SymbolsExtension=".so.dbg" />
+    <NativeArtifactDirectories Include="$(ArtifactsBinDir)osx-arm64.$(Configuration)" TargetRid="osx-arm64" LibraryPrefix="lib" LibraryExtension=".dylib" SymbolsExtension=".dylib.dwarf" />
+    <NativeArtifactDirectories Include="$(ArtifactsBinDir)osx-x64.$(Configuration)" TargetRid="osx-x64" LibraryPrefix="lib" LibraryExtension=".dylib" SymbolsExtension=".dylib.dwarf" />
+    <NativeArtifactDirectories Include="$(ArtifactsBinDir)win-arm64.$(Configuration)" TargetRid="win-arm64" LibraryPrefix="" LibraryExtension=".dll" SymbolsExtension=".pdb" />
+    <NativeArtifactDirectories Include="$(ArtifactsBinDir)win-x64.$(Configuration)" TargetRid="win-x64" LibraryPrefix="" LibraryExtension=".dll" SymbolsExtension=".pdb" />
+    <NativeArtifactDirectories Include="$(ArtifactsBinDir)win-x86.$(Configuration)" TargetRid="win-x86" LibraryPrefix="" LibraryExtension=".dll" SymbolsExtension=".pdb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Profiler library items for all of the native platforms. -->
+    <MonitorProfilerLibraryFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(LibraryExtension)')" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Profiler symbols items for all of the native platforms. -->
+    <MonitorProfilerSymbolsFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(SymbolsExtension)')" />
+  </ItemGroup>
+
   <Import Project="$(RepositoryEngineeringDir)Analyzers.props" />
+  <Import Project="$(RepositoryEngineeringDir)native\naming.props" />
 </Project>
