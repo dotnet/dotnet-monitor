@@ -204,7 +204,7 @@ async function resolveBackportPrToReleaseNotePr(octokit, pr, repoOwner, repoName
     for (const label of originPr.labels)
     {
         if (label.name === UpdateReleaseNotesLabel) {
-            console.log(`--> Mentioning in release notes`)
+            console.log(`--> Potentially mentioning in release notes`)
             return originPr;
         }
 
@@ -216,7 +216,7 @@ async function resolveBackportPrToReleaseNotePr(octokit, pr, repoOwner, repoName
 
     if (originIsBackport) {
         if (maxRecursion > 0) {
-            return await resolveBackportPr(octokit, originPr, repoOwner, repoName, minMergeDate, maxRecursion - 1);
+            return await resolveBackportPrToReleaseNotePr(octokit, originPr, repoOwner, repoName, minMergeDate, maxRecursion - 1);
         }
     }
 
