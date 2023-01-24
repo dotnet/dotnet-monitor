@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             _outputHelper = outputhelper;
 
-            // AGENT_TEMPDIRECTORY is AzureDevops variable which is set to a path
+            // AGENT_TEMPDIRECTORY is an AzureDevops variable which is set to a path
             // that is cleaned up after every job.
             string topLevelTempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY");
             if (string.IsNullOrEmpty(topLevelTempDir))
