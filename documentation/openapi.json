@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "dotnet-monitor",
-    "version": "v1.0"
+    "version": "1.0"
   },
   "paths": {
     "/processes": {
@@ -1894,17 +1894,17 @@
       }
     },
     "securitySchemes": {
-      "bearerAuth": {
+      "ApiKeyAuth": {
         "type": "apiKey",
-        "description": "JWT Authorization header using the Bearer scheme. Put only the JWT Token in the textbox when prompted using Swagger UI.",
-        "name": "JWT Authentication",
+        "description": "JWT Authorization header using bearer token authentication. Put the Authorization header value (\"Bearer\" prefix and the JWT value) in the textbox when prompted.",
+        "name": "Authorization",
         "in": "header"
       }
     }
   },
   "security": [
     {
-      "bearerAuth": [ ]
+      "ApiKeyAuth": [ ]
     }
   ]
 }

@@ -18,7 +18,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiateVersion)" />
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(MicrosoftIdentityModelTokensVersion)" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="$(SwashbuckleAspNetCoreSwaggerGenVersion)" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="$(SwashbuckleAspNetCoreVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">
