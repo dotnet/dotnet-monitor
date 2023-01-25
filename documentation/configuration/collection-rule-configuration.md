@@ -449,7 +449,7 @@ An action that collects a dump of the process that the collection rule is target
 | Name | Type | Required | Description | Default Value |
 |---|---|---|---|---|
 | `Type` | [DumpType](../api/definitions.md#dumptype) | false | The type of dump to collect | `WithHeap` |
-| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected dump. | |
+| `Egress` | string | true | The named [egress provider](../egress.md) for egressing the collected dump. | |
 
 #### Outputs
 
@@ -810,7 +810,7 @@ Usage that executes a .NET executable named `myapp.dll` using `dotnet`.
 
 Collect call stacks from the target process.
 
->**Note**: This feature is [experimental](./experimental.md). To enable this feature, set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. Additionally, the [in-process features](#experimental-in-process-features-configuration-70) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
+>**Note**: This feature is [experimental](../experimental.md). To enable this feature, set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. Additionally, the [in-process features](#experimental-in-process-features-configuration-70) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
 
 #### Properties
 
