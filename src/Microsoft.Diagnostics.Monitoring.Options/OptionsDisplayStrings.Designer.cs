@@ -653,7 +653,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The format used to display the callstacks..
+        ///   Looks up a localized string similar to The format used to display the call stacks..
         /// </summary>
         public static string DisplayAttributeDescription_CollectStacksOptions_Format {
             get {
@@ -1136,6 +1136,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_MetricProvider_CounterNames {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_MetricProvider_CounterNames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type of metrics this provider consumes.
+        /// </summary>
+        public static string DisplayAttributeDescription_MetricProvider_MetricType {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_MetricProvider_MetricType", resourceCulture);
             }
         }
         
