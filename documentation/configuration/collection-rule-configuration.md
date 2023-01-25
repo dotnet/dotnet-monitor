@@ -552,7 +552,7 @@ An action that collects a trace of the process that the collection rule is targe
 | `RequestRundown` | bool | false | The runtime may provide additional type information for certain types of events after the trace session is ended. This additional information is known as rundown events. Without this information, some events may not be parsable into useful information. Only applies when `Providers` is specified. | `true` | | |
 | `BufferSizeMegabytes` | int | false | The size (in megabytes) of the event buffer used in the runtime. If the event buffer is filled, events produced by event providers may be dropped until the buffer is cleared. Increase the buffer size to mitigate this or pair down the list of event providers, keywords, and level to filter out extraneous events. Only applies when `Providers` is specified. | `256` | `1` | `1024` |
 | `Duration` | TimeSpan? | false | The duration of the trace operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
-| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected trace. | | | |
+| `Egress` | string | true | The named [egress provider](../egress.md) for egressing the collected trace. | | | |
 | `StoppingEvent` | [TraceEventFilter](../api/definitions.md#traceeventfilter)? | false | The event to watch for while collecting the trace, and once either the event is hit or the `Duration` is reached the trace will be stopped. This can only be specified if `Providers` is set. | `null` | | |
 
 #### Outputs
@@ -607,7 +607,7 @@ An action that collects live metrics for the process that the collection rule is
 | `IncludeDefaultProviders` | bool | false | Determines if the default counter providers should be used. | `true` | | |
 | `Providers` | [EventMetricsProvider](../api/definitions.md#eventmetricsprovider)[] | false | The array of providers for metrics to collect. | | | |
 | `Duration` | TimeSpan? | false | The duration of the live metrics operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
-| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected live metrics. | | | |
+| `Egress` | string | true | The named [egress provider](../egress.md) for egressing the collected live metrics. | | | |
 
 #### Outputs
 
@@ -706,7 +706,7 @@ An action that collects logs for the process that the collection rule is targeti
 | `UseAppFilters` | bool | false | Specifies whether to capture log statements at the levels as specified in the application-defined filters. | `true` | | |
 | `Format` | [LogFormat](../api/definitions.md#logformat)? | false | The format of the logs artifact. | `PlainText` | | |
 | `Duration` | TimeSpan? | false | The duration of the logs operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
-| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected logs. | | | |
+| `Egress` | string | true | The named [egress provider](../egress.md) for egressing the collected logs. | | | |
 
 #### Outputs
 
@@ -817,7 +817,7 @@ Collect call stacks from the target process.
 | Name | Type | Required | Description | Default Value |
 |---|---|---|---|---|
 | `Format` | [CallStackFormat](../api/definitions.md#experimental-callstackformat-70) | false | The format of the collected call stack. | `Json` |
-| `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected stacks. | |
+| `Egress` | string | true | The named [egress provider](../egress.md) for egressing the collected stacks. | |
 
 ### `LoadProfiler` Action
 
