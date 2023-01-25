@@ -48,26 +48,72 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             await _stream.WriteAsync(JsonSequenceRecordSeparator);
             _bufferWriter.Clear();
-            using (var writer = new Utf8JsonWriter(_bufferWriter, new JsonWriterOptions { Indented = false }))
+            if (counter is PercentilePayload percentilePayload)
             {
-                writer.WriteStartObject();
-                writer.WriteString("timestamp", counter.Timestamp);
-                writer.WriteString("provider", counter.Provider);
-                writer.WriteString("name", counter.Name);
-                writer.WriteString("displayName", counter.DisplayName);
-                writer.WriteString("unit", counter.Unit);
-                writer.WriteString("counterType", counter.CounterType.ToString());
+                for (int i = 0; i < percentilePayload.Quantiles.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        _bufferWriter.Write(JsonSequenceRecordSeparator.Span);
+                    }
+                    Quantile quantile = percentilePayload.Quantiles[i];
 
-                writer.WriteString("tags", counter.Metadata);
+                    SerializeCounterValues(counter.Timestamp,
+                        counter.Provider,
+                        counter.Name,
+                        counter.DisplayName,
+                        counter.Unit,
+                        counter.CounterType.ToString(),
+                        CounterUtilities.AppendPercentile(counter.Metadata, quantile.Percentage),
+                        quantile.Value);
 
-                //Some versions of .Net return invalid metric numbers. See https://github.com/dotnet/runtime/pull/46938
-                writer.WriteNumber("value", double.IsNaN(counter.Value) ? 0.0 : counter.Value);
-
-                writer.WriteEndObject();
+                    if (i < percentilePayload.Quantiles.Length - 1)
+                    {
+                        _bufferWriter.Write(NewLineSeparator.Span);
+                    }
+                }
+            }
+            else
+            {
+                SerializeCounterValues(counter.Timestamp,
+                    counter.Provider,
+                    counter.Name,
+                    counter.DisplayName,
+                    counter.Unit,
+                    counter.CounterType.ToString(),
+                    counter.Metadata,
+                    counter.Value);
             }
             await _stream.WriteAsync(_bufferWriter.WrittenMemory);
 
             await _stream.WriteAsync(NewLineSeparator);
+        }
+
+        private void SerializeCounterValues(
+            DateTime timestamp,
+            string provider,
+            string name,
+            string displayName,
+            string unit,
+            string counterType,
+            string tags,
+            double value)
+        {
+            using var writer = new Utf8JsonWriter(_bufferWriter, new JsonWriterOptions { Indented = false });
+            writer.WriteStartObject();
+            writer.WriteString("timestamp", timestamp);
+            writer.WriteString("provider", provider);
+            writer.WriteString("name", name);
+            writer.WriteString("displayName", displayName);
+            writer.WriteString("unit", unit);
+            writer.WriteString("counterType", counterType);
+
+            writer.WriteString("tags", tags);
+
+            //Some versions of .Net return invalid metric numbers. See https://github.com/dotnet/runtime/pull/46938
+            writer.WriteNumber("value", double.IsNaN(value) ? 0.0 : value);
+
+            writer.WriteEndObject();
         }
     }
 }
