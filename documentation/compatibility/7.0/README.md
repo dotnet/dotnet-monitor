@@ -51,4 +51,4 @@ When egressing an artifact to Azure blob storage, several metadata keys and valu
 - `ArtifactSource_ProcessId` -> `DotnetMonitor_ArtifactSource_ProcessId`
 - `ArtifactSource_RuntimeInstanceCookie` -> `DotnetMonitor_ArtifactSource_RuntimeInstanceCookie`
 
-> **Note**: The custom metadata keys as specified in the [Azure blob storage](../../configuration.md#azure-blob-storage-egress-provider) egress provider are not prefixed.
+> **Note**: The custom metadata keys as specified in the [Azure blob storage](../../configuration/egress-configuration.md#azure-blob-storage-egress-provider) egress provider are not prefixed.
