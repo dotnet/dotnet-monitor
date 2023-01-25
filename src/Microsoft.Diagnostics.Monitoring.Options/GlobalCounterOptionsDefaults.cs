@@ -7,7 +7,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         public const float IntervalSeconds = 5.0f;
 
-        public const int MaxHistograms = 10;
+        public const int MaxHistograms = 20;
 
         public const int MaxTimeSeries = 1000;
     }
