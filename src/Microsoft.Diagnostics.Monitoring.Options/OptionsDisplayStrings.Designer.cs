@@ -1149,6 +1149,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The type of metrics this provider consumes.
+        /// </summary>
+        public static string DisplayAttributeDescription_MetricProvider_MetricType {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_MetricProvider_MetricType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name of the custom metrics provider..
         /// </summary>
         public static string DisplayAttributeDescription_MetricProvider_ProviderName {

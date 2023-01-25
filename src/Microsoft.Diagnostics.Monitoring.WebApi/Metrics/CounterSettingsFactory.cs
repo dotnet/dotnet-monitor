@@ -56,9 +56,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             if (includeDefaults)
             {
-                eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.SystemRuntimeEventSourceName });
-                eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.MicrosoftAspNetCoreHostingEventSourceName });
-                eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.GrpcAspNetCoreServer });
+                eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.SystemRuntimeEventSourceName, Type = CounterGroupType.EventCounter });
+                eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.MicrosoftAspNetCoreHostingEventSourceName, Type = CounterGroupType.EventCounter });
+                eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.GrpcAspNetCoreServer, Type = CounterGroupType.EventCounter });
             }
 
             return new CounterPipelineSettings
@@ -84,6 +84,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     {
                         customCounterGroup.CounterNames = customProvider.CounterNames.ToArray();
                     }
+
+                    customCounterGroup.Type = (CounterGroupType)customProvider.MetricType.GetValueOrDefault(MetricsOptionsDefaults.MetricType);
+
                     counterGroups.Add(customCounterGroup);
                 }
             }
@@ -104,6 +107,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     {
                         customCounterGroup.CounterNames = customProvider.CounterNames.ToArray();
                     }
+
+                    customCounterGroup.Type = (CounterGroupType)customProvider.MetricType.GetValueOrDefault(MetricsOptionsDefaults.MetricType);
 
                     counterGroups.Add(customCounterGroup);
                 }
