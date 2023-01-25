@@ -370,6 +370,10 @@
     <value>Shows configuration, as if dotnet-monitor collect was executed with these parameters.</value>
     <comment>Gets the string to display in help that explains what the 'show' command does.</comment>
   </data>
+  <data name="HelpDescription_JWT_Header" xml:space="preserve">
+    <value>JWT Authorization header using the Bearer scheme. Put only the JWT Token in the textbox when prompted using Swagger UI.</value>
+    <comment>Gets a string used in the generated OpenAPI doc for the auth scheme</comment>
+  </data>
   <data name="HelpDescription_OptionConfigurationFilePath" xml:space="preserve">
     <value>The fully qualified path and filename of the json configuration file you'd like to add to the list of configuration sources.</value>
     <comment>Gets the string to display in help that explains what the '--configuration-file-path' option does.</comment>
