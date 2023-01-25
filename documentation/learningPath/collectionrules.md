@@ -12,6 +12,9 @@ You can learn more about how collection rules work [here](https://github.com/dot
 Collection rules' implementation is distributed between the `dotnet monitor` repo and the [`dotnet diagnostics` repo](https://github.com/dotnet/diagnostics). The flowchart below shows a simplified version of how `dotnet monitor` and `dotnet diagnostics` interact to run collection rules.
 
 ```mermaid
+---
+title: THIS IS THE ORIGINAL - NEW ONES ARE BELOW
+---
 graph LR
     A[Collection Rules] --> |Configuration| N{.NET Monitor}
     B[Diagnostic Port] --> |Configuration| N{.NET Monitor}
@@ -29,6 +32,44 @@ graph LR
 
 
     T[Events] --> |EventPipeEventSource| U{.NET Diagnostics}
+```
+
+```mermaid
+---
+title: Diagram A
+---
+%%{ init: { 'flowchart': { 'curve': 'basis' } } }%%
+graph LR
+    classDef altColor fill:#CAF,stroke:purple;
+    subgraph ide1 [Set-Up]
+    A[Configuration] --> N{.NET Monitor}
+    N --> |1| O[Load Configuration and Bind Options]
+    N --> |2| P[Connect to Processes in Reverse Mode]    
+    N --> |3| Q[Start Pipelines For Processes That Match Filters]
+    end
+    subgraph ide2 [Repeat until Rule Limits Reached]
+    N ---> |4| R[Wait To Satisfy Trigger - See Diagram B]
+    N ---> |5| V[Check For Throttling]
+    N ---> |6| W[Execute Action List]
+    end
+    
+    class ide2 altColor
+
+
+```
+
+
+
+```mermaid
+---
+title: Diagram B
+---
+%%{ init: { 'flowchart': { 'curve': 'linear' } } }%%
+graph LR
+    A[Steps 1-3 From Diagram A] --> N{.NET Monitor}
+    T[Events] --> |EventPipeEventSource| U{.NET Diagnostics}
+    N --> |Wait To Satisfy Trigger| U
+    U ---> |Trigger Conditions Met - See Diagram A|N
 ```
 
 ### Key Areas Of The Code
