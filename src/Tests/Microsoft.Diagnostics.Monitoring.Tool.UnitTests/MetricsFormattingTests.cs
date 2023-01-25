@@ -43,13 +43,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             List<ICounterPayload> payload = new();
 
             string tags1 = "Percentile=50";
-            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, tags1, Value1, Timestamp));
-
-            string tags2 = "Percentile=95";
-            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, tags2, Value2, Timestamp));
-
-            string tags3 = "Percentile=99";
-            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, tags3, Value3, Timestamp));
+            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, tags1,
+                new[] { (0.5, (double)Value1), (0.95, (double)Value2), (0.99, (double)Value3) },
+                Timestamp));
 
             using MemoryStream stream = await GetMetrics(payload);
             List<string> lines = ReadStream(stream);
@@ -65,9 +61,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(5, lines.Count);
             Assert.Equal(FormattableString.Invariant($"# HELP {metricName}{payload[0].Unit} {payload[0].DisplayName}"), lines[0]);
             Assert.Equal(FormattableString.Invariant($"# TYPE {metricName} summary"), lines[1]);
-            Assert.Equal(FormattableString.Invariant($"{metricName}{percentile_50} {payload[0].Value}"), lines[2]);
-            Assert.Equal(FormattableString.Invariant($"{metricName}{percentile_95} {payload[1].Value}"), lines[3]);
-            Assert.Equal(FormattableString.Invariant($"{metricName}{percentile_99} {payload[2].Value}"), lines[4]);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{percentile_50} {Value1}"), lines[2]);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{percentile_95} {Value2}"), lines[3]);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{percentile_99} {Value3}"), lines[4]);
         }
 
         [Fact]
