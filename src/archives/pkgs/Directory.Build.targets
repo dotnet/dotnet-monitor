@@ -16,16 +16,27 @@
       <_FileToArchive Remove="@(_FileToArchive)" />
       <_FileToArchive Include="@(FileToArchive)" />
     </ItemGroup>
+    <!-- Update metadata on existing items -->
     <ItemGroup>
       <_FileToArchive Condition="'%(_FileToArchive.PackagePath)' == ''">
         <PackagePath>%(RecursiveDir)</PackagePath>
       </_FileToArchive>
+      <_FileToArchive>
+        <TargetPath>$(OutputPath)%(PackagePath)%(Filename)%(Extension)</TargetPath>
+      </_FileToArchive>
     </ItemGroup>
-    <Copy SourceFiles="@(_FileToArchive)" DestinationFiles="$(OutputPath)%(PackagePath)%(Filename)%(Extension)" />
+    <!-- Create staged file items (an inversion of the FileToArchive items) -->
+    <ItemGroup>
+      <_StagedFile Remove="@(_StagedFile)" />
+      <_StagedFile Include="%(_FileToArchive.TargetPath)">
+        <SourcePath>@(_FileToArchive->'%(Identity)')</SourcePath>
+      </_StagedFile>
+    </ItemGroup>
+    <Copy SourceFiles="%(SourcePath)" DestinationFiles="@(_StagedFile)" />
     <!-- Make executable files readable by all, writable by the user, and executable by all. -->
     <ItemGroup>
       <_ArchiveExecutableContent Remove="@(_ArchiveExecutableContent)" />
-      <_ArchiveExecutableContent Include="@(_FileToArchive)"
+      <_ArchiveExecutableContent Include="@(_StagedFile)"
                                  Condition="'%(Extension)' == '.dylib' or '%(Extension)' == '.so'" />
     </ItemGroup>
     <Exec Command="chmod 755 %(_ArchiveExecutableContent.Identity)"
@@ -33,7 +44,7 @@
     <!-- Make non-executable files readable by all and writable by the user. -->
     <ItemGroup>
       <_ArchiveNonExecutableContent Remove="@(_ArchiveNonExecutableContent)" />
-      <_ArchiveNonExecutableContent Include="@(_FileToArchive)" />
+      <_ArchiveNonExecutableContent Include="@(_StagedFile)" />
       <_ArchiveNonExecutableContent Remove="@(_ArchiveExecutableContent)" />
     </ItemGroup>
     <Exec Command="chmod 644 %(_ArchiveNonExecutableContent.Identity)"
@@ -47,16 +58,27 @@
       <_SymbolFileToArchive Remove="@(_SymbolFileToArchive)" />
       <_SymbolFileToArchive Include="@(SymbolFileToArchive)" />
     </ItemGroup>
+    <!-- Update metadata on existing items -->
     <ItemGroup>
       <_SymbolFileToArchive Condition="'%(_SymbolFileToArchive.PackagePath)' == ''">
         <PackagePath>%(RecursiveDir)</PackagePath>
       </_SymbolFileToArchive>
+      <_SymbolFileToArchive>
+        <TargetPath>$(SymbolsOutputPath)%(PackagePath)%(Filename)%(Extension)</TargetPath>
+      </_SymbolFileToArchive>
     </ItemGroup>
-    <Copy SourceFiles="@(_SymbolFileToArchive)" DestinationFiles="$(SymbolsOutputPath)%(PackagePath)%(Filename)%(Extension)" />
+    <!-- Create staged file items (an inversion of the SymbolFileToArchive items) -->
+    <ItemGroup>
+      <_StagedFile Remove="@(_StagedFile)" />
+      <_StagedFile Include="%(_SymbolFileToArchive.TargetPath)">
+        <SourcePath>@(_SymbolFileToArchive->'%(Identity)')</SourcePath>
+      </_StagedFile>
+    </ItemGroup>
+    <Copy SourceFiles="%(SourcePath)" DestinationFiles="@(_StagedFile)" />
     <!-- Make non-executable files readable by all and writable by the user. -->
     <ItemGroup>
       <_SymbolsNonExecutableContent Remove="@(_SymbolsNonExecutableContent)" />
-      <_SymbolsNonExecutableContent Include="@(_SymbolFileToArchive)" />
+      <_SymbolsNonExecutableContent Include="@(_StagedFile)" />
     </ItemGroup>
     <Exec Command="chmod 644 %(_SymbolsNonExecutableContent.Identity)"
           Condition="!$([MSBuild]::IsOSPlatform(Windows)) and '@(_SymbolsNonExecutableContent)' != ''" />
