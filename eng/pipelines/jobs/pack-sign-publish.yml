@@ -1,0 +1,44 @@
+jobs:
+- template: /eng/common/templates/job/job.yml
+  parameters:
+    name: Pack_Sign
+    displayName: Pack and Sign
+    pool:
+      name: NetCore1ESPool-Svc-Internal
+      demands: ImageOverride -equals 1es-windows-2019
+    enablePublishUsingPipelines: true
+    enableMicrobuild: true
+    artifacts:
+      publish:
+        artifacts:
+          name: Artifacts_Pack_Sign
+        logs:
+          name: Logs_Pack_Sign
+        manifests: true
+    variables:
+    - _BuildConfig: Release
+    - _SignType: real
+    steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Binaries
+      inputs:
+        artifactName: Build_Unified_Release
+        targetPath: '$(Build.SourcesDirectory)/artifacts'
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Archives
+      inputs:
+        artifactName: Archive_Unified_Release
+        targetPath: '$(Build.SourcesDirectory)/artifacts'
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Third Party Notice
+      inputs:
+        artifactName: 'THIRD-PARTY-NOTICES'
+        targetPath: '$(Build.SourcesDirectory)'
+    - script: >-
+        $(Build.SourcesDirectory)/eng/cipacksignpublish.cmd
+        /p:TeamName=$(_TeamName)
+        /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
+        /p:DotNetSignType=real
+        /p:DotNetPublishUsingPipelines=true
+        /p:ThirdPartyNoticesFilePath='$(Build.SourcesDirectory)/$(_TPNFile)'
+      displayName: Pack, Sign, and Publish

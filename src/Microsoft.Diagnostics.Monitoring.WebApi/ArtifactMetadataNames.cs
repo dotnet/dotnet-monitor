@@ -4,7 +4,7 @@
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     /// <summary>
-    /// Metadata keys that represent artfiact information.
+    /// Metadata keys that represent artifact information.
     /// </summary>
     internal static class ArtifactMetadataNames
     {
@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const string ArtifactType = nameof(ArtifactType);
 
         /// <summary>
-        /// Metadata keus that represent the source of an artifact.
+        /// Metadata keys that represent the source of an artifact.
         /// </summary>
         public static class ArtifactSource
         {

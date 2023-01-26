@@ -180,9 +180,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         /// <summary>
         ///   Looks up a localized string similar to Unable to enumerate processes..
         /// </summary>
-        internal static string ErrorMessage_ProcessEnumeratuinFailed {
+        internal static string ErrorMessage_ProcessEnumerationFailed {
             get {
-                return ResourceManager.GetString("ErrorMessage_ProcessEnumeratuinFailed", resourceCulture);
+                return ResourceManager.GetString("ErrorMessage_ProcessEnumerationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resource {0} cannot be found.
+        /// </summary>
+        internal static string ErrorMessage_ResourceNotFound {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ResourceNotFound", resourceCulture);
             }
         }
         

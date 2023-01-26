@@ -1,0 +1,35 @@
+<Project>
+  <Import Project="$(RepositoryEngineeringDir)PublishProjects.targets" />
+
+  <PropertyGroup>
+    <PublishToDiskDependsOn>CollectPublishedFilesToArchive</PublishToDiskDependsOn>
+    <PublishSymbolsToDiskDependsOn>CollectPublishedFilesToArchive</PublishSymbolsToDiskDependsOn>
+  </PropertyGroup>
+
+  <!-- Publish projects if they were not published after build -->
+  <Target Name="PublishProjectsBeforeArchive"
+          Condition="'$(PublishProjectsAfterBuild)' != 'true'">
+    <CallTarget Targets="PublishProjects" />
+  </Target>
+
+  <Target Name="CollectPublishedFilesToArchive"
+          DependsOnTargets="PublishProjectsBeforeArchive">
+    <Error Text="The 'ArchiveContentRootPath' property must be set to the path of the root of the files to archive."
+           Condition="'$(ArchiveContentRootPath)' == ''" />
+    <Error Text="The archive content root path '$(ArchiveContentRootPath)' does not exist."
+           Condition="!Exists($(ArchiveContentRootPath))" />
+    <ItemGroup>
+      <FileToArchive Include="$(ArchiveContentRootPath)**" />
+    </ItemGroup>
+    <ItemGroup>
+      <FileToArchive Remove="$(ArchiveContentRootPath)**\*.dbg" />
+      <FileToArchive Remove="$(ArchiveContentRootPath)**\*.dwarf" />
+      <FileToArchive Remove="$(ArchiveContentRootPath)**\*.pdb" />
+    </ItemGroup>
+    <ItemGroup>
+      <SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.dbg" />
+      <SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.dwarf" />
+      <SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.pdb" />
+    </ItemGroup>
+  </Target>
+</Project>

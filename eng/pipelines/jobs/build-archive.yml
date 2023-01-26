@@ -1,0 +1,50 @@
+# Builds and tests dotnet-monitor for a specific platform and configuration
+
+parameters:
+  # Operating system group (Windows, Linux, MacOS, etc)
+  osGroup: Windows
+  # Build configuration (Debug, Release)
+  configuration: Release
+  # Build architecture (arm64, x64, x86, etc)
+  architecture: x64
+
+jobs:
+- template: /eng/pipelines/jobs/build.yml
+  parameters:
+    prefix: Archive
+    osGroup: ${{ parameters.osGroup }}
+    configuration: ${{ parameters.configuration }}
+    architecture: ${{ parameters.architecture }}
+
+    preBuildSteps:
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Build
+      inputs:
+        artifactName: Build_Published_${{ parameters.configuration }}
+        targetPath: '$(Build.SourcesDirectory)/artifacts'
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Third Party Notice
+      inputs:
+        artifactName: 'THIRD-PARTY-NOTICES'
+        targetPath: '$(Build.SourcesDirectory)'
+
+    buildArgs: >-
+      -archive
+      -pack
+      -skipmanaged
+      -skipnative
+      /p:PublishProjectsAfterBuild=true
+      /p:ThirdPartyNoticesFilePath='$(Build.SourcesDirectory)/$(_TPNFile)'
+
+    postBuildSteps:
+    - task: CopyFiles@2
+      displayName: Gather Artifacts (packages)
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)/artifacts/packages'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/packages'
+
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Artifacts (Unified)
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
+        artifactName: Archive_Unified_${{ parameters.configuration }}

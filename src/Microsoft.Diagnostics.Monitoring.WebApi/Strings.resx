@@ -163,9 +163,13 @@
   <data name="ErrorMessage_OperationNotRunning" xml:space="preserve">
     <value>Operation is not running.</value>
   </data>
-  <data name="ErrorMessage_ProcessEnumeratuinFailed" xml:space="preserve">
+  <data name="ErrorMessage_ProcessEnumerationFailed" xml:space="preserve">
     <value>Unable to enumerate processes.</value>
     <comment>Gets a string similar to "Unable to enumerate processes.".</comment>
+  </data>
+  <data name="ErrorMessage_ResourceNotFound" xml:space="preserve">
+    <value>Resource {0} cannot be found</value>
+    <comment>Gets the format string for when an embedded resource is requested that doesn't exist</comment>
   </data>
   <data name="ErrorMessage_StacksTimeout" xml:space="preserve">
     <value>Unable to process stack in timely manner.</value>

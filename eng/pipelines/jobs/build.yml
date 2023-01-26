@@ -1,10 +1,8 @@
 # Builds dotnet-monitor for a specific platform and configuration
 
 parameters:
-  # Job name (required)
-  name: ''
-  # Job display name
-  displayName: ''
+  # Job prefix (required)
+  prefix: ''
   # Operating system group (Windows, Linux, MacOS, etc)
   osGroup: Windows
   # Build configuration (Debug, Release)
@@ -27,22 +25,23 @@ parameters:
   disableComponentGovernance: false
   # Disable SBOM generation
   disableSbom: false
+  buildArgs: ''
 
 jobs:
 - template: /eng/common/templates/job/job.yml
   parameters:
-    name: ${{ parameters.name }}
-    displayName: ${{ coalesce(parameters.displayName, parameters.name) }}
+    name: ${{ parameters.prefix }}_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
+    displayName: ${{ format('{0} {1} {2} {3}', parameters.prefix, parameters.osGroup, parameters.architecture, parameters.configuration) }}
     timeoutInMinutes: ${{ parameters.timeoutInMinutes }}
     enableTelemetry: true
-    disableComponentGovernance: ${{ or(parameters.disableComponentGovernance, eq(parameters.osGroup, 'Linux_Musl')) }}
+    disableComponentGovernance: ${{ or(eq(parameters.disableComponentGovernance, 'true'), eq(parameters.osGroup, 'Linux_Musl')) }}
     ${{ if eq(parameters.disableSbom, 'true') }}:
       enableSbom: false
     helixRepo: dotnet/dotnet-monitor
     artifacts:
       publish:
         logs:
-          name: Logs_${{ parameters.osGroup }}_${{ parameters.architecture }}_${{ parameters.configuration }}
+          name: Logs_$(JobName)
 
     pool:
       # Public Linux Build Pool
@@ -80,8 +79,7 @@ jobs:
       ${{ if eq(parameters.architecture, 'arm64') }}:
         container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-alpine
       ${{ else }}:
-        # CMake + Clang is broken on Alpine 3.14 prereqs image
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.13-WithNode
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-WithNode
 
     ${{ if ne(parameters.dependsOn, '') }}:
       dependsOn: ${{ parameters.dependsOn }}
@@ -90,6 +88,7 @@ jobs:
       clean: all
 
     variables:
+    - JobName: ${{ parameters.prefix }}_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
     - _BuildConfig: ${{ parameters.configuration }}
     - _HelixType: build/product
     - _HelixBuildConfig: ${{ parameters.configuration }}
@@ -100,7 +99,7 @@ jobs:
       - ${{ variable }}
 
     # Component Governance does not work on Musl
-    - ${{ if or(parameters.disableComponentGovernance, eq(parameters.osGroup, 'Linux_Musl')) }}:
+    - ${{ if or(eq(parameters.disableComponentGovernance, 'true'), eq(parameters.osGroup, 'Linux_Musl')) }}:
       - skipComponentGovernanceDetection: true
     
     # Cross build for arm64 non-Windows builds
@@ -155,6 +154,7 @@ jobs:
 
     - script: >-
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
+        ${{ parameters.buildArgs }}
         -configuration ${{ parameters.configuration }}
         -architecture ${{ parameters.architecture }}
         $(_CrossBuildArgs)
@@ -164,21 +164,6 @@ jobs:
       ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
         env:
           ROOTFS_DIR: '/crossrootfs/arm64'
-
-    - ${{ if and(ne(variables['System.TeamProject'], 'public'), gt(length(parameters.publishArtifactsSubPaths), 0)) }}:
-      - ${{ each subPath in parameters.publishArtifactsSubPaths }}:
-        - task: CopyFiles@2
-          displayName: Gather Artifacts (${{ subPath.source }})
-          inputs:
-            SourceFolder: '$(Build.SourcesDirectory)/artifacts/${{ subPath.source }}'
-            Contents: '**'
-            TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/${{ coalesce(subPath.target, subPath.source) }}'
-
-      - task: PublishBuildArtifacts@1
-        displayName: Publish Artifacts
-        inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
-          artifactName: Build_${{ parameters.configuration }}
 
     - ${{ each step in parameters.postBuildSteps }}:
       - ${{ step }}

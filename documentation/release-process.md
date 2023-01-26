@@ -29,7 +29,6 @@ The official build will not automatically trigger for release branches. Each tim
 
 1. Wait for changes to be mirrored from [GitHub repository](https://github.com/dotnet/dotnet-monitor) to the [internal repository](https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet-monitor).
 1. Invoke the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) for the release branch.
-1. Bump the versions across feature branches. See https://github.com/dotnet/dotnet-monitor/pull/1973/files for an example.
 
 The result of the successful build pushes packages to the [dotnet-tools](https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json) feed, pushes symbols to symbol feeds, and generates aka.ms links for the following:
 - `aka.ms/dotnet/diagnostics/monitor{channel}/dotnet-monitor.nupkg.version`
@@ -106,8 +105,8 @@ The remainder of the release will automatically push NuGet packages to nuget.org
 
 ## Release to Storage Accounts
 
-1. Approximately 3 days before Docker image release, execute a dry-run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (`Branch` should be set to `main`; `IsDryRun` should be checked; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will validate that the nupkg files can be published to the `dotnetcli` storage account and checksums can be published to the `dotnetclichecksums` storage account.
-1. The day before Docker image release, execute run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (`Branch` should be set to `main`; uncheck `IsDryRun`; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will publish the nupkg files to the `dotnetcli` storage account and the checksums to the `dotnetclichecksums` storage account.
+1. Approximately 3 days before Docker image release, execute a dry-run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (`Branch` should be set to `main`; `IsDryRun` should be checked; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will validate that the `.nupkg` files can be published to the `dotnetcli` storage account and checksums can be published to the `dotnetclichecksums` storage account.
+1. The day before Docker image release, execute run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (`Branch` should be set to `main`; uncheck `IsDryRun`; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will publish the `.nupkg` files to the `dotnetcli` storage account and the checksums to the `dotnetclichecksums` storage account.
 
 ## Release Docker Images
 
@@ -121,7 +120,6 @@ The release image is `mcr.microsoft.com/dotnet/monitor`. The tag list is https:/
 ## After the Release
 
 1. Update [releases.md](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/releases.md) with the latest version.
-1. When necessary, update [docker.md](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/docker.md).
 1. When necessary, update this document if its instructions were unclear or incorrect.
 1. When releasing a new minor version, include an announcement that the previous version will soon be out of support. For example, https://github.com/dotnet/dotnet-monitor/discussions/1871
 1. Make sure you [Revert](#revert-pipeline-variable-after-release) the nightly build pipeline.
