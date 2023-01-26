@@ -17,7 +17,7 @@ When running a dotnet application, differences in diverse local and production e
     - [Running in Kubernetes](./kubernetes.md)
     - Enabling SSL
 - [API Endpoints](./api/README.md)
-    - [OpenAPI document](./openapi.json)
+    - [Swagger UI & OpenAPI document](./swagger-ui.md)
     - [`/processes`](./api/processes.md)
     - [`/dump`](./api/dump.md)
     - [`/gcdump`](./api/gcdump.md)
@@ -28,7 +28,7 @@ When running a dotnet application, differences in diverse local and production e
     - [`/info`](./api/info.md)
     - [`/operations`](./api/operations.md)
     - [`/collectionrules`](./api/collectionrules.md)
-- [Configuration](./configuration.md)
+- [Configuration](./configuration/README.md)
     - [JSON Schema](./schema.json)
 - [Authentication](./authentication.md)
     - [API Key (Recommended)](./authentication.md#api-key-authentication)
