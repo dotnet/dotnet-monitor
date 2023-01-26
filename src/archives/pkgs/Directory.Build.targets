@@ -26,7 +26,7 @@
     <ItemGroup>
       <_ArchiveExecutableContent Remove="@(_ArchiveExecutableContent)" />
       <_ArchiveExecutableContent Include="@(_FileToArchive)"
-                                 Condition="'%(Extension)' == '.dylib' or '%(Extension)' == '.so'" />
+                                 Condition="'%(Extension)' == '.dylib' or '%(Extension)' == '.so' or '%(Extension)' == ''"/>
     </ItemGroup>
     <Exec Command="chmod 755 %(_ArchiveExecutableContent.Identity)"
           Condition="!$([MSBuild]::IsOSPlatform(Windows)) and '@(_ArchiveExecutableContent)' != ''" />
