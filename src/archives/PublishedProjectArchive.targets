@@ -14,6 +14,10 @@
 
   <Target Name="CollectPublishedFilesToArchive"
           DependsOnTargets="PublishProjectsBeforeArchive">
+    <Error Text="The 'ArchiveContentRootPath' property must be set to the path of the root of the files to archive."
+           Condition="'$(ArchiveContentRootPath)' == ''" />
+    <Error Text="The archive content root path '$(ArchiveContentRootPath)' does not exist."
+           Condition="!Exists($(ArchiveContentRootPath))" />
     <ItemGroup>
       <FileToArchive Include="$(ArchiveContentRootPath)**" />
     </ItemGroup>

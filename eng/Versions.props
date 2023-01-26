@@ -19,9 +19,10 @@
   <PropertyGroup Label="Testing">
     <XUnitCoreSettingsFile>$(MSBuildThisFileDirectory)xunit.runner.json</XUnitCoreSettingsFile>
   </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)Common.props" />
   <PropertyGroup Label="TargetFrameworks">
     <!-- The TFMs of the dotnet-monitor tool.  -->
-    <ToolTargetFrameworks>netcoreapp3.1;net6.0</ToolTargetFrameworks>
+    <ToolTargetFrameworks>netcoreapp3.1;$(LatestTargetFramework)</ToolTargetFrameworks>
     <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
     <TestTargetFrameworks>$(ToolTargetFrameworks)</TestTargetFrameworks>
   </PropertyGroup>
