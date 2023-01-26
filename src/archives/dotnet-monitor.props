@@ -1,6 +1,8 @@
 <Project>
+  <!-- Import ProjectToPublish items -->
+  <Import Project="$(RepositoryEngineeringDir)DotnetMonitorProjectToPublish.props" />
   <PropertyGroup>
-    <ArchiveContentRootPath>$(ArtifactsBinDir)dotnet-monitor\$(Configuration)\$(TargetFramework)\$(PackageRid)\publish\</ArchiveContentRootPath>
+    <ArchiveContentRootPath>$(DotnetMonitorPublishPath)</ArchiveContentRootPath>
   </PropertyGroup>
   <!-- These items are included in addition to those from publishing the dotnet-monitor project. -->
   <ItemGroup>
@@ -37,8 +39,6 @@
     </SymbolFileToArchive>
     <!-- Do not include symbols for the extra native assemblies since they have their own symbols package. -->
   </ItemGroup>
-  <!-- Import ProjectToPublish items -->
-  <Import Project="$(RepositoryEngineeringDir)DotnetMonitorProjectToPublish.props" />
   <!-- Import archive creation from published project -->
   <Import Project="$(MSBuildThisFileDirectory)PublishedProjectArchive.targets" />
 </Project>

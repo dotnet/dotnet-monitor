@@ -7,10 +7,6 @@
   
   <Target Name="PublishToDisk"
           DependsOnTargets="$(PublishToDiskDependsOn)">
-    <Error Message="The 'ArchiveContentRootPath' property must be set to the path of the root of the files to archive."
-           Condition="'$(ArchiveContentRootPath)' == ''" />
-    <Error Message="The archive content root path '$(ArchiveContentRootPath)' does not exist."
-           Condition="!Exists($(ArchiveContentRootPath))" />
     <!-- Collect non-symbol files and copy to staging directory -->
     <ItemGroup>
       <_FileToArchive Remove="@(_FileToArchive)" />
