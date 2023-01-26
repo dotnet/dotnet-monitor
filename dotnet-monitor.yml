@@ -14,6 +14,7 @@ pr:
     - .github
     - .vscode
     - .gitignore
+    - cspell.json
     - eng/actions
     - '**.md'
 
