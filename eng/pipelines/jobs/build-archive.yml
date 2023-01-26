@@ -15,15 +15,17 @@ jobs:
     osGroup: ${{ parameters.osGroup }}
     configuration: ${{ parameters.configuration }}
     architecture: ${{ parameters.architecture }}
-    dependsOn:
-    - Build_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
-    - Generate_TPN
 
     preBuildSteps:
     - task: DownloadPipelineArtifact@2
-      displayName: Download Binaries
+      displayName: Download Managed
       inputs:
-        artifactName: Build_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
+        artifactName: Build_Managed_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
+        targetPath: '$(Build.SourcesDirectory)/artifacts'
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Native
+      inputs:
+        artifactName: Build_Native_${{ parameters.configuration }}
         targetPath: '$(Build.SourcesDirectory)/artifacts'
     - task: DownloadPipelineArtifact@2
       displayName: Download Third Party Notice
@@ -33,6 +35,7 @@ jobs:
 
     buildArgs: >-
       -archive
+      -pack
       -skipmanaged
       -skipnative
       /p:PublishProjectsAfterBuild=true
@@ -46,7 +49,7 @@ jobs:
         TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/packages'
 
     - task: PublishBuildArtifacts@1
-      displayName: Publish Artifacts
+      displayName: Publish Artifacts (Unified)
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
-        artifactName: Archive_${{ parameters.configuration }}
+        artifactName: Archive_Unified_${{ parameters.configuration }}

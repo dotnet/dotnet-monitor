@@ -83,10 +83,22 @@ jobs:
           TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/bin/dotnet-monitor'
 
       - task: PublishBuildArtifacts@1
-        displayName: Publish Artifacts
+        displayName: Publish Artifacts (Managed)
         inputs:
           pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
-          artifactName: Build_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
+          artifactName: Build_Managed_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
+      
+      - task: CopyFiles@2
+        displayName: Gather Artifacts (bin/${{ parameters.targetRid }}.${{ parameters.configuration }})
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/native/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
+
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Artifacts (Native)
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)/native'
+          artifactName: Build_Native_${{ parameters.configuration }}
 
       - ${{ if eq(parameters.targetRid, 'win-x64') }}:
         - task: CopyFiles@2
@@ -110,7 +122,7 @@ jobs:
         displayName: Publish Artifacts (Unified)
         inputs:
           pathtoPublish: '$(Build.ArtifactStagingDirectory)/unified'
-          artifactName: Build_${{ parameters.configuration }}
+          artifactName: Build_Unified_${{ parameters.configuration }}
 
     # Execute tests
     - ${{ if and(ne(parameters.testGroup, 'None'), eq(parameters.architecture, 'arm64')) }}:

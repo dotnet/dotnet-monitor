@@ -58,7 +58,12 @@ stages:
         publishArtifacts: ${{ and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}
         testGroup: ${{ parameters.testGroup }}
 
-  - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+- ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+  - stage: Archive
+    displayName: Archive
+    dependsOn:
+    - Build
+    jobs:
     # Build RID (runtime identifier) archives
     - template: /eng/pipelines/jobs/platform-matrix.yml
       parameters:
@@ -69,7 +74,7 @@ stages:
   - stage: PackSignPublish
     displayName: Pack, Sign, and Generate Manifests
     dependsOn:
-    - Build
+    - Archive
     jobs:
     # Pack, sign, and publish manifest
     - template: /eng/pipelines/jobs/pack-sign-publish.yml
