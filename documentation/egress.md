@@ -3,7 +3,7 @@
 
 # Egress Providers
 
-`dotnet monitor` supports configuration of [egress providers](./configuration.md#egress-configuration) that can be used to egress artifacts externally, instead of to the client. This is supported for dumps, gcdumps, traces, logs, and live metrics. Currently supported providers are Azure blob storage and filesystem. 
+`dotnet monitor` supports configuration of [egress providers](./configuration/egress-configuration.md) that can be used to egress artifacts externally, instead of to the client. This is supported for dumps, gcdumps, traces, logs, and live metrics. Currently supported providers are Azure blob storage and filesystem. 
 
 Egress providers must first be named and configured in `dotnet monitor` configuration. They can then be referenced from a request, and will cause an egress based on the provider configuration, rather than directly back to the client.
 
