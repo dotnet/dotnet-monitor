@@ -1,3 +1,9 @@
+parameters:
+- name: updateDocker
+  displayName: 'Update dotnet-docker? (Only for release branches)'
+  type: boolean
+  default: false
+
 stages:
 - stage: PrepareReleaseStage
   displayName: Release Preparation
@@ -82,3 +88,9 @@ stages:
           inputs:
             type: 'Build'
             tags: 'MonitorRelease'
+        - ${{ if eq(parameters.updateDocker, true) }}:
+          - task: tagBuildOrRelease@0
+            displayName: 'Tag Build with update-docker'
+            inputs:
+              type: 'Build'
+              tags: 'update-docker'

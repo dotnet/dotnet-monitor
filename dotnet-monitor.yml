@@ -29,6 +29,10 @@ parameters:
   - None
   - CI
   - PR
+- name: updateDocker
+  displayName: 'Update dotnet-docker? (Only for release branches)'
+  type: boolean
+  default: false
 
 variables:
 - name: _TeamName
@@ -121,3 +125,5 @@ stages:
         - 'PackageArtifacts'
 # This sets up the bits to do a Release.
 - template: /eng/pipelines/stages/preparerelease.yml
+  parameters:
+    updateDocker: ${{ parameters.updateDocker }}
