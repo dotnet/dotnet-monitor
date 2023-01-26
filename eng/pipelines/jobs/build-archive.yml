@@ -18,14 +18,9 @@ jobs:
 
     preBuildSteps:
     - task: DownloadPipelineArtifact@2
-      displayName: Download Managed
+      displayName: Download Build
       inputs:
-        artifactName: Build_Managed_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
-        targetPath: '$(Build.SourcesDirectory)/artifacts'
-    - task: DownloadPipelineArtifact@2
-      displayName: Download Native
-      inputs:
-        artifactName: Build_Native_${{ parameters.configuration }}
+        artifactName: Build_Published_${{ parameters.configuration }}
         targetPath: '$(Build.SourcesDirectory)/artifacts'
     - task: DownloadPipelineArtifact@2
       displayName: Download Third Party Notice
