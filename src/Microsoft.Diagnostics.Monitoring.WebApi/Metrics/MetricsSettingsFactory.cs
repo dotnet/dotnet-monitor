@@ -12,9 +12,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// <summary>
     /// Utility class to create metric settings (for both configuration and on demand metrics).
     /// </summary>
-    internal static class CounterSettingsFactory
+    internal static class MetricsSettingsFactory
     {
-        public static CounterPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, bool includeDefaults,
+        public static MetricsPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, bool includeDefaults,
             int durationSeconds)
         {
             return CreateSettings(includeDefaults,
@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 () => new List<EventPipeCounterGroup>(0));
         }
 
-        public static CounterPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, MetricsOptions options)
+        public static MetricsPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, MetricsOptions options)
         {
             return CreateSettings(options.IncludeDefaultProviders.GetValueOrDefault(MetricsOptionsDefaults.IncludeDefaultProviders),
                 Timeout.Infinite, counterOptions.GetIntervalSeconds(),
@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 () => ConvertCounterGroups(options.Providers));
         }
 
-        public static CounterPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, int durationSeconds,
+        public static MetricsPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, int durationSeconds,
             Models.EventMetricsConfiguration configuration)
         {
             return CreateSettings(configuration.IncludeDefaultProviders,
@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 () => ConvertCounterGroups(configuration.Providers));
         }
 
-        private static CounterPipelineSettings CreateSettings(bool includeDefaults,
+        private static MetricsPipelineSettings CreateSettings(bool includeDefaults,
             int durationSeconds,
             float counterInterval,
             int maxHistograms,
@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.GrpcAspNetCoreServer, Type = CounterGroupType.EventCounter });
             }
 
-            return new CounterPipelineSettings
+            return new MetricsPipelineSettings
             {
                 CounterGroups = eventPipeCounterGroups.ToArray(),
                 Duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds),

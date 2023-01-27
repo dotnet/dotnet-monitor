@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
-            CounterPipelineSettings settings = CounterSettingsFactory.CreateSettings(
+            MetricsPipelineSettings settings = MetricsSettingsFactory.CreateSettings(
                 _counterOptions.CurrentValue,
                 includeDefaults: true,
                 durationSeconds: durationSeconds);
@@ -91,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
-            CounterPipelineSettings settings = CounterSettingsFactory.CreateSettings(
+            MetricsPipelineSettings settings = MetricsSettingsFactory.CreateSettings(
                 _counterOptions.CurrentValue,
                 durationSeconds,
                 configuration);
