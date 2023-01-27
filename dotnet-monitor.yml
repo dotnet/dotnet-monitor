@@ -39,7 +39,7 @@ variables:
   value: DotNetCore
 - name: _TPNFile
   value: THIRD-PARTY-NOTICES.TXT
-  
+
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   # DotNet-Diagnostics-SDL-Params provides Tsa* variables for SDL checks.
   - group: DotNet-Diagnostics-SDL-Params

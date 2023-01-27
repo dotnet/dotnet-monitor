@@ -13,7 +13,7 @@ stages:
   jobs:
   - job: PrepareReleaseJob
     displayName: Prepare release with Darc
-    pool: 
+    pool:
       ${{ if eq(variables['System.TeamProject'], 'public') }}:
         name: NetCore-Public
         demands: ImageOverride -equals 1es-windows-2019-open
@@ -55,25 +55,25 @@ stages:
           targetType: filePath
           filePath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
           arguments: >-
-            -BarBuildId "$(BARBuildId)" 
-            -AzdoToken "$(dn-bot-dotnet-all-scopes)" 
-            -MaestroToken "$(MaestroAccessToken)" 
-            -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)" 
-            -DownloadTargetPath "$(System.ArtifactsDirectory)\ReleaseTarget" 
-            -SasSuffixes "$(dotnetclichecksumsmsrc-dotnet-read-list-sas-token),$(dotnetclimsrc-read-sas-token)" 
+            -BarBuildId "$(BARBuildId)"
+            -AzdoToken "$(dn-bot-dotnet-all-scopes)"
+            -MaestroToken "$(MaestroAccessToken)"
+            -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)"
+            -DownloadTargetPath "$(System.ArtifactsDirectory)\ReleaseTarget"
+            -SasSuffixes "$(dotnetclichecksumsmsrc-dotnet-read-list-sas-token),$(dotnetclimsrc-read-sas-token)"
             -ReleaseVersion "$(Build.BuildNumber)"
           workingDirectory: '$(Build.Repository.LocalPath)'
       - script: >-
           dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release
           --
-          prepare-release 
-          --input-drop-path "$(System.ArtifactsDirectory)\ReleaseTarget" 
-          --tool-manifest "$(Build.Repository.LocalPath)\eng\release\tool-list.json" 
-          --staging-directory "$(System.ArtifactsDirectory)\ReleaseStaging" 
-          --release-name "$(Build.BuildNumber)" 
-          --account-name "$(dotnet-diagnostics-storage-accountname)" 
-          --account-key "$(dotnetstage-storage-key)" 
-          --sas-valid-days "$(dotnet-diagnostics-storage-retentiondays)" 
+          prepare-release
+          --input-drop-path "$(System.ArtifactsDirectory)\ReleaseTarget"
+          --tool-manifest "$(Build.Repository.LocalPath)\eng\release\tool-list.json"
+          --staging-directory "$(System.ArtifactsDirectory)\ReleaseStaging"
+          --release-name "$(Build.BuildNumber)"
+          --account-name "$(dotnet-diagnostics-storage-accountname)"
+          --account-key "$(dotnetstage-storage-key)"
+          --sas-valid-days "$(dotnet-diagnostics-storage-retentiondays)"
           -v True
         workingDirectory: '$(Build.Repository.LocalPath)\'
         displayName: 'Manifest generation and asset publishing'
