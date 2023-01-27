@@ -40,7 +40,7 @@ When overriding the `CMD` instruction, the existing arguments will need to be re
 
 ### Egress: Built-In Metadata Is Prefixed for Azure Blob Egress
 
-When egressing an artifact to Azure blob storage, several metadata keys and values are applied to the Azure blob, such as `dotnet monitor` activity information, collection rule execution information, and process information. Starting in 7.0, these metadata keys are now prefixed with `DotnetMonitor_`. This change was made in order to avoid potential collisions with metadata acquired from the `metadata` description on the [Azure blob storage](../../configuration.md#azure-blob-storage-egress-provider) egress provider. The names are changed as follows:
+When egressing an artifact to Azure blob storage, several metadata keys and values are applied to the Azure blob, such as `dotnet monitor` activity information, collection rule execution information, and process information. Starting in 7.0, these metadata keys are now prefixed with `DotnetMonitor_`. This change was made in order to avoid potential collisions with metadata acquired from the `metadata` description on the [Azure blob storage](../../configuration/egress-configuration.md#azure-blob-storage-egress-provider) egress provider. The names are changed as follows:
 
 - `ParentId` -> `DotnetMonitor_ParentId`
 - `SpanId` -> `DotnetMonitor_SpanId`
@@ -51,4 +51,4 @@ When egressing an artifact to Azure blob storage, several metadata keys and valu
 - `ArtifactSource_ProcessId` -> `DotnetMonitor_ArtifactSource_ProcessId`
 - `ArtifactSource_RuntimeInstanceCookie` -> `DotnetMonitor_ArtifactSource_RuntimeInstanceCookie`
 
-> **Note**: The custom metadata keys as specified in the [Azure blob storage](../../configuration.md#azure-blob-storage-egress-provider) egress provider are not prefixed.
+> **Note**: The custom metadata keys as specified in the [Azure blob storage](../../configuration/egress-configuration.md#azure-blob-storage-egress-provider) egress provider are not prefixed.
