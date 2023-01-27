@@ -42,3 +42,15 @@ jobs:
         /p:DotNetPublishUsingPipelines=true
         /p:ThirdPartyNoticesFilePath='$(Build.SourcesDirectory)/$(_TPNFile)'
       displayName: Pack, Sign, and Publish
+    - task: powershell@2
+      displayName: Generate Build Info
+      inputs:
+        targetType: inline
+        script: |
+            New-Item "$(Build.ArtifactStagingDirectory)/buildInfo" -Type Directory
+            Copy-Item "$(Build.SourcesDirectory)/artifacts/packages/Release/Shipping/dotnet-monitor.*.nupkg.buildversion" "$(Build.ArtifactStagingDirectory)/buildInfo/dotnet-monitor.nupkg.buildversion"
+    - task: PublishPipelineArtifact@1
+      displayName: Publish Build Info
+      inputs:
+        artifactName: 'Build_Info'
+        targetPath: $(Build.ArtifactStagingDirectory)/buildInfo
