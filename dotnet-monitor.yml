@@ -29,13 +29,17 @@ parameters:
   - None
   - CI
   - PR
+- name: updateDocker
+  displayName: 'Update dotnet-docker? (Only for release branches)'
+  type: boolean
+  default: false
 
 variables:
 - name: _TeamName
   value: DotNetCore
 - name: _TPNFile
   value: THIRD-PARTY-NOTICES.TXT
-  
+
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   # DotNet-Diagnostics-SDL-Params provides Tsa* variables for SDL checks.
   - group: DotNet-Diagnostics-SDL-Params
@@ -127,3 +131,5 @@ stages:
         - 'PackageArtifacts'
 # This sets up the bits to do a Release.
 - template: /eng/pipelines/stages/preparerelease.yml
+  parameters:
+    updateDocker: ${{ parameters.updateDocker }}
