@@ -71,7 +71,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     Providers = providers
                 };
 
-                CounterPipelineSettings settings = CounterSettingsFactory.CreateSettings(
+                MetricsPipelineSettings settings = MetricsSettingsFactory.CreateSettings(
                     _counterOptions.CurrentValue,
                     (int)duration.TotalSeconds,
                     configuration);

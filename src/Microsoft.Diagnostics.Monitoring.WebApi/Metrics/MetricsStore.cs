@@ -60,6 +60,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public void AddMetric(ICounterPayload metric)
         {
+            if (metric is PercentilePayload payload && !payload.Quantiles.Any())
+            {
+                // If histogram data is not generated in the monitored app, we can get Histogram events that do not contain quantiles.
+                // For now, we will ignore these events.
+                return;
+            }
+
             lock (_allMetrics)
             {
                 var metricKey = new MetricKey(metric);

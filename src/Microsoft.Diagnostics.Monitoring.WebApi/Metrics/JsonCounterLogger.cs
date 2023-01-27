@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -46,10 +47,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 return;
             }
 
-            await _stream.WriteAsync(JsonSequenceRecordSeparator);
-            _bufferWriter.Clear();
             if (counter is PercentilePayload percentilePayload)
             {
+                if (!percentilePayload.Quantiles.Any())
+                {
+                    return;
+                }
+                await _stream.WriteAsync(JsonSequenceRecordSeparator);
+                _bufferWriter.Clear();
+
                 for (int i = 0; i < percentilePayload.Quantiles.Length; i++)
                 {
                     if (i > 0)
@@ -75,6 +81,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             else
             {
+                await _stream.WriteAsync(JsonSequenceRecordSeparator);
+                _bufferWriter.Clear();
+
                 SerializeCounterValues(counter.Timestamp,
                     counter.Provider,
                     counter.Name,
