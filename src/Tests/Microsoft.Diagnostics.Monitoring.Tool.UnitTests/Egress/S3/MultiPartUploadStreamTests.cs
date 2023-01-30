@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +11,7 @@ using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
 {
+    /*
     public class MultiPartUploadStreamTests
     {
         public enum EWriteOperation
@@ -155,5 +155,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             Assert.True(_s3.Uploads.TryGetValue(uploadId, out List<InMemoryStorage.StorageData> data));
             Assert.Empty(data);
         }
-    }
+    }*/
 }

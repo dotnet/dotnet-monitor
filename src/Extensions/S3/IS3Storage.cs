@@ -3,13 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Amazon.S3.Model;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
+namespace Microsoft.Diagnostics.Monitoring.S3
 {
     public interface IS3Storage
     {

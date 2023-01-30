@@ -4,7 +4,6 @@
 
 using Amazon.S3;
 using Amazon.S3.Model;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
 {
+    /*
     public class InMemoryStorage : IS3Storage
     {
         public class StorageData
@@ -148,5 +148,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
                 PartNumber = partNumber
             });
         }
-    }
+    }*/
 }

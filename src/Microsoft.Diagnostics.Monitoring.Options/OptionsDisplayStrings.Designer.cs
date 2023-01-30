@@ -1527,24 +1527,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} field is required..
-        /// </summary>
-        public static string ErrorMessage_EgressS3FailedMissingOption {
-            get {
-                return ResourceManager.GetString("ErrorMessage_EgressS3FailedMissingOption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to S3 storage egress failed: Neither the secrets file nor the password are specified..
-        /// </summary>
-        public static string ErrorMessage_EgressS3FailedMissingSecrets {
-            get {
-                return ResourceManager.GetString("ErrorMessage_EgressS3FailedMissingSecrets", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to A value is required for the process filter..
         /// </summary>
         public static string ErrorMessage_FilterValueMissing {

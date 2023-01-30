@@ -1,0 +1,9 @@
+{
+  "Id": "Microsoft.Diagnostics.Monitoring.S3",
+  "Version": "1.0.0",
+  "Program": "dotnet-monitor-egress-s3storage",
+  "Name": "S3Storage",
+  "SupportedExtensionTypes": [
+    "Egress"
+  ]
+}
