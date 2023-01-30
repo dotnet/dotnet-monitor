@@ -14,9 +14,6 @@
     </ItemGroup>
     <!-- Update metadata on existing items -->
     <ItemGroup>
-      <_FileToArchive Condition="'%(_FileToArchive.PackagePath)' == ''">
-        <PackagePath>%(RecursiveDir)</PackagePath>
-      </_FileToArchive>
       <_FileToArchive>
         <TargetPath>$(OutputPath)%(PackagePath)%(Filename)%(Extension)</TargetPath>
       </_FileToArchive>
@@ -26,6 +23,7 @@
       <_StagedFile Remove="@(_StagedFile)" />
       <_StagedFile Include="%(_FileToArchive.TargetPath)">
         <SourcePath>@(_FileToArchive->'%(Identity)')</SourcePath>
+        <MarkExecutable>%(_FileToArchive.MarkExecutable)</MarkExecutable>
       </_StagedFile>
     </ItemGroup>
     <Copy SourceFiles="%(SourcePath)" DestinationFiles="@(_StagedFile)" />
@@ -34,6 +32,8 @@
       <_ArchiveExecutableContent Remove="@(_ArchiveExecutableContent)" />
       <_ArchiveExecutableContent Include="@(_StagedFile)"
                                  Condition="'%(Extension)' == '.dylib' or '%(Extension)' == '.so'" />
+      <_ArchiveExecutableContent Include="@(_StagedFile)"
+                                 Condition="'%(MarkExecutable)' == 'true'" />
     </ItemGroup>
     <Exec Command="chmod 755 %(_ArchiveExecutableContent.Identity)"
           Condition="!$([MSBuild]::IsOSPlatform(Windows)) and '@(_ArchiveExecutableContent)' != ''" />
@@ -56,9 +56,6 @@
     </ItemGroup>
     <!-- Update metadata on existing items -->
     <ItemGroup>
-      <_SymbolFileToArchive Condition="'%(_SymbolFileToArchive.PackagePath)' == ''">
-        <PackagePath>%(RecursiveDir)</PackagePath>
-      </_SymbolFileToArchive>
       <_SymbolFileToArchive>
         <TargetPath>$(SymbolsOutputPath)%(PackagePath)%(Filename)%(Extension)</TargetPath>
       </_SymbolFileToArchive>
