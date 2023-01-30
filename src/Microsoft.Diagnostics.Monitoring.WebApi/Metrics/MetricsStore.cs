@@ -66,6 +66,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 // For now, we will ignore these events.
                 return;
             }
+            //Do not accept CounterEnded payloads.
+            if (metric is CounterEndedPayload counterEnded)
+            {
+                _logger.CounterEndedPayload(counterEnded.Name);
+                return;
+            }
 
             lock (_allMetrics)
             {
@@ -153,7 +159,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static async Task WriteMetricHeader(ICounterPayload metricInfo, StreamWriter writer, string metricName)
         {
-            if (metricInfo.EventType != EventType.Error)
+            if ((metricInfo.EventType != EventType.Error) && (metricInfo.EventType != EventType.CounterEnded))
             {
                 string metricType = GetMetricType(metricInfo.EventType);
 
@@ -215,10 +221,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             else if (metric is ErrorPayload errorMetric)
             {
                 _logger.LogWarning(errorMetric.ErrorMessage);
-            }
-            else if (metric is CounterEndedPayload)
-            {
-                _logger.CounterEndedPayload(metric.Name);
             }
             else
             {
