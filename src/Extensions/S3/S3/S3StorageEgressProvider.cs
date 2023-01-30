@@ -2,19 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Amazon.S3;
-using Microsoft.Extensions.Logging;
-using System;
 using System.Globalization;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
+namespace Microsoft.Diagnostics.Monitoring.S3
 {
     /// <summary>
     /// Egress provider for egressing stream data to the S3 storage.
     /// </summary>
-    internal class S3StorageEgressProvider : EgressProvider<S3StorageEgressProviderOptions>
+    internal sealed class S3StorageEgressProvider
     {
         internal class StorageFactory
         {
@@ -22,14 +17,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
         }
 
         internal StorageFactory ClientFactory = new();
+        private readonly ILogger _logger;
 
-        public S3StorageEgressProvider(ILogger<S3StorageEgressProvider> logger) : base(logger)
+        public S3StorageEgressProvider(ILogger logger)
         {
+            _logger = logger;
         }
 
-        public override async Task<string> EgressAsync(
-            string providerType,
-            string providerName,
+        public async Task<string> EgressAsync(
             S3StorageEgressProviderOptions options,
             Func<CancellationToken, Task<Stream>> action,
             EgressArtifactSettings artifactSettings,
@@ -37,7 +32,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
         {
             try
             {
-                Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.S3Storage);
+                _logger.EgressProviderInvokeStreamAction(Constants.S3StorageProviderName);
                 await using var stream = await action(token);
 
                 var client = await ClientFactory.CreateAsync(options, artifactSettings, token);
@@ -59,9 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             }
         }
 
-        public override async Task<string> EgressAsync(
-            string providerType,
-            string providerName,
+        public async Task<string> EgressAsync(
             S3StorageEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
@@ -76,7 +69,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
                 uploadId = await client.InitMultiPartUploadAsync(artifactSettings.Metadata, token);
                 int copyBufferSize = options.CopyBufferSize.GetValueOrDefault(0x100000);
                 await using var stream = new MultiPartUploadStream(client, options.BucketName, artifactSettings.Name, uploadId, copyBufferSize);
-                Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.S3Storage);
+                _logger.EgressProviderInvokeStreamAction(Constants.S3StorageProviderName);
                 await action(stream, token);
                 await stream.FinalizeAsync(token); // force to push the last part
 
@@ -112,7 +105,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
             DateTime expires = DateTime.UtcNow.Add(options.PreSignedUrlExpiry!.Value);
             string resourceId = client.GetTemporaryResourceUrl(expires);
-            Logger?.EgressProviderSavedStream(EgressProviderTypes.S3Storage, resourceId);
+            _logger.EgressProviderSavedStream(Constants.S3StorageProviderName, resourceId);
             return resourceId;
         }
 

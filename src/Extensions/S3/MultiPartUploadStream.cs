@@ -2,17 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Amazon.S3.Model;
-using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
+namespace Microsoft.Diagnostics.Monitoring.S3;
 
-internal class MultiPartUploadStream : Stream
+internal sealed class MultiPartUploadStream : Stream
 {
     private readonly byte[] _buffer;
     private int _offset;

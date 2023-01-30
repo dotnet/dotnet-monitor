@@ -6,15 +6,10 @@ using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
+namespace Microsoft.Diagnostics.Monitoring.S3
 {
-    internal class S3Storage : IS3Storage
+    internal sealed class S3Storage : IS3Storage
     {
         private readonly IAmazonS3 _s3Client;
         private readonly string _bucketName;
@@ -132,7 +127,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             };
             var response = await _s3Client.UploadPartAsync(uploadRequest, token);
             return new PartETag(response.PartNumber, response.ETag);
-
         }
 
         public string GetTemporaryResourceUrl(DateTime expires)

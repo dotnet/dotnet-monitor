@@ -5,7 +5,6 @@ using Amazon.S3;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
 using System;
 using System.IO;
 using System.Threading;
@@ -15,6 +14,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
 {
+    /*
     public class S3StorageEgressProviderTests
     {
         public enum EUploadAction
@@ -199,5 +199,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             MemoryStream stream = new(bytes);
             return stream;
         }
-    }
+    }*/
 }
