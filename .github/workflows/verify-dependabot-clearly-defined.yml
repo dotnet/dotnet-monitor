@@ -18,7 +18,7 @@ jobs:
         run: |
           set -e
           blockPr=""
-          while IFS=%'\t' read -r dependency; do
+          while read -r dependency; do
             url="https://api.clearlydefined.io/definitions/nuget/nuget/-/$dependency"
             echo "Checking $dependency at $url"
             license=$(curl -sX GET "$url" -H "accept: */*" | jq -r '.licensed.declared')
