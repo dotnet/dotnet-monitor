@@ -50,9 +50,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CollectionRuleActions.UnitTests", "src\Tests\CollectionRuleActions.UnitTests\CollectionRuleActions.UnitTests.csproj", "{2FD0A2A3-D7DA-4458-9084-E195102B9D5B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Diagnostics.Monitoring.StartupHook", "src\Microsoft.Diagnostics.Monitoring.StartupHook\Microsoft.Diagnostics.Monitoring.StartupHook.csproj", "{72EC615C-E1BE-4D27-A0FC-C0FEE483D3D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.StartupHook", "src\Microsoft.Diagnostics.Monitoring.StartupHook\Microsoft.Diagnostics.Monitoring.StartupHook.csproj", "{72EC615C-E1BE-4D27-A0FC-C0FEE483D3D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests\Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests.csproj", "{E7EA323B-0CFE-4D42-9844-4C322A3BC54A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests\Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests.csproj", "{E7EA323B-0CFE-4D42-9844-4C322A3BC54A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
