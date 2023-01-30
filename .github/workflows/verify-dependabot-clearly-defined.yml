@@ -1,0 +1,41 @@
+name: Dependabot Verify ClearlyDefined
+on: pull_request
+
+permissions:
+  pull-requests: read
+
+jobs:
+  dependabotVerify:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    steps:
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1
+
+      - name: Check ClearlyDefined
+        if: ${{steps.metadata.outputs.package-ecosystem == 'nuget'}}
+        run: |
+          set -e
+          blockPr=""
+          while IFS=%'\t' read -r dependency; do
+            url="https://api.clearlydefined.io/definitions/nuget/nuget/-/$dependency"
+            echo "Checking $dependency at $url"
+            license=$(curl -sX GET "$url" -H "accept: */*" | jq -r '.licensed.declared')
+            if [ "$license" == "null" ]; then
+              echo "--> Not harvested, submitting request."
+              curl -sX POST "https://api.clearlydefined.io/harvest" -H "accept: */*" -H "Content-Type: application/json" -d "[{\"tool\":\"package\",\"coordinates\":\"nuget/nuget/-/$dependency\"}]"
+              echo
+              if [[ "$dependency" == Microsoft.* ]] || [[ "$dependency" == Azure.* ]] || [[ "$dependency" == System.* ]]; then
+                echo "--> 1P dependency"
+              else
+                echo "--> 3P dependency"
+                blockPr="true"
+              fi
+            fi
+          done <<< $(echo '${{steps.metadata.outputs.updated-dependencies-json}}' | jq -r '.[] | .dependencyName + "/" + .newVersion')
+
+          if [ "$blockPr" == "true" ]; then
+            echo "Blocking PR"
+            exit 1
+          fi
