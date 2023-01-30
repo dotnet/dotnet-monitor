@@ -6,4 +6,15 @@
     <RuntimeIdentifiers>$(DefaultRuntimeIdentifiers)</RuntimeIdentifiers>
   </PropertyGroup>
   <Import Project="$(RepositoryArchivesDir)dotnet-monitor.props" />
+  <PropertyGroup>
+    <PublishToDiskDependsOn>$(PublishToDiskDependsOn);UpdateFilesToArchive</PublishToDiskDependsOn>
+  </PropertyGroup>
+  <Target Name="UpdateFilesToArchive">
+    <ItemGroup>
+      <!-- Check extension so as to not mark 'dotnet-monitor.dll' as executable. -->
+      <FileToArchive Condition="'%(Filename)%(Extension)' == 'dotnet-monitor'">
+        <MarkExecutable>true</MarkExecutable>
+      </FileToArchive>
+    </ItemGroup>
+  </Target>
 </Project>
