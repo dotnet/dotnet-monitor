@@ -6,9 +6,12 @@
     <OutputType>Library</OutputType>
     <Nullable>enable</Nullable>
     <DefineConstants>$(DefineConstants);STARTUPHOOK</DefineConstants>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\Stacks\NameCache.cs" Link="NameCache.cs" />
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\Stacks\NameIdentificationEvents.cs" Link="Exceptions\Eventing\NameIdentificationEvents.cs" />
     <Compile Include="..\Tools\dotnet-monitor\DisposableHelper.cs" Link="DisposableHelper.cs" />
   </ItemGroup>
 

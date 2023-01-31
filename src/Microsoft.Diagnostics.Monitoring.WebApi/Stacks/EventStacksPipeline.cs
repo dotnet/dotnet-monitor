@@ -91,52 +91,48 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
             else if (action.ID == CallStackEvents.FunctionDesc)
             {
-                ulong id = action.GetPayload<ulong>(CallStackEvents.FunctionDescPayloads.FunctionId);
-                var functionData = new FunctionData
-                {
-                    Name = action.GetPayload<string>(CallStackEvents.FunctionDescPayloads.Name),
-                    ParentClass = action.GetPayload<ulong>(CallStackEvents.FunctionDescPayloads.ClassId),
-                    ParentToken = action.GetPayload<uint>(CallStackEvents.FunctionDescPayloads.ClassToken),
-                    ModuleId = action.GetPayload<ulong>(CallStackEvents.FunctionDescPayloads.ModuleId),
-                    TypeArgs = action.GetPayload<ulong[]>(CallStackEvents.FunctionDescPayloads.TypeArgs) ?? Array.Empty<ulong>()
-                };
+                ulong id = action.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.FunctionId);
+                var functionData = new FunctionData(
+                    action.GetPayload<string>(NameIdentificationEvents.FunctionDescPayloads.Name),
+                    action.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ClassId),
+                    action.GetPayload<uint>(NameIdentificationEvents.FunctionDescPayloads.ClassToken),
+                    action.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ModuleId),
+                    action.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.TypeArgs) ?? Array.Empty<ulong>()
+                    );
 
-                _result.NameCache.FunctionData.Add(id, functionData);
+                _result.NameCache.FunctionData.TryAdd(id, functionData);
             }
             else if (action.ID == CallStackEvents.ClassDesc)
             {
-                ulong id = action.GetPayload<ulong>(CallStackEvents.ClassDescPayloads.ClassId);
-                var classData = new ClassData
-                {
-                    ModuleId = action.GetPayload<ulong>(CallStackEvents.ClassDescPayloads.ModuleId),
-                    Token = action.GetPayload<uint>(CallStackEvents.ClassDescPayloads.Token),
-                    Flags = (ClassFlags)action.GetPayload<uint>(CallStackEvents.ClassDescPayloads.Flags),
-                    TypeArgs = action.GetPayload<ulong[]>(CallStackEvents.ClassDescPayloads.TypeArgs) ?? Array.Empty<ulong>()
-                };
+                ulong id = action.GetPayload<ulong>(NameIdentificationEvents.ClassDescPayloads.ClassId);
+                var classData = new ClassData(
+                    action.GetPayload<uint>(NameIdentificationEvents.ClassDescPayloads.Token),
+                    action.GetPayload<ulong>(NameIdentificationEvents.ClassDescPayloads.ModuleId),
+                    (ClassFlags)action.GetPayload<uint>(NameIdentificationEvents.ClassDescPayloads.Flags),
+                    action.GetPayload<ulong[]>(NameIdentificationEvents.ClassDescPayloads.TypeArgs) ?? Array.Empty<ulong>()
+                    );
 
-                _result.NameCache.ClassData.Add(id, classData);
+                _result.NameCache.ClassData.TryAdd(id, classData);
             }
             else if (action.ID == CallStackEvents.ModuleDesc)
             {
-                ulong id = action.GetPayload<ulong>(CallStackEvents.ModuleDescPayloads.ModuleId);
-                var moduleData = new ModuleData
-                {
-                    Name = action.GetPayload<string>(CallStackEvents.ModuleDescPayloads.Name)
-                };
+                ulong id = action.GetPayload<ulong>(NameIdentificationEvents.ModuleDescPayloads.ModuleId);
+                var moduleData = new ModuleData(
+                    action.GetPayload<string>(NameIdentificationEvents.ModuleDescPayloads.Name)
+                    );
 
-                _result.NameCache.ModuleData.Add(id, moduleData);
+                _result.NameCache.ModuleData.TryAdd(id, moduleData);
             }
             else if (action.ID == CallStackEvents.TokenDesc)
             {
-                ulong modId = action.GetPayload<ulong>(CallStackEvents.TokenDescPayloads.ModuleId);
-                ulong token = action.GetPayload<uint>(CallStackEvents.TokenDescPayloads.Token);
-                var tokenData = new TokenData()
-                {
-                    Name = action.GetPayload<string>(CallStackEvents.TokenDescPayloads.Name),
-                    OuterToken = action.GetPayload<uint>(CallStackEvents.TokenDescPayloads.OuterToken)
-                };
+                ulong modId = action.GetPayload<ulong>(NameIdentificationEvents.TokenDescPayloads.ModuleId);
+                uint token = action.GetPayload<uint>(NameIdentificationEvents.TokenDescPayloads.Token);
+                var tokenData = new TokenData(
+                    action.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.Name),
+                    action.GetPayload<uint>(NameIdentificationEvents.TokenDescPayloads.OuterToken)
+                    );
 
-                _result.NameCache.TokenData.Add((modId, token), tokenData);
+                _result.NameCache.TokenData.TryAdd(new ModuleScopedToken(modId, token), tokenData);
             }
             else if (action.ID == CallStackEvents.End)
             {

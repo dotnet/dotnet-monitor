@@ -6,13 +6,13 @@ using System;
 using System.Runtime.CompilerServices;
 using Xunit;
 
-namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
+namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMoniker.Current)]
     public sealed class ExceptionIdentifierTests
     {
         [Fact]
-        public void ExceptionIdentifier_UnthrownException()
+        public void ExceptionIdentifier_NotThrownException()
         {
             Exception ex = new();
             ExceptionIdentifier id = new(ex);
@@ -39,6 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             ExceptionIdentifier id2 = ThrowAndCreate();
 
             Assert.Equal(id1, id2);
+            Assert.True(id1 == id2);
         }
 
         [Fact]
@@ -60,6 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             (ExceptionIdentifier id1, ExceptionIdentifier id2) = ThrowAndCreatePair(differentTypes: true);
 
             Assert.NotEqual(id1, id2);
+            Assert.True(id1 != id2);
         }
 
         [Fact]
@@ -80,6 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             (ExceptionIdentifier id1, ExceptionIdentifier id2) = ThrowAndCreatePair(differentMethods: true);
 
             Assert.NotEqual(id1, id2);
+            Assert.True(id1 != id2);
         }
 
         [Fact]
@@ -99,6 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             (ExceptionIdentifier id1, ExceptionIdentifier id2) = ThrowAndCreatePair();
 
             Assert.NotEqual(id1, id2);
+            Assert.True(id1 != id2);
         }
 
         [Fact]

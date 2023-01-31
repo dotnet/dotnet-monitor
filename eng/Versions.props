@@ -25,16 +25,17 @@
   <PropertyGroup Label="Testing">
     <XUnitCoreSettingsFile>$(MSBuildThisFileDirectory)xunit.runner.json</XUnitCoreSettingsFile>
   </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)Common.props" />
   <PropertyGroup Label="TargetFrameworks">
     <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
     <ExcludeLatestTargetFramework>false</ExcludeLatestTargetFramework>
     <ExcludeLatestTargetFramework Condition="'$(BuildingInsideVisualStudio)' == 'true'">true</ExcludeLatestTargetFramework>
     <!-- The TFMs of the dotnet-monitor tool.  -->
     <ToolTargetFrameworks>net6.0</ToolTargetFrameworks>
-    <ToolTargetFrameworks Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(ToolTargetFrameworks);net8.0</ToolTargetFrameworks>
+    <ToolTargetFrameworks Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(ToolTargetFrameworks);$(LatestTargetFramework)</ToolTargetFrameworks>
     <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
     <TestTargetFrameworks>net6.0;net7.0</TestTargetFrameworks>
-    <TestTargetFrameworks Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(TestTargetFrameworks);net8.0</TestTargetFrameworks>
+    <TestTargetFrameworks Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(TestTargetFrameworks);$(LatestTargetFramework)</TestTargetFrameworks>
     <!-- The TFM for generating schema.json and OpenAPI docs. -->
     <SchemaTargetFramework>net6.0</SchemaTargetFramework>
     <!-- Defines for including the next .NET version -->
