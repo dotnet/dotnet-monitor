@@ -57,9 +57,9 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/arcade references -->
-    <MicrosoftDotNetBuildTasksArchivesVersion>8.0.0-beta.23075.2</MicrosoftDotNetBuildTasksArchivesVersion>
-    <MicrosoftDotNetCodeAnalysisVersion>8.0.0-beta.23075.2</MicrosoftDotNetCodeAnalysisVersion>
-    <MicrosoftDotNetXUnitExtensionsVersion>8.0.0-beta.23075.2</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetBuildTasksArchivesVersion>8.0.0-beta.23077.1</MicrosoftDotNetBuildTasksArchivesVersion>
+    <MicrosoftDotNetCodeAnalysisVersion>8.0.0-beta.23077.1</MicrosoftDotNetCodeAnalysisVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>8.0.0-beta.23077.1</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>8.0.0-alpha.1.23066.6</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <VSRedistCommonAspNetCoreSharedFrameworkx6480Version>8.0.0-alpha.1.23066.6</VSRedistCommonAspNetCoreSharedFrameworkx6480Version>
@@ -69,7 +69,7 @@
     <MicrosoftDiagnosticsMonitoringVersion>6.0.0-preview.23080.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>6.0.0-preview.23080.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/roslyn-analyzers -->
-    <MicrosoftCodeAnalysisNetAnalyzersVersion>8.0.0-preview1.23076.1</MicrosoftCodeAnalysisNetAnalyzersVersion>
+    <MicrosoftCodeAnalysisNetAnalyzersVersion>8.0.0-preview1.23076.2</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
     <MicrosoftNETCoreAppRuntimewinx64Version>8.0.0-alpha.1.23059.14</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6480Version>8.0.0-alpha.1.23059.14</VSRedistCommonNetCoreSharedFrameworkx6480Version>

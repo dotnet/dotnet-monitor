@@ -18,25 +18,25 @@
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>6f1752a798a9460b8a039750e30b827578528c90</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0-preview1.23076.1">
+    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0-preview1.23076.2">
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
-      <Sha>f025dc539b99ba064e337c26c7c249e13bd1823d</Sha>
+      <Sha>9dd3c12b2244e67c0b9c7aa922ec4ac74d977f59</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="8.0.0-beta.23075.2">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="8.0.0-beta.23077.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>74a74c44f54249ac59d045b49f9f8da922e0b8d8</Sha>
+      <Sha>691fd54681d10eef3c2681fceb8b09b9f9ba9bb0</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="8.0.0-beta.23075.2">
+    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="8.0.0-beta.23077.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>74a74c44f54249ac59d045b49f9f8da922e0b8d8</Sha>
+      <Sha>691fd54681d10eef3c2681fceb8b09b9f9ba9bb0</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="8.0.0-beta.23075.2">
+    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="8.0.0-beta.23077.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>74a74c44f54249ac59d045b49f9f8da922e0b8d8</Sha>
+      <Sha>691fd54681d10eef3c2681fceb8b09b9f9ba9bb0</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="8.0.0-beta.23075.2">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="8.0.0-beta.23077.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>74a74c44f54249ac59d045b49f9f8da922e0b8d8</Sha>
+      <Sha>691fd54681d10eef3c2681fceb8b09b9f9ba9bb0</Sha>
     </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.407301">
       <Uri>https://github.com/dotnet/symstore</Uri>
