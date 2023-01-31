@@ -18,6 +18,14 @@ pr:
     - eng/actions
     - '**.md'
 
+schedules:
+# Schedule before docker update pipeline
+- cron: "0 3 * * Mon-Fri"
+  displayName: M-F Scheduled Build
+  branches:
+    include:
+    - main
+
 parameters:
 - name: testGroup
   displayName: 'Test Group'
@@ -39,6 +47,9 @@ variables:
   value: DotNetCore
 - name: _TPNFile
   value: THIRD-PARTY-NOTICES.TXT
+# Scheduled builds of main branch will be marked for update by dotnet-docker if this is true
+- name: NightlyUpdateDockerFromMain
+  value: true
 
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   # DotNet-Diagnostics-SDL-Params provides Tsa* variables for SDL checks.
@@ -129,4 +140,8 @@ stages:
 # This sets up the bits to do a Release.
 - template: /eng/pipelines/stages/preparerelease.yml
   parameters:
-    updateDocker: ${{ parameters.updateDocker }}
+    ${{ if eq(parameters.updateDocker, 'true') }}:
+      updateDocker: true
+    ${{ else }}:
+      # If scheduled build from main and nightly update from main enabled
+      updateDocker: ${{ and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['NightlyUpdateDockerFromMain'], 'true')) }}
