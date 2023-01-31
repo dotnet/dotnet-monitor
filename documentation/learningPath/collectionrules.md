@@ -12,32 +12,6 @@ You can learn more about how collection rules work [here](https://github.com/dot
 Collection rules' implementation is distributed between the `dotnet monitor` repo and the [`dotnet diagnostics` repo](https://github.com/dotnet/diagnostics). The flowchart below shows a simplified version of how `dotnet monitor` and `dotnet diagnostics` interact to run collection rules.
 
 ```mermaid
----
-title: THIS IS THE ORIGINAL - NEW ONES ARE BELOW
----
-graph LR
-    A[Collection Rules] --> |Configuration| N{.NET Monitor}
-    B[Diagnostic Port] --> |Configuration| N{.NET Monitor}
-    C[Other Configuration] --> |Configuration| N{.NET Monitor}
-    N ---> |1| O[Load Configuration and Bind Options]
-    N ---> |2| P[Connect to Process]    
-    N ---> |3| Q[Start Pipelines For Processes That Match Filters]
-    N ---> |4| R[Wait To Satisfy Trigger]
-    R ---> U
-    U ---> |5| S[Trigger Conditions Met]
-    S ---> N
-    N ---> |6| V[Check For Throttling]
-    N ---> |7| W[Execute Action List]
-    N ---> |8| X[Repeat 4-7 until Rule Limits Reached]
-
-
-    T[Events] --> |EventPipeEventSource| U{.NET Diagnostics}
-```
-
-```mermaid
----
-title: Diagram A
----
 %%{ init: { 'flowchart': { 'curve': 'basis' } } }%%
 graph LR
     classDef altColor fill:#CAF,stroke:purple;
@@ -56,18 +30,6 @@ graph LR
     class ide2 altColor
 ```
 
-```mermaid
----
-title: Diagram B
----
-%%{ init: { 'flowchart': { 'curve': 'linear' } } }%%
-graph LR
-    A[Steps 1-3 From Diagram A] --> N{.NET Monitor}
-    T[Events] --> |EventPipeEventSource| U{.NET Diagnostics}
-    N --> |Wait To Satisfy Trigger| U
-    U ---> |Trigger Conditions Met - See Diagram A|N
-```
-
 ### Key Areas Of The Code
 
 * Collection rules are registered [here](https://github.com/dotnet/dotnet-monitor/blob/v7.0.1/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs#L100). When adding a new trigger or action, these types need to be added here to take effect. This section is also responsible for making sure options get configured and validated.
@@ -75,7 +37,7 @@ graph LR
 * Rules are applied, removed, and restarted in response to configuration changes [here](https://github.com/dotnet/dotnet-monitor/blob/v7.0.1/src/Tools/dotnet-monitor/CollectionRules/CollectionRuleService.cs). This is also responsible for generating a description of each collection rule's state for the `/collectionrules` API Endpoint.
 * The pipeline responsible for the lifetime of a single executing collection rule can be found [here](https://github.com/dotnet/dotnet-monitor/blob/v7.0.1/src/Tools/dotnet-monitor/CollectionRules/CollectionRulePipeline.cs#L55).
 * To run collection rules, `dotnet monitor` must be in `Listen` mode - this is set via [DiagnosticPortOptions](https://github.com/dotnet/dotnet-monitor/blob/v7.0.1/src/Microsoft.Diagnostics.Monitoring.Options/DiagnosticPortOptions.cs).
-* For each type of trigger, [this](https://github.com/dotnet/diagnostics/blob/v6.0.351802/src/Microsoft.Diagnostics.Monitoring.EventPipe/Triggers/ITraceEventTrigger.cs#L29) is responsible for determining whether the triggering conditions have been satisfied.
+* For each type of trigger, the [dotnet diagnostics repo](https://github.com/dotnet/diagnostics/blob/v6.0.351802/src/Microsoft.Diagnostics.Monitoring.EventPipe/Triggers/ITraceEventTrigger.cs#L29) is responsible for determining whether the triggering conditions have been satisfied.
 
 ### Triggers
 
