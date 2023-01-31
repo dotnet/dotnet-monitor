@@ -1,0 +1,60 @@
+parameters:
+  # Build configuration (Debug, Release)
+  configuration: Release
+
+jobs:
+- template: /eng/common/templates/job/job.yml
+  parameters:
+    name: Sign_Binaries
+    displayName: Sign Binaries
+    pool:
+      name: NetCore1ESPool-Svc-Internal
+      demands: ImageOverride -equals 1es-windows-2019
+    enableMicrobuild: true
+    artifacts:
+      publish:
+        logs:
+          name: Logs_Sign_Binaries
+    variables:
+    - _BuildConfig: ${{ parameters.configuration }}
+    - _SignType: real
+
+    steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Build
+      inputs:
+        artifactName: Build_Published_${{ parameters.configuration }}
+        targetPath: '$(Build.SourcesDirectory)/artifacts'
+
+    - script: >-
+        $(Build.SourcesDirectory)/restore.cmd
+        -configuration ${{ parameters.configuration }}
+        -verbosity minimal
+        -ci
+        -preparemachine
+        -sign
+        -nobl
+        /bl:'$(Build.SourcesDirectory)\artifacts\log\Release\SignBinaries.binlog'
+        /p:TeamName=$(_TeamName)
+        /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
+        /p:DotNetSignType=real
+        /p:SignAllBinaries=true
+      displayName: Sign
+
+    - task: CopyFiles@2
+      displayName: Gather Artifacts (bin)
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/bin'
+    
+    - task: CopyFiles@2
+      displayName: Gather Artifacts (pub)
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)/artifacts/pub'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/pub'
+
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Artifacts
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
+        artifactName: Build_Signed_${{ parameters.configuration }}
