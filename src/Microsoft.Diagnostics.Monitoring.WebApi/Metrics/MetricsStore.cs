@@ -48,6 +48,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly int _maxMetricCount;
         private ILogger<MetricsStoreService> _logger;
 
+        private HashSet<string> _observedErrorMessages = new();
+        private HashSet<(string provider, string counter)> _observedEndedCounters = new();
+
         public MetricsStore(ILogger<MetricsStoreService> logger, int maxMetricCount)
         {
             if (maxMetricCount < 1)
@@ -69,7 +72,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             //Do not accept CounterEnded payloads.
             if (metric is CounterEndedPayload counterEnded)
             {
-                _logger.CounterEndedPayload(counterEnded.Name);
+                if (_observedEndedCounters.Add((counterEnded.Provider, counterEnded.Name)))
+                {
+                    _logger.CounterEndedPayload(counterEnded.Name);
+                }
+                return;
+            }
+            if (metric is ErrorPayload errorPayload)
+            {
+                if (_observedErrorMessages.Add(errorPayload.ErrorMessage))
+                {
+                    // We only show unique errors once. For example, if a rate callback throws an exception,
+                    // we will receive an error message every 5 seconds. However, we only log the message the first time.
+                    _logger.LogWarning(errorPayload.ErrorMessage);
+                }
                 return;
             }
 
@@ -184,7 +200,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        private async Task WriteMetricDetails(
+        private static async Task WriteMetricDetails(
                     StreamWriter writer,
                     ICounterPayload metric,
                     string metricName,
@@ -217,10 +233,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     await writer.WriteAsync("{" + metricLabels + "}");
                 }
                 await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue}"));
-            }
-            else if (metric is ErrorPayload errorMetric)
-            {
-                _logger.LogWarning(errorMetric.ErrorMessage);
             }
             else
             {
