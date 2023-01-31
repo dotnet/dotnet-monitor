@@ -304,6 +304,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0}.
+        /// </summary>
+        internal static string LogFormatString_ErrorPayload {
+            get {
+                return ResourceManager.GetString("LogFormatString_ErrorPayload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Stopped waiting for metrics to complete writing..
         /// </summary>
         internal static string LogFormatString_MetricsAbandonCompletion {

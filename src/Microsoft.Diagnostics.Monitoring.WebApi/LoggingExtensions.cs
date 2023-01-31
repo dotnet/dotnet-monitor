@@ -105,6 +105,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_CounterEndedPayload);
 
+        private static readonly Action<ILogger, string, Exception> _errorPayload =
+            LoggerMessage.Define<string>(
+                eventId: new EventId(17, "ErrorPayload"),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ErrorPayload);
+
         public static void RequestFailed(this ILogger logger, Exception ex)
         {
             _requestFailed(logger, ex);
@@ -183,6 +189,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static void CounterEndedPayload(this ILogger logger, string counterName)
         {
             _counterEndedPayload(logger, counterName, null);
+        }
+
+        public static void ErrorPayload(this ILogger logger, string message)
+        {
+            _errorPayload(logger, message, null);
         }
     }
 }

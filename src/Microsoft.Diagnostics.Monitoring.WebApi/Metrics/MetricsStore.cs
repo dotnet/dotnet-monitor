@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     // We only show unique errors once. For example, if a rate callback throws an exception,
                     // we will receive an error message every 5 seconds. However, we only log the message the first time.
-                    _logger.LogWarning(errorPayload.ErrorMessage);
+                    _logger.ErrorPayload(errorPayload.ErrorMessage);
                 }
                 return;
             }
@@ -207,43 +207,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     string metricValue,
                     string metricLabels)
         {
-            if (metric is GaugePayload)
+            await writer.WriteAsync(metricName);
+            if (!string.IsNullOrWhiteSpace(metricLabels))
             {
-                await writer.WriteAsync(metricName);
-                if (!string.IsNullOrWhiteSpace(metricLabels))
-                {
-                    await writer.WriteAsync("{" + metricLabels + "}");
-                }
-                await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
+                await writer.WriteAsync("{" + metricLabels + "}");
             }
-            else if (metric is RatePayload)
-            {
-                await writer.WriteAsync(metricName);
-                if (!string.IsNullOrWhiteSpace(metricLabels))
-                {
-                    await writer.WriteAsync("{" + metricLabels + "}");
-                }
-                await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
-            }
-            else if (metric is PercentilePayload)
-            {
-                await writer.WriteAsync(metricName); // Just experimenting with this
-                if (!string.IsNullOrWhiteSpace(metricLabels))
-                {
-                    await writer.WriteAsync("{" + metricLabels + "}");
-                }
-                await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue}"));
-            }
-            else
-            {
-                // Existing format for EventCounters
-                await writer.WriteAsync(metricName);
-                if (!string.IsNullOrWhiteSpace(metricLabels))
-                {
-                    await writer.WriteAsync("{" + metricLabels + "}");
-                }
-                await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
-            }
+
+            string lineSuffix = metric is PercentilePayload ? string.Empty : FormattableString.Invariant($" {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}");
+
+            await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue}{lineSuffix}"));
         }
 
         private static bool CompareMetrics(ICounterPayload first, ICounterPayload second)

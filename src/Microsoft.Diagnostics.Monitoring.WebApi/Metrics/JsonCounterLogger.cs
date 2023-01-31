@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             if (counter is ErrorPayload errorPayload)
             {
-                Logger.LogWarning(errorPayload.ErrorMessage);
+                Logger.ErrorPayload(errorPayload.ErrorMessage);
                 return;
             }
             else if (counter is CounterEndedPayload)

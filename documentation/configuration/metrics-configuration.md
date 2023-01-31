@@ -177,7 +177,7 @@ For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum n
 
   ```json
   {
-    "Metrics": {
+    "GlobalCounter": {
       "MaxHistograms": 5
     }
   }
@@ -188,7 +188,7 @@ For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum n
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  Metrics__MaxHistograms: "5"
+  GlobalCounter__MaxHistograms: "5"
   ```
 </details>
 
@@ -196,12 +196,12 @@ For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum n
   <summary>Kubernetes Environment Variables</summary>
   
   ```yaml
-  - name: DotnetMonitor_Metrics__MaxHistograms
+  - name: DotnetMonitor_GlobalCounter__MaxHistograms
     value: "5"
   ```
 </details>
 
-## Limit How Many Time Series To Track (7.1+)
+## Limit How Many Time Series To Track (8.0+)
 
 For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum number of time series that can be tracked. Each unique combination of provider name, metric name, and dimension values counts as one time series. Tracking more time series uses more memory in the target process so this bound guards against unintentional high memory use. `MaxTimeSeries` has a default value of `1000`.
 
@@ -210,7 +210,7 @@ For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum n
 
   ```json
   {
-    "Metrics": {
+    "GlobalCounter": {
       "MaxTimeSeries": 500
     }
   }
@@ -221,7 +221,7 @@ For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum n
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  Metrics__MaxTimeSeries: "500"
+  GlobalCounter__MaxTimeSeries: "500"
   ```
 </details>
 
@@ -229,7 +229,7 @@ For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum n
   <summary>Kubernetes Environment Variables</summary>
   
   ```yaml
-  - name: DotnetMonitor_Metrics__MaxTimeSeries
+  - name: DotnetMonitor_GlobalCounter__MaxTimeSeries
     value: "500"
   ```
 </details>

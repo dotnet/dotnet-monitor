@@ -227,6 +227,9 @@
 1 Format Parameter:
 1. location: The location that the artifact was egressed to</comment>
   </data>
+  <data name="LogFormatString_ErrorPayload" xml:space="preserve">
+    <value>{0}</value>
+  </data>
   <data name="LogFormatString_MetricsAbandonCompletion" xml:space="preserve">
     <value>Stopped waiting for metrics to complete writing.</value>
   </data>
