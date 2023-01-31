@@ -1,0 +1,20 @@
+name: To Do Comments
+on:
+  pull_request_review_comment:
+    types: [created, edited]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  create-todo-issue:
+    runs-on: ubuntu-latest
+    if: ${{ contains(github.event.comment.body, '#TODO') }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MESSAGE: ${{ github.event.comment.body }}
+        
