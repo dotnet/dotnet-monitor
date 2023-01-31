@@ -4,6 +4,7 @@
     <ArchiveName>dotnet-monitor</ArchiveName>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
     <RuntimeIdentifiers>$(DefaultRuntimeIdentifiers)</RuntimeIdentifiers>
+    <IsShipping>true</IsShipping>
   </PropertyGroup>
   <Import Project="$(RepositoryArchivesDir)dotnet-monitor.props" />
   <PropertyGroup>
