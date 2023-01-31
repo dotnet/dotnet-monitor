@@ -77,28 +77,22 @@ jobs:
     postBuildSteps:
     - ${{ if and(eq(parameters.publishArtifacts, 'true'), eq(parameters.configuration, 'Release')) }}:
       - task: CopyFiles@2
-        displayName: Gather Artifacts (bin/dotnet-monitor)
+        displayName: Gather Artifacts (pub)
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin/dotnet-monitor'
-          TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/bin/dotnet-monitor'
-
-      - task: PublishBuildArtifacts@1
-        displayName: Publish Artifacts (Managed)
-        inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
-          artifactName: Build_Managed_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
+          SourceFolder: '$(Build.SourcesDirectory)/artifacts/pub'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/pub'
       
       - task: CopyFiles@2
         displayName: Gather Artifacts (bin/${{ parameters.targetRid }}.${{ parameters.configuration }})
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
-          TargetFolder: '$(Build.ArtifactStagingDirectory)/native/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
 
       - task: PublishBuildArtifacts@1
-        displayName: Publish Artifacts (Native)
+        displayName: Publish Artifacts (Published)
         inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)/native'
-          artifactName: Build_Native_${{ parameters.configuration }}
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
+          artifactName: Build_Published_${{ parameters.configuration }}
 
       - ${{ if eq(parameters.targetRid, 'win-x64') }}:
         - task: CopyFiles@2
