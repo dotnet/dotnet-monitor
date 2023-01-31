@@ -1,6 +1,6 @@
 name: To Do Comments
 on:
-  pull_request_comment:
+  pull_request_review_comment:
     types: [created, edited]
 
 permissions:
@@ -10,7 +10,6 @@ permissions:
 jobs:
   create-todo-issue:
     runs-on: ubuntu-latest
-  - ${{ if and( not(startsWith(parameters.conditions, 'not')), contains(parameters.conditions, variables['build.reason'])) }}:
     if: ${{ contains(github.event.comment.body, '#TODO') }}
     steps:
       - uses: actions/checkout@v2
