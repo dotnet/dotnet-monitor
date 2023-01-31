@@ -132,7 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     if (metric is PercentilePayload percentilePayload)
                     {
-                        foreach(Quantile quantile in percentilePayload.Quantiles)
+                        foreach (Quantile quantile in percentilePayload.Quantiles)
                         {
                             string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(metric.Unit, quantile.Value);
                             string metricLabels = GetMetricLabels(metric, quantile.Percentage);

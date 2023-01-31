@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             string tags1 = "Percentile=50";
             payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, tags1,
-                new Quantile[] {new(0.5, Value1), new(0.95, Value2), new(0.99, Value3) },
+                new Quantile[] { new(0.5, Value1), new(0.95, Value2), new(0.99, Value3) },
                 Timestamp));
 
             using MemoryStream stream = await GetMetrics(payload);
