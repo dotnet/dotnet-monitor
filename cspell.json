@@ -62,6 +62,7 @@
         "openapi",
         "Pids",
         "PKCS",
+        "quantile",
         "rclsid",
         "reentrancy",
         "REFCLSID",
