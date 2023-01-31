@@ -15,12 +15,14 @@ jobs:
     osGroup: ${{ parameters.osGroup }}
     configuration: ${{ parameters.configuration }}
     architecture: ${{ parameters.architecture }}
+    dependsOn:
+    - Sign_Binaries
 
     preBuildSteps:
     - task: DownloadPipelineArtifact@2
-      displayName: Download Build
+      displayName: Download Signed Artifacts
       inputs:
-        artifactName: Build_Published_${{ parameters.configuration }}
+        artifactName: Build_Signed_${{ parameters.configuration }}
         targetPath: '$(Build.SourcesDirectory)/artifacts'
     - task: DownloadPipelineArtifact@2
       displayName: Download Third Party Notice
