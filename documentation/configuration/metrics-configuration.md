@@ -168,7 +168,7 @@ When `CounterNames` are not specified, all the counters associated with the `Pro
 
 [7.1+] Custom metrics support labels for metadata. Metadata cannot include commas (`,`); the inclusion of a comma in metadata will result in all metadata being removed from the custom metric.
 
-## Limit How Many Histograms To Track (7.1+)
+## Limit How Many Histograms To Track (8.0+)
 
 For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum number of histograms that can be tracked. Each unique combination of provider name, histogram name, and dimension values counts as one histogram. Tracking more histograms uses more memory in the target process so this bound guards against unintentional high memory use. `MaxHistograms` has a default value of `10`.
 
