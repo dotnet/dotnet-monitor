@@ -68,6 +68,9 @@ stages:
     dependsOn:
     - Build
     jobs:
+    # Sign binaries before archiving
+    - template: /eng/pipelines/jobs/sign-binaries.yml
+
     # Build RID (runtime identifier) archives
     - template: /eng/pipelines/jobs/platform-matrix.yml
       parameters:
