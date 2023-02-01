@@ -90,6 +90,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             }
         }
 
+        public static class Metrics
+        {
+            public const string Name = nameof(Metrics);
+
+            public static class Commands
+            {
+                public const string Continue = nameof(Continue);
+            }
+        }
+
         public static class SpinWait
         {
             public const string Name = nameof(SpinWait);
