@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             // Check that /metrics does not serve metrics
             var validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
-                () => apiClient.GetMetricsAsync());
+                apiClient.GetMetricsAsync);
             Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
             Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
         }
@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             // Check that /metrics does not serve metrics
             var validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
-                () => apiClient.GetMetricsAsync());
+                apiClient.GetMetricsAsync);
             Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
             Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
         }
@@ -97,7 +97,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             // Check that /metrics does not serve metrics
             var validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
-                () => client.GetMetricsAsync());
+                client.GetMetricsAsync);
             Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
             Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
         }
@@ -125,7 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             // Check that /metrics does not serve metrics
             var validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
-                () => apiClient.GetMetricsAsync());
+                apiClient.GetMetricsAsync);
             Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
             Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
         }

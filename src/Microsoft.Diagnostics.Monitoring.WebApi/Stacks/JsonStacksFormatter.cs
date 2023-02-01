@@ -31,11 +31,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 {
                     Models.CallStackFrame frameModel = new Models.CallStackFrame()
                     {
-                        ClassName = UnknownClass,
+                        ClassName = NameFormatter.UnknownClass,
                         MethodName = UnknownFunction,
                         //TODO Bring this back once we have a useful offset value
                         //Offset = frame.Offset,
-                        ModuleName = UnknownModule
+                        ModuleName = NameFormatter.UnknownModule
                     };
                     if (frame.FunctionId == 0)
                     {
@@ -45,18 +45,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                     }
                     else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
                     {
-                        frameModel.ModuleName = GetModuleName(cache, functionData.ModuleId);
+                        frameModel.ModuleName = NameFormatter.GetModuleName(cache, functionData.ModuleId);
                         frameModel.MethodName = functionData.Name;
 
                         builder.Clear();
-                        BuildClassName(builder, cache, functionData);
+                        NameFormatter.BuildClassName(builder, cache, functionData);
                         frameModel.ClassName = builder.ToString();
 
                         if (functionData.TypeArgs.Length > 0)
                         {
                             builder.Clear();
                             builder.Append(functionData.Name);
-                            BuildGenericParameters(builder, cache, functionData.TypeArgs);
+                            NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
                             frameModel.MethodName = builder.ToString();
                         }
                     }

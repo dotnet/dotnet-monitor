@@ -25,16 +25,17 @@
   <PropertyGroup Label="Testing">
     <XUnitCoreSettingsFile>$(MSBuildThisFileDirectory)xunit.runner.json</XUnitCoreSettingsFile>
   </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)Common.props" />
   <PropertyGroup Label="TargetFrameworks">
     <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
     <ExcludeLatestTargetFramework>false</ExcludeLatestTargetFramework>
     <ExcludeLatestTargetFramework Condition="'$(BuildingInsideVisualStudio)' == 'true'">true</ExcludeLatestTargetFramework>
     <!-- The TFMs of the dotnet-monitor tool.  -->
     <ToolTargetFrameworks>net6.0</ToolTargetFrameworks>
-    <ToolTargetFrameworks Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(ToolTargetFrameworks);net8.0</ToolTargetFrameworks>
+    <ToolTargetFrameworks Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(ToolTargetFrameworks);$(LatestTargetFramework)</ToolTargetFrameworks>
     <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
     <TestTargetFrameworks>net6.0;net7.0</TestTargetFrameworks>
-    <TestTargetFrameworks Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(TestTargetFrameworks);net8.0</TestTargetFrameworks>
+    <TestTargetFrameworks Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(TestTargetFrameworks);$(LatestTargetFramework)</TestTargetFrameworks>
     <!-- The TFM for generating schema.json and OpenAPI docs. -->
     <SchemaTargetFramework>net6.0</SchemaTargetFramework>
     <!-- Defines for including the next .NET version -->
@@ -57,24 +58,24 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/arcade references -->
-    <MicrosoftDotNetBuildTasksArchivesVersion>8.0.0-beta.23077.1</MicrosoftDotNetBuildTasksArchivesVersion>
-    <MicrosoftDotNetCodeAnalysisVersion>8.0.0-beta.23077.1</MicrosoftDotNetCodeAnalysisVersion>
-    <MicrosoftDotNetXUnitExtensionsVersion>8.0.0-beta.23077.1</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetBuildTasksArchivesVersion>8.0.0-beta.23080.3</MicrosoftDotNetBuildTasksArchivesVersion>
+    <MicrosoftDotNetCodeAnalysisVersion>8.0.0-beta.23080.3</MicrosoftDotNetCodeAnalysisVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>8.0.0-beta.23080.3</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>8.0.0-alpha.1.23066.6</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <VSRedistCommonAspNetCoreSharedFrameworkx6480Version>8.0.0-alpha.1.23066.6</VSRedistCommonAspNetCoreSharedFrameworkx6480Version>
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta4.23073.1</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>6.0.0-preview.23077.1</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>6.0.0-preview.23077.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>6.0.0-preview.23080.1</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>6.0.0-preview.23080.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/roslyn-analyzers -->
-    <MicrosoftCodeAnalysisNetAnalyzersVersion>8.0.0-preview1.23076.2</MicrosoftCodeAnalysisNetAnalyzersVersion>
+    <MicrosoftCodeAnalysisNetAnalyzersVersion>8.0.0-preview1.23081.3</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
     <MicrosoftNETCoreAppRuntimewinx64Version>8.0.0-alpha.1.23059.14</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6480Version>8.0.0-alpha.1.23059.14</VSRedistCommonNetCoreSharedFrameworkx6480Version>
     <!-- dotnet/symstore references -->
-    <MicrosoftFileFormatsVersion>1.0.407301</MicrosoftFileFormatsVersion>
+    <MicrosoftFileFormatsVersion>1.0.408101</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>

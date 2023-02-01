@@ -88,9 +88,9 @@ stages:
           inputs:
             type: 'Build'
             tags: 'MonitorRelease'
-        - ${{ if eq(parameters.updateDocker, true) }}:
-          - task: tagBuildOrRelease@0
-            displayName: 'Tag Build with update-docker'
-            inputs:
-              type: 'Build'
-              tags: 'update-docker'
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), eq(parameters.updateDocker, true)) }}:
+      - task: tagBuildOrRelease@0
+        displayName: 'Tag Build with update-docker'
+        inputs:
+          type: 'Build'
+          tags: 'update-docker'

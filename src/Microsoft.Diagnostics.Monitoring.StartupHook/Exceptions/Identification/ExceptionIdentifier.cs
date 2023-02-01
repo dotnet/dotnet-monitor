@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
+namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 {
     /// <summary>
     /// Class representing a type of exception thrown from the specific location

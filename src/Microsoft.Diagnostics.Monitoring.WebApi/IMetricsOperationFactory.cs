@@ -15,6 +15,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// </summary>
         IArtifactOperation Create(
             IEndpointInfo endpointInfo,
-            EventPipeCounterPipelineSettings settings);
+            MetricsPipelineSettings settings);
     }
 }

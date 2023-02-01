@@ -1,10 +1,11 @@
 <Project>
+  <Import Project="$(MSBuildThisFileDirectory)Common.props" />
   <ItemGroup Condition="'$(CreateArchives)' == 'true'">
     <ProjectToBuild Include="$(RepoRoot)src\archives\pkgs\dotnet-monitor\dotnet-monitor-archive.proj">
-      <AdditionalProperties>TargetFramework=net8.0;RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
+      <AdditionalProperties>TargetFramework=$(LatestTargetFramework);RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
     </ProjectToBuild>
     <ProjectToBuild Include="$(RepoRoot)src\archives\symbols\dotnet-monitor\dotnet-monitor-symbols.proj">
-      <AdditionalProperties>TargetFramework=net8.0;RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
+      <AdditionalProperties>TargetFramework=$(LatestTargetFramework);RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
     </ProjectToBuild>
   </ItemGroup>
 </Project>

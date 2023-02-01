@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,18 +46,50 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private Dictionary<MetricKey, Queue<ICounterPayload>> _allMetrics = new Dictionary<MetricKey, Queue<ICounterPayload>>();
         private readonly int _maxMetricCount;
+        private ILogger<MetricsStoreService> _logger;
 
-        public MetricsStore(int maxMetricCount)
+        private HashSet<string> _observedErrorMessages = new();
+        private HashSet<(string provider, string counter)> _observedEndedCounters = new();
+
+        public MetricsStore(ILogger<MetricsStoreService> logger, int maxMetricCount)
         {
             if (maxMetricCount < 1)
             {
                 throw new ArgumentException(Strings.ErrorMessage_InvalidMetricCount);
             }
             _maxMetricCount = maxMetricCount;
+            _logger = logger;
         }
 
         public void AddMetric(ICounterPayload metric)
         {
+            if (metric is PercentilePayload payload && !payload.Quantiles.Any())
+            {
+                // If histogram data is not generated in the monitored app, we can get Histogram events that do not contain quantiles.
+                // For now, we will ignore these events.
+                return;
+            }
+            //Do not accept CounterEnded payloads.
+            if (metric is CounterEndedPayload counterEnded)
+            {
+                if (_observedEndedCounters.Add((counterEnded.Provider, counterEnded.Name)))
+                {
+                    _logger.CounterEndedPayload(counterEnded.Name);
+                }
+                return;
+            }
+            if (metric is ErrorPayload errorPayload)
+            {
+                if (_observedErrorMessages.Add(errorPayload.ErrorMessage))
+                {
+                    // We only show unique errors once. For example, if a rate callback throws an exception,
+                    // we will receive an error message every 5 seconds. However, we only log the message the first time.
+                    // Error payload information is not tied to a particular provider or counter name.
+                    _logger.ErrorPayload(errorPayload.ErrorMessage);
+                }
+                return;
+            }
+
             lock (_allMetrics)
             {
                 var metricKey = new MetricKey(metric);
@@ -91,22 +124,80 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             foreach (var metricGroup in copy)
             {
                 ICounterPayload metricInfo = metricGroup.Value.First();
+
                 string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.Provider, metricInfo.Name, metricInfo.Unit);
-                string metricType = "gauge";
 
-                var keyValuePairs = from pair in metricInfo.Metadata select PrometheusDataModel.GetPrometheusNormalizedLabel(pair.Key, pair.Value);
-                string metricLabels = string.Join(", ", keyValuePairs);
-
-                //TODO Some clr metrics claim to be incrementing, but are really gauges.
-
-                await writer.WriteLineAsync(FormattableString.Invariant($"# HELP {metricName} {metricInfo.DisplayName}"));
-                await writer.WriteLineAsync(FormattableString.Invariant($"# TYPE {metricName} {metricType}"));
+                await WriteMetricHeader(metricInfo, writer, metricName);
 
                 foreach (var metric in metricGroup.Value)
                 {
-                    string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(metric.Unit, metric.Value);
-                    await WriteMetricDetails(writer, metric, metricName, metricValue, metricLabels);
+                    if (metric is PercentilePayload percentilePayload)
+                    {
+                        foreach (Quantile quantile in percentilePayload.Quantiles)
+                        {
+                            string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(metric.Unit, quantile.Value);
+                            string metricLabels = GetMetricLabels(metric, quantile.Percentage);
+                            await WriteMetricDetails(writer, metric, metricName, metricValue, metricLabels);
+                        }
+                    }
+                    else
+                    {
+                        string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(metric.Unit, metric.Value);
+                        string metricLabels = GetMetricLabels(metric, quantile: null);
+                        await WriteMetricDetails(writer, metric, metricName, metricValue, metricLabels);
+                    }
                 }
+            }
+        }
+
+        private static string GetMetricLabels(ICounterPayload metric, double? quantile)
+        {
+            string metadata = metric.Metadata;
+            if (quantile.HasValue)
+            {
+                metadata = CounterUtilities.AppendPercentile(metadata, quantile.Value);
+            }
+
+            char separator = IsMeter(metric) ? '=' : ':';
+            var keyValuePairs = from pair in CounterUtilities.GetMetadata(metadata, separator)
+                                select pair.Key + "=" + "\"" + pair.Value + "\"";
+            string metricLabels = string.Join(", ", keyValuePairs);
+
+            return metricLabels;
+        }
+
+        //HACK We should make this easier in the base api
+        private static bool IsMeter(ICounterPayload payload) =>
+            payload switch
+            {
+                GaugePayload or PercentilePayload or CounterEndedPayload or RatePayload => true,
+                _ => false
+            };
+
+        private static async Task WriteMetricHeader(ICounterPayload metricInfo, StreamWriter writer, string metricName)
+        {
+            if ((metricInfo.EventType != EventType.Error) && (metricInfo.EventType != EventType.CounterEnded))
+            {
+                string metricType = GetMetricType(metricInfo.EventType);
+
+                await writer.WriteLineAsync(FormattableString.Invariant($"# HELP {metricName} {metricInfo.DisplayName}"));
+                await writer.WriteLineAsync(FormattableString.Invariant($"# TYPE {metricName} {metricType}"));
+            }
+        }
+
+        private static string GetMetricType(EventType eventType)
+        {
+            switch (eventType)
+            {
+                case EventType.Rate:
+                    return "counter";
+                case EventType.Gauge:
+                    return "gauge";
+                case EventType.Histogram:
+                    return "summary";
+                case EventType.Error:
+                default:
+                    return string.Empty; // Not sure this is how we want to do it.
             }
         }
 
@@ -122,7 +213,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 await writer.WriteAsync("{" + metricLabels + "}");
             }
-            await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue} {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}"));
+
+            string lineSuffix = metric is PercentilePayload ? string.Empty : FormattableString.Invariant($" {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}");
+
+            await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue}{lineSuffix}"));
         }
 
         private static bool CompareMetrics(ICounterPayload first, ICounterPayload second)

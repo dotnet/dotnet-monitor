@@ -1,7 +1,12 @@
 <Project>
+  <PropertyGroup>
+    <DotnetMonitorPublishTargetFramework>$(LatestTargetFramework)</DotnetMonitorPublishTargetFramework>
+    <DotnetMonitorPublishTargetFramework Condition="'$(TargetFramework)' != ''">$(TargetFramework)</DotnetMonitorPublishTargetFramework>
+    <DotnetMonitorPublishPath>$(ArtifactsDir)pub\dotnet-monitor\$(Configuration)\$(DotnetMonitorPublishTargetFramework)\$(PackageRid)\</DotnetMonitorPublishPath>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectToPublish Include="$(RepoRoot)src\Tools\dotnet-monitor\dotnet-monitor.csproj">
-      <AdditionalProperties>TargetFramework=net8.0;RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
+      <AdditionalProperties>TargetFramework=$(DotnetMonitorPublishTargetFramework);RuntimeIdentifier=$(PackageRid);PublishDir=$(DotnetMonitorPublishPath)</AdditionalProperties>
     </ProjectToPublish>
   </ItemGroup>
 </Project>

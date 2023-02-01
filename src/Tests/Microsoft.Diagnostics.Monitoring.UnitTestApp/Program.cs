@@ -14,6 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
         {
             return new CommandLineBuilder(new RootCommand()
             {
+                MetricsScenario.Command(),
                 AspNetScenario.Command(),
                 AsyncWaitScenario.Command(),
                 ExecuteScenario.Command(),
