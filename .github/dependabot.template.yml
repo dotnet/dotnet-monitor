@@ -9,7 +9,7 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "main"
-#@ for branch in ["main", "release/7.x", "release/7.0", "release/6.x"]:
+#@ for branch in ["main", "release/8.x", "release/7.x", "release/7.0", "release/6.x"]:
   - package-ecosystem: "nuget"
     directory: "/eng/dependabot"
     schedule:
