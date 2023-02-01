@@ -84,6 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     // We only show unique errors once. For example, if a rate callback throws an exception,
                     // we will receive an error message every 5 seconds. However, we only log the message the first time.
+                    // Error payload information is not tied to a particular provider or counter name.
                     _logger.ErrorPayload(errorPayload.ErrorMessage);
                 }
                 return;
