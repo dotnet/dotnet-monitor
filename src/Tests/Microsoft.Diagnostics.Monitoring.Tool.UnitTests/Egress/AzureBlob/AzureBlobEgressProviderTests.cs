@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Azure;
 using Azure.Storage.Blobs;
@@ -134,7 +133,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
 
             BlobItem resultingBlob = Assert.Single(blobs);
-            Assert.Equal($"{providerOptions.BlobPrefix}/{artifactSettings.Name}", resultingBlob.Name);
+            Assert.Equal(FormattableString.Invariant($"{providerOptions.BlobPrefix}/{artifactSettings.Name}"), resultingBlob.Name);
         }
 
         [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]

@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
@@ -43,9 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// </summary>
         [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect)]
-#if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen)]
-#endif
         public Task SingleProcessIdentificationTest(DiagnosticPortConnectionMode mode)
         {
             string expectedEnvVarValue = Guid.NewGuid().ToString("D");
@@ -91,11 +88,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Tests that multiple processes are discoverable by dotnet-monitor.
         /// Also tests for correct behavior in response to queries with different/multiple process identifiers.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotWindowsNetCore31))]
+        [Theory]
         [InlineData(DiagnosticPortConnectionMode.Connect)]
-#if NET5_0_OR_GREATER
         [InlineData(DiagnosticPortConnectionMode.Listen)]
-#endif
         public async Task MultiProcessIdentificationTest(DiagnosticPortConnectionMode mode)
         {
             DiagnosticPortHelper.Generate(
@@ -162,7 +157,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     int pid = processIdentifier.Pid;
                     Guid uid = processIdentifier.Uid;
                     string name = processIdentifier.Name;
-#if NET5_0_OR_GREATER
+
                     // CHECK 1: Get response for processes using PID, UID, and Name and check for consistency
 
                     List<ProcessInfo> processInfoQueriesCheck1 = new List<ProcessInfo>();
@@ -180,7 +175,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     }
 
                     VerifyProcessInfoEquality(processInfoQueriesCheck1);
-#endif
+
                     // CHECK 2: Get response for requests using PID | PID and UID | PID, UID, and Name and check for consistency
 
                     List<ProcessInfo> processInfoQueriesCheck2 = new List<ProcessInfo>();
@@ -290,7 +285,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Assert.NotNull(info);
             Assert.Equal(identifier.Pid, info.Pid);
 
-#if NET5_0_OR_GREATER
             // Currently, the runtime instance identifier is only provided for .NET 5 and higher
             info = await client.GetProcessWithRetryAsync(_outputHelper, uid: identifier.Uid);
             Assert.NotNull(info);
@@ -302,25 +296,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Assert.NotEmpty(env);
             Assert.True(env.TryGetValue(ExpectedEnvVarName, out string actualEnvVarValue));
             Assert.Equal(expectedEnvVarValue, actualEnvVarValue);
-#else
-            // .NET Core 3.1 and earlier do not support getting the environment block
-            ValidationProblemDetailsException validationProblemDetailsException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(
-                () => client.GetProcessEnvironmentAsync(processId));
-            Assert.Equal(HttpStatusCode.BadRequest, validationProblemDetailsException.StatusCode);
-            Assert.Equal(StatusCodes.Status400BadRequest, validationProblemDetailsException.Details.Status);
-#endif
-        }
-
-        public static bool IsNotWindowsNetCore31
-        {
-            get
-            {
-                /// Disabled on Windows .NET Core 3.1; process enumeration frequent hangs when running in connect mode.
-                /// Additional logging shows that some discovered processes on the test machines are not responding on their
-                /// diagnostic pipe and the named pipe implementation is not responding to cancellation.
-                /// See https://github.com/dotnet/diagnostics/issues/2711
-                return !TestConditions.IsWindows || !TestConditions.IsNetCore31;
-            }
         }
     }
 }

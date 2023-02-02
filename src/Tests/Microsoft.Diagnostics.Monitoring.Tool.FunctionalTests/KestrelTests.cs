@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
@@ -50,7 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         {
             return ExecuteNoOverrideWarning((runner, url) =>
             {
-                // This should be overriden by the ASPNETCORE_Urls entry. If it is not,
+                // This should be overridden by the ASPNETCORE_Urls entry. If it is not,
                 // it will cause dotnet-monitor to not bind correctly and the /info route
                 // check will fail.
                 runner.DotNetUrls = "dotnet_invalid";
@@ -63,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         {
             return ExecuteNoOverrideWarning((runner, url) =>
             {
-                // These should be overriden by the DotnetMonitor_Urls entry. If it is not,
+                // These should be overridden by the DotnetMonitor_Urls entry. If it is not,
                 // it will cause dotnet-monitor to not bind correctly and the /info route
                 // check will fail.
                 runner.DotNetUrls = "dotnet_invalid";

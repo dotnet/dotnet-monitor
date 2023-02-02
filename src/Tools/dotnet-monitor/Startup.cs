@@ -1,9 +1,9 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Diagnostics.Monitoring.WebApi;
@@ -81,6 +81,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 app.UseHsts();
             }
 
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "dotnet-monitor v1.0");
+            });
+
+
             app.UseRouting();
 
             app.UseAuthentication();
@@ -98,6 +104,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             app.UseEndpoints(builder =>
             {
                 builder.MapControllers();
+
+                // Use a redirect to the Swagger UI if the request hits the default endpoint.
+                // This means that the swagger endpoint can have a permanent address, even if we decide to host
+                // something else at the root later.
+                builder.MapGet("/", (HttpResponse response) =>
+                {
+                    response.Redirect("/swagger/index.html");
+                });
             });
         }
     }

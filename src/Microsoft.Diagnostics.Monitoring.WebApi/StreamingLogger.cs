@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.Options;
@@ -208,7 +207,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 foreach (IReadOnlyList<KeyValuePair<string, object>> scope in _scopes)
                 {
                     // The first scope should not have extra padding before the delimiter since
-                    // it was aleady padded by the padding added for every line.
+                    // it was already padded by the padding added for every line.
                     if (firstScope)
                     {
                         firstScope = false;

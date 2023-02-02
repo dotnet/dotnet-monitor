@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
 using System;
@@ -122,7 +121,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
         }
 
         [Fact]
-        public async Task ItShouldWriteSingleFulllPart()
+        public async Task ItShouldWriteSingleFullPart()
         {
             var uploadId = (await _s3.InitMultiPartUploadAsync(null, CancellationToken.None));
             await using var stream = new MultiPartUploadStream(_s3, "bucket", "key", uploadId, 1024);

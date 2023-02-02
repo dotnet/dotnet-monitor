@@ -1,0 +1,169 @@
+# Builds dotnet-monitor for a specific platform and configuration
+
+parameters:
+  # Job prefix (required)
+  prefix: ''
+  # Operating system group (Windows, Linux, MacOS, etc)
+  osGroup: Windows
+  # Build configuration (Debug, Release)
+  configuration: Release
+  # Build architecture (arm64, x64, x86, etc)
+  architecture: x64
+  # Additional job variables
+  variables: []
+  # Additional steps to execute before build
+  preBuildSteps: []
+  # Additional steps to execute after build
+  postBuildSteps: []
+  # Job timeout
+  timeoutInMinutes: 180
+  # Job dependencies
+  dependsOn: ''
+  # Sub paths under 'artifacts' folder from which files are published to artifacts location
+  publishArtifactsSubPaths: []
+  # Disable Component Governance injection and analysis
+  disableComponentGovernance: false
+  # Disable SBOM generation
+  disableSbom: false
+  buildArgs: ''
+
+jobs:
+- template: /eng/common/templates/job/job.yml
+  parameters:
+    name: ${{ parameters.prefix }}_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
+    displayName: ${{ format('{0} {1} {2} {3}', parameters.prefix, parameters.osGroup, parameters.architecture, parameters.configuration) }}
+    timeoutInMinutes: ${{ parameters.timeoutInMinutes }}
+    enableTelemetry: true
+    disableComponentGovernance: ${{ or(eq(parameters.disableComponentGovernance, 'true'), eq(parameters.osGroup, 'Linux_Musl')) }}
+    ${{ if eq(parameters.disableSbom, 'true') }}:
+      enableSbom: false
+    helixRepo: dotnet/dotnet-monitor
+    artifacts:
+      publish:
+        logs:
+          name: Logs_$(JobName)
+
+    pool:
+      # Public Linux Build Pool
+      ${{ if in(parameters.osGroup, 'Linux', 'Linux_Musl') }}:
+        ${{ if eq(variables['System.TeamProject'], 'public') }}:
+          name: NetCore-Public
+          demands: ImageOverride -equals Build.Ubuntu.1804.Amd64.Open
+
+        # Official Build Linux Pool
+        ${{ if ne(variables['System.TeamProject'], 'public') }}:
+          name: NetCore1ESPool-Internal
+          demands: ImageOverride -equals Build.Ubuntu.1804.Amd64
+
+      # Build OSX Pool
+      ${{ if in(parameters.osGroup, 'MacOS') }}:
+        vmImage: macos-11
+
+      # Public Windows Build Pool
+      ${{ if eq(parameters.osGroup, 'Windows') }}:
+        ${{ if eq(variables['System.TeamProject'], 'public') }}:
+          name: NetCore-Public
+          demands: ImageOverride -equals windows.vs2019.amd64.open
+
+        ${{ if ne(variables['System.TeamProject'], 'public') }}:
+          name: NetCore1ESPool-Internal
+          demands: ImageOverride -equals windows.vs2019.amd64
+
+    ${{ if eq(parameters.osGroup, 'Linux') }}:
+      ${{ if eq(parameters.architecture, 'arm64') }}:
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64
+      ${{ else }}:
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7
+
+    ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
+      ${{ if eq(parameters.architecture, 'arm64') }}:
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-alpine
+      ${{ else }}:
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-WithNode
+
+    ${{ if ne(parameters.dependsOn, '') }}:
+      dependsOn: ${{ parameters.dependsOn }}
+
+    workspace:
+      clean: all
+
+    variables:
+    - JobName: ${{ parameters.prefix }}_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
+    - _BuildConfig: ${{ parameters.configuration }}
+    - _HelixType: build/product
+    - _HelixBuildConfig: ${{ parameters.configuration }}
+    - _CrossBuildArgs: ''
+    - _InternalInstallArgs: ''
+    - _InternalBuildArgs: ''
+    - ${{ each variable in parameters.variables }}:
+      - ${{ variable }}
+
+    # Component Governance does not work on Musl
+    - ${{ if or(eq(parameters.disableComponentGovernance, 'true'), eq(parameters.osGroup, 'Linux_Musl')) }}:
+      - skipComponentGovernanceDetection: true
+    
+    # Cross build for arm64 non-Windows builds
+    - ${{ if and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')) }}:
+      - _CrossBuildArgs: '-cross'
+
+    - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
+      - group: DotNet-MSRC-Storage
+      - _InternalInstallArgs: >-
+          -RuntimeSourceFeed https://dotnetclimsrc.blob.core.windows.net/dotnet
+          -RuntimeSourceFeedKey $(dotnetclimsrc-read-sas-token-base64)
+
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+      - _InternalBuildArgs: >-
+          /p:TeamName=$(_TeamName)
+          /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
+
+    # Only enable publishing in non-public, non PR scenarios.
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+      - _HelixSource: official/dotnet/dotnet-monitor/$(Build.SourceBranch)
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
+      - _HelixSource: pr-internal/dotnet/dotnet-monitor/$(Build.SourceBranch)
+    - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
+      - _HelixSource: pr/dotnet/dotnet-monitor/$(Build.SourceBranch)
+
+    - ${{ if eq(parameters.osGroup, 'Windows') }}:
+      - scriptExt: '.cmd'
+    - ${{ if ne(parameters.osGroup, 'Windows') }}:
+      - scriptExt: '.sh'
+
+    steps:
+    - ${{ if ne(variables['System.TeamProject'], 'public') }}:
+      - ${{ if eq(parameters.osGroup, 'Windows') }}:
+        - task: PowerShell@2
+          displayName: Setup Private Feeds Credentials
+          inputs:
+            filePath: $(Build.SourcesDirectory)/eng/common/SetupNugetSources.ps1
+            arguments: -ConfigFile $(Build.SourcesDirectory)/NuGet.config -Password $Env:Token
+          env:
+            Token: $(dn-bot-dnceng-artifact-feeds-rw)
+      - ${{ if ne(parameters.osGroup, 'Windows') }}:
+        - task: Bash@3
+          displayName: Setup Private Feeds Credentials
+          inputs:
+            filePath: $(Build.SourcesDirectory)/eng/common/SetupNugetSources.sh
+            arguments: $(Build.SourcesDirectory)/NuGet.config $Token
+          env:
+            Token: $(dn-bot-dnceng-artifact-feeds-rw)
+
+    - ${{ each step in parameters.preBuildSteps }}:
+      - ${{ step }}
+
+    - script: >-
+        $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
+        ${{ parameters.buildArgs }}
+        -configuration ${{ parameters.configuration }}
+        -architecture ${{ parameters.architecture }}
+        $(_CrossBuildArgs)
+        $(_InternalInstallArgs)
+        $(_InternalBuildArgs)
+      displayName: Build
+      ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
+        env:
+          ROOTFS_DIR: '/crossrootfs/arm64'
+
+    - ${{ each step in parameters.postBuildSteps }}:
+      - ${{ step }}

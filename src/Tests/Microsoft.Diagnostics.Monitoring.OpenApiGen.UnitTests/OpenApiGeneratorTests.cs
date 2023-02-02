@@ -1,6 +1,5 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
@@ -19,6 +18,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public class OpenApiGeneratorTests
     {
         private static readonly TimeSpan GenerationTimeout = TimeSpan.FromSeconds(30);
@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
             Path.Combine(Path.GetDirectoryName(CurrentExecutingAssemblyPath), OpenApiBaselineName);
 
         private static readonly string OpenApiGenPath =
-            AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), OpenApiGenName);
+            AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), OpenApiGenName, TargetFrameworkMoniker.Net60);
 
         private readonly ITestOutputHelper _outputHelper;
 

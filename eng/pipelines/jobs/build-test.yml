@@ -1,0 +1,161 @@
+# Builds and tests dotnet-monitor for a specific platform and configuration
+
+parameters:
+  # Operating system group (Windows, Linux, MacOS, etc)
+  osGroup: Windows
+  # Build configuration (Debug, Release)
+  configuration: Release
+  # Build architecture (arm64, x64, x86, etc)
+  architecture: x64
+  # RID (runtime identifier) of build output
+  targetRid: win-x64
+  # Enable/disable of publishing build output
+  publishArtifacts: false
+  # Group of tests to be run
+  testGroup: Default
+  # TFMs for which test results are uploaded
+  testResultTfms:
+  - key: net6.0
+    value: .NET 6
+  - key: net7.0
+    value: .NET 7
+  - key: net8.0
+    value: .NET 8
+
+jobs:
+- template: /eng/pipelines/jobs/build.yml
+  parameters:
+    prefix: Build
+    osGroup: ${{ parameters.osGroup }}
+    configuration: ${{ parameters.configuration }}
+    architecture: ${{ parameters.architecture }}
+
+    variables:
+    - ${{ if and(ne(parameters.testGroup, 'None'), ne(parameters.architecture, 'arm64')) }}:
+      # If TestGroup == 'Default', choose the test group based on the type of pipeline run
+      - ${{ if eq(parameters.testGroup, 'Default') }}:
+        - ${{ if in(variables['Build.Reason'], 'BatchedCI', 'IndividualCI') }}:
+          - _TestGroup: 'CI'
+        - ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
+          - _TestGroup: 'PR'
+        - ${{ else }}:
+          - _TestGroup: 'All'
+      - ${{ else }}:
+        - _TestGroup: '${{ parameters.testGroup }}'
+
+    preBuildSteps:
+    - ${{ if and(ne(parameters.testGroup, 'None'), ne(parameters.architecture, 'arm64')) }}:
+      - ${{ if ne(parameters.osGroup, 'Windows') }}:
+        - task: NodeTool@0
+          displayName: Install Node.js
+          inputs:
+            # Version requirements:
+            # - Azurite requires 8.x or higher.
+            # - The alpine containers have their own build of Node.js of 10.x but without supplemental tooling like npm.
+            # Since the alpine containers already have a Node.js build, match it's major version for a compatible version
+            # of npm across all build environments.
+            versionSpec: '10.x'
+
+        - task: Npm@1
+          displayName: Install Azurite
+          inputs:
+            command: custom
+            customCommand: install -g azurite
+
+      # When using the Alpine build containers, the above npm install will install to the system's
+      # node directory instead of the agent's copy.
+      # The container doesn't have the node bin directory included in PATH by default, so global npm tool installations
+      # are not discoverable by the test infrastructure.
+      #
+      # Add the azurite installation location to PATH to workaround this.
+      - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
+        - script: echo "##vso[task.prependpath]/usr/share/node/bin"
+          displayName: Add Azurite to PATH
+
+    buildArgs: '/p:PublishProjectsAfterBuild=true'
+
+    postBuildSteps:
+    - ${{ if and(eq(parameters.publishArtifacts, 'true'), eq(parameters.configuration, 'Release')) }}:
+      - task: CopyFiles@2
+        displayName: Gather Artifacts (pub)
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/artifacts/pub'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/pub'
+      
+      - task: CopyFiles@2
+        displayName: Gather Artifacts (bin/${{ parameters.targetRid }}.${{ parameters.configuration }})
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
+
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Artifacts (Published)
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
+          artifactName: Build_Published_${{ parameters.configuration }}
+
+      - ${{ if eq(parameters.targetRid, 'win-x64') }}:
+        - task: CopyFiles@2
+          displayName: Gather Artifacts (bin)
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/unified/bin'
+        - task: CopyFiles@2
+          displayName: Gather Artifacts (obj)
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)/artifacts/obj'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/unified/obj'
+      - ${{ else }}:
+        - task: CopyFiles@2
+          displayName: Gather Artifacts (bin/${{ parameters.targetRid }}.${{ parameters.configuration }})
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/unified/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
+      
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Artifacts (Unified)
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)/unified'
+          artifactName: Build_Unified_${{ parameters.configuration }}
+
+    # Execute tests
+    - ${{ if and(ne(parameters.testGroup, 'None'), eq(parameters.architecture, 'arm64')) }}:
+      - script: echo "Running tests for arm64 binaries is currently not supported."
+        displayName: Skipped ARM64 tests
+    - ${{ if and(ne(parameters.testGroup, 'None'), ne(parameters.architecture, 'arm64')) }}:
+      - script: >-
+          $(Build.SourcesDirectory)/eng/citest$(scriptExt)
+          -configuration ${{ parameters.configuration }}
+          -architecture ${{ parameters.architecture }}
+          -test
+          -testgroup $(_TestGroup)
+          -skipmanaged
+          -skipnative
+          /m:1
+        displayName: Test
+        timeoutInMinutes: 60
+
+      # Publish test results to Azure Pipelines
+      - ${{ each testResultTfm in parameters.testResultTfms }}:
+        - task: PublishTestResults@2
+          displayName: Publish Test Results (${{ testResultTfm.value }})
+          inputs:
+            testResultsFormat: VSTest
+            testResultsFiles: '**/*Tests*${{ testResultTfm.key }}*.trx'
+            searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
+            failTaskOnFailedTests: true
+            testRunTitle: '${{ parameters.configuration }} ${{ parameters.osGroup }} ${{ parameters.architecture }} ${{ testResultTfm.value }}'
+            publishRunAttachments: true
+            mergeTestResults: true
+            buildConfiguration: $(JobName)
+          continueOnError: true
+          condition: succeededOrFailed()
+
+      - ${{ if ne(variables['System.TeamProject'], 'public') }}:
+        - task: PublishBuildArtifacts@1
+          displayName: Publish Test Result Files
+          inputs:
+            PathtoPublish: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
+            ArtifactName: TestResults_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
+          continueOnError: true
+          condition: succeededOrFailed()

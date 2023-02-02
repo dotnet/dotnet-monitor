@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
@@ -17,6 +16,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public class CollectionRulePipelineTests
     {
         private readonly TimeSpan DefaultPipelineTimeout = TimeSpan.FromSeconds(30);
@@ -265,7 +265,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
-        /// Test that the CollectionRulePipeline thottles actions when action count limit is reached within window.
+        /// Test that the CollectionRulePipeline throttles actions when action count limit is reached within window.
         /// </summary>
         [Theory]
         [MemberData(nameof(GetTfmsSupportingPortListener))]
@@ -333,7 +333,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // Expect total action invocation count to be twice the limit
                     VerifyExecutionCount(callbackService, 2 * ExpectedActionExecutionCount);
 
-                    // Pipeline should not run to completion due to sliding window existance.
+                    // Pipeline should not run to completion due to sliding window existence.
                     Assert.False(runTask.IsCompleted);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);

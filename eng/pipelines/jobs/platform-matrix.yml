@@ -1,0 +1,104 @@
+# Executes a specified job on each supported platform and configuration
+
+parameters:
+  # Job template to run on applicable platforms
+  jobTemplate: ''
+  # Extra job template parameters to pass to the job template
+  jobParameters: {}
+  # Determines if debug configurations should be included
+  includeDebug: false
+  # Determines if ARM64 architectures should be included
+  includeArm64: false
+
+jobs:
+- ${{ if eq(parameters.includeDebug, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      osGroup: Windows
+      configuration: Debug
+      targetRid: win-x64
+      ${{ insert }}: ${{ parameters.jobParameters }}
+- template: ${{ parameters.jobTemplate }}
+  parameters:
+    osGroup: Windows
+    configuration: Release
+    targetRid: win-x64
+    ${{ insert }}: ${{ parameters.jobParameters }}
+- template: ${{ parameters.jobTemplate }}
+  parameters:
+    osGroup: Windows
+    configuration: Release
+    architecture: x86
+    targetRid: win-x86
+    ${{ insert }}: ${{ parameters.jobParameters }}
+- ${{ if eq(parameters.includeArm64, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      osGroup: Windows
+      configuration: Release
+      architecture: arm64
+      targetRid: win-arm64
+      ${{ insert }}: ${{ parameters.jobParameters }}
+- ${{ if eq(parameters.includeDebug, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      osGroup: Linux
+      configuration: Debug
+      targetRid: linux-x64
+      ${{ insert }}: ${{ parameters.jobParameters }}
+- template: ${{ parameters.jobTemplate }}
+  parameters:
+    osGroup: Linux
+    configuration: Release
+    targetRid: linux-x64
+    ${{ insert }}: ${{ parameters.jobParameters }}
+- ${{ if eq(parameters.includeArm64, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      osGroup: Linux
+      configuration: Release
+      architecture: arm64
+      targetRid: linux-arm64
+      ${{ insert }}: ${{ parameters.jobParameters }}
+- ${{ if eq(parameters.includeDebug, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      osGroup: Linux_Musl
+      configuration: Debug
+      targetRid: linux-musl-x64
+      ${{ insert }}: ${{ parameters.jobParameters }}
+- template: ${{ parameters.jobTemplate }}
+  parameters:
+    osGroup: Linux_Musl
+    configuration: Release
+    targetRid: linux-musl-x64
+    ${{ insert }}: ${{ parameters.jobParameters }}
+- ${{ if eq(parameters.includeArm64, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      osGroup: Linux_Musl
+      configuration: Release
+      architecture: arm64
+      targetRid: linux-musl-arm64
+      ${{ insert }}: ${{ parameters.jobParameters }}
+- ${{ if eq(parameters.includeDebug, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      osGroup: MacOS
+      configuration: Debug
+      targetRid: osx-x64
+      ${{ insert }}: ${{ parameters.jobParameters }}
+- template: ${{ parameters.jobTemplate }}
+  parameters:
+    osGroup: MacOS
+    configuration: Release
+    targetRid: osx-x64
+    ${{ insert }}: ${{ parameters.jobParameters }}
+- ${{ if eq(parameters.includeArm64, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      osGroup: MacOS
+      configuration: Release
+      architecture: arm64
+      targetRid: osx-arm64
+      ${{ insert }}: ${{ parameters.jobParameters }}

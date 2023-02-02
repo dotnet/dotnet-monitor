@@ -3,7 +3,7 @@
 
 # Collection Rule Examples
 
-The following examples provide sample scenarios for using a collection rule. These templates can be copied directly into your configuration file with minimal adjustments to work with your application (for more information on configuring an egress provider, see [egress providers](./../configuration.md#egress-configuration)), or they can be adjusted for your specific use-case. [Learn more about configuring collection rules](collectionrules.md).
+The following examples provide sample scenarios for using a collection rule. These templates can be copied directly into your configuration file with minimal adjustments to work with your application (for more information on configuring an egress provider, see [egress providers](../configuration/egress-configuration.md)), or they can be adjusted for your specific use-case. [Learn more about configuring collection rules](collectionrules.md).
 
 ## Collect Trace - Startup (`Startup` Trigger)
 
@@ -23,7 +23,7 @@ The following examples provide sample scenarios for using a collection rule. The
             "Providers": [{
                 "Name": "Microsoft-Windows-DotNETRuntime",
                 "EventLevel": "Informational",
-                "Keywords": "0x8"
+                "Keywords": "0xC"
             }],
             "Duration": "00:00:15",
             "Egress": "artifacts"
@@ -43,7 +43,7 @@ The following examples provide sample scenarios for using a collection rule. The
   CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Type: "CollectTrace"
   CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Name: "Microsoft-Windows-DotNETRuntime"
   CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__EventLevel: "Informational"
-  CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Keywords: "0x8"
+  CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Keywords: "0xC"
   CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Duration: "00:00:15"
   CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Egress: "artifacts"
   ```
@@ -62,7 +62,7 @@ The following examples provide sample scenarios for using a collection rule. The
   - name: DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__EventLevel
     value: "Informational"
   - name: DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Providers__0__Keywords
-    value: "0x8"
+    value: "0xC"
   - name: DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Duration
     value: "00:00:15"
   - name: DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Settings__Egress
@@ -72,7 +72,7 @@ The following examples provide sample scenarios for using a collection rule. The
 
 ### Explanation
 
-This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's startup. When the rule is triggered, a trace will be collected for 15 seconds and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem). The trace will capture events from an event provider named `Microsoft-Windows-DotNETRuntime`, and will collect events at or above the `Informational` level using the keyword `0x8` (`LoaderKeyword`). For more information on providers, refer to [Well Known Event Providers](https://docs.microsoft.com/en-us/dotnet/core/diagnostics/well-known-event-providers). The trace will request rundown by default, and the `BufferSizeInMB` has the default value of 256 MB.
+This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's startup. When the rule is triggered, a trace will be collected for 15 seconds and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem). The trace will capture events from an event provider named `Microsoft-Windows-DotNETRuntime`, and will collect events at or above the `Informational` level using the keyword `0xC` (a combination of the [`loader` and `binder` keywords](https://learn.microsoft.com/dotnet/fundamentals/diagnostics/runtime-loader-binder-events)). For more information on providers, refer to [Well Known Event Providers](https://docs.microsoft.com/dotnet/core/diagnostics/well-known-event-providers). The trace will request rundown by default, and the `BufferSizeInMB` has the default value of 256 MB.
 
 ## Collect GCDump - Heap Size (`EventCounter` Trigger)
 

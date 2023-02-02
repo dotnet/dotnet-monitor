@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
@@ -34,7 +33,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-#if NET5_0_OR_GREATER
         private const string DefaultRuleName = "FunctionalTestRule";
 
         /// <summary>
@@ -127,7 +125,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Validates that a collection rule with a command line filter can be matched to the
         /// target process.
         /// </summary>
-        [ConditionalTheory(nameof(IsNotNet5OrGreaterOnUnix))]
+        /// <remarks>
+        /// The GetProcessInfo command is not providing command line arguments (only the process name)
+        /// for .NET 5+ processes on non-Windows when suspended. See https://github.com/dotnet/dotnet-monitor/issues/885
+        /// </remarks>
+        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsWindows))]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
         public async Task CollectionRule_CommandLineFilterMatchTest(DiagnosticPortConnectionMode mode)
         {
@@ -243,7 +245,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddProcessNameFilter("UmatchedName");
+                        .AddProcessNameFilter("UnmatchedName");
 
                     filteredTask = runner.WaitForCollectionRuleUnmatchedFiltersAsync(DefaultRuleName);
                 });
@@ -363,13 +365,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             // for the target process before dotnet-monitor shuts down.
             await rulesStoppedTask;
         }
-
-        // The GetProcessInfo command is not providing command line arguments (only the process name)
-        // for .NET 5+ process on non-Windows when suspended. See https://github.com/dotnet/dotnet-monitor/issues/885
-        private static bool IsNotNet5OrGreaterOnUnix =>
-            DotNetHost.RuntimeVersion.Major < 5 ||
-            RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-
-#endif
     }
 }

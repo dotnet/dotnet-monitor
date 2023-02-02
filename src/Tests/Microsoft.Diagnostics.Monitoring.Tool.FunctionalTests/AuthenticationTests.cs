@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
@@ -20,6 +19,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -476,7 +476,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.True(false, "Unknown algorithm");
                 }
 
-                JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonSerializerOptionsFactory.JsonIgnoreCondition.WhenWritingNull);
+                JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonIgnoreCondition.WhenWritingNull);
                 serializerOptions.IgnoreReadOnlyProperties = true;
                 string privateKeyJson = JsonSerializer.Serialize(exportableJwk, serializerOptions);
                 string privateKeyEncoded = Base64UrlEncoder.Encode(privateKeyJson);
@@ -587,7 +587,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ApiClient client = new(_outputHelper, httpClient);
 
             // TODO: Split test into elevated vs non-elevated tests and skip
-            // when not running in the corresponding context. Possibly unelevate
+            // when not running in the corresponding context. Possibly un-elevate
             // dotnet-monitor when running tests elevated.
             if (EnvironmentInformation.IsElevated)
             {

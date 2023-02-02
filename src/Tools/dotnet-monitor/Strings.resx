@@ -224,7 +224,7 @@
 1 Format Parameter:
 0. fieldName: The name of the field that failed validation</comment>
   </data>
-  <data name="ErrorMessage_FieldOddLengh" xml:space="preserve">
+  <data name="ErrorMessage_FieldOddLength" xml:space="preserve">
     <value>The {0} field value length must be an even number.</value>
     <comment>Gets the format string for rejecting a field because it must have an even numbered length.
 1 Format Parameter:
@@ -432,6 +432,10 @@
     <value>The output format of the API Key configuration.</value>
     <comment>Gets the string to display in help that explains what the '--output' option does.</comment>
   </data>
+  <data name="HelpDescription_SecurityDefinitionDescription_ApiKey" xml:space="preserve">
+    <value>JWT Authorization header using bearer token authentication. Put the Authorization header value ("Bearer" prefix and the JWT value) in the textbox when prompted.</value>
+    <comment>Gets a string used in the generated OpenAPI doc for the auth scheme</comment>
+  </data>
   <data name="LogFormatString_ActionSettingsTokenizationNotSupported" xml:space="preserve">
     <value>Collection rule action options '{settingsType}' must implement ICloneable to support property tokenization.</value>
   </data>
@@ -536,7 +540,7 @@
     <value>Diagnostic port file at '{0}' was either deleted or moved while it was still being used.</value>
   </data>
   <data name="LogFormatString_DiagnosticPortDeleteAttempt" xml:space="preserve">
-    <value>Attemping to delete diagnostic port file at '{0}'.</value>
+    <value>Attempting to delete diagnostic port file at '{0}'.</value>
   </data>
   <data name="LogFormatString_DiagnosticPortDeleteFailed" xml:space="preserve">
     <value>Failed to delete diagnostic port file at '{0}'.</value>
@@ -723,7 +727,7 @@
   <data name="LogFormatString_GetEnvironmentVariable" xml:space="preserve">
     <value>Getting the environment variable {variableName} from process {processId}.</value>
     <comment>Gets the format string that is printed in the 55:GetEnvironmentVariable event.
-2 Format parameterts:
+2 Format Parameters:
 1. variableName: The name of the environment variable being read
 2. processId: The id of the process to which the variable is being read</comment>
   </data>
@@ -739,7 +743,7 @@
     <value>Invalid action reference '{actionReference}'.</value>
   </data>
   <data name="LogFormatString_InvalidActionResultReference" xml:space="preserve">
-    <value>Invalid result refrence '{actionToken}'.</value>
+    <value>Invalid result reference '{actionToken}'.</value>
   </data>
   <data name="LogFormatString_InvalidToken" xml:space="preserve">
     <value>Action '{actionName}' with setting '{setting}' has invalid tokens.</value>
@@ -747,7 +751,7 @@
   <data name="LogFormatString_LoadingProfiler" xml:space="preserve">
     <value>Loading the profiler with CLSID {clsid} from {path} into process {processId}.</value>
     <comment>Gets the format string that is printed in the 53:LoadingProfiler event.
-3 Format parameterts:
+3 Format Parameters:
 1. profilerGuid: The id in guid form of the cor profiler in question
 2. path: The file path to the profiler being loaded relative to target process
 3. processId: The id of the process to which the profiler is being loaded</comment>
@@ -767,7 +771,7 @@
 0 Format Parameters</comment>
   </data>
   <data name="LogFormatString_NotifyPrivateKey" xml:space="preserve">
-    <value>The configuration field {fieldName} contains private key information. The private key information is not required for dotnet-monitor to verify a token signature and it is strongly recomended to only provide the public key.</value>
+    <value>The configuration field {fieldName} contains private key information. The private key information is not required for dotnet-monitor to verify a token signature and it is strongly recommended to only provide the public key.</value>
   </data>
   <data name="LogFormatString_OptionsValidationFailure" xml:space="preserve">
     <value>{failure}</value>
@@ -804,7 +808,7 @@
   <data name="LogFormatString_SetEnvironmentVariable" xml:space="preserve">
     <value>Setting the environment variable {variableName} in process {processId}.</value>
     <comment>Gets the format string that is printed in the 54:SetEnvironmentVariable event.
-2 Format parameterts:
+2 Format Parameters:
 1. variableName: The name of the environment variable being set
 2. processId: The id of the process to which the variable is being set</comment>
   </data>

@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
@@ -27,8 +26,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
     [Collection(DefaultCollectionFixture.Name)]
     public class StacksTests
     {
-#if NET6_0_OR_GREATER
-
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
         private readonly TemporaryDirectory _tempDirectory;
@@ -466,6 +463,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             MethodName = ExpectedFunction
                         }
             };
-#endif
     }
 }

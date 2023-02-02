@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Azure;
 using Azure.Identity;
@@ -58,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
                     //Azure's stream from OpenWriteAsync will do the following
                     //1. Write the data to a local buffer
                     //2. Once that buffer is full, stage the data remotely (this data is not considered valid yet)
-                    //3. After 4Gi of data has been staged, the data will be commited. This can be forced earlier by flushing
+                    //3. After 4Gi of data has been staged, the data will be committed. This can be forced earlier by flushing
                     //the stream.
                     // Since we want the data to be readily available, we automatically flush (and therefore commit) every time we fill up the buffer.
                     _logger.EgressProviderInvokeStreamAction(Constants.AzureBlobStorageProviderName);

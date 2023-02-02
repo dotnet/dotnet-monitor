@@ -14,19 +14,20 @@ pr:
     - .github
     - .vscode
     - .gitignore
+    - cspell.json
     - eng/actions
     - '**.md'
 
 schedules:
-- cron: 15 11 * * 6
-  displayName: Weekly Full Test Run
+# Schedule before docker update pipeline
+- cron: "0 3 * * Mon-Fri"
+  displayName: M-F Scheduled Build
   branches:
     include:
     - main
-  always: true
 
 parameters:
-- name: TestGroup
+- name: testGroup
   displayName: 'Test Group'
   type: string
   default: Default
@@ -36,14 +37,20 @@ parameters:
   - None
   - CI
   - PR
+- name: updateDocker
+  displayName: 'Update dotnet-docker? (Only for release branches)'
+  type: boolean
+  default: false
 
 variables:
 - name: _TeamName
   value: DotNetCore
-- ${{ if notin(variables['Build.Reason'], 'PullRequest') }}:
-  - name: Codeql.Enabled
-    value: true
-  
+- name: _TPNFile
+  value: THIRD-PARTY-NOTICES.TXT
+# Scheduled builds of main branch will be marked for update by dotnet-docker if this is true
+- name: NightlyUpdateDockerFromMain
+  value: true
+
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   # DotNet-Diagnostics-SDL-Params provides Tsa* variables for SDL checks.
   - group: DotNet-Diagnostics-SDL-Params
@@ -52,169 +59,44 @@ stages:
 - stage: Build
   displayName: Build and Test
   jobs:
-  # Build and test binaries
-  - template: /eng/build.yml
-    parameters:
-      name: Windows_x64_Debug
-      displayName: Windows x64 Debug
-      osGroup: Windows
-      configuration: Debug
-      testGroup: ${{ parameters.TestGroup }}
-  - template: /eng/build.yml
-    parameters:
-      name: Windows_x64_Release
-      displayName: Windows x64 Release
-      osGroup: Windows
-      configuration: Release
-      publishArtifactsSubPaths:
-      - source: 'bin'
-      - source: 'obj'
-      testGroup: ${{ parameters.TestGroup }}
-  - template: /eng/build.yml
-    parameters:
-      name: Windows_x86_Release
-      displayName: Windows x86 Release
-      osGroup: Windows
-      configuration: Release
-      architecture: x86
-      publishArtifactsSubPaths:
-      - source: 'bin/Windows_NT.x86.Release'
-      testGroup: ${{ parameters.TestGroup }}
-  - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-    - template: /eng/build.yml
-      parameters:
-        name: Windows_arm64_Release
-        displayName: Windows arm64 Release
-        osGroup: Windows
-        configuration: Release
-        architecture: arm64
-        publishArtifactsSubPaths:
-        - source: 'bin/Windows_NT.arm64.Release'
-        testGroup: None
-  - template: /eng/build.yml
-    parameters:
-      name: Linux_x64_Debug
-      displayName: Linux x64 Debug
-      osGroup: Linux
-      configuration: Debug
-      testGroup: ${{ parameters.TestGroup }}
-  - template: /eng/build.yml
-    parameters:
-      name: Linux_x64_Release
-      displayName: Linux x64 Release
-      osGroup: Linux
-      configuration: Release
-      publishArtifactsSubPaths:
-      - source: 'bin/Linux.x64.Release'
-      testGroup: ${{ parameters.TestGroup }}
-  - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-    - template: /eng/build.yml
-      parameters:
-        name: Linux_arm64_Release
-        displayName: Linux arm64 Release
-        osGroup: Linux
-        configuration: Release
-        architecture: arm64
-        publishArtifactsSubPaths:
-        - source: 'bin/Linux.arm64.Release'
-        testGroup: None
-  - template: /eng/build.yml
-    parameters:
-      name: Linux_Musl_x64_Debug
-      displayName: Linux Musl x64 Debug
-      osGroup: Linux_Musl
-      configuration: Debug
-      testGroup: ${{ parameters.TestGroup }}
-  - template: /eng/build.yml
-    parameters:
-      name: Linux_Musl_x64_Release
-      displayName: Linux Musl x64 Release
-      osGroup: Linux_Musl
-      configuration: Release
-      publishArtifactsSubPaths:
-      - source: 'bin/Linux.x64.Release'
-        target: 'bin/Linux-musl.x64.Release'
-      testGroup: ${{ parameters.TestGroup }}
-  - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-    - template: /eng/build.yml
-      parameters:
-        name: Linux_Musl_arm64_Release
-        displayName: Linux Musl arm64 Release
-        osGroup: Linux_Musl
-        configuration: Release
-        architecture: arm64
-        publishArtifactsSubPaths:
-        - source: 'bin/Linux.arm64.Release'
-          target: 'bin/Linux-musl.arm64.Release'
-        testGroup: None
-  - template: /eng/build.yml
-    parameters:
-      name: MacOS_x64_Debug
-      displayName: MacOS x64 Debug
-      osGroup: MacOS
-      configuration: Debug
-      testGroup: ${{ parameters.TestGroup }}
-  - template: /eng/build.yml
-    parameters:
-      name: MacOS_x64_Release
-      displayName: MacOS x64 Release
-      osGroup: MacOS
-      configuration: Release
-      publishArtifactsSubPaths:
-      - source: 'bin/OSX.x64.Release'
-      testGroup: ${{ parameters.TestGroup }}
-  - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-    - template: /eng/build.yml
-      parameters:
-        name: MacOS_arm64_Release
-        displayName: MacOS arm64 Release
-        osGroup: MacOS
-        configuration: Release
-        architecture: arm64
-        publishArtifactsSubPaths:
-        - source: 'bin/OSX.arm64.Release'
-        testGroup: None
   - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-    # Pack, sign, and publish
-    - template: /eng/common/templates/job/job.yml
+    # Generate a TPN for only the dotnet-monitor project
+    - template: /eng/pipelines/jobs/tpn.yml
+
+  # Build and test binaries
+  - template: /eng/pipelines/jobs/platform-matrix.yml
+    parameters:
+      jobTemplate: /eng/pipelines/jobs/build-test.yml
+      includeArm64: ${{ ne(variables['System.TeamProject'], 'public') }}
+      includeDebug: true
+      jobParameters:
+        publishArtifacts: ${{ and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}
+        testGroup: ${{ parameters.testGroup }}
+
+- ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+  - stage: Archive
+    displayName: Archive
+    dependsOn:
+    - Build
+    jobs:
+    # Sign binaries before archiving
+    - template: /eng/pipelines/jobs/sign-binaries.yml
+
+    # Build RID (runtime identifier) archives
+    - template: /eng/pipelines/jobs/platform-matrix.yml
       parameters:
-        name: Pack_Sign
-        displayName: Pack and Sign
-        dependsOn:
-        - Windows_x64_Release
-        - Windows_x86_Release
-        - Windows_arm64_Release
-        - Linux_x64_Release
-        - Linux_arm64_Release
-        - Linux_Musl_x64_Release
-        - Linux_Musl_arm64_Release
-        - MacOS_x64_Release
-        - MacOS_arm64_Release
-        pool:
-          name: NetCore1ESPool-Internal
-          demands: ImageOverride -equals 1es-windows-2019
-        enablePublishUsingPipelines: true
-        enableMicrobuild: true
-        artifacts:
-          download:
-            name: Build_Release
-          publish:
-            artifacts:
-              name: Artifacts_Pack_Sign
-            logs:
-              name: Logs_Pack_Sign
-            manifests: true
-        variables:
-        - _BuildConfig: Release
-        - _SignType: real
-        steps:
-        - script: >-
-            $(Build.SourcesDirectory)/eng/cipacksignpublish.cmd
-            /p:TeamName=$(_TeamName)
-            /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
-            /p:DotNetSignType=real
-            /p:DotNetPublishUsingPipelines=true
-          displayName: Pack, Sign, and Publish
+        jobTemplate: /eng/pipelines/jobs/build-archive.yml
+        includeArm64: ${{ ne(variables['System.TeamProject'], 'public') }}
+# This stage creates NuGet packages and generates the BAR manifests
+- ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+  - stage: PackSignPublish
+    displayName: Pack, Sign, and Generate Manifests
+    dependsOn:
+    - Archive
+    jobs:
+    # Pack, sign, and publish manifest
+    - template: /eng/pipelines/jobs/pack-sign-publish.yml
+
     # Register with BAR
     - template: /eng/common/templates/job/publish-build-assets.yml
       parameters:
@@ -226,12 +108,13 @@ stages:
           name: NetCore1ESPool-Internal
           demands: ImageOverride -equals 1es-windows-2019
 # These are the stages that perform validation of several SDL requirements and publish the bits required to the designated feed.
-- ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   - template: /eng/common/templates/post-build/post-build.yml
     parameters:
       # This is to enable SDL runs part of Post-Build Validation Stage.
       # as well as NuGet, SourceLink, and signing validation.
       # The variables get imported from group dotnet-diagnostics-sdl-params
+      validateDependsOn:
+      - PackSignPublish
       publishingInfraVersion: 3
       enableSourceLinkValidation: true
       enableSigningValidation: true
@@ -241,17 +124,24 @@ stages:
       SDLValidationParameters:
         enable: true
         continueOnError: true
-        params: ' -SourceToolsList @("policheck","credscan")
-        -TsaInstanceURL $(_TsaInstanceURL)
-        -TsaProjectName $(_TsaProjectName)
-        -TsaNotificationEmail $(_TsaNotificationEmail)
-        -TsaCodebaseAdmin $(_TsaCodebaseAdmin)
-        -TsaBugAreaPath $(_TsaBugAreaPath)
-        -TsaIterationPath $(_TsaIterationPath)
-        -TsaRepositoryName "dotnet-monitor"
-        -TsaCodebaseName "dotnet-monitor"
-        -TsaPublish $True'
+        params: >-
+          -SourceToolsList @("policheck","credscan")
+          -TsaInstanceURL $(_TsaInstanceURL)
+          -TsaProjectName $(_TsaProjectName)
+          -TsaNotificationEmail $(_TsaNotificationEmail)
+          -TsaCodebaseAdmin $(_TsaCodebaseAdmin)
+          -TsaBugAreaPath $(_TsaBugAreaPath)
+          -TsaIterationPath $(_TsaIterationPath)
+          -TsaRepositoryName "dotnet-monitor"
+          -TsaCodebaseName "dotnet-monitor"
+          -TsaPublish $True
         artifactNames:
         - 'PackageArtifacts'
 # This sets up the bits to do a Release.
-- template: /eng/PrepareRelease.yml
+- template: /eng/pipelines/stages/preparerelease.yml
+  parameters:
+    ${{ if eq(parameters.updateDocker, 'true') }}:
+      updateDocker: true
+    ${{ else }}:
+      # If scheduled build from main and nightly update from main enabled
+      updateDocker: ${{ and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['NightlyUpdateDockerFromMain'], 'true')) }}

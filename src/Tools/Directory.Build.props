@@ -3,22 +3,16 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <RuntimeIdentifiers>$(DefaultRuntimeIdentifiers)</RuntimeIdentifiers>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
     <IsShipping>true</IsShipping>
     <PackAsTool>true</PackAsTool>
-    <PackAsToolShimRuntimeIdentifiers>win-x64;win-x86;win-arm64;win-arm;osx-x64;linux-x64;linux-musl-x64;linux-arm64;linux-musl-arm64;linux-arm</PackAsToolShimRuntimeIdentifiers>
+    <PackAsToolShimRuntimeIdentifiers Condition="'$(PackAsTool)' == 'true'">$(SignOnlyRuntimeIdentifiers)</PackAsToolShimRuntimeIdentifiers>
     <PackagedShimOutputRootDirectory>$(OutputPath)</PackagedShimOutputRootDirectory>
   </PropertyGroup>
-  <ItemGroup>
-    <NativeArtifactDirectories Include="$(ArtifactsBinDir)Linux.arm64.$(Configuration)" TargetRid="linux-arm64" LibraryPrefix="lib" LibraryExtension=".so" SymbolsExtension=".so.dbg" />
-    <NativeArtifactDirectories Include="$(ArtifactsBinDir)Linux.x64.$(Configuration)" TargetRid="linux-x64" LibraryPrefix="lib" LibraryExtension=".so" SymbolsExtension=".so.dbg" />
-    <NativeArtifactDirectories Include="$(ArtifactsBinDir)Linux-musl.arm64.$(Configuration)" TargetRid="linux-musl-arm64" LibraryPrefix="lib" LibraryExtension=".so" SymbolsExtension=".so.dbg" />
-    <NativeArtifactDirectories Include="$(ArtifactsBinDir)Linux-musl.x64.$(Configuration)" TargetRid="linux-musl-x64" LibraryPrefix="lib" LibraryExtension=".so" SymbolsExtension=".so.dbg" />
-    <NativeArtifactDirectories Include="$(ArtifactsBinDir)OSX.arm64.$(Configuration)" TargetRid="osx-arm64" LibraryPrefix="lib" LibraryExtension=".dylib" SymbolsExtension=".dylib.dwarf" />
-    <NativeArtifactDirectories Include="$(ArtifactsBinDir)OSX.x64.$(Configuration)" TargetRid="osx-x64" LibraryPrefix="lib" LibraryExtension=".dylib" SymbolsExtension=".dylib.dwarf" />
-    <NativeArtifactDirectories Include="$(ArtifactsBinDir)Windows_NT.arm64.$(Configuration)" TargetRid="win-arm64" LibraryPrefix="" LibraryExtension=".dll" SymbolsExtension=".pdb" />
-    <NativeArtifactDirectories Include="$(ArtifactsBinDir)Windows_NT.x64.$(Configuration)" TargetRid="win-x64" LibraryPrefix="" LibraryExtension=".dll" SymbolsExtension=".pdb" />
-    <NativeArtifactDirectories Include="$(ArtifactsBinDir)Windows_NT.x86.$(Configuration)" TargetRid="win-x86" LibraryPrefix="" LibraryExtension=".dll" SymbolsExtension=".pdb" />
+
+  <ItemGroup Condition=" '$(IsPackable)' == 'true' and '$(ThirdPartyNoticesFilePath)' != ''">
+    <None Include="$(ThirdPartyNoticesFilePath)" Pack="true" PackagePath="notices" Visible="false" />
   </ItemGroup>
 </Project>

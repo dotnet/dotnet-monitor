@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
@@ -34,7 +33,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-#if NET6_0_OR_GREATER
         private const string DefaultRuleName = "FunctionalTestRule";
         private readonly TimeSpan TraceDuration = Timeout.InfiniteTimeSpan;
         private const string AppUrl = "http://+:0";
@@ -179,6 +177,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             return holder;
         }
-#endif
     }
 }

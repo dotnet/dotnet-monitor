@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
@@ -557,13 +556,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return executeOptions;
         }
 
-        public static LoadProfilerOptions VerifyLoadProfilerAction(this CollectionRuleOptions ruleOptions, int actionIndex, string expectedPath, Guid expectecClsid)
+        public static LoadProfilerOptions VerifyLoadProfilerAction(this CollectionRuleOptions ruleOptions, int actionIndex, string expectedPath, Guid expectedClsid)
         {
             LoadProfilerOptions opts = ruleOptions.VerifyAction<LoadProfilerOptions>(
                 actionIndex, KnownCollectionRuleActions.LoadProfiler);
 
             Assert.Equal(expectedPath, opts.Path);
-            Assert.Equal(expectecClsid, opts.Clsid);
+            Assert.Equal(expectedClsid, opts.Clsid);
 
             return opts;
         }

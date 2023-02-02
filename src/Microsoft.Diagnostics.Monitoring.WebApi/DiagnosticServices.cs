@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -40,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     // CONSIDER: Can this processing be pushed into the IEndpointInfoSource implementation and cached
                     // so that extended process information doesn't have to be recalculated for every call. This would be
                     // useful for:
-                    // - .NET Core 3.1 processes, which require issuing a brief event pipe session to get the process commmand
+                    // - .NET Core 3.1 processes, which require issuing a brief event pipe session to get the process command
                     //   line information and parse out the process name
                     // - Caching entrypoint information (when that becomes available).
                     processInfoTasks.Add(Task.Run(
@@ -64,7 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
 
                 // FromEndpointInfoAsync can fill in the command line for .NET Core 3.1 processes by invoking the
-                // event pipe and capturing the ProcessInfo event. Timebox this operation with the cancellation token
+                // event pipe and capturing the ProcessInfo event. Time-box this operation with the cancellation token
                 // so that getting the process list does not take a long time or wait indefinitely.
                 extendedInfoCancellation.CancelAfter(ProcessInfoImpl.ExtendedProcessInfoTimeout);
 
@@ -76,7 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             catch (UnauthorizedAccessException)
             {
-                throw new InvalidOperationException(Strings.ErrorMessage_ProcessEnumeratuinFailed);
+                throw new InvalidOperationException(Strings.ErrorMessage_ProcessEnumerationFailed);
             }
 
             if (processFilterConfig != null)

@@ -180,9 +180,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         /// <summary>
         ///   Looks up a localized string similar to Unable to enumerate processes..
         /// </summary>
-        internal static string ErrorMessage_ProcessEnumeratuinFailed {
+        internal static string ErrorMessage_ProcessEnumerationFailed {
             get {
-                return ResourceManager.GetString("ErrorMessage_ProcessEnumeratuinFailed", resourceCulture);
+                return ResourceManager.GetString("ErrorMessage_ProcessEnumerationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resource {0} cannot be found.
+        /// </summary>
+        internal static string ErrorMessage_ResourceNotFound {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ResourceNotFound", resourceCulture);
             }
         }
         
@@ -259,6 +268,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The counter {0} ended and is no longer receiving metrics..
+        /// </summary>
+        internal static string LogFormatString_CounterEndedPayload {
+            get {
+                return ResourceManager.GetString("LogFormatString_CounterEndedPayload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to determine the default process..
         /// </summary>
         internal static string LogFormatString_DefaultProcessUnexpectedFailure {
@@ -282,6 +300,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         internal static string LogFormatString_EgressedArtifact {
             get {
                 return ResourceManager.GetString("LogFormatString_EgressedArtifact", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}.
+        /// </summary>
+        internal static string LogFormatString_ErrorPayload {
+            get {
+                return ResourceManager.GetString("LogFormatString_ErrorPayload", resourceCulture);
             }
         }
         

@@ -1,6 +1,5 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 #include "TypeNameUtilities.h"
 #include "corhlpr.h"
@@ -221,14 +220,14 @@ HRESULT TypeNameUtilities::GetModuleInfo(NameCache& nameCache, ModuleID moduleId
 
     WCHAR moduleFullName[256];
     ULONG nameLength = 0;
-    AssemblyID assemID;
+    AssemblyID assemblyID;
 
     IfFailRet(_profilerInfo->GetModuleInfo(moduleId,
         nullptr,
         256,
         &nameLength,
         moduleFullName,
-        &assemID));
+        &assemblyID));
 
     WCHAR* ptr = nullptr;
 
