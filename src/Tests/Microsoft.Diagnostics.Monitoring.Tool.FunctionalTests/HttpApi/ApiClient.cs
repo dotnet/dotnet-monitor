@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -45,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// <summary>
         /// GET /
         /// </summary>
-        public async Task GetRootAsync(CancellationToken token)
+        public async Task<HttpResponseMessage> GetRootAsync(CancellationToken token)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, "/");
 
@@ -59,8 +58,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
                 case HttpStatusCode.NotFound:
                     ThrowIfNotSuccess(response);
                     break;
-            }
 
+                case HttpStatusCode.OK:
+                case HttpStatusCode.Redirect:
+                case HttpStatusCode.Moved:
+                    return response;
+            }
             throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
         }
 

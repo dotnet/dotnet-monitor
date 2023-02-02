@@ -5,12 +5,12 @@
 
 ## Prepare the release branch
 
+1. Update the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) variables to prevent consumption of nightly builds into dotnet-docker. Set `NightlyUpdateDockerFromMain` variable to `false` on the pipeline itself, not just on a new build.
 1. Merge from the `main` branch to the appropriate release branch (e.g. `release/5.0`). Note that for patch releases, fixes should be made directly to the appropriate release branch and we do not merge from the `main` branch. Note that it is acceptable to use a release/major.x branch. Alternatively, you can create a new release branch for the minor version. See [additional branch steps](#additional-steps-when-creating-a-new-release-branch) below.
 1. Review and merge in any outstanding dependabot PRs for the release branch.
 1. Run the [Update release version](https://github.com/dotnet/dotnet-monitor/actions/workflows/update-release-version.yml) workflow, setting `Use workflow from` to the release branch and correctly setting the `Release type` and `Release version` options. (*NOTE:* Release version should include only major.minor.patch, without any extra labels). Review and merge in the PR created by this workflow.
 1. If you merged from `main` in step 1, repeat the above step for the `main` branch with the appropriate `Release type` and `Release version`.
 1. Complete at least one successful [release build](#build-release-branch).
-1. [Update dotnet-docker pipeline variables](#update-pipeline-variable-for-release) to pick up builds from the release branch.
 
 ## Additional steps when creating a new release branch
 
@@ -28,29 +28,18 @@
 The official build will not automatically trigger for release branches. Each time a new build is needed, the pipeline will need to be invoked manually.
 
 1. Wait for changes to be mirrored from [GitHub repository](https://github.com/dotnet/dotnet-monitor) to the [internal repository](https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet-monitor).
-1. Invoke the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) for the release branch.
-1. Bump the versions across feature branches. See https://github.com/dotnet/dotnet-monitor/pull/1973/files for an example.
+1. Invoke the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) for the release branch. Make sure the `Update dotnet-docker?` parameter is set to true. Setting this will cause a successful build to trigger an update in the `dotnet-docker` repository.
 
 The result of the successful build pushes packages to the [dotnet-tools](https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json) feed, pushes symbols to symbol feeds, and generates aka.ms links for the following:
 - `aka.ms/dotnet/diagnostics/monitor{channel}/dotnet-monitor.nupkg.version`
 - `aka.ms/dotnet/diagnostics/monitor{channel}/dotnet-monitor.nupkg.sha512`
 
-The `channel` value is used by the `dotnet-docker` repository to consume the correct latest version. This value is:
-- `{major}.{minor}/daily` for builds from non-release branches. For example, `channel` is `5.0/daily` for the `main` branch.
-- `{majorVersion}.{minorVersion}/release` for final release in release branches. For example, `channel` is `5.0/release` for the `release/5.0` if its `<BlobGroupBuildQuality>` is set to `release`.
+> **Note**:
+> The `channel` value is:
+> - `{major}.{minor}/daily` for builds from non-release branches. For example, `channel` is `5.0/daily` for the `main` branch.
+> - `{majorVersion}.{minorVersion}/release` for final release in release branches. For example, `channel` is `5.0/release` for the `release/5.0` if its `<BlobGroupBuildQuality>` is set to `release`.
 
 ## Update Nightly Docker Ingestion
-
-### Update Pipeline Variable for Release
-
-The `dotnet-docker` repository runs an update process each day that detects the latest version of a given `dotnet-monitor` channel. During the stabilization/testing/release period for a release of `dotnet-monitor`, the update process should be changed to pick up builds for the release branch.
-
-**Known issues**
-* Currently docker only supports updating one minor version for each major version. We have to manually update any additional versions. See [instructions](#manually-updating-docker-versions) for manually updating.
-
-The following variables for [dotnet-docker-update-dependencies-monitor](https://dev.azure.com/dnceng/internal/_build?definitionId=1207) need to be updated for release:
-* `monitorXMinorVersion`: Make sure these are set to the correct minor version values (e.g. `monitor7MinorVersion=1` for the 7.1.X version).
-* `monitorXQuality`: This should be `daily` for picking builds from the `main` branch, otherwise should be set to `release` for builds from release branches (e.g. `monitor8Quality=daily`, `monitor7Quality=release`).
 
 ### Updating tags
 
@@ -59,10 +48,6 @@ If you are releasing a new minor version, you may need to update the current/pre
 1. Update https://github.com/dotnet/dotnet-docker/blob/nightly/manifest.json.
 1. Run update-dependencies as described [here](#manually-updating-docker-versions).
 1. See https://github.com/dotnet/dotnet-docker/pull/3830/files for an example.
-
-### Revert Pipeline Variable After Release
-
-After the release has been completed, this pipeline variable should be changed to the appropriate build quality (e.g. `daily` to pick up builds from the `main` branch); for servicing releases, this typically stays as `release`.
 
 ### Manually updating docker versions
 1. Run `\eng\Set-DotnetVersions.ps1`. Example:
@@ -76,7 +61,7 @@ After the release has been completed, this pipeline variable should be changed t
 ### Updating dependencies
 
 If necessary, update dependencies in the release branch.
->**Note**: This is no longer needed for the diagnostics packages. They are kept up-to-date by dependabot.
+>**Note**: This is typically not needed for the diagnostics packages. They are kept up-to-date by dependabot if `UseMicrosoftDiagnosticsMonitoringShippedVersion` in [../eng/Versions.props](../eng/Versions.props) is set to `true`. It might be set to `false` if feature development requiring unreleased diagnostics libraries was merged into the branch. Official releases should use the released diagnostics libraries per agreed upon policy.
 
 1. For new branches only, you need to setup a subscription using darc: `darc add-subscription --channel ".NET Core Tooling Release" --source-repo https://github.com/dotnet/diagnostics --target-repo https://github.com/dotnet/dotnet-monitor --target-branch release/8.x --update-frequency None --standard-automerge`
 1. Use `darc get-subscriptions --target-repo monitor` to see existing subscriptions.
@@ -96,7 +81,7 @@ The nightly image is `mcr.microsoft.com/dotnet/nightly/monitor`. The tag list is
 
 ## Release to nuget.org and Add GitHub Release
 
-1. Run the [Generate release notes](https://github.com/dotnet/dotnet-monitor/actions/workflows/generate-release-notes.yml) workflow, setting `Use workflow from` to the release branch and checking `Include PRs that were merged into main?` if you merged `main` into the release branch. Review and merge in the PR created by this workflow.
+1. Run the [Generate release notes](https://github.com/dotnet/dotnet-monitor/actions/workflows/generate-release-notes.yml) workflow, setting `Use workflow from` to the release branch. Review and merge in the PR created by this workflow.
 1. Start [release pipeline](https://dev.azure.com/dnceng/internal/_release?_a=releases&view=mine&definitionId=105). Allow the stages to trigger automatically (do not check the boxes in the associated dropdown). During creation of the release you must select the dotnet-monitor build to release from the list of available builds. This must be a build with the tag `MonitorRelease` and the associated `MonitorRelease` artifact (set `dotnet-monitor_build` to the pipeline run of `dotnet monitor` that is being released; set `dotnet-monitor_source` to the latest commit from `main`).
 1. The release will start the stage "Pre-Release Verification"; this will check that the above steps were done as expected. The name of the release will be updated automatically.
 1. Approve the sign-off step the day before the release after 8:45 AM PDT, when ready to publish.
@@ -106,8 +91,8 @@ The remainder of the release will automatically push NuGet packages to nuget.org
 
 ## Release to Storage Accounts
 
-1. Approximately 3 days before Docker image release, execute a dry-run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (`Branch` should be set to `main`; `IsDryRun` should be checked; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will validate that the nupkg files can be published to the `dotnetcli` storage account and checksums can be published to the `dotnetclichecksums` storage account.
-1. The day before Docker image release, execute run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (`Branch` should be set to `main`; uncheck `IsDryRun`; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will publish the nupkg files to the `dotnetcli` storage account and the checksums to the `dotnetclichecksums` storage account.
+1. Approximately 3 days before Docker image release, execute a dry-run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (`Branch` should be set to `main`; `IsDryRun` should be checked; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will validate that the `.nupkg` files can be published to the `dotnetcli` storage account and checksums can be published to the `dotnetclichecksums` storage account.
+1. The day before Docker image release, execute run of the [dotnet-monitor-release](https://dev.azure.com/dnceng/internal/_build?definitionId=1103) pipeline (`Branch` should be set to `main`; uncheck `IsDryRun`; uncheck `IsTestRun`; under `Resources`, select the `dotnet monitor` build from which assets will be published). This will publish the `.nupkg` files to the `dotnetcli` storage account and the checksums to the `dotnetclichecksums` storage account.
 
 ## Release Docker Images
 
@@ -120,8 +105,7 @@ The release image is `mcr.microsoft.com/dotnet/monitor`. The tag list is https:/
 
 ## After the Release
 
+1. Change the `NightlyUpdateDockerFromMain` variable to `true` in the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) to begin the consumption of nightly builds into dotnet-docker.
 1. Update [releases.md](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/releases.md) with the latest version.
-1. When necessary, update [docker.md](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/docker.md).
 1. When necessary, update this document if its instructions were unclear or incorrect.
 1. When releasing a new minor version, include an announcement that the previous version will soon be out of support. For example, https://github.com/dotnet/dotnet-monitor/discussions/1871
-1. Make sure you [Revert](#revert-pipeline-variable-after-release) the nightly build pipeline.

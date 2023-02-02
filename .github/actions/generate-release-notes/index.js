@@ -24,7 +24,6 @@ async function run() {
     const buildDescription = core.getInput("build_description", { required: true });
     const lastReleaseDate = core.getInput("last_release_date", { required: true });
     const branch = core.getInput("branch_name", { required: true });
-    const additional_branch = core.getInput("additional_branch", { required: false });
 
     const repoOwner = github.context.payload.repository.owner.login;
     const repoName = github.context.payload.repository.name;
@@ -44,7 +43,7 @@ async function run() {
                 inChangelog: false
             }
         ];
-        const changelog = await generateChangelog(octokit, branch, additional_branch, repoOwner, repoName, lastReleaseDate, significantLabels);
+        const changelog = await generateChangelog(octokit, branch, repoOwner, repoName, lastReleaseDate, significantLabels);
         const monikerDescriptions = generateMonikerDescriptions(significantLabels);
 
         const releaseNotes = await generateReleaseNotes(path.join(__dirname, "releaseNotes.template.md"), buildDescription, changelog, monikerDescriptions);
@@ -67,12 +66,13 @@ function generateMonikerDescriptions(significantLabels) {
     return descriptions.join(" \\\n");
 }
 
-async function generateChangelog(octokit, branchName, additionalBranch, repoOwner, repoName, minMergeDate, significantLabels) {
-    let prs = await getPRs(octokit, branchName, additionalBranch, repoOwner, repoName, minMergeDate, UpdateReleaseNotesLabel);
+async function getPrsToMention(octokit, branch, repoOwner, repoName, minMergeDate) {
+    // Identify potential PRs to mention the release notes.
+    let candidatePrs = await getPRs(octokit, repoOwner, repoName, minMergeDate, UpdateReleaseNotesLabel);
 
     // Resolve the backport PRs to their origin PRs
     const maxRecursion = 3;
-    const backportPrs = await getPRs(octokit, branchName, additionalBranch, repoOwner, repoName, minMergeDate, BackportLabel);
+    const backportPrs = await getPRs(octokit, repoOwner, repoName, minMergeDate, BackportLabel);
     for (const pr of backportPrs) {
         const originPr = await resolveBackportPrToReleaseNotePr(octokit, pr, repoOwner, repoName, minMergeDate, maxRecursion);
         if (originPr !== undefined) {
@@ -81,9 +81,47 @@ async function generateChangelog(octokit, branchName, additionalBranch, repoOwne
             // the information from the origin PR.
             originPr.number = pr.number;
             originPr.html_url = pr.html_url;
-            prs.push(originPr);
+
+            candidatePrs.push(originPr);
         }
     }
+
+    // Create a lookup table for every commit hash this release includes.
+    const commitObjects = await octokit.paginate(octokit.rest.repos.listCommits, {
+        owner: repoOwner,
+        repo: repoName,
+        sha: branch, // To filter by branch, set the sha field to the branch name.
+        since: minMergeDate
+    });
+
+    let commitHashesInRelease = new Set();
+    for (const commit of commitObjects) {
+        commitHashesInRelease.add(commit.sha);
+    }
+
+    let prs = [];
+    for (const pr of candidatePrs) {
+        // Get a fully-qualified version of the pr that has all of the relevant information,
+        // including the merge/squash/rebase commit.
+        const fqPr = (await octokit.rest.pulls.get({
+            owner: repoOwner,
+            repo: repoName,
+            pull_number: pr.number
+        }))?.data;
+
+        if (commitHashesInRelease.has(fqPr.merge_commit_sha)) {
+            console.log(`Including: #${fqPr.number}`);
+            prs.push(pr);
+        } else {
+            console.log(`Skipping: #${fqPr.number} --- ${fqPr.merge_commit_sha}`);
+        }
+    }
+
+    return prs;
+}
+
+async function generateChangelog(octokit, branch, repoOwner, repoName, minMergeDate, significantLabels) {
+    const prs = await getPrsToMention(octokit, branch, repoOwner, repoName, minMergeDate);
 
     let changelog = [];
     for (const pr of prs) {
@@ -130,11 +168,8 @@ async function generateReleaseNotes(templatePath, buildDescription, changelog, m
     return releaseNotes.trim();
 }
 
-async function getPRs(octokit, branchName, additionalBranch, repoOwner, repoName, minMergeDate, labelFilter) {
-    let searchQuery = `is:pr is:merged label:${labelFilter} repo:${repoOwner}/${repoName} base:${branchName} merged:>=${minMergeDate}`;
-    if (additionalBranch !== undefined) {
-        searchQuery += ` base:${additionalBranch}`
-    }
+async function getPRs(octokit, repoOwner, repoName, minMergeDate, labelFilter) {
+    let searchQuery = `is:pr is:merged label:${labelFilter} repo:${repoOwner}/${repoName} merged:>=${minMergeDate}`;
     console.log(searchQuery);
 
     return await octokit.paginate(octokit.rest.search.issuesAndPullRequests, {
@@ -169,7 +204,7 @@ async function resolveBackportPrToReleaseNotePr(octokit, pr, repoOwner, repoName
     for (const label of originPr.labels)
     {
         if (label.name === UpdateReleaseNotesLabel) {
-            console.log(`--> Mentioning in release notes`)
+            console.log(`--> Potentially mentioning in release notes`)
             return originPr;
         }
 
@@ -181,7 +216,7 @@ async function resolveBackportPrToReleaseNotePr(octokit, pr, repoOwner, repoName
 
     if (originIsBackport) {
         if (maxRecursion > 0) {
-            return await resolveBackportPr(octokit, originPr, repoOwner, repoName, minMergeDate, maxRecursion - 1);
+            return await resolveBackportPrToReleaseNotePr(octokit, originPr, repoOwner, repoName, minMergeDate, maxRecursion - 1);
         }
     }
 

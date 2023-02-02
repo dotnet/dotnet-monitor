@@ -1,0 +1,43 @@
+# Builds dotnet-monitor for a specific platform and configuration with CodeQL analysis enabled
+
+parameters:
+  # Operating system group (Windows, Linux, MacOS, etc)
+  osGroup: Windows
+  # Build configuration (Debug, Release)
+  configuration: Release
+  # Build architecture (arm64, x64, x86, etc)
+  architecture: x64
+  # Sub paths under 'artifacts' folder from which files are published to artifacts location
+  publishArtifactsSubPaths: []
+  # Group of tests to be run
+  testGroup: Default
+  # Enables TSA results upload
+  enableTsa: false
+
+jobs:
+- template: /eng/pipelines/jobs/build.yml
+  parameters:
+    prefix: CodeQL
+    osGroup: ${{ parameters.osGroup }}
+    configuration: ${{ parameters.configuration }}
+    architecture: ${{ parameters.architecture }}
+    disableComponentGovernance: true
+    disableSbom: true
+
+    variables:
+    - Codeql.BuildIdentifier: $(JobName)
+      # Do not let CodeQL 3000 Extension gate scan frequency
+    - Codeql.Cadence: 0
+    # Force CodeQL enabled so it may be run on any branch
+    - Codeql.Enabled: true
+    - Codeql.Language: csharp,cpp
+      # CodeQL needs this plumbed along as a variable to enable TSA
+    - Codeql.TSAEnabled: ${{ parameters.enableTsa }}
+
+    preBuildSteps:
+    - task: CodeQL3000Init@0
+      displayName: CodeQL Initialize
+
+    postBuildSteps:
+    - task: CodeQL3000Finalize@0
+      displayName: CodeQL Finalize

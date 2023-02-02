@@ -1,11 +1,11 @@
 name: 'Generate release notes'
-run-name: '[${{ github.ref_name }}] Generate release notes'
+run-name: '[${{ github.ref_name }}] Generate release notes (test: ${{ inputs.test_run }})'
 
 on:
   workflow_dispatch:
     inputs:
-      include_main_prs:
-        description: 'Include PRs that were merged into main?'
+      test_run:
+        description: 'Test run?'
         required: true
         type: boolean
 
@@ -38,16 +38,20 @@ jobs:
           release_version_label=$(perl -ne '/<PreReleaseVersionLabel>([^<]*)/ && print $1' $versionFile)
           major_minor_version=${release_version%.*}
 
-          version_url="https://aka.ms/dotnet/diagnostics/monitor${major_minor_version}/release/dotnet-monitor.nupkg.version"
-          qualified_release_version=$(curl -sL $version_url)
-          # Check if the aka.ms url existed
-          if [[ "$qualified_release_version" =~ "<html" || -z "$qualified_release_version" ]]; then
-            echo "Could not determine qualified release version, $version_url did not contain the expected information"
-            exit 1
-          fi
+          if [[ "${{ inputs.test_run }}" == "true" ]]; then
+            qualified_release_version="test-$release_version"
+          else
+            version_url="https://aka.ms/dotnet/diagnostics/monitor${major_minor_version}/release/dotnet-monitor.nupkg.version"
+            qualified_release_version=$(curl -sL $version_url)
+            # Check if the aka.ms url existed
+            if [[ "$qualified_release_version" =~ "<html" || -z "$qualified_release_version" ]]; then
+              echo "Could not determine qualified release version, $version_url did not contain the expected information"
+              exit 1
+            fi
 
-          # trim the return carriage
-          qualified_release_version=$(echo $qualified_release_version | tr -d '\r')
+            # trim the return carriage
+            qualified_release_version=$(echo $qualified_release_version | tr -d '\r')
+          fi
 
           friendly_release_name=""
 
@@ -69,7 +73,6 @@ jobs:
           ref: main
 
       - name: Generate release notes
-        if: ${{ inputs.include_main_prs != true }}
         uses: ./.github/actions/generate-release-notes
         with:
           output: ${{ env.release_note_path }}
@@ -78,22 +81,25 @@ jobs:
           auth_token: ${{ secrets.GITHUB_TOKEN }}
           branch_name: ${{ github.ref_name }}
 
-      - name: Generate release notes (main merged)
-        if: ${{ inputs.include_main_prs }}
-        uses: ./.github/actions/generate-release-notes
+      - name: Open PR (test run)
+        if: ${{ inputs.test_run }}
+        uses: ./.github/actions/open-pr
         with:
-          output: ${{ env.release_note_path }}
-          last_release_date:  ${{ env.last_release_date }}
-          build_description: ${{ env.friendly_release_name }}
+          draft: true
+          files_to_commit: ${{ env.release_note_path }}
+          title: "[test] Add ${{ env.qualified_release_version }} release notes"
+          commit_message: generate release notes
+          body: This is a test PR. Add ${{ env.qualified_release_version }} release notes. This PR was auto generated and will not be automatically merged in.
+          branch_name: releaseNotes/test/${{ env.qualified_release_version }}
+          fail_if_files_unchanged: true
           auth_token: ${{ secrets.GITHUB_TOKEN }}
-          branch_name: ${{ github.ref_name }}
-          additional_branch: 'main'
 
       - name: Open PR
+        if: ${{ !inputs.test_run }}
         uses: ./.github/actions/open-pr
         with:
           files_to_commit: ${{ env.release_note_path }}
-          title: Add ${{ env.qualified_release_version }} release notes
+          title: "Add ${{ env.qualified_release_version }} release notes"
           commit_message: generate release notes
           body: Add ${{ env.qualified_release_version }} release notes. This PR was auto generated and will not be automatically merged in.
           branch_name: releaseNotes/${{ env.qualified_release_version }}

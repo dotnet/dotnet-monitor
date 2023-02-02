@@ -1,11 +1,9 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -51,7 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 Frames = new List<Models.SharedFrame>()
                 {
                     new Models.SharedFrame{ Name = NativeFrame },
-                    new Models.SharedFrame{ Name = UnknownClass }
+                    new Models.SharedFrame{ Name = NameFormatter.UnknownClass }
                 }
             };
 
@@ -86,12 +84,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                             // but Speedscope uses the name.
 
                             builder.Clear();
-                            builder.Append(GetModuleName(cache, functionData.ModuleId));
+                            builder.Append(NameFormatter.GetModuleName(cache, functionData.ModuleId));
                             builder.Append(ModuleSeparator);
-                            BuildClassName(builder, cache, functionData);
+                            NameFormatter.BuildClassName(builder, cache, functionData);
                             builder.Append(ClassSeparator);
                             builder.Append(functionData.Name);
-                            BuildGenericParameters(builder, cache, functionData.TypeArgs);
+                            NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
 
                             speedscopeResult.Shared.Frames.Add(new SharedFrame { Name = builder.ToString() });
                             mapping = speedscopeResult.Shared.Frames.Count - 1;

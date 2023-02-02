@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios;
 using System.CommandLine;
@@ -15,9 +14,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
         {
             return new CommandLineBuilder(new RootCommand()
             {
-#if NET6_0_OR_GREATER
+                MetricsScenario.Command(),
                 AspNetScenario.Command(),
-#endif
                 AsyncWaitScenario.Command(),
                 ExecuteScenario.Command(),
                 LoggerScenario.Command(),

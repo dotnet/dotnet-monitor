@@ -1,8 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
-using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -40,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             await writer.FlushAsync();
         }
 
-        private void BuildFrame(StringBuilder builder, NameCache cache, CallStackFrame frame)
+        private static void BuildFrame(StringBuilder builder, NameCache cache, CallStackFrame frame)
         {
             if (frame.FunctionId == 0)
             {
@@ -48,12 +46,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
             else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
             {
-                builder.Append(GetModuleName(cache, functionData.ModuleId));
+                builder.Append(NameFormatter.GetModuleName(cache, functionData.ModuleId));
                 builder.Append(ModuleSeparator);
-                BuildClassName(builder, cache, functionData);
+                NameFormatter.BuildClassName(builder, cache, functionData);
                 builder.Append(ClassSeparator);
                 builder.Append(functionData.Name);
-                BuildGenericParameters(builder, cache, functionData.TypeArgs);
+                NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
             }
             else
             {

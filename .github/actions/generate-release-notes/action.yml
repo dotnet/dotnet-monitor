@@ -16,9 +16,6 @@ inputs:
   branch_name:
     description: 'The branch to generate release notes for.'
     required: true
-  additional_branch:
-    description: "Include PRs from an additional branch"
-    required: false
 
 runs:
   using: 'node16'

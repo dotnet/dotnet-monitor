@@ -4,5 +4,26 @@
     <FileSignInfo Include="AWSSDK.S3.dll" CertificateName="3PartySHA2" />
     <FileSignInfo Include="Newtonsoft.Json.dll" CertificateName="3PartySHA2" />
     <FileSignInfo Include="Newtonsoft.Json.Bson.dll" CertificateName="3PartySHA2" />
+    <FileSignInfo Include="Swashbuckle.AspNetCore.SwaggerUI.dll" CertificateName="3PartySHA2" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(SignAllBinaries)' != 'true'">
+    <!--
+      Tarballs are currently not signed nor are their contents.
+      This entry allows them to be signed automatically when tooling allows for it.
+      -->
+    <ItemsToSign Include="$(ArtifactsPackagesDir)**\*.tar.gz" />
+    <!--
+      The zip file itself is not signed but their contents are.
+      The zip is expanded, the contents are signed, and then rezipped.
+      -->
+    <ItemsToSign Include="$(ArtifactsPackagesDir)**\*.zip" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(SignAllBinaries)' == 'true'">
+    <!--
+      Sign all binaries in the artifacts directory.
+      -->
+    <ItemsToSign Remove="@(ItemsToSign)" />
+    <ItemsToSign Include="$(ArtifactsDir)bin\**\*" />
+    <ItemsToSign Include="$(ArtifactsDir)pub\**\*" />
   </ItemGroup>
 </Project>

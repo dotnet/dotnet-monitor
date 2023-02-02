@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -14,6 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures
     public class ServiceProviderFixture : IDisposable
     {
         public const string HttpClientName_DefaultCredentials = "DefaultCredentials";
+        public const string HttpClientName_NoRedirect = "NoRedirect";
 
         public ServiceProviderFixture()
         {
@@ -24,6 +24,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures
                 {
                     HttpClientHandler handler = new HttpClientHandler();
                     handler.UseDefaultCredentials = true;
+                    return handler;
+                });
+
+            services.AddHttpClient(HttpClientName_NoRedirect)
+                .ConfigurePrimaryHttpMessageHandler(() =>
+                {
+                    HttpClientHandler handler = new HttpClientHandler();
+                    handler.AllowAutoRedirect = false;
                     return handler;
                 });
 

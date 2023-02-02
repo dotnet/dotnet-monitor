@@ -1,17 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
-    <RuntimeIdentifiers>linux-x64;linux-musl-x64;win-x64</RuntimeIdentifiers>
-    <PackAsToolShimRuntimeIdentifiers>linux-x64;linux-musl-x64;win-x64</PackAsToolShimRuntimeIdentifiers>
     <RootNamespace>Microsoft.Diagnostics.Tools.Monitor</RootNamespace>
     <ToolCommandName>dotnet-monitor</ToolCommandName>
     <Description>.NET Core Diagnostic Monitoring Tool</Description>
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
     <ServerGarbageCollection>false</ServerGarbageCollection>
+    <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="$(AwsSdkS3Version)" />
     <PackageReference Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
@@ -21,10 +19,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiateVersion)" />
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(MicrosoftIdentityModelTokensVersion)" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="$(SwashbuckleAspNetCoreVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">
-    <PackageReference Include="Microsoft.Diagnostics.Monitoring" Version="$(MicrosoftDiagnosticsMonitoringVersion)" />
+    <PackageReference Include="Microsoft.Diagnostics.Monitoring" Version="$(MicrosoftDiagnosticsMonitoringLibraryVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' != ''">
@@ -45,7 +44,7 @@
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
     <InternalsVisibleTo Include="$(MoqInternalsVisibleTo)" Key="$(MoqInternalsVisibleToKey)" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <Compile Update="Strings.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -59,27 +58,23 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);GatherNativeFilesForTfm</TargetsForTfmSpecificContentInPackage>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);GatherTfmNativeFilesInPackage</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
 
-  <Target Name="GatherNativeFilesForTfm">
+  <Target Name="GatherTfmNativeFilesInPackage">
     <ItemGroup>
-      <!-- Create profiler library items for all of the native platforms. -->
-      <MonitorProfilerLibraryFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(LibraryExtension)')">
+      <!-- Pack the profiler library for each platform. -->
+      <AdditionalPackageFile Include="@(MonitorProfilerLibraryFile)">
         <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
-      </MonitorProfilerLibraryFile>
+      </AdditionalPackageFile>
+      <!-- Pack the profiler symbols for each platform. -->
+      <AdditionalPackageFile Include="@(MonitorProfilerSymbolsFile)">
+        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
+      </AdditionalPackageFile>
     </ItemGroup>
     <ItemGroup>
-      <!-- Create profiler symbols items for all of the native platforms. -->
-      <MonitorProfilerSymbolsFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(SymbolsExtension)')">
-        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
-      </MonitorProfilerSymbolsFile>
-    </ItemGroup>
-    <ItemGroup>
-      <!-- Pack the profiler library for each platform if it exists. -->
-      <TfmSpecificPackageFile Include="@(MonitorProfilerLibraryFile-&gt;Exists())" />
-      <!-- Pack the profiler symbols for each platform if it exists. -->
-      <TfmSpecificPackageFile Include="@(MonitorProfilerSymbolsFile-&gt;Exists())" />
+      <!-- Pack the file if it exists. -->
+      <TfmSpecificPackageFile Include="@(AdditionalPackageFile->Exists())" />
     </ItemGroup>
   </Target>
 

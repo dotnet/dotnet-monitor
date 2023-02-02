@@ -1,0 +1,41 @@
+<Project>
+  <!-- Import ProjectToPublish items -->
+  <Import Project="$(RepositoryEngineeringDir)DotnetMonitorProjectToPublish.props" />
+  <PropertyGroup>
+    <ArchiveContentRootPath>$(DotnetMonitorPublishPath)</ArchiveContentRootPath>
+  </PropertyGroup>
+  <!-- These items are included in addition to those from publishing the dotnet-monitor project. -->
+  <ItemGroup>
+    <FileToArchive Include="$(RepoRoot)LICENSE.TXT" />
+    <FileToArchive Include="$(ThirdPartyNoticesFilePath)" Condition="Exists('$(ThirdPartyNoticesFilePath)')" />
+    <!-- Include the profiler for the current platform. -->
+    <FileToArchive Include="@(MonitorProfilerLibraryFile->WithMetadataValue('TargetRid', '$(RuntimeIdentifier)'))">
+      <PackagePath>shared\$(RuntimeIdentifier)\native\</PackagePath>
+    </FileToArchive>
+    <!-- For linux, include both musl and glib variants; thus include the profiler for the other variant. -->
+    <FileToArchive Include="@(MonitorProfilerLibraryFile->WithMetadataValue('TargetRid', 'linux-arm64'))"
+                   Condition="'$(RuntimeIdentifier)' == 'linux-musl-arm64'">
+      <PackagePath>shared\linux-arm64\native\</PackagePath>
+    </FileToArchive>
+    <FileToArchive Include="@(MonitorProfilerLibraryFile->WithMetadataValue('TargetRid', 'linux-x64'))"
+                   Condition="'$(RuntimeIdentifier)' == 'linux-musl-x64'">
+      <PackagePath>shared\linux-x64\native\</PackagePath>
+    </FileToArchive>
+    <FileToArchive Include="@(MonitorProfilerLibraryFile->WithMetadataValue('TargetRid', 'linux-musl-arm64'))"
+                   Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">
+      <PackagePath>shared\linux-musl-arm64\native\</PackagePath>
+    </FileToArchive>
+    <FileToArchive Include="@(MonitorProfilerLibraryFile->WithMetadataValue('TargetRid', 'linux-musl-x64'))"
+                   Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
+      <PackagePath>shared\linux-musl-x64\native\</PackagePath>
+    </FileToArchive>
+  </ItemGroup>
+  <ItemGroup>
+    <SymbolFileToArchive Include="@(MonitorProfilerSymbolsFile->WithMetadataValue('TargetRid', '$(RuntimeIdentifier)'))">
+      <PackagePath>shared\$(RuntimeIdentifier)\native\</PackagePath>
+    </SymbolFileToArchive>
+    <!-- Do not include symbols for the extra native assemblies since they have their own symbols package. -->
+  </ItemGroup>
+  <!-- Import archive creation from published project -->
+  <Import Project="$(MSBuildThisFileDirectory)PublishedProjectArchive.targets" />
+</Project>

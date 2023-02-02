@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.FileFormats;
 using Microsoft.FileFormats.ELF;
@@ -92,6 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             public uint TimeDateStamp;
             public ulong Flags;
 
+            // spell-checker:disable-next
             // 50,4D,44,4D = PMDM
             public ValidationRule IsSignatureValid => new ValidationRule("Invalid Signature", () => Signature == 0x504D444DU);
         }

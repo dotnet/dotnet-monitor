@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
@@ -13,6 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
@@ -185,7 +185,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             string resultToken = tokenHandler.WriteToken(newToken);
 
-            JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonSerializerOptionsFactory.JsonIgnoreCondition.WhenWritingNull);
+            JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonIgnoreCondition.WhenWritingNull);
             string publicKeyJson = JsonSerializer.Serialize(exportableJwk, serializerOptions);
 
             string publicKeyEncoded = Base64UrlEncoder.Encode(publicKeyJson);

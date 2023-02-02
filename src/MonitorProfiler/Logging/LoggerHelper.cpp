@@ -1,6 +1,5 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 #include "LoggerHelper.h"
 #include "macros.h"
@@ -98,7 +97,7 @@ HRESULT LoggerHelper::SaveRestoreErrno(int (*func)(T...), T... args)
         }
         else
         {
-            // An error may not have actually occured since errno
+            // An error may not have actually occurred since errno
             // was not set. For example, string formatting APIs will
             // return -1 if truncation occurs, which may not be an error.
             hr = S_FALSE;

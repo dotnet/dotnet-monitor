@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using System.IO;
 using System.Text;
@@ -32,11 +31,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 {
                     Models.CallStackFrame frameModel = new Models.CallStackFrame()
                     {
-                        ClassName = UnknownClass,
+                        ClassName = NameFormatter.UnknownClass,
                         MethodName = UnknownFunction,
                         //TODO Bring this back once we have a useful offset value
                         //Offset = frame.Offset,
-                        ModuleName = UnknownModule
+                        ModuleName = NameFormatter.UnknownModule
                     };
                     if (frame.FunctionId == 0)
                     {
@@ -46,18 +45,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                     }
                     else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
                     {
-                        frameModel.ModuleName = GetModuleName(cache, functionData.ModuleId);
+                        frameModel.ModuleName = NameFormatter.GetModuleName(cache, functionData.ModuleId);
                         frameModel.MethodName = functionData.Name;
 
                         builder.Clear();
-                        BuildClassName(builder, cache, functionData);
+                        NameFormatter.BuildClassName(builder, cache, functionData);
                         frameModel.ClassName = builder.ToString();
 
                         if (functionData.TypeArgs.Length > 0)
                         {
                             builder.Clear();
                             builder.Append(functionData.Name);
-                            BuildGenericParameters(builder, cache, functionData.TypeArgs);
+                            NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
                             frameModel.MethodName = builder.ToString();
                         }
                     }

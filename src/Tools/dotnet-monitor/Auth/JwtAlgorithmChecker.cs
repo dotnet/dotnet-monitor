@@ -1,4 +1,7 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// Pulled from: https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
         /// </remarks>
         private static readonly string[] AllowedJwtAlgos = new string[]
-        {            
+        {
             // ECDSA using curves P-X and SHA-X
             SecurityAlgorithms.EcdsaSha256, SecurityAlgorithms.EcdsaSha256Signature,
             SecurityAlgorithms.EcdsaSha384, SecurityAlgorithms.EcdsaSha384Signature,

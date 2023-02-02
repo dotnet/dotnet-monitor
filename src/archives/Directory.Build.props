@@ -1,0 +1,6 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />
+  <PropertyGroup>
+    <RepositoryArchivesDir>$(MSBuildThisFileDirectory)</RepositoryArchivesDir>
+  </PropertyGroup>
+</Project>

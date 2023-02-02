@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using System;
 using System.Collections.Generic;
@@ -45,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public string EntrypointAssemblyPath { get; set; }
 
         /// <summary>
-        /// Retrives the starting environment block of the process.
+        /// Retrieves the starting environment block of the process.
         /// </summary>
         public IDictionary<string, string> Environment => _process.StartInfo.Environment;
 

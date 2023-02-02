@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.NETCore.Client;
@@ -18,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// </summary>
     internal sealed class MetricsService : BackgroundService
     {
-        private EventCounterPipeline _counterPipeline;
+        private MetricsPipeline _counterPipeline;
         private readonly IDiagnosticServices _services;
         private readonly MetricsStoreService _store;
         private IOptionsMonitor<MetricsOptions> _optionsMonitor;
@@ -58,9 +57,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     //If metric options change, we need to cancel the existing metrics pipeline and restart with the new settings.
                     using IDisposable monitorListener = _optionsMonitor.OnChange((_, _) => optionsTokenSource.SafeCancel());
 
-                    EventPipeCounterPipelineSettings counterSettings = EventCounterSettingsFactory.CreateSettings(counterOptions, options);
+                    MetricsPipelineSettings counterSettings = MetricsSettingsFactory.CreateSettings(counterOptions, options);
 
-                    _counterPipeline = new EventCounterPipeline(client, counterSettings, loggers: new[] { new MetricsLogger(_store.MetricsStore) });
+                    _counterPipeline = new MetricsPipeline(client, counterSettings, loggers: new[] { new MetricsLogger(_store.MetricsStore) });
 
                     using var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, optionsTokenSource.Token);
                     await _counterPipeline.RunAsync(linkedTokenSource.Token);

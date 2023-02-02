@@ -28,7 +28,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `name` | query | false | string | The name of the process. |
 | `durationSeconds` | query | false | int | The duration of the metrics operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected metrics. When not specified, the metrics are written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
-| `tags` | query | false | string | (8.0+) A comma-separated list of user-readable identifiers for the operation. |
+| `tags` | query | false | string | (7.1+) A comma-separated list of user-readable identifiers for the operation. |
 
 See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
@@ -52,7 +52,7 @@ Allowed schemes:
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many requests at this time. Try to request metrics at a later time. | `application/problem+json` |
 
-> **NOTE: (8.0+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
+> **NOTE: (7.1+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
 
 ## Examples
 

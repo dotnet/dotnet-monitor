@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Diagnostics.Monitoring.Options;
@@ -148,7 +147,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         // https://github.com/dotnet/dotnet-monitor/issues/1285
-        [ConditionalFact(nameof(IsNotCore31OnOSX))]
+        [Fact]
         public async Task EgressListTest()
         {
             await ScenarioRunner.SingleTarget(
@@ -402,7 +401,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         /// <summary>
-        /// Test that when requesting non-existant egress it immediately returns HTTP 400
+        /// Test that when requesting non-existent egress it immediately returns HTTP 400
         /// rather than queueing the request and having the operation report that it failed.
         /// </summary>
         /// <returns></returns>
@@ -424,15 +423,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
-        }
-
-        public static bool IsNotCore31OnOSX()
-        {
-#if NET5_0_OR_GREATER
-            return true;
-#else
-            return !RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
-#endif
         }
 
         private static async Task<HttpResponseMessage> TraceWithDelay(ApiClient client, int processId, bool delay = true)

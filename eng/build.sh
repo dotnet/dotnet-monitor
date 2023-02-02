@@ -5,6 +5,7 @@
 # Obtain the location of the bash script to figure out where the root of the repo is.
 __RepoRootDir="$(cd "$(dirname "$0")"/..; pwd -P)"
 
+__CreateArchives=0
 __BuildArch=x64
 __BuildType=Debug
 __CMakeArgs=
@@ -91,6 +92,10 @@ handle_arguments() {
             __ShiftArgs=1
             ;;
 
+        archive|-archive)
+            __CreateArchives=1
+            ;;
+
         -warnaserror|-nodereuse)
             __ManagedBuildArgs="$__ManagedBuildArgs $1 $2"
             __ShiftArgs=1
@@ -105,10 +110,24 @@ handle_arguments() {
 source "$__RepoRootDir"/eng/native/build-commons.sh
 
 __LogsDir="$__RootBinDir/log/$__BuildType"
-__ConfigTriplet="$__TargetOS.$__BuildArch.$__BuildType"
-__BinDir="$__RootBinDir/bin/$__ConfigTriplet"
 __ArtifactsIntermediatesDir="$__RootBinDir/obj"
-__IntermediatesDir="$__ArtifactsIntermediatesDir/$__ConfigTriplet"
+
+if [[ "$__BuildArch" == "armel" ]]; then
+    # Armel cross build is Tizen specific and does not support Portable RID build
+    __PortableBuild=0
+fi
+
+#
+# Initialize the target distro name
+#
+
+initTargetDistroRid
+
+echo "RID: $__DistroRid"
+
+__BinDir="$__RootBinDir/bin/$__DistroRid.$__BuildType"
+__IntermediatesDir="$__ArtifactsIntermediatesDir/$__DistroRid.$__BuildType"
+__CommonMSBuildArgs="/p:PackageRid=$__DistroRid"
 
 # Specify path to be set for CMAKE_INSTALL_PREFIX.
 # This is where all built libraries will copied to.
@@ -124,32 +143,6 @@ __ExtraCmakeArgs="$__ExtraCmakeArgs -DCLR_MANAGED_BINARY_DIR=$__RootBinDir/bin -
 # Specify path to be set for CMAKE_INSTALL_PREFIX.
 # This is where all built native libraries will copied to.
 export __CMakeBinDir="$__BinDir"
-
-
-if [[ "$__BuildArch" == "armel" ]]; then
-    # Armel cross build is Tizen specific and does not support Portable RID build
-    __PortableBuild=0
-fi
-
-#
-# Managed build
-#
-
-if [[ "$__ManagedBuild" == 1 ]]; then
-    echo "Commencing managed build for $__BuildType in $__RootBinDir/bin"
-    "$__RepoRootDir/eng/common/build.sh" --build --configuration "$__BuildType" $__CommonMSBuildArgs $__ManagedBuildArgs $__UnprocessedBuildArgs
-    if [ "$?" != 0 ]; then
-        exit 1
-    fi
-fi
-
-#
-# Initialize the target distro name
-#
-
-initTargetDistroRid
-
-echo "RID: $__DistroRid"
 
 #
 # Setup LLDB paths for native build
@@ -198,6 +191,39 @@ if [[ "$__NativeBuild" == 1 ]]; then
 fi
 
 #
+# Managed build
+#
+
+if [[ "$__ManagedBuild" == 1 ]]; then
+    echo "Commencing managed build for $__BuildType in $__RootBinDir/bin"
+    "$__RepoRootDir/eng/common/build.sh" --build --configuration "$__BuildType" $__CommonMSBuildArgs $__ManagedBuildArgs $__ArcadeScriptArgs $__UnprocessedBuildArgs
+    if [ "$?" != 0 ]; then
+        exit 1
+    fi
+fi
+
+#
+# Archive build
+#
+
+if [[ "$__CreateArchives" == 1 ]]; then
+    echo "Commencing archiving for $__BuildType in $__RootBinDir/bin"
+    "$__RepoRootDir/eng/common/build.sh" \
+      --build \
+      --configuration "$__BuildType" \
+      -nobl \
+      /bl:"$__LogsDir"/Archive.binlog \
+      /p:CreateArchives=true \
+      $__CommonMSBuildArgs \
+      $__ManagedBuildArgs \
+      $__ArcadeScriptArgs \
+      $__UnprocessedBuildArgs
+    if [ "$?" != 0 ]; then
+        exit 1
+    fi
+fi
+
+#
 # Run xunit tests
 #
 
@@ -228,11 +254,12 @@ if [[ "$__Test" == 1 ]]; then
       "$__RepoRootDir/eng/common/build.sh" \
         --test \
         --configuration "$__BuildType" \
+        /p:BuildArch="$__BuildArch" \
         -nobl \
         /bl:"$__LogsDir"/Test.binlog \
-        /p:BuildArch="$__BuildArch" \
         /p:TestGroup="$__TestGroup" \
         $__CommonMSBuildArgs \
+        $__ArcadeScriptArgs \
         $__UnprocessedBuildArgs
 
       if [ $? != 0 ]; then

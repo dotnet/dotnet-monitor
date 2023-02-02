@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.NETCore.Client;
@@ -44,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         }
 
         // Creates an IProcessInfo object from the IEndpointInfo. Attempts to get the command line using event pipe
-        // if the endpoint information doesn't provide it. The cancelation token can be used to timebox this fallback
+        // if the endpoint information doesn't provide it. The cancellation token can be used to timebox this fallback
         // mechanism.
         public static async Task<IProcessInfo> FromEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken extendedInfoCancellationToken)
         {

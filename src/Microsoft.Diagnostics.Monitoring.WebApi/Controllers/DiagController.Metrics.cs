@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -43,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
-            EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+            MetricsPipelineSettings settings = MetricsSettingsFactory.CreateSettings(
                 _counterOptions.CurrentValue,
                 includeDefaults: true,
                 durationSeconds: durationSeconds);
@@ -92,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
-            EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+            MetricsPipelineSettings settings = MetricsSettingsFactory.CreateSettings(
                 _counterOptions.CurrentValue,
                 durationSeconds,
                 configuration);

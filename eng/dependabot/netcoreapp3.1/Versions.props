@@ -1,6 +1,6 @@
 <Project>
   <!-- Import references updated by Dependabot. -->
   <PropertyGroup>
-    <MicrosoftNETCoreApp31Version>3.1.31</MicrosoftNETCoreApp31Version>
+    <MicrosoftNETCoreApp31Version>3.1.32</MicrosoftNETCoreApp31Version>
   </PropertyGroup>
 </Project>

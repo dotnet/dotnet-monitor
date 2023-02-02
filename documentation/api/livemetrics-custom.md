@@ -26,7 +26,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `name` | query | false | string | The name of the process. |
 | `durationSeconds` | query | false | int | The duration of the metrics operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected metrics. When not specified, the metrics are written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
-| `tags` | query | false | string | (8.0+) A comma-separated list of user-readable identifiers for the operation. |
+| `tags` | query | false | string | (7.1+) A comma-separated list of user-readable identifiers for the operation. |
 
 See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
@@ -56,11 +56,13 @@ The expected content type is `application/json`.
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many requests at this time. Try to request metrics at a later time. | `application/problem+json` |
 
-> **NOTE: (8.0+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
+> **NOTE: (7.1+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
 
 ## Examples
 
-### Sample Request
+### EventCounter
+
+#### Sample Request
 
 ```http
 POST /livemetrics?pid=21632&durationSeconds=60 HTTP/1.1
@@ -81,7 +83,7 @@ Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 }
 ```
 
-### Sample Response
+#### Sample Response
 
 ```http
 HTTP/1.1 200 OK
@@ -110,6 +112,50 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
     "counterType": "Metric",
     "value": 126,
     "metadata": {}
+}
+```
+
+### System.Diagnostics.Metrics
+
+#### Sample Request
+
+```http
+GET /livemetrics?pid=21632&durationSeconds=60 HTTP/1.1
+Host: localhost:52323
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
+
+{
+    "includeDefaultProviders": false,
+    "providers": [
+        {
+            "providerName": "CustomProvider",
+            "counterNames": [
+                "myHistogram"
+            ]
+        }
+    ]
+}
+```
+
+#### Sample Histogram Response
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json-seq
+Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
+
+{
+    "timestamp": "2021-08-31T16:58:39.7514031+00:00",
+    "provider": "CustomProvider",
+    "name": "myHistogram",
+    "displayName": "myHistogram",
+    "unit": null,
+    "counterType": "Metric",
+    "value": {
+        "0.5": 2892,
+        "0.95": 4848,
+        "0.99": 4984
+    }
 }
 ```
 

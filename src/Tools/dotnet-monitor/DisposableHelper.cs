@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using System;
 using System.Threading;
@@ -8,6 +7,8 @@ using System.Threading.Tasks;
 
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
+#elif STARTUPHOOK
+namespace Microsoft.Diagnostics.Monitoring.StartupHook
 #else
 namespace Microsoft.Diagnostics.Tools.Monitor
 #endif
@@ -32,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         }
 
         /// <summary>
-        /// Throws an <see cref="ObjectDisposedException"/> for the specified type if the state claims that the object is dipsoed.
+        /// Throws an <see cref="ObjectDisposedException"/> for the specified type if the state claims that the object is disposed.
         /// </summary>
         public static void ThrowIfDisposed<T>(ref long state)
         {
@@ -40,7 +41,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         }
 
         /// <summary>
-        /// Throws an <see cref="ObjectDisposedException"/> for the specified type if the state claims that the object is dipsoed.
+        /// Throws an <see cref="ObjectDisposedException"/> for the specified type if the state claims that the object is disposed.
         /// </summary>
         public static void ThrowIfDisposed(ref long state, Type owner)
         {

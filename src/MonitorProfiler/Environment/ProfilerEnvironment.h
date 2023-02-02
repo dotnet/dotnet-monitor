@@ -1,6 +1,5 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 #pragma once
 
@@ -15,7 +14,7 @@
 /// </summary>
 /// <remarks>
 /// On non-Windows platforms, the runtime will cache the initial environment variable block. Managed
-/// caled to Environment::[Get|Set]EnvironmentVariable will only mutate the cache, not the real
+/// called to Environment::[Get|Set]EnvironmentVariable will only mutate the cache, not the real
 /// environment block. Additionally, diagnostic commands for accessing the environment variables
 /// only mutate and get from the cache, not the real environment block.
 /// 
