@@ -1,5 +1,5 @@
 ---
-title: \[TODO\] {{ env.MESSAGE }}
+title: {{ env.MESSAGE }}
 labels: todo
 ---
 This Issue was auto generated.
