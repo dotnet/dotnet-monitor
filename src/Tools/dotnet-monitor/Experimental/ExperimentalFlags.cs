@@ -17,12 +17,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         // Feature flags
         public const string Feature_CallStacks = ExperimentalPrefix + nameof(Feature_CallStacks);
+        public const string Feature_Exceptions = ExperimentalPrefix + nameof(Feature_Exceptions);
 
         // Behaviors
         private const string EnabledTrueValue = "True";
         private const string EnabledOneValue = "1";
 
         private readonly Lazy<bool> _isCallStacksEnabledLazy = new Lazy<bool>(() => IsFeatureEnabled(Feature_CallStacks));
+
+        private readonly Lazy<bool> _isExceptionsEnabledLazy = new Lazy<bool>(() => IsFeatureEnabled(Feature_Exceptions));
 
         private static bool IsFeatureEnabled(string environmentVariable)
         {
@@ -33,5 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         }
 
         public bool IsCallStacksEnabled => _isCallStacksEnabledLazy.Value;
+
+        public bool IsExceptionsEnabled => _isExceptionsEnabledLazy.Value;
     }
 }
