@@ -170,7 +170,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             var keyValuePairs = from pair in metadataValues
-                                select pair.Key + "=" + "\"" + pair.Value + "\"";
+                                select PrometheusDataModel.GetPrometheusNormalizedLabel(pair.Key, pair.Value);
 
             string metricLabels = string.Join(", ", keyValuePairs);
 
