@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 async (appRunner, apiClient) =>
                 {
                     using ResponseStreamHolder holder = await apiClient.CaptureMetricsAsync(await appRunner.ProcessIdTask,
-                        durationSeconds: 2);
+                        durationSeconds: 10);
 
                     var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
                     await LiveMetricsTestUtilities.ValidateMetrics(new[] { EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     var counterNames = new[] { "cpu-usage", "working-set" };
 
                     using ResponseStreamHolder holder = await apiClient.CaptureMetricsAsync(await appRunner.ProcessIdTask,
-                        durationSeconds: 2,
+                        durationSeconds: 10,
                         metricsConfiguration: new EventMetricsConfiguration
                         {
                             IncludeDefaultProviders = false,
@@ -134,7 +134,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     var counterNames = new[] { "cpu-usage", "working-set" };
 
                     using ResponseStreamHolder holder = await apiClient.CaptureMetricsAsync(await appRunner.ProcessIdTask,
-                        durationSeconds: 2,
+                        durationSeconds: 10,
                         metricsConfiguration: new EventMetricsConfiguration
                         {
                             IncludeDefaultProviders = false,
@@ -214,7 +214,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 appValidate: async (runner, client) =>
                 {
                     using ResponseStreamHolder holder = await client.CaptureMetricsAsync(await runner.ProcessIdTask,
-                        durationSeconds: 2,
+                        durationSeconds: 10,
                         metricsConfiguration: new EventMetricsConfiguration
                         {
                             IncludeDefaultProviders = false,
@@ -312,7 +312,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 appValidate: async (runner, client) =>
                 {
                     using ResponseStreamHolder holder = await client.CaptureMetricsAsync(await runner.ProcessIdTask,
-                        durationSeconds: 2,
+                        durationSeconds: 10,
                         metricsConfiguration: new EventMetricsConfiguration
                         {
                             IncludeDefaultProviders = false,
@@ -392,7 +392,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 appValidate: async (runner, client) =>
                 {
                     using ResponseStreamHolder holder = await client.CaptureMetricsAsync(await runner.ProcessIdTask,
-                        durationSeconds: 2,
+                        durationSeconds: 10,
                         metricsConfiguration: new EventMetricsConfiguration
                         {
                             IncludeDefaultProviders = false,
@@ -463,7 +463,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 appValidate: async (runner, client) =>
                 {
                     using ResponseStreamHolder holder = await client.CaptureMetricsAsync(await runner.ProcessIdTask,
-                        durationSeconds: 2,
+                        durationSeconds: 10,
                         metricsConfiguration: new EventMetricsConfiguration
                         {
                             IncludeDefaultProviders = false,
