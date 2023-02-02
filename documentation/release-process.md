@@ -20,7 +20,7 @@
 1. You will need to add the branch to a channel. E.g.
 `darc add-default-channel --channel ".NET Core Tooling Release" --branch release/8.x --repo https://github.com/dotnet/dotnet-monitor`
 1. Ensure that `UseMicrosoftDiagnosticsMonitoringShippedVersion` is set appropriately. See [Updating dependencies](#updating-dependencies).
-1. Ensure that dependabot configuration is updated at [../.github/depndabot.template.yml](../.github/dependabot.template.yml).
+1. Ensure that dependabot configuration is updated at [../.github/dependabot.template.yml](../.github/dependabot.template.yml).
 
 - It can be helpful to create test release branches (e.g. release/test/8.x). Note these branches will trigger warnings because they are considered unprotected release branches and should be deleted as soon as possible.
 - If you created a build from a newly created release branch without a channel, you will get the message 'target build already exists on all channels'. To use this build you need to add it to a channel: `darc add-build-to-channel --id <Build BAR ID> --channel "General Testing"`.
