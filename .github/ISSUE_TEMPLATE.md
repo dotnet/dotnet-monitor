@@ -1,6 +1,7 @@
 ---
 title: ToDo Comment
-assignees: kkeirstead
+assignees: {{ env.AUTHOR }}
 labels: todo
 ---
 {{ env.MESSAGE }}
+Requested by {{ env.AUTHOR }}
