@@ -13,7 +13,7 @@ jobs:
     if: ${{ startsWith(github.event.comment.body, '#TODO') }}
     steps:
       - run: |
-          trimmed_comment=$(echo #TODO This is a test! | sed 's/#TODO //g')
+          trimmed_comment=$(echo #TODO This is a test! | sed 's/TODO //g')
           echo "trimmed_comment_env=$(echo ${trimmed_comment})" >> $GITHUB_ENV
       - uses: actions/checkout@v3
       - uses: JasonEtco/create-an-issue@v2
