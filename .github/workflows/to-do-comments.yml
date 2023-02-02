@@ -13,12 +13,13 @@ jobs:
     if: ${{ startsWith(github.event.comment.body, '#TODO') }}
     steps:
       - run: |
-          echo "trimmed_comment=$(echo ${{ github.event.comment.body }} | sed 's/^#TODO //')" >> $GITHUB_ENV
+          trimmed_comment=$(echo ${{ github.event.comment.body }} | sed 's/^ #TODO //')
+          echo "trimmed_comment_env=$(echo ${trimmed_comment})" >> $GITHUB_ENV
       - uses: actions/checkout@v3
       - uses: JasonEtco/create-an-issue@v2
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TRIMMED_MESSAGE: ${{ env.trimmed_comment }}
+          TRIMMED_MESSAGE: ${{ env.trimmed_comment_env }}
           MESSAGE: ${{ github.event.comment.body }}
           URL: ${{ github.event.comment.html_url }}
