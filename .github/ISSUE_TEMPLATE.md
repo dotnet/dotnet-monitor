@@ -1,6 +1,5 @@
 ---
 title: ToDo Comment
-assignees: {{ env.AUTHOR }}
 labels: todo
 ---
 {{ env.MESSAGE }}
