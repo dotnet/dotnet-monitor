@@ -20,7 +20,7 @@ jobs:
 
       - name: Update shipping branch
         run: |
-          release_version=${GITHUB_REF_NAME}
+          release_version=${GITHUB_REF_NAME%-*}
           if [[ ! "$release_version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
               echo "Unexpected release tag: $release_version."
               exit 1
