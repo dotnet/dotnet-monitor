@@ -20,6 +20,5 @@ jobs:
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TRIMMED_MESSAGE: ${{ env.trimmed_comment_env }}
-          MESSAGE: ${{ github.event.comment.body }}
+          MESSAGE: ${{ env.trimmed_comment_env }}
           URL: ${{ github.event.comment.html_url }}
