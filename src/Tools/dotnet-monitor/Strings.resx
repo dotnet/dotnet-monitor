@@ -354,6 +354,9 @@
   <data name="FeatureName_CallStacks" xml:space="preserve">
     <value>Call Stacks</value>
   </data>
+  <data name="FeatureName_Exceptions" xml:space="preserve">
+    <value>Exceptions</value>
+  </data>
   <data name="HelpDescription_CommandCollect" xml:space="preserve">
     <value>Monitor logs and metrics in a .NET application send the results to a chosen destination.</value>
     <comment>Gets the string to display in help that explains what the 'collect' command does.</comment>
