@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -103,6 +104,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     metrics.Dequeue();
                 }
+
+                // CONSIDER We only keep 1 histogram representation per snapshot. Is it meaningful for Prometheus to see previous histograms? These are not timestamped.
+                if ((metrics.Count > 1) && (metric is PercentilePayload))
+                {
+                    metrics.Dequeue();
+                }
             }
         }
 
@@ -133,7 +140,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     if (metric is PercentilePayload percentilePayload)
                     {
-                        foreach (Quantile quantile in percentilePayload.Quantiles)
+                        // Summary quantiles must appear from smallest to largest
+                        foreach (Quantile quantile in percentilePayload.Quantiles.OrderBy(q => q.Percentage))
                         {
                             string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(metric.Unit, quantile.Value);
                             string metricLabels = GetMetricLabels(metric, quantile.Percentage);
@@ -153,14 +161,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private static string GetMetricLabels(ICounterPayload metric, double? quantile)
         {
             string metadata = metric.Metadata;
-            if (quantile.HasValue)
-            {
-                metadata = CounterUtilities.AppendPercentile(metadata, quantile.Value);
-            }
 
             char separator = IsMeter(metric) ? '=' : ':';
-            var keyValuePairs = from pair in CounterUtilities.GetMetadata(metadata, separator)
+            var metadataValues = CounterUtilities.GetMetadata(metadata, separator);
+            if (quantile.HasValue)
+            {
+                metadataValues.Add("quantile", quantile.Value.ToString(CultureInfo.InvariantCulture));
+            }
+
+            var keyValuePairs = from pair in metadataValues
                                 select pair.Key + "=" + "\"" + pair.Value + "\"";
+
             string metricLabels = string.Join(", ", keyValuePairs);
 
             return metricLabels;
