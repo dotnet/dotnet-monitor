@@ -1,8 +1,10 @@
 name: To Do Comments
 on:
   pull_request_review_comment:
-    types: [created, edited]
-
+    types: [created]
+  issue_comment:
+    types: [created]
+    
 permissions:
   pull-requests: write
   issues: write
