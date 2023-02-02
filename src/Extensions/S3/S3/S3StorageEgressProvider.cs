@@ -11,10 +11,12 @@ namespace Microsoft.Diagnostics.Monitoring.S3
     /// </summary>
     internal sealed class S3StorageEgressProvider
     {
+#pragma warning disable CA1852
         internal class StorageFactory
         {
             public virtual async Task<IS3Storage> CreateAsync(S3StorageEgressProviderOptions options, EgressArtifactSettings settings, CancellationToken cancellationToken) => await S3Storage.CreateAsync(options, settings, cancellationToken);
         }
+#pragma warning restore CA1852
 
         internal StorageFactory ClientFactory = new();
         private readonly ILogger _logger;
