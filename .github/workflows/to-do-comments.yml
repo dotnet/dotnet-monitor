@@ -17,5 +17,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MESSAGE: ${{ github.event.comment.body }}
-          AUTHOR: ${{ github.event.comment.author.name }}
-          URL: ${{ github.event.comment.url }}
+          URL: ${{ github.event.comment.html_url }}
