@@ -1,7 +1,6 @@
 parameters:
-- name: updateDocker
-  displayName: 'Update dotnet-docker? (Only for release branches)'
-  type: boolean
+- name: updateDockerCondition
+  type: string
   default: false
 
 stages:
@@ -88,9 +87,10 @@ stages:
           inputs:
             type: 'Build'
             tags: 'MonitorRelease'
-    - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), eq(parameters.updateDocker, true)) }}:
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
       - task: tagBuildOrRelease@0
         displayName: 'Tag Build with update-docker'
+        condition: ${{ parameters.updateDockerCondition }}
         inputs:
           type: 'Build'
           tags: 'update-docker'

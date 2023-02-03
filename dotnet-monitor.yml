@@ -47,9 +47,6 @@ variables:
   value: DotNetCore
 - name: _TPNFile
   value: THIRD-PARTY-NOTICES.TXT
-# Scheduled builds of main branch will be marked for update by dotnet-docker if this is true
-- name: NightlyUpdateDockerFromMain
-  value: true
 
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   # DotNet-Diagnostics-SDL-Params provides Tsa* variables for SDL checks.
@@ -141,7 +138,8 @@ stages:
 - template: /eng/pipelines/stages/preparerelease.yml
   parameters:
     ${{ if eq(parameters.updateDocker, 'true') }}:
-      updateDocker: true
+      updateDockerCondition: true
     ${{ else }}:
       # If scheduled build from main and nightly update from main enabled
-      updateDocker: ${{ and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['NightlyUpdateDockerFromMain'], 'true')) }}
+      updateDockerCondition: and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['NightlyUpdateDockerFromMain'], 'true'))
+
