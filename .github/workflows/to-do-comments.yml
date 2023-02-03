@@ -18,7 +18,7 @@ jobs:
           trimmed_comment=$(echo "${{ github.event.comment.body }}" | sed 's/#TODO //g')
           echo "trimmed_comment_env=$(echo ${trimmed_comment})" >> $GITHUB_ENV
       - uses: actions/checkout@v3
-      - uses: kkeirstead/create-an-issue/src@main
+      - uses: kkeirstead/create-an-issue@main
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
