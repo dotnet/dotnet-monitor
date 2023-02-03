@@ -1,6 +1,5 @@
 ---
 title: "{{ env.MESSAGE }}"
-assignees: kkeirstead
 labels: todo
 ---
 This Issue was auto generated.
