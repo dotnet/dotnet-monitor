@@ -1,5 +1,6 @@
 ---
 title: "{{ env.MESSAGE }}"
+assignees: "{{ env.ASSIGNEE }}"
 labels: todo
 ---
 This Issue was auto generated.
