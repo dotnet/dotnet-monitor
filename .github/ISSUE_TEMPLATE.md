@@ -1,6 +1,6 @@
 ---
 title: "{{ env.MESSAGE }}"
-labels: todo
+labels: 'todo'
 ---
 This Issue was auto generated.
 
