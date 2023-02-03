@@ -23,9 +23,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MESSAGE: ${{ env.trimmed_comment_env }}
-          RAW_URL: ${{ github.event.comment.url }}
           URL: ${{ github.event.comment.html_url }}
-          ASSIGNEE: ${{ github.event.comment.user.login }}
       - uses: ./.github/actions/AssignIssue
         with:
           issueNumber: ${{ steps.create-issue.outputs.number }}
