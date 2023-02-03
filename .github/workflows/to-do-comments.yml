@@ -19,6 +19,7 @@ jobs:
           echo "trimmed_comment_env=$(echo ${trimmed_comment})" >> $GITHUB_ENV
       - uses: actions/checkout@v3
       - uses: JasonEtco/create-an-issue@v2
+        id: create-issue
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MESSAGE: ${{ env.trimmed_comment_env }}
