@@ -6,7 +6,6 @@ on:
     types: [created]
     
 permissions:
-  pull-requests: write
   issues: write
 
 jobs:
