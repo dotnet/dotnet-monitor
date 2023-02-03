@@ -17,15 +17,4 @@ jobs:
       - run: |
           trimmed_comment=$(echo "${{ github.event.comment.body }}" | sed 's/#TODO //g')
           echo "trimmed_comment_env=$(echo ${trimmed_comment})" >> $GITHUB_ENV
-      - uses: actions/checkout@v3
-      - uses: JasonEtco/create-an-issue@v2
-        id: create-issue
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MESSAGE: ${{ env.trimmed_comment_env }}
-          URL: ${{ github.event.comment.html_url }}
-      - uses: ./.github/actions/AssignIssue
-        with:
-          issueNumber: ${{ steps.create-issue.outputs.number }}
-          assignee: ${{ github.event.comment.user.login }}
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          gh issue create --label "todo" --assignee "${{ github.event.comment.user.login }}" --title "${{ env.trimmed_comment_env }}" --body "${{ github.event.comment.html_url }}"
