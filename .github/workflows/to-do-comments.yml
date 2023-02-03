@@ -26,9 +26,7 @@ jobs:
           RAW_URL: ${{ github.event.comment.url }}
           URL: ${{ github.event.comment.html_url }}
           ASSIGNEE: ${{ github.event.comment.user.login }}
-      - run: 'echo Created issue number ${{ steps.create-issue.outputs.number }}'
-      - run: 'echo Created ${{ steps.create-issue.outputs.url }}'
-      - uses: kkeirstead/AssignIssue@main
+      - uses: ./.github/actions/AssignIssue
         with:
           issueNumber: ${{ steps.create-issue.outputs.number }}
           assignee: ${{ github.event.comment.user.login }}
