@@ -1,6 +1,6 @@
 ---
 title: "{{ env.MESSAGE }}"
-assignees: "{{ payload.sender.login }}"
+assignees: "{{ payload.sender }}"
 labels: todo
 ---
 This Issue was auto generated.
