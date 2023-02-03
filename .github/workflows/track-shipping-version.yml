@@ -6,7 +6,7 @@ permissions:
   contents: write
 
 env:
-  shipping_branch_prefix: 'shipping'
+  shipping_branch_prefix: 'shipped'
 
 jobs:
   update-shipping-branch:
