@@ -1,0 +1,15 @@
+name: 'AssignIssue Action'
+description: 'Assigns an issue to the user responsible for creating it.'
+inputs:
+  issueNumber:
+    description: 'The number of the newly created issue'
+    required: true
+  assignee:
+    description: 'The person (username) being assigned to the issue'
+    required: true
+  githubToken:
+    description: 'The secret GitHub token.'
+    required: true
+runs:
+  using: 'node16'
+  main: 'index.js'
