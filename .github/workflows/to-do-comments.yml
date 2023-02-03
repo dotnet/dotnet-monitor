@@ -19,10 +19,15 @@ jobs:
           echo "trimmed_comment_env=$(echo ${trimmed_comment})" >> $GITHUB_ENV
       - uses: actions/checkout@v3
       - uses: JasonEtco/create-an-issue@v2
-
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MESSAGE: ${{ env.trimmed_comment_env }}
           RAW_URL: ${{ github.event.comment.url }}
           URL: ${{ github.event.comment.html_url }}
           ASSIGNEE: ${{ github.event.comment.user.login }}
+      - run: 'echo Created issue number ${{ steps.create-issue.outputs.number }}'
+      - run: 'echo Created ${{ steps.create-issue.outputs.url }}'
+      - uses: kkeirstead/AssignIssue@main
+        with:
+          issueNumber: ${{ steps.create-issue.outputs.number }}
+          assignee: ${{ github.event.comment.user.login }}
