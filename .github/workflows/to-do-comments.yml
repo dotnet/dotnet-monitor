@@ -32,3 +32,4 @@ jobs:
         with:
           issueNumber: ${{ steps.create-issue.outputs.number }}
           assignee: ${{ github.event.comment.user.login }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
