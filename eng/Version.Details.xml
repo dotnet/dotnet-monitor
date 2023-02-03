@@ -1,5 +1,9 @@
 <Dependencies>
   <ProductDependencies>
+    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="8.0.0-preview.1.23080.16" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
+      <Uri>https://github.com/dotnet/aspnetcore</Uri>
+      <Sha>6a9cef3fa2f5c7c2695a2141a8aa098294736d4e</Sha>
+    </Dependency>
     <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="7.0.410101">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>f99383213ea19741908f5aa3cf0ed400db2e5f0a</Sha>
@@ -11,10 +15,6 @@
     <Dependency Name="System.CommandLine" Version="2.0.0-beta4.23073.1">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
       <Sha>6524142f1398ed78eadfb9b802ba6492c6af63c4</Sha>
-    </Dependency>
-    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="8.0.0-preview.1.23080.16" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
-      <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>6a9cef3fa2f5c7c2695a2141a8aa098294736d4e</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
