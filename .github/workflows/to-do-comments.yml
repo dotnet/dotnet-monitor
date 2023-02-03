@@ -20,4 +20,4 @@ jobs:
           gh issue create --label "todo" --assignee "${{ github.event.comment.user.login }}" --title "${{ env.trimmed_comment_env }}" --body "${{ github.event.comment.html_url }}"
         shell: bash
         env:
-          GITHUB_TOKEN: ${{ inputs.auth_token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
