@@ -20,8 +20,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           trimmed_comment=$(echo "${{ github.event.comment.body }}" | sed 's/#TODO //g')
-          echo "trimmed_comment_env=$(echo ${trimmed_comment})" >> $GITHUB_ENV
-          gh issue create --label "todo" --assignee "${{ github.event.comment.user.login }}" --title "${trimmed_comment_env}" --body "${{ github.event.comment.html_url }}"
+          gh issue create --label "todo" --assignee "${{ github.event.comment.user.login }}" --title "${{ trimmed_comment }}" --body "${{ github.event.comment.html_url }}"
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
