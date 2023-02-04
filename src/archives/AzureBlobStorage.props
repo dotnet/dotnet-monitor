@@ -1,0 +1,13 @@
+<Project>
+  <!-- Import ProjectToPublish items -->
+  <Import Project="$(RepositoryEngineeringDir)AzureBlobStorageProjectToPublish.props" />
+  <PropertyGroup>
+    <ArchiveContentRootPath>$(AzureBlobStoragePublishPath)</ArchiveContentRootPath>
+  </PropertyGroup>
+  <!-- These items are included in addition to those from publishing the dotnet-monitor project. -->
+  <ItemGroup>
+    <FileToArchive Include="$(RepoRoot)LICENSE.TXT" />
+  </ItemGroup>
+  <!-- Import archive creation from published project -->
+  <Import Project="$(MSBuildThisFileDirectory)PublishedProjectArchive.targets" />
+</Project>

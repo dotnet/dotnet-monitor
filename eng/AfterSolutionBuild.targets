@@ -1,5 +1,6 @@
 <Project>
   <!-- Import ProjectToPublish items; all projects that would participate in publishing should be listed here. -->
+  <Import Project="$(MSBuildThisFileDirectory)AzureBlobStorageProjectToPublish.props" />
   <Import Project="$(MSBuildThisFileDirectory)DotnetMonitorProjectToPublish.props" />
 
   <!-- Only publish projects after build if opt-in -->
