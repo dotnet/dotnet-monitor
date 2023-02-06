@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
         public override void OnClassData(ulong classId, ClassData data)
         {
-            _source.WriteClassDescription(
+            _source.ClassDescription(
                 classId,
                 data.ModuleId,
                 data.Token,
@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
         public override void OnExceptionIdentifier(ulong registrationId, ExceptionIdentifierData data)
         {
-            _source.WriteExceptionId(
+            _source.ExceptionIdentifier(
                 registrationId,
                 data.ExceptionClassId,
                 data.ThrowingMethodId,
@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
         public override void OnFunctionData(ulong functionId, FunctionData data)
         {
-            _source.WriteFunctionDescription(
+            _source.FunctionDescription(
                 functionId,
                 data.ParentClass,
                 data.ParentToken,
@@ -47,14 +47,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
         public override void OnModuleData(ulong moduleId, ModuleData data)
         {
-            _source.WriteModuleDescription(
+            _source.ModuleDescription(
                 moduleId,
                 data.Name);
         }
 
         public override void OnTokenData(ulong moduleId, uint typeToken, TokenData data)
         {
-            _source.WriteTokenDescription(
+            _source.TokenDescription(
                 moduleId,
                 typeToken,
                 data.OuterToken,

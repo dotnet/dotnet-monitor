@@ -31,7 +31,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
         {
             ArgumentNullException.ThrowIfNull(exception);
 
-            _identifierCache.GetOrAdd(new ExceptionIdentifier(exception));
+            ulong identifier = _identifierCache.GetOrAdd(new ExceptionIdentifier(exception));
+
+            _eventSource.ExceptionInstance(identifier, exception.Message);
 
             _next(exception);
         }
