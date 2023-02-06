@@ -1,0 +1,22 @@
+name: To Do Comments
+on:
+  pull_request_review_comment:
+    types: [created]
+  issue_comment:
+    types: [created]
+    
+permissions:
+  issues: write
+
+jobs:
+  create-todo-issue:
+    runs-on: ubuntu-latest
+    if: startsWith(github.event.comment.body, '/TODO') && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - run: |
+          trimmed_comment=$(echo "${{ github.event.comment.body }}" | sed 's|/TODO ||I')
+          gh issue create --label "todo" --assignee "${{ github.event.comment.user.login }}" --title "$trimmed_comment" --body "${{ github.event.comment.html_url }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
