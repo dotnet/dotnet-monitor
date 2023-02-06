@@ -168,6 +168,72 @@ When `CounterNames` are not specified, all the counters associated with the `Pro
 
 [7.1+] Custom metrics support labels for metadata. Metadata cannot include commas (`,`); the inclusion of a comma in metadata will result in all metadata being removed from the custom metric.
 
+## Limit How Many Histograms To Track (8.0+)
+
+For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum number of histograms that can be tracked. Each unique combination of provider name, histogram name, and dimension values counts as one histogram. Tracking more histograms uses more memory in the target process so this bound guards against unintentional high memory use. `MaxHistograms` has a default value of `20`.
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "GlobalCounter": {
+      "MaxHistograms": 5
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  GlobalCounter__MaxHistograms: "5"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_GlobalCounter__MaxHistograms
+    value: "5"
+  ```
+</details>
+
+## Limit How Many Time Series To Track (8.0+)
+
+For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum number of time series that can be tracked. Each unique combination of provider name, metric name, and dimension values counts as one time series. Tracking more time series uses more memory in the target process so this bound guards against unintentional high memory use. `MaxTimeSeries` has a default value of `1000`.
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "GlobalCounter": {
+      "MaxTimeSeries": 500
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  GlobalCounter__MaxTimeSeries: "500"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_GlobalCounter__MaxTimeSeries
+    value: "500"
+  ```
+</details>
+
 ## Disable default providers
 
 In addition to enabling custom providers, `dotnet monitor` also allows you to disable collection of the default providers. You can do so via the following configuration:
