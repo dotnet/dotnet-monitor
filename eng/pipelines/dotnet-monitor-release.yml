@@ -10,6 +10,7 @@ parameters:
   default: true
 
 variables:
+- template: /eng/common/templates/variables/pool-providers.yml
 - name: _TeamName
   value: DotNetCore
   readonly: true
@@ -30,7 +31,7 @@ stages:
 - stage: Validation
 
   pool:
-    name: NetCore1ESPool-Internal
+    name: $(DncEngInternalBuildPool)
     demands: ImageOverride -equals 1es-windows-2019
 
   jobs:
@@ -94,7 +95,7 @@ stages:
   - Validation
 
   pool:
-    name: NetCore1ESPool-Internal
+    name: $(DncEngInternalBuildPool)
     demands: ImageOverride -equals 1es-windows-2019
 
   jobs:
