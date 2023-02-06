@@ -1,0 +1,35 @@
+name: 'Submit To Do Issue'
+
+on:
+  workflow_run:
+    workflows: ["Scan For To Do Comments"]
+    types:
+      - completed
+
+permissions:
+  issues: write
+
+jobs:
+  submit-todo-issue:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      # Download the artifact from the workflow that kicked off this one.
+      # The default artifact download action doesn't support cross-workflow
+      # artifacts, so use a 3rd party one.
+      - name: 'Download linting results'
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: ${{env.workflow_name}}
+          run_id: ${{github.event.workflow_run.id }}
+          name: pr-todo
+          path: ./pr-todo
+      - run: |
+          title=$(cat ./pr-todo/pr-title)
+          user=$(cat ./pr-todo/pr-user)
+          url=$(cat ./pr-todo/pr-url)
+          gh issue create --label "todo" --assignee "$user" --title "$title" --body "$url"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

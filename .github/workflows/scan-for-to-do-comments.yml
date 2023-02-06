@@ -1,0 +1,28 @@
+name: Scan For To Do Comments
+on:
+  pull_request_review_comment:
+    types: [created]
+  issue_comment:
+    types: [created]
+
+jobs:
+  scan-for-todo-issue:
+    runs-on: ubuntu-latest
+    if: startsWith(github.event.comment.body, '/TODO') && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Generate artifacts
+        run: |
+          trimmed_comment=$(echo "${{ github.event.comment.body }}" | sed 's|/TODO ||I')
+          mkdir -p ./pr
+          echo -n $trimmed_comment > ./pr/pr-title
+          echo -n "${{ github.event.comment.html_url }}" > ./pr/pr-url
+          echo -n "${{ github.event.comment.user.login }}" > ./pr/pr-user
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: pr-todo
+          path: pr/
