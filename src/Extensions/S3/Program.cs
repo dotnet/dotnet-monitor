@@ -40,6 +40,8 @@ namespace Microsoft.Diagnostics.Monitoring.S3
             EgressArtifactResult result = new();
             try
             {
+                await Task.Delay(10000); // testing only
+
                 string jsonConfig = Console.ReadLine();
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
                 S3StorageEgressProviderOptions options = BuildOptions(configPayload);
