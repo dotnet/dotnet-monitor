@@ -75,6 +75,7 @@ async function getPrsToMention(octokit, branch, repoOwner, repoName, minMergeDat
     for (const pr of candidatePrs) {
         candidatePrIds.add(pr.number);
     }
+
     // Resolve the backport PRs to their origin PRs
     const maxRecursion = 3;
     const backportPrs = await getPRs(octokit, repoOwner, repoName, minMergeDate, BackportLabel);
