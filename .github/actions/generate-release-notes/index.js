@@ -81,7 +81,6 @@ async function getPrsToMention(octokit, branch, repoOwner, repoName, minMergeDat
     for (const pr of backportPrs) {
         const originPr = await resolveBackportPrToReleaseNotePr(octokit, pr, repoOwner, repoName, minMergeDate, maxRecursion);
         if (originPr !== undefined && !candidatePrIds.has(originPr.number)) {
-            candidatePrIds.add(pr.number);
             candidatePrIds.add(originPr.number);
 
             // Patch the origin PR information to have the backport PR number and URL
