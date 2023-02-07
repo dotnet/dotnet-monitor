@@ -38,25 +38,25 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>608f3c7aed68dec1314d75601c6f143747e78cc6</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Dotnet.Sdk.Internal" Version="8.0.100-preview.1.23107.4">
+    <Dependency Name="Microsoft.Dotnet.Sdk.Internal" Version="8.0.100-preview.1.23107.12">
       <Uri>https://github.com/dotnet/installer</Uri>
-      <Sha>5a2156073c60d97b3d36d040dd3596a502850265</Sha>
+      <Sha>8691697fa747d0f952d242854753ecec2ef8e848</Sha>
     </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.408101">
       <Uri>https://github.com/dotnet/symstore</Uri>
       <Sha>117c711598f1cc144e0c9d82c4e9f78638e0315d</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="8.0.0-preview.1.23104.3" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
+    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="8.0.0-preview.1.23106.5" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>6507a44770f6648ca8da6ebbd7fe804ee5f91db4</Sha>
+      <Sha>9f654effb17265a137695bf38f0a782d274791cd</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.8.0" Version="8.0.0-preview.1.23105.1" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>3b0c734a11d5c9973010281c28ce959e8161baa2</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.8.0" Version="8.0.0-preview.1.23104.3" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
+    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.8.0" Version="8.0.0-preview.1.23106.5" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>6507a44770f6648ca8da6ebbd7fe804ee5f91db4</Sha>
+      <Sha>9f654effb17265a137695bf38f0a782d274791cd</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
