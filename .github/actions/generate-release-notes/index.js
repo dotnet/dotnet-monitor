@@ -25,8 +25,8 @@ async function run() {
     const lastReleaseDate = core.getInput("last_release_date", { required: true });
     const branch = core.getInput("branch_name", { required: true });
 
-    const repoOwner = github.context.payload.repository.owner.login;
-    const repoName = github.context.payload.repository.name;
+    const repoOwner = "dotnet"
+    const repoName = "dotnet-monitor"
 
     try {
         const significantLabels = [
