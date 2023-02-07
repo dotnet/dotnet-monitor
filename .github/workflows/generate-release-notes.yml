@@ -67,10 +67,10 @@ jobs:
           echo "friendly_release_name=$(echo ${friendly_release_name})" >> $GITHUB_ENV
           echo "qualified_release_version=$(echo ${qualified_release_version})" >> $GITHUB_ENV
 
-      - name: Checkout main
-        uses: actions/checkout@v3
-        with:
-          ref: main
+      # - name: Checkout main
+      #   uses: actions/checkout@v3
+      #   with:
+      #     ref: main
 
       - name: Generate release notes
         uses: ./.github/actions/generate-release-notes
