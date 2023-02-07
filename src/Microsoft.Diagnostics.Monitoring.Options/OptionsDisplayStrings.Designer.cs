@@ -1041,6 +1041,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dictionary of provider names and their specific intervals..
+        /// </summary>
+        public static string DisplayAttributeDescription_GlobalCounterOptions_ProviderIntervals {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_GlobalCounterOptions_ProviderIntervals", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes..
         /// </summary>
         public static string DisplayAttributeDescription_InProcessFeaturesOptions_Enabled {

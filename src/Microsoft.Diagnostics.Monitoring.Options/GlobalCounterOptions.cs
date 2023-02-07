@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -32,6 +33,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         [DefaultValue(GlobalCounterOptionsDefaults.MaxTimeSeries)]
         [Range(1, int.MaxValue)]
         public int? MaxTimeSeries { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_GlobalCounterOptions_ProviderIntervals))]
+        public System.Collections.Generic.IDictionary<string, float> ProviderIntervals { get; set; } = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
     }
 
     internal static class GlobalCounterOptionsExtensions
@@ -44,5 +50,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public static int GetMaxTimeSeries(this GlobalCounterOptions options) =>
             options.MaxTimeSeries.GetValueOrDefault(GlobalCounterOptionsDefaults.MaxTimeSeries);
+
+        public static float GetProviderSpecificInterval(this GlobalCounterOptions options, string providerName) =>
+            options.ProviderIntervals.TryGetValue(providerName, out float interval) ? interval : options.GetIntervalSeconds();
     }
 }

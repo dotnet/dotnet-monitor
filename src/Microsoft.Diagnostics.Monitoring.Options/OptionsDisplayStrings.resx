@@ -811,4 +811,7 @@
     <value>The type of metrics this provider consumes</value>
     <comment>The description provided for the MetricType parameter on MetricProvider.</comment>
   </data>
+  <data name="DisplayAttributeDescription_GlobalCounterOptions_ProviderIntervals" xml:space="preserve">
+    <value>Dictionary of provider names and their specific intervals.</value>
+  </data>
 </root>

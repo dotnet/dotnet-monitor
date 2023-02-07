@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
@@ -1056,6 +1057,38 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
+        public Task CollectionRuleOptions_CollectTraceAction_ValidateProviderIntervals()
+        {
+            const string ExpectedEgressProvider = "TmpEgressProvider";
+            const int ExpectedInterval = 7;
+
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.AddGlobalCounter(5);
+                    rootOptions.AddProviderInterval(MonitoringSourceConfiguration.SystemRuntimeEventSourceName, ExpectedInterval);
+
+                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
+
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectTraceAction(new EventPipeProvider[] { new EventPipeProvider
+                        {
+                            Name = MonitoringSourceConfiguration.SystemRuntimeEventSourceName,
+                            Arguments = new Dictionary<string, string>{ { "EventCounterIntervalSec", "5" } },
+                        }},
+                        ExpectedEgressProvider, null);
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+
+                    VerifyProviderIntervalMessage(failures, 0, MonitoringSourceConfiguration.SystemRuntimeEventSourceName, ExpectedInterval);
+                });
+        }
+
+        [Fact]
         public Task CollectionRuleOptions_CollectTraceAction_NoProfileOrProviders()
         {
             const string ExpectedEgressProvider = "TmpEgressProvider";
@@ -1866,6 +1899,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 fieldName,
                 providerName,
                 providerFieldName);
+
+            Assert.Equal(message, failures[index]);
+        }
+
+        private static void VerifyProviderIntervalMessage(string[] failures, int index, string provider, int expectedInterval)
+        {
+            string message = string.Format(CultureInfo.CurrentCulture, WebApi.Strings.ErrorMessage_InvalidMetricInterval, provider, expectedInterval);
 
             Assert.Equal(message, failures[index]);
         }

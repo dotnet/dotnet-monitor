@@ -899,6 +899,17 @@
           "default": 1000,
           "maximum": 2147483647.0,
           "minimum": 1.0
+        },
+        "ProviderIntervals": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "Dictionary of provider names and their specific intervals.",
+          "additionalProperties": {
+            "type": "number",
+            "format": "float"
+          }
         }
       }
     },

@@ -13,6 +13,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
@@ -42,6 +43,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             {
                 IntervalSeconds = intervalSeconds
             };
+
+            return options;
+        }
+
+        public static RootOptions AddProviderInterval(this RootOptions options, string name, int intervalSeconds)
+        {
+            Assert.NotNull(options.GlobalCounter);
+
+            options.GlobalCounter.ProviderIntervals.Add(name, (float)intervalSeconds);
 
             return options;
         }

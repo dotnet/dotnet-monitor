@@ -20,6 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return CreateSettings(includeDefaults,
                 durationSeconds,
                 counterOptions.GetIntervalSeconds(),
+                counterOptions.ProviderIntervals,
                 counterOptions.GetMaxHistograms(),
                 counterOptions.GetMaxTimeSeries(),
                 () => new List<EventPipeCounterGroup>(0));
@@ -29,6 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             return CreateSettings(options.IncludeDefaultProviders.GetValueOrDefault(MetricsOptionsDefaults.IncludeDefaultProviders),
                 Timeout.Infinite, counterOptions.GetIntervalSeconds(),
+                counterOptions.ProviderIntervals,
                 counterOptions.GetMaxHistograms(),
                 counterOptions.GetMaxTimeSeries(),
                 () => ConvertCounterGroups(options.Providers));
@@ -40,6 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return CreateSettings(configuration.IncludeDefaultProviders,
                 durationSeconds,
                 counterOptions.GetIntervalSeconds(),
+                counterOptions.ProviderIntervals,
                 counterOptions.GetMaxHistograms(),
                 counterOptions.GetMaxTimeSeries(),
                 () => ConvertCounterGroups(configuration.Providers));
@@ -48,6 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private static MetricsPipelineSettings CreateSettings(bool includeDefaults,
             int durationSeconds,
             float counterInterval,
+            IDictionary<string, float> intervalMap,
             int maxHistograms,
             int maxTimeSeries,
             Func<List<EventPipeCounterGroup>> createCounterGroups)
@@ -59,6 +63,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.SystemRuntimeEventSourceName, Type = CounterGroupType.EventCounter });
                 eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.MicrosoftAspNetCoreHostingEventSourceName, Type = CounterGroupType.EventCounter });
                 eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.GrpcAspNetCoreServer, Type = CounterGroupType.EventCounter });
+            }
+
+            foreach(EventPipeCounterGroup counterGroup in eventPipeCounterGroups)
+            {
+                if (intervalMap.TryGetValue(counterGroup.ProviderName, out float providerInterval))
+                {
+                    counterGroup.IntervalSeconds = providerInterval;
+                }
             }
 
             return new MetricsPipelineSettings

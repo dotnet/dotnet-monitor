@@ -17,12 +17,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Validation
             if (provider.Arguments?.TryGetValue("EventCounterIntervalSec", out string intervalValue) == true)
             {
                 if (float.TryParse(intervalValue, out float intervalSeconds) &&
-                    intervalSeconds != counterOptions.GetIntervalSeconds())
+                    intervalSeconds != counterOptions.GetProviderSpecificInterval(provider.Name))
                 {
                     errorMessage = string.Format(CultureInfo.CurrentCulture,
                         Strings.ErrorMessage_InvalidMetricInterval,
                         provider.Name,
-                        counterOptions.GetIntervalSeconds());
+                        counterOptions.GetProviderSpecificInterval(provider.Name));
                     return false;
                 }
             }

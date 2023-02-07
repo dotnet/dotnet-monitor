@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class TraceUtilities
     {
-        public static MonitoringSourceConfiguration GetTraceConfiguration(Models.TraceProfile profile, float metricsIntervalSeconds)
+        public static MonitoringSourceConfiguration GetTraceConfiguration(Models.TraceProfile profile, GlobalCounterOptions options)
         {
             var configurations = new List<MonitoringSourceConfiguration>();
             if (profile.HasFlag(Models.TraceProfile.Cpu))
@@ -34,7 +34,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             if (profile.HasFlag(Models.TraceProfile.Metrics))
             {
-                configurations.Add(new MetricSourceConfiguration(metricsIntervalSeconds, Enumerable.Empty<string>()));
+                IEnumerable<MetricEventPipeProvider> defaultProviders = MonitoringSourceConfiguration.DefaultMetricProviders.Select(provider => new MetricEventPipeProvider
+                {
+                    Provider = provider,
+                    IntervalSeconds = options.GetProviderSpecificInterval(provider),
+                    Type = MetricType.EventCounter
+                });
+
+                configurations.Add(new MetricSourceConfiguration(options.GetIntervalSeconds(), defaultProviders));
             }
 
             return new AggregateSourceConfiguration(configurations.ToArray());
