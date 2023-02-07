@@ -23,7 +23,7 @@ async function run() {
     const output = core.getInput("output", { required: true });
     const buildDescription = core.getInput("build_description", { required: true });
     const lastReleaseDate = core.getInput("last_release_date", { required: true });
-    const branch = core.getInput("branch_name", { required: true });
+    const branch = "release/8.x";
 
     const repoOwner = "dotnet";
     const repoName = github.context.payload.repository.name;
@@ -122,9 +122,7 @@ async function getPrsToMention(octokit, branch, repoOwner, repoName, minMergeDat
             console.log(`Including: #${fqPr.number}`);
             prs.push(pr);
         } else {
-         //   console.log(`Skipping: #${fqPr.number} --- ${fqPr.merge_commit_sha}`);
-            prs.push(pr);
-
+            console.log(`Skipping: #${fqPr.number} --- ${fqPr.merge_commit_sha}`);
         }
     }
 
