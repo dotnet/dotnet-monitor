@@ -8,7 +8,7 @@ jobs:
     name: Sign_Binaries
     displayName: Sign Binaries
     pool:
-      name: NetCore1ESPool-Internal
+      name: $(DncEngInternalBuildPool)
       demands: ImageOverride -equals 1es-windows-2019
     enableMicrobuild: true
     artifacts:

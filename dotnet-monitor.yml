@@ -43,6 +43,7 @@ parameters:
   default: false
 
 variables:
+- template: /eng/common/templates/variables/pool-providers.yml
 - name: _TeamName
   value: DotNetCore
 - name: _TPNFile
@@ -102,7 +103,7 @@ stages:
         - Pack_Sign
         publishUsingPipelines: true
         pool:
-          name: NetCore1ESPool-Internal
+          name: $(DncEngInternalBuildPool)
           demands: ImageOverride -equals 1es-windows-2019
 # These are the stages that perform validation of several SDL requirements and publish the bits required to the designated feed.
   - template: /eng/common/templates/post-build/post-build.yml
