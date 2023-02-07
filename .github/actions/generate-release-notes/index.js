@@ -25,8 +25,8 @@ async function run() {
     const lastReleaseDate = core.getInput("last_release_date", { required: true });
     const branch = core.getInput("branch_name", { required: true });
 
-    const repoOwner = "dotnet"
-    const repoName = "dotnet-monitor"
+    const repoOwner = github.context.payload.repository.owner.login;
+    const repoName = github.context.payload.repository.name;
 
     try {
         const significantLabels = [
@@ -70,7 +70,7 @@ async function getPrsToMention(octokit, branch, repoOwner, repoName, minMergeDat
     // Identify potential PRs to mention the release notes.
     let candidatePrs = await getPRs(octokit, repoOwner, repoName, minMergeDate, UpdateReleaseNotesLabel);
 
-    // Keep track of all of the ids we may mention to avoid duplicates when resolving backports
+    // Keep track of all of the ids we may mention to avoid duplicates when resolving backports.
     let candidatePrIds = new Set();
     for (const pr of candidatePrs) {
         candidatePrIds.add(pr.number);
