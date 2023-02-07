@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             using IHost host = TestHostHelper.CreateHost(_outputHelper, (rootOptions) =>
             {
                 rootOptions.AddGlobalCounter(ExpectedGlobalInterval);
-                foreach(string provider in MonitoringSourceConfiguration.DefaultMetricProviders)
+                foreach (string provider in MonitoringSourceConfiguration.DefaultMetricProviders)
                 {
                     rootOptions.AddProviderInterval(provider, customInterval++);
                 }
