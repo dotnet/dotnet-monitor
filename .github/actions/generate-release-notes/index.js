@@ -25,7 +25,7 @@ async function run() {
     const lastReleaseDate = core.getInput("last_release_date", { required: true });
     const branch = core.getInput("branch_name", { required: true });
 
-    const repoOwner = github.context.payload.repository.owner.login;
+    const repoOwner = "dotnet";
     const repoName = github.context.payload.repository.name;
 
     try {
@@ -122,7 +122,9 @@ async function getPrsToMention(octokit, branch, repoOwner, repoName, minMergeDat
             console.log(`Including: #${fqPr.number}`);
             prs.push(pr);
         } else {
-            console.log(`Skipping: #${fqPr.number} --- ${fqPr.merge_commit_sha}`);
+         //   console.log(`Skipping: #${fqPr.number} --- ${fqPr.merge_commit_sha}`);
+            prs.push(pr);
+
         }
     }
 
