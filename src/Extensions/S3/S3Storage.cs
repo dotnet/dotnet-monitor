@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Amazon;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
@@ -38,7 +39,8 @@ namespace Microsoft.Diagnostics.Monitoring.S3
                 if (!string.IsNullOrEmpty(options.Endpoint))
                     configuration.ServiceURL = options.Endpoint;
                 if (!string.IsNullOrEmpty(options.RegionName))
-                    configuration.AuthenticationRegion = options.RegionName;
+                    configuration.RegionEndpoint = RegionEndpoint.GetBySystemName(options.RegionName);
+                    //configuration.AuthenticationRegion = options.RegionName;
             }
             // use configured AWS profile
             else if (!string.IsNullOrEmpty(options.AwsProfileName))

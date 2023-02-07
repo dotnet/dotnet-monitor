@@ -139,20 +139,20 @@ namespace Microsoft.Diagnostics.Monitoring.S3
             StdInStream.Close();
         }
 
+        /*
         private static Task<Stream> GetStream(CancellationToken cancellationToken)
         {
             StdInStream = Console.OpenStandardInput();
             return Task.FromResult(StdInStream);
-        }
+        }*/
 
-        /*
         private static async Task GetStream(Stream outputStream, CancellationToken cancellationToken)
         {
             const int DefaultBufferSize = 0x10000;
 
             StdInStream = Console.OpenStandardInput();
             await StdInStream.CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
-        }*/
+        }
     }
 
     internal sealed class ExtensionEgressPayload
