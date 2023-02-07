@@ -8,7 +8,7 @@ on:
 jobs:
   scan-for-todo-issue:
     runs-on: ubuntu-latest
-    if: startsWith(github.event.comment.body, '/TODO') && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+    if: startsWith(github.event.comment.body, '/TODO')
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -16,13 +16,12 @@ jobs:
       - name: Generate artifacts
         run: |
           trimmed_comment=$(echo "${{ github.event.comment.body }}" | sed 's|/TODO ||I')
-          mkdir -p ./pr
-          echo -n $trimmed_comment > ./pr/pr-title
-          echo -n "${{ github.event.comment.html_url }}" > ./pr/pr-url
-          echo -n "${{ github.event.comment.user.login }}" > ./pr/pr-user
-
+          mkdir -p ./issue
+          echo -n $trimmed_comment > ./issue/issue-title
+          echo -n "${{ github.event.comment.html_url }}" > ./issue/issue-url
+          echo -n "${{ github.event.comment.user.login }}" > ./issue/issue-user
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: pr-todo
-          path: pr/
+          name: issue-todo
+          path: issue/
