@@ -65,7 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.GrpcAspNetCoreServer, Type = CounterGroupType.EventCounter });
             }
 
-            foreach(EventPipeCounterGroup counterGroup in eventPipeCounterGroups)
+            foreach (EventPipeCounterGroup counterGroup in eventPipeCounterGroups)
             {
                 if (intervalMap.TryGetValue(counterGroup.ProviderName, out float providerInterval))
                 {
