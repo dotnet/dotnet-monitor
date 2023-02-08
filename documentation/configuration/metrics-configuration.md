@@ -171,11 +171,11 @@ When `CounterNames` are not specified, all the counters associated with the `Pro
 [8.0+] `System.Diagnostics.Metrics` is now supported in a limited capacity for custom metrics. At this time, there are several known limitations:
  * `System.Diagnostics.Metrics` cannot have multiple sessions collecting metrics concurrently (i.e. `/metrics` and `/livemetrics` cannot both be looking for `System.Diagnostics.Metrics` at the same time). 
  * There is currently no trigger for `System.Diagnostics.Metrics` for collection rule scenarios.
- * When using `dotnet monitor` in `Listen` mode, `dotnet monitor` may be unable to collect `System.Diagnostics.Metrics` if the target app starts after `dotnet monitor` starts.
+ * When using `dotnet monitor` in `listen` mode, `dotnet monitor` may be unable to collect `System.Diagnostics.Metrics` if the target app starts after `dotnet monitor` starts.
 
 ### Set [`MetricType`](../api/definitions.md#metrictype-80)
 
-By default, `dotnet monitor` is unable to determine whether a custom provider is an `EventCounter` or `System.Diagnostics.Metrics`, and will attempt to collect both kinds of metrics for the specified provider. To explicitly specify whether a custom provider is an `EventCounter` or `System.Diagnostics.Metrics`, set the appropriate `MetricType`:
+By default, `dotnet monitor` is unable to determine whether a custom provider is an `EventCounter` or `System.Diagnostics.Metrics`, and will attempt to collect both kinds of metrics for the specified provider. To explicitly specify whether a custom provider is an `EventCounter` or `Meter`, set the appropriate `MetricType`:
 
 <details>
   <summary>JSON</summary>
