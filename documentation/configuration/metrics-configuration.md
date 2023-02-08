@@ -166,7 +166,12 @@ Additional metrics providers and counter names to return from this route can be 
 
 When `CounterNames` are not specified, all the counters associated with the `ProviderName` are collected.
 
-[7.1+] Custom metrics support labels for metadata. Metadata cannot include commas (`,`); the inclusion of a comma in metadata will result in all metadata being removed from the custom metric.
+[8.0+] Custom metrics support labels for metadata. Metadata cannot include commas (`,`); the inclusion of a comma in metadata will result in all metadata being removed from the custom metric.
+
+[8.0+] `System.Diagnostics.Metrics` is now supported in a limited capacity for custom metrics. At this time, there are several known limitations:
+ * `System.Diagnostics.Metrics` cannot have multiple sessions collecting metrics concurrently (i.e. `/metrics` and `/livemetrics` cannot both be looking for `System.Diagnostics.Metrics` at the same time). 
+ * There is currently no trigger for `System.Diagnostics.Metrics` for collection rule scenarios.
+ * When using `dotnet monitor` in `Listen` mode, `dotnet monitor` may be unable to collect `System.Diagnostics.Metrics` if the target app starts after `dotnet monitor` starts.
 
 ## Limit How Many Histograms To Track (8.0+)
 
