@@ -322,6 +322,20 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 });
         }
 
+        public static CollectionRuleOptions SetSystemDiagnosticsMetricsTrigger(this CollectionRuleOptions options, Action<SystemDiagnosticsMetricsOptions> callback = null)
+        {
+            return options.SetTrigger(
+                KnownCollectionRuleTriggers.SystemDiagnosticsMetrics,
+                triggerOptions =>
+                {
+                    SystemDiagnosticsMetricsOptions settings = new();
+
+                    callback?.Invoke(settings);
+
+                    triggerOptions.Settings = settings;
+                });
+        }
+
         public static CollectionRuleOptions SetAspNetRequestCountTrigger(this CollectionRuleOptions options, Action<AspNetRequestCountOptions> callback = null)
         {
             return options.SetTrigger(
@@ -396,6 +410,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         {
             ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.EventCounter);
             return Assert.IsType<EventCounterOptions>(ruleOptions.Trigger.Settings);
+        }
+
+        public static SystemDiagnosticsMetricsOptions VerifySystemDiagnosticsMetricsTrigger(this CollectionRuleOptions ruleOptions)
+        {
+            ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.SystemDiagnosticsMetrics);
+            return Assert.IsType<SystemDiagnosticsMetricsOptions>(ruleOptions.Trigger.Settings);
         }
 
         public static CPUUsageOptions VerifyCPUUsageTrigger(this CollectionRuleOptions ruleOptions)
