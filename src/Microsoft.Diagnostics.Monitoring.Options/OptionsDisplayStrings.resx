@@ -811,4 +811,32 @@
     <value>The type of metrics this provider consumes</value>
     <comment>The description provided for the MetricType parameter on MetricProvider.</comment>
   </data>
+  <data name="DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_InstrumentName" xml:space="preserve">
+    <value>The name of the instrument to monitor.</value>
+    <comment>The description provided for the InstrumentName parameter on SystemDiagnosticsMetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_GreaterThan" xml:space="preserve">
+    <value>The threshold level the instrument must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.</value>
+    <comment>The description provided for the GreaterThan parameter on SystemDiagnosticsMetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_HistogramMode" xml:space="preserve">
+    <value>The histogram mode that dictates whether the histogram percentiles are minimums or maximums.</value>
+    <comment>The description provided for the HistogramMode parameter on SystemDiagnosticsMetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_HistogramPercentiles" xml:space="preserve">
+    <value>The histogram percentiles and the threshold levels that should be maintained for the specified duration. </value>
+    <comment>The description provided for the HistogramPercentiles parameter on SystemDiagnosticsMetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_LessThan" xml:space="preserve">
+    <value>The threshold level the instrument must maintain (or lower) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.</value>
+    <comment>The description provided for the LessThan parameter on SystemDiagnosticsMetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_ProviderName" xml:space="preserve">
+    <value>The name of the event source that provides the instrument information.</value>
+    <comment>The description provided for the ProviderName parameter on SystemDiagnosticsMetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_SlidingWindowDuration" xml:space="preserve">
+    <value>The sliding time window in which the instrument must maintain its value as specified by the threshold levels in GreaterThan and LessThan.</value>
+    <comment>The description provided for the SlidingWindowDuration parameter on SystemDiagnosticsMetricsOptions.</comment>
+  </data>
 </root>

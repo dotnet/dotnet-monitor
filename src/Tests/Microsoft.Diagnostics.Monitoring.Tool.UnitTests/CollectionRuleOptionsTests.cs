@@ -252,6 +252,265 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
+        [Fact]
+        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_MinimumOptions()
+        {
+            const string ExpectedProviderName = "Provider";
+            const string ExpectedCounterName = "Counter";
+            const double ExpectedGreaterThan = 0.5;
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetSystemDiagnosticsMetricsTrigger(options =>
+                        {
+                            options.ProviderName = ExpectedProviderName;
+                            options.InstrumentName = ExpectedCounterName;
+                            options.GreaterThan = ExpectedGreaterThan;
+                        });
+                },
+                ruleOptions =>
+                {
+                    SystemDiagnosticsMetricsOptions systemDiagnosticsMetricsOptions = ruleOptions.VerifySystemDiagnosticsMetricsTrigger();
+                    Assert.Equal(ExpectedProviderName, systemDiagnosticsMetricsOptions.ProviderName);
+                    Assert.Equal(ExpectedCounterName, systemDiagnosticsMetricsOptions.InstrumentName);
+                    Assert.Equal(ExpectedGreaterThan, systemDiagnosticsMetricsOptions.GreaterThan);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_Default_RoundTrip()
+        {
+            const string ExpectedProviderName = "Provider";
+            const string ExpectedCounterName = "Counter";
+            const double ExpectedGreaterThan = 0.5;
+            const double ExpectedLessThan = 0.75;
+            TimeSpan ExpectedDuration = TimeSpan.FromSeconds(30);
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetSystemDiagnosticsMetricsTrigger(options =>
+                        {
+                            options.ProviderName = ExpectedProviderName;
+                            options.InstrumentName = ExpectedCounterName;
+                            options.GreaterThan = ExpectedGreaterThan;
+                            options.LessThan = ExpectedLessThan;
+                            options.SlidingWindowDuration = ExpectedDuration;
+                        });
+                },
+                ruleOptions =>
+                {
+                    SystemDiagnosticsMetricsOptions systemDiagnosticsMetricsOptions = ruleOptions.VerifySystemDiagnosticsMetricsTrigger();
+                    Assert.Equal(ExpectedProviderName, systemDiagnosticsMetricsOptions.ProviderName);
+                    Assert.Equal(ExpectedCounterName, systemDiagnosticsMetricsOptions.InstrumentName);
+                    Assert.Equal(ExpectedGreaterThan, systemDiagnosticsMetricsOptions.GreaterThan);
+                    Assert.Equal(ExpectedLessThan, systemDiagnosticsMetricsOptions.LessThan);
+                    Assert.Equal(ExpectedDuration, systemDiagnosticsMetricsOptions.SlidingWindowDuration);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_Histogram_RoundTrip()
+        {
+            const string ExpectedProviderName = "Provider";
+            const string ExpectedCounterName = "Counter";
+            TimeSpan ExpectedDuration = TimeSpan.FromSeconds(30);
+            const HistogramMode ExpectedHistogramMode = HistogramMode.GreaterThan;
+            Dictionary<string, double> ExpectedHistogramPercentiles = new()
+            {
+                { "50", 100 }
+            };
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetSystemDiagnosticsMetricsTrigger(options =>
+                        {
+                            options.ProviderName = ExpectedProviderName;
+                            options.InstrumentName = ExpectedCounterName;
+                            options.HistogramMode = ExpectedHistogramMode;
+                            options.HistogramPercentiles = ExpectedHistogramPercentiles;
+                            options.SlidingWindowDuration = ExpectedDuration;
+                        });
+                },
+                ruleOptions =>
+                {
+                    SystemDiagnosticsMetricsOptions systemDiagnosticsMetricsOptions = ruleOptions.VerifySystemDiagnosticsMetricsTrigger();
+                    Assert.Equal(ExpectedProviderName, systemDiagnosticsMetricsOptions.ProviderName);
+                    Assert.Equal(ExpectedCounterName, systemDiagnosticsMetricsOptions.InstrumentName);
+                    Assert.Equal(ExpectedHistogramMode, systemDiagnosticsMetricsOptions.HistogramMode);
+                    Assert.Equal(ExpectedHistogramPercentiles, systemDiagnosticsMetricsOptions.HistogramPercentiles);
+                    Assert.Equal(ExpectedDuration, systemDiagnosticsMetricsOptions.SlidingWindowDuration);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_PropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetSystemDiagnosticsMetricsTrigger(options =>
+                        {
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    // Property validation failures will short-circuit the remainder of the validation
+                    // rules, thus only observe 3 errors when one might expect 4 (the fourth being that
+                    // either GreaterThan or LessThan should be specified).
+                    Assert.Equal(3, failures.Length);
+                    VerifyRequiredMessage(failures, 0, nameof(SystemDiagnosticsMetricsOptions.ProviderName));
+                    VerifyRequiredMessage(failures, 1, nameof(SystemDiagnosticsMetricsOptions.InstrumentName));
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(SystemDiagnosticsMetricsOptions.SlidingWindowDuration),
+                        TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_NoGreaterThanOrLessThan()
+        {
+            const string ExpectedProviderName = "Provider";
+            const string ExpectedCounterName = "Counter";
+
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetSystemDiagnosticsMetricsTrigger(options =>
+                        {
+                            options.ProviderName = ExpectedProviderName;
+                            options.InstrumentName = ExpectedCounterName;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyEitherRequiredMessage(failures, 0,
+                        nameof(SystemDiagnosticsMetricsOptions.GreaterThan), nameof(SystemDiagnosticsMetricsOptions.LessThan));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_GreaterThanLargerThanLessThan()
+        {
+            const string ExpectedProviderName = "Provider";
+            const string ExpectedCounterName = "Counter";
+
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetSystemDiagnosticsMetricsTrigger(options =>
+                        {
+                            options.ProviderName = ExpectedProviderName;
+                            options.InstrumentName = ExpectedCounterName;
+                            options.GreaterThan = 0.75;
+                            options.LessThan = 0.5;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyFieldLessThanOtherFieldMessage(failures, 0, nameof(SystemDiagnosticsMetricsOptions.GreaterThan), nameof(SystemDiagnosticsMetricsOptions.LessThan));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_GreaterThanAndHistogramSettings()
+        {
+            const string ExpectedProviderName = "Provider";
+            const string ExpectedCounterName = "Counter";
+            const HistogramMode ExpectedHistogramMode = HistogramMode.GreaterThan;
+            Dictionary<string, double> ExpectedHistogramPercentiles = new()
+            {
+                { "50", 100 }
+            };
+
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetSystemDiagnosticsMetricsTrigger(options =>
+                        {
+                            options.ProviderName = ExpectedProviderName;
+                            options.InstrumentName = ExpectedCounterName;
+                            options.GreaterThan = 0.75;
+                            options.HistogramMode = ExpectedHistogramMode;
+                            options.HistogramPercentiles = ExpectedHistogramPercentiles;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyCannotHaveGreaterThanLessThanWithHistogram(failures, 0);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_HistogramModeButNoPercentiles()
+        {
+            const string ExpectedProviderName = "Provider";
+            const string ExpectedCounterName = "Counter";
+            const HistogramMode ExpectedHistogramMode = HistogramMode.GreaterThan;
+
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetSystemDiagnosticsMetricsTrigger(options =>
+                        {
+                            options.ProviderName = ExpectedProviderName;
+                            options.InstrumentName = ExpectedCounterName;
+                            options.HistogramMode = ExpectedHistogramMode;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyMissingComplementaryField(failures, 0, nameof(SystemDiagnosticsMetricsOptions.HistogramMode), nameof(SystemDiagnosticsMetricsOptions.HistogramPercentiles));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_HistogramPercentilesButNoMode()
+        {
+            const string ExpectedProviderName = "Provider";
+            const string ExpectedCounterName = "Counter";
+            Dictionary<string, double> ExpectedHistogramPercentiles = new()
+            {
+                { "50", 100 }
+            };
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetSystemDiagnosticsMetricsTrigger(options =>
+                        {
+                            options.ProviderName = ExpectedProviderName;
+                            options.InstrumentName = ExpectedCounterName;
+                            options.HistogramPercentiles = ExpectedHistogramPercentiles;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyMissingComplementaryField(failures, 0, nameof(SystemDiagnosticsMetricsOptions.HistogramPercentiles), nameof(SystemDiagnosticsMetricsOptions.HistogramMode));
+                });
+        }
+
         [Theory]
         [MemberData(nameof(GetIEventCounterShortcutsAndNames))]
         public Task CollectionRuleOptions_IEventCounterTrigger_MinimumOptions(Type triggerType, string triggerName)
@@ -1816,6 +2075,25 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(message, failures[index]);
         }
 
+        private static void VerifyMissingComplementaryField(string[] failures, int index, string fieldName1, string fieldName2)
+        {
+            string message = string.Format(
+                CultureInfo.InvariantCulture,
+                Strings.ErrorMessage_MissingComplementaryField,
+                fieldName1,
+                fieldName2);
+
+            Assert.Equal(message, failures[index]);
+        }
+
+        private static void VerifyCannotHaveGreaterThanLessThanWithHistogram(string[] failures, int index)
+        {
+            string message = string.Format(
+                CultureInfo.InvariantCulture,
+                Strings.ErrorMessage_CannotHaveGreaterThanLessThanWithHistogram);
+
+            Assert.Equal(message, failures[index]);
+        }
         private static void VerifyBothCannotBeSpecifiedMessage(string[] failures, int index, string fieldName1, string fieldName2)
         {
             string message = string.Format(

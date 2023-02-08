@@ -66,6 +66,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\ThreadpoolQueueLengthOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\ThreadpoolQueueLengthOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\ThreadpoolQueueLengthOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\ThreadpoolQueueLengthOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\IAspNetActionPathFilters.cs" Link="Options\CollectionRules\Triggers\IAspNetActionPathFilters.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\SystemDiagnosticsMetricsOptions.cs" Link="Options\CollectionRules\Triggers\SystemDiagnosticsMetricsOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\TriggerOptionsConstants.cs" Link="Options\CollectionRules\Triggers\TriggerOptionsConstants.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CommonOptionsExtensions.cs" Link="Options\CommonOptionsExtensions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\LoggingEventIds.cs" Link="LoggingEventIds.cs" />
