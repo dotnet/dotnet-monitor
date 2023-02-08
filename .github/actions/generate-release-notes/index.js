@@ -115,7 +115,7 @@ async function getPrsToMention(octokit, branch, repoOwner, repoName, minMergeDat
 
         let originNumber = pr.originNumber ?? pr.number;
         if (commitHashesInRelease.has(fqPr.merge_commit_sha) && !mentionedUrls.has(originNumber)) {
-            console.log(`Including: #${fqPr.number} -- origin:$${originNumber}`);
+            console.log(`Including: #${fqPr.number} -- origin:#${originNumber}`);
             mentionedOriginNumbers.add(originNumber);
             prs.push(pr);
         } else {
