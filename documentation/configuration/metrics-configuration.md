@@ -173,7 +173,7 @@ When `CounterNames` are not specified, all the counters associated with the `Pro
  * There is currently no trigger for `System.Diagnostics.Metrics` for collection rule scenarios.
  * When using `dotnet monitor` in `Listen` mode, `dotnet monitor` may be unable to collect `System.Diagnostics.Metrics` if the target app starts after `dotnet monitor` starts.
 
-### Set [`MetricType`](../api/definitions.md)
+### Set [`MetricType`](../api/definitions.md#metrictype-80)
 
 By default, `dotnet monitor` is unable to determine whether a custom provider is an `EventCounter` or `System.Diagnostics.Metrics`, and will attempt to collect both kinds of metrics for the specified provider. To explicitly specify whether a custom provider is an `EventCounter` or `System.Diagnostics.Metrics`, set the appropriate `MetricType`:
 
