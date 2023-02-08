@@ -173,6 +173,57 @@ When `CounterNames` are not specified, all the counters associated with the `Pro
  * There is currently no trigger for `System.Diagnostics.Metrics` for collection rule scenarios.
  * When using `dotnet monitor` in `Listen` mode, `dotnet monitor` may be unable to collect `System.Diagnostics.Metrics` if the target app starts after `dotnet monitor` starts.
 
+### Set `MetricType`
+
+By default, `dotnet monitor` is unable to determine whether a custom provider is an `EventCounter` or `System.Diagnostics.Metrics`, and will attempt to collect both kinds of metrics for the specified provider. To explicitly specify whether a custom provider is an `EventCounter` or `System.Diagnostics.Metrics`, set the appropriate `MetricType`:
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Metrics": {
+      "Providers": [
+        {
+          "ProviderName": "MyCustomEventCounterProvider",
+          "MetricType": "EventCounter"
+        },
+        {
+          "ProviderName": "MyCustomSDMProvider",
+          "MetricType": "Meter"
+        }
+      ]
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  Metrics__Providers__0__ProviderName: "MyCustomEventCounterProvider"
+  Metrics__Providers__0__MetricType: "EventCounter"
+  Metrics__Providers__1__ProviderName: "MyCustomSDMProvider"
+  Metrics__Providers__1__MetricType: "Meter"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_Metrics__Providers__0__ProviderName
+    value: "MyCustomEventCounterProvider"
+  - name: DotnetMonitor_Metrics__Providers__0__MetricType
+    value: "EventCounter"
+  - name: DotnetMonitor_Metrics__Providers__1__ProviderName
+    value: "MyCustomSDMProvider"
+  - name: DotnetMonitor_Metrics__Providers__1__MetricType
+    value: "Meter"
+  ```
+</details>
+
 ## Limit How Many Histograms To Track (8.0+)
 
 For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum number of histograms that can be tracked. Each unique combination of provider name, histogram name, and dimension values counts as one histogram. Tracking more histograms uses more memory in the target process so this bound guards against unintentional high memory use. `MaxHistograms` has a default value of `20`.
