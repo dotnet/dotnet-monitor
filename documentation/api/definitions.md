@@ -246,7 +246,7 @@ Object describing a metric from the application.
 
 ## MetricType (8.0+)
 
-Enumeration that describes the type of metrics a provider consumes
+Enumeration that describes the type of metrics a provider consumes.
 
 | Name |
 |---|
