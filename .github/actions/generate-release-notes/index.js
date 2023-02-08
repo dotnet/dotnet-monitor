@@ -70,23 +70,16 @@ async function getPrsToMention(octokit, branch, repoOwner, repoName, minMergeDat
     // Identify potential PRs to mention the release notes.
     let candidatePrs = await getPRs(octokit, repoOwner, repoName, minMergeDate, UpdateReleaseNotesLabel);
 
-    // Keep track of all of the ids we may mention to avoid duplicates when resolving backports.
-    let candidatePrIds = new Set();
-    for (const pr of candidatePrs) {
-        candidatePrIds.add(pr.number);
-    }
-
     // Resolve the backport PRs to their origin PRs
     const maxRecursion = 3;
     const backportPrs = await getPRs(octokit, repoOwner, repoName, minMergeDate, BackportLabel);
     for (const pr of backportPrs) {
         const originPr = await resolveBackportPrToReleaseNotePr(octokit, pr, repoOwner, repoName, minMergeDate, maxRecursion);
-        if (originPr !== undefined && !candidatePrIds.has(originPr.number)) {
-            candidatePrIds.add(originPr.number);
-
+        if (originPr !== undefined) {
             // Patch the origin PR information to have the backport PR number and URL
             // so that the release notes links to the backport, but grabs the rest of
             // the information from the origin PR.
+            originPr.originNumber = originPr.number;
             originPr.number = pr.number;
             originPr.html_url = pr.html_url;
 
@@ -107,6 +100,9 @@ async function getPrsToMention(octokit, branch, repoOwner, repoName, minMergeDat
         commitHashesInRelease.add(commit.sha);
     }
 
+    // Keep track of all of the prs we mention to avoid duplicates from resolved backports.
+    let mentionedOriginNumbers = new Set();
+
     let prs = [];
     for (const pr of candidatePrs) {
         // Get a fully-qualified version of the pr that has all of the relevant information,
@@ -117,8 +113,10 @@ async function getPrsToMention(octokit, branch, repoOwner, repoName, minMergeDat
             pull_number: pr.number
         }))?.data;
 
-        if (commitHashesInRelease.has(fqPr.merge_commit_sha)) {
-            console.log(`Including: #${fqPr.number}`);
+        originNumber = pr.originNumber ?? pr.number;
+        if (commitHashesInRelease.has(fqPr.merge_commit_sha) && !mentionedUrls.has(originNumber)) {
+            console.log(`Including: #${fqPr.number} -- origin:$${originNumber}`);
+            mentionedOriginNumbers.add(originNumber);
             prs.push(pr);
         } else {
             console.log(`Skipping: #${fqPr.number} --- ${fqPr.merge_commit_sha}`);
