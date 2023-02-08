@@ -23,9 +23,9 @@ async function run() {
     const output = core.getInput("output", { required: true });
     const buildDescription = core.getInput("build_description", { required: true });
     const lastReleaseDate = core.getInput("last_release_date", { required: true });
-    const branch = "release/8.x";
+    const branch = core.getInput("branch_name", { required: true });
 
-    const repoOwner = "dotnet";
+    const repoOwner = github.context.payload.repository.owner.login;
     const repoName = github.context.payload.repository.name;
 
     try {
@@ -87,7 +87,6 @@ async function getPrsToMention(octokit, branch, repoOwner, repoName, minMergeDat
             // Patch the origin PR information to have the backport PR number and URL
             // so that the release notes links to the backport, but grabs the rest of
             // the information from the origin PR.
-
             originPr.number = pr.number;
             originPr.html_url = pr.html_url;
 
