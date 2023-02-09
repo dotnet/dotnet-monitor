@@ -224,6 +224,97 @@ This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1
 
 This rule, named "HighCpuUsage", will trigger when a process named "MyProcessName" causes CPU usage to exceed 60% for greater than 10 seconds. If the rule is triggered, a Cpu trace will be collected for the default duration (30 seconds), and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem). There is a default `ActionCount` limit stating that this rule may only be triggered 5 times.
 
+## Collect Logs - Custom Histogram Metrics (`SystemDiagnosticsMetrics` Trigger)
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "HighHistogramValues": {
+      "Trigger": {
+        "Type": "SystemDiagnosticsMetrics",
+        "Settings": {
+          "ProviderName": "MyCustomProvider",
+          "InstrumentName": "MyCustomHistogram",
+          "HistogramMode": "GreaterThan",
+          "HistogramPercentiles": {
+            "50": 100,
+            "95": 175,
+            "99": 190
+          }
+        }
+      },
+      "Actions": [
+        {
+          "Type": "CollectLogs",
+          "Settings": {
+            "Egress": "artifacts",
+            "DefaultLevel": "Warning",
+            "UseAppFilters": false,
+            "Duration": "00:00:30"
+          }
+        }
+      ]
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+
+  ```yaml
+  CollectionRules__HighHistogramValues__Trigger__Type: "SystemDiagnosticsMetrics"
+  CollectionRules__HighHistogramValues__Trigger__Settings__ProviderName: "MyCustomProvider"
+  CollectionRules__HighHistogramValues__Trigger__Settings__InstrumentName: "MyCustomHistogram"
+  CollectionRules__HighHistogramValues__Trigger__Settings__HistogramMode: "GreaterThan"
+  CollectionRules__HighHistogramValues__Trigger__Settings__HistogramPercentiles__50: "100"
+  CollectionRules__HighHistogramValues__Trigger__Settings__HistogramPercentiles__95: "175"
+  CollectionRules__HighHistogramValues__Trigger__Settings__HistogramPercentiles__99: "190"
+  CollectionRules__HighHistogramValues__Actions__0__Type: "CollectLogs"
+  CollectionRules__HighHistogramValues__Actions__0__Settings__Egress: "artifacts"
+  CollectionRules__HighHistogramValues__Actions__0__Settings__DefaultLevel: "Warning"
+  CollectionRules__HighHistogramValues__Actions__0__Settings__UseAppFilters: "false"
+  CollectionRules__HighHistogramValues__Actions__0__Settings__Duration: "00:00:30"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Type
+    value: "SystemDiagnosticsMetrics"
+  - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Settings__ProviderName
+    value: "MyCustomProvider"
+  - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Settings__InstrumentName
+    value: "MyCustomHistogram"
+  - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Settings__HistogramMode
+    value: "GreaterThan"
+  - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Settings__HistogramPercentiles__50
+    value: "100"
+  - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Settings__HistogramPercentiles__95
+    value: "175"
+  - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Settings__HistogramPercentiles__99
+    value: "190"
+  - name: DotnetMonitor_CollectionRules__HighHistogramValues__Actions__0__Type
+    value: "CollectLogs"
+  - name: DotnetMonitor_CollectionRules__HighHistogramValues__Actions__0__Settings__Egress
+    value: "artifacts"
+  - name: DotnetMonitor_CollectionRules__HighHistogramValues__Actions__0__Settings__DefaultLevel
+    value: "Warning"
+  - name: DotnetMonitor_CollectionRules__HighHistogramValues__Actions__0__Settings__UseAppFilters
+    value: "false"
+  - name: DotnetMonitor_CollectionRules__HighHistogramValues__Actions__0__Settings__Duration
+    value: "00:00:30"    
+  ```
+</details>
+
+### Explanation
+
+This rule, named "HighHistogramValues", will trigger when the custom histogram's values for the 50th, 95th, and 99th percentiles exceed the specified thresholds throughout the default sliding window duration (1 minute). If the rule is triggered, logs will be collected and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the logs to the local filesystem). There is a default `ActionCount` limit stating that this rule may only be triggered 5 times.
+
 ## Collect Dump - 4xx Response Status (`AspNetResponseStatus` Trigger)
 
 <details>

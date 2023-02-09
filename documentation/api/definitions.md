@@ -147,6 +147,15 @@ Object describing the list of event providers, keywords, event levels, and addit
 }
 ```
 
+## HistogramMode (8.0+)
+
+Enumeration that describes the histogram's mode.
+
+| Name | Description |
+|---|---|
+| `GreaterThan` | Histogram values should be greater than the specified thresholds |
+| `LessThan` | Histogram values should be less than the specified thresholds. |
+
 ## LogEntry
 
 Object describing a log entry from a target process.

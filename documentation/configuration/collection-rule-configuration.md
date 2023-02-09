@@ -12,6 +12,7 @@ Collection rules are specified in configuration as a named item under the `Colle
   - [AspNetRequestDuration](#aspnetrequestduration-trigger)
   - [AspNetResponseStatus](#aspnetresponsestatus-trigger)
   - [EventCounter](#eventcounter-trigger)
+  - [SystemDiagnosticsMetrics](#systemdiagnosticsmetrics-trigger)
   - [Trigger shortcuts](../collectionrules/triggershortcuts.md) 
 - [`Actions`](#actions) - The action to be be performed
   - [CollectDump](#collectdump-action)
@@ -410,6 +411,121 @@ Usage that is satisfied when the CPU usage of the application is higher than 70%
     value: "cpu-usage"
   - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan
     value: "70"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration
+    value: "00:00:10"
+  ```
+</details>
+
+### `SystemDiagnosticsMetrics` Trigger (7.1+)
+
+A trigger that has its condition satisfied when the value of an instrument falls above, below, or between the described threshold values for a duration of time. Supported instruments include [Gauges](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.observablegauge-1), [Counters](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.counter-1), [Histograms](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.histogram-1), and [UpDownCounters](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.updowncounter-1) (*not yet*).
+
+#### Properties
+
+| Name | Type | Required | Description | Default Value | Min Value | Max Value |
+|---|---|---|---|---|---|---|
+| `ProviderName` | string | true | The name of the event source that provides the instrument information. | | | |
+| `InstrumentName` | string | true | The name of the instrument to monitor. | | | |
+| `GreaterThan` | double? | false | The threshold level the instrument must maintain (or higher) for the specified duration. Either `GreaterThan` or `LessThan` (or both) must be specified for non-histogram instruments. | `null` | | |
+| `LessThan` | double? | false | The threshold level the instrument must maintain (or lower) for the specified duration. Either `GreaterThan` or `LessThan` (or both) must be specified for non-histogram instruments. | `null` | | |
+| `SlidingWindowDuration` | TimeSpan? | false | The sliding time window in which the instrument must maintain its value as specified by the threshold levels in `GreaterThan` and/or `LessThan`. | `"00:01:00"` (one minute) | `"00:00:01"` (one second) | `"1.00:00:00"` (1 day) |
+| `HistogramMode` | [HistogramMode](api/definitions.md#histogrammode-71)? | false | The histogram mode that dictates whether the histogram percentiles are minimums or maximums. When specified, `HistogramPercentiles` must also be specified, and `GreaterThan` and `LessThan` should not be specified. | | | |
+| `HistogramPercentiles` | Dictionary<string, double> | false | The histogram percentiles and the threshold levels that should be maintained for the specified duration. `HistogramPercentiles` should be a subset of the instrument's published percentiles (by default, 50%, 95%, and 99%). When specified, `HistogramMode` must also be specified, and `GreaterThan` and `LessThan` should not be specified. | | | |
+
+#### Example
+
+Usage that is satisfied when the target application's custom gauge is greater than 20 for a 10 second window.
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "ProviderName": "MyMeterName",
+    "InstrumentName": "MyGaugeName",
+    "GreaterThan": 20,
+    "SlidingWindowDuration": "00:00:10"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+
+  ```yaml
+  CollectionRules__RuleName__Trigger__Settings__ProviderName: "MyMeterName"
+  CollectionRules__RuleName__Trigger__Settings__InstrumentName: "MyGaugeName"
+  CollectionRules__RuleName__Trigger__Settings__GreaterThan: "20"
+  CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration: "00:00:10"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName
+    value: "MyMeterName"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__InstrumentName
+    value: "MyGaugeName"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__GreaterThan
+    value: "20"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration
+    value: "00:00:10"
+  ```
+</details>
+
+#### Example
+
+Usage that is satisfied when the target application's custom histogram for a 10 second window has its:
+ * 50th Percentile be greater than 200
+ * 95th Percentile be greater than 300
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "ProviderName": "MyMeterName",
+    "InstrumentName": "MyHistogramName",
+    "HistogramMode": "GreaterThan",
+    "HistogramPercentiles":
+    {
+      "50": 200,
+      "95": 300
+    },
+    "SlidingWindowDuration": "00:00:10"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+
+  ```yaml
+  CollectionRules__RuleName__Trigger__Settings__ProviderName: "MyMeterName"
+  CollectionRules__RuleName__Trigger__Settings__InstrumentName: "MyHistogramName"
+  CollectionRules__RuleName__Trigger__Settings__HistogramMode: "GreaterThan"
+  CollectionRules__RuleName__Trigger__Settings__HistogramPercentiles__50: "200"
+  CollectionRules__RuleName__Trigger__Settings__HistogramPercentiles__95: "300"
+  CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration: "00:00:10"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName
+    value: "MyMeterName"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__InstrumentName
+    value: "MyGaugeName"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__HistogramMode
+    value: "GreaterThan"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__HistogramPercentiles__50
+    value: "200"
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__HistogramPercentiles__95
+    value: "300"
   - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration
     value: "00:00:10"
   ```

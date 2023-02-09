@@ -46,8 +46,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 HistogramMode = options.HistogramMode,
                 HistogramPercentiles = options.HistogramPercentiles,
                 SlidingWindowDuration = options.SlidingWindowDuration.GetValueOrDefault(TimeSpan.Parse(SystemDiagnosticsMetricsOptionsDefaults.SlidingWindowDuration)),
-                MaxHistograms = _metricsOptions.CurrentValue.MaxHistograms.GetValueOrDefault(MetricsOptionsDefaults.MaxHistograms),
-                MaxTimeSeries = _metricsOptions.CurrentValue.MaxTimeSeries.GetValueOrDefault(MetricsOptionsDefaults.MaxTimeSeries),
+                MaxHistograms = _counterOptions.CurrentValue.GetMaxHistograms(),
+                MaxTimeSeries = _counterOptions.CurrentValue.GetMaxTimeSeries(),
             };
 
             return EventPipeTriggerFactory.Create(
