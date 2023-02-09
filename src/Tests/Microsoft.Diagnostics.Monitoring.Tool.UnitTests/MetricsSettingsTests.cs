@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
-        public void ValidateApiStoreSettings()
+        public void ValidateApiMetricsSettings()
         {
             const int ExpectedGlobalInterval = 5;
             const int CustomInterval = 6;

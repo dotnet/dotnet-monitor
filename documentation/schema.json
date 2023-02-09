@@ -900,16 +900,30 @@
           "maximum": 2147483647.0,
           "minimum": 1.0
         },
-        "ProviderIntervals": {
+        "Providers": {
           "type": [
             "null",
             "object"
           ],
-          "description": "Dictionary of provider names and their specific intervals.",
+          "description": "Dictionary of provider names and their global configuration.",
           "additionalProperties": {
-            "type": "number",
-            "format": "float"
+            "$ref": "#/definitions/GlobalProviderOptions"
           }
+        }
+      }
+    },
+    "GlobalProviderOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "IntervalSeconds": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "format": "float",
+          "maximum": 86400.0,
+          "minimum": 1.0
         }
       }
     },

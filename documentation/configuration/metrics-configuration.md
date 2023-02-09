@@ -8,6 +8,8 @@
 Due to limitations in event counters, `dotnet monitor` supports only **one** refresh interval when collecting metrics. This interval is used for
 Prometheus metrics, livemetrics, triggers, traces, and trigger actions that collect traces. The default interval is 5 seconds, but can be changed in configuration.
 
+[7.1+] For EventCounter providers, is possible to specify a different interval for each provider. See [Per provider intervals](#per-provider-intervals-71).
+
 <details>
   <summary>JSON</summary>
 
@@ -34,6 +36,48 @@ Prometheus metrics, livemetrics, triggers, traces, and trigger actions that coll
   ```yaml
   - name: DotnetMonitor_GlobalCounter__IntervalSeconds
     value: "10"
+  ```
+</details>
+
+## Per provider intervals (7.1+)
+
+It is possible to override the global interval on a per provider basis. Note this forces all scenarios (triggers, live metrics, prometheus metrics, traces) that use a particular provider to use that interval. Metrics that are `System.Diagnostics.Metrics` based always use global interval.
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+      "GlobalCounter": {
+        "IntervalSeconds": 5,
+        "Providers": {
+            "System.Runtime": {
+              "IntervalSeconds": 10
+            }
+          }
+      }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  GlobalCounter__IntervalSeconds: "5"
+  GlobalCounter__Providers__System.Runtime__IntervalSeconds: "10"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_GlobalCounter__IntervalSeconds
+    value: "5"
+  - name: DotnetMonitor_GlobalCounter__Providers__System.Runtime__IntervalSeconds
+    value: "10"
+
   ```
 </details>
 

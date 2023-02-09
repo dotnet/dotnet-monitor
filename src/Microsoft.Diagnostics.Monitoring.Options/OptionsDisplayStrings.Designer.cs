@@ -1041,11 +1041,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dictionary of provider names and their specific intervals..
+        ///   Looks up a localized string similar to Dictionary of provider names and their global configuration..
         /// </summary>
-        public static string DisplayAttributeDescription_GlobalCounterOptions_ProviderIntervals {
+        public static string DisplayAttributeDescription_GlobalCounterOptions_Providers {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_GlobalCounterOptions_ProviderIntervals", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_GlobalCounterOptions_Providers", resourceCulture);
             }
         }
         
@@ -1595,6 +1595,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string ErrorMessage_FilterValueMissing {
             get {
                 return ResourceManager.GetString("ErrorMessage_FilterValueMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provider &apos;{0}&apos; validation error: &apos;{1}&apos;.
+        /// </summary>
+        public static string ErrorMessage_NestedProviderValidationError {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NestedProviderValidationError", resourceCulture);
             }
         }
         

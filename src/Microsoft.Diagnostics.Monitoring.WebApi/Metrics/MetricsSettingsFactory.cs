@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return CreateSettings(includeDefaults,
                 durationSeconds,
                 counterOptions.GetIntervalSeconds(),
-                counterOptions.ProviderIntervals,
+                counterOptions.Providers,
                 counterOptions.GetMaxHistograms(),
                 counterOptions.GetMaxTimeSeries(),
                 () => new List<EventPipeCounterGroup>(0));
@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             return CreateSettings(options.IncludeDefaultProviders.GetValueOrDefault(MetricsOptionsDefaults.IncludeDefaultProviders),
                 Timeout.Infinite, counterOptions.GetIntervalSeconds(),
-                counterOptions.ProviderIntervals,
+                counterOptions.Providers,
                 counterOptions.GetMaxHistograms(),
                 counterOptions.GetMaxTimeSeries(),
                 () => ConvertCounterGroups(options.Providers));
@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return CreateSettings(configuration.IncludeDefaultProviders,
                 durationSeconds,
                 counterOptions.GetIntervalSeconds(),
-                counterOptions.ProviderIntervals,
+                counterOptions.Providers,
                 counterOptions.GetMaxHistograms(),
                 counterOptions.GetMaxTimeSeries(),
                 () => ConvertCounterGroups(configuration.Providers));
@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private static MetricsPipelineSettings CreateSettings(bool includeDefaults,
             int durationSeconds,
             float counterInterval,
-            IDictionary<string, float> intervalMap,
+            IDictionary<string, GlobalProviderOptions> intervalMap,
             int maxHistograms,
             int maxTimeSeries,
             Func<List<EventPipeCounterGroup>> createCounterGroups)
@@ -67,9 +67,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             foreach (EventPipeCounterGroup counterGroup in eventPipeCounterGroups)
             {
-                if (intervalMap.TryGetValue(counterGroup.ProviderName, out float providerInterval))
+                if (intervalMap.TryGetValue(counterGroup.ProviderName, out GlobalProviderOptions providerInterval))
                 {
-                    counterGroup.IntervalSeconds = providerInterval;
+                    counterGroup.IntervalSeconds = providerInterval.IntervalSeconds;
                 }
             }
 

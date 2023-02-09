@@ -20,6 +20,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Tracing;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -1089,6 +1090,36 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
+        public Task CollectionRuleOptions_CollectTraceAction_InvalidProviderInterval()
+        {
+            const string ExpectedEgressProvider = "TmpEgressProvider";
+
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.AddGlobalCounter(5);
+                    rootOptions.AddProviderInterval(MonitoringSourceConfiguration.SystemRuntimeEventSourceName, -2);
+
+                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
+
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectTraceAction(new EventPipeProvider[] { new EventPipeProvider
+                        {
+                            Name = MonitoringSourceConfiguration.SystemRuntimeEventSourceName,
+                            Arguments = new Dictionary<string, string>{ { "EventCounterIntervalSec", "5" } },
+                        }},
+                        ExpectedEgressProvider, null);
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyNestedGlobalInterval(failures, 0, MonitoringSourceConfiguration.SystemRuntimeEventSourceName);
+                });
+        }
+
+        [Fact]
         public Task CollectionRuleOptions_CollectTraceAction_NoProfileOrProviders()
         {
             const string ExpectedEgressProvider = "TmpEgressProvider";
@@ -1907,6 +1938,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             string message = string.Format(CultureInfo.CurrentCulture, WebApi.Strings.ErrorMessage_InvalidMetricInterval, provider, expectedInterval);
 
+            Assert.Equal(message, failures[index]);
+        }
+
+        private static void VerifyNestedGlobalInterval(string[] failures, int index, string provider)
+        {
+            string rangeValidationMessage = typeof(WebApi.GlobalProviderOptions)
+                .GetProperty(nameof(WebApi.GlobalProviderOptions.IntervalSeconds))
+                .GetCustomAttribute<RangeAttribute>()
+                .FormatErrorMessage(nameof(WebApi.GlobalProviderOptions.IntervalSeconds));
+
+            string message = string.Format(CultureInfo.CurrentCulture, WebApi.OptionsDisplayStrings.ErrorMessage_NestedProviderValidationError, provider, rangeValidationMessage);
             Assert.Equal(message, failures[index]);
         }
     }

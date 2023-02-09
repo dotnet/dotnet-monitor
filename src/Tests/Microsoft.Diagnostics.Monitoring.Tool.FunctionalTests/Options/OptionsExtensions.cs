@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         {
             Assert.NotNull(options.GlobalCounter);
 
-            options.GlobalCounter.ProviderIntervals.Add(name, (float)intervalSeconds);
+            options.GlobalCounter.Providers.Add(name, new GlobalProviderOptions { IntervalSeconds = (float)intervalSeconds });
 
             return options;
         }
