@@ -1,6 +1,12 @@
 <Project>
   <Import Project="$(MSBuildThisFileDirectory)Common.props" />
   <ItemGroup Condition="'$(CreateArchives)' == 'true'">
+    <ProjectToBuild Include="$(RepoRoot)src\archives\pkgs\AzureBlobStorage\AzureBlobStorage-archive.proj">
+      <AdditionalProperties>TargetFramework=$(LatestTargetFramework);RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
+    </ProjectToBuild>
+    <ProjectToBuild Include="$(RepoRoot)src\archives\symbols\AzureBlobStorage\AzureBlobStorage-symbols.proj">
+      <AdditionalProperties>TargetFramework=$(LatestTargetFramework);RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
+    </ProjectToBuild>
     <ProjectToBuild Include="$(RepoRoot)src\archives\pkgs\dotnet-monitor\dotnet-monitor-archive.proj">
       <AdditionalProperties>TargetFramework=$(LatestTargetFramework);RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
     </ProjectToBuild>

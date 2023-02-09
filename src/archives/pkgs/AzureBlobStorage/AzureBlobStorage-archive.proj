@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.Build.NoTargets">
+  <!-- Create dotnet-monitor-egress-azureblobstorage product archive (RID and TFM specific) -->
+  <PropertyGroup>
+    <ArchiveName>dotnet-monitor-egress-azureblobstorage</ArchiveName>
+    <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
+    <RuntimeIdentifiers>$(DefaultRuntimeIdentifiers)</RuntimeIdentifiers>
+    <IsShipping>true</IsShipping>
+  </PropertyGroup>
+  <Import Project="$(RepositoryArchivesDir)AzureBlobStorage.props" />
+  <PropertyGroup>
+    <PublishToDiskDependsOn>$(PublishToDiskDependsOn);UpdateFilesToArchive</PublishToDiskDependsOn>
+  </PropertyGroup>
+  <Target Name="UpdateFilesToArchive">
+    <ItemGroup>
+      <!-- Check extension so as to not mark 'dotnet-monitor-egress-azureblobstorage.dll' as executable. -->
+      <FileToArchive Condition="'%(Filename)%(Extension)' == 'dotnet-monitor-egress-azureblobstorage'">
+        <MarkExecutable>true</MarkExecutable>
+      </FileToArchive>
+    </ItemGroup>
+  </Target>
+</Project>

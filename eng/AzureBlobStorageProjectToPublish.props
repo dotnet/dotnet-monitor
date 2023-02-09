@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <AzureBlobStoragePublishTargetFramework>$(LatestTargetFramework)</AzureBlobStoragePublishTargetFramework>
+    <AzureBlobStoragePublishTargetFramework Condition="'$(TargetFramework)' != ''">$(TargetFramework)</AzureBlobStoragePublishTargetFramework>
+    <AzureBlobStoragePublishPath>$(ArtifactsDir)pub\dotnet-monitor-egress-azureblobstorage\$(Configuration)\$(AzureBlobStoragePublishTargetFramework)\$(PackageRid)\</AzureBlobStoragePublishPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectToPublish Include="$(RepoRoot)src\Extensions\AzureBlobStorage\AzureBlobStorage.csproj">
+      <AdditionalProperties>TargetFramework=$(AzureBlobStoragePublishTargetFramework);RuntimeIdentifier=$(PackageRid);PublishDir=$(AzureBlobStoragePublishPath)</AdditionalProperties>
+    </ProjectToPublish>
+  </ItemGroup>
+</Project>
