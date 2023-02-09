@@ -1,6 +1,7 @@
 <Project>
-  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />
   <PropertyGroup>
+    <PackageId>$(ArchiveName)-archive.$(RuntimeIdentifier)</PackageId>
+    <Description>Symbols for the $(ArchiveName) $(RuntimeIdentifier) archive.</Description>
     <!-- IncludeBuildOutput must be true otherwise callbacks for custom file gathering are not invoked. -->
     <IncludeBuildOutput>true</IncludeBuildOutput>
     <IncludeSymbols>true</IncludeSymbols>
