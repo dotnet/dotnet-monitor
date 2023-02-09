@@ -25,7 +25,7 @@ An API Key is the recommended authentication mechanism for `dotnet monitor`. API
 
   or
 
-- Use the `--temp-api-key` command line option to generate a one-time API key for that instantiation of dotnet-monitor. The API key will be reported back as part of log output during the startup of the process.
+- Use the `--temp-apikey` command line option to generate a one-time API key for that instantiation of dotnet-monitor. The API key will be reported back as part of log output during the startup of the process.
 
 > **Note**: API Key Authentication should only be used when TLS is enabled to protect the key while in transit. `dotnet monitor` will emit a warning if authentication is enabled over an insecure transport medium.
 
