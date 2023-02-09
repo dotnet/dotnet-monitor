@@ -149,7 +149,7 @@ async function generateChangelog(octokit, branch, repoOwner, repoName, minMergeD
             entry += ` ${significantLabels[index].moniker}`;
         }
 
-        const changelogRegex=/^###### Release Notes Entry\s*(?<releaseNotesEntry>.*)/m
+        const changelogRegex=/^###### Release Notes Entry\s+(?<releaseNotesEntry>.*)/m
         const userDefinedChangelogEntry = pr.body?.match(changelogRegex)?.groups?.releaseNotesEntry?.trim();
         if (userDefinedChangelogEntry !== undefined && userDefinedChangelogEntry.length !== 0) {
             entry += ` ${userDefinedChangelogEntry}`
