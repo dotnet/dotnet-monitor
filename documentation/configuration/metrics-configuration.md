@@ -175,7 +175,7 @@ When `CounterNames` are not specified, all the counters associated with the `Pro
 
 ### Set [`MetricType`](../api/definitions.md#metrictype-80)
 
-By default, `dotnet monitor` is unable to determine whether a custom provider is an `EventCounter` or `System.Diagnostics.Metrics`, and will attempt to collect both kinds of metrics for the specified provider. To explicitly specify whether a custom provider is an `EventCounter` or `Meter`, set the appropriate `MetricType`:
+By default, `dotnet monitor` is unable to determine whether a custom provider is an `EventCounter` or `Meter`, and will attempt to collect both kinds of metrics for the specified provider. To explicitly specify whether a custom provider is an `EventCounter` or `Meter`, set the appropriate `MetricType`:
 
 <details>
   <summary>JSON</summary>
