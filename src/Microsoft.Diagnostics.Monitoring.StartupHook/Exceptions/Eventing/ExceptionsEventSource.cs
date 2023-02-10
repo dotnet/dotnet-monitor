@@ -19,6 +19,16 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         // The length of the array is the number of elements, not the number of bytes.
         private const int ArrayLengthFieldSize = sizeof(short);
 
+        /// <summary>
+        /// Amount of time to wait before sending batches of event source events in order to
+        /// avoid real-time buffering issues in the runtime eventing infrastructure and the
+        /// trace event library event processor.
+        /// </summary>
+        /// <remarks>
+        /// See: https://github.com/dotnet/runtime/issues/76704
+        /// </remarks>
+        private static readonly TimeSpan EventSourceBufferAvoidanceTimeout = TimeSpan.FromMilliseconds(200);
+
         private readonly Timer _flushEventsTimer;
 
         // NOTE: Arrays with a non-"byte" element type are not supported well by in-proc EventListener
@@ -167,7 +177,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         {
             // This will reset the timer to fire after the specified time period. If the timer is already
             // started, it will be reset. If it already finished, it will be started again.
-            _flushEventsTimer.Change(TimeSpan.FromMilliseconds(100), Timeout.InfiniteTimeSpan);
+            _flushEventsTimer.Change(EventSourceBufferAvoidanceTimeout, Timeout.InfiniteTimeSpan);
         }
 
         [NonEvent]
@@ -209,6 +219,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         private static unsafe void FillArrayData<T>(Span<byte> target, T[] source) where T : unmanaged
         {
 #if DEBUG
+            // Double-check that the Span is correctly sized. This shouldn't be encountered
+            // at runtime so long as Span is constructed correctly using GetArrayDataSize.
             if (target.Length != GetArrayDataSize(source))
                 throw new ArgumentOutOfRangeException(nameof(source));
 #endif

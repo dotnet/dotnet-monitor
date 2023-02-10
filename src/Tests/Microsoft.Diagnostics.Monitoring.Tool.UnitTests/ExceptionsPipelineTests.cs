@@ -197,7 +197,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private sealed class TestCallback : ExceptionsStoreCallback
         {
             private readonly List<ExceptionInstance> _instances = new();
-            
+
             private readonly int _instanceThreshold;
             private readonly TaskCompletionSource _instanceThresholdSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
