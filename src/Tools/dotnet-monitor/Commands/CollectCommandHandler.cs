@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.Swagger;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -136,6 +137,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 {
                     services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
                 }
+
+                services.AddSwaggerGen(options => options.ConfigureMonitorSwaggerGen());
 
                 services.ConfigureDiagnosticPort(context.Configuration);
 

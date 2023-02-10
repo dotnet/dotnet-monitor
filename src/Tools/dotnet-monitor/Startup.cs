@@ -81,6 +81,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 app.UseHsts();
             }
 
+            app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "dotnet-monitor v1.0");
