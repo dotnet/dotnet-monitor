@@ -1082,10 +1082,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 ex =>
                 {
-                    string[] failures = ex.Failures.ToArray();
-                    Assert.Single(failures);
-
-                    VerifyProviderIntervalMessage(failures, 0, MonitoringSourceConfiguration.SystemRuntimeEventSourceName, ExpectedInterval);
+                    string failure = Assert.Single(ex.Failures);
+                    VerifyProviderIntervalMessage(failure, MonitoringSourceConfiguration.SystemRuntimeEventSourceName, ExpectedInterval);
                 });
         }
 
@@ -1113,9 +1111,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 ex =>
                 {
-                    string[] failures = ex.Failures.ToArray();
-                    Assert.Single(failures);
-                    VerifyNestedGlobalInterval(failures, 0, MonitoringSourceConfiguration.SystemRuntimeEventSourceName);
+                    string failure = Assert.Single(ex.Failures);
+                    VerifyNestedGlobalInterval(failure, MonitoringSourceConfiguration.SystemRuntimeEventSourceName);
                 });
         }
 
@@ -1934,14 +1931,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(message, failures[index]);
         }
 
-        private static void VerifyProviderIntervalMessage(string[] failures, int index, string provider, int expectedInterval)
+        private static void VerifyProviderIntervalMessage(string failure, string provider, int expectedInterval)
         {
             string message = string.Format(CultureInfo.CurrentCulture, WebApi.Strings.ErrorMessage_InvalidMetricInterval, provider, expectedInterval);
 
-            Assert.Equal(message, failures[index]);
+            Assert.Equal(message, failure);
         }
 
-        private static void VerifyNestedGlobalInterval(string[] failures, int index, string provider)
+        private static void VerifyNestedGlobalInterval(string failure, string provider)
         {
             string rangeValidationMessage = typeof(WebApi.GlobalProviderOptions)
                 .GetProperty(nameof(WebApi.GlobalProviderOptions.IntervalSeconds))
@@ -1949,7 +1946,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 .FormatErrorMessage(nameof(WebApi.GlobalProviderOptions.IntervalSeconds));
 
             string message = string.Format(CultureInfo.CurrentCulture, WebApi.OptionsDisplayStrings.ErrorMessage_NestedProviderValidationError, provider, rangeValidationMessage);
-            Assert.Equal(message, failures[index]);
+            Assert.Equal(message, failure);
         }
     }
 }
