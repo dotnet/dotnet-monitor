@@ -1,0 +1,5 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)Common.props" />
+  <Import Project="$(RepositoryArchivesDir)PublishedProjectPackage.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)Common.targets" />
+</Project>
