@@ -1,6 +1,4 @@
 <Project>
-  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.targets" />
-
   <Target Name="GetTfmSymbolFilesForPackage"
           DependsOnTargets="CollectPublishedFilesToArchive">
     <ItemGroup>
