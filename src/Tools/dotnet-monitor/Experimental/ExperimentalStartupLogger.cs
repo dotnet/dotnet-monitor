@@ -24,6 +24,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 _logger.ExperimentalFeatureEnabled(Strings.FeatureName_CallStacks);
             }
+            if (_experimentalFlags.IsExceptionsEnabled)
+            {
+                _logger.ExperimentalFeatureEnabled(Strings.FeatureName_Exceptions);
+            }
         }
     }
 }

@@ -1,12 +1,10 @@
 <Project>
-  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.targets" />
-
   <ItemGroup>
     <PackageReference Include="Microsoft.DotNet.Build.Tasks.Archives" Version="$(MicrosoftDotNetBuildTasksArchivesVersion)" />
   </ItemGroup>
   
   <Target Name="PublishToDisk"
-          DependsOnTargets="$(PublishToDiskDependsOn)">
+          DependsOnTargets="$(PublishToDiskDependsOn);MarkEntrypointAsExecutable">
     <!-- Collect non-symbol files and copy to staging directory -->
     <ItemGroup>
       <_FileToArchive Remove="@(_FileToArchive)" />
@@ -75,5 +73,15 @@
     </ItemGroup>
     <Exec Command="chmod 644 %(_SymbolsNonExecutableContent.Identity)"
           Condition="!$([MSBuild]::IsOSPlatform(Windows)) and '@(_SymbolsNonExecutableContent)' != ''" />
+  </Target>
+
+  <Target Name="MarkEntrypointAsExecutable"
+          Condition="'$(ExecutableName)' != ''">
+    <ItemGroup>
+      <!-- Mark entrypoint as executable -->
+      <FileToArchive Condition="'%(Filename)%(Extension)' == '$(ExecutableName)'">
+        <MarkExecutable>true</MarkExecutable>
+      </FileToArchive>
+    </ItemGroup>
   </Target>
 </Project>

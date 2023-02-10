@@ -10,5 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     internal interface IExperimentalFlags
     {
         bool IsCallStacksEnabled { get; }
+
+        bool IsExceptionsEnabled { get; }
     }
 }
