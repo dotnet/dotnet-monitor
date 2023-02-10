@@ -14,11 +14,15 @@ updates:
   - dependency-name: Microsoft.Extensions.*
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[main] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
     interval: daily
   target-branch: main
+  commit-message:
+    prefix: '[main] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/net7.0
   schedule:
@@ -28,6 +32,8 @@ updates:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[main] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
   schedule:
@@ -37,6 +43,8 @@ updates:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[main] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/netcoreapp3.1
   schedule:
@@ -46,6 +54,8 @@ updates:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[main] '
 - package-ecosystem: nuget
   directory: /eng/dependabot
   schedule:
@@ -55,11 +65,15 @@ updates:
   - dependency-name: Microsoft.Extensions.*
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/8.x] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
     interval: daily
   target-branch: release/8.x
+  commit-message:
+    prefix: '[release/8.x] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/net7.0
   schedule:
@@ -69,6 +83,8 @@ updates:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/8.x] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
   schedule:
@@ -78,6 +94,8 @@ updates:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/8.x] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/netcoreapp3.1
   schedule:
@@ -87,6 +105,8 @@ updates:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/8.x] '
 - package-ecosystem: nuget
   directory: /eng/dependabot
   schedule:
@@ -96,11 +116,15 @@ updates:
   - dependency-name: Microsoft.Extensions.*
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/7.x] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
     interval: daily
   target-branch: release/7.x
+  commit-message:
+    prefix: '[release/7.x] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/net7.0
   schedule:
@@ -110,6 +134,8 @@ updates:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/7.x] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
   schedule:
@@ -119,6 +145,8 @@ updates:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/7.x] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/netcoreapp3.1
   schedule:
@@ -128,6 +156,8 @@ updates:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/7.x] '
 - package-ecosystem: nuget
   directory: /eng/dependabot
   schedule:
@@ -137,11 +167,15 @@ updates:
   - dependency-name: Microsoft.Extensions.*
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/7.0] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
     interval: daily
   target-branch: release/7.0
+  commit-message:
+    prefix: '[release/7.0] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/net7.0
   schedule:
@@ -151,6 +185,8 @@ updates:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/7.0] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
   schedule:
@@ -160,6 +196,8 @@ updates:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/7.0] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/netcoreapp3.1
   schedule:
@@ -169,6 +207,8 @@ updates:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/7.0] '
 - package-ecosystem: nuget
   directory: /eng/dependabot
   schedule:
@@ -178,11 +218,15 @@ updates:
   - dependency-name: Microsoft.Extensions.*
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/6.x] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
     interval: daily
   target-branch: release/6.x
+  commit-message:
+    prefix: '[release/6.x] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/net7.0
   schedule:
@@ -192,6 +236,8 @@ updates:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/6.x] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
   schedule:
@@ -201,6 +247,8 @@ updates:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/6.x] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/netcoreapp3.1
   schedule:
@@ -210,3 +258,5 @@ updates:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
+  commit-message:
+    prefix: '[release/6.x] '
