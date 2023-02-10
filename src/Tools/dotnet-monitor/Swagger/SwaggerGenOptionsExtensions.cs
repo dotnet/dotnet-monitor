@@ -17,8 +17,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
     {
         public static void ConfigureMonitorSwaggerGen(this SwaggerGenOptions options)
         {
-            ConfigureMonitorSwaggerGenSecurity(options);
-
             options.DocumentFilter<BadRequestResponseDocumentFilter>();
             options.DocumentFilter<UnauthorizedResponseDocumentFilter>();
             options.DocumentFilter<TooManyRequestsResponseDocumentFilter>();
@@ -33,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
             options.IncludeXmlComments(documentationPath);
         }
 
-        private static void ConfigureMonitorSwaggerGenSecurity(this SwaggerGenOptions options)
+        public static void ConfigureMonitorSwaggerGenSecurity(this SwaggerGenOptions options)
         {
             const string ApiKeySecurityDefinitionName = "ApiKeyAuth";
 

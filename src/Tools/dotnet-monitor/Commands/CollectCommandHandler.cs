@@ -138,7 +138,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                     services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
                 }
 
-                services.AddSwaggerGen(options => options.ConfigureMonitorSwaggerGen());
+                services.AddSwaggerGen(options =>
+                {
+                    options.ConfigureMonitorSwaggerGen();
+                    options.ConfigureMonitorSwaggerGenSecurity();
+                });
 
                 services.ConfigureDiagnosticPort(context.Configuration);
 
