@@ -3,6 +3,10 @@ on:
   issues:
     types:
       - opened
+
+permissions:
+  issues: write
+
 jobs:
   check-if-new-user:
     runs-on: ubuntu-latest
@@ -13,4 +17,4 @@ jobs:
       - uses: actions/first-interaction@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-message: "## Welcome to dotnet-monitor!\nThanks for creating your first issue; let us know what you think of dotnet-monitor by filling out our [survey](https://aka.ms/dotnet-monitor-survey)."
+          issue-message: "## Welcome to dotnet-monitor!\nThanks for creating your first issue; let us know what you think of dotnet-monitor by filling out our [survey](https://aka.ms/dotnet-monitor-survey?src=firstissue)."
