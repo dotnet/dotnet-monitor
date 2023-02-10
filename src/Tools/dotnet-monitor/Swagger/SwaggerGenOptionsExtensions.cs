@@ -9,7 +9,6 @@ using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
