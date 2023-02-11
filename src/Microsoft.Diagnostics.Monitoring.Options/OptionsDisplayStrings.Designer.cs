@@ -1590,6 +1590,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Provider &apos;{0}&apos; validation error: &apos;{1}&apos;.
+        /// </summary>
+        public static string ErrorMessage_NestedProviderValidationError {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NestedProviderValidationError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An egress provider must be specified if there is no default egress provider..
         /// </summary>
         public static string ErrorMessage_NoDefaultEgressProvider {

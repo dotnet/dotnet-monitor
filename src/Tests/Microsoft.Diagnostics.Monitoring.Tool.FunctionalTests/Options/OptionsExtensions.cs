@@ -45,6 +45,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static RootOptions AddProviderInterval(this RootOptions options, string name, int intervalSeconds)
+        {
+            Assert.NotNull(options.GlobalCounter);
+
+            options.GlobalCounter.Providers.Add(name, new GlobalProviderOptions { IntervalSeconds = (float)intervalSeconds });
+
+            return options;
+        }
+
         public static CollectionRuleOptions CreateCollectionRule(this RootOptions rootOptions, string name)
         {
             CollectionRuleOptions options = new();

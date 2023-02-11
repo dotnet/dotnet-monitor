@@ -68,9 +68,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 if (Options.Profile.HasValue)
                 {
                     TraceProfile profile = Options.Profile.Value;
-                    float metricsIntervalSeconds = _counterOptions.CurrentValue.GetIntervalSeconds();
-
-                    configuration = TraceUtilities.GetTraceConfiguration(profile, metricsIntervalSeconds);
+                    configuration = TraceUtilities.GetTraceConfiguration(profile, _counterOptions.CurrentValue);
                 }
                 else
                 {
