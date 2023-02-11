@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -69,6 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 if (intervalMap.TryGetValue(counterGroup.ProviderName, out GlobalProviderOptions providerInterval))
                 {
+                    Debug.Assert(counterGroup.IntervalSeconds == null, "Unexpected value for provider interval") ;
                     counterGroup.IntervalSeconds = providerInterval.IntervalSeconds;
                 }
             }
