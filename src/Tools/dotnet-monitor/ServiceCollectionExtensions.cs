@@ -39,7 +39,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureGlobalCounter(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<GlobalCounterOptions>(services, configuration, ConfigurationKeys.GlobalCounter);
+            return ConfigureOptions<GlobalCounterOptions>(services, configuration, ConfigurationKeys.GlobalCounter)
+                .AddSingleton<IValidateOptions<GlobalCounterOptions>, DataAnnotationValidateOptions<GlobalCounterOptions>>();
+
         }
 
         public static IServiceCollection ConfigureCollectionRuleDefaults(this IServiceCollection services, IConfiguration configuration)
