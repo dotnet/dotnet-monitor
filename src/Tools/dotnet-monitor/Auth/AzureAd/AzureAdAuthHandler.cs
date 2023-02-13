@@ -20,22 +20,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
 {
     internal sealed class AzureAdAuthHandler : IAuthHandler
     {
-        private readonly IConfiguration _azureAdConfig;
         private readonly AzureAdOptions _azureAdOptions;
         private readonly Dictionary<string, string> _scopes;
 
         public AzureAdAuthHandler(AzureAdOptions azureAdOptions)
         {
-            // Project an in-memory representation of our AzureAdOptions to process our defaults.
-            Dictionary<string, string> config = new Dictionary<string, string>
-            {
-                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.Instance)), azureAdOptions.Instance },
-                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.TenantId)), azureAdOptions.TenantId },
-                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.ClientId)), azureAdOptions.ClientId },
-                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.Audience)), azureAdOptions.Audience },
-            };
-
-            _azureAdConfig = new ConfigurationBuilder().AddInMemoryCollection(config).Build();
             _azureAdOptions = azureAdOptions;
 
             _scopes = new(1);
@@ -48,7 +37,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
 
         public void ConfigureApiAuth(IServiceCollection services, HostBuilderContext context)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(_azureAdConfig);
+            // Create in-memory representation of our AzureAdOptions so that our defaults applies
+            // and we only pass fields supported by our schema.
+            Dictionary<string, string> config = new Dictionary<string, string>
+            {
+                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.Instance)), _azureAdOptions.Instance },
+                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.TenantId)), _azureAdOptions.TenantId },
+                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.ClientId)), _azureAdOptions.ClientId },
+                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.Audience)), _azureAdOptions.Audience },
+            };
+
+            IConfiguration azureAdConfig = new ConfigurationBuilder().AddInMemoryCollection(config).Build();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(azureAdConfig);
 
             List<string> requiredScopes = new(1);
             if (_azureAdOptions.RequireScope != null)
