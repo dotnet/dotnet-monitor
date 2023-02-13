@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored
 
         public override void LogStartup(ILogger logger, IServiceProvider serviceProvider)
         {
-            LogIfNegotiateIsDisabled(logger);
+            LogIfNegotiateIsDisabledDueToElevation(logger);
 
             MonitorApiKeyConfigurationObserver observer = serviceProvider.GetRequiredService<MonitorApiKeyConfigurationObserver>();
             observer.Initialize();

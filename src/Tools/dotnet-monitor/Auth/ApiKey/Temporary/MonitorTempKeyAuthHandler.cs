@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Temporary
 
         public override void LogStartup(ILogger logger, IServiceProvider serviceProvider)
         {
-            LogIfNegotiateIsDisabled(logger);
+            LogIfNegotiateIsDisabledDueToElevation(logger);
             logger.LogTempKey(_jwtKey.Token);
         }
     }
