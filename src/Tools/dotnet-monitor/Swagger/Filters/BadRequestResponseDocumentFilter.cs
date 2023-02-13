@@ -6,7 +6,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
+namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
 {
     /// <summary>
     /// Adds an BadRequestResponse response component to the document.
