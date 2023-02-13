@@ -16,11 +16,11 @@ using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
-    internal abstract class AbstractMonitorKeyAuthHandler : IAuthHandler
+    internal abstract class AbstractMonitorKeyAuthConfigurator : IAuthenticationConfigurator
     {
         private readonly bool _enableNegotiation;
 
-        public AbstractMonitorKeyAuthHandler()
+        public AbstractMonitorKeyAuthConfigurator()
         {
             if (OperatingSystem.IsWindows())
             {

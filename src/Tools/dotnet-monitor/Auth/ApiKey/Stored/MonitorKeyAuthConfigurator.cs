@@ -11,9 +11,9 @@ using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored
 {
-    internal sealed class MonitorKeyAuthHandler : AbstractMonitorKeyAuthHandler
+    internal sealed class MonitorKeyAuthConfigurator : AbstractMonitorKeyAuthConfigurator
     {
-        public MonitorKeyAuthHandler() : base()
+        public MonitorKeyAuthConfigurator() : base()
         {
         }
 

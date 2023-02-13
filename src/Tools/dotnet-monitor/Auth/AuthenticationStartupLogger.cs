@@ -12,24 +12,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         private readonly AddressListenResults _listenResults;
         private readonly ILogger _logger;
-        private readonly IAuthHandler _authHandler;
+        private readonly IAuthenticationConfigurator _authConfigurator;
         private readonly IServiceProvider _serviceProvider;
 
         public AuthenticationStartupLogger(
             IServiceProvider serviceProvider,
             AddressListenResults listenResults,
-            IAuthHandler authHandler,
+            IAuthenticationConfigurator authConfigurator,
             ILogger<Startup> logger)
         {
             _listenResults = listenResults;
             _logger = logger;
-            _authHandler = authHandler;
+            _authConfigurator = authConfigurator;
             _serviceProvider = serviceProvider;
         }
 
         public void Log()
         {
-            _authHandler.LogStartup(_logger, _serviceProvider);
+            _authConfigurator.LogStartup(_logger, _serviceProvider);
 
             // Auth is enabled and we are binding on http. Make sure we log a warning.
             // (HasInsecureAuthentication will only be true if we're using https and not using NoAuth)

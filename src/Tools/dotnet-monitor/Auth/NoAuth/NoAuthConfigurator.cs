@@ -11,7 +11,7 @@ using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth
 {
-    internal sealed class NoAuthHandler : IAuthHandler
+    internal sealed class NoAuthConfigurator : IAuthenticationConfigurator
     {
         public void ConfigureApiAuth(IServiceCollection services, HostBuilderContext context)
         {

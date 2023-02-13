@@ -13,11 +13,11 @@ using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Temporary
 {
-    internal sealed class MonitorTempKeyAuthHandler : AbstractMonitorKeyAuthHandler
+    internal sealed class MonitorTempKeyAuthConfigurator : AbstractMonitorKeyAuthConfigurator
     {
         private readonly GeneratedJwtKey _jwtKey;
 
-        public MonitorTempKeyAuthHandler() : base()
+        public MonitorTempKeyAuthConfigurator() : base()
         {
             _jwtKey = GeneratedJwtKey.Create();
         }

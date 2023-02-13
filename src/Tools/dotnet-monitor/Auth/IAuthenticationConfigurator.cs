@@ -10,7 +10,7 @@ using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth
 {
-    internal interface IAuthHandler
+    internal interface IAuthenticationConfigurator
     {
         void ConfigureApiAuth(IServiceCollection services, HostBuilderContext context);
         void ConfigureSwaggerGenAuth(SwaggerGenOptions options);
