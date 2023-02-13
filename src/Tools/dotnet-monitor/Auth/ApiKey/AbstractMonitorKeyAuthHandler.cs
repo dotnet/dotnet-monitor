@@ -19,20 +19,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
     internal abstract class AbstractMonitorKeyAuthHandler : IAuthHandler
     {
         private readonly bool _enableNegotiation;
-        private readonly bool _didDisableNegotionDueToElevation;
 
         public AbstractMonitorKeyAuthHandler()
         {
             if (OperatingSystem.IsWindows())
             {
-                if (EnvironmentInformation.IsElevated)
-                {
-                    _didDisableNegotionDueToElevation = true;
-                }
-                else
-                {
-                    _enableNegotiation = true;
-                }
+                _enableNegotiation = true;
             }
         }
 
@@ -92,7 +84,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 
         protected void LogIfNegotiateIsDisabledDueToElevation(ILogger logger)
         {
-            if (_didDisableNegotionDueToElevation)
+            if (_enableNegotiation && EnvironmentInformation.IsElevated)
             {
                 logger.DisabledNegotiateWhileElevated();
             }
