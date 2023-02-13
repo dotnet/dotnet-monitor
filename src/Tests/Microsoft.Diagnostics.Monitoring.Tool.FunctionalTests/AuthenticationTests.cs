@@ -540,17 +540,25 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Tests that --temp-apikey will override the ApiAuthentication configuration.
         /// </summary>
-        [Fact]
-        public async Task TempApiKeyOverridesApiAuthenticationTest()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task TempApiKeyOverridesApiAuthenticationTest(bool keyPerValue)
         {
             const string signingAlgo = "ES256";
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
             toolRunner.UseTempApiKey = true;
 
-            // Set API key via key-per-file
             RootOptions options = new();
             options.UseApiKey(signingAlgo, Guid.NewGuid(), out string apiKey);
-            toolRunner.WriteKeyPerValueConfiguration(options);
+            if (keyPerValue)
+            {
+                toolRunner.WriteKeyPerValueConfiguration(options);
+            }
+            else
+            {
+                await toolRunner.WriteUserSettingsAsync(options);
+            }
 
             await toolRunner.StartAsync();
 
