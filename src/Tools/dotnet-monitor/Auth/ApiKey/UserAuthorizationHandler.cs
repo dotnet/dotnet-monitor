@@ -41,9 +41,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
                     context.Succeed(requirement);
                 }
             }
-            else if (context.User.Identity.AuthenticationType == AuthConstants.NtlmSchema ||
-                    context.User.Identity.AuthenticationType == AuthConstants.KerberosSchema ||
-                    context.User.Identity.AuthenticationType == AuthConstants.NegotiateSchema)
+            else if ((context.User.Identity.AuthenticationType == AuthConstants.NtlmSchema) ||
+                    (context.User.Identity.AuthenticationType == AuthConstants.KerberosSchema) ||
+                    (context.User.Identity.AuthenticationType == AuthConstants.NegotiateSchema))
             {
                 // Only supported on Windows
                 if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 
                 using WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
                 Claim currentUserClaim = currentUser.Claims.FirstOrDefault(claim => string.Equals(claim.Type, ClaimTypes.PrimarySid));
-                if (currentUserClaim != null && context.User.HasClaim(currentUserClaim.Type, currentUserClaim.Value))
+                if ((currentUserClaim != null) && context.User.HasClaim(currentUserClaim.Type, currentUserClaim.Value))
                 {
                     context.Succeed(requirement);
                 }

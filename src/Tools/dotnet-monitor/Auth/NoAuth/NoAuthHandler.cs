@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth
             {
                 authOptions.AddPolicy(AuthConstants.PolicyName, (builder) =>
                 {
-                    builder.RequireAssertion((f) => true);
+                    builder.RequireAssertion((_) => true);
                 });
             });
         }

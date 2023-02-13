@@ -82,12 +82,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 app.UseHsts();
             }
 
-            IAuthHandler authBuilder = app.ApplicationServices.GetRequiredService<IAuthHandler>();
+            IAuthHandler authHandler = app.ApplicationServices.GetRequiredService<IAuthHandler>();
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "dotnet-monitor v1.0");
-                authBuilder.ConfigureSwaggerUI(options);
+                authHandler.ConfigureSwaggerUI(options);
             });
 
 

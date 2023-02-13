@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _authHandler.LogStartup(_logger, _serviceProvider);
 
             // Auth is enabled and we are binding on http. Make sure we log a warning.
-            // (HasInsecureAuthentication will only be true **if** we're not using NoAuth)
+            // (HasInsecureAuthentication will only be true if we're using https and not using NoAuth)
             if (_listenResults.HasInsecureAuthentication)
             {
                 _logger.InsecureAuthenticationConfiguration();

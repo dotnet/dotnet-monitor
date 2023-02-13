@@ -79,20 +79,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
         {
             return builder.ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
             {
-                IAuthHandler authBuilder = AuthHandlerFactory.Create(startupAuthMode, context);
-                services.AddSingleton(authBuilder);
+                IAuthHandler authHandler = AuthHandlerFactory.Create(startupAuthMode, context);
+                services.AddSingleton(authHandler);
 
                 //TODO Many of these service additions should be done through extension methods
                 services.AddSingleton(RealSystemClock.Instance);
 
                 services.AddSingleton<IEgressOutputConfiguration>(new EgressOutputConfiguration(httpEgressEnabled: !noHttpEgress));
 
-                authBuilder.ConfigureApiAuth(services, context);
+                authHandler.ConfigureApiAuth(services, context);
 
                 services.AddSwaggerGen(options =>
                 {
                     options.ConfigureMonitorSwaggerGen();
-                    authBuilder.ConfigureSwaggerGenAuth(options);
+                    authHandler.ConfigureSwaggerGenAuth(options);
                 });
 
                 services.ConfigureDiagnosticPort(context.Configuration);

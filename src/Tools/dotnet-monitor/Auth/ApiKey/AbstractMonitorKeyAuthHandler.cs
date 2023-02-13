@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 
         public AbstractMonitorKeyAuthHandler()
         {
-            _enableNegotiation = false;
+            _enableNegotiation = OperatingSystem.IsWindows();
         }
 
         public void ConfigureApiAuth(IServiceCollection services, HostBuilderContext context)
