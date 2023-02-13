@@ -47,7 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public bool EnableCallStacksFeature { get; set; }
 
         /// <summary>
-        /// Determines whether to pass in the user configuraiton file via --configuration-file-path
+        /// Determines whether to pass in the user configuration file via --configuration-file-path
         /// </summary>
         public bool ExplicitlySetConfigurationFilePath { get; set; }
 

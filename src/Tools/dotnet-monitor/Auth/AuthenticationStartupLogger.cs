@@ -15,20 +15,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private readonly AddressListenResults _listenResults;
         private readonly ILogger _logger;
         private readonly IAuthHandler _authHandler;
-        private readonly IWebHostEnvironment _env;
         private readonly IServiceProvider _serviceProvider;
 
         public AuthenticationStartupLogger(
             IServiceProvider serviceProvider,
             AddressListenResults listenResults,
             IAuthHandler authHandler,
-            IWebHostEnvironment env,
             ILogger<Startup> logger)
         {
             _listenResults = listenResults;
             _logger = logger;
             _authHandler = authHandler;
-            _env = env;
             _serviceProvider = serviceProvider;
         }
 
