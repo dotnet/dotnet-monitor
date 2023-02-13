@@ -423,6 +423,10 @@
     <value>The output format of the API Key configuration.</value>
     <comment>Gets the string to display in help that explains what the '--output' option does.</comment>
   </data>
+  <data name="HelpDescription_RequiredScope_AzureAd" xml:space="preserve">
+    <value>Application API permission</value>
+    <comment>Gets a string used in the generated OpenAPI doc for the auth scheme</comment>
+  </data>
   <data name="HelpDescription_SecurityDefinitionDescription_ApiKey" xml:space="preserve">
     <value>JWT Authorization header using bearer token authentication. Put the Authorization header value ("Bearer" prefix and the JWT value) in the textbox when prompted.</value>
     <comment>Gets a string used in the generated OpenAPI doc for the auth scheme</comment>

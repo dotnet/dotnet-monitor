@@ -27,11 +27,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
         {
             _azureAdOptions = azureAdOptions;
 
+            // For now we only support a single scope.
             _scopes = new(1);
             if (_azureAdOptions.RequireScope != null)
             {
                 Uri audience = _azureAdOptions.Audience == null ? new Uri($"api://{_azureAdOptions.ClientId}") : new Uri(_azureAdOptions.Audience);
-                _scopes.Add(new Uri(audience, _azureAdOptions.RequireScope).ToString(), "Application API Permissions");
+                _scopes.Add(new Uri(audience, _azureAdOptions.RequireScope).ToString(), Strings.HelpDescription_RequiredScope_AzureAd);
             }
         }
 
@@ -59,7 +60,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
             List<string> requiredRoles = new(1);
             if (_azureAdOptions.RequireRole != null)
             {
-                requiredScopes.Add(_azureAdOptions.RequireRole);
+                requiredRoles.Add(_azureAdOptions.RequireRole);
             }
 
             services.AddAuthorization(options =>
@@ -75,21 +76,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
         {
             const string OAuth2SecurityDefinitionName = "OAuth2";
 
-            Uri baseEndpoint = new Uri(new Uri(_azureAdOptions.Instance), $"{_azureAdOptions.TenantId}/oauth2/v2.0/");
-
-            options.AddSecurityDefinition(OAuth2SecurityDefinitionName, new OpenApiSecurityScheme
+            // Only present an option to authenticate IF a required scope is set.
+            // Otherwise a user cannot authenticate, only other applications can.
+            if (_scopes.Any())
             {
-                Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows
+                Uri baseEndpoint = new Uri(new Uri(_azureAdOptions.Instance), $"{_azureAdOptions.TenantId}/oauth2/v2.0/");
+
+                options.AddSecurityDefinition(OAuth2SecurityDefinitionName, new OpenApiSecurityScheme
                 {
-                    AuthorizationCode = new OpenApiOAuthFlow
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
                     {
-                        AuthorizationUrl = new Uri(baseEndpoint, "authorize"),
-                        TokenUrl = new Uri(baseEndpoint, "token"),
-                        Scopes = _scopes
+                        AuthorizationCode = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri(baseEndpoint, "authorize"),
+                            TokenUrl = new Uri(baseEndpoint, "token"),
+                            Scopes = _scopes
+                        }
                     }
-                }
-            });
+                });
+            }
 
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
@@ -105,6 +111,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
 
         public void ConfigureSwaggerUI(SwaggerUIOptions options)
         {
+            if (!_scopes.Any())
+            {
+                return;
+            }
+
             options.OAuthUsePkce();
             options.OAuthClientId(_azureAdOptions.ClientId);
             options.OAuthScopes(_scopes.Keys.ToArray());
