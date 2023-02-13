@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
             };
 
             IConfiguration azureAdConfig = new ConfigurationBuilder().AddInMemoryCollection(config).Build();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(azureAdConfig);
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(azureAdConfig, ConfigurationKeys.AzureAd);
 
             List<string> requiredScopes = new(1);
             if (_azureAdOptions.RequireScope != null)
