@@ -9,6 +9,7 @@ using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
@@ -29,32 +30,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
             string documentationFile = $"{typeof(DiagController).Assembly.GetName().Name}.xml";
             string documentationPath = Path.Combine(AppContext.BaseDirectory, documentationFile);
             options.IncludeXmlComments(documentationPath);
-        }
-
-        public static void ConfigureMonitorSwaggerGenSecurity(this SwaggerGenOptions options)
-        {
-            const string ApiKeySecurityDefinitionName = "ApiKeyAuth";
-
-            options.AddSecurityDefinition(ApiKeySecurityDefinitionName, new OpenApiSecurityScheme
-            {
-                Name = HeaderNames.Authorization,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = JwtBearerDefaults.AuthenticationScheme,
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description = Strings.HelpDescription_SecurityDefinitionDescription_ApiKey
-            });
-
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = ApiKeySecurityDefinitionName }
-                    },
-                    Array.Empty<string>()
-                }
-            });
         }
     }
 }

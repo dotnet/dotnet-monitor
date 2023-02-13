@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
                 metricUrls: null,
                 metrics: false,
                 diagnosticPort: null,
-                authConfiguration: HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                startupAuthMode: HostBuilderHelper.GetStartupAuthenticationMode(noAuth: false, tempApiKey: false),
                 userProvidedConfigFilePath: null);
 
             // Create all of the same services as dotnet-monitor and add

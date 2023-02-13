@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
+using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -81,10 +82,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 app.UseHsts();
             }
 
+            IAuthHandler authBuilder = app.ApplicationServices.GetRequiredService<IAuthHandler>();
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "dotnet-monitor v1.0");
+                authBuilder.ConfigureSwaggerUI(options);
             });
 
 

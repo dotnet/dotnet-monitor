@@ -1,51 +1,47 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Diagnostics.Tools.Monitor.Auth;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class AuthenticationStartupLogger :
         IStartupLogger
     {
-        private readonly IAuthConfiguration _authConfiguration;
         private readonly AddressListenResults _listenResults;
         private readonly ILogger _logger;
-        private readonly MonitorApiKeyConfigurationObserver _observer;
+        private readonly IAuthHandler _authHandler;
+        private readonly IWebHostEnvironment _env;
+        private readonly IServiceProvider _serviceProvider;
 
         public AuthenticationStartupLogger(
-            IAuthConfiguration authConfiguration,
+            IServiceProvider serviceProvider,
             AddressListenResults listenResults,
-            MonitorApiKeyConfigurationObserver observer,
+            IAuthHandler authHandler,
+            IWebHostEnvironment env,
             ILogger<Startup> logger)
         {
-            _authConfiguration = authConfiguration;
             _listenResults = listenResults;
             _logger = logger;
-            _observer = observer;
+            _authHandler = authHandler;
+            _env = env;
+            _serviceProvider = serviceProvider;
         }
 
         public void Log()
         {
-            if (_authConfiguration.KeyAuthenticationMode == KeyAuthenticationMode.NoAuth)
-            {
-                _logger.NoAuthentication();
-            }
-            else
-            {
-                if (_authConfiguration.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
-                {
-                    _logger.LogTempKey(_authConfiguration.TemporaryJwtKey.Token);
-                }
+            _authHandler.LogStartup(_logger, _serviceProvider);
 
-                //Auth is enabled and we are binding on http. Make sure we log a warning.
-                if (_listenResults.HasInsecureAuthentication)
-                {
-                    _logger.InsecureAuthenticationConfiguration();
-                }
+            // Auth is enabled and we are binding on http. Make sure we log a warning.
+            // (HasInsecureAuthentication will only be true **if** we're not using NoAuth)
+            if (_listenResults.HasInsecureAuthentication)
+            {
+                _logger.InsecureAuthenticationConfiguration();
             }
-
-            _observer.Initialize();
         }
     }
 }

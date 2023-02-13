@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -49,7 +50,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public string DiagnosticPort { get; set; }
 
-        public IAuthConfiguration Authentication { get; set; }
+        public StartupAuthenticationMode AuthenticationMode { get; set; }
 
         public string ContentRootDirectory { get; set; }
 
@@ -67,7 +68,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             string[] metricUrls,
             bool metrics,
             string diagnosticPort,
-            IAuthConfiguration authConfiguration,
+            StartupAuthenticationMode startupAuthMode,
             FileInfo userProvidedConfigFilePath)
         {
             return new HostBuilderSettings()
@@ -76,7 +77,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 MetricsUrls = metricUrls,
                 EnableMetrics = metrics,
                 DiagnosticPort = diagnosticPort,
-                Authentication = authConfiguration,
+                AuthenticationMode = startupAuthMode,
                 ContentRootDirectory = AppContext.BaseDirectory,
                 SharedConfigDirectory = SharedConfigDirectoryPath,
                 UserConfigDirectory = UserConfigDirectoryPath,

@@ -1,18 +1,16 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Diagnostics.Tools.Monitor.Swagger;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -26,11 +24,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
         {
             try
             {
-                AuthConfiguration authConfiguration = HostBuilderHelper.CreateAuthConfiguration(noAuth, tempApiKey);
-                HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(urls, metricUrls, metrics, diagnosticPort, authConfiguration, configurationFilePath);
+                StartupAuthenticationMode authMode = HostBuilderHelper.GetStartupAuthenticationMode(noAuth, tempApiKey);
+                HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(urls, metricUrls, metrics, diagnosticPort, authMode, configurationFilePath);
 
                 IHost host = HostBuilderHelper.CreateHostBuilder(settings)
-                    .Configure(authConfiguration, noHttpEgress)
+                    .Configure(authMode, noHttpEgress)
                     .Build();
 
                 try
@@ -77,71 +75,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             return 0;
         }
 
-        private static IHostBuilder Configure(this IHostBuilder builder, AuthConfiguration authenticationOptions, bool noHttpEgress)
+        private static IHostBuilder Configure(this IHostBuilder builder, StartupAuthenticationMode startupAuthMode, bool noHttpEgress)
         {
             return builder.ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
             {
+                IAuthHandler authBuilder = AuthHandlerFactory.Create(startupAuthMode, context);
+                services.AddSingleton(authBuilder);
+
                 //TODO Many of these service additions should be done through extension methods
                 services.AddSingleton(RealSystemClock.Instance);
 
-                services.AddSingleton<IAuthConfiguration>(authenticationOptions);
-
                 services.AddSingleton<IEgressOutputConfiguration>(new EgressOutputConfiguration(httpEgressEnabled: !noHttpEgress));
 
-                // Although this is only observing API key authentication changes, it does handle
-                // the case when API key authentication is not enabled. This class could evolve
-                // to observe other options in the future, at which point it might be good to
-                // refactor the options observers for each into separate implementations and are
-                // orchestrated by this single service.
-                services.AddSingleton<MonitorApiKeyConfigurationObserver>();
-
-                List<string> authSchemas = null;
-                if (authenticationOptions.EnableKeyAuth)
-                {
-                    AuthenticationBuilder authBuilder = services.ConfigureMonitorApiKeyAuthentication(context.Configuration);
-
-                    authSchemas = new List<string> { AuthConstants.ApiKeySchema };
-
-                    if (authenticationOptions.EnableNegotiate)
-                    {
-                        //On Windows add Negotiate package. This will use NTLM to perform Windows Authentication.
-                        authBuilder.AddNegotiate();
-                        authSchemas.Add(AuthConstants.NegotiateSchema);
-                    }
-                }
-
-                //Apply Authorization Policy for NTLM. Without Authorization, any user with a valid login/password will be authorized. We only
-                //want to authorize the same user that is running dotnet-monitor, at least for now.
-                //Note this policy applies to both Authorization schemas.
-                services.AddAuthorization(authOptions =>
-                {
-                    if (authenticationOptions.EnableKeyAuth)
-                    {
-                        authOptions.AddPolicy(AuthConstants.PolicyName, (builder) =>
-                        {
-                            builder.AddRequirements(new AuthorizedUserRequirement());
-                            builder.RequireAuthenticatedUser();
-                            builder.AddAuthenticationSchemes(authSchemas.ToArray());
-                        });
-                    }
-                    else
-                    {
-                        authOptions.AddPolicy(AuthConstants.PolicyName, (builder) =>
-                        {
-                            builder.RequireAssertion((_) => true);
-                        });
-                    }
-                });
-
-                if (authenticationOptions.EnableKeyAuth)
-                {
-                    services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
-                }
+                authBuilder.ConfigureApiAuth(services, context);
 
                 services.AddSwaggerGen(options =>
                 {
                     options.ConfigureMonitorSwaggerGen();
-                    options.ConfigureMonitorSwaggerGenSecurity();
+                    authBuilder.ConfigureSwaggerGenAuth(options);
                 });
 
                 services.ConfigureDiagnosticPort(context.Configuration);

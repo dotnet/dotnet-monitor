@@ -3,11 +3,12 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 
-namespace Microsoft.Diagnostics.Tools.Monitor
+namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
     /// <summary>
     /// Configures <see cref="JwtBearerOptions"/> based on <see cref="MonitorApiKeyConfiguration" /> configuration.
@@ -32,27 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 return;
             }
 
-            TokenValidationParameters tokenValidationParameters = new TokenValidationParameters
-            {
-                // Signing Settings
-                RequireSignedTokens = true,
-                ValidAlgorithms = JwtAlgorithmChecker.GetAllowedJwsAlgorithmList(),
-
-                // Issuer Settings
-                ValidateIssuer = false,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKeys = new SecurityKey[] { configSnapshot.PublicKey },
-                TryAllIssuerSigningKeys = true,
-
-                // Audience Settings
-                ValidateAudience = true,
-                ValidAudiences = new string[] { AuthConstants.ApiKeyJwtAudience },
-
-                // Other Settings
-                ValidateActor = false,
-                ValidateLifetime = false,
-            };
-            options.TokenValidationParameters = tokenValidationParameters;
+            options.ConfigureApiKeyTokenValidation(configSnapshot.PublicKey);
         }
     }
 }

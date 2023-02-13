@@ -122,7 +122,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Set up the initial settings used to create the host builder.
             HostBuilderSettings settings = new()
             {
-                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                AuthenticationMode = HostBuilderHelper.GetStartupAuthenticationMode(noAuth: false, tempApiKey: false),
                 ContentRootDirectory = contentRootDirectory.FullName,
                 SharedConfigDirectory = sharedConfigDir.FullName,
                 UserConfigDirectory = userConfigDir.FullName,
@@ -210,7 +210,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Set up the initial settings used to create the host builder.
             HostBuilderSettings settings = new()
             {
-                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                AuthenticationMode = HostBuilderHelper.GetStartupAuthenticationMode(noAuth: false, tempApiKey: false),
                 ContentRootDirectory = contentRootDirectory.FullName,
                 SharedConfigDirectory = sharedConfigDir.FullName,
                 UserConfigDirectory = userConfigDir.FullName
@@ -258,7 +258,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Set up the initial settings used to create the host builder.
             HostBuilderSettings settings = new()
             {
-                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                AuthenticationMode = HostBuilderHelper.GetStartupAuthenticationMode(noAuth: false, tempApiKey: false),
                 ContentRootDirectory = contentRootDirectory.FullName,
                 SharedConfigDirectory = sharedConfigDir.FullName,
                 UserConfigDirectory = userConfigDir.FullName,
@@ -314,7 +314,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Set up the initial settings used to create the host builder.
             HostBuilderSettings settings = new()
             {
-                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                AuthenticationMode = HostBuilderHelper.GetStartupAuthenticationMode(noAuth: false, tempApiKey: false),
                 ContentRootDirectory = contentRootDirectory.FullName,
                 SharedConfigDirectory = sharedConfigDir.FullName,
                 UserConfigDirectory = userConfigDir.FullName

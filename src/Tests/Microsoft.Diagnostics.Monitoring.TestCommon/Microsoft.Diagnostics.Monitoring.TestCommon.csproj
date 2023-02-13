@@ -14,6 +14,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\TaskCompletionSourceExtensions.cs" Link="TaskCompletionSourceExtensions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\TaskExtensions.cs" Link="TaskExtensions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\ToolIdentifiers.cs" Link="ToolIdentifiers.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\EnvironmentInformation.cs" Link="EnvironmentInformation.cs" />
   </ItemGroup>
 
   <ItemGroup>
