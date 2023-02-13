@@ -1662,6 +1662,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The fields {0} and {1} are both unspecified. At least one of them must be..
+        /// </summary>
+        public static string ErrorMessage_NeitherFieldSpecified {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NeitherFieldSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Provider &apos;{0}&apos; validation error: &apos;{1}&apos;.
         /// </summary>
         public static string ErrorMessage_NestedProviderValidationError {

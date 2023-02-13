@@ -7,22 +7,22 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class AzureAdOptions
+    internal sealed partial class AzureAdOptions
     {
+        private const string DefaultInstanceId = "https://login.microsoftonline.com";
+        private const string DefaultTenantId = "organizations";
+
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_Instance))]
-        [DefaultValue("https://login/microsoftonline.com")]
-        [Required]
-        public string Instance { get; set; }
-
+        [DefaultValue(DefaultInstanceId)]
+        public string Instance { get; set; } = DefaultInstanceId;
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_TenantId))]
-        [DefaultValue("organizations")]
-        [Required]
-        public string TenantId { get; set; }
+        [DefaultValue(DefaultTenantId)]
+        public string TenantId { get; set; } = DefaultTenantId;
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

@@ -7,7 +7,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public const string Authentication = nameof(RootOptions.Authentication);
 
-        public const string AzureAd = nameof(AuthenticationOptions.AzureAd);
+        public const string AzureAd = nameof(AzureAd);
 
         public const string CollectionRules = nameof(CollectionRules);
 

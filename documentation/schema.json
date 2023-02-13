@@ -396,15 +396,26 @@
     "AuthenticationOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "MonitorApiKey"
-      ],
       "properties": {
         "MonitorApiKey": {
           "description": "The parameters used to validate MonitorApiKey JWT tokens.",
           "oneOf": [
             {
+              "type": "null"
+            },
+            {
               "$ref": "#/definitions/MonitorApiKeyOptions"
+            }
+          ]
+        },
+        "AzureAd": {
+          "description": "The parameters used to use configure authentication using Azure Active Directory.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/AzureAdOptions"
             }
           ]
         }
@@ -428,6 +439,57 @@
           "description": "The public key used to sign the JWT (JSON Web Token) used for authentication. This field is a JSON Web Key serialized as JSON encoded with base64Url encoding. The JWK must have a kty field of RSA or EC and should not have the private key information.",
           "minLength": 1,
           "pattern": "[0-9a-zA-Z_-]+"
+        }
+      }
+    },
+    "AzureAdOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ClientId"
+      ],
+      "properties": {
+        "Instance": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Specifies the Azure cloud instance users are signing in from. Can be either the Azure public cloud or one of the national clouds.",
+          "default": "https://login/microsoftonline.com"
+        },
+        "TenantId": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The tenant id of the Azure Active Directory tenant, or its tenant domain.",
+          "default": "organizations"
+        },
+        "ClientId": {
+          "type": "string",
+          "description": "The unique application (client) id assigned to the app registration in Azure Active Directory.",
+          "minLength": 1
+        },
+        "Audience": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The app id uri of the app registration. Defaults to api://{ClientId} if not specified."
+        },
+        "RequireRole": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The app role required by daemon applications to be able to authenticate. If not specified, daemon applications will not be able to authenticate."
+        },
+        "RequireScope": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The API scope required by users to be able to authenticate. If not specified, users will not be able to authenticate."
         }
       }
     },

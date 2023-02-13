@@ -845,4 +845,11 @@
     <value>The tenant id of the Azure Active Directory tenant, or its tenant domain.</value>
     <comment>The description provided for the TenantId parameter on AzureAdOptions.</comment>
   </data>
+  <data name="ErrorMessage_NeitherFieldSpecified" xml:space="preserve">
+    <value>The fields {0} and {1} are both unspecified. At least one of them must be.</value>
+    <comment>Gets the format string for rjecting validation due to two missing fields where at least one must be specified. 
+2 Format Parameter:
+0. The name of the first field that is missing.
+1. The name of the second field that is missing.</comment>
+  </data>
 </root>

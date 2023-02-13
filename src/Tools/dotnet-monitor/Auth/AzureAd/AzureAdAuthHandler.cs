@@ -20,13 +20,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
 {
     internal sealed class AzureAdAuthHandler : IAuthHandler
     {
-        private readonly IConfigurationSection _azureAdConfig;
+        private readonly IConfiguration _azureAdConfig;
         private readonly AzureAdOptions _azureAdOptions;
         private readonly Dictionary<string, string> _scopes;
 
-        public AzureAdAuthHandler(AzureAdOptions azureAdOptions, IConfigurationSection azureAdConfig)
+        public AzureAdAuthHandler(AzureAdOptions azureAdOptions)
         {
-            _azureAdConfig = azureAdConfig;
+            // Project an in-memory representation of our AzureAdOptions to process our defaults.
+            Dictionary<string, string> config = new Dictionary<string, string>
+            {
+                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.Instance)), azureAdOptions.Instance },
+                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.TenantId)), azureAdOptions.TenantId },
+                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.ClientId)), azureAdOptions.ClientId },
+                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.Audience)), azureAdOptions.Audience },
+            };
+
+            _azureAdConfig = new ConfigurationBuilder().AddInMemoryCollection(config).Build();
             _azureAdOptions = azureAdOptions;
 
             _scopes = new(1);

@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
 
                     if (authOptions.AzureAd != null)
                     {
-                        return new AzureAdAuthHandler(authOptions.AzureAd, authConfigSection.GetRequiredSection(ConfigurationKeys.AzureAd));
+                        return new AzureAdAuthHandler(authOptions.AzureAd);
                     }
                     else
                     {
