@@ -9,54 +9,40 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class AzureAdOptions
     {
-        // https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-client-application-configuration#cloud-instance
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MonitorApiKeyOptions_Subject))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_Instance))]
         [DefaultValue("https://login/microsoftonline.com")]
         [Required]
         public string Instance { get; set; }
 
-        [Display(
-            ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MonitorApiKeyOptions_Subject))]
-        public string Domain { get; set; }
 
-        // https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-client-application-configuration#how-to-specify-the-audience-in-your-codeconfiguration
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MonitorApiKeyOptions_Subject))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_TenantId))]
+        [DefaultValue("organizations")]
         [Required]
         public string TenantId { get; set; }
 
-        // https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-client-application-configuration#client-id
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MonitorApiKeyOptions_Subject))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_ClientId))]
         [Required]
         public string ClientId { get; set; }
 
-        // https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-client-application-configuration#application-audience
-        // https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#what-if-the-app-id-uri-of-your-application-is-not-apiclientid
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MonitorApiKeyOptions_Subject))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_Audience))]
         public string Audience { get; set; }
 
-        // https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-client-application-configuration#application-audience
-        // https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#what-if-the-app-id-uri-of-your-application-is-not-apiclientid
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MonitorApiKeyOptions_Subject))]
-        [Required]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_RequireRole))]
         public string RequireRole { get; set; }
 
-        // https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-client-application-configuration#application-audience
-        // https://github.com/AzureAD/microsoft-identity-web/wiki/web-apis#what-if-the-app-id-uri-of-your-application-is-not-apiclientid
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MonitorApiKeyOptions_Subject))]
-        [Required]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_RequireScope))]
         public string RequireScope { get; set; }
     }
 }

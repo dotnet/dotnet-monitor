@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AuthenticationOptions_MonitorApiKey))]
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AuthenticationOptions_AzureAd))]
         public AzureAdOptions AzureAd { get; set; }
     }
 }
