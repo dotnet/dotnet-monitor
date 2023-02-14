@@ -8,7 +8,7 @@ using Microsoft.Extensions.Primitives;
 using System;
 using System.Threading;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
+namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored
 {
     /// <summary>
     /// Notifies that JwtBearerOptions changes when MonitorApiKeyConfiguration changes.

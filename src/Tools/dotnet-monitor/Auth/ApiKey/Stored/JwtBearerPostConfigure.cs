@@ -6,7 +6,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored;
 using Microsoft.Extensions.Options;
 using System.Linq;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
+namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored
 {
     /// <summary>
     /// Configures <see cref="JwtBearerOptions"/> based on <see cref="MonitorApiKeyConfiguration" /> configuration.
