@@ -1032,6 +1032,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dictionary of provider names and their global configuration..
+        /// </summary>
+        public static string DisplayAttributeDescription_GlobalCounterOptions_Providers {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_GlobalCounterOptions_Providers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes..
         /// </summary>
         public static string DisplayAttributeDescription_InProcessFeaturesOptions_Enabled {
@@ -1577,6 +1586,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string ErrorMessage_FilterValueMissing {
             get {
                 return ResourceManager.GetString("ErrorMessage_FilterValueMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provider &apos;{0}&apos; validation error: &apos;{1}&apos;.
+        /// </summary>
+        public static string ErrorMessage_NestedProviderValidationError {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NestedProviderValidationError", resourceCulture);
             }
         }
         

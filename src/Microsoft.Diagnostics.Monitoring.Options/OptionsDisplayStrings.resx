@@ -807,4 +807,10 @@
     <value>The type of metrics this provider consumes</value>
     <comment>The description provided for the MetricType parameter on MetricProvider.</comment>
   </data>
+  <data name="DisplayAttributeDescription_GlobalCounterOptions_Providers" xml:space="preserve">
+    <value>Dictionary of provider names and their global configuration.</value>
+  </data>
+  <data name="ErrorMessage_NestedProviderValidationError" xml:space="preserve">
+    <value>Provider '{0}' validation error: '{1}'</value>
+  </data>
 </root>
