@@ -9,7 +9,6 @@ using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.EventCounter;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
-using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
