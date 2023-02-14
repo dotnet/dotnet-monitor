@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using System;
 using System.Collections.Generic;
 
@@ -79,6 +80,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
                     Array.Empty<string>()
                 }
             });
+        }
+
+        public void ConfigureSwaggerUI(SwaggerUIOptions options)
+        {
         }
 
         protected void LogIfNegotiateIsDisabledDueToElevation(ILogger logger)

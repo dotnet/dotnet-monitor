@@ -455,7 +455,7 @@
             "string"
           ],
           "description": "Specifies the Azure cloud instance users are signing in from. Can be either the Azure public cloud or one of the national clouds.",
-          "default": "https://login/microsoftonline.com"
+          "default": "https://login.microsoftonline.com"
         },
         "TenantId": {
           "type": [
@@ -477,14 +477,14 @@
           ],
           "description": "The app id uri of the app registration. Defaults to api://{ClientId} if not specified."
         },
-        "RequireRole": {
+        "RequiredRole": {
           "type": [
             "null",
             "string"
           ],
           "description": "The app role required by daemon applications to be able to authenticate. If not specified, daemon applications will not be able to authenticate."
         },
-        "RequireScope": {
+        "RequiredScope": {
           "type": [
             "null",
             "string"

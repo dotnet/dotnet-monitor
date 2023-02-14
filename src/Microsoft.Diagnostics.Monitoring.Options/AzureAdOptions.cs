@@ -37,12 +37,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_RequireRole))]
-        public string RequireRole { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_RequiredRole))]
+        public string RequiredRole { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_RequireScope))]
-        public string RequireScope { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_RequiredScope))]
+        public string RequiredScope { get; set; }
     }
 }

@@ -833,13 +833,13 @@
     <value>Specifies the Azure cloud instance users are signing in from. Can be either the Azure public cloud or one of the national clouds.</value>
     <comment>The description provided for the Instance parameter on AzureAdOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_AzureAdOptions_RequireRole" xml:space="preserve">
+  <data name="DisplayAttributeDescription_AzureAdOptions_RequiredRole" xml:space="preserve">
     <value>The app role required by daemon applications to be able to authenticate. If not specified, daemon applications will not be able to authenticate.</value>
-    <comment>The description provided for the RequireRole parameter on AzureAdOptions.</comment>
+    <comment>The description provided for the RequiredRole parameter on AzureAdOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_AzureAdOptions_RequireScope" xml:space="preserve">
+  <data name="DisplayAttributeDescription_AzureAdOptions_RequiredScope" xml:space="preserve">
     <value>The API scope required by users to be able to authenticate. If not specified, users will not be able to authenticate.</value>
-    <comment>The description provided for the RequireScope parameter on AzureAdOptions.</comment>
+    <comment>The description provided for the RequiredScope parameter on AzureAdOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AzureAdOptions_TenantId" xml:space="preserve">
     <value>The tenant id of the Azure Active Directory tenant, or its tenant domain.</value>

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth
@@ -24,6 +25,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth
         }
 
         public void ConfigureSwaggerGenAuth(SwaggerGenOptions options)
+        {
+        }
+
+        public void ConfigureSwaggerUI(SwaggerUIOptions options)
         {
         }
 

@@ -15,14 +15,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IList<ValidationResult> results = new List<ValidationResult>();
 
             // At least either a required role or scope must be specified.
-            if (string.IsNullOrEmpty(RequireRole) && string.IsNullOrEmpty(RequireScope))
+            if (string.IsNullOrEmpty(RequiredRole) && string.IsNullOrEmpty(RequiredScope))
             {
                 results.Add(
                     new ValidationResult(
                         string.Format(
                             OptionsDisplayStrings.ErrorMessage_NeitherFieldSpecified,
-                            nameof(RequireRole),
-                            nameof(RequireScope))));
+                            nameof(RequiredRole),
+                            nameof(RequiredScope))));
             }
 
             return results;

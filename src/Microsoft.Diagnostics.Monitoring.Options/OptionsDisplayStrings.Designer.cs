@@ -234,18 +234,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         /// <summary>
         ///   Looks up a localized string similar to The app role required by daemon applications to be able to authenticate. If not specified, daemon applications will not be able to authenticate..
         /// </summary>
-        public static string DisplayAttributeDescription_AzureAdOptions_RequireRole {
+        public static string DisplayAttributeDescription_AzureAdOptions_RequiredRole {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_RequireRole", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_RequiredRole", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The API scope required by users to be able to authenticate. If not specified, users will not be able to authenticate..
         /// </summary>
-        public static string DisplayAttributeDescription_AzureAdOptions_RequireScope {
+        public static string DisplayAttributeDescription_AzureAdOptions_RequiredScope {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_RequireScope", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_RequiredScope", resourceCulture);
             }
         }
         

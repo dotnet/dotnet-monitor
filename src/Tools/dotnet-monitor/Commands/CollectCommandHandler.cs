@@ -80,6 +80,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             return builder.ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
             {
                 IAuthenticationConfigurator authConfigurator = AuthConfiguratorFactory.Create(startupAuthMode, context);
+                services.AddSingleton<IAuthenticationConfigurator>(authConfigurator);
 
                 //TODO Many of these service additions should be done through extension methods
                 services.AddSingleton(RealSystemClock.Instance);

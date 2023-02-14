@@ -18,21 +18,21 @@ using Microsoft.OpenApi.Models;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
 {
-    internal sealed class AzureAdAuthHandler : IAuthHandler
+    internal sealed class AzureAdAuthConfigurator : IAuthenticationConfigurator
     {
         private readonly AzureAdOptions _azureAdOptions;
         private readonly Dictionary<string, string> _scopes;
 
-        public AzureAdAuthHandler(AzureAdOptions azureAdOptions)
+        public AzureAdAuthConfigurator(AzureAdOptions azureAdOptions)
         {
             _azureAdOptions = azureAdOptions;
 
             // For now we only support a single scope.
             _scopes = new(1);
-            if (_azureAdOptions.RequireScope != null)
+            if (_azureAdOptions.RequiredScope != null)
             {
                 Uri audience = _azureAdOptions.Audience == null ? new Uri($"api://{_azureAdOptions.ClientId}") : new Uri(_azureAdOptions.Audience);
-                _scopes.Add(new Uri(audience, _azureAdOptions.RequireScope).ToString(), Strings.HelpDescription_RequiredScope_AzureAd);
+                _scopes.Add(new Uri(audience, _azureAdOptions.RequiredScope).ToString(), Strings.HelpDescription_RequiredScope_AzureAd);
             }
         }
 
@@ -40,27 +40,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
         {
             // Create in-memory representation of our AzureAdOptions so that our defaults applies
             // and we only pass fields supported by our schema.
-            Dictionary<string, string> config = new Dictionary<string, string>
+            IConfiguration azureAdConfig = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
             {
-                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.Instance)), _azureAdOptions.Instance },
-                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.TenantId)), _azureAdOptions.TenantId },
-                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.ClientId)), _azureAdOptions.ClientId },
-                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(AzureAdOptions.Audience)), _azureAdOptions.Audience },
-            };
+                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(MicrosoftIdentityOptions.Instance)), _azureAdOptions.Instance },
+                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(MicrosoftIdentityOptions.TenantId)), _azureAdOptions.TenantId },
+                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(MicrosoftIdentityOptions.ClientId)), _azureAdOptions.ClientId },
+                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(JwtBearerOptions.Audience)), _azureAdOptions.Audience }
+            }).Build();
 
-            IConfiguration azureAdConfig = new ConfigurationBuilder().AddInMemoryCollection(config).Build();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(azureAdConfig, ConfigurationKeys.AzureAd);
 
             List<string> requiredScopes = new(1);
-            if (_azureAdOptions.RequireScope != null)
+            if (_azureAdOptions.RequiredScope != null)
             {
-                requiredScopes.Add(_azureAdOptions.RequireScope);
+                requiredScopes.Add(_azureAdOptions.RequiredScope);
             }
 
             List<string> requiredRoles = new(1);
-            if (_azureAdOptions.RequireRole != null)
+            if (_azureAdOptions.RequiredRole != null)
             {
-                requiredRoles.Add(_azureAdOptions.RequireRole);
+                requiredRoles.Add(_azureAdOptions.RequiredRole);
             }
 
             services.AddAuthorization(options =>
@@ -76,7 +75,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
         {
             const string OAuth2SecurityDefinitionName = "OAuth2";
 
-            // Only present an option to authenticate IF a required scope is set.
+            // Only present an option to authenticate if a required scope is set.
             // Otherwise a user cannot authenticate, only other applications can.
             if (_scopes.Any())
             {
@@ -121,8 +120,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
             options.OAuthScopes(_scopes.Keys.ToArray());
         }
 
-        public void LogStartup(ILogger logger, IServiceProvider serviceProvider)
+        public IStartupLogger CreateStartupLogger(ILogger<Startup> logger, IServiceProvider _)
         {
+            return new AuthenticationStartupLoggerWrapper(() => { });
         }
     }
 }
