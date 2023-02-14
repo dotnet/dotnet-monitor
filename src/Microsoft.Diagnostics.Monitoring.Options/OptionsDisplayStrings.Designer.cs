@@ -187,11 +187,74 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The parameters used to use configure authentication using Azure Active Directory..
+        /// </summary>
+        public static string DisplayAttributeDescription_AuthenticationOptions_AzureAd {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AuthenticationOptions_AzureAd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The parameters used to validate MonitorApiKey JWT tokens..
         /// </summary>
         public static string DisplayAttributeDescription_AuthenticationOptions_MonitorApiKey {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_AuthenticationOptions_MonitorApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The app id uri of the app registration. Defaults to api://{ClientId} if not specified..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureAdOptions_Audience {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_Audience", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The unique application (client) id assigned to the app registration in Azure Active Directory..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureAdOptions_ClientId {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_ClientId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specifies the Azure cloud instance users are signing in from. Can be either the Azure public cloud or one of the national clouds..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureAdOptions_Instance {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_Instance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The app role required by daemon applications to be able to authenticate. If not specified, daemon applications will not be able to authenticate..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureAdOptions_RequireRole {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_RequireRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API scope required by users to be able to authenticate. If not specified, users will not be able to authenticate..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureAdOptions_RequireScope {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_RequireScope", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The tenant id of the Azure Active Directory tenant, or its tenant domain..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureAdOptions_TenantId {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_TenantId", resourceCulture);
             }
         }
         
@@ -1595,6 +1658,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string ErrorMessage_FilterValueMissing {
             get {
                 return ResourceManager.GetString("ErrorMessage_FilterValueMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The fields {0} and {1} are both unspecified. At least one of them must be..
+        /// </summary>
+        public static string ErrorMessage_NeitherFieldSpecified {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NeitherFieldSpecified", resourceCulture);
             }
         }
         

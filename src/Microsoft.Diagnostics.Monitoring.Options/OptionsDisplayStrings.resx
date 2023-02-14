@@ -817,4 +817,39 @@
   <data name="ErrorMessage_NestedProviderValidationError" xml:space="preserve">
     <value>Provider '{0}' validation error: '{1}'</value>
   </data>
+  <data name="DisplayAttributeDescription_AuthenticationOptions_AzureAd" xml:space="preserve">
+    <value>The parameters used to use configure authentication using Azure Active Directory.</value>
+    <comment>The description provided for the AzureAd parameter on AuthenticationOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureAdOptions_Audience" xml:space="preserve">
+    <value>The app id uri of the app registration. Defaults to api://{ClientId} if not specified.</value>
+    <comment>The description provided for the Audience parameter on AzureAdOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureAdOptions_ClientId" xml:space="preserve">
+    <value>The unique application (client) id assigned to the app registration in Azure Active Directory.</value>
+    <comment>The description provided for the ClientId parameter on AzureAdOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureAdOptions_Instance" xml:space="preserve">
+    <value>Specifies the Azure cloud instance users are signing in from. Can be either the Azure public cloud or one of the national clouds.</value>
+    <comment>The description provided for the Instance parameter on AzureAdOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureAdOptions_RequireRole" xml:space="preserve">
+    <value>The app role required by daemon applications to be able to authenticate. If not specified, daemon applications will not be able to authenticate.</value>
+    <comment>The description provided for the RequireRole parameter on AzureAdOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureAdOptions_RequireScope" xml:space="preserve">
+    <value>The API scope required by users to be able to authenticate. If not specified, users will not be able to authenticate.</value>
+    <comment>The description provided for the RequireScope parameter on AzureAdOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureAdOptions_TenantId" xml:space="preserve">
+    <value>The tenant id of the Azure Active Directory tenant, or its tenant domain.</value>
+    <comment>The description provided for the TenantId parameter on AzureAdOptions.</comment>
+  </data>
+  <data name="ErrorMessage_NeitherFieldSpecified" xml:space="preserve">
+    <value>The fields {0} and {1} are both unspecified. At least one of them must be.</value>
+    <comment>Gets the format string for rjecting validation due to two missing fields where at least one must be specified. 
+2 Format Parameter:
+0. The name of the first field that is missing.
+1. The name of the second field that is missing.</comment>
+  </data>
 </root>

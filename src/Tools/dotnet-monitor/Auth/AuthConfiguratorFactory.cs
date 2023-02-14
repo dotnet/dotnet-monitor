@@ -3,7 +3,9 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Temporary;
+using Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using System;
 
@@ -29,8 +31,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
                     return new MonitorTempKeyAuthConfigurator();
 
                 case StartupAuthenticationMode.Deferred:
-                    // We currently only have one configuration-based authentication mode.
-                    return new MonitorKeyAuthConfigurator();
+                    IConfigurationSection authConfigSection = context.Configuration.GetSection(ConfigurationKeys.Authentication);
+                    AuthenticationOptions authOptions = new AuthenticationOptions();
+                    if (authConfigSection.Exists())
+                    {
+                        authConfigSection.Bind(authOptions);
+                    }
+
+                    if (authOptions.AzureAd != null)
+                    {
+                        return new AzureAdAuthHandler(authOptions.AzureAd);
+                    }
+                    else
+                    {
+                        return new MonitorKeyAuthConfigurator();
+                    }
 
                 default:
                     throw new NotSupportedException();
