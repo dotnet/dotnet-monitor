@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored;
 using Microsoft.Extensions.Options;
 using System.Linq;
 
