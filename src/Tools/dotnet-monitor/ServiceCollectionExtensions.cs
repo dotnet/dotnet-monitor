@@ -256,6 +256,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IStartupLogger, HostBuilderStartupLogger>();
             services.AddSingleton<IStartupLogger, DiagnosticPortStartupLogger>();
             services.AddSingleton<IStartupLogger, ElevatedPermissionsStartupLogger>();
+            services.AddSingleton<IStartupLogger, AddressListenResultsStartupLogger>();
             services.AddSingleton<IStartupLogger>((services) =>
             {
                 ILogger<Startup> logger = services.GetRequiredService<ILogger<Startup>>();
