@@ -42,8 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             List<ICounterPayload> payload = new();
 
-            string tags1 = "Percentile=50";
-            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, tags1,
+            payload.Add(new PercentilePayload(MeterName, InstrumentName, "DisplayName", string.Empty, string.Empty,
                 new Quantile[] { new(0.5, Value1), new(0.95, Value2), new(0.99, Value3) },
                 Timestamp));
 
@@ -54,16 +53,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // should we call this method, or should this also be implicitly testing its behavior by having this hard-coded?
             string metricName = $"{MeterName.ToLowerInvariant()}_{payload[0].Name}";
 
-            const string percentile_50 = "{Percentile=\"50\"}";
-            const string percentile_95 = "{Percentile=\"95\"}";
-            const string percentile_99 = "{Percentile=\"99\"}";
+            const string quantile_50 = "{quantile=\"0.5\"}";
+            const string quantile_95 = "{quantile=\"0.95\"}";
+            const string quantile_99 = "{quantile=\"0.99\"}";
 
             Assert.Equal(5, lines.Count);
             Assert.Equal(FormattableString.Invariant($"# HELP {metricName}{payload[0].Unit} {payload[0].DisplayName}"), lines[0]);
             Assert.Equal(FormattableString.Invariant($"# TYPE {metricName} summary"), lines[1]);
-            Assert.Equal(FormattableString.Invariant($"{metricName}{percentile_50} {Value1}"), lines[2]);
-            Assert.Equal(FormattableString.Invariant($"{metricName}{percentile_95} {Value2}"), lines[3]);
-            Assert.Equal(FormattableString.Invariant($"{metricName}{percentile_99} {Value3}"), lines[4]);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{quantile_50} {Value1}"), lines[2]);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{quantile_95} {Value2}"), lines[3]);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{quantile_99} {Value3}"), lines[4]);
         }
 
         [Fact]

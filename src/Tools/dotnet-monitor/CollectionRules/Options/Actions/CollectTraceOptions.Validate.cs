@@ -55,6 +55,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
             }
             else if (hasProviders)
             {
+                GlobalCounterOptions counterOptions = null;
+
+                try
+                {
+                    // Nested validations have to be handled by catching the exception and converting it to a ValidationResult.
+                    counterOptions = validationContext.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>().CurrentValue;
+                }
+                catch (OptionsValidationException e)
+                {
+                    results.AddRange(e.Failures.Select((string failure) => new ValidationResult(e.Message)));
+                }
+
                 // Validate that each provider is valid.
                 int index = 0;
                 foreach (EventPipeProvider provider in Providers)
@@ -64,9 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 
                     Validator.TryValidateObject(provider, providerContext, results, validateAllProperties: true);
 
-                    IOptionsMonitor<GlobalCounterOptions> counterOptions = validationContext.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
-                    if (!CounterValidator.ValidateProvider(counterOptions.CurrentValue,
-                        provider, out string errorMessage))
+                    if (counterOptions != null && !CounterValidator.ValidateProvider(counterOptions, provider, out string errorMessage))
                     {
                         results.Add(new ValidationResult(errorMessage, new[] { nameof(EventPipeProvider.Arguments) }));
                     }

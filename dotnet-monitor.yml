@@ -43,13 +43,11 @@ parameters:
   default: false
 
 variables:
+- template: /eng/common/templates/variables/pool-providers.yml
 - name: _TeamName
   value: DotNetCore
 - name: _TPNFile
   value: THIRD-PARTY-NOTICES.TXT
-# Scheduled builds of main branch will be marked for update by dotnet-docker if this is true
-- name: NightlyUpdateDockerFromMain
-  value: true
 
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   # DotNet-Diagnostics-SDL-Params provides Tsa* variables for SDL checks.
@@ -105,7 +103,7 @@ stages:
         - Pack_Sign
         publishUsingPipelines: true
         pool:
-          name: NetCore1ESPool-Internal
+          name: $(DncEngInternalBuildPool)
           demands: ImageOverride -equals 1es-windows-2019
 # These are the stages that perform validation of several SDL requirements and publish the bits required to the designated feed.
   - template: /eng/common/templates/post-build/post-build.yml
@@ -141,7 +139,8 @@ stages:
 - template: /eng/pipelines/stages/preparerelease.yml
   parameters:
     ${{ if eq(parameters.updateDocker, 'true') }}:
-      updateDocker: true
+      updateDockerCondition: true
     ${{ else }}:
       # If scheduled build from main and nightly update from main enabled
-      updateDocker: ${{ and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['NightlyUpdateDockerFromMain'], 'true')) }}
+      updateDockerCondition: and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['NightlyUpdateDockerFromMain'], 'true'))
+

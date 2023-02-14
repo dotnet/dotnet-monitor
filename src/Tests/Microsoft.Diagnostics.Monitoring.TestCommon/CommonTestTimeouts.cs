@@ -73,6 +73,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static readonly TimeSpan LogsDuration = TimeSpan.FromSeconds(10);
 
         /// <summary>
+        /// Default live metrics collection duration.
+        /// </summary>
+        public static readonly int LiveMetricsDurationSeconds = 10;
+
+        /// <summary>
         /// Default timeout for environment variable manipulation.
         /// </summary>
         public static readonly TimeSpan EnvVarsTimeout = GeneralTimeout;

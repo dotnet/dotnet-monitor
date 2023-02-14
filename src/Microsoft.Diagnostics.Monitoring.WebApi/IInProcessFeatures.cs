@@ -6,5 +6,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public interface IInProcessFeatures
     {
         bool IsCallStacksEnabled { get; }
+
+        bool IsExceptionsEnabled { get; }
     }
 }
