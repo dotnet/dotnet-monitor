@@ -1,6 +1,6 @@
 <Project>
   <!-- Import references updated by Dependabot. -->
   <PropertyGroup>
-    <MicrosoftNETCoreApp70Version>7.0.2</MicrosoftNETCoreApp70Version>
+    <MicrosoftNETCoreApp70Version>7.0.3</MicrosoftNETCoreApp70Version>
   </PropertyGroup>
 </Project>
