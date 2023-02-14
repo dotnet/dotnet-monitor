@@ -80,7 +80,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             return builder.ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
             {
                 IAuthenticationConfigurator authConfigurator = AuthConfiguratorFactory.Create(startupAuthMode, context);
-                services.AddSingleton(authConfigurator);
 
                 //TODO Many of these service additions should be done through extension methods
                 services.AddSingleton(RealSystemClock.Instance);
@@ -120,7 +119,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<ProfilerChannel>();
                 services.ConfigureCollectionRules();
                 services.ConfigureProfiler();
-                services.ConfigureStartupLoggers();
+                services.ConfigureStartupLoggers(authConfigurator);
                 services.AddSingleton<IExperimentalFlags, ExperimentalFlags>();
                 services.ConfigureInProcessFeatures(context.Configuration);
                 services.AddSingleton<IInProcessFeatures, InProcessFeatures>();

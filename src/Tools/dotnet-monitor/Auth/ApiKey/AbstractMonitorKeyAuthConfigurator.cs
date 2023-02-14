@@ -92,8 +92,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 
         protected abstract void ConfigureAuthBuilder(IServiceCollection services, HostBuilderContext context, AuthenticationBuilder authBuilder);
 
-        public abstract void ConfigureSwaggerUI(SwaggerUIOptions options);
-
-        public abstract void LogStartup(ILogger logger, IServiceProvider serviceProvider);
+        public abstract IStartupLogger CreateStartupLogger(ILogger<Startup> logger, IServiceProvider serviceProvider);
     }
 }

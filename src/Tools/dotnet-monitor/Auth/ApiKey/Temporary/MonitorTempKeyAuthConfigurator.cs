@@ -38,15 +38,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Temporary
             services.AddSingleton<IAuthorizationHandler>(new UserAuthorizationHandler(_jwtKey.Subject));
         }
 
-        public override void ConfigureSwaggerUI(SwaggerUIOptions options)
+        public override IStartupLogger CreateStartupLogger(ILogger<Startup> logger, IServiceProvider _)
         {
-
-        }
-
-        public override void LogStartup(ILogger logger, IServiceProvider serviceProvider)
-        {
-            LogIfNegotiateIsDisabledDueToElevation(logger);
-            logger.LogTempKey(_jwtKey.Token);
+            return new AuthenticationStartupLoggerWrapper(() =>
+            {
+                LogIfNegotiateIsDisabledDueToElevation(logger);
+                logger.LogTempKey(_jwtKey.Token);
+            });
         }
     }
 }

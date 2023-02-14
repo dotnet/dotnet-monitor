@@ -24,17 +24,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored
             services.AddSingleton<MonitorApiKeyConfigurationObserver>();
         }
 
-        public override void ConfigureSwaggerUI(SwaggerUIOptions options)
+        public override IStartupLogger CreateStartupLogger(ILogger<Startup> logger, IServiceProvider serviceProvider)
         {
+            return new AuthenticationStartupLoggerWrapper(() =>
+            {
+                LogIfNegotiateIsDisabledDueToElevation(logger);
 
-        }
-
-        public override void LogStartup(ILogger logger, IServiceProvider serviceProvider)
-        {
-            LogIfNegotiateIsDisabledDueToElevation(logger);
-
-            MonitorApiKeyConfigurationObserver observer = serviceProvider.GetRequiredService<MonitorApiKeyConfigurationObserver>();
-            observer.Initialize();
+                MonitorApiKeyConfigurationObserver observer = serviceProvider.GetRequiredService<MonitorApiKeyConfigurationObserver>();
+                observer.Initialize();
+            });
         }
     }
 }

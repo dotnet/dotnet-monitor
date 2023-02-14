@@ -14,7 +14,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
     {
         void ConfigureApiAuth(IServiceCollection services, HostBuilderContext context);
         void ConfigureSwaggerGenAuth(SwaggerGenOptions options);
-        void ConfigureSwaggerUI(SwaggerUIOptions options);
-        void LogStartup(ILogger logger, IServiceProvider serviceProvider);
+        IStartupLogger CreateStartupLogger(ILogger<Startup> logger, IServiceProvider serviceProvider);
     }
 }

@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Amazon.Runtime.Internal.Util;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
@@ -8,6 +9,7 @@ using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.AspNet;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.EventCounter;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
@@ -28,6 +30,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
@@ -247,15 +250,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        public static IServiceCollection ConfigureStartupLoggers(this IServiceCollection services)
+        public static IServiceCollection ConfigureStartupLoggers(this IServiceCollection services, IAuthenticationConfigurator authConfigurator)
         {
             services.AddSingleton<IStartupLogger, ExperienceSurveyStartupLogger>();
             services.AddSingleton<IStartupLogger, ExperimentalStartupLogger>();
             services.AddSingleton<IStartupLogger, HostBuilderStartupLogger>();
             services.AddSingleton<IStartupLogger, DiagnosticPortStartupLogger>();
             services.AddSingleton<IStartupLogger, ElevatedPermissionsStartupLogger>();
-            services.AddSingleton<IStartupLogger, AuthenticationStartupLogger>();
-            services.AddSingleton<IStartupLogger, AddressListenResultsStartupLogger>();
+            services.AddSingleton<IStartupLogger>((services) =>
+            {
+                ILogger<Startup> logger = services.GetRequiredService<ILogger<Startup>>();
+                return authConfigurator.CreateStartupLogger(logger, services);
+            });
             return services;
         }
 

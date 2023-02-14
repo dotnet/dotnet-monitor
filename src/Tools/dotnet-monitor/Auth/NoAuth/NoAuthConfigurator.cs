@@ -28,14 +28,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth
         {
         }
 
-        public void ConfigureSwaggerUI(SwaggerUIOptions options)
+        public IStartupLogger CreateStartupLogger(ILogger<Startup> logger, IServiceProvider _)
         {
-
-        }
-
-        public void LogStartup(ILogger logger, IServiceProvider serviceProvider)
-        {
-            logger.NoAuthentication();
+            return new AuthenticationStartupLoggerWrapper(logger.NoAuthentication);
         }
     }
 }
