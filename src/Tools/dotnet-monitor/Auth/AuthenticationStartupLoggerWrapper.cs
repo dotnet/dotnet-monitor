@@ -9,9 +9,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
     {
         private readonly Action _logAction;
 
-        public AuthenticationStartupLoggerWrapper(Action log)
+        public AuthenticationStartupLoggerWrapper(Action logAction)
         {
-            _logAction = log;
+            _logAction = logAction;
         }
 
         public void Log()
