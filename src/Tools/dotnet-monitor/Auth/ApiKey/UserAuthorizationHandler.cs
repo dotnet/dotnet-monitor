@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored;
 using Microsoft.Extensions.Options;
 using System.Linq;
 using System.Runtime.InteropServices;
