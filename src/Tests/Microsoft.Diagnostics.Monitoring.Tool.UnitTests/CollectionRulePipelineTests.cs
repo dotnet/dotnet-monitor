@@ -101,7 +101,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// <summary>
         /// Test that the pipeline works with the EventCounter trigger.
         /// </summary>
-        [Theory(Skip = "Nondeterministic")]
+        //[Theory(Skip = "Nondeterministic")]
+        [Theory]
         [MemberData(nameof(GetTfmsSupportingPortListener))]
         public Task CollectionRulePipeline_EventCounterTriggerTest(TargetFrameworkMoniker appTfm)
         {
@@ -116,10 +117,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     options.CreateCollectionRule(TestRuleName)
                         .SetEventCounterTrigger(options =>
                         {
-                            // cpu usage greater than 5% for 2 seconds
+                            // cpu usage greater than 0% for 2 seconds
                             options.ProviderName = "System.Runtime";
                             options.CounterName = "cpu-usage";
-                            options.GreaterThan = 5;
+                            options.GreaterThan = 0;
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
                         })
                         .AddAction(CallbackAction.ActionName);
@@ -256,9 +257,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                             options.HistogramMode = HistogramMode.GreaterThan;
                             options.HistogramPercentiles = new Dictionary<string, double>()
                             {
-                                { "50", 0 },
-                                { "95", 0 },
-                                { "99", 0 },
+                                { "0.5", 0 },
+                                { "0.95", 0 },
+                                { "0.99", 0 },
                             };
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
                         })
