@@ -6,7 +6,11 @@ using System;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.IO;
+using System.IO.TextReader;
 using System.Threading.Tasks;
+
+
+
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -125,6 +129,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 ArgumentHelpName = "metricUrls"
             };
+        
+        
+        
 
         private static Option<bool> ProvideMetricsOption =
             new Option<bool>(
