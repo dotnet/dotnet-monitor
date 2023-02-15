@@ -550,8 +550,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             // Set API key via user configuration file
             RootOptions options = new();
             options.UseApiKey(signingAlgo, Guid.NewGuid(), out string apiKey);
-            await toolRunner.WriteUserSettingsAsync(options);
-            toolRunner.ExplicitlySetConfigurationFilePath = true;
+            await toolRunner.WriteExplicitlySetSettingsFileAsync(options);
 
             await toolRunner.StartAsync();
 
