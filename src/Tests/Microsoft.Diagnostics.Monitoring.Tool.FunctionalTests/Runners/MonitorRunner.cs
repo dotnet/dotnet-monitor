@@ -216,13 +216,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public async Task WriteUserSettingsAsync(RootOptions options)
         {
-            await WriteSettingsFileAsync(options, UserSettingsFilePath);
+            await WriteSettingsFileAsync(options, UserSettingsFilePath).ConfigureAwait(false);
             _outputHelper.WriteLine("Wrote user settings.");
         }
 
         public async Task WriteExplicitlySetSettingsFileAsync(RootOptions options)
         {
-            await WriteSettingsFileAsync(options, ExplicitlySetSettingsFilePath);
+            await WriteSettingsFileAsync(options, ExplicitlySetSettingsFilePath).ConfigureAwait(false);
             _useExplicitlySetConfiguration = true;
             _outputHelper.WriteLine("Wrote settings file.");
         }
