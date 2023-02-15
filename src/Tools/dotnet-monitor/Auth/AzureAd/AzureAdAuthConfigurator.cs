@@ -38,17 +38,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
 
         public void ConfigureApiAuth(IServiceCollection services, HostBuilderContext context)
         {
-            // Create in-memory representation of our AzureAdOptions so that our defaults applies
-            // and we only pass fields supported by our schema.
-            IConfiguration azureAdConfig = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(MicrosoftIdentityOptions.Instance)), _azureAdOptions.Instance },
-                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(MicrosoftIdentityOptions.TenantId)), _azureAdOptions.TenantId },
-                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(MicrosoftIdentityOptions.ClientId)), _azureAdOptions.ClientId },
-                { ConfigurationPath.Combine(ConfigurationKeys.AzureAd, nameof(JwtBearerOptions.Audience)), _azureAdOptions.Audience }
-            }).Build();
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(azureAdConfig, ConfigurationKeys.AzureAd);
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApi(
+                    configureJwtBearerOptions: options =>
+                    {
+                        options.Audience = _azureAdOptions.Audience;
+                    },
+                    configureMicrosoftIdentityOptions: options =>
+                    {
+                        options.Instance = _azureAdOptions.Instance;
+                        options.TenantId = _azureAdOptions.TenantId;
+                        options.ClientId = _azureAdOptions.ClientId;
+                    }
+                );
 
             List<string> requiredScopes = new(1);
             if (_azureAdOptions.RequiredScope != null)
