@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Diagnostics.Tools.Monitor.Swagger;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
                 metricUrls: null,
                 metrics: false,
                 diagnosticPort: null,
-                authConfiguration: HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                startupAuthMode: StartupAuthenticationMode.Deferred,
                 userProvidedConfigFilePath: null);
 
             // Create all of the same services as dotnet-monitor and add

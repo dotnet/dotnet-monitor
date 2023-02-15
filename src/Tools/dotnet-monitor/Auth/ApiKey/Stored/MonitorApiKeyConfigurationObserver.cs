@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 
-namespace Microsoft.Diagnostics.Tools.Monitor
+namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored
 {
     /// <summary>
     /// Service that monitors API Key authentication options changes and logs issues with the specified options.
@@ -16,29 +16,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         private readonly ILogger<MonitorApiKeyConfigurationObserver> _logger;
         private readonly IOptionsMonitor<MonitorApiKeyConfiguration> _options;
-        private readonly IAuthConfiguration _authConfigurationOptions;
 
         private IDisposable _changeRegistration;
 
         public MonitorApiKeyConfigurationObserver(
             ILogger<MonitorApiKeyConfigurationObserver> logger,
-            IOptionsMonitor<MonitorApiKeyConfiguration> options,
-            IAuthConfiguration authConfigurationOptions)
+            IOptionsMonitor<MonitorApiKeyConfiguration> options)
         {
             _logger = logger;
             _options = options;
-            _authConfigurationOptions = authConfigurationOptions;
         }
 
         public void Initialize()
         {
-            if (_authConfigurationOptions.KeyAuthenticationMode != KeyAuthenticationMode.NoAuth)
-            {
-                _changeRegistration = _options.OnChange(OnMonitorApiKeyOptionsChanged);
+            _changeRegistration = _options.OnChange(OnMonitorApiKeyOptionsChanged);
 
-                // Write out current validation state of options when starting the tool.
-                CheckMonitorApiKeyOptions(_options.CurrentValue);
-            }
+            // Write out current validation state of options when starting the tool.
+            CheckMonitorApiKeyOptions(_options.CurrentValue);
         }
 
         public void Dispose()

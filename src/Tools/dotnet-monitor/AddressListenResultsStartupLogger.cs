@@ -45,6 +45,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 _logger.UnableToListenToAddress(result.Url, result.Exception);
             }
+
+            if (_listenResults.HasInsecureAuthentication)
+            {
+                _logger.InsecureAuthenticationConfiguration();
+            }
         }
 
         private void OnStarted()
