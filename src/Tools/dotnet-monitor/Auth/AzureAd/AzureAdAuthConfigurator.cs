@@ -19,16 +19,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
     internal sealed class AzureAdAuthConfigurator : IAuthenticationConfigurator
     {
         private readonly AzureAdOptions _azureAdOptions;
+        private readonly Uri _audience;
         private readonly string _fqRequiredScope;
 
         public AzureAdAuthConfigurator(AzureAdOptions azureAdOptions)
         {
             _azureAdOptions = azureAdOptions;
+            _audience = _azureAdOptions.Audience == null ? new Uri($"api://{_azureAdOptions.ClientId}") : new Uri(_azureAdOptions.Audience);
 
             if (_azureAdOptions.RequiredScope != null)
             {
-                Uri audience = _azureAdOptions.Audience == null ? new Uri($"api://{_azureAdOptions.ClientId}") : new Uri(_azureAdOptions.Audience);
-                _fqRequiredScope = new Uri(audience, _azureAdOptions.RequiredScope).ToString();
+                _fqRequiredScope = new Uri(_audience, _azureAdOptions.RequiredScope).ToString();
             }
         }
 
@@ -38,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
                 .AddMicrosoftIdentityWebApi(
                     configureJwtBearerOptions: options =>
                     {
-                        options.Audience = _azureAdOptions.Audience;
+                        options.Audience = _audience.ToString();
                     },
                     configureMicrosoftIdentityOptions: options =>
                     {
