@@ -87,7 +87,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "dotnet-monitor v1.0");
             });
 
-
             app.UseRouting();
 
             app.UseAuthentication();

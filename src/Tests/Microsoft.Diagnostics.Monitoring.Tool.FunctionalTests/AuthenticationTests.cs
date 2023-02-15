@@ -547,10 +547,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
             toolRunner.UseTempApiKey = true;
 
-            // Set API key via key-per-file
+            // Set API key via user configuration file
             RootOptions options = new();
             options.UseApiKey(signingAlgo, Guid.NewGuid(), out string apiKey);
-            toolRunner.WriteKeyPerValueConfiguration(options);
+            await toolRunner.WriteExplicitlySetSettingsFileAsync(options);
 
             await toolRunner.StartAsync();
 

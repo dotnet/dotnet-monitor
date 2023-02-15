@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored;
 using Microsoft.Extensions.Options;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -10,14 +11,21 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor
+namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
     /// <summary>
     /// Handles authorization for both Negotiate and ApiKey authentication.
     /// </summary>
     internal sealed class UserAuthorizationHandler : AuthorizationHandler<AuthorizedUserRequirement>
     {
+        private readonly string _pinnedSubject;
         private readonly IOptionsMonitor<MonitorApiKeyConfiguration> _apiKeyConfig;
+
+        public UserAuthorizationHandler(string pinnedSubject)
+        {
+            _pinnedSubject = pinnedSubject;
+        }
+
         public UserAuthorizationHandler(IOptionsMonitor<MonitorApiKeyConfiguration> apiKeyConfig)
         {
             _apiKeyConfig = apiKeyConfig;
@@ -28,8 +36,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             if (context.User.Identity.AuthenticationType == AuthConstants.FederationAuthType)
             {
                 // If we get a FederationAuthType (Bearer from a Jwt Token) we need to check that the user has the specified subject claim.
-                MonitorApiKeyConfiguration configSnapshot = _apiKeyConfig.CurrentValue;
-                if (context.User.HasClaim(ClaimTypes.NameIdentifier, configSnapshot.Subject))
+                string expectedSubjectClaim = _pinnedSubject ?? _apiKeyConfig.CurrentValue.Subject;
+                if (context.User.HasClaim(ClaimTypes.NameIdentifier, expectedSubjectClaim))
                 {
                     context.Succeed(requirement);
                 }
@@ -50,13 +58,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 //has a deny claim on Administrator group.
                 //Validate that the user that logged in matches the user that is running dotnet-monitor
                 //Do not allow at all if running as Administrator.
-                WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
-                WindowsPrincipal principal = new WindowsPrincipal(currentUser);
-                if (principal.IsInRole(WindowsBuiltInRole.Administrator))
+                if (EnvironmentInformation.IsElevated)
                 {
                     return Task.CompletedTask;
                 }
 
+                using WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
                 Claim currentUserClaim = currentUser.Claims.FirstOrDefault(claim => string.Equals(claim.Type, ClaimTypes.PrimarySid));
                 if ((currentUserClaim != null) && context.User.HasClaim(currentUserClaim.Type, currentUserClaim.Value))
                 {
