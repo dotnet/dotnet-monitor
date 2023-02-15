@@ -7,12 +7,10 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Identity.Web;
 using System.Collections.Generic;
 using System;
-using System.Linq;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Configuration;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.OpenApi.Models;
 
@@ -21,18 +19,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
     internal sealed class AzureAdAuthConfigurator : IAuthenticationConfigurator
     {
         private readonly AzureAdOptions _azureAdOptions;
-        private readonly Dictionary<string, string> _scopes;
+        private readonly string _fqRequiredScope;
 
         public AzureAdAuthConfigurator(AzureAdOptions azureAdOptions)
         {
             _azureAdOptions = azureAdOptions;
 
-            // For now we only support a single scope.
-            _scopes = new(1);
             if (_azureAdOptions.RequiredScope != null)
             {
                 Uri audience = _azureAdOptions.Audience == null ? new Uri($"api://{_azureAdOptions.ClientId}") : new Uri(_azureAdOptions.Audience);
-                _scopes.Add(new Uri(audience, _azureAdOptions.RequiredScope).ToString(), Strings.HelpDescription_RequiredScope_AzureAd);
+                _fqRequiredScope = new Uri(audience, _azureAdOptions.RequiredScope).ToString();
             }
         }
 
@@ -79,7 +75,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
 
             // Only present an option to authenticate if a required scope is set.
             // Otherwise a user cannot authenticate, only other applications can.
-            if (_scopes.Any())
+            if (_fqRequiredScope != null)
             {
                 Uri baseEndpoint = new Uri(new Uri(_azureAdOptions.Instance), $"{_azureAdOptions.TenantId}/oauth2/v2.0/");
 
@@ -92,7 +88,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
                         {
                             AuthorizationUrl = new Uri(baseEndpoint, "authorize"),
                             TokenUrl = new Uri(baseEndpoint, "token"),
-                            Scopes = _scopes
+                            Scopes = new Dictionary<string, string>()
+                            {
+                                { _fqRequiredScope, Strings.HelpDescription_RequiredScope_AzureAd }
+                            }
                         }
                     }
                 });
@@ -105,21 +104,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
                     {
                         Reference = new OpenApiReference { Type= ReferenceType.SecurityScheme, Id = OAuth2SecurityDefinitionName }
                     },
-                    _scopes.Keys.ToArray()
+                    (_fqRequiredScope != null) ? new [] { _fqRequiredScope } : null
                 }
             });
         }
 
         public void ConfigureSwaggerUI(SwaggerUIOptions options)
         {
-            if (!_scopes.Any())
+            if (_fqRequiredScope == null)
             {
                 return;
             }
 
             options.OAuthUsePkce();
             options.OAuthClientId(_azureAdOptions.ClientId);
-            options.OAuthScopes(_scopes.Keys.ToArray());
+            options.OAuthScopes(_fqRequiredScope);
         }
 
         public IStartupLogger CreateStartupLogger(ILogger<Startup> logger, IServiceProvider _)
