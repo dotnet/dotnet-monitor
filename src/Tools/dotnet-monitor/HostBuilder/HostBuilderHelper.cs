@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -74,17 +75,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // If a file at this path does not have read permissions, the application will fail to launch.
                     builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
                     builder.AddEnvironmentVariables(ToolIdentifiers.StandardPrefix);
-
-                    if (settings.Authentication.KeyAuthenticationMode == KeyAuthenticationMode.TemporaryKey)
-                    {
-                        // These are configured via the command line configuration source so that
-                        // the "show config" command will report these are from the command line
-                        // rather than an in-memory collection.
-                        List<string> arguments = new();
-                        AddTempApiKeyArguments(arguments, settings);
-
-                        builder.AddCommandLine(arguments.ToArray());
-                    }
 
                     // User-specified configuration file path is considered highest precedence, but does NOT override other configuration sources
                     FileInfo userFilePath = settings.UserProvidedConfigFilePath;
@@ -161,7 +151,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             options,
                             urls,
                             metricsOptions.GetEnabled() ? metricUrls : Array.Empty<string>(),
-                            settings.Authentication.KeyAuthenticationMode != KeyAuthenticationMode.NoAuth);
+                            settings.AuthenticationMode != StartupAuthenticationMode.NoAuth);
                     })
                     .UseStartup<Startup>();
                 })
@@ -213,10 +203,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
-        public static AuthConfiguration CreateAuthConfiguration(bool noAuth, bool tempApiKey)
+        public static StartupAuthenticationMode GetStartupAuthenticationMode(bool noAuth, bool tempApiKey)
         {
-            KeyAuthenticationMode authMode = noAuth ? KeyAuthenticationMode.NoAuth : tempApiKey ? KeyAuthenticationMode.TemporaryKey : KeyAuthenticationMode.StoredKey;
-            return new AuthConfiguration(authMode);
+            if (noAuth)
+            {
+                return StartupAuthenticationMode.NoAuth;
+            }
+
+            if (tempApiKey)
+            {
+                return StartupAuthenticationMode.TemporaryKey;
+            }
+
+            // The authentication mode wasn't configured by startup arguments.
+            // Defer determining which auth mode to use until we can inspect the provided configuration.
+            return StartupAuthenticationMode.Deferred;
         }
 
         private static void ConfigureMetricsDefaults(IConfigurationBuilder builder)
@@ -259,20 +260,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             arguments.Add(FormatCmdLineArgument(
                 ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.Enabled)),
                 settings.EnableMetrics.ToString()));
-        }
-
-        private static void AddTempApiKeyArguments(List<string> arguments, HostBuilderSettings settings)
-        {
-            if (settings.Authentication.TemporaryJwtKey != null)
-            {
-                arguments.Add(FormatCmdLineArgument(
-                    ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.Subject)),
-                    settings.Authentication.TemporaryJwtKey.Subject));
-
-                arguments.Add(FormatCmdLineArgument(
-                    ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.PublicKey)),
-                    settings.Authentication.TemporaryJwtKey.PublicKey));
-            }
         }
 
         private static void AddUrlsArguments(List<string> arguments, HostBuilderSettings settings)
