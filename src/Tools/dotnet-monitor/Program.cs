@@ -88,7 +88,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             };
 
             showCommand.SetHandler(context =>
-            {
+            { 
                 ConfigShowCommandHandler.Invoke(
                     context.ParseResult.GetValue(UrlsOption),
                     context.ParseResult.GetValue(MetricUrlsOption),
