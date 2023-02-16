@@ -17,12 +17,6 @@ namespace Microsoft.Diagnostics.Monitoring.S3
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_EgressProviderSavedStream);
 
-        private static readonly Action<ILogger, string, string, Exception> _egressProviderUnableToFindPropertyKey =
-            LoggerMessage.Define<string, string>(
-                eventId: LoggingEventIds.EgressProviderUnableToFindPropertyKey.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_EgressProviderUnableToFindPropertyKey);
-
         public static void EgressProviderInvokeStreamAction(this ILogger logger, string providerName)
         {
             _egressProviderInvokeStreamAction(logger, providerName, null);
@@ -31,11 +25,6 @@ namespace Microsoft.Diagnostics.Monitoring.S3
         public static void EgressProviderSavedStream(this ILogger logger, string providerName, string path)
         {
             _egressProviderSavedStream(logger, providerName, path, null);
-        }
-
-        public static void EgressProviderUnableToFindPropertyKey(this ILogger logger, string providerName, string keyName)
-        {
-            _egressProviderUnableToFindPropertyKey(logger, providerName, keyName, null);
         }
     }
 }

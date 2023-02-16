@@ -7,9 +7,8 @@ namespace Microsoft.Diagnostics.Monitoring.S3
     // New logging events must use the next available EventId.
     internal enum LoggingEventIds
     {
-        EgressProviderUnableToFindPropertyKey = 1,
-        EgressProviderInvokeStreamAction = 2,
-        EgressProviderSavedStream = 3,
+        EgressProviderInvokeStreamAction = 1,
+        EgressProviderSavedStream = 2
     }
 
     internal static class LoggingEventIdsExtensions
