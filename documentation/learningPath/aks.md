@@ -12,3 +12,28 @@ This workflow takes your local development copy of `dotnet-monitor`, patches it 
 ## Patching `dotnet monitor`
 
 >**Note**: If your changes do not involve the [.NET Core Diagnostics Repo](https://github.com/dotnet/diagnostics#net-core-diagnostics-repo), feel free to skip this step.
+
+1. Open `Powershell` and run the [generate-dev-sln script](https://github.com/dotnet/dotnet-monitor/blob/main/generate-dev-sln.ps1), providing a path to your local copy of the diagnostics repo.
+
+```bash
+cd C:\your-path\dotnet-monitor 
+.\generate-dev-sln.ps1 C:\your-path\diagnostics
+```
+
+2. Publish `dotnet monitor` to your desired (local) target location
+
+```bash
+dotnet publish .\src\Tools\dotnet-monitor -o $env:TEMP\dotnet-monitor -c Release -f net6.0
+```
+
+3. Add a Dockerfile to the `dotnet monitor` directory created in the previous step. Below is an example of the contents of the Dockerfile:
+
+```bash
+FROM mcr.microsoft.com/dotnet/nightly/aspnet:6.0-alpine 
+ENV COMPlus_EnableDiagnostics 0
+ENV ASPNETCORE_URLS=
+ENV DOTNET_MONITOR_VERSION=6
+WORKDIR /app
+COPY . .
+ENTRYPOINT ["dotnet", "dotnet-monitor.dll", "collect", "--no-auth"]
+```
