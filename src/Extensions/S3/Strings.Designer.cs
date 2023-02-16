@@ -97,15 +97,6 @@ namespace Microsoft.Diagnostics.Monitoring.S3 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Copying action stream to egress stream with buffer size {bufferSize}.
-        /// </summary>
-        internal static string LogFormatString_EgressCopyActionStreamToEgressStream {
-            get {
-                return ResourceManager.GetString("LogFormatString_EgressCopyActionStreamToEgressStream", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Provider {providerType}: Invoking stream action..
         /// </summary>
         internal static string LogFormatString_EgressProviderInvokeStreamAction {

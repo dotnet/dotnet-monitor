@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3
 
         private static readonly Action<ILogger, string, string, Exception> _egressProviderUnableToFindPropertyKey =
             LoggerMessage.Define<string, string>(
-                eventId: LoggingEventIds.EgressProvideUnableToFindPropertyKey.EventId(),
+                eventId: LoggingEventIds.EgressProviderUnableToFindPropertyKey.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EgressProviderUnableToFindPropertyKey);
 

@@ -137,12 +137,6 @@
     <value>S3 storage egress failed: Neither the secrets file nor the password are specified.</value>
     <comment>Gets the string for rejecting validation due to missing credentials for S3 options.</comment>
   </data>
-  <data name="LogFormatString_EgressCopyActionStreamToEgressStream" xml:space="preserve">
-    <value>Copying action stream to egress stream with buffer size {bufferSize}</value>
-    <comment>Gets the format string that is printed in the 5:EgressCopyActionStreamToEgressStream event.
-1 Format Parameter:
-1. bufferSize: Size of the buffer</comment>
-  </data>
   <data name="LogFormatString_EgressProviderInvokeStreamAction" xml:space="preserve">
     <value>Provider {providerType}: Invoking stream action.</value>
     <comment>Gets the format string that is printed in the 11:EgressProviderInvokeStreamAction event.

@@ -39,8 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3
                 if (!string.IsNullOrEmpty(options.Endpoint))
                     configuration.ServiceURL = options.Endpoint;
                 if (!string.IsNullOrEmpty(options.RegionName))
-                    configuration.RegionEndpoint = RegionEndpoint.GetBySystemName(options.RegionName);
-                    //configuration.AuthenticationRegion = options.RegionName;
+                    configuration.AuthenticationRegion = options.RegionName;
             }
             // use configured AWS profile
             else if (!string.IsNullOrEmpty(options.AwsProfileName))
