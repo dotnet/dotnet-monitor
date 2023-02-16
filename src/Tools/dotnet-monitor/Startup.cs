@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Builder;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
-
+using System;
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal class Startup
@@ -44,9 +44,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 options.Filters.Add(typeof(EgressValidationUnhandledExceptionFilter));
             });
 
-            services.Configure<ApiBehaviorOptions>(options =>
+             services.Configure<ApiBehaviorOptions>(options =>
             {
-                options.InvalidModelStateResponseFactory = context =>
+                options.InvalidModelStateResponseFactory = context   =>
                 {
                     var details = new ValidationProblemDetails(context.ModelState);
                     var result = new BadRequestObjectResult(details);
