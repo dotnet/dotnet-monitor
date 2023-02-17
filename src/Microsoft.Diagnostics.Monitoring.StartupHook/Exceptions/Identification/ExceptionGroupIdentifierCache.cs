@@ -14,14 +14,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
     /// Class that caches naming information for provided metadata
     /// and invokes callbacks for new instances of the metadata.
     /// </summary>
-    internal sealed class ExceptionIdentifierCache
+    internal sealed class ExceptionGroupIdentifierCache
     {
         // List of callbacks to invoke for newly provided metadata.
-        private readonly IEnumerable<ExceptionIdentifierCacheCallback> _callbacks;
+        private readonly IEnumerable<ExceptionGroupIdentifierCacheCallback> _callbacks;
 
-        // Mapping of ExceptionIdentifier to a unique ID; ExceptionIdentifier itself does not have a way
+        // Mapping of ExceptionGroupIdentifier to a unique ID; ExceptionGroupIdentifier itself does not have a way
         // of uniquely identifying itself using a primitive type.
-        private readonly ConcurrentDictionary<ExceptionIdentifier, ulong> _exceptionIds = new();
+        private readonly ConcurrentDictionary<ExceptionGroupIdentifier, ulong> _exceptionGroupIds = new();
 
         private readonly ConcurrentDictionary<MethodBase, ulong> _methodIds = new();
 
@@ -34,12 +34,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         // Name cache for all provided metadata
         private readonly NameCache _nameCache = new();
 
-        private ulong _nextRegistrationId = 1;
+        private ulong _nextGroupId = 1;
         private ulong _nextMethodId = 1;
         private ulong _nextModuleId = 1;
         private ulong _nextStackFrameId = 1;
 
-        public ExceptionIdentifierCache(IEnumerable<ExceptionIdentifierCacheCallback> callbacks)
+        public ExceptionGroupIdentifierCache(IEnumerable<ExceptionGroupIdentifierCacheCallback> callbacks)
         {
             ArgumentNullException.ThrowIfNull(callbacks);
 
@@ -47,27 +47,27 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         }
 
         /// <summary>
-        /// Gets the identifier of the <see cref="ExceptionIdentifier"/> and
+        /// Gets the identifier of the <see cref="ExceptionGroupIdentifier"/> and
         /// caches its data if it has not been encountered yet.
         /// </summary>
         /// <returns>
-        /// An identifier that uniquely identifies the <see cref="ExceptionIdentifier"/> in this cache.
+        /// An identifier that uniquely identifies the <see cref="ExceptionGroupIdentifier"/> in this cache.
         /// </returns>
-        public ulong GetOrAdd(ExceptionIdentifier exceptionId)
+        public ulong GetOrAdd(ExceptionGroupIdentifier exceptionGroupId)
         {
-            if (!GetOrCreateIdentifier(_exceptionIds, exceptionId, ref _nextRegistrationId, out ulong registrationId))
-                return registrationId;
+            if (!GetOrCreateIdentifier(_exceptionGroupIds, exceptionGroupId, ref _nextGroupId, out ulong groupId))
+                return groupId;
 
-            ExceptionIdentifierData data = new()
+            ExceptionGroupData data = new()
             {
-                ExceptionClassId = GetOrAdd(exceptionId.ExceptionType),
-                ThrowingMethodId = AddOrDefault(exceptionId.ThrowingMethod),
-                ILOffset = exceptionId.ILOffset
+                ExceptionClassId = GetOrAdd(exceptionGroupId.ExceptionType),
+                ThrowingMethodId = AddOrDefault(exceptionGroupId.ThrowingMethod),
+                ILOffset = exceptionGroupId.ILOffset
             };
 
-            InvokeExceptionIdentifierCallbacks(registrationId, data);
+            InvokeExceptionGroupCallbacks(groupId, data);
 
-            return registrationId;
+            return groupId;
         }
 
         /// <summary>
@@ -329,17 +329,17 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             return false;
         }
 
-        private void InvokeExceptionIdentifierCallbacks(ulong registrationId, ExceptionIdentifierData data)
+        private void InvokeExceptionGroupCallbacks(ulong groupId, ExceptionGroupData data)
         {
-            foreach (ExceptionIdentifierCacheCallback callback in _callbacks)
+            foreach (ExceptionGroupIdentifierCacheCallback callback in _callbacks)
             {
-                callback.OnExceptionIdentifier(registrationId, data);
+                callback.OnExceptionGroupData(groupId, data);
             }
         }
 
         private void InvokeClassDataCallbacks(ulong classId, ClassData data)
         {
-            foreach (ExceptionIdentifierCacheCallback callback in _callbacks)
+            foreach (ExceptionGroupIdentifierCacheCallback callback in _callbacks)
             {
                 callback.OnClassData(classId, data);
             }
@@ -347,7 +347,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 
         private void InvokeFunctionDataCallbacks(ulong functionId, FunctionData data)
         {
-            foreach (ExceptionIdentifierCacheCallback callback in _callbacks)
+            foreach (ExceptionGroupIdentifierCacheCallback callback in _callbacks)
             {
                 callback.OnFunctionData(functionId, data);
             }
@@ -355,7 +355,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 
         private void InvokeModuleDataCallbacks(ulong moduleId, ModuleData data)
         {
-            foreach (ExceptionIdentifierCacheCallback callback in _callbacks)
+            foreach (ExceptionGroupIdentifierCacheCallback callback in _callbacks)
             {
                 callback.OnModuleData(moduleId, data);
             }
@@ -363,7 +363,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 
         private void InvokeStackFrameDataCallbacks(ulong moduleId, StackFrameData data)
         {
-            foreach (ExceptionIdentifierCacheCallback callback in _callbacks)
+            foreach (ExceptionGroupIdentifierCacheCallback callback in _callbacks)
             {
                 callback.OnStackFrameData(moduleId, data);
             }
@@ -371,7 +371,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 
         private void InvokeTokenDataCallbacks(ulong moduleId, uint typeToken, TokenData data)
         {
-            foreach (ExceptionIdentifierCacheCallback callback in _callbacks)
+            foreach (ExceptionGroupIdentifierCacheCallback callback in _callbacks)
             {
                 callback.OnTokenData(moduleId, typeToken, data);
             }
