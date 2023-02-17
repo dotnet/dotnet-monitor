@@ -3,8 +3,8 @@
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 {
-    internal abstract class ExceptionsStoreCallback
+    internal interface IExceptionsStore
     {
-        public virtual void OnExceptionInstance(ulong exceptionId, string message) { }
+        void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message);
     }
 }

@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 expectedInstanceCount: 1,
                 validate: instances =>
                 {
-                    TestCallback.ExceptionInstance instance = Assert.Single(instances);
+                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
                     Assert.NotNull(instance);
                     Assert.NotEqual(0UL, instance.ExceptionId);
                     Assert.Equal(typeof(InvalidOperationException).FullName, instance.TypeName);
@@ -67,10 +67,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     Assert.Equal(ExpectedInstanceCount, instances.Count());
 
-                    TestCallback.ExceptionInstance instance1 = instances.First();
+                    TestExceptionsStore.ExceptionInstance instance1 = instances.First();
                     Assert.NotNull(instance1);
 
-                    TestCallback.ExceptionInstance instance2 = instances.Skip(1).Single();
+                    TestExceptionsStore.ExceptionInstance instance2 = instances.Skip(1).Single();
                     Assert.NotNull(instance2);
 
                     // Relying on record equality
@@ -89,7 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 expectedInstanceCount: 1,
                 validate: instances =>
                 {
-                    TestCallback.ExceptionInstance instance = Assert.Single(instances);
+                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
                     Assert.NotNull(instance);
                     Assert.NotEqual(0UL, instance.ExceptionId);
                     Assert.Equal(typeof(TaskCanceledException).FullName, instance.TypeName);
@@ -109,7 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 expectedInstanceCount: 1,
                 validate: instances =>
                 {
-                    TestCallback.ExceptionInstance instance = Assert.Single(instances);
+                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
                     Assert.NotNull(instance);
                     Assert.NotEqual(0UL, instance.ExceptionId);
                     Assert.Equal(typeof(ArgumentNullException).FullName, instance.TypeName);
@@ -129,7 +129,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 expectedInstanceCount: 1,
                 validate: instances =>
                 {
-                    TestCallback.ExceptionInstance instance = Assert.Single(instances);
+                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
                     Assert.NotNull(instance);
                     Assert.NotEqual(0UL, instance.ExceptionId);
                     Assert.Equal("Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomException`2[System.Int32,System.String]", instance.TypeName);
@@ -141,7 +141,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private async Task Execute(
             string subScenarioName,
             int expectedInstanceCount,
-            Action<IEnumerable<TestCallback.ExceptionInstance>> validate)
+            Action<IEnumerable<TestExceptionsStore.ExceptionInstance>> validate)
         {
             EndpointInfoSourceCallback callback = new(_outputHelper);
             await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
@@ -160,9 +160,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 await newEndpointInfoTask;
 
-                ExceptionsStore store = new();
-                TestCallback callback = new(store);
-                store.AddCallback(callback);
+                TestExceptionsStore store = new(expectedInstanceCount);
 
                 EventExceptionsPipelineSettings settings = new();
                 await using EventExceptionsPipeline pipeline = new(newEndpointInfoTask.Result.Endpoint, settings, store);
@@ -177,9 +175,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 await runner.SendCommandAsync(TestAppScenarios.Exceptions.Commands.End);
 
                 // Wait for the expected number of exceptions to have been reported
-                await callback.InstanceThresholdTask.WaitAsync(timeoutSource.Token);
+                await store.InstanceThresholdTask.WaitAsync(timeoutSource.Token);
 
-                validate(callback.Instances);
+                validate(store.Instances);
             });
         }
 
@@ -194,14 +192,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             runner.Environment.Add("DOTNET_STARTUP_HOOKS", startupHookPath);
         }
 
-        private sealed class TestCallback : ExceptionsStoreCallback
+        private sealed class TestExceptionsStore : IExceptionsStore
         {
             private readonly List<ExceptionInstance> _instances = new();
 
             private readonly int _instanceThreshold;
             private readonly TaskCompletionSource _instanceThresholdSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            private readonly ExceptionsStore _store;
 
             private int _instanceCount;
 
@@ -209,22 +205,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             public IEnumerable<ExceptionInstance> Instances => _instances;
 
-            public TestCallback(ExceptionsStore store, int instanceThreshold = 1)
+            public TestExceptionsStore(int instanceThreshold = 1)
             {
-                ArgumentNullException.ThrowIfNull(store, nameof(store));
-
                 _instanceThreshold = instanceThreshold;
-                _store = store;
             }
 
-            public override void OnExceptionInstance(ulong exceptionId, string message)
+            public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message)
             {
-                Assert.True(_store.TryGetExceptionId(exceptionId, out ulong exceptionClassId, out ulong throwingMethodId, out _));
+                Assert.True(cache.TryGetExceptionId(exceptionId, out ulong exceptionClassId, out ulong throwingMethodId, out _));
 
                 StringBuilder typeBuilder = new();
-                NameFormatter.BuildClassName(typeBuilder, _store.NameCache, exceptionClassId);
+                NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId);
 
-                Assert.True(_store.NameCache.FunctionData.TryGetValue(throwingMethodId, out FunctionData throwingMethodData));
+                Assert.True(cache.NameCache.FunctionData.TryGetValue(throwingMethodId, out FunctionData throwingMethodData));
 
                 _instances.Add(new ExceptionInstance(exceptionId, typeBuilder.ToString(), message, throwingMethodData.Name));
                 if (++_instanceCount >= _instanceThreshold)

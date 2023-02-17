@@ -1,25 +1,20 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
-using System;
 using System.Collections.Generic;
+using System;
+using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
+using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 
-namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
+namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {
-    internal sealed class ExceptionsStore
+    internal sealed class EventExceptionsPipelineNameCache : IExceptionsNameCache
     {
-        private readonly List<ExceptionsStoreCallback> _callbacks = new();
         private readonly List<ExceptionInstance> _exceptions = new();
         private readonly Dictionary<ulong, ExceptionIdentifier> _exceptionIds = new();
         private readonly NameCache _nameCache = new();
 
         public NameCache NameCache => _nameCache;
-
-        public void AddCallback(ExceptionsStoreCallback callback)
-        {
-            _callbacks.Add(callback);
-        }
 
         public void AddClass(ulong id, uint token, ulong moduleId, ClassFlags flags, ulong[] typeArgs)
         {
@@ -34,11 +29,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
         public void AddExceptionInstance(ulong exceptionId, string message)
         {
             _exceptions.Add(new ExceptionInstance(exceptionId, message));
-
-            foreach (ExceptionsStoreCallback callback in _callbacks)
-            {
-                callback.OnExceptionInstance(exceptionId, message);
-            }
         }
 
         public void AddFunction(ulong id, ulong classId, uint classToken, ulong moduleId, string name, ulong[] typeArgs)
