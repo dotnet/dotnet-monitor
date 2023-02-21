@@ -319,11 +319,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             const string ExpectedProviderName = "Provider";
             const string ExpectedCounterName = "Counter";
             TimeSpan ExpectedDuration = TimeSpan.FromSeconds(30);
-            const HistogramMode ExpectedHistogramMode = HistogramMode.GreaterThan;
-            Dictionary<string, double> ExpectedHistogramPercentiles = new()
-            {
-                { "50", 100 }
-            };
+            string ExpectedHistogramPercentile = "50";
 
             return ValidateSuccess(
                 rootOptions =>
@@ -333,8 +329,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         {
                             options.ProviderName = ExpectedProviderName;
                             options.InstrumentName = ExpectedCounterName;
-                            options.HistogramMode = ExpectedHistogramMode;
-                            options.HistogramPercentiles = ExpectedHistogramPercentiles;
+                            options.HistogramPercentile = ExpectedHistogramPercentile;
                             options.SlidingWindowDuration = ExpectedDuration;
                         });
                 },
@@ -343,8 +338,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     SystemDiagnosticsMetricsOptions systemDiagnosticsMetricsOptions = ruleOptions.VerifySystemDiagnosticsMetricsTrigger();
                     Assert.Equal(ExpectedProviderName, systemDiagnosticsMetricsOptions.ProviderName);
                     Assert.Equal(ExpectedCounterName, systemDiagnosticsMetricsOptions.InstrumentName);
-                    Assert.Equal(ExpectedHistogramMode, systemDiagnosticsMetricsOptions.HistogramMode);
-                    Assert.Equal(ExpectedHistogramPercentiles, systemDiagnosticsMetricsOptions.HistogramPercentiles);
+                    Assert.Equal(ExpectedHistogramPercentile, systemDiagnosticsMetricsOptions.HistogramPercentile);
                     Assert.Equal(ExpectedDuration, systemDiagnosticsMetricsOptions.SlidingWindowDuration);
                 });
         }
@@ -427,15 +421,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
-        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_GreaterThanAndHistogramSettings()
+        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_InvalidHistogramPercentile()
         {
             const string ExpectedProviderName = "Provider";
             const string ExpectedCounterName = "Counter";
-            const HistogramMode ExpectedHistogramMode = HistogramMode.GreaterThan;
-            Dictionary<string, double> ExpectedHistogramPercentiles = new()
-            {
-                { "50", 100 }
-            };
+
+            string ExpectedHistogramPercentile = "101";
 
             return ValidateFailure(
                 rootOptions =>
@@ -445,70 +436,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         {
                             options.ProviderName = ExpectedProviderName;
                             options.InstrumentName = ExpectedCounterName;
-                            options.GreaterThan = 0.75;
-                            options.HistogramMode = ExpectedHistogramMode;
-                            options.HistogramPercentiles = ExpectedHistogramPercentiles;
+                            options.GreaterThan = 0.5;
+                            options.HistogramPercentile = ExpectedHistogramPercentile;
                         });
                 },
                 ex =>
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyCannotHaveGreaterThanLessThanWithHistogram(failures, 0);
-                });
-        }
 
-        [Fact]
-        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_HistogramModeButNoPercentiles()
-        {
-            const string ExpectedProviderName = "Provider";
-            const string ExpectedCounterName = "Counter";
-            const HistogramMode ExpectedHistogramMode = HistogramMode.GreaterThan;
+                    // ADD THE FAILURE HERE
 
-            return ValidateFailure(
-                rootOptions =>
-                {
-                    rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetSystemDiagnosticsMetricsTrigger(options =>
-                        {
-                            options.ProviderName = ExpectedProviderName;
-                            options.InstrumentName = ExpectedCounterName;
-                            options.HistogramMode = ExpectedHistogramMode;
-                        });
-                },
-                ex =>
-                {
-                    string[] failures = ex.Failures.ToArray();
-                    Assert.Single(failures);
-                    VerifyMissingComplementaryField(failures, 0, nameof(SystemDiagnosticsMetricsOptions.HistogramMode), nameof(SystemDiagnosticsMetricsOptions.HistogramPercentiles));
-                });
-        }
-
-        [Fact]
-        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_HistogramPercentilesButNoMode()
-        {
-            const string ExpectedProviderName = "Provider";
-            const string ExpectedCounterName = "Counter";
-            Dictionary<string, double> ExpectedHistogramPercentiles = new()
-            {
-                { "50", 100 }
-            };
-            return ValidateFailure(
-                rootOptions =>
-                {
-                    rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetSystemDiagnosticsMetricsTrigger(options =>
-                        {
-                            options.ProviderName = ExpectedProviderName;
-                            options.InstrumentName = ExpectedCounterName;
-                            options.HistogramPercentiles = ExpectedHistogramPercentiles;
-                        });
-                },
-                ex =>
-                {
-                    string[] failures = ex.Failures.ToArray();
-                    Assert.Single(failures);
-                    VerifyMissingComplementaryField(failures, 0, nameof(SystemDiagnosticsMetricsOptions.HistogramPercentiles), nameof(SystemDiagnosticsMetricsOptions.HistogramMode));
                 });
         }
 

@@ -1518,20 +1518,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The histogram mode that dictates whether the histogram percentiles are minimums or maximums..
+        ///   Looks up a localized string similar to When monitoring a histogram, this dictates which percentile to compare against using the value in GreaterThan/LessThan..
         /// </summary>
-        public static string DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_HistogramMode {
+        public static string DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_HistogramPercentile {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_HistogramMode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The histogram percentiles and the threshold levels that should be maintained for the specified duration. .
-        /// </summary>
-        public static string DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_HistogramPercentiles {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_HistogramPercentiles", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_HistogramPercentile", resourceCulture);
             }
         }
         
