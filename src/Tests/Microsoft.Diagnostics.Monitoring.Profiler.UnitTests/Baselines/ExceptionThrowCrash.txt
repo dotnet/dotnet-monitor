@@ -1,12 +1,9 @@
 ﻿[profiler]dbug: Exception thrown: System.InvalidOperationException
 [profiler]dbug: Exception method: Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp.dll!Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp.Scenarios.ExceptionThrowCrashScenario.Execute
-[profiler]dbug: Exception handled: System.CommandLine.dll!System.CommandLine.Invocation.AnonymousCommandHandler+<InvokeAsync>d__6.MoveNext
+[profiler]dbug: Exception handled: System.CommandLine.dll!System.CommandLine.Invocation.AnonymousCommandHandler+<InvokeAsync>d__5.MoveNext
 [profiler]dbug: Exception thrown: System.InvalidOperationException
 [profiler]dbug: Exception method: System.Private.CoreLib.dll!System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw
-[profiler]dbug: Exception handled: System.CommandLine.dll!System.CommandLine.Parsing.ParseResultExtensions+<InvokeAsync>d__0.MoveNext
-[profiler]dbug: Exception thrown: System.InvalidOperationException
-[profiler]dbug: Exception method: System.Private.CoreLib.dll!System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw
-[profiler]dbug: Exception handled: System.CommandLine.dll!System.CommandLine.Parsing.ParserExtensions+<InvokeAsync>d__3.MoveNext
+[profiler]dbug: Exception handled: System.CommandLine.dll!System.CommandLine.Invocation.InvocationPipeline+<InvokeAsync>d__0.MoveNext
 [profiler]dbug: Exception thrown: System.InvalidOperationException
 [profiler]dbug: Exception method: System.Private.CoreLib.dll!System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw
 [ignore]The following are expected but are not being produced in CI builds at this time.
