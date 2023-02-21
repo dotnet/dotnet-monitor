@@ -52,6 +52,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private void Callback(TraceEvent traceEvent)
         {
+            // Using event name instead of event ID because event ID seem to be dynamically assigned
+            // in the order in which they are used.
             switch (traceEvent.EventName)
             {
                 case "ClassDescription":
@@ -103,6 +105,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         traceEvent.GetPayload<uint>(NameIdentificationEvents.TokenDescPayloads.OuterToken),
                         traceEvent.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.Name)
                         );
+                    break;
+                case "Flush":
                     break;
 #if DEBUG
                 default:

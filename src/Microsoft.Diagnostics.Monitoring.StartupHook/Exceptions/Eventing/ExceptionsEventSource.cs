@@ -40,6 +40,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             _flushEventsTimer = new Timer(FlushTimerTick);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            _flushEventsTimer.Dispose();
+            base.Dispose(disposing);
+        }
+
         [Event(ExceptionEvents.EventIds.ExceptionIdentifier)]
         public void ExceptionIdentifier(
             ulong ExceptionId,
@@ -161,7 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         }
 
         [Event(ExceptionEvents.EventIds.Flush)]
-        public void Flush()
+        private void Flush()
         {
             WriteEvent(ExceptionEvents.EventIds.Flush);
         }
