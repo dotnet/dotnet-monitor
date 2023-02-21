@@ -7,8 +7,8 @@
   <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
     <VersionPrefix>7.1.0</VersionPrefix>
-    <PreReleaseVersionLabel>rtm</PreReleaseVersionLabel>
-    <DotnetFinalVersionKind>release</DotnetFinalVersionKind>
+    <PreReleaseVersionLabel>alpha</PreReleaseVersionLabel>
+    <PreReleaseVersionIteration>1</PreReleaseVersionIteration>
     <DotNetUseShippingVersions>true</DotNetUseShippingVersions>
     <!--
       Build quality notion for blob group naming, similar to aka.ms channel build quality in Arcade:
