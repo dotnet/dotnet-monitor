@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return command;
         }
 
-        public static async Task ExecuteAsync(InvocationContext context)
+        public static async Task ExecuteAsync(InvocationContext context, CancellationToken token)
         {
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 }
 
                 return 0;
-            }, context.GetCancellationToken());
+            }, token);
         }
     }
 }
