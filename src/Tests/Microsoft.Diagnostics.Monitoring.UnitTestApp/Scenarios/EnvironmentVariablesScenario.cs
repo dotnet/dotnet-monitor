@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
@@ -22,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return command;
         }
 
-        public static async Task ExecuteAsync(InvocationContext context)
+        public static async Task ExecuteAsync(InvocationContext context, CancellationToken token)
         {
             string[] acceptableCommands = new string[]
             {
@@ -50,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                             return 0;
                     }
                 }
-            }, context.GetCancellationToken());
+            }, token);
         }
     }
 }
