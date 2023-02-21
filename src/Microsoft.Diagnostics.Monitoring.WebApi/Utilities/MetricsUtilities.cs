@@ -12,11 +12,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class MetricsUtilities
     {
-        public static async Task CaptureLiveMetricsAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, EventPipeCounterPipelineSettings settings, Stream outputStream, CancellationToken token)
+        public static async Task CaptureLiveMetricsAsync(TaskCompletionSource<object> startCompletionSource, IEndpointInfo endpointInfo, MetricsPipelineSettings settings, Stream outputStream, CancellationToken token)
         {
             var client = new DiagnosticsClient(endpointInfo.Endpoint);
 
-            await using EventCounterPipeline eventCounterPipeline = new EventCounterPipeline(client,
+            await using MetricsPipeline eventCounterPipeline = new MetricsPipeline(client,
                 settings,
                 loggers:
                 new[] { new JsonCounterLogger(outputStream) });

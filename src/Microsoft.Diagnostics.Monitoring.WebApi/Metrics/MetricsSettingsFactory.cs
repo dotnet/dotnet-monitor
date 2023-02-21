@@ -12,22 +12,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// <summary>
     /// Utility class to create metric settings (for both configuration and on demand metrics).
     /// </summary>
-    internal static class EventCounterSettingsFactory
+    internal static class MetricsSettingsFactory
     {
-        public static EventPipeCounterPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, bool includeDefaults,
+        public static MetricsPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, bool includeDefaults,
             int durationSeconds)
         {
             return CreateSettings(includeDefaults, durationSeconds, counterOptions.GetIntervalSeconds(), () => new List<EventPipeCounterGroup>(0));
         }
 
-        public static EventPipeCounterPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, MetricsOptions options)
+        public static MetricsPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, MetricsOptions options)
         {
             return CreateSettings(options.IncludeDefaultProviders.GetValueOrDefault(MetricsOptionsDefaults.IncludeDefaultProviders),
                 Timeout.Infinite, counterOptions.GetIntervalSeconds(),
                 () => ConvertCounterGroups(options.Providers));
         }
 
-        public static EventPipeCounterPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, int durationSeconds,
+        public static MetricsPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, int durationSeconds,
             Models.EventMetricsConfiguration configuration)
         {
             return CreateSettings(configuration.IncludeDefaultProviders,
@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 () => ConvertCounterGroups(configuration.Providers));
         }
 
-        private static EventPipeCounterPipelineSettings CreateSettings(bool includeDefaults,
+        private static MetricsPipelineSettings CreateSettings(bool includeDefaults,
             int durationSeconds,
             float counterInterval,
             Func<List<EventPipeCounterGroup>> createCounterGroups)
@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.GrpcAspNetCoreServer });
             }
 
-            return new EventPipeCounterPipelineSettings
+            return new MetricsPipelineSettings
             {
                 CounterGroups = eventPipeCounterGroups.ToArray(),
                 Duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds),
