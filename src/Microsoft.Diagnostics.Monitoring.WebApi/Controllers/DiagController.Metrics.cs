@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 string fileName = MetricsUtilities.GetMetricFilename(processInfo.EndpointInfo);
 
-                EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                MetricsPipelineSettings settings = MetricsSettingsFactory.CreateSettings(
                     _counterOptions.CurrentValue,
                     includeDefaults: true,
                     durationSeconds: durationSeconds);
@@ -97,7 +97,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 string fileName = MetricsUtilities.GetMetricFilename(processInfo.EndpointInfo);
 
-                EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                MetricsPipelineSettings settings = MetricsSettingsFactory.CreateSettings(
                     _counterOptions.CurrentValue,
                     durationSeconds,
                     configuration);
