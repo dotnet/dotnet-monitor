@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
@@ -22,14 +23,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return command;
         }
 
-        public static async Task ExecuteAsync(InvocationContext context)
+        public static async Task ExecuteAsync(InvocationContext context, CancellationToken token)
         {
             context.ExitCode = await ScenarioHelpers.RunWebScenarioAsync<Startup>(async logger =>
             {
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.AspNet.Commands.Continue, logger);
 
                 return 0;
-            }, context.GetCancellationToken());
+            }, token);
         }
 
         private sealed class Startup
