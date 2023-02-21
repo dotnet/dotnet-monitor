@@ -36,6 +36,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         private long _disposedState;
 
+        private bool _useExplicitlySetConfiguration;
+
         /// <summary>
         /// Sets configuration values via environment variables.
         /// </summary>
@@ -52,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public bool ExplicitlySetConfigurationFilePath { get; set; }
 
         /// <summary>
-        /// Gets the task for the underlying <see cref="DotNetRunner"/>'s 
+        /// Gets the task for the underlying <see cref="DotNetRunner"/>'s
         /// <see cref="DotNetRunner.ExitedTask"/> which is used to wait for process exit.
         /// </summary>
         protected Task<int> RunnerExitedTask => _runner.ExitedTask;
@@ -90,6 +92,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         private string UserSettingsFilePath =>
             Path.Combine(UserConfigDirectoryPath, "settings.json");
+
+        private string ExplicitlySetSettingsFilePath =>
+            Path.Combine(TempPath, "settings.json");
 
         public string TempPath => _tempDir.FullName;
 
@@ -135,10 +140,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 argsList.AddRange(args);
             }
 
-            if (ExplicitlySetConfigurationFilePath)
+            if (_useExplicitlySetConfiguration)
             {
                 argsList.Add("--configuration-file-path");
-                argsList.Add(UserSettingsFilePath);
+                argsList.Add($"\"{ExplicitlySetSettingsFilePath}\"");
+                _outputHelper.WriteLine("Explicitly set settings path: {0}", ExplicitlySetSettingsFilePath);
             }
 
             _runner.EntrypointAssemblyPath = DotNetMonitorPath;
@@ -215,17 +221,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public async Task WriteUserSettingsAsync(RootOptions options)
         {
-            using FileStream stream = new(UserSettingsFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
-
-            JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonIgnoreCondition.WhenWritingNull);
-            await JsonSerializer.SerializeAsync(stream, options, serializerOptions).ConfigureAwait(false);
-
+            await WriteSettingsFileAsync(options, UserSettingsFilePath).ConfigureAwait(false);
             _outputHelper.WriteLine("Wrote user settings.");
+        }
+
+        public async Task WriteExplicitlySetSettingsFileAsync(RootOptions options)
+        {
+            await WriteSettingsFileAsync(options, ExplicitlySetSettingsFilePath).ConfigureAwait(false);
+            _useExplicitlySetConfiguration = true;
+            _outputHelper.WriteLine("Wrote settings file.");
         }
 
         protected void SetEnvironmentVariable(string name, string value)
         {
             _adapter.Environment[name] = value;
+        }
+
+        private static async Task WriteSettingsFileAsync(RootOptions options, string filePath)
+        {
+            using FileStream stream = new(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+
+            JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonIgnoreCondition.WhenWritingNull);
+            await JsonSerializer.SerializeAsync(stream, options, serializerOptions).ConfigureAwait(false);
         }
     }
 }

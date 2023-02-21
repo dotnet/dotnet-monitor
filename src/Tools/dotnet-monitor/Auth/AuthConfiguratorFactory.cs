@@ -42,10 +42,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
                     {
                         return new AzureAdAuthConfigurator(authOptions.AzureAd);
                     }
-                    else
-                    {
-                        return new MonitorKeyAuthConfigurator();
-                    }
+
+
+                    return new MonitorKeyAuthConfigurator();
 
                 default:
                     throw new NotSupportedException();

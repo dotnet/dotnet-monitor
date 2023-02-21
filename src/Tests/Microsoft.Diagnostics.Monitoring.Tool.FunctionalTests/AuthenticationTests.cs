@@ -257,7 +257,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         /// <summary>
-        /// This tests that a valid JWT with the correct subject ID 
+        /// This tests that a valid JWT with the correct subject ID
         /// that is signed with a key other than the specified one will get rejected.
         /// </summary>
         [Theory]
@@ -405,7 +405,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         /// <summary>
-        /// This tests that invalid subject vs configured subject gets rejected. Any string is valid 
+        /// This tests that invalid subject vs configured subject gets rejected. Any string is valid
         /// but it must match between the 'sub' field in the jwt and the Subject configuration parameter.
         /// </summary>
         [Theory]
@@ -550,8 +550,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             // Set API key via user configuration file
             RootOptions options = new();
             options.UseApiKey(signingAlgo, Guid.NewGuid(), out string apiKey);
-            await toolRunner.WriteUserSettingsAsync(options);
-            toolRunner.ExplicitlySetConfigurationFilePath = true;
+            await toolRunner.WriteExplicitlySetSettingsFileAsync(options);
 
             await toolRunner.StartAsync();
 
