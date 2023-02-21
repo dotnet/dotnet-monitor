@@ -5,7 +5,6 @@ using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
-using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
@@ -21,6 +20,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
         public Dictionary<ulong, ExceptionIdentifierData> ExceptionIdentifiers { get; } = new();
 
+        public Dictionary<ulong, StackFrameIdentifier> StackFrameIdentifiers { get; } = new();
+
         protected override void OnEventWritten(EventWrittenEventArgs eventData)
         {
             if (_thisThread == Thread.CurrentThread)
@@ -31,11 +32,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                 {
                     case ExceptionEvents.EventIds.ExceptionInstance:
                         Exceptions.Add(
-                            new ExceptionInstance()
-                            {
-                                ExceptionId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionId]),
-                                ExceptionMessage = ToString(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage])
-                            });
+                            new ExceptionInstance(
+                                ToUInt64(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionId]),
+                                ToString(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage]),
+                                ToArray<ulong>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.StackFrameIds])
+                            ));
                         break;
                     case ExceptionEvents.EventIds.ExceptionIdentifier:
                         ExceptionIdentifiers.Add(
@@ -72,6 +73,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                             new ModuleData(
                                 ToString(eventData.Payload[NameIdentificationEvents.ModuleDescPayloads.Name])));
                         break;
+                    case ExceptionEvents.EventIds.StackFrameDescription:
+                        StackFrameIdentifiers.TryAdd(
+                            ToUInt64(eventData.Payload[ExceptionEvents.StackFrameIdentifierPayloads.StackFrameId]),
+                            new StackFrameIdentifier(
+                                ToUInt64(eventData.Payload[ExceptionEvents.StackFrameIdentifierPayloads.FunctionId]),
+                                ToInt32(eventData.Payload[ExceptionEvents.StackFrameIdentifierPayloads.ILOffset])));
+                        break;
                     case ExceptionEvents.EventIds.TokenDescription:
                         NameCache.TokenData.TryAdd(
                             new ModuleScopedToken(
@@ -105,21 +113,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
         private static unsafe T[] ToArray<T>(object? value) where T : unmanaged
         {
-            if (value is not byte[] byteArray)
-                throw new InvalidCastException();
-
-            if (byteArray.Length == 0)
-            {
-                return Array.Empty<T>();
-            }
-
-            T[] destinationArray = new T[byteArray.Length / sizeof(T)];
-            fixed (byte* byteArrayPtr = byteArray)
-            fixed (T* destinationArrayPtr = destinationArray)
-            {
-                Unsafe.CopyBlockUnaligned(destinationArrayPtr, byteArrayPtr, (uint)byteArray.Length);
-            }
-            return destinationArray;
+            // EventSource doesn't decode non-primitive types very well for EventListeners. In the case of non-byte arrays, it interprets the data
+            // as a string and attempts to decode it as a series of chars.
+            // Refer to https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Diagnostics/Tracing/EventSource.cs#L146
+            return Array.Empty<T>();
         }
 
         private static string ToString(object? value)
@@ -143,8 +140,17 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
     internal sealed class ExceptionInstance
     {
-        public ulong ExceptionId { get; set; }
+        public ExceptionInstance(ulong exceptionId, string? message, ulong[] frameIds)
+        {
+            ExceptionId = exceptionId;
+            ExceptionMessage = message;
+            StackFrameIds = frameIds;
+        }
 
-        public string? ExceptionMessage { get; set; }
+        public ulong ExceptionId { get; }
+
+        public string? ExceptionMessage { get; }
+
+        public ulong[]? StackFrameIds { get; }
     }
 }

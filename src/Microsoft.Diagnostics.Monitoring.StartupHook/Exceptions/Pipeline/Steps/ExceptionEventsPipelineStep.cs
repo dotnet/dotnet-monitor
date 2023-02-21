@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing;
 using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
 {
@@ -42,7 +43,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             {
                 ulong identifier = _identifierCache.GetOrAdd(new ExceptionIdentifier(exception));
 
-                _eventSource.ExceptionInstance(identifier, exception.Message);
+                StackTrace stackTrace = new(exception, fNeedFileInfo: false);
+                ulong[] frameIds = _identifierCache.GetOrAdd(stackTrace.GetFrames());
+
+                _eventSource.ExceptionInstance(
+                    identifier,
+                    exception.Message,
+                    frameIds);
             }
 
             _next(exception);

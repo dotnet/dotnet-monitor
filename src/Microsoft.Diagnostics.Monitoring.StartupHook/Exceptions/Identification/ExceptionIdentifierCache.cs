@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 
@@ -26,11 +27,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         // of uniquely identifying itself using a primitive type.
         private readonly ConcurrentDictionary<Module, ulong> _moduleIds = new();
 
+        private readonly ConcurrentDictionary<StackFrameIdentifier, ulong> _stackFrameIds = new();
+
         // Name cache for all provided metadata
         private readonly NameCache _nameCache = new();
 
         private ulong _nextRegistrationId = 1;
         private ulong _nextModuleId = 1;
+        private ulong _nextStackFrameId = 1;
 
         public ExceptionIdentifierCache(IEnumerable<ExceptionIdentifierCacheCallback> callbacks)
         {
@@ -119,6 +123,57 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                 }
             }
             return moduleId;
+        }
+
+        /// <summary>
+        /// Gets the identifier of the <see cref="StackFrame"/> instance and
+        /// caches its data if it has not be encountered yet.
+        /// </summary>
+        /// <returns>
+        /// An identifier that uniquely identifies the <see cref="StackFrame"/> in this cache.
+        /// </returns>
+        public ulong GetOrAdd(StackFrame frame)
+        {
+            StackFrameIdentifier identifier = new(
+                AddOrDefault(frame.GetMethod()),
+                frame.GetILOffset());
+
+            if (_stackFrameIds.TryGetValue(identifier, out ulong frameId))
+                return frameId;
+
+            frameId = Interlocked.Increment(ref _nextStackFrameId);
+
+            ulong actualFrameId = _stackFrameIds.GetOrAdd(identifier, frameId);
+
+            if (actualFrameId == frameId)
+            {
+                StackFrameData data = new()
+                {
+                    MethodId = identifier.MethodId,
+                    ILOffset = identifier.ILOffset
+                };
+
+                InvokeStackFrameDataCallbacks(frameId, data);
+            }
+            return actualFrameId;
+        }
+
+        public ulong[] GetOrAdd(StackFrame[] frames)
+        {
+            ulong[] frameIds;
+            if (frames.Length > 0)
+            {
+                frameIds = new ulong[frames.Length];
+                for (int i = 0; i < frames.Length; i++)
+                {
+                    frameIds[i] = GetOrAdd(frames[i]);
+                }
+            }
+            else
+            {
+                frameIds = Array.Empty<ulong>();
+            }
+            return frameIds;
         }
 
         /// <summary>
@@ -257,6 +312,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             foreach (ExceptionIdentifierCacheCallback callback in _callbacks)
             {
                 callback.OnModuleData(moduleId, data);
+            }
+        }
+
+        private void InvokeStackFrameDataCallbacks(ulong moduleId, StackFrameData data)
+        {
+            foreach (ExceptionIdentifierCacheCallback callback in _callbacks)
+            {
+                callback.OnStackFrameData(moduleId, data);
             }
         }
 

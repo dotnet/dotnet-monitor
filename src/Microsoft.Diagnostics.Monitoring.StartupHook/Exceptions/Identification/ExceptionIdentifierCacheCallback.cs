@@ -29,6 +29,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         {
         }
 
+        public virtual void OnStackFrameData(
+            ulong frameId,
+            StackFrameData data)
+        {
+        }
+
         public virtual void OnTokenData(
             ulong moduleId,
             uint typeToken,

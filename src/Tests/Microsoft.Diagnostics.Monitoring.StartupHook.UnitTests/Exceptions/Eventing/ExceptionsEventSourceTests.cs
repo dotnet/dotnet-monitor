@@ -2,11 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification;
+using Microsoft.Diagnostics.Monitoring.TestCommon;
+using System;
 using System.Diagnostics.Tracing;
+using System.Linq;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMoniker.Current)]
     public sealed class ExceptionsEventSourceTests
     {
         private const string InvalidOperationExceptionMessage = "Operation is not valid due to the current state of the object.";
@@ -60,23 +64,27 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         }
 
         [Theory]
-        [InlineData(0, null)]
-        [InlineData(1, "")]
-        [InlineData(7, InvalidOperationExceptionMessage)]
-        [InlineData(ulong.MaxValue - 1, OperationCancelledExceptionMessage)]
-        [InlineData(ulong.MaxValue, ObjectDisposedExceptionMessage)]
-        public void ExceptionsEventSource_WriteException_Event(ulong id, string message)
+        [InlineData(0, null, "0,0,0")]
+        [InlineData(1, "", "1,2")]
+        [InlineData(7, InvalidOperationExceptionMessage, "")]
+        [InlineData(ulong.MaxValue - 1, OperationCancelledExceptionMessage, "3,5,7")]
+        [InlineData(ulong.MaxValue, ObjectDisposedExceptionMessage, "2,7,11")]
+        public void ExceptionsEventSource_WriteException_Event(ulong id, string message, string frameIdsString)
         {
             using ExceptionsEventSource source = new();
 
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Informational);
 
-            source.ExceptionInstance(id, message);
+            ulong[] frameIds = frameIdsString.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(ulong.Parse).ToArray();
+            source.ExceptionInstance(id, message, frameIds);
 
             ExceptionInstance instance = Assert.Single(listener.Exceptions);
             Assert.Equal(id, instance.ExceptionId);
             Assert.Equal(CoalesceNull(message), instance.ExceptionMessage);
+            // We would normally expect the following to return an array of the stack frame IDs
+            // but in-process listener doesn't decode non-byte arrays correctly.
+            Assert.Equal(Array.Empty<ulong>(), instance.StackFrameIds);
         }
 
         [Fact]
@@ -87,7 +95,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Warning);
 
-            source.ExceptionInstance(7, ObjectDisposedExceptionMessage);
+            source.ExceptionInstance(7, ObjectDisposedExceptionMessage, Array.Empty<ulong>());
 
             Assert.Empty(listener.Exceptions);
         }
@@ -99,9 +107,26 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
             using ExceptionsEventListener listener = new();
 
-            source.ExceptionInstance(9, OperationCancelledExceptionMessage);
+            source.ExceptionInstance(9, OperationCancelledExceptionMessage, Array.Empty<ulong>());
 
             Assert.Empty(listener.Exceptions);
+        }
+
+        [Theory]
+        [InlineData(0, 0, 0)]
+        [InlineData(1, 42, 7)]
+        public void ExceptionsEventSource_WriteStackFrame_Event(ulong id, ulong methodId, int ilOffset)
+        {
+            using ExceptionsEventSource source = new();
+
+            using ExceptionsEventListener listener = new();
+            listener.EnableEvents(source, EventLevel.Informational);
+
+            source.StackFrameDescription(id, methodId, ilOffset);
+
+            Assert.True(listener.StackFrameIdentifiers.TryGetValue(id, out StackFrameIdentifier? frameIdentifier));
+            Assert.Equal(methodId, frameIdentifier.MethodId);
+            Assert.Equal(ilOffset, frameIdentifier.ILOffset);
         }
 
         private static string CoalesceNull(string? value)

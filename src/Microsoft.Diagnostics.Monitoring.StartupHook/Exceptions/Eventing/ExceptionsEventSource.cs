@@ -68,13 +68,17 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         [Event(ExceptionEvents.EventIds.ExceptionInstance)]
         public void ExceptionInstance(
             ulong ExceptionId,
-            string? ExceptionMessage)
+            string? ExceptionMessage,
+            ulong[] StackFrameIds)
         {
-            Span<EventData> data = stackalloc EventData[2];
+            Span<EventData> data = stackalloc EventData[3];
             using PinnedData namePinned = PinnedData.Create(ExceptionMessage);
+            Span<byte> stackFrameIdsSpan = stackalloc byte[GetArrayDataSize(StackFrameIds)];
+            FillArrayData(stackFrameIdsSpan, StackFrameIds);
 
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionId], ExceptionId);
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage], namePinned);
+            SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.StackFrameIds], stackFrameIdsSpan);
 
             WriteEventCore(ExceptionEvents.EventIds.ExceptionInstance, data);
 
@@ -142,6 +146,23 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.ModuleDescPayloads.Name], namePinned);
 
             WriteEventCore(ExceptionEvents.EventIds.ModuleDescription, data);
+
+            RestartFlushingEventTimer();
+        }
+
+        [Event(ExceptionEvents.EventIds.StackFrameDescription)]
+        public void StackFrameDescription(
+            ulong StackFrameId,
+            ulong FunctionId,
+            int ILOffset)
+        {
+            Span<EventData> data = stackalloc EventData[3];
+
+            SetValue(ref data[ExceptionEvents.StackFrameIdentifierPayloads.StackFrameId], StackFrameId);
+            SetValue(ref data[ExceptionEvents.StackFrameIdentifierPayloads.FunctionId], FunctionId);
+            SetValue(ref data[ExceptionEvents.StackFrameIdentifierPayloads.ILOffset], ILOffset);
+
+            WriteEventCore(ExceptionEvents.EventIds.StackFrameDescription, data);
 
             RestartFlushingEventTimer();
         }
