@@ -3,6 +3,8 @@
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -28,13 +30,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             SerializeCounter(_stream, counter);
         }
 
-        public void PipelineStarted()
-        {
-        }
+        public Task PipelineStarted(CancellationToken token) => Task.CompletedTask;
 
-        public void PipelineStopped()
+        public Task PipelineStopped(CancellationToken token)
         {
             Cleanup();
+            return Task.CompletedTask;
         }
     }
 }

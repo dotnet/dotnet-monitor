@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     Providers = providers
                 };
 
-                EventPipeCounterPipelineSettings settings = EventCounterSettingsFactory.CreateSettings(
+                MetricsPipelineSettings settings = MetricsSettingsFactory.CreateSettings(
                     _counterOptions.CurrentValue,
                     (int)duration.TotalSeconds,
                     configuration);
