@@ -7,22 +7,20 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed partial class AzureAdOptions :
+    internal sealed partial class AuthenticationOptions :
         IValidatableObject
     {
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
             IList<ValidationResult> results = new List<ValidationResult>();
 
-            // At least either a required role or scope must be specified.
-            if (string.IsNullOrEmpty(RequiredRole) && string.IsNullOrEmpty(RequiredScope))
+            // At most only one authentication configuration can be specified.
+            if (MonitorApiKey != null && AzureAd != null)
             {
                 results.Add(
                     new ValidationResult(
                         string.Format(
-                            OptionsDisplayStrings.ErrorMessage_AzureAdMissingRoleAndScope,
-                            nameof(RequiredRole),
-                            nameof(RequiredScope))));
+                            OptionsDisplayStrings.ErrorMessage_MultipleAuthenticationModesSpecified)));
             }
 
             return results;

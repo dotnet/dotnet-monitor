@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class AuthenticationOptions
+    internal sealed partial class AuthenticationOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

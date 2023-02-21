@@ -538,10 +538,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         /// <summary>
-        /// Tests that --temp-apikey will override the ApiAuthentication configuration.
+        /// Tests that --temp-apikey will override the ApiKey authentication configuration.
         /// </summary>
         [Fact]
-        public async Task TempApiKeyOverridesApiAuthenticationTest()
+        public async Task TempApiKeyOverridesApiKeyAuthenticationTest()
         {
             const string signingAlgo = "ES256";
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
@@ -567,6 +567,72 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
                 () => apiClient.GetProcessesAsync());
             Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
+        }
+
+        /// <summary>
+        /// Tests that --temp-apikey will override the AzureAd authentication configuration.
+        /// </summary>
+        [Fact]
+        public async Task TempApiKeyOverridesAzureAdAuthenticationTest()
+        {
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
+            toolRunner.UseTempApiKey = true;
+
+            // Set API key via user configuration file
+            RootOptions options = new();
+            options.UseAzureAd();
+            await toolRunner.WriteExplicitlySetSettingsFileAsync(options);
+
+            await toolRunner.StartAsync();
+
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+            ApiClient apiClient = new(_outputHelper, httpClient);
+
+            // Check that /processes is authenticated when using the supplied temp key
+            var processes = await apiClient.GetProcessesAsync();
+            Assert.NotNull(processes);
+        }
+
+        [Fact]
+        public async Task RejectsUnauthorizedRequestWithAzureAd()
+        {
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
+
+            toolRunner.ConfigurationFromEnvironment.UseAzureAd();
+
+            // Start dotnet-monitor
+            await toolRunner.StartAsync();
+
+            // Create HttpClient with default request headers
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+            ApiClient apiClient = new(_outputHelper, httpClient);
+
+            var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
+                () => apiClient.GetProcessesAsync());
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
+        }
+
+        [Fact]
+        public async Task DoesNotStart_With_InvalidAuthenticationOptions()
+        {
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
+
+            toolRunner.ConfigurationFromEnvironment.UseAzureAd();
+            toolRunner.ConfigurationFromEnvironment.UseApiKey("ES256", Guid.NewGuid(), out _);
+
+            // Start dotnet-monitor
+            await Assert.ThrowsAsync<InvalidOperationException>(toolRunner.StartAsync);
+        }
+
+        [Fact]
+        public async Task DoesNotStart_With_InvalidAzureAdOptions()
+        {
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
+
+            toolRunner.ConfigurationFromEnvironment.UseAzureAd(requiredScope: null, requiredRole: null);
+
+            // Start dotnet-monitor
+            await Assert.ThrowsAsync<InvalidOperationException>(toolRunner.StartAsync);
         }
 
         /// <summary>

@@ -845,11 +845,15 @@
     <value>The tenant id of the Azure Active Directory tenant, or its tenant domain.</value>
     <comment>The description provided for the TenantId parameter on AzureAdOptions.</comment>
   </data>
-  <data name="ErrorMessage_NeitherFieldSpecified" xml:space="preserve">
-    <value>The fields {0} and {1} are both unspecified. At least one of them must be.</value>
-    <comment>Gets the format string for rjecting validation due to two missing fields where at least one must be specified. 
+  <data name="ErrorMessage_AzureAdMissingRoleAndScope" xml:space="preserve">
+    <value>The Azure Active Directory authentication configuration is missing both the {0} and {1} fields. At least one must be set.</value>
+    <comment>Gets the format string for rejecting validation due to AzureAd not being configured with a required role or scope
 2 Format Parameter:
-0. The name of the first field that is missing.
-1. The name of the second field that is missing.</comment>
+0. The name of the required role field.
+1. The name of the required scope field.</comment>
+  </data>
+  <data name="ErrorMessage_MultipleAuthenticationModesSpecified" xml:space="preserve">
+    <value>Multiple authentication modes were configured. Only one may be set.</value>
+    <comment>Gets the format string for rejecting validation due to multiple authentication modes being specified in configuration. </comment>
   </data>
 </root>

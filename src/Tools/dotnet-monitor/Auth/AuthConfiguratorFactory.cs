@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Temporary;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using System;
@@ -36,10 +37,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
                     if (authConfigSection.Exists())
                     {
                         authConfigSection.Bind(authOptions);
+                        ValidationHelper.ThrowIfValidationErrors(authOptions);
                     }
 
                     if (authOptions.AzureAd != null)
                     {
+                        ValidationHelper.ThrowIfValidationErrors(authOptions.AzureAd);
                         return new AzureAdAuthConfigurator(authOptions.AzureAd);
                     }
 

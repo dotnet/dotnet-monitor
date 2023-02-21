@@ -6,12 +6,32 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Reflection;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 {
     internal static class ValidationHelper
     {
+        
+        public static void ThrowIfValidationErrors<T>(T options, ValidationContext validationContext = null) where T : IValidatableObject
+        {
+            validationContext ??= new ValidationContext(options);
+
+            List<ValidationResult> results = new();
+            Validator.TryValidateObject(options, validationContext, results, validateAllProperties: true);
+
+            if (results.Any())
+            {
+                List<string> validationErrorMessages = new(results.Count);
+                foreach (ValidationResult error in results)
+                {
+                    validationErrorMessages.Add(error.ErrorMessage);
+                }
+                throw new OptionsValidationException(validationContext.DisplayName, validationContext.ObjectType, validationErrorMessages);
+            }
+        }
+
         public static void TryValidateItems(IEnumerable<object> items, ValidationContext validationContext, ICollection<ValidationResult> results)
         {
             int index = 0;

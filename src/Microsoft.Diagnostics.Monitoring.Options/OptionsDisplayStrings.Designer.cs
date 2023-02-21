@@ -1626,6 +1626,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Azure Active Directory authentication configuration is missing both the {0} and {1} fields. At least one must be set..
+        /// </summary>
+        public static string ErrorMessage_AzureAdMissingRoleAndScope {
+            get {
+                return ResourceManager.GetString("ErrorMessage_AzureAdMissingRoleAndScope", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} field, {1} field, or {2} field is required..
         /// </summary>
         public static string ErrorMessage_CredentialsMissing {
@@ -1662,11 +1671,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The fields {0} and {1} are both unspecified. At least one of them must be..
+        ///   Looks up a localized string similar to Multiple authentication modes were configured. Only one may be set..
         /// </summary>
-        public static string ErrorMessage_NeitherFieldSpecified {
+        public static string ErrorMessage_MultipleAuthenticationModesSpecified {
             get {
-                return ResourceManager.GetString("ErrorMessage_NeitherFieldSpecified", resourceCulture);
+                return ResourceManager.GetString("ErrorMessage_MultipleAuthenticationModesSpecified", resourceCulture);
             }
         }
         

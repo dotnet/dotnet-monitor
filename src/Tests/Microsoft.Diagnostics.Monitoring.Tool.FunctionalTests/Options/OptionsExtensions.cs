@@ -125,6 +125,49 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options.UseApiKey(algorithmName, subjectStr, newPayload, out token);
         }
 
+
+        /// <summary>
+        /// Sets AzureAd authentication. Use this overload for most operations, unless specifically testing Authentication or Authorization.
+        /// </summary>
+        public static RootOptions UseAzureAd(this RootOptions options)
+        {
+            return options.UseAzureAd(
+                tenantId: Guid.NewGuid().ToString("D"),
+                clientId: Guid.NewGuid().ToString("D"),
+                requiredScope: Guid.NewGuid().ToString("D"),
+                requiredRole: Guid.NewGuid().ToString("D"));
+        }
+
+        public static RootOptions UseAzureAd(this RootOptions options, string requiredScope, string requiredRole)
+        {
+            return options.UseAzureAd(
+                tenantId: Guid.NewGuid().ToString("D"),
+                clientId: Guid.NewGuid().ToString("D"),
+                requiredScope: requiredScope,
+                requiredRole: requiredRole);
+        }
+
+        public static RootOptions UseAzureAd(this RootOptions options, string tenantId, string clientId, string requiredScope, string requiredRole)
+        {
+            if (null == options.Authentication)
+            {
+                options.Authentication = new AuthenticationOptions();
+            }
+
+            if (null == options.Authentication.AzureAd)
+            {
+                options.Authentication.AzureAd = new AzureAdOptions
+                {
+                    TenantId = tenantId,
+                    ClientId = clientId,
+                    RequiredRole = requiredRole,
+                    RequiredScope = requiredScope
+                };
+            }
+
+            return options;
+        }
+
         public static RootOptions UseApiKey(this RootOptions options, string algorithmName, string subject, JwtPayload customPayload, out string token)
         {
             return options.UseApiKey(algorithmName, subject, customPayload, out token, out SecurityKey _);

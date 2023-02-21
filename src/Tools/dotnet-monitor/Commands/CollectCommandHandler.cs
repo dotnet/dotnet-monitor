@@ -61,6 +61,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                     await DisposableHelper.DisposeAsync(host);
                 }
             }
+            catch (OptionsValidationException ex)
+            {
+                // Validation option during initial construction, no logger available.
+                Console.Error.WriteLine("One or more errors occured when validating authentication configuration.");
+                foreach (string failure in ex.Failures)
+                {
+                    Console.Error.WriteLine(failure);
+                }
+
+                return -1;
+            }
             catch (FormatException ex)
             {
                 Console.Error.WriteLine(ex.Message);
