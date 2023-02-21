@@ -20,10 +20,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 OutputOption
             };
 
-            command.SetHandler(async context =>
+            command.SetHandler(async (context, token) =>
             {
                 context.ExitCode = await GenerateApiKeyCommandHandler.Invoke(
-                    context.GetCancellationToken(),
+                    token,
                     context.ParseResult.GetValue(OutputOption),
                     context.Console);
             });
@@ -47,10 +47,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ConfigurationFilePathOption
             };
 
-            command.SetHandler(async context =>
+            command.SetHandler(async (context, token) =>
             {
                 context.ExitCode = await CollectCommandHandler.Invoke(
-                    context.GetCancellationToken(),
+                    token,
                     context.ParseResult.GetValue(UrlsOption),
                     context.ParseResult.GetValue(MetricUrlsOption),
                     context.ParseResult.GetValue(ProvideMetricsOption),
