@@ -144,7 +144,7 @@ When `dotnet-monitor` is used to produce artifacts such as dumps or traces, an e
 
 The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`; using the above example with an artifact named `mydump.dmp`, this would be `artifacts/mydump.dmp`) that is being egressed to blob storage. This is designed to be easily integrated into an Azure Function that triggers whenever a new message is added to the queue, providing you with the contents of the artifact as a stream. See [Azure Blob storage input binding for Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-input?tabs=csharp#example) for an example.
 
-## S3 storage egress provider
+## (8.0+) S3 storage egress provider
 
 | Name | Type | Required | Description |
 |---|---|---|---|
