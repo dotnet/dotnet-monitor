@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,20 +10,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed partial class AzureAdOptions
     {
-        private const string DefaultInstanceId = "https://login.microsoftonline.com";
-        private const string DefaultTenantId = "organizations";
-
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_Instance))]
-        [DefaultValue(DefaultInstanceId)]
-        public string Instance { get; set; } = DefaultInstanceId;
+        [DefaultValue(AzureAdOptionsDefaults.DefaultInstance)]
+        public Uri Instance { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_TenantId))]
-        [DefaultValue(DefaultTenantId)]
-        public string TenantId { get; set; } = DefaultTenantId;
+        [DefaultValue(AzureAdOptionsDefaults.DefaultTenantId)]
+        public string TenantId { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -33,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_AppIdUri))]
-        public string AppIdUri { get; set; }
+        public Uri AppIdUri { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

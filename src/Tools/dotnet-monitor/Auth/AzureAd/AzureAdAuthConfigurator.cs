@@ -19,17 +19,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
     internal sealed class AzureAdAuthConfigurator : IAuthenticationConfigurator
     {
         private readonly AzureAdOptions _azureAdOptions;
-        private readonly string _appIdUri;
         private readonly string _fqRequiredScope;
 
         public AzureAdAuthConfigurator(AzureAdOptions azureAdOptions)
         {
             _azureAdOptions = azureAdOptions;
-            _appIdUri = _azureAdOptions.AppIdUri ?? $"api://{_azureAdOptions.ClientId}";
 
             if (_azureAdOptions.RequiredScope != null)
             {
-                _fqRequiredScope = $"{_appIdUri}/{_azureAdOptions.RequiredScope}";
+                _fqRequiredScope = new Uri(_azureAdOptions.GetAppIdUri(), _azureAdOptions.RequiredScope).ToString();
             }
         }
 
@@ -39,12 +37,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
                 .AddMicrosoftIdentityWebApi(
                     configureJwtBearerOptions: options =>
                     {
-                        options.Audience = _appIdUri;
+                        options.Audience = _azureAdOptions.GetAppIdUri().ToString();
                     },
                     configureMicrosoftIdentityOptions: options =>
                     {
-                        options.Instance = _azureAdOptions.Instance;
-                        options.TenantId = _azureAdOptions.TenantId;
+                        options.Instance = _azureAdOptions.GetInstance().ToString();
+                        options.TenantId = _azureAdOptions.GetTenantId();
                         options.ClientId = _azureAdOptions.ClientId;
                     }
                 );
@@ -78,7 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
             // Otherwise a users cannot interactively authenticate.
             if (_fqRequiredScope != null)
             {
-                Uri baseEndpoint = new Uri(new Uri(_azureAdOptions.Instance), $"{_azureAdOptions.TenantId}/oauth2/v2.0/");
+                Uri baseEndpoint = new Uri(_azureAdOptions.GetInstance(), $"{_azureAdOptions.GetTenantId()}/oauth2/v2.0/");
 
                 options.AddSecurityDefinition(OAuth2SecurityDefinitionName, new OpenApiSecurityScheme
                 {

@@ -455,6 +455,7 @@
             "string"
           ],
           "description": "Specifies the Azure cloud instance users are signing in from. Can be either the Azure public cloud or one of the national clouds.",
+          "format": "uri",
           "default": "https://login.microsoftonline.com"
         },
         "TenantId": {
@@ -475,7 +476,8 @@
             "null",
             "string"
           ],
-          "description": "The App ID URI of the app registration. Defaults to api://{ClientId} if not specified."
+          "description": "The App ID URI of the app registration. Defaults to api://{ClientId} if not specified.",
+          "format": "uri"
         },
         "RequiredRole": {
           "type": [
