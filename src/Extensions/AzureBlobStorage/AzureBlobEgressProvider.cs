@@ -9,6 +9,7 @@ using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Queues;
 using Microsoft.Diagnostics.Monitoring.Extension.Common;
+using Microsoft.Extensions.Logging;
 using System.Globalization;
 using System.Net;
 

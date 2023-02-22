@@ -3,6 +3,7 @@
 
 using Amazon.S3;
 using Microsoft.Diagnostics.Monitoring.Extension.Common;
+using Microsoft.Extensions.Logging;
 using System.Globalization;
 
 namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
