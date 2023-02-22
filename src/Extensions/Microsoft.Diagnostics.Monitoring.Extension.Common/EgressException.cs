@@ -1,7 +1,9 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-namespace Microsoft.Diagnostics.Monitoring.S3
+using System;
+
+namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 {
     /// <summary>
     /// Exception that egress providers can throw when an operational error occurs (e.g. failed to write the stream data).

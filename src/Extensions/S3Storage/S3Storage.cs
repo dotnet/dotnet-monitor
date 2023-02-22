@@ -1,14 +1,14 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Amazon;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using Microsoft.Diagnostics.Monitoring.Extension.Common;
 
-namespace Microsoft.Diagnostics.Monitoring.S3
+namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 {
     internal sealed class S3Storage : IS3Storage
     {

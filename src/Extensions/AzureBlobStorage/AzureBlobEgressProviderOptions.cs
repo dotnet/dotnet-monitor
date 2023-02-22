@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Extension.Common;
 using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
@@ -8,7 +9,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
     /// <summary>
     /// Egress provider options for Azure blob storage.
     /// </summary>
-    internal sealed partial class AzureBlobEgressProviderOptions
+    internal sealed partial class AzureBlobEgressProviderOptions : IEgressProviderOptions
     {
         [Required]
         public Uri AccountUri { get; set; }

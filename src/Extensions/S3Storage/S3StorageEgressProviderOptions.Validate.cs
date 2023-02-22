@@ -3,7 +3,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Microsoft.Diagnostics.Monitoring.S3
+namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 {
     /// <summary>
     /// Egress provider options for S3 storage.

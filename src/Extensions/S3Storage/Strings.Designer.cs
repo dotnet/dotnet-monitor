@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.Diagnostics.Monitoring.S3 {
+namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3 {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Diagnostics.Monitoring.S3.Strings", typeof(Strings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Diagnostics.Monitoring.Extension.S3Storage.Strings", typeof(Strings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

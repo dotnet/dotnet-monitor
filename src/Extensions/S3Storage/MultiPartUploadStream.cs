@@ -4,7 +4,7 @@
 using Amazon.S3.Model;
 using System.Buffers;
 
-namespace Microsoft.Diagnostics.Monitoring.S3;
+namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage;
 
 internal sealed class MultiPartUploadStream : Stream
 {

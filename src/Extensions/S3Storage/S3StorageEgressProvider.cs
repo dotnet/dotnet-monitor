@@ -2,14 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Amazon.S3;
+using Microsoft.Diagnostics.Monitoring.Extension.Common;
 using System.Globalization;
 
-namespace Microsoft.Diagnostics.Monitoring.S3
+namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 {
     /// <summary>
     /// Egress provider for egressing stream data to the S3 storage.
     /// </summary>
-    internal sealed class S3StorageEgressProvider
+    internal sealed class S3StorageEgressProvider : EgressProvider
     {
 #pragma warning disable CA1852
         internal class StorageFactory
@@ -19,44 +20,24 @@ namespace Microsoft.Diagnostics.Monitoring.S3
 #pragma warning restore CA1852
 
         internal StorageFactory ClientFactory = new();
-        private readonly ILogger _logger;
 
-        public S3StorageEgressProvider(ILogger logger)
+        public S3StorageEgressProvider(ILogger logger) : base(logger)
         {
-            _logger = logger;
         }
 
-        public async Task<string> EgressAsync(
-            S3StorageEgressProviderOptions options,
-            Func<CancellationToken, Task<Stream>> action,
+        public override async Task<string> EgressAsync(
+            IEgressProviderOptions egressProviderOptions,
+            Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
-            try
-            {
-                _logger.EgressProviderInvokeStreamAction(Constants.S3StorageProviderName);
-                await using var stream = await action(token);
-
-                var client = await ClientFactory.CreateAsync(options, artifactSettings, token);
-                if (stream.CanSeek) // use the stream directly
-                {
-                    await client.PutAsync(stream, token);
-                }
-                else // copy temporary to memory stream locally
-                {
-                    await client.UploadAsync(stream, token);
-                }
-
-                string resourceId = GetResourceId(client, options, artifactSettings);
-                return resourceId;
-            }
-            catch (AmazonS3Exception e)
-            {
-                throw CreateException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressS3FailedDetailed, e.Message));
-            }
+            return await EgressAsyncHelper((S3StorageEgressProviderOptions)egressProviderOptions,
+                action,
+                artifactSettings,
+                token);
         }
 
-        public async Task<string> EgressAsync(
+        public async Task<string> EgressAsyncHelper(
             S3StorageEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,

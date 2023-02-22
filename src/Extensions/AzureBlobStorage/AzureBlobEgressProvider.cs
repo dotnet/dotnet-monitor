@@ -8,6 +8,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Queues;
+using Microsoft.Diagnostics.Monitoring.Extension.Common;
 using System.Globalization;
 using System.Net;
 
@@ -19,17 +20,27 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
     /// <remarks>
     /// Blobs created through this provider will overwrite existing blobs if they have the same blob name.
     /// </remarks>
-    internal partial class AzureBlobEgressProvider
+    internal partial class AzureBlobEgressProvider : EgressProvider
     {
         private int BlobStorageBufferSize = 4 * 1024 * 1024;
-        private readonly ILogger _logger;
 
-        public AzureBlobEgressProvider(ILogger logger)
+        public AzureBlobEgressProvider(ILogger logger) : base(logger)
         {
-            _logger = logger;
         }
 
-        public async Task<string> EgressAsync(
+        public override async Task<string> EgressAsync(
+            IEgressProviderOptions egressProviderOptions,
+            Func<Stream, CancellationToken, Task> action,
+            EgressArtifactSettings artifactSettings,
+            CancellationToken token)
+        {
+            return await EgressAsyncHelper((AzureBlobEgressProviderOptions)egressProviderOptions,
+                action,
+                artifactSettings,
+                token);
+        }
+
+        public async Task<string> EgressAsyncHelper(
             AzureBlobEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,

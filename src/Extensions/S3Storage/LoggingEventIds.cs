@@ -1,7 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-namespace Microsoft.Diagnostics.Monitoring.S3
+namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 {
     // The existing EventIds must not be duplicated, reused, or repurposed.
     // New logging events must use the next available EventId.

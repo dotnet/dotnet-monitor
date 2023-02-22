@@ -3,7 +3,7 @@
 
 using Amazon.S3.Model;
 
-namespace Microsoft.Diagnostics.Monitoring.S3
+namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 {
     public interface IS3Storage
     {

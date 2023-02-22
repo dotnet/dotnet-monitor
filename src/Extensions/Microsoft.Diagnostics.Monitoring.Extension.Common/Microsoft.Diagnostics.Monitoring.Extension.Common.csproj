@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <IsShippingAssembly>true</IsShippingAssembly>
+    <OutputType>Library</OutputType>
+    <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
+    <RootNamespace>Microsoft.Diagnostics.Monitoring.Extension.Common</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="dotnet-monitor-egress-azureblobstorage" />
+    <InternalsVisibleTo Include="dotnet-monitor-egress-s3storage" />
+  </ItemGroup>
+
+</Project>

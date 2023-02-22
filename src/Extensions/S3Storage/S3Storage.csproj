@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
-    <RootNamespace>Microsoft.Diagnostics.Monitoring.S3</RootNamespace>
+    <RootNamespace>Microsoft.Diagnostics.Monitoring.Extension.S3Storage</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
 
@@ -17,6 +17,10 @@
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.Extension.Common\Microsoft.Diagnostics.Monitoring.Extension.Common.csproj" />
+  </ItemGroup>
+  
   <ItemGroup>
     <Compile Update="Strings.Designer.cs">
       <DesignTime>True</DesignTime>

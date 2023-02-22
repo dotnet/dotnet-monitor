@@ -1,30 +1,39 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.IO;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Monitoring.S3
+namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 {
-    internal sealed class Program
+    internal sealed class SharedEntrypoint<T> where T : class, IEgressProviderOptions, new()
     {
         private static Stream StdInStream;
         private static CancellationTokenSource CancelSource = new CancellationTokenSource();
 
-        public static ILogger Logger { get; set; }
+        private static EgressProvider _provider;
+        private static Action<ExtensionEgressPayload, T> _configureOptions;
 
-        static async Task<int> Main(string[] args)
+        public static async Task<int> Entrypoint(string[] args, EgressProvider provider, Action<ExtensionEgressPayload, T> configureOptions)
         {
+            _provider = provider;
+            _configureOptions = configureOptions;
+
             using var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddConsole();
             });
 
-            Logger = loggerFactory.CreateLogger<Program>();
-
-            // Expected command line format is: dotnet-monitor-egress-s3storage.exe Egress
-            RootCommand rootCommand = new RootCommand("Egresses an artifact to S3 storage.");
+            // Expected command line format is: dotnet-monitor-egress-*extension_type*.exe Egress
+            RootCommand rootCommand = new RootCommand("Egresses an artifact to cloud storage.");
 
             Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.");
 
@@ -42,13 +51,11 @@ namespace Microsoft.Diagnostics.Monitoring.S3
             {
                 string jsonConfig = Console.ReadLine();
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
-                S3StorageEgressProviderOptions options = BuildOptions(configPayload);
-
-                S3StorageEgressProvider provider = new S3StorageEgressProvider(Logger);
+                IEgressProviderOptions options = BuildOptions(configPayload);
 
                 Console.CancelKeyPress += Console_CancelKeyPress;
 
-                result.ArtifactPath = await provider.EgressAsync(options,
+                result.ArtifactPath = await _provider.EgressAsync(options,
                     GetStream,
                     configPayload.Settings,
                     CancelSource.Token);
@@ -68,14 +75,16 @@ namespace Microsoft.Diagnostics.Monitoring.S3
             return result.Succeeded ? 0 : 1;
         }
 
-        private static S3StorageEgressProviderOptions BuildOptions(ExtensionEgressPayload configPayload)
+        private static T BuildOptions(ExtensionEgressPayload configPayload)
         {
-            S3StorageEgressProviderOptions options = GetOptions<S3StorageEgressProviderOptions>(configPayload);
+            T options = GetOptions(configPayload);
+
+            _configureOptions(configPayload, options);
 
             return options;
         }
 
-        private static T GetOptions<T>(ExtensionEgressPayload payload) where T : class, new()
+        private static T GetOptions(ExtensionEgressPayload payload)
         {
             IConfigurationBuilder builder = new ConfigurationBuilder();
 
