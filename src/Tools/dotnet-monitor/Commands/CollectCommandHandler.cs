@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -63,8 +64,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             }
             catch (OptionsValidationException ex)
             {
-                // Validation option during initial construction, no logger available.
-                Console.Error.WriteLine("One or more errors occured when validating authentication configuration.");
+                Console.Error.WriteLine(Strings.ErrorMessage_StartupConfigurationValiddationException);
+                Debug.Assert(ex.Failures.Any());
                 foreach (string failure in ex.Failures)
                 {
                     Console.Error.WriteLine(failure);

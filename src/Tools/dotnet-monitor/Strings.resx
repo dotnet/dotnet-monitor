@@ -301,6 +301,9 @@
 1 Format Parameter:
 0. configName: The variable name for the provided string.</comment>
   </data>
+  <data name="ErrorMessage_StartupConfigurationValiddationException" xml:space="preserve">
+    <value>The following unrecoverable validation issues with set configuration were found:</value>
+  </data>
   <data name="ErrorMessage_TemplateNotFound" xml:space="preserve">
     <value>Could not find a template with the name: {0}</value>
     <comment>Gets the format string for template resolution failure.

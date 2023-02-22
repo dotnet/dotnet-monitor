@@ -385,6 +385,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The following unrecoverable validation issues with set configuration were found:.
+        /// </summary>
+        internal static string ErrorMessage_StartupConfigurationValiddationException {
+            get {
+                return ResourceManager.GetString("ErrorMessage_StartupConfigurationValiddationException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find a template with the name: {0}.
         /// </summary>
         internal static string ErrorMessage_TemplateNotFound {

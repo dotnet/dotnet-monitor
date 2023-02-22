@@ -46,7 +46,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
                         return new AzureAdAuthConfigurator(authOptions.AzureAd);
                     }
 
-
                     return new MonitorKeyAuthConfigurator();
 
                 default:
