@@ -19,7 +19,7 @@
     <!--
       This should be set to true for official releases.
     -->
-    <UseMicrosoftDiagnosticsMonitoringShippedVersion>false</UseMicrosoftDiagnosticsMonitoringShippedVersion>
+    <UseMicrosoftDiagnosticsMonitoringShippedVersion>true</UseMicrosoftDiagnosticsMonitoringShippedVersion>
   </PropertyGroup>
   <PropertyGroup Label="Testing">
     <XUnitCoreSettingsFile>$(MSBuildThisFileDirectory)xunit.runner.json</XUnitCoreSettingsFile>
@@ -66,8 +66,8 @@
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta4.23113.1</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>6.0.0-preview.23056.1</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>6.0.0-preview.23056.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>7.0.410101</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>7.0.410101</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/roslyn-analyzers -->
     <MicrosoftCodeAnalysisNetAnalyzersVersion>7.0.1-preview1.23061.1</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
