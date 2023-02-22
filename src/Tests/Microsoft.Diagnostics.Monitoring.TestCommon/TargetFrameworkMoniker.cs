@@ -86,9 +86,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 case TargetFrameworkMoniker.Net60:
                     return "net6.0";
                 case TargetFrameworkMoniker.Net70:
-                    return "net7.0";
+                    return "net6.0";
                 case TargetFrameworkMoniker.Net80:
-                    return "net8.0";
+                    return "net6.0";
             }
             throw CreateUnsupportedException(moniker);
         }

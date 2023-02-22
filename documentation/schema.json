@@ -482,7 +482,7 @@
             "null",
             "string"
           ],
-          "description": "The app role required by daemon applications to be able to authenticate. If not specified, daemon applications will not be able to authenticate."
+          "description": "The app role required by other applications to be able to authenticate. If not specified, other applications will not be able to authenticate."
         },
         "RequiredScope": {
           "type": [
