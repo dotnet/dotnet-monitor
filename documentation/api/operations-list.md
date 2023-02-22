@@ -30,7 +30,7 @@ If none of `pid`, `uid`, or `name` are specified, all operations will be listed.
 
 > **Note**: If multiple processes match the provided parameters (e.g., two processes named "MyProcess"), the operations for all matching processes will be listed.
 
-> **Note**: An operation must include all of the provided tags to be shown in the results (e.g., tags=tag1,tag2 only includes operations with tag1 and tag2, not one or the other).
+> **Note**: An operation must include all of the provided tags to be shown in the results (e.g., tags=tag1,tag2 only includes operations with tag1 and tag2, not one or the other). 
 
 ## Authentication
 
