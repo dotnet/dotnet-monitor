@@ -385,11 +385,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The following unrecoverable validation issues with set configuration were found:.
+        ///   Looks up a localized string similar to The following unrecoverable validation issues were found with the &apos;{0}&apos; configuration:
+        ///{1}.
         /// </summary>
-        internal static string ErrorMessage_StartupConfigurationValiddationException {
+        internal static string ErrorMessage_StartupConfigurationValidationException {
             get {
-                return ResourceManager.GetString("ErrorMessage_StartupConfigurationValiddationException", resourceCulture);
+                return ResourceManager.GetString("ErrorMessage_StartupConfigurationValidationException", resourceCulture);
             }
         }
         

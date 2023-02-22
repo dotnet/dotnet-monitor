@@ -3,9 +3,9 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
@@ -26,42 +26,70 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
         [Fact]
         public void AzureAdOptions_Supports_GuidTenantId()
         {
+            // Arrange
             AzureAdOptions options = GetDefaultOptions();
-
             options.TenantId = Guid.NewGuid().ToString("D");
 
-            ValidationHelper.ThrowIfValidationErrors(options);
+            List<ValidationResult> results = new();
+
+            // Act
+            bool isValid = Validator.TryValidateObject(options, new(options), results, validateAllProperties: true);
+
+            // Assert
+            Assert.True(isValid);
         }
 
         [Fact]
         public void AzureAdOptions_Supports_TenantIdDomain()
         {
+            // Arrange
             AzureAdOptions options = GetDefaultOptions();
-
             options.TenantId = "common";
 
-            ValidationHelper.ThrowIfValidationErrors(options);
+            List<ValidationResult> results = new();
+
+            // Act
+            bool isValid = Validator.TryValidateObject(options, new(options), results, validateAllProperties: true);
+
+            // Assert
+            Assert.True(isValid);
         }
 
         [Fact]
         public void AzureAdOptions_Requires_RoleOrScope()
         {
+            // Arrange
             AzureAdOptions options = GetDefaultOptions();
 
             options.RequiredScope = null;
             options.RequiredRole = null;
 
-            Assert.Throws<OptionsValidationException>(() => ValidationHelper.ThrowIfValidationErrors(options));
+            List<ValidationResult> results = new();
+
+            // Act
+            bool isValid = Validator.TryValidateObject(options, new(options), results, validateAllProperties: true);
+
+            // Assert
+            Assert.False(isValid);
+            Assert.Single(results);
         }
 
         [Fact]
         public void AzureAdOptions_Requires_ClientId()
         {
+            // Arrange
             AzureAdOptions options = GetDefaultOptions();
 
             options.ClientId = null;
 
-            Assert.Throws<OptionsValidationException>(() => ValidationHelper.ThrowIfValidationErrors(options));
+            List<ValidationResult> results = new();
+
+            // Act
+            bool isValid = Validator.TryValidateObject(options, new(options), results, validateAllProperties: true);
+
+            // Assert
+            Assert.False(isValid);
+            Assert.Single(results);
         }
     }
 }

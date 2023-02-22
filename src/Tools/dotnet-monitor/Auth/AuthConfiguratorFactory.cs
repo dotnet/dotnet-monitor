@@ -1,6 +1,9 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Temporary;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd;
@@ -8,7 +11,12 @@ using Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using System;
+using System.Collections.Generic;
+using System.CommandLine;
+using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth
 {
@@ -37,12 +45,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
                     if (authConfigSection.Exists())
                     {
                         authConfigSection.Bind(authOptions);
-                        ValidationHelper.ThrowIfValidationErrors(authOptions);
+                        ValidateAuthConfigSection(authOptions, authConfigSection.Path);
                     }
 
                     if (authOptions.AzureAd != null)
                     {
-                        ValidationHelper.ThrowIfValidationErrors(authOptions.AzureAd);
+                        ValidateAuthConfigSection(authOptions.AzureAd, ConfigurationPath.Combine(authConfigSection.Path, ConfigurationKeys.AzureAd));
                         return new AzureAdAuthConfigurator(authOptions.AzureAd);
                     }
 
@@ -50,6 +58,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
 
                 default:
                     throw new NotSupportedException();
+            }
+        }
+
+        private static void ValidateAuthConfigSection<T>(T options, string configurationPath) where T : IValidatableObject
+        {
+            List<ValidationResult> results = new();
+            if (!Validator.TryValidateObject(options, new ValidationContext(options), results, validateAllProperties: true))
+            {
+                throw new DeferredAuthenticationValidationException(configurationPath, results);
             }
         }
     }

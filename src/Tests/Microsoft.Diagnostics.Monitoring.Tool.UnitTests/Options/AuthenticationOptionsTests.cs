@@ -3,8 +3,8 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-using Microsoft.Extensions.Options;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
@@ -15,39 +15,68 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
         [Fact]
         public void AuthenticationOptions_Supports_NoConfiguration()
         {
+            // Arrange
             AuthenticationOptions options = new();
-            ValidationHelper.ThrowIfValidationErrors(options);
+            List<ValidationResult> results = new();
+
+            // Act
+            bool isValid = Validator.TryValidateObject(options, new(options), results, validateAllProperties: true);
+
+            // Assert
+            Assert.True(isValid);
         }
 
         [Fact]
         public void AuthenticationOptions_Supports_OnlyAzureAd()
         {
+            // Arrange
             AuthenticationOptions options = new()
             {
                 AzureAd = new AzureAdOptions()
             };
-            ValidationHelper.ThrowIfValidationErrors(options);
+            List<ValidationResult> results = new();
+
+            // Act
+            bool isValid = Validator.TryValidateObject(options, new(options), results, validateAllProperties: true);
+
+            // Assert
+            Assert.True(isValid);
         }
 
         [Fact]
         public void AuthenticationOptions_Supports_OnlyApiKey()
         {
+            // Arrange 
             AuthenticationOptions options = new()
             {
                 MonitorApiKey = new MonitorApiKeyOptions()
             };
-            ValidationHelper.ThrowIfValidationErrors(options);
+            List<ValidationResult> results = new();
+
+            // Act
+            bool isValid = Validator.TryValidateObject(options, new(options), results, validateAllProperties: true);
+
+            // Assert
+            Assert.True(isValid);
         }
 
         [Fact]
         public void AuthenticationOptions_DoesNotSupport_MultipleModes()
         {
+            // Arrange
             AuthenticationOptions options = new()
             {
                 MonitorApiKey = new MonitorApiKeyOptions(),
                 AzureAd = new AzureAdOptions()
             };
-            Assert.Throws<OptionsValidationException>(() => ValidationHelper.ThrowIfValidationErrors(options));
+            List<ValidationResult> results = new();
+
+            // Act
+            bool isValid = Validator.TryValidateObject(options, new(options), results, validateAllProperties: true);
+
+            // Assert
+            Assert.False(isValid);
+            Assert.Single(results);
         }
     }
 }

@@ -62,18 +62,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                     await DisposableHelper.DisposeAsync(host);
                 }
             }
-            catch (OptionsValidationException ex)
-            {
-                Console.Error.WriteLine(Strings.ErrorMessage_StartupConfigurationValiddationException);
-                Debug.Assert(ex.Failures.Any());
-                foreach (string failure in ex.Failures)
-                {
-                    Console.Error.WriteLine(failure);
-                }
-
-                return -1;
-            }
-            catch (FormatException ex)
+            catch (Exception ex) when (ex is FormatException || ex is DeferredAuthenticationValidationException)
             {
                 Console.Error.WriteLine(ex.Message);
                 if (ex.InnerException != null)
