@@ -12,7 +12,7 @@ When `dotnet-monitor` is used to produce artifacts such as dumps or traces, an e
 | ClientId | string | true | The unique application (client) id assigned to the app registration in Azure Active Directory. |
 | RequiredRole | string | false | The app role required by other applications to be able to authenticate. If not specified, other applications will not be able to authenticate. |
 | RequiredScope | string | false | The API scope required by users to be able to authenticate. If not specified, users will not be able to authenticate. |
-| Audience | string | false | The App ID URI of the app registration. Defaults to `api://{ClientId}` if not specified. |
+| AppIdUri | string | false | The App ID URI of the app registration. Defaults to `api://{ClientId}` if not specified. |
 | Instance | string | false | Specifies the Azure cloud instance users are signing in from. Can be either the Azure public cloud or one of the national clouds. Defaults to the Azure public cloud (`https://login.microsoftonline.com`). |
 | TenantId | string | false | The tenant id of the Azure Active Directory tenant, or its tenant domain. Defaults to `organizations`. |
 

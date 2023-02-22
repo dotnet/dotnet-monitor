@@ -470,7 +470,7 @@
           "description": "The unique application (client) id assigned to the app registration in Azure Active Directory.",
           "minLength": 1
         },
-        "Audience": {
+        "AppIdUri": {
           "type": [
             "null",
             "string"

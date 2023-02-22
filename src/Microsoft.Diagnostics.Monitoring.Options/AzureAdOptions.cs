@@ -32,8 +32,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_Audience))]
-        public string Audience { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_AppIdUri))]
+        public string AppIdUri { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
