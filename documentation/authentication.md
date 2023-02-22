@@ -21,9 +21,13 @@ Azure Active Directory integration (referred to as Azure AD) is the recommended 
 - [Create an App Registration](https://learn.microsoft.com/azure/active-directory/develop/quickstart-register-app#register-an-application) in your Azure tenant that will be used by `dotnet monitor`. Note that a single App Registration can be used by multiple instances of `dotnet monitor`.
 - If you want individual users to be able to authenticate against `dotnet monitor`, [add a new scope](https://learn.microsoft.com/azure/active-directory/develop/quickstart-configure-app-expose-web-apis#add-a-scope) for general API access. Custom Application ID URIs are supported.
 - If you want other applications to be able to authenticate against `dotnet monitor`, [add a new app role](https://learn.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps#app-roles-ui) for general API access.
-- [Configure dotnet monitor](./configuration/azure-ad-authentication-configuration.md)
+- [Configure Azure AD in dotnet monitor](./configuration/azure-ad-authentication-configuration.md).
 
 > **Note**: Azure AD B2C is currently not supported.
+
+### Authenticating with a Managed Identity
+
+`dotnet monitor` supports other applications calling its APIs using a [Managed Identity](https://learn.microsoft.com/azure/active-directory/managed-identities-azure-resources/) when Azure AD is configured. You will need to have added an app role to `dotnet monitor`'s App Registration as described above and then assign it to the Managed Identity. This can be done using [New-AzureADServiceAppRoleAssignment](https://learn.microsoft.com/powershell/module/azuread/new-azureadserviceapproleassignment?view=azureadps-2.0). Note that you will need to [configure Azure AD in dotnet monitor](./configuration/azure-ad-authentication-configuration.md) with the app role information.
 
 ### Interactively authenticating using the Swagger UI
 
