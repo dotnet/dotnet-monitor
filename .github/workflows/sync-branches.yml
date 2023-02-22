@@ -4,32 +4,33 @@ on:
     - cron: '0 0 * * 1' # Run at the start of every monday
   workflow_dispatch: # Allow manually invoking this workflow
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 env:
   base_branch: 'origin/main'
 
 jobs:
   sync-branch:
-    if: github.repository == 'dotnet/dotnet-monitor'
     strategy:
       matrix:
         branch: ["release/6.x", "release/7.x", "release/7.0"]
     name: 'Sync ${{ matrix.branch }}'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
         with:
+          persist-credentials: true # We need to persist credentials to push the resulting changes upstream.
           fetch-depth: 0 # Fetch the entire repo for the below git operations
           ref: ${{ matrix.branch }}
 
       - name: Sync branch
         run: |
-          git checkout "${{ env.base_branch }}" -- \
+          git checkout "$base_branch" -- \
             ".github" \
             ".devcontainer" \
             ".vscode" \

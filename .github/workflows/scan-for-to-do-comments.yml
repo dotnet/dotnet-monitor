@@ -11,14 +11,14 @@ permissions:
 
 jobs:
   scan-for-todo-issue:
+    if: startsWith(github.event.comment.body, '/TODO') && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
-    if: startsWith(github.event.comment.body, '/TODO')
     steps:
       - name: Generate artifacts
         run: |
           trimmed_comment=$(echo "$COMMENT_BODY" | sed 's|/TODO ||I')
           mkdir -p ./issue
-          echo -n $trimmed_comment > ./issue/issue-title
+          echo -n "$trimmed_comment" > ./issue/issue-title
           echo -n "$COMMENT_URL" > ./issue/issue-url
           echo -n "$COMMENT_AUTHOR" > ./issue/issue-user
         env:
@@ -27,7 +27,7 @@ jobs:
           COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
         with:
           name: issue-todo
           path: issue/
