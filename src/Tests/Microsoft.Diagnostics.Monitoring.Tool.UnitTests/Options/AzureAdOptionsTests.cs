@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
         }
 
         [Fact]
-        public void AzureAdOptions_Supports_TenantIdDomain()
+        public void AzureAdOptions_Supports_DomainTenantId()
         {
             // Arrange
             AzureAdOptions options = GetDefaultOptions();
