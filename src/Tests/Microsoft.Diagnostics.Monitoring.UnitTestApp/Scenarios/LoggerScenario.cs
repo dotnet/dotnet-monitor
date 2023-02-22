@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -24,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return command;
         }
 
-        public static async Task ExecuteAsync(InvocationContext context)
+        public static async Task ExecuteAsync(InvocationContext context, CancellationToken token)
         {
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
@@ -114,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 }
 
                 return 0;
-            }, context.GetCancellationToken());
+            }, token);
         }
 
         private static void LogTraceMessage(ILogger logger)
