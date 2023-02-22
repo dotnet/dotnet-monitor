@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
         }
 
         [Fact]
-        public void AzureAdOptions_Supports_WellKnownTenantId()
+        public void AzureAdOptions_Supports_TenantIdDomain()
         {
             AzureAdOptions options = GetDefaultOptions();
 

@@ -205,7 +205,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to The app id uri of the app registration. Defaults to api://{ClientId} if not specified..
+        ///   Looks up a localized string similar to The App ID URI of the app registration. Defaults to api://{ClientId} if not specified..
         /// </summary>
         public static string DisplayAttributeDescription_AzureAdOptions_Audience {
             get {

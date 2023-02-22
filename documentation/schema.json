@@ -475,7 +475,7 @@
             "null",
             "string"
           ],
-          "description": "The app id uri of the app registration. Defaults to api://{ClientId} if not specified."
+          "description": "The App ID URI of the app registration. Defaults to api://{ClientId} if not specified."
         },
         "RequiredRole": {
           "type": [

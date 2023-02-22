@@ -822,7 +822,7 @@
     <comment>The description provided for the AzureAd parameter on AuthenticationOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AzureAdOptions_Audience" xml:space="preserve">
-    <value>The app id uri of the app registration. Defaults to api://{ClientId} if not specified.</value>
+    <value>The App ID URI of the app registration. Defaults to api://{ClientId} if not specified.</value>
     <comment>The description provided for the Audience parameter on AzureAdOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AzureAdOptions_ClientId" xml:space="preserve">
