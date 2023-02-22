@@ -10,8 +10,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     {
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
-            // QUESTION: Do we want to do any regex validation on the percentile?
-
             List<ValidationResult> results = new();
 
             if (!GreaterThan.HasValue && !LessThan.HasValue)

@@ -319,7 +319,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             const string ExpectedProviderName = "Provider";
             const string ExpectedCounterName = "Counter";
             TimeSpan ExpectedDuration = TimeSpan.FromSeconds(30);
-            string ExpectedHistogramPercentile = "50";
+            int ExpectedHistogramPercentile = 50;
+            int ExpectedGreaterThan = 1;
 
             return ValidateSuccess(
                 rootOptions =>
@@ -331,6 +332,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                             options.InstrumentName = ExpectedCounterName;
                             options.HistogramPercentile = ExpectedHistogramPercentile;
                             options.SlidingWindowDuration = ExpectedDuration;
+                            options.GreaterThan = ExpectedGreaterThan;
                         });
                 },
                 ruleOptions =>
@@ -340,6 +342,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(ExpectedCounterName, systemDiagnosticsMetricsOptions.InstrumentName);
                     Assert.Equal(ExpectedHistogramPercentile, systemDiagnosticsMetricsOptions.HistogramPercentile);
                     Assert.Equal(ExpectedDuration, systemDiagnosticsMetricsOptions.SlidingWindowDuration);
+                    Assert.Equal(ExpectedGreaterThan, systemDiagnosticsMetricsOptions.GreaterThan);
                 });
         }
 
@@ -426,7 +429,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             const string ExpectedProviderName = "Provider";
             const string ExpectedCounterName = "Counter";
 
-            string ExpectedHistogramPercentile = "101";
+            int ExpectedHistogramPercentile = 101;
 
             return ValidateFailure(
                 rootOptions =>
@@ -445,8 +448,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
 
-                    // ADD THE FAILURE HERE
-
+                    VerifyRangeMessage<int>(failures, 0, nameof(SystemDiagnosticsMetricsOptions.HistogramPercentile),
+                        TriggerOptionsConstants.Percentage_MinValue.ToString(), TriggerOptionsConstants.Percentage_MaxValue.ToString());
                 });
         }
 

@@ -44,6 +44,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_HistogramPercentile))]
-        public string HistogramPercentile { get; set; }
+        [Range(TriggerOptionsConstants.Percentage_MinValue, TriggerOptionsConstants.Percentage_MaxValue)]
+        public int? HistogramPercentile { get; set; }
     }
 }
