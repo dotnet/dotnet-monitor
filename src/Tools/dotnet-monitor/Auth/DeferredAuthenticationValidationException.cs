@@ -35,6 +35,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
             FailureMessages = failureMessages;
         }
 
-        public override string Message => string.Format(Strings.ErrorMessage_StartupConfigurationValidationException, ConfigurationPath, string.Join(' ', FailureMessages));
+        public override string Message => string.Format(Strings.ErrorMessage_StartupConfigurationValidationException, ConfigurationPath, string.Join(Environment.NewLine, FailureMessages));
     }
 }
