@@ -31,7 +31,7 @@ Azure Active Directory integration (referred to as Azure AD) is the recommended 
 
 ### Interactively authenticating using the Swagger UI
 
-If you want Azure AD users to be able to interactively authenticate against your `dotnet monitor` instance using the in-box Swagger UI you will need to [add a redirect URI to the App Registration](https://learn.microsoft.com/azure/active-directory/develop/quickstart-register-app#add-a-redirect-uri).
+If you want Azure AD users to be able to interactively authenticate with your `dotnet monitor` instance using the in-box Swagger UI you will need to [add a redirect URI to the App Registration](https://learn.microsoft.com/azure/active-directory/develop/quickstart-register-app#add-a-redirect-uri).
 1. Select `Single-page application` as the platform.
 1. For the redirect URI, enter `{dotnet monitor address}/swagger/oauth2-redirect.html`, where `{dotnet monitor address}` is the address of your `dotnet monitor` instance. Note:
    1. `https` is **required**.
