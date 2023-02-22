@@ -29,7 +29,7 @@ jobs:
         run: |
           changed_source_files=$(git diff-tree --no-commit-id --name-only -r "$base_sha" "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
           echo "Files to validate: '${changed_source_files}'"
-          echo "updated_files=$changed_source_files" >> $GITHUB_ENV
+          echo "updated_files=$(echo ${changed_source_files})" >> $GITHUB_ENV
 
       - name: Run dotnet restore
         run: ./dotnet.sh restore
