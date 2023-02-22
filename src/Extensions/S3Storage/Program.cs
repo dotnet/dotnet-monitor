@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.Extension.Common;
+using System.CommandLine;
 
 namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 {
@@ -9,16 +10,19 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
     {
         static async Task<int> Main(string[] args)
         {
-            ILogger logger = Utilities.CreateLogger<S3StorageEgressProviderOptions>();
+            ILogger logger = Utilities.CreateLogger();
 
             S3StorageEgressProvider provider = new(logger);
 
-            Action<ExtensionEgressPayload, S3StorageEgressProviderOptions> configureOptions = (configPayload, options) =>
-            {
-                // TODO: Not currently doing any extra configuration/validation for S3 here
-            };
+            // Expected command line format is: dotnet-monitor-egress-s3storage.exe Egress
+            RootCommand rootCommand = new RootCommand("Egresses an artifact to S3 storage.");
 
-            return await SharedEntrypoint<S3StorageEgressProviderOptions>.Entrypoint(args, provider, configureOptions);
+            // TODO: Not currently doing any extra configuration/validation for S3 here
+            Command egressCmd = EgressHelper.CreateEgressCommand(provider);
+
+            rootCommand.Add(egressCmd);
+
+            return await rootCommand.InvokeAsync(args);
         }
     }
 }

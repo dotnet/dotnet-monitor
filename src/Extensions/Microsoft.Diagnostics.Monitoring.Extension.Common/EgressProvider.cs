@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 {
-    internal abstract class EgressProvider
+    internal abstract class EgressProvider<TOptions> where TOptions : class
     {
         protected readonly ILogger _logger;
 
@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         }
 
         public abstract Task<string> EgressAsync(
-            IEgressProviderOptions options,
+            TOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
             CancellationToken token);

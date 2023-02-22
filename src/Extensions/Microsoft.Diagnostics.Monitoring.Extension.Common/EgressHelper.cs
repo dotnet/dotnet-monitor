@@ -2,11 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.IO;
 using System.Text.Json;
 using System.Threading;
@@ -14,48 +12,32 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 {
-    internal sealed class SharedEntrypoint<T> where T : class, IEgressProviderOptions, new()
+    internal sealed class EgressHelper
     {
         private static Stream StdInStream;
         private static CancellationTokenSource CancelSource = new CancellationTokenSource();
 
-        private static EgressProvider _provider;
-        private static Action<ExtensionEgressPayload, T> _configureOptions;
-
-        public static async Task<int> Entrypoint(string[] args, EgressProvider provider, Action<ExtensionEgressPayload, T> configureOptions)
+        internal static Command CreateEgressCommand<TOptions>(EgressProvider<TOptions> provider, Action<ExtensionEgressPayload, TOptions> configureOptions = null) where TOptions : class, new()
         {
-            _provider = provider;
-            _configureOptions = configureOptions;
-
-            using var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddConsole();
-            });
-
-            // Expected command line format is: dotnet-monitor-egress-*extension_type*.exe Egress
-            RootCommand rootCommand = new RootCommand("Egresses an artifact to cloud storage.");
-
             Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.");
 
-            egressCmd.SetHandler(Egress);
+            egressCmd.SetHandler(() => Egress(provider, configureOptions));
 
-            rootCommand.Add(egressCmd);
-
-            return await rootCommand.InvokeAsync(args);
+            return egressCmd;
         }
 
-        private static async Task<int> Egress()
+        private static async Task<int> Egress<TOptions>(EgressProvider<TOptions> provider, Action<ExtensionEgressPayload, TOptions> configureOptions = null) where TOptions : class, new()
         {
             EgressArtifactResult result = new();
             try
             {
                 string jsonConfig = Console.ReadLine();
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
-                IEgressProviderOptions options = BuildOptions(configPayload);
+                TOptions options = BuildOptions(configPayload, configureOptions);
 
                 Console.CancelKeyPress += Console_CancelKeyPress;
 
-                result.ArtifactPath = await _provider.EgressAsync(options,
+                result.ArtifactPath = await provider.EgressAsync(options,
                     GetStream,
                     configPayload.Settings,
                     CancelSource.Token);
@@ -75,22 +57,22 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             return result.Succeeded ? 0 : 1;
         }
 
-        private static T BuildOptions(ExtensionEgressPayload configPayload)
+        private static TOptions BuildOptions<TOptions>(ExtensionEgressPayload configPayload, Action<ExtensionEgressPayload, TOptions> configureOptions = null) where TOptions : new()
         {
-            T options = GetOptions(configPayload);
+            TOptions options = GetOptions<TOptions>(configPayload);
 
-            _configureOptions(configPayload, options);
+            configureOptions?.Invoke(configPayload, options);
 
             return options;
         }
 
-        private static T GetOptions(ExtensionEgressPayload payload)
+        private static TOptions GetOptions<TOptions>(ExtensionEgressPayload payload) where TOptions : new()
         {
             IConfigurationBuilder builder = new ConfigurationBuilder();
 
             var configurationRoot = builder.AddInMemoryCollection(payload.Configuration).Build();
 
-            T options = new();
+            TOptions options = new();
 
             configurationRoot.Bind(options);
 

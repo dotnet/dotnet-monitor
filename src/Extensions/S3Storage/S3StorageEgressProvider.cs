@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
     /// <summary>
     /// Egress provider for egressing stream data to the S3 storage.
     /// </summary>
-    internal sealed class S3StorageEgressProvider : EgressProvider
+    internal sealed class S3StorageEgressProvider : EgressProvider<S3StorageEgressProviderOptions>
     {
 #pragma warning disable CA1852
         internal class StorageFactory
@@ -26,18 +26,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
         }
 
         public override async Task<string> EgressAsync(
-            IEgressProviderOptions egressProviderOptions,
-            Func<Stream, CancellationToken, Task> action,
-            EgressArtifactSettings artifactSettings,
-            CancellationToken token)
-        {
-            return await EgressAsyncHelper((S3StorageEgressProviderOptions)egressProviderOptions,
-                action,
-                artifactSettings,
-                token);
-        }
-
-        public async Task<string> EgressAsyncHelper(
             S3StorageEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,

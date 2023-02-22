@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.Extension.Common;
+using System.CommandLine;
 
 namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 {
@@ -9,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
     {
         static async Task<int> Main(string[] args)
         {
-            ILogger logger = Utilities.CreateLogger<AzureBlobEgressProviderOptions>();
+            ILogger logger = Utilities.CreateLogger();
 
             AzureBlobEgressProvider provider = new(logger);
 
@@ -58,7 +59,14 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
                 }
             };
 
-            return await SharedEntrypoint<AzureBlobEgressProviderOptions>.Entrypoint(args, provider, configureOptions);
+            // Expected command line format is: dotnet-monitor-egress-azureblobstorage.exe Egress
+            RootCommand rootCommand = new RootCommand("Egresses an artifact to Azure storage.");
+
+            Command egressCmd = EgressHelper.CreateEgressCommand(provider, configureOptions);
+
+            rootCommand.Add(egressCmd);
+
+            return await rootCommand.InvokeAsync(args);
         }
     }
 }

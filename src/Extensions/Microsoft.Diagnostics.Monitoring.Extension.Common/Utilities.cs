@@ -7,14 +7,14 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 {
     internal static class Utilities
     {
-        public static ILogger CreateLogger<T>() where T : class, IEgressProviderOptions, new()
+        public static ILogger CreateLogger()
         {
             using var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddConsole();
             });
 
-            return loggerFactory.CreateLogger<SharedEntrypoint<T>>();
+            return loggerFactory.CreateLogger<EgressHelper>();
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.Extension.Common;
 using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
@@ -9,7 +8,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
     /// <summary>
     /// Egress provider options for S3 storage.
     /// </summary>
-    internal sealed partial class S3StorageEgressProviderOptions : IEgressProviderOptions
+    internal sealed partial class S3StorageEgressProviderOptions
     {
         public string Endpoint { get; set; }
 

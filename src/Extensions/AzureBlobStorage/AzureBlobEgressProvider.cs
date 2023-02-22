@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
     /// <remarks>
     /// Blobs created through this provider will overwrite existing blobs if they have the same blob name.
     /// </remarks>
-    internal partial class AzureBlobEgressProvider : EgressProvider
+    internal partial class AzureBlobEgressProvider : EgressProvider<AzureBlobEgressProviderOptions>
     {
         private int BlobStorageBufferSize = 4 * 1024 * 1024;
 
@@ -29,18 +29,6 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
         }
 
         public override async Task<string> EgressAsync(
-            IEgressProviderOptions egressProviderOptions,
-            Func<Stream, CancellationToken, Task> action,
-            EgressArtifactSettings artifactSettings,
-            CancellationToken token)
-        {
-            return await EgressAsyncHelper((AzureBlobEgressProviderOptions)egressProviderOptions,
-                action,
-                artifactSettings,
-                token);
-        }
-
-        public async Task<string> EgressAsyncHelper(
             AzureBlobEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
@@ -105,7 +93,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
                 throw CreateException(ex);
             }
         }
-
+ 
         public async Task SetBlobClientMetadata(BlobBaseClient blobClient, EgressArtifactSettings artifactSettings, CancellationToken token)
         {
             Dictionary<string, string> mergedMetadata = new Dictionary<string, string>(artifactSettings.Metadata);
