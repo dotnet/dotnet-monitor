@@ -8,6 +8,9 @@
         },
         {
             "pattern": "^https://pkgs\\.dev\\.azure\\.com/dnceng/public/_packaging/.*"
+        },
+        {
+            "pattern": "^https://www\\.dotnetfoundation.org/.*"
         }
     ],
     "aliveStatusCodes": [
