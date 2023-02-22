@@ -18,8 +18,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
             return new AzureAdOptions
             {
                 ClientId = Guid.NewGuid().ToString("D"),
-                RequiredRole = "Application.Access",
-                RequiredScope = "access_as_user"
+                RequiredRole = Guid.NewGuid().ToString("D"),
+                RequiredScope = Guid.NewGuid().ToString("D")
             };
         }
 

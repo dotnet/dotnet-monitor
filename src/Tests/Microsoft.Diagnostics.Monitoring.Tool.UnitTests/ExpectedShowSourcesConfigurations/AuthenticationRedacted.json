@@ -1,6 +1,7 @@
 {
-  "MonitorApiKey": {
-    "Subject": "ae5473b6-8dad-498d-b915-ffffffffffff" /*JsonConfigurationProvider for 'appsettings.json' (Optional)*/,
-    "PublicKey": ":REDACTED:" /*JsonConfigurationProvider for 'appsettings.json' (Optional)*/
-  }
+    "MonitorApiKey": {
+        "Subject": "ae5473b6-8dad-498d-b915-ffffffffffff" /*JsonConfigurationProvider for 'appsettings.json' (Optional)*/,
+        "PublicKey": ":REDACTED:" /*JsonConfigurationProvider for 'appsettings.json' (Optional)*/
+    },
+    "AzureAd": ":NOTPRESENT:"
 }

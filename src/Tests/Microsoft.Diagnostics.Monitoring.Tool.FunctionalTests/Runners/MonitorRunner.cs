@@ -49,11 +49,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public bool EnableCallStacksFeature { get; set; }
 
         /// <summary>
-        /// Determines whether to pass in the user configuration file via --configuration-file-path
-        /// </summary>
-        public bool ExplicitlySetConfigurationFilePath { get; set; }
-
-        /// <summary>
         /// Gets the task for the underlying <see cref="DotNetRunner"/>'s
         /// <see cref="DotNetRunner.ExitedTask"/> which is used to wait for process exit.
         /// </summary>
