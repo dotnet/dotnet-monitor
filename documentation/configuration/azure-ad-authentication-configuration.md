@@ -3,8 +3,6 @@
 
 # Azure Active Directory Authentication Configuration (8.0+)
 
-When `dotnet-monitor` is used to produce artifacts such as dumps or traces, an egress provider enables the artifacts to be stored in a manner suitable for the hosting environment rather than streamed back directly.
-
 ## Configuration Options
 
 | Name | Type | Required | Description |

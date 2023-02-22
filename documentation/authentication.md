@@ -12,7 +12,7 @@ It is also possible, although strongly not recommended, to [disable authenticati
 
 > **Note**: Authentication is not performed on requests to the metrics endpoint (by default, http://localhost:52325).
 
-The recommended configuration for `dotnet monitor` is to use [AzureAd Authentication](#azure-active-directory-authentication) over a channel secured with TLS.
+The recommended configuration for `dotnet monitor` is to use [Azure Active Directory Authentication](#azure-active-directory-authentication) over a channel secured with TLS.
 
 ## Azure Active Directory Authentication
 
