@@ -117,7 +117,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
                 return;
             }
 
+            // Use authorization code flow instead of the implicit flow.
+            // AzureAD advices against using implicit flow and requires manual editing of the
+            // App Registration manifest to enable.
             options.OAuthUsePkce();
+
             options.OAuthClientId(_azureAdOptions.ClientId);
             options.OAuthScopes(_fqRequiredScope);
         }
