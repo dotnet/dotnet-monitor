@@ -39,7 +39,7 @@ Authentication is enforced for this route. See [Authentication](./../authenticat
 
 Allowed schemes:
 - `Bearer`
-- `Negotiate` (Windows only, running as unelevated)
+- `Negotiate` (Windows only, running as unelevated and using an API Key)
 
 ## Responses
 
@@ -100,7 +100,7 @@ See [Process ID `pid` vs Unique ID `uid`](pidvsuid.md) for clarification on when
 
 ### View the collected `.nettrace` file
 
-On Windows, `.nettrace` files can be viewed in [PerfView](https://github.com/microsoft/perfview) for analysis or in Visual Studio. 
+On Windows, `.nettrace` files can be viewed in [PerfView](https://github.com/microsoft/perfview) for analysis or in Visual Studio.
 
 A `.nettrace` files can be converted to another format (e.g. SpeedScope or Chromium) using the [dotnet-trace](https://docs.microsoft.com/dotnet/core/diagnostics/dotnet-trace) tool.
 

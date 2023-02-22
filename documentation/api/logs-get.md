@@ -41,7 +41,7 @@ Authentication is enforced for this route. See [Authentication](./../authenticat
 
 Allowed schemes:
 - `Bearer`
-- `Negotiate` (Windows only, running as unelevated)
+- `Negotiate` (Windows only, running as unelevated and using an API Key)
 
 ## Responses
 

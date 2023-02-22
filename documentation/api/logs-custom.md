@@ -40,7 +40,7 @@ Authentication is enforced for this route. See [Authentication](./../authenticat
 
 Allowed schemes:
 - `Bearer`
-- `Negotiate` (Windows only, running as unelevated)
+- `Negotiate` (Windows only, running as unelevated and using an API Key)
 
 ## Request Body
 
@@ -105,7 +105,7 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 
 2021-05-13 18:06:41Z info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
       => RequestId:0HM8M726ENU3K:0000002B, RequestPath:/, SpanId:|4791a4a7-433aa59a9e362743., TraceId:4791a4a7-433aa59a9e362743, ParentId:
-      Request starting HTTP/1.1 GET http://localhost:5000/  
+      Request starting HTTP/1.1 GET http://localhost:5000/
 
 2021-05-13 18:06:41Z info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
       => RequestId:0HM8M726ENU3K:0000002B, RequestPath:/, SpanId:|4791a4a7-433aa59a9e362743., TraceId:4791a4a7-433aa59a9e362743, ParentId:
