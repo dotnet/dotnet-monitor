@@ -235,7 +235,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         {
             using FileStream stream = new(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
 
-            JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonIgnoreCondition.WhenWritingNull);
+            JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonSerializerOptionsFactory.JsonIgnoreCondition.WhenWritingNull);
             await JsonSerializer.SerializeAsync(stream, options, serializerOptions).ConfigureAwait(false);
         }
     }
