@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return scenarioCommand;
         }
 
-        public static async Task SingleExceptionAsync(InvocationContext context)
+        public static async Task SingleExceptionAsync(InvocationContext context, CancellationToken token)
         {
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
@@ -50,10 +50,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
 
                 return 0;
-            }, context.GetCancellationToken());
+            }, token);
         }
 
-        public static async Task RepeatExceptionAsync(InvocationContext context)
+        public static async Task RepeatExceptionAsync(InvocationContext context, CancellationToken token)
         {
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
@@ -66,10 +66,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
 
                 return 0;
-            }, context.GetCancellationToken());
+            }, token);
         }
 
-        public static async Task AsyncExceptionAsync(InvocationContext context)
+        public static async Task AsyncExceptionAsync(InvocationContext context, CancellationToken token)
         {
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
@@ -80,10 +80,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
 
                 return 0;
-            }, context.GetCancellationToken());
+            }, token);
         }
 
-        public static async Task FrameworkExceptionAsync(InvocationContext context)
+        public static async Task FrameworkExceptionAsync(InvocationContext context, CancellationToken token)
         {
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
@@ -94,10 +94,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
 
                 return 0;
-            }, context.GetCancellationToken());
+            }, token);
         }
 
-        public static async Task CustomExceptionAsync(InvocationContext context)
+        public static async Task CustomExceptionAsync(InvocationContext context, CancellationToken token)
         {
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
@@ -108,7 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
 
                 return 0;
-            }, context.GetCancellationToken());
+            }, token);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
