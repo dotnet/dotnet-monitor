@@ -4,7 +4,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
-using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Temporary;
+using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey;
-using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Temporary;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth;
 using Microsoft.Extensions.Hosting;
 using System;

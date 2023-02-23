@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.AspNet;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.EventCounter;
