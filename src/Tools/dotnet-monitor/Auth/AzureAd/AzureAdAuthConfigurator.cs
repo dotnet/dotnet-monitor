@@ -73,7 +73,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
             const string OAuth2SecurityDefinitionName = "OAuth2";
 
             // Only present an option to authenticate if a required scope is set.
-            // Otherwise a users cannot interactively authenticate.
+            // Otherwise users cannot interactively authenticate.
             if (_fqRequiredScope != null)
             {
                 Uri baseEndpoint = new Uri(_azureAdOptions.GetInstance(), $"{_azureAdOptions.GetTenantId()}/oauth2/v2.0/");

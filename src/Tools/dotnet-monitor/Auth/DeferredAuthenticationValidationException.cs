@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
             List<string> failureMessages = new (results.Count());
             foreach (ValidationResult result in results)
             {
-                if (result.ErrorMessage != null)
+                if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
                 {
                     failureMessages.Add(result.ErrorMessage);
                 }

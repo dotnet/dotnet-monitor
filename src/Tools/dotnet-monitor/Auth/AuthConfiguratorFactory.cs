@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
 
                 case StartupAuthenticationMode.Deferred:
                     IConfigurationSection authConfigSection = context.Configuration.GetSection(ConfigurationKeys.Authentication);
-                    AuthenticationOptions authOptions = new AuthenticationOptions();
+                    AuthenticationOptions authOptions = new();
                     if (authConfigSection.Exists())
                     {
                         authConfigSection.Bind(authOptions);
