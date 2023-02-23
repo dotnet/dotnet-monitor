@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 {

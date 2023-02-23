@@ -7,6 +7,11 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Microsoft.Diagnostics.Monitoring.Extension.Common;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 {

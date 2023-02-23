@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.Extension.Common;
 using Microsoft.Extensions.Logging;
 using System.CommandLine;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 {

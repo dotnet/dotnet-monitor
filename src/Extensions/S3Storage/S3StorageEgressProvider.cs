@@ -4,7 +4,11 @@
 using Amazon.S3;
 using Microsoft.Diagnostics.Monitoring.Extension.Common;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Globalization;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 {

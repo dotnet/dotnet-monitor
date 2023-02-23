@@ -94,7 +94,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
                 throw CreateException(ex);
             }
         }
- 
+
         public async Task SetBlobClientMetadata(BlobBaseClient blobClient, EgressArtifactSettings artifactSettings, CancellationToken token)
         {
             Dictionary<string, string> mergedMetadata = new Dictionary<string, string>(artifactSettings.Metadata);

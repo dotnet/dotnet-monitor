@@ -2,6 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Amazon.S3.Model;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 {
