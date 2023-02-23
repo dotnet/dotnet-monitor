@@ -29,8 +29,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
             if (context.User.Identity.AuthenticationType == AuthConstants.FederationAuthType)
             {
                 // If we get a FederationAuthType (Bearer from a Jwt Token) we need to check that the user has the specified subject claim.
-                string expectedSubjectClaim = _apiKeyConfig.CurrentValue.Subject;
-                if (context.User.HasClaim(ClaimTypes.NameIdentifier, expectedSubjectClaim))
+                MonitorApiKeyConfiguration configSnapshot = _apiKeyConfig.CurrentValue;
+                if (context.User.HasClaim(ClaimTypes.NameIdentifier, configSnapshot.Subject))
                 {
                     context.Succeed(requirement);
                 }
