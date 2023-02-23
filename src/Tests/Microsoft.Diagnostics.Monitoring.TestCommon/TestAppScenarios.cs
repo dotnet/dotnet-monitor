@@ -42,6 +42,26 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             }
         }
 
+        public static class Exceptions
+        {
+            public const string Name = nameof(Exceptions);
+
+            public static class SubScenarios
+            {
+                public const string SingleException = nameof(SingleException);
+                public const string RepeatException = nameof(RepeatException);
+                public const string AsyncException = nameof(AsyncException);
+                public const string FrameworkException = nameof(FrameworkException);
+                public const string CustomException = nameof(CustomException);
+            }
+
+            public static class Commands
+            {
+                public const string Begin = nameof(Begin);
+                public const string End = nameof(End);
+            }
+        }
+
         public static class Stacks
         {
             public const string Name = nameof(Stacks);
