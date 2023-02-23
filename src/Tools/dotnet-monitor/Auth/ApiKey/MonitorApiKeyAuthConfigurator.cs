@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 
             if (OperatingSystem.IsWindows())
             {
-                _enableNegotiation = false;
+                _enableNegotiation = true;
             }
         }
 
