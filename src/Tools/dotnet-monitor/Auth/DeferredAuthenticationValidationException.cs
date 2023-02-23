@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
         {
             ConfigurationPath = configurationPath;
 
-            List<string> failureMessages = new (results.Count());
+            List<string> failureMessages = new(results.Count());
             foreach (ValidationResult result in results)
             {
                 if (!string.IsNullOrWhiteSpace(result.ErrorMessage))

@@ -1,19 +1,19 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.Swagger;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Identity.Web;
-using System.Collections.Generic;
-using System;
-using Swashbuckle.AspNetCore.SwaggerUI;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
-using Microsoft.Diagnostics.Tools.Monitor.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Swashbuckle.AspNetCore.SwaggerUI;
+using System;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
 {
