@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored
+namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
     /// <summary>
     /// Represents internal version of <see cref="MonitorApiKeyOptions"/>.

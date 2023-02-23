@@ -1,12 +1,11 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored;
+using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Temporary;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth
 {
@@ -31,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
                     {
                         if (generatedJwtKeyObject is GeneratedJwtKey generatedJwtKey)
                         {
-                            return new MonitorTempKeyAuthConfigurator(generatedJwtKey);
+                            return new MonitorKeyAuthConfigurator(generatedJwtKey);
                         }
                     }
 

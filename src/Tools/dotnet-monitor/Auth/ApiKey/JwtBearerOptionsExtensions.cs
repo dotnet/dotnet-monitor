@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
