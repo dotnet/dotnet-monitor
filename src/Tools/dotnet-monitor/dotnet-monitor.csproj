@@ -75,7 +75,7 @@
     </ItemGroup>
     <ItemGroup>
       <!-- Pack the file if it exists. -->
-      <TfmSpecificPackageFile Include="@(AdditionalPackageFile-&gt;Exists())" />
+      <TfmSpecificPackageFile Include="@(AdditionalPackageFile->Exists())" />
     </ItemGroup>
   </Target>
 

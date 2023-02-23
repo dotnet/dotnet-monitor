@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
                     }
 
                     // We should never reach here unless there is a bug in our initialization code.
-                    throw new InvalidOperationException("GeneratedJwtKey was not found.");
+                    throw new InvalidOperationException();
 
                 case StartupAuthenticationMode.Deferred:
                     // We currently only have one configuration-based authentication mode.

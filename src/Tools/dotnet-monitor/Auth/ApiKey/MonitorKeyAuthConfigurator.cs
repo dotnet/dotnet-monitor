@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
-    internal class MonitorKeyAuthConfigurator : IAuthenticationConfigurator
+    internal sealed class MonitorKeyAuthConfigurator : IAuthenticationConfigurator
     {
         private readonly GeneratedJwtKey _pinnedJwtKey;
         private readonly bool _enableNegotiation;

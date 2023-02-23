@@ -23,7 +23,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             string aspnetUrls = string.Empty;
             ServerUrlsBlockingConfigurationManager manager = new();
-
             manager.IsBlocking = true;
 
             return new HostBuilder()
