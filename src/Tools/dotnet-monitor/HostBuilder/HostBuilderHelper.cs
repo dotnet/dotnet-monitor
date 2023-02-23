@@ -269,7 +269,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ConfigurationHelper.JoinValue(settings.Urls ?? Array.Empty<string>())));
         }
 
-        private static string FormatCmdLineArgument(string key, string value)
+        public static string FormatCmdLineArgument(string key, string value)
         {
             return FormattableString.Invariant($"{key}={value}");
         }

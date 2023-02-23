@@ -3,10 +3,12 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
+using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Temporary;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Commands
@@ -32,7 +34,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
         {
             StartupAuthenticationMode startupAuthMode = HostBuilderHelper.GetStartupAuthenticationMode(noAuth, tempApiKey);
             HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(urls, metricUrls, metrics, diagnosticPort, startupAuthMode, configurationFilePath);
-            IHost host = HostBuilderHelper.CreateHostBuilder(settings).Build();
+            IHost host = HostBuilderHelper.CreateHostBuilder(settings)
+                .ConfigureAppConfiguration((HostBuilderContext context, IConfigurationBuilder builder) =>
+                {
+                    // HACK: generate a random jwt key and add it to the command line options.
+                    // Since we never fully startup it doesn't have to actually match what the auth configurator is using.
+                    //
+                    // Do this to avoid the breaking change described in https://github.com/dotnet/dotnet-monitor/pull/3665 in already shipping major versions.
+                    if (startupAuthMode == StartupAuthenticationMode.TemporaryKey)
+                    {
+                        List<string> arguments = new();
+
+                        GeneratedJwtKey generatedJwtKey = GeneratedJwtKey.Create();
+                        arguments.Add(HostBuilderHelper.FormatCmdLineArgument(
+                            ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.Subject)),
+                            generatedJwtKey.Subject));
+
+                        arguments.Add(HostBuilderHelper.FormatCmdLineArgument(
+                            ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.PublicKey)),
+                            generatedJwtKey.PublicKey));
+
+                        builder.AddCommandLine(arguments.ToArray());
+                    }
+                })
+                .Build();
             IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
             using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);
             jsonWriter.Write(configuration, full: level == ConfigDisplayLevel.Full, skipNotPresent: false, showSources: showSources);
