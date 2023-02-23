@@ -205,6 +205,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         [NonEvent]
         private static unsafe void SetValue(ref EventData data, in Span<byte> value)
         {
+            // It is expected that the Span is a wrapper around an array-like value
+            // that is pinned or is unmovable from the perspective of GC (e.g. stackalloc).
+            // Otherwise, GC might relocate the value after its address is acquired and
+            // potentially cause access violations or misinterpretation of the data.
             data.DataPointer = (nint)Unsafe.AsPointer(ref value.GetPinnableReference());
             data.Size = value.Length;
         }
