@@ -72,22 +72,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 .AddSingleton<IMetricsPortsProvider, MetricsPortsProvider>();
         }
 
-        public static IServiceCollection ConfigureMonitorApiKeyOptions(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection ConfigureMonitorApiKeyOptions(this IServiceCollection services, IConfiguration configuration, bool allowConfigurationUpdates)
         {
             ConfigureOptions<MonitorApiKeyOptions>(services, configuration, ConfigurationKeys.MonitorApiKey);
 
             // Loads and validates MonitorApiKeyOptions into MonitorApiKeyConfiguration
             services.AddSingleton<IPostConfigureOptions<MonitorApiKeyConfiguration>, MonitorApiKeyPostConfigure>();
-            // Notifies that MonitorApiKeyConfiguration is changed when MonitorApiKeyOptions is changed.
-            services.AddSingleton<IOptionsChangeTokenSource<MonitorApiKeyConfiguration>, MonitorApiKeyChangeTokenSource>();
+
+            if (allowConfigurationUpdates)
+            {
+                // Notifies that MonitorApiKeyConfiguration is changed when MonitorApiKeyOptions is changed.
+                services.AddSingleton<IOptionsChangeTokenSource<MonitorApiKeyConfiguration>, MonitorApiKeyChangeTokenSource>();
+            }
 
             return services;
         }
 
-        public static AuthenticationBuilder ConfigureMonitorApiKeyAuthentication(this IServiceCollection services, IConfiguration configuration, AuthenticationBuilder builder)
+        public static AuthenticationBuilder ConfigureMonitorApiKeyAuthentication(this IServiceCollection services, IConfiguration configuration, AuthenticationBuilder builder, bool allowConfigurationUpdates)
         {
             IConfigurationSection authSection = configuration.GetSection(ConfigurationKeys.Authentication);
-            services.ConfigureMonitorApiKeyOptions(authSection);
+            services.ConfigureMonitorApiKeyOptions(authSection, allowConfigurationUpdates);
 
             // Notifies that the JwtBearerOptions change when MonitorApiKeyConfiguration gets changed.
             services.AddSingleton<IOptionsChangeTokenSource<JwtBearerOptions>, JwtBearerChangeTokenSource>();

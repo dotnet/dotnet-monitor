@@ -2,12 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Temporary
@@ -16,25 +14,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Temporary
     {
         private readonly GeneratedJwtKey _jwtKey;
 
-        public MonitorTempKeyAuthConfigurator() : base()
+        public MonitorTempKeyAuthConfigurator(GeneratedJwtKey jwtKey) : base()
         {
-            _jwtKey = GeneratedJwtKey.Create();
+            _jwtKey = jwtKey;
         }
 
         protected override void ConfigureAuthBuilder(IServiceCollection services, HostBuilderContext context, AuthenticationBuilder authBuilder)
         {
-            authBuilder.AddScheme<JwtBearerOptions, JwtBearerHandler>(JwtBearerDefaults.AuthenticationScheme, options =>
-            {
-                // Error handling:
-                // If there's an exception here using the generated key
-                // all routes will be inaccessible and the exceptions will be logged.
-                string jwkJson = Base64UrlEncoder.Decode(_jwtKey.PublicKey);
-                JsonWebKey jwk = JsonWebKey.Create(jwkJson);
-
-                options.ConfigureApiKeyTokenValidation(jwk);
-            });
-
-            services.AddSingleton<IAuthorizationHandler>(new UserAuthorizationHandler(_jwtKey.Subject));
+            services.ConfigureMonitorApiKeyAuthentication(context.Configuration, authBuilder, allowConfigurationUpdates: false);
+            services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
         }
 
         public override IStartupLogger CreateStartupLogger(ILogger<Startup> logger, IServiceProvider _)

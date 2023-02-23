@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Temporary;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth
 {
@@ -26,7 +27,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
                     return new NoAuthConfigurator();
 
                 case StartupAuthenticationMode.TemporaryKey:
-                    return new MonitorTempKeyAuthConfigurator();
+                    if (context.Properties.TryGetValue(typeof(GeneratedJwtKey), out object generatedJwtKeyObject))
+                    {
+                        if (generatedJwtKeyObject is GeneratedJwtKey generatedJwtKey)
+                        {
+                            return new MonitorTempKeyAuthConfigurator(generatedJwtKey);
+                        }
+                    }
+
+                    // We should never reach here unless there is a bug in our initialization code.
+                    throw new InvalidOperationException("GeneratedJwtKey was not found.");
 
                 case StartupAuthenticationMode.Deferred:
                     // We currently only have one configuration-based authentication mode.

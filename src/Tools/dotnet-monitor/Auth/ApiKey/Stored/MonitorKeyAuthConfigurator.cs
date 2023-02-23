@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored
 
         protected override void ConfigureAuthBuilder(IServiceCollection services, HostBuilderContext context, AuthenticationBuilder authBuilder)
         {
-            services.ConfigureMonitorApiKeyAuthentication(context.Configuration, authBuilder);
+            services.ConfigureMonitorApiKeyAuthentication(context.Configuration, authBuilder, allowConfigurationUpdates: true);
             services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
             services.AddSingleton<MonitorApiKeyConfigurationObserver>();
         }

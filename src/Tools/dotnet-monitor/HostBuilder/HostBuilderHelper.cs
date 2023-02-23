@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
+using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Temporary;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,6 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             string aspnetUrls = string.Empty;
             ServerUrlsBlockingConfigurationManager manager = new();
+
             manager.IsBlocking = true;
 
             return new HostBuilder()
@@ -93,6 +95,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         {
                             AddJsonFileHelper(builder, hostBuilderResults, userFilePath.FullName);
                         }
+                    }
+
+                    if (settings.AuthenticationMode == StartupAuthenticationMode.TemporaryKey)
+                    {
+                        GeneratedJwtKey jwtKey = GeneratedJwtKey.Create();
+                        context.Properties.Add(typeof(GeneratedJwtKey), jwtKey);
+
+                        // These are configured via the command line configuration source so that
+                        // the "show config" command will report these are from the command line
+                        // rather than an in-memory collection.
+                        List<string> arguments = new();
+                        AddTempApiKeyArguments(arguments, jwtKey);
+
+                        builder.AddCommandLine(arguments.ToArray());
                     }
                 })
                 //Note this is necessary for config only because Kestrel configuration
@@ -249,6 +265,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     ConfigurationPath.Combine(ConfigurationKeys.DiagnosticPort, nameof(DiagnosticPortOptions.EndpointName)),
                     settings.DiagnosticPort));
             }
+        }
+
+        private static void AddTempApiKeyArguments(List<string> arguments, GeneratedJwtKey jwtKey)
+        {
+            arguments.Add(FormatCmdLineArgument(
+                ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.Subject)),
+                jwtKey.Subject));
+
+            arguments.Add(FormatCmdLineArgument(
+                ConfigurationPath.Combine(ConfigurationKeys.Authentication, ConfigurationKeys.MonitorApiKey, nameof(MonitorApiKeyOptions.PublicKey)),
+                jwtKey.PublicKey));
         }
 
         private static void AddMetricsArguments(List<string> arguments, HostBuilderSettings settings)
