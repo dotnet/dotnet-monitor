@@ -16,13 +16,13 @@ using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
-    internal sealed class MonitorKeyAuthConfigurator : IAuthenticationConfigurator
+    internal sealed class MonitorApiKeyAuthConfigurator : IAuthenticationConfigurator
     {
         private readonly GeneratedJwtKey _pinnedJwtKey;
         private readonly bool _enableNegotiation;
 
 
-        public MonitorKeyAuthConfigurator(GeneratedJwtKey pinnedJwtKey = null)
+        public MonitorApiKeyAuthConfigurator(GeneratedJwtKey pinnedJwtKey = null)
         {
             _pinnedJwtKey = pinnedJwtKey;
 

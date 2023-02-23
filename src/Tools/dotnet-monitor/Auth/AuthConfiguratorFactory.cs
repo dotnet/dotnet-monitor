@@ -29,7 +29,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
                     {
                         if (generatedJwtKeyObject is GeneratedJwtKey generatedJwtKey)
                         {
-                            return new MonitorKeyAuthConfigurator(generatedJwtKey);
+                            return new MonitorApiKeyAuthConfigurator(generatedJwtKey);
                         }
                     }
 
@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
 
                 case StartupAuthenticationMode.Deferred:
                     // We currently only have one configuration-based authentication mode.
-                    return new MonitorKeyAuthConfigurator();
+                    return new MonitorApiKeyAuthConfigurator();
 
                 default:
                     throw new NotSupportedException();
