@@ -4,7 +4,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Options;
-using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
