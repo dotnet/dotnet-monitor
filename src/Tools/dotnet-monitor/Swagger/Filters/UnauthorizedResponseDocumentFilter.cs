@@ -4,7 +4,7 @@
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
+namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
 {
     /// <summary>
     /// Adds an UnauthorizedResponse response component to the document.

@@ -6,7 +6,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
 
-namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
+namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
 {
     /// <summary>
     /// Removes failure content types (e.g. application/problem+json) from success operations.

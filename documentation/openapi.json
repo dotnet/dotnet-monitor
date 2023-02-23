@@ -1892,19 +1892,6 @@
           }
         }
       }
-    },
-    "securitySchemes": {
-      "ApiKeyAuth": {
-        "type": "apiKey",
-        "description": "JWT Authorization header using bearer token authentication. Put the Authorization header value (\"Bearer\" prefix and the JWT value) in the textbox when prompted.",
-        "name": "Authorization",
-        "in": "header"
-      }
     }
-  },
-  "security": [
-    {
-      "ApiKeyAuth": [ ]
-    }
-  ]
+  }
 }
