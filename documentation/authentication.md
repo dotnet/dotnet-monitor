@@ -3,7 +3,7 @@
 
 # Authentication
 
-Authenticated requests to `dotnet monitor` help protect sensitive diagnostic artifacts from unauthorized users and lower privileged processes. `dotnet monitor` can be configured to use any of the following authentication modes:
+Authenticated requests to `dotnet monitor` help protect sensitive diagnostic artifacts from unauthorized users and lower privileged processes. `dotnet monitor` can be configured to use any one of the following authentication modes:
 - [API Key](#api-key-authentication)
 - [Azure Active Directory Authentication](#azure-active-directory-authentication) (8.0+)
 - [Windows Authentication](#windows-authentication)
@@ -19,8 +19,7 @@ The recommended configuration for `dotnet monitor` is to use [Azure Active Direc
 Azure Active Directory integration (referred to as Azure AD) is the recommended authentication mechanism for `dotnet monitor` as it does not require storing any secrets or rotating keys yourself. To enable Azure AD authentication:
 
 - [Create an App Registration](https://learn.microsoft.com/azure/active-directory/develop/quickstart-register-app#register-an-application) in your Azure tenant that will be used by `dotnet monitor`. Note that a single App Registration can be used by multiple instances of `dotnet monitor`.
-- If you want individual users to be able to authenticate against `dotnet monitor`, [add a new scope](https://learn.microsoft.com/azure/active-directory/develop/quickstart-configure-app-expose-web-apis#add-a-scope) for general API access. Custom Application ID URIs are supported.
-- If you want other applications to be able to authenticate against `dotnet monitor`, [add a new app role](https://learn.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps#app-roles-ui) for general API access.
+- [Add a new app role](https://learn.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps#app-roles-ui) for general API access.
 - [Configure Azure AD in dotnet monitor](./configuration/azure-ad-authentication-configuration.md).
 
 > **Note**: Azure AD B2C is currently not supported.
@@ -29,13 +28,34 @@ Azure Active Directory integration (referred to as Azure AD) is the recommended 
 
 `dotnet monitor` supports other applications calling its APIs using a [Managed Identity](https://learn.microsoft.com/azure/active-directory/managed-identities-azure-resources/) when Azure AD is configured. You will need to have added an app role to `dotnet monitor`'s App Registration as described above and then assign it to the Managed Identity. This can be done using [New-AzureADServiceAppRoleAssignment](https://learn.microsoft.com/powershell/module/azuread/new-azureadserviceapproleassignment?view=azureadps-2.0). Note that you will need to [configure Azure AD in dotnet monitor](./configuration/azure-ad-authentication-configuration.md) with the app role information.
 
+### Authenticating with the Azure CLI
+
+If a user is a member of the necessary app role, they can obtain a valid auth token using the Azure CLI:
+
+```sh
+az account get-access-token --resource <Application ID URI> --query accessToken --output tsv
+```
+
+You can then use that token like so:
+
+```sh
+curl -H "Authorization: Bearer <Token from Azure CLI>" https://localhost:52323/processes
+```
+
+- If using PowerShell, you can use `Invoke-WebRequest` but it does not accept the same parameters.
+
+```powershell
+ (Invoke-WebRequest -Uri https://localhost:52323/processes -Headers @{ 'Authorization' = 'Bearer <Token from Azure CLI>' }).Content | ConvertFrom-Json
+```
+
 ### Interactively authenticating using the Swagger UI
 
-If you want Azure AD users to be able to interactively authenticate with your `dotnet monitor` instance using the in-box Swagger UI you will need to [add a redirect URI to the App Registration](https://learn.microsoft.com/azure/active-directory/develop/quickstart-register-app#add-a-redirect-uri).
-1. Select `Single-page application` as the platform.
-1. For the redirect URI, enter `{dotnet monitor address}/swagger/oauth2-redirect.html`, where `{dotnet monitor address}` is the address of your `dotnet monitor` instance.
-
-> **Note**: If using `localhost` for the address, you do **not** need to specify the port number. Example: `https://localhost/swagger/oauth2-redirect.html`
+If you want Azure AD users to be able to interactively authenticate with your `dotnet monitor` instance using the in-box Swagger UI you will need to:
+- [Add a new scope](https://learn.microsoft.com/azure/active-directory/develop/quickstart-configure-app-expose-web-apis#add-a-scope). This scope will only be used to enable interactive authentication and users will still be required to be part of the configured app role. Custom Application ID URIs are supported.
+- [Add a redirect URI to the App Registration](https://learn.microsoft.com/azure/active-directory/develop/quickstart-register-app#add-a-redirect-uri).
+  1. Select `Single-page application` as the platform.
+  1. For the redirect URI, enter `{dotnet monitor address}/swagger/oauth2-redirect.html`, where `{dotnet monitor address}` is the address of your `dotnet monitor` instance.
+  > **Note**: If using `localhost` for the address, you do **not** need to specify the port number. Example: `https://localhost/swagger/oauth2-redirect.html`
 
 ## Windows Authentication
 

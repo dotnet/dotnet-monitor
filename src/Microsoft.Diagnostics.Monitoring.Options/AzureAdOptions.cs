@@ -36,11 +36,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_RequiredRole))]
+        [Required]
         public string RequiredRole { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
-            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_RequiredScope))]
-        public string RequiredScope { get; set; }
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_SwaggerScope))]
+        public string SwaggerScope { get; set; }
     }
 }

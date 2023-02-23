@@ -834,23 +834,16 @@
     <comment>The description provided for the Instance parameter on AzureAdOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AzureAdOptions_RequiredRole" xml:space="preserve">
-    <value>The app role required by other applications to be able to authenticate. If not specified, other applications will not be able to authenticate.</value>
+    <value>The role required to be able to authenticate.</value>
     <comment>The description provided for the RequiredRole parameter on AzureAdOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_AzureAdOptions_RequiredScope" xml:space="preserve">
-    <value>The API scope required by users to be able to authenticate. If not specified, users will not be able to authenticate.</value>
-    <comment>The description provided for the RequiredScope parameter on AzureAdOptions.</comment>
+  <data name="DisplayAttributeDescription_AzureAdOptions_SwaggerScope" xml:space="preserve">
+    <value>The API scope required by users to be able to interactively authenticate using the in-box Swagger UI. If not specified, users will not be able to interactively authenticate.</value>
+    <comment>The description provided for the SwaggerScope parameter on AzureAdOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AzureAdOptions_TenantId" xml:space="preserve">
     <value>The tenant id of the Azure Active Directory tenant, or its tenant domain.</value>
     <comment>The description provided for the TenantId parameter on AzureAdOptions.</comment>
-  </data>
-  <data name="ErrorMessage_AzureAdMissingRoleAndScope" xml:space="preserve">
-    <value>The Azure Active Directory authentication configuration is missing both the {0} and {1} fields. At least one must be set.</value>
-    <comment>Gets the format string for rejecting validation due to AzureAd not being configured with a required role or scope
-2 Format Parameter:
-0. The name of the required role field.
-1. The name of the required scope field.</comment>
   </data>
   <data name="ErrorMessage_MultipleAuthenticationModesSpecified" xml:space="preserve">
     <value>Multiple authentication modes were configured. Only one may be set.</value>

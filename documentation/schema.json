@@ -446,7 +446,8 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "ClientId"
+        "ClientId",
+        "RequiredRole"
       ],
       "properties": {
         "Instance": {
@@ -480,18 +481,16 @@
           "format": "uri"
         },
         "RequiredRole": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The app role required by other applications to be able to authenticate. If not specified, other applications will not be able to authenticate."
+          "type": "string",
+          "description": "The role required to be able to authenticate.",
+          "minLength": 1
         },
-        "RequiredScope": {
+        "SwaggerScope": {
           "type": [
             "null",
             "string"
           ],
-          "description": "The API scope required by users to be able to authenticate. If not specified, users will not be able to authenticate."
+          "description": "The API scope required by users to be able to interactively authenticate using the in-box Swagger UI. If not specified, users will not be able to interactively authenticate."
         }
       }
     },

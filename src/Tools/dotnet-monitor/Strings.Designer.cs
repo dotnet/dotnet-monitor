@@ -656,20 +656,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Application API permission.
-        /// </summary>
-        internal static string HelpDescription_RequiredScope_AzureAd {
-            get {
-                return ResourceManager.GetString("HelpDescription_RequiredScope_AzureAd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to JWT Authorization header using bearer token authentication. Put the Authorization header value (&quot;Bearer&quot; prefix and the JWT value) in the textbox when prompted..
         /// </summary>
         internal static string HelpDescription_SecurityDefinitionDescription_ApiKey {
             get {
                 return ResourceManager.GetString("HelpDescription_SecurityDefinitionDescription_ApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Swagger UI permission.
+        /// </summary>
+        internal static string HelpDescription_SwaggerScope_AzureAd {
+            get {
+                return ResourceManager.GetString("HelpDescription_SwaggerScope_AzureAd", resourceCulture);
             }
         }
         

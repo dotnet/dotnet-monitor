@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.Swagger;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -59,27 +60,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
         public void ConfigureSwaggerGenAuth(SwaggerGenOptions options)
         {
             const string ApiKeySecurityDefinitionName = "ApiKeyAuth";
-
-            options.AddSecurityDefinition(ApiKeySecurityDefinitionName, new OpenApiSecurityScheme
-            {
-                Name = HeaderNames.Authorization,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = JwtBearerDefaults.AuthenticationScheme,
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description = Strings.HelpDescription_SecurityDefinitionDescription_ApiKey
-            });
-
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = ApiKeySecurityDefinitionName }
-                    },
-                    Array.Empty<string>()
-                }
-            });
+            options.AddBearerTokenAuthOption(ApiKeySecurityDefinitionName);
         }
 
         public void ConfigureSwaggerUI(SwaggerUIOptions options)

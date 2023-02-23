@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
             }
         }
 
-        private static void ValidateAuthConfigSection<T>(T options, string configurationPath) where T : IValidatableObject
+        private static void ValidateAuthConfigSection<T>(T options, string configurationPath)
         {
             List<ValidationResult> results = new();
             if (!Validator.TryValidateObject(options, new ValidationContext(options), results, validateAllProperties: true))

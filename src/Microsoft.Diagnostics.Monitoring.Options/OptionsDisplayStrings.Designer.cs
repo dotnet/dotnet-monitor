@@ -232,7 +232,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The app role required by other applications to be able to authenticate. If not specified, other applications will not be able to authenticate..
+        ///   Looks up a localized string similar to The role required to be able to authenticate..
         /// </summary>
         public static string DisplayAttributeDescription_AzureAdOptions_RequiredRole {
             get {
@@ -241,11 +241,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The API scope required by users to be able to authenticate. If not specified, users will not be able to authenticate..
+        ///   Looks up a localized string similar to The API scope required by users to be able to interactively authenticate using the in-box Swagger UI. If not specified, users will not be able to interactively authenticate..
         /// </summary>
-        public static string DisplayAttributeDescription_AzureAdOptions_RequiredScope {
+        public static string DisplayAttributeDescription_AzureAdOptions_SwaggerScope {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_RequiredScope", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_SwaggerScope", resourceCulture);
             }
         }
         
@@ -1622,15 +1622,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_TraceEventFilter_ProviderName {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_TraceEventFilter_ProviderName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The Azure Active Directory authentication configuration is missing both the {0} and {1} fields. At least one must be set..
-        /// </summary>
-        public static string ErrorMessage_AzureAdMissingRoleAndScope {
-            get {
-                return ResourceManager.GetString("ErrorMessage_AzureAdMissingRoleAndScope", resourceCulture);
             }
         }
         

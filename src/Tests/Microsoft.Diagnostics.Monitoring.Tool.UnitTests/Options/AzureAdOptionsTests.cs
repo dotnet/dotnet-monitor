@@ -18,8 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
             return new AzureAdOptions
             {
                 ClientId = Guid.NewGuid().ToString("D"),
-                RequiredRole = Guid.NewGuid().ToString("D"),
-                RequiredScope = Guid.NewGuid().ToString("D")
+                RequiredRole = Guid.NewGuid().ToString("D")
             };
         }
 
@@ -56,12 +55,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
         }
 
         [Fact]
-        public void AzureAdOptions_Requires_RoleOrScope()
+        public void AzureAdOptions_Requires_Role()
         {
             // Arrange
             AzureAdOptions options = GetDefaultOptions();
 
-            options.RequiredScope = null;
             options.RequiredRole = null;
 
             List<ValidationResult> results = new();

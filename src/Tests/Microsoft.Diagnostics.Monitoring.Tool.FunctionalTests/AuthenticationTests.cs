@@ -629,7 +629,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         {
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
 
-            toolRunner.ConfigurationFromEnvironment.UseAzureAd(requiredScope: null, requiredRole: null);
+            toolRunner.ConfigurationFromEnvironment.UseAzureAd(requiredRole: null);
 
             // Start dotnet-monitor
             await Assert.ThrowsAsync<InvalidOperationException>(toolRunner.StartAsync);
