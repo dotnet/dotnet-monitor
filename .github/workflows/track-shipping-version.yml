@@ -1,3 +1,4 @@
+name: Track shipped versions
 on:
   release:
     types: [released]

@@ -244,6 +244,16 @@ Object describing a metric from the application.
 | `counterType` | string | The type of metric. This is typically `Rate` or `Metric`. |
 | `value` | double | The value of the metric. |
 
+## MetricType (8.0+)
+
+Enumeration that describes the type of metrics a provider consumes.
+
+| Name |
+|---|
+| `EventCounter` |
+| `Meter` |
+| `All` |
+
 ## OperationError
 
 | Name | Type | Description |

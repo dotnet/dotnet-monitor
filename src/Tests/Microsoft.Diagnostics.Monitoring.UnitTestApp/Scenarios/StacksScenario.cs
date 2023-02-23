@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return command;
         }
 
-        public static async Task ExecuteAsync(InvocationContext context)
+        public static async Task ExecuteAsync(InvocationContext context, CancellationToken token)
         {
             using StacksWorker worker = new StacksWorker();
 
@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 worker.Signal();
 
                 return 0;
-            }, context.GetCancellationToken());
+            }, token);
         }
 
         public static void Entrypoint(object worker)

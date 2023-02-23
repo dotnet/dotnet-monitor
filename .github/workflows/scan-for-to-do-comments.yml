@@ -1,0 +1,33 @@
+name: Scan For To Do Comments
+on:
+  pull_request_review_comment:
+    types: [created]
+  issue_comment:
+    types: [created]
+
+permissions:
+  pull-requests: read
+  issues: read
+
+jobs:
+  scan-for-todo-issue:
+    runs-on: ubuntu-latest
+    if: startsWith(github.event.comment.body, '/TODO')
+    steps:
+      - name: Generate artifacts
+        run: |
+          trimmed_comment=$(echo "$COMMENT_BODY" | sed 's|/TODO ||I')
+          mkdir -p ./issue
+          echo -n $trimmed_comment > ./issue/issue-title
+          echo -n "$COMMENT_URL" > ./issue/issue-url
+          echo -n "$COMMENT_AUTHOR" > ./issue/issue-user
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          COMMENT_URL: ${{ github.event.comment.html_url }}
+          COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: issue-todo
+          path: issue/
