@@ -11,7 +11,7 @@ Azure Active Directory authentication must be configured before `dotnet monitor`
 |---|---|---|---|
 | ClientId | string | true | The unique application (client) id assigned to the app registration in Azure Active Directory. |
 | RequiredRole | string | true | The role required to be able to authenticate. |
-| SwaggerScope | string | true | The API scope required by users to be able to interactively authenticate using the in-box Swagger UI. If not specified, users will not be able to interactively authenticate. |
+| SwaggerScope | string | false | The API scope required by users to be able to interactively authenticate using the in-box Swagger UI. If not specified, users will not be able to interactively authenticate. |
 | AppIdUri | uri | false | The App ID URI of the app registration. Defaults to `api://{ClientId}` if not specified. |
 | Instance | uri | false | Specifies the Azure cloud instance users are signing in from. Can be either the Azure public cloud or one of the national clouds. Defaults to the Azure public cloud (`https://login.microsoftonline.com`). |
 | TenantId | string | false | The tenant id of the Azure Active Directory tenant, or its tenant domain. Defaults to `organizations`. |
