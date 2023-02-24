@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public bool EnableCallStacksFeature { get; set; }
 
         /// <summary>
-        /// Gets the task for the underlying <see cref="DotNetRunner"/>'s 
+        /// Gets the task for the underlying <see cref="DotNetRunner"/>'s
         /// <see cref="DotNetRunner.ExitedTask"/> which is used to wait for process exit.
         /// </summary>
         protected Task<int> RunnerExitedTask => _runner.ExitedTask;
