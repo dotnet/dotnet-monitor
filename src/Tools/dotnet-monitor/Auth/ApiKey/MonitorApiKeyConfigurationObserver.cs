@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored
+namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
     /// <summary>
     /// Service that monitors API Key authentication options changes and logs issues with the specified options.
