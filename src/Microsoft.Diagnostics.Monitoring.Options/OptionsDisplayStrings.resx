@@ -717,16 +717,6 @@
     <value>The boolean flag set for AWS connection configuration ForcePathStyle option.</value>
     <comment>The description provided for the ForcePathStyle parameter on S3StorageEgressProviderOptions.</comment>
   </data>
-  <data name="ErrorMessage_EgressS3FailedMissingSecrets" xml:space="preserve">
-    <value>S3 storage egress failed: Neither the secrets file nor the password are specified.</value>
-    <comment>Gets the string for rejecting validation due to missing credentials for S3 options.</comment>
-  </data>
-  <data name="ErrorMessage_EgressS3FailedMissingOption" xml:space="preserve">
-    <value>The {0} field is required.</value>
-    <comment>Gets the string for rejecting validation due to missing field.
-1 Format Parameter:
-0. fieldName: The name of the field that is missing</comment>
-  </data>
   <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_Duration" xml:space="preserve">
     <value>The duration of time in which live metrics are collected.</value>
     <comment>The description provided for the Duration parameter on CollectLiveMetricsOptions.</comment>

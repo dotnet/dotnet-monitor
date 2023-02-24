@@ -10,9 +10,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
+namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage;
 
-internal class MultiPartUploadStream : Stream
+internal sealed class MultiPartUploadStream : Stream
 {
     private readonly byte[] _buffer;
     private int _offset;

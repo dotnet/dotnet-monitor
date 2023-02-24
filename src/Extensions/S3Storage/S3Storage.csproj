@@ -2,26 +2,21 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
-    <RootNamespace>Microsoft.Diagnostics.Monitoring.AzureBlobStorage</RootNamespace>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>disable</Nullable>
-
-    <Description>Azure Blob Storage extension for dotnet-monitor</Description>
+    <RootNamespace>Microsoft.Diagnostics.Monitoring.Extension.S3Storage</RootNamespace>
+    <Description>S3 Storage extension for dotnet-monitor</Description>
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
-    <AssemblyName>dotnet-monitor-egress-azureblobstorage</AssemblyName>
+    <AssemblyName>dotnet-monitor-egress-s3storage</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
-    <PackageReference Include="Azure.Storage.Queues" Version="$(AzureStorageQueuesVersion)" />
+    <PackageReference Include="AWSSDK.S3" Version="$(AwsSdkS3Version)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.Extension.Common\Microsoft.Diagnostics.Monitoring.Extension.Common.csproj" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <Compile Update="Strings.Designer.cs">
       <DesignTime>True</DesignTime>

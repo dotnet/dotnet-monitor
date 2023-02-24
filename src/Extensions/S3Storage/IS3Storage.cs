@@ -8,7 +8,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
+namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 {
     public interface IS3Storage
     {

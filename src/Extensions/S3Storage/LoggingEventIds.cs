@@ -2,24 +2,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Extensions.Logging;
+using System;
 
-namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
+namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 {
     // The existing EventIds must not be duplicated, reused, or repurposed.
     // New logging events must use the next available EventId.
     internal enum LoggingEventIds
     {
-        EgressProvideUnableToFindPropertyKey = 1,
-        EgressProviderInvokeStreamAction = 2,
-        QueueDoesNotExist = 3,
-        QueueOptionsPartiallySet = 4,
-        WritingMessageToQueueFailed = 5,
-        InvalidMetadata = 6,
-        DuplicateKeyInMetadata = 7,
-        EnvironmentVariableNotFound = 8,
-        EnvironmentBlockNotSupported = 9,
-        EgressProviderSavedStream = 10,
-        EgressCopyActionStreamToEgressStream = 11
+        EgressProviderInvokeStreamAction = 1,
+        EgressProviderSavedStream = 2
     }
 
     internal static class LoggingEventIdsExtensions
