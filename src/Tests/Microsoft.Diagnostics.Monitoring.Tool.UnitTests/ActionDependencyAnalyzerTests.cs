@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -109,6 +110,45 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.Equal("a1input2", a2output2);
                 Assert.True(a2result.OutputValues.TryGetValue(Output3, out string a2output3));
                 Assert.Equal("Output a1input3 trail", a2output3);
+            }, serviceCollection =>
+            {
+                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
+            });
+        }
+
+        [Fact]
+        public async Task ProcessInfoTest()
+        {
+            PassThroughOptions settings = null;
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                CollectionRuleOptions options = rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddPassThroughAction("a1", ConfigurationTokenParser.ProcessNameReference, ConfigurationTokenParser.ProcessIdReference, ConfigurationTokenParser.CommandLineReference)
+                    .SetStartupTrigger();
+
+                settings = (PassThroughOptions)options.Actions.Last().Settings;
+            }, host =>
+            {
+                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeoutMs);
+
+                CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
+                ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
+                ISystemClock clock = host.Services.GetRequiredService<ISystemClock>();
+
+                const string processName = "actionProcess";
+                const int processId = 123;
+                string commandLine = FormattableString.Invariant($"{processName} arg1");
+
+                Guid instanceId = Guid.NewGuid();
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestEndpointInfo(instanceId, processId: processId, commandLine: commandLine), logger, clock);
+
+                ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
+                PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
+
+                Assert.Equal(processName, newSettings.Input1);
+                Assert.Equal(processId.ToString(CultureInfo.InvariantCulture), newSettings.Input2);
+                Assert.Equal(commandLine, newSettings.Input3);
+
             }, serviceCollection =>
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));

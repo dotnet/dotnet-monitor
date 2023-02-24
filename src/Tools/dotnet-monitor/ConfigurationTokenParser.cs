@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
@@ -16,7 +17,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public Guid RuntimeId { get; set; } = Guid.Empty;
 
-        public int ProcessId { get; set; } = -1;
+        public int ProcessId { get; set; }
+
+        public string ProcessName { get; set; } = string.Empty;
+
+        public string CommandLine { get; set; } = string.Empty;
 
         public IDictionary<string, string> EnvironmentBlock { get; set; } = new Dictionary<string, string>();
     }
@@ -31,7 +36,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private const string ProcessInfoReference = "Process";
         private const string RuntimeId = "RuntimeId";
-        public static readonly string RuntimeIdReference = FormattableString.Invariant($"{SubstitutionPrefix}{ProcessInfoReference}{Separator}{RuntimeId}{SubstitutionSuffix}");
+        private const string ProcessId = "ProcessId";
+        private const string ProcessName = "Name";
+        private const string CommandLine = "CommandLine";
+
+        public static readonly string RuntimeIdReference = CreateTokenReference(ProcessInfoReference, RuntimeId);
+        public static readonly string ProcessIdReference = CreateTokenReference(ProcessInfoReference, ProcessId);
+        public static readonly string ProcessNameReference = CreateTokenReference(ProcessInfoReference, ProcessName);
+        public static readonly string CommandLineReference = CreateTokenReference(ProcessInfoReference, CommandLine);
 
         public ConfigurationTokenParser(ILogger logger)
         {
@@ -51,6 +63,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
 
                 string replacement = originalPropertyValue.Replace(RuntimeIdReference, context.RuntimeId.ToString("D"), StringComparison.Ordinal);
+                replacement = replacement.Replace(ProcessIdReference, context.ProcessId.ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal);
+                replacement = replacement.Replace(ProcessNameReference, context.ProcessName, StringComparison.Ordinal);
+                replacement = replacement.Replace(CommandLineReference, context.CommandLine, StringComparison.Ordinal);
 
                 if (!ReferenceEquals(replacement, originalPropertyValue))
                 {
@@ -95,5 +110,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.PropertyType == typeof(string) && (predicate?.Invoke(p) ?? true)) ??
             Enumerable.Empty<PropertyInfo>();
+
+        private static string CreateTokenReference(string category, string token) =>
+            FormattableString.Invariant($"{SubstitutionPrefix}{category}{Separator}{token}{SubstitutionSuffix}");
     }
 }
