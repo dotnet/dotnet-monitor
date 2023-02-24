@@ -22,6 +22,8 @@ Azure Active Directory integration (referred to as Azure AD) is the recommended 
 - [Add a new app role](https://learn.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps#app-roles-ui) for general API access.
 - [Configure Azure AD in dotnet monitor](./configuration/azure-ad-authentication-configuration.md).
 
+> **Note**: Only organization accounts (non-MSA) are officially supported.
+
 > **Note**: Azure AD B2C is currently not supported.
 
 ### Authenticating with a Managed Identity

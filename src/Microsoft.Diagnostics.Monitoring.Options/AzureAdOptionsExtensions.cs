@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static Uri GetAppIdUri(this AzureAdOptions options)
         {
-            return options.AppIdUri ?? new Uri($"api://{options.ClientId}");
+            return options.AppIdUri ?? new Uri(FormattableString.Invariant($"api://{options.ClientId}"));
         }
     }
 }
