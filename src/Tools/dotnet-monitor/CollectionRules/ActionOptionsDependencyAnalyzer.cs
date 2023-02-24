@@ -151,11 +151,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     }
                 }
             }
+            string commandLine = _ruleContext.EndpointInfo?.CommandLine ?? string.Empty;
 
             settings = _tokenParser.SubstituteOptionValues(settings, new TokenContext
             {
                 CloneOnSubstitution = ReferenceEquals(originalSettings, settings),
-                RuntimeId = _ruleContext.EndpointInfo?.RuntimeInstanceCookie ?? Guid.Empty
+                RuntimeId = _ruleContext.EndpointInfo?.RuntimeInstanceCookie ?? Guid.Empty,
+                ProcessId = _ruleContext.EndpointInfo?.ProcessId ?? 0,
+                CommandLine = commandLine,
+                ProcessName = Monitoring.WebApi.ProcessInfoImpl.GetProcessName(commandLine, _ruleContext.EndpointInfo?.OperatingSystem)
             });
 
             return settings;
