@@ -70,15 +70,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When specifying HistogramMode and HistogramPercentiles, GreaterThan and LessThan must be empty..
-        /// </summary>
-        internal static string ErrorMessage_CannotHaveGreaterThanLessThanWithHistogram {
-            get {
-                return ResourceManager.GetString("ErrorMessage_CannotHaveGreaterThanLessThanWithHistogram", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to find a collection rule with name {0}..
         /// </summary>
         internal static string ErrorMessage_CollectionRuleNotFound {
@@ -318,15 +309,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ErrorMessage_MaxConnections {
             get {
                 return ResourceManager.GetString("ErrorMessage_MaxConnections", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to When {0} is provided, {1} must be provided..
-        /// </summary>
-        internal static string ErrorMessage_MissingComplementaryField {
-            get {
-                return ResourceManager.GetString("ErrorMessage_MissingComplementaryField", resourceCulture);
             }
         }
         

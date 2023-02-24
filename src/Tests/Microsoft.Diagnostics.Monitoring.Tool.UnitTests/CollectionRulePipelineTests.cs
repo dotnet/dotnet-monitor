@@ -249,11 +249,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     options.CreateCollectionRule(TestRuleName)
                         .SetSystemDiagnosticsMetricsTrigger(options =>
                         {
-                            // histogram percentiles greater than 48 for 2 seconds
+                            // histogram 50th percentile greater than 45 for 2 seconds
                             options.ProviderName = LiveMetricsTestConstants.ProviderName1;
                             options.InstrumentName = LiveMetricsTestConstants.HistogramName1;
                             options.HistogramPercentile = 50;
-                            options.GreaterThan = 48;
+                            options.GreaterThan = 45;
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
                         })
                         .AddAction(CallbackAction.ActionName);
@@ -316,11 +316,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     options.CreateCollectionRule(TestRuleName)
                         .SetSystemDiagnosticsMetricsTrigger(options =>
                         {
-                            // histogram percentiles less than 97 for 2 seconds
+                            // histogram 95% percentile less than 99 for 2 seconds
                             options.ProviderName = LiveMetricsTestConstants.ProviderName1;
                             options.InstrumentName = LiveMetricsTestConstants.HistogramName1;
                             options.HistogramPercentile = 95;
-                            options.LessThan = 97;
+                            options.LessThan = 99;
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
                         })
                         .AddAction(CallbackAction.ActionName);

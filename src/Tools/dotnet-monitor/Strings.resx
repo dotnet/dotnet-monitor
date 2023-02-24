@@ -121,10 +121,6 @@
     <value>API key authentication not configured.</value>
     <comment>Gets a string similar to "API key authentication not configured.".</comment>
   </data>
-  <data name="ErrorMessage_CannotHaveGreaterThanLessThanWithHistogram" xml:space="preserve">
-    <value>When specifying HistogramMode and HistogramPercentiles, GreaterThan and LessThan must be empty.</value>
-    <comment>Gets a string similar to "When specifying HistogramMode and HistogramPercentiles, GreaterThan and LessThan must be empty.".</comment>
-  </data>
   <data name="ErrorMessage_CollectionRuleNotFound" xml:space="preserve">
     <value>Unable to find a collection rule with name {0}.</value>
     <comment>Gets the format string for an unexpected collection rule name.</comment>
@@ -254,13 +250,6 @@
   </data>
   <data name="ErrorMessage_MaxConnections" xml:space="preserve">
     <value>Value must be between 1 and 254, or -1 (to obtain the maximum number allowed by system resources).</value>
-  </data>
-  <data name="ErrorMessage_MissingComplementaryField" xml:space="preserve">
-    <value>When {0} is provided, {1} must be provided.</value>
-    <comment>Gets the format string for rejecting validation due to a missing field where both are required.
-2 Format Parameters:
-0. fieldNameOne: The name of the field that is provided
-1. fieldNameTwo: The name of the field that is missing</comment>
   </data>
   <data name="ErrorMessage_MissingStoppingEventProvider" xml:space="preserve">
     <value>The {0} field specified the provider '{1}' but it was not found in the {2} field.</value>

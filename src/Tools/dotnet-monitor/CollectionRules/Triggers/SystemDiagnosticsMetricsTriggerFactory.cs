@@ -19,18 +19,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         private readonly EventPipeTriggerFactory _eventPipeTriggerFactory;
         private readonly ITraceEventTriggerFactory<SystemDiagnosticsMetricsTriggerSettings> _traceEventTriggerFactory;
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
-        private IOptionsMonitor<MetricsOptions> _metricsOptions;
 
         public SystemDiagnosticsMetricsTriggerFactory(
             IOptionsMonitor<GlobalCounterOptions> counterOptions,
-            IOptionsMonitor<MetricsOptions> metricsOptions,
             EventPipeTriggerFactory eventPipeTriggerFactory,
             ITraceEventTriggerFactory<SystemDiagnosticsMetricsTriggerSettings> traceEventTriggerFactory)
         {
             _eventPipeTriggerFactory = eventPipeTriggerFactory;
             _traceEventTriggerFactory = traceEventTriggerFactory;
             _counterOptions = counterOptions;
-            _metricsOptions = metricsOptions;
         }
 
         /// <inheritdoc/>

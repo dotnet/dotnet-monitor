@@ -284,8 +284,6 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
     value: "MyCustomProvider"
   - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Settings__InstrumentName
     value: "MyCustomHistogram"
-  - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Settings__HistogramMode
-    value: "GreaterThan"
   - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Settings__HistogramPercentile
     value: "95"
   - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Settings__GreaterThan

@@ -12,7 +12,7 @@ Collection rules are specified in configuration as a named item under the `Colle
   - [AspNetRequestDuration](#aspnetrequestduration-trigger)
   - [AspNetResponseStatus](#aspnetresponsestatus-trigger)
   - [EventCounter](#eventcounter-trigger)
-  - [SystemDiagnosticsMetrics](#systemdiagnosticsmetrics-trigger)
+  - [SystemDiagnosticsMetrics](#systemdiagnosticsmetrics-trigger-71)
   - [Trigger shortcuts](../collectionrules/triggershortcuts.md) 
 - [`Actions`](#actions) - The action to be be performed
   - [CollectDump](#collectdump-action)
@@ -418,7 +418,7 @@ Usage that is satisfied when the CPU usage of the application is higher than 70%
 
 ### `SystemDiagnosticsMetrics` Trigger (7.1+)
 
-A trigger that has its condition satisfied when the value of an instrument falls above, below, or between the described threshold values for a duration of time. Supported instruments include [Gauges](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.observablegauge-1), [Counters](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.counter-1), [Histograms](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.histogram-1), and [UpDownCounters](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.updowncounter-1) (*not yet*).
+A trigger that has its condition satisfied when the value of an instrument falls above, below, or between the described threshold value for a duration of time. Supported instruments include [Gauges](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.observablegauge-1), [Counters](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.counter-1), and [Histograms](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.histogram-1)..
 
 #### Properties
 
@@ -429,7 +429,7 @@ A trigger that has its condition satisfied when the value of an instrument falls
 | `GreaterThan` | double? | false | The threshold level the instrument must maintain (or higher) for the specified duration. Either `GreaterThan` or `LessThan` (or both) must be specified for non-histogram instruments. | `null` | | |
 | `LessThan` | double? | false | The threshold level the instrument must maintain (or lower) for the specified duration. Either `GreaterThan` or `LessThan` (or both) must be specified for non-histogram instruments. | `null` | | |
 | `SlidingWindowDuration` | TimeSpan? | false | The sliding time window in which the instrument must maintain its value as specified by the threshold levels in `GreaterThan` and/or `LessThan`. | `"00:01:00"` (one minute) | `"00:00:01"` (one second) | `"1.00:00:00"` (1 day) |
-| `HistogramPercentile` | int? | false | The histogram percentile should be one of the instrument's published percentiles (by default, 50, 95, and 99) and is only specified when the instrument is a histogram. The provided percentile's value will be used to compare against `GreaterThan` and/or `LessThan`. | | | |
+| `HistogramPercentile` | int? | false | The histogram percentile should be one of the instrument's published percentiles (by default: 50, 95, and 99) and is only specified when the instrument is a histogram. The provided percentile's value will be used to compare against `GreaterThan` and/or `LessThan`. | | 0 | 100 |
 
 #### Example
 
@@ -476,8 +476,7 @@ Usage that is satisfied when the target application's custom gauge is greater th
 
 #### Example
 
-Usage that is satisfied when the target application's custom histogram for a 10 second window has its:
- * 50th Percentile be greater than 200
+Usage that is satisfied when the target application's custom histogram for a 10 second window has its 50th Percentile greater than 200:
 
 <details>
   <summary>JSON</summary>
