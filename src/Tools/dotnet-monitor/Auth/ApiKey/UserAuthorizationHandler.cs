@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor
+namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
     /// <summary>
     /// Handles authorization for both Negotiate and ApiKey authentication.
@@ -18,6 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal sealed class UserAuthorizationHandler : AuthorizationHandler<AuthorizedUserRequirement>
     {
         private readonly IOptionsMonitor<MonitorApiKeyConfiguration> _apiKeyConfig;
+
         public UserAuthorizationHandler(IOptionsMonitor<MonitorApiKeyConfiguration> apiKeyConfig)
         {
             _apiKeyConfig = apiKeyConfig;
@@ -50,13 +51,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 //has a deny claim on Administrator group.
                 //Validate that the user that logged in matches the user that is running dotnet-monitor
                 //Do not allow at all if running as Administrator.
-                WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
-                WindowsPrincipal principal = new WindowsPrincipal(currentUser);
-                if (principal.IsInRole(WindowsBuiltInRole.Administrator))
+                if (EnvironmentInformation.IsElevated)
                 {
                     return Task.CompletedTask;
                 }
 
+                using WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
                 Claim currentUserClaim = currentUser.Claims.FirstOrDefault(claim => string.Equals(claim.Type, ClaimTypes.PrimarySid));
                 if ((currentUserClaim != null) && context.User.HasClaim(currentUserClaim.Type, currentUserClaim.Value))
                 {
