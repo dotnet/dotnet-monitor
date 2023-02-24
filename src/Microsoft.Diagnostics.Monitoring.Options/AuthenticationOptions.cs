@@ -6,12 +6,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class AuthenticationOptions
+    internal sealed partial class AuthenticationOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AuthenticationOptions_MonitorApiKey))]
-        [Required]
         public MonitorApiKeyOptions MonitorApiKey { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AuthenticationOptions_AzureAd))]
+        public AzureAdOptions AzureAd { get; set; }
     }
 }

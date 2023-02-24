@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.Swagger;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Net.Http.Headers;
-using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using System;
 using System.Collections.Generic;
 
@@ -64,27 +64,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
         public void ConfigureSwaggerGenAuth(SwaggerGenOptions options)
         {
             const string ApiKeySecurityDefinitionName = "ApiKeyAuth";
+            options.AddBearerTokenAuthOption(ApiKeySecurityDefinitionName);
+        }
 
-            options.AddSecurityDefinition(ApiKeySecurityDefinitionName, new OpenApiSecurityScheme
-            {
-                Name = HeaderNames.Authorization,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = JwtBearerDefaults.AuthenticationScheme,
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description = Strings.HelpDescription_SecurityDefinitionDescription_ApiKey
-            });
-
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = ApiKeySecurityDefinitionName }
-                    },
-                    Array.Empty<string>()
-                }
-            });
+        public void ConfigureSwaggerUI(SwaggerUIOptions options)
+        {
         }
 
         public IStartupLogger CreateStartupLogger(ILogger<Startup> logger, IServiceProvider serviceProvider)
