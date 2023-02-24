@@ -745,4 +745,16 @@
     <value>A mapping of event payload field names to their expected value. A subset of the payload fields may be specified.</value>
     <comment>The description provided for the PayloadFilter parameter on TraceEventFilter.</comment>
   </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_MaxHistograms" xml:space="preserve">
+    <value>The maximum number of histograms that can be tracked. Each unique combination of provider name, histogram name, and dimension values counts as one histogram. Tracking more histograms uses more memory in the target process so this bound guards against unintentional high memory use.</value>
+    <comment>The description provided for the MaxHistograms parameter on MetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_MaxTimeSeries" xml:space="preserve">
+    <value>The maximum number of time series that can be tracked. Each unique combination of provider name, metric name, and dimension values counts as one time series. Tracking more time series uses more memory in the target process so this bound guards against unintentional high memory use.</value>
+    <comment>The description provided for the MaxTimeSeries parameter on MetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MetricProvider_MetricType" xml:space="preserve">
+    <value>The type of metrics this provider consumes</value>
+    <comment>The description provided for the MetricType parameter on MetricProvider.</comment>
+  </data>
 </root>

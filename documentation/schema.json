@@ -877,6 +877,28 @@
           "default": 5.0,
           "maximum": 86400.0,
           "minimum": 1.0
+        },
+        "MaxHistograms": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The maximum number of histograms that can be tracked. Each unique combination of provider name, histogram name, and dimension values counts as one histogram. Tracking more histograms uses more memory in the target process so this bound guards against unintentional high memory use.",
+          "format": "int32",
+          "default": 20,
+          "maximum": 2147483647.0,
+          "minimum": 1.0
+        },
+        "MaxTimeSeries": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The maximum number of time series that can be tracked. Each unique combination of provider name, metric name, and dimension values counts as one time series. Tracking more time series uses more memory in the target process so this bound guards against unintentional high memory use.",
+          "format": "int32",
+          "default": 1000,
+          "maximum": 2147483647.0,
+          "minimum": 1.0
         }
       }
     },
@@ -1212,8 +1234,35 @@
           "items": {
             "type": "string"
           }
+        },
+        "MetricType": {
+          "description": "The type of metrics this provider consumes",
+          "default": "All",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/MetricProviderType"
+            }
+          ]
         }
       }
+    },
+    "MetricProviderType": {
+      "type": "string",
+      "description": "",
+      "x-enumFlags": true,
+      "x-enumNames": [
+        "EventCounter",
+        "Meter",
+        "All"
+      ],
+      "enum": [
+        "EventCounter",
+        "Meter",
+        "All"
+      ]
     },
     "StorageOptions": {
       "type": "object",
@@ -1544,6 +1593,16 @@
           "items": {
             "type": "string"
           }
+        },
+        "MetricType": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/MetricProviderType"
+            }
+          ]
         }
       }
     },

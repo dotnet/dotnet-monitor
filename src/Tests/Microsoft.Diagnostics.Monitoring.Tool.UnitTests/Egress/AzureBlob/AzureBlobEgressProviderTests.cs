@@ -133,7 +133,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
 
             BlobItem resultingBlob = Assert.Single(blobs);
-            Assert.Equal($"{providerOptions.BlobPrefix}/{artifactSettings.Name}", resultingBlob.Name);
+            Assert.Equal(FormattableString.Invariant($"{providerOptions.BlobPrefix}/{artifactSettings.Name}"), resultingBlob.Name);
         }
 
         [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
