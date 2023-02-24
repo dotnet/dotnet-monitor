@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth
@@ -13,6 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
     {
         void ConfigureApiAuth(IServiceCollection services, HostBuilderContext context);
         void ConfigureSwaggerGenAuth(SwaggerGenOptions options);
+        void ConfigureSwaggerUI(SwaggerUIOptions options);
         IStartupLogger CreateStartupLogger(ILogger<Startup> logger, IServiceProvider serviceProvider);
     }
 }
