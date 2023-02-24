@@ -55,7 +55,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
                         return new AzureAdAuthConfigurator(authOptions.AzureAd);
                     }
 
-                    return new MonitorKeyAuthConfigurator();
+                    return new MonitorApiKeyAuthConfigurator();
 
                 default:
                     throw new NotSupportedException();

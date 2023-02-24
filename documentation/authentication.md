@@ -26,7 +26,7 @@ Azure Active Directory integration (referred to as Azure AD) is the recommended 
 
 ### Authenticating with a Managed Identity
 
-`dotnet monitor` supports other applications calling its APIs using a [Managed Identity](https://learn.microsoft.com/azure/active-directory/managed-identities-azure-resources/) when Azure AD is configured. You will need to have added an app role to `dotnet monitor`'s App Registration as described above and then assign it to the Managed Identity. This can be done using [New-AzureADServiceAppRoleAssignment](https://learn.microsoft.com/powershell/module/azuread/new-azureadserviceapproleassignment?view=azureadps-2.0). Note that you will need to [configure Azure AD in dotnet monitor](./configuration/azure-ad-authentication-configuration.md) with the app role information.
+`dotnet monitor` supports other applications calling its APIs using a [Managed Identity](https://learn.microsoft.com/azure/active-directory/managed-identities-azure-resources/) when Azure AD is configured. You will need to have added an app role to `dotnet monitor`'s App Registration as described above and then assign it to the Managed Identity using either the [Azure CLI](https://learn.microsoft.com/azure/active-directory/managed-identities-azure-resources/how-to-assign-app-role-managed-identity-cli) or [PowerShell](https://learn.microsoft.com/azure/active-directory/managed-identities-azure-resources/how-to-assign-app-role-managed-identity-powershell).
 
 ### Authenticating with the Azure CLI
 
