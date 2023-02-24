@@ -65,7 +65,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
             // Only present an option to interactively authenticate if a swagger scope is set.
             if (_fqSwaggerScope != null)
             {
-                Uri baseEndpoint = new Uri(_azureAdOptions.GetInstance(), FormattableString.Invariant($"{_azureAdOptions.GetTenantId()}/oauth2/v2.0/");
+                Uri baseEndpoint = new Uri(_azureAdOptions.GetInstance(), FormattableString.Invariant($"{_azureAdOptions.GetTenantId()}/oauth2/v2.0/"));
 
                 options.AddSecurityDefinition(OAuth2SecurityDefinitionName, new OpenApiSecurityScheme
                 {
