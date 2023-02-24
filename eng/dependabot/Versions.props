@@ -4,7 +4,7 @@
   <PropertyGroup>
     <AzureIdentityVersion>1.8.1</AzureIdentityVersion>
     <AzureStorageBlobsVersion>12.14.1</AzureStorageBlobsVersion>
-    <AzureStorageQueuesVersion>12.12.0</AzureStorageQueuesVersion>
+    <AzureStorageQueuesVersion>12.13.0</AzureStorageQueuesVersion>
     <MicrosoftExtensionsConfigurationAbstractionsVersion>7.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
     <MicrosoftExtensionsConfigurationKeyPerFileVersion>7.0.0</MicrosoftExtensionsConfigurationKeyPerFileVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>7.0.0</MicrosoftExtensionsLoggingAbstractionsVersion>
