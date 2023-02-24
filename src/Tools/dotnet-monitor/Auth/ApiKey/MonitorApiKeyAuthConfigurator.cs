@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Swagger;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,12 +16,16 @@ using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
-    internal abstract class AbstractMonitorKeyAuthConfigurator : IAuthenticationConfigurator
+    internal sealed class MonitorApiKeyAuthConfigurator : IAuthenticationConfigurator
     {
+        private readonly GeneratedJwtKey _pinnedJwtKey;
         private readonly bool _enableNegotiation;
 
-        public AbstractMonitorKeyAuthConfigurator()
+
+        public MonitorApiKeyAuthConfigurator(GeneratedJwtKey pinnedJwtKey = null)
         {
+            _pinnedJwtKey = pinnedJwtKey;
+
             if (OperatingSystem.IsWindows())
             {
                 _enableNegotiation = true;
@@ -52,7 +57,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
                 });
             });
 
-            ConfigureAuthBuilder(services, context, builder);
+            services.ConfigureMonitorApiKeyAuthentication(context.Configuration, builder, allowConfigurationUpdates: _pinnedJwtKey == null);
+            services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
         }
 
         public void ConfigureSwaggerGenAuth(SwaggerGenOptions options)
@@ -65,16 +71,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
         {
         }
 
-        protected void LogIfNegotiateIsDisabledDueToElevation(ILogger logger)
+        public IStartupLogger CreateStartupLogger(ILogger<Startup> logger, IServiceProvider serviceProvider)
         {
-            if (_enableNegotiation && EnvironmentInformation.IsElevated)
+            return new AuthenticationStartupLoggerWrapper(() =>
             {
-                logger.DisabledNegotiateWhileElevated();
-            }
+                if (_enableNegotiation && EnvironmentInformation.IsElevated)
+                {
+                    logger.DisabledNegotiateWhileElevated();
+                }
+
+                if (_pinnedJwtKey != null)
+                {
+                    logger.LogTempKey(_pinnedJwtKey.Token);
+                }
+                else
+                {
+                    MonitorApiKeyConfigurationObserver observer = serviceProvider.GetRequiredService<MonitorApiKeyConfigurationObserver>();
+                    observer.Initialize();
+                }
+            });
         }
-
-        protected abstract void ConfigureAuthBuilder(IServiceCollection services, HostBuilderContext context, AuthenticationBuilder authBuilder);
-
-        public abstract IStartupLogger CreateStartupLogger(ILogger<Startup> logger, IServiceProvider serviceProvider);
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Security.Claims;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored
+namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
     /// <summary>
     /// This will reject all validations and is used when configuration is invalid and

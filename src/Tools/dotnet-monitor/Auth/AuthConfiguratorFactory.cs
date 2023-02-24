@@ -1,8 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Stored;
-using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey.Temporary;
+using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth;
 using Microsoft.Extensions.Configuration;
@@ -30,7 +29,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
                     return new NoAuthConfigurator();
 
                 case StartupAuthenticationMode.TemporaryKey:
-                    return new MonitorTempKeyAuthConfigurator();
+                    if (context.Properties.TryGetValue(typeof(GeneratedJwtKey), out object generatedJwtKeyObject))
+                    {
+                        if (generatedJwtKeyObject is GeneratedJwtKey generatedJwtKey)
+                        {
+                            return new MonitorApiKeyAuthConfigurator(generatedJwtKey);
+                        }
+                    }
+
+                    // We should never reach here unless there is a bug in our initialization code.
+                    throw new InvalidOperationException();
 
                 case StartupAuthenticationMode.Deferred:
                     IConfigurationSection authConfigSection = context.Configuration.GetSection(ConfigurationKeys.Authentication);
