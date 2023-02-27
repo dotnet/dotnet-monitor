@@ -19,8 +19,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public void PostConfigure(string name, InProcessFeaturesOptions options)
         {
-            // Stacks is currently the only in-process feature; if this feature is not
-            // enabled, disable all in-process feature support.
             if (!_experimentalFlags.IsCallStacksEnabled && !_experimentalFlags.IsExceptionsEnabled)
             {
                 options.Enabled = false;
