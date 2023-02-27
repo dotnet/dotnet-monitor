@@ -39,7 +39,7 @@ ENTRYPOINT ["dotnet", "dotnet-monitor.dll", "collect", "--no-auth"]
 4. Log in to your ACR
 
 ```bash
-az account set --subscription xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+az account set --subscription <subscription_id>
 az aks get-credentials --resource-group <name_of_resource_group> --name <name_of_aks>
 az acr login --resource-group <name_of_resource_group> --name <name_of_acr>
 ```
