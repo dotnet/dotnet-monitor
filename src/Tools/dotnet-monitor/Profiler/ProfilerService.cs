@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.FileProviders;
@@ -19,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
     internal sealed class ProfilerService : BackgroundService
     {
         private readonly TaskCompletionSource<INativeFileProviderFactory> _fileProviderFactorySource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly IOptions<InProcessFeaturesOptions> _inProcessFeaturesOptions;
+        private readonly IInProcessFeatures _inProcessFeatures;
         private readonly ISharedLibraryInitializer _sharedLibraryInitializer;
         private readonly IOptions<StorageOptions> _storageOptions;
         private readonly ILogger<ProfilerService> _logger;
@@ -27,10 +26,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
         public ProfilerService(
             ISharedLibraryInitializer sharedLibraryInitializer,
             IOptions<StorageOptions> storageOptions,
-            IOptions<InProcessFeaturesOptions> inProcessFeaturesOptions,
+            IInProcessFeatures inProcessFeatures,
             ILogger<ProfilerService> logger)
         {
-            _inProcessFeaturesOptions = inProcessFeaturesOptions;
+            _inProcessFeatures = inProcessFeatures;
             _logger = logger;
             _sharedLibraryInitializer = sharedLibraryInitializer;
             _storageOptions = storageOptions;
@@ -38,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (!_inProcessFeaturesOptions.Value.GetEnabled())
+            if (!_inProcessFeatures.IsProfilerRequired)
             {
                 return;
             }
@@ -62,7 +61,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
         public async Task ApplyProfiler(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            if (!_inProcessFeaturesOptions.Value.GetEnabled())
+            if (!_inProcessFeatures.IsProfilerRequired)
             {
                 return;
             }
