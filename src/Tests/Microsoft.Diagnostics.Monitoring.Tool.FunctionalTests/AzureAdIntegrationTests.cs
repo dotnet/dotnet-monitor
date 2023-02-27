@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             azureAdOptions.RequiredRole = Guid.NewGuid().ToString("D");
             toolRunner.ConfigurationFromEnvironment.UseAzureAd(azureAdOptions);
 
-            string accessToken = await GenerateAccessToken(azureAdOptions);
+            string accessToken = await GenerateAccessTokenAsync(azureAdOptions);
 
             // Start dotnet-monitor
             await toolRunner.StartAsync();
@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             AzureAdOptions azureAdOptions = GetAzureAdOptionsFromEnv();
             toolRunner.ConfigurationFromEnvironment.UseAzureAd(azureAdOptions);
 
-            string accessToken = await GenerateAccessToken(azureAdOptions);
+            string accessToken = await GenerateAccessTokenAsync(azureAdOptions);
 
             // Start dotnet-monitor
             await toolRunner.StartAsync();
@@ -117,7 +117,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             return value;
         }
 
-        private static async Task<string> GenerateAccessToken(AzureAdOptions options)
+        private static async Task<string> GenerateAccessTokenAsync(AzureAdOptions options)
         {
             string agentClientId = MustGetEnvironmentVariable(PipelineAgentClientIdEnvVariable);
             string agentClientSecret = MustGetEnvironmentVariable(PipelineAgentClientSecretEnvVariable);
