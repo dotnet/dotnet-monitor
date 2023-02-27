@@ -149,21 +149,23 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 
         public static RootOptions UseAzureAd(this RootOptions options, string tenantId, string clientId, string swaggerScope, string requiredRole)
         {
+            return options.UseAzureAd(new AzureAdOptions
+            {
+                TenantId = tenantId,
+                ClientId = clientId,
+                RequiredRole = requiredRole,
+                SwaggerScope = swaggerScope
+            });
+        }
+
+        public static RootOptions UseAzureAd(this RootOptions options, AzureAdOptions azureAd)
+        {
             if (null == options.Authentication)
             {
                 options.Authentication = new AuthenticationOptions();
             }
 
-            if (null == options.Authentication.AzureAd)
-            {
-                options.Authentication.AzureAd = new AzureAdOptions
-                {
-                    TenantId = tenantId,
-                    ClientId = clientId,
-                    RequiredRole = requiredRole,
-                    SwaggerScope = swaggerScope
-                };
-            }
+            options.Authentication.AzureAd = azureAd;
 
             return options;
         }
