@@ -100,8 +100,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         private static void SkipTestIfNotEnabled()
         {
+            const string disabledEnvVariableValue = "0";
+
             string enableEndToEndAzureAdTests = Environment.GetEnvironmentVariable(EnableTestsEnvVariable);
-            if (string.IsNullOrEmpty(enableEndToEndAzureAdTests) || string.Equals(enableEndToEndAzureAdTests, "0", StringComparison.OrdinalIgnoreCase))
+            if (string.IsNullOrEmpty(enableEndToEndAzureAdTests) || string.Equals(enableEndToEndAzureAdTests, disabledEnvVariableValue, StringComparison.OrdinalIgnoreCase))
             {
                 throw new SkipTestException($"AzureAd end-to-end tests are not enabled.");
             }
