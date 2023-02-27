@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     [Collection(DefaultCollectionFixture.Name)]
-    public class AzureAdTests
+    public class AzureAdIntegrationTests
     {
         private const string AzureAdTestEnvVariablePrefix = "DOTNET_MONITOR_AZURE_AD_TESTS_";
         private const string EnableTestsEnvVariable = $"{AzureAdTestEnvVariablePrefix}ENABLE";
@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
 
-        public AzureAdTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
+        public AzureAdIntegrationTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
             _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             azureAdOptions.RequiredRole = Guid.NewGuid().ToString("D");
             toolRunner.ConfigurationFromEnvironment.UseAzureAd(azureAdOptions);
 
-            string accessToken = await GetAccessTokenFromEnv(azureAdOptions).ConfigureAwait(false);
+            string accessToken = await GenerateAccessToken(azureAdOptions).ConfigureAwait(false);
 
             // Start dotnet-monitor
             await toolRunner.StartAsync();
