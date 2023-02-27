@@ -31,9 +31,19 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
         {
             ArgumentNullException.ThrowIfNull(exception);
 
-            ulong identifier = _identifierCache.GetOrAdd(new ExceptionIdentifier(exception));
+            // Do not populate the cache or send via the EventSource until
+            // a listener is active; otherwise, the listener will not receive the identifiers
+            // for types/methods/modules/etc prior to listening to the event source. This
+            // means that exception at startup are likely to be dropped if the listener was
+            // not registered during the diagnostic startup suspension point.
+            // CONSIDER: Possible improvement is to cache the information and then send off
+            // the events once the listener is registered to effectively "catch up".
+            if (_eventSource.IsEnabled())
+            {
+                ulong identifier = _identifierCache.GetOrAdd(new ExceptionIdentifier(exception));
 
-            _eventSource.ExceptionInstance(identifier, exception.Message);
+                _eventSource.ExceptionInstance(identifier, exception.Message);
+            }
 
             _next(exception);
         }

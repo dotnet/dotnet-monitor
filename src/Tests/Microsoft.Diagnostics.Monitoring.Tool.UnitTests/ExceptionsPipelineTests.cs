@@ -226,7 +226,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 }
             }
 
-            public sealed record class ExceptionInstance(ulong ExceptionId, string TypeName, string Message, string ThrowingMethodName);
+            public IEnumerable<IExceptionInstance> GetSnapshot()
+            {
+                return Instances;
+            }
+
+            public sealed record class ExceptionInstance(ulong ExceptionId, string TypeName, string Message, string ThrowingMethodName) :
+                IExceptionInstance
+            {
+            }
         }
     }
 }
