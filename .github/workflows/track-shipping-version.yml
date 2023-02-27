@@ -3,8 +3,7 @@ on:
   release:
     types: [released]
 
-permissions:
-  contents: write
+permissions: {}
 
 env:
   shipping_branch_prefix: 'shipped'
@@ -14,10 +13,14 @@ jobs:
     if: github.repository == 'dotnet/dotnet-monitor'
     name: '[${{ github.ref_name }}] Update shipping branch'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+        with:
+          persist-credentials: true # We need to persist credentials to push the resulting changes upstream.
 
       - name: Update shipping branch
         run: |
@@ -28,7 +31,7 @@ jobs:
           fi
 
           major_minor_version=${release_version%.*}
-          shipping_branch_name="${{ env.shipping_branch_prefix }}/$major_minor_version"
+          shipping_branch_name="${shipping_branch_prefix}/${major_minor_version}"
 
           # This is a shallow clone so we will always create a new local branch even if it already exists on the remote
           git checkout -b "$shipping_branch_name"

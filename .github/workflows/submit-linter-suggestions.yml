@@ -6,19 +6,23 @@ on:
     types:
       - completed
 
-permissions:
-  pull-requests: write
+permissions: {}
 
 jobs:
   submit-linter-suggestions:
-    name: 'Submit linter suggestions'
-    runs-on: ubuntu-latest
     if: >
       ${{ github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success' }}
+    name: 'Submit linter suggestions'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+        with:
+          persist-credentials: false
 
       - name: Set C# Linting Env Vars
         if: ${{ github.event.workflow_run.name == 'C# Linting' }}
@@ -35,7 +39,7 @@ jobs:
       # The default artifact download action doesn't support cross-workflow
       # artifacts, so use a 3rd party one.
       - name: 'Download linting results'
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@5e780fc7bbd0cac69fc73271ed86edf5dcb72d67
         with:
           workflow: ${{env.workflow_name}}
           run_id: ${{github.event.workflow_run.id }}
@@ -43,7 +47,7 @@ jobs:
           path: ./pr-linter
 
       - name: 'Setup reviewdog'
-        uses: reviewdog/action-setup@v1
+        uses: reviewdog/action-setup@8f2ec89e6b467ca9175527d2a1641bbd0c05783b
 
       # Manually supply the triggering PR event information since when a PR is from a fork,
       # this workflow running in the base repo will not be given information about it.
@@ -59,8 +63,8 @@ jobs:
           new_event_file=${{github.workspace}}/reviewdog_event.json
           new_event_name=$(cat ./pr-linter/pr-event-name)
           jq -j ".${new_event_name}.head.repo.owner.id = .${new_event_name}.base.repo.owner.id" ./pr-linter/pr-event.json > ${new_event_file}
-          GITHUB_EVENT_NAME="${new_event_name}" GITHUB_EVENT_PATH="${new_event_file}" REVIEWDOG_GITHUB_API_TOKEN="${{ secrets.GITHUB_TOKEN }}" reviewdog \
-              -name="${{env.reporter_name}}" \
+          GITHUB_EVENT_NAME="${new_event_name}" GITHUB_EVENT_PATH="${new_event_file}" reviewdog \
+              -name="$reporter_name" \
               -f=diff \
               -f.diff.strip=1 \
               -reporter="github-pr-review" \
@@ -68,3 +72,5 @@ jobs:
               -fail-on-error="false" \
               -level="warning" \
               < "./pr-linter/linter.diff"
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
