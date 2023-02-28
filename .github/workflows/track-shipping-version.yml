@@ -30,7 +30,8 @@ jobs:
         uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975
         with:
           script: |
-            const refName = `heads/${{ steps.calculate-branch-name.outputs.result }}`;
+            const branchName = `${{ steps.calculate-branch-name.outputs.result }}`;
+            const refName = `heads/${branchName}`;
 
             // Check if the ref already exists, if so we will need to fast forward it.
             let needToCreateRef = true;
@@ -68,7 +69,7 @@ jobs:
             await github.rest.repos.createOrUpdateFileContents({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              branch: `${{ steps.calculate-branch-name.outputs.result }}`,
+              branch: branchName,
               message: 'Trigger branch mirroring',
               path: '.mirror',
               content: ''
