@@ -128,7 +128,7 @@ internal class MultiPartUploadStream : Stream
                         int bytesToCopy = Math.Min(_syncOffset, BytesAvailableInBuffer());
 
                         _syncTempBuffer.GetRange(0, bytesToCopy).ToArray().CopyTo(_syncBuffer.AsMemory(_offset));
-                        _syncTempBuffer.Clear();
+                        _syncTempBuffer.RemoveRange(0, bytesToCopy);
                         _offset += bytesToCopy; // move the offset of the stream buffer
                         _syncOffset -= bytesToCopy;
                         _position += bytesToCopy; // move global position
