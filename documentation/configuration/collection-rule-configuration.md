@@ -418,7 +418,7 @@ Usage that is satisfied when the CPU usage of the application is higher than 70%
 
 ### `SystemDiagnosticsMetrics` Trigger (7.1+)
 
-A trigger that has its condition satisfied when the value of an instrument falls above, below, or between the described threshold value for a duration of time. Supported instruments include [Gauges](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.observablegauge-1), [Counters](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.counter-1), and [Histograms](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.histogram-1)..
+A trigger that has its condition satisfied when the value of an instrument falls above, below, or between the described threshold value for a duration of time. Supported instruments include [Gauges](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.observablegauge-1), [Counters](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.counter-1), and [Histograms](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics.histogram-1).
 
 #### Properties
 
