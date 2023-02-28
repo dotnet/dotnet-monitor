@@ -56,7 +56,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 sha: context.sha,
-                ref: `${refName}`,
+                ref: refName,
                 force: true
               });
             }
