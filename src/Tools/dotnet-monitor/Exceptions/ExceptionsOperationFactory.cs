@@ -95,6 +95,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 {
                     writer.WriteStartObject();
                     writer.WriteString("typeName", instance.TypeName);
+                    writer.WriteString("moduleName", instance.ModuleName);
                     writer.WriteString("message", instance.Message);
                     writer.WriteEndObject();
                 }

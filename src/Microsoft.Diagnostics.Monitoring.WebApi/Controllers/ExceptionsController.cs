@@ -36,7 +36,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <summary>
         /// Gets the exceptions from the default process.
         /// </summary>
-        /// <returns></returns>
         [HttpGet("exceptions", Name = nameof(GetExceptions))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]

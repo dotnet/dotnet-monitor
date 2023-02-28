@@ -3,7 +3,7 @@
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 {
-    internal record class ExceptionInstance(string TypeName, string Message)
+    internal record class ExceptionInstance(string TypeName, string ModuleName, string Message)
         : IExceptionInstance
     {
     }

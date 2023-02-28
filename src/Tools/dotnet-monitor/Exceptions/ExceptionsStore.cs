@@ -59,7 +59,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private static Channel<ExceptionInstanceEntry> CreateChannel()
         {
-            // TODO: Hook callback for when items are dropped an report appropriately.
+            // TODO: Hook callback for when items are dropped and report appropriately.
             return Channel.CreateBounded<ExceptionInstanceEntry>(
                 new BoundedChannelOptions(capacity: 1000)
                 {
@@ -96,9 +96,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         exceptionTypeName = _builder.ToString();
                     }
 
+                    string moduleName = string.Empty;
+                    if (entry.Cache.NameCache.ClassData.TryGetValue(exceptionClassId, out ClassData exceptionClassData))
+                    {
+                        moduleName = NameFormatter.GetModuleName(entry.Cache.NameCache, exceptionClassData.ModuleId);
+                    }
+
                     lock (_instances)
                     {
-                        _instances.Add(new ExceptionInstance(exceptionTypeName, entry.Message));
+                        _instances.Add(new ExceptionInstance(exceptionTypeName, moduleName, entry.Message));
                     }
                 }
 

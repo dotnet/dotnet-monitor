@@ -7,6 +7,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
     {
         string Message { get; }
 
+        string ModuleName { get; }
+
         string TypeName { get; }
     }
 }
