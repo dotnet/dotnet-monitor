@@ -187,11 +187,74 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The parameters used to use configure authentication using Azure Active Directory..
+        /// </summary>
+        public static string DisplayAttributeDescription_AuthenticationOptions_AzureAd {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AuthenticationOptions_AzureAd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The parameters used to validate MonitorApiKey JWT tokens..
         /// </summary>
         public static string DisplayAttributeDescription_AuthenticationOptions_MonitorApiKey {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_AuthenticationOptions_MonitorApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The App ID URI of the app registration. Defaults to api://{ClientId} if not specified..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureAdOptions_AppIdUri {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_AppIdUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The unique application (client) id assigned to the app registration in Azure Active Directory..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureAdOptions_ClientId {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_ClientId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specifies the Azure cloud instance users are signing in from. Can be either the Azure public cloud or one of the national clouds..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureAdOptions_Instance {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_Instance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The role required to be able to authenticate..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureAdOptions_RequiredRole {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_RequiredRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The API scope required by users to be able to interactively authenticate using the in-box Swagger UI. If not specified, users will not be able to interactively authenticate..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureAdOptions_SwaggerScope {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_SwaggerScope", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The tenant id of the Azure Active Directory tenant, or its tenant domain..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureAdOptions_TenantId {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_TenantId", resourceCulture);
             }
         }
         
@@ -1041,6 +1104,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dictionary of provider names and their global configuration..
+        /// </summary>
+        public static string DisplayAttributeDescription_GlobalCounterOptions_Providers {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_GlobalCounterOptions_Providers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes..
         /// </summary>
         public static string DisplayAttributeDescription_InProcessFeaturesOptions_Enabled {
@@ -1641,6 +1713,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string ErrorMessage_FilterValueMissing {
             get {
                 return ResourceManager.GetString("ErrorMessage_FilterValueMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Multiple authentication modes were configured. Only one may be set..
+        /// </summary>
+        public static string ErrorMessage_MultipleAuthenticationModesSpecified {
+            get {
+                return ResourceManager.GetString("ErrorMessage_MultipleAuthenticationModesSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provider &apos;{0}&apos; validation error: &apos;{1}&apos;.
+        /// </summary>
+        public static string ErrorMessage_NestedProviderValidationError {
+            get {
+                return ResourceManager.GetString("ErrorMessage_NestedProviderValidationError", resourceCulture);
             }
         }
         

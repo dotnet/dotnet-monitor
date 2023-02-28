@@ -6,5 +6,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     internal sealed class TestExperimentalFlags : Microsoft.Diagnostics.Monitoring.WebApi.IExperimentalFlags
     {
         public bool IsCallStacksEnabled { get; set; }
+
+        public bool IsExceptionsEnabled { get; set; }
     }
 }

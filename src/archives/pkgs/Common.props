@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup>
+    <ArchiveFormat Condition="$(RuntimeIdentifier.Contains(win))">zip</ArchiveFormat>
+    <ArchiveFormat Condition="!$(RuntimeIdentifier.Contains(win))">tar.gz</ArchiveFormat>
+    <IsShipping>true</IsShipping>
+    <IsArchivable>true</IsArchivable>
+    <CreateSymbolsArchive>true</CreateSymbolsArchive>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <_FileToArchive>
+      <PackagePath>%(RecursiveDir)</PackagePath>
+    </_FileToArchive>
+    <_SymbolFileToArchive>
+      <PackagePath>%(RecursiveDir)</PackagePath>
+    </_SymbolFileToArchive>
+    <FileToArchive>
+      <MarkExecutable>false</MarkExecutable>
+    </FileToArchive>
+  </ItemDefinitionGroup>
+</Project>

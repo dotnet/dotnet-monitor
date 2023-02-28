@@ -35,7 +35,7 @@ runs:
     - name: Open PR
       run: |
         current_branch_name=$(git symbolic-ref --short HEAD)
-        pr_branch_name=$(echo "bot/${{ inputs.branch_name }}" )
+        pr_branch_name="bot/$BRANCH_NAME"
 
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
@@ -53,19 +53,21 @@ runs:
           exit 0
         fi
 
-        git commit -m "${{ inputs.commit_message }}"
+        git commit -m "$COMMIT_MESSAGE"
         git push --force --set-upstream origin "HEAD:$pr_branch_name"
 
         extraArgs=""
-        if [[ ! -z "${{ inputs.labels }}" ]]; then
-          extraArgs="${extraArgs} --label \"${{ inputs.labels }}\""
-        fi
-
-        if [[ "${{ inputs.draft }}" == "true" ]]; then
+        if [[ "$DRAFT" == "true" ]]; then
           extraArgs="${extraArgs} --draft"
         fi
 
-        gh pr create --repo "${{ github.repository }}" --base "$current_branch_name" -t "${{ inputs.title }}" -b "${{ inputs.body }}" $extraArgs
+        gh pr create --repo "${{ github.repository }}" --base "$current_branch_name" -t "$TITLE" -b "$BODY_MESSAGE" $extraArgs --label "$LABELS"
       shell: bash
       env:
+        BODY_MESSAGE: ${{ inputs.body }}
+        BRANCH_NAME: ${{ inputs.branch_name }}
+        COMMIT_MESSAGE: ${{ inputs.commit_message }}
+        DRAFT: ${{ inputs.draft }}
+        LABELS: ${{ inputs.labels }}
+        TITLE: ${{ inputs.title }}
         GITHUB_TOKEN: ${{ inputs.auth_token }}

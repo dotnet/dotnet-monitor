@@ -13,6 +13,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
@@ -42,6 +43,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             {
                 IntervalSeconds = intervalSeconds
             };
+
+            return options;
+        }
+
+        public static RootOptions AddProviderInterval(this RootOptions options, string name, int intervalSeconds)
+        {
+            Assert.NotNull(options.GlobalCounter);
+
+            options.GlobalCounter.Providers.Add(name, new GlobalProviderOptions { IntervalSeconds = (float)intervalSeconds });
 
             return options;
         }
@@ -113,6 +123,49 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             JwtPayload newPayload = new JwtPayload(new Claim[] { audClaim, issClaim, subClaim });
 
             return options.UseApiKey(algorithmName, subjectStr, newPayload, out token);
+        }
+
+
+        /// <summary>
+        /// Sets AzureAd authentication. Use this overload for most operations, unless specifically testing Authentication or Authorization.
+        /// </summary>
+        public static RootOptions UseAzureAd(this RootOptions options)
+        {
+            return options.UseAzureAd(
+                tenantId: Guid.NewGuid().ToString("D"),
+                clientId: Guid.NewGuid().ToString("D"),
+                swaggerScope: Guid.NewGuid().ToString("D"),
+                requiredRole: Guid.NewGuid().ToString("D"));
+        }
+
+        public static RootOptions UseAzureAd(this RootOptions options, string requiredRole)
+        {
+            return options.UseAzureAd(
+                tenantId: Guid.NewGuid().ToString("D"),
+                clientId: Guid.NewGuid().ToString("D"),
+                swaggerScope: Guid.NewGuid().ToString("D"),
+                requiredRole: requiredRole);
+        }
+
+        public static RootOptions UseAzureAd(this RootOptions options, string tenantId, string clientId, string swaggerScope, string requiredRole)
+        {
+            if (null == options.Authentication)
+            {
+                options.Authentication = new AuthenticationOptions();
+            }
+
+            if (null == options.Authentication.AzureAd)
+            {
+                options.Authentication.AzureAd = new AzureAdOptions
+                {
+                    TenantId = tenantId,
+                    ClientId = clientId,
+                    RequiredRole = requiredRole,
+                    SwaggerScope = swaggerScope
+                };
+            }
+
+            return options;
         }
 
         public static RootOptions UseApiKey(this RootOptions options, string algorithmName, string subject, JwtPayload customPayload, out string token)

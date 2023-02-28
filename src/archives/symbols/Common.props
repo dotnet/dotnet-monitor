@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup>
+    <PackageId>$(ArchiveName)-archive.$(RuntimeIdentifier)</PackageId>
+    <Description>Symbols for the $(ArchiveName) $(RuntimeIdentifier) archive.</Description>
+    <!-- IncludeBuildOutput must be true otherwise callbacks for custom file gathering are not invoked. -->
+    <IncludeBuildOutput>true</IncludeBuildOutput>
+    <IncludeSymbols>true</IncludeSymbols>
+    <!--
+      Symbols NuGet packages should never ship. They are only used in transport
+      during build promotion to provide files for symbol server publishing.
+      -->
+    <IsShipping>false</IsShipping>
+    <IsPackable>true</IsPackable>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <AllowedOutputExtensionsInSymbolsPackageBuildOutputFolder>$(AllowedOutputExtensionsInSymbolsPackageBuildOutputFolder);$(SymbolsSuffix)</AllowedOutputExtensionsInSymbolsPackageBuildOutputFolder>
+    <TargetsForTfmSpecificDebugSymbolsInPackage>$(TargetsForTfmSpecificDebugSymbolsInPackage);GetTfmSymbolFilesForPackage</TargetsForTfmSpecificDebugSymbolsInPackage>
+    <!-- Symbols NuGet packages do not need to be published to blob storage. -->
+    <DisableCustomBlobStoragePublishing>true</DisableCustomBlobStoragePublishing>
+  </PropertyGroup>
+</Project>

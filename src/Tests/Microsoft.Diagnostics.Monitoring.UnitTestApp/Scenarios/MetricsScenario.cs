@@ -8,6 +8,7 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Constants = Microsoft.Diagnostics.Monitoring.TestCommon.LiveMetricsTestConstants;
 
@@ -22,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return command;
         }
 
-        public static async Task ExecuteAsync(InvocationContext context)
+        public static async Task ExecuteAsync(InvocationContext context, CancellationToken token)
         {
             context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
             {
@@ -58,7 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 }
 
                 return 0;
-            }, context.GetCancellationToken());
+            }, token);
         }
     }
 }

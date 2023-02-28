@@ -106,7 +106,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Custom trace metric provider &apos;{0}&apos; must use the global counter interval &apos;{1}&apos;.
+        ///   Looks up a localized string similar to Custom trace metric provider &apos;{0}&apos; must use the expected counter interval &apos;{1}&apos;..
         /// </summary>
         internal static string ErrorMessage_InvalidMetricInterval {
             get {
