@@ -78,28 +78,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
 
                 Task writeSynchronousArtifacts = stream.StartAsyncLoop(source.Token);
 
-                Logger.LogWarning("Before await action.");
-
                 await action(stream, token);
-
-                Logger.LogWarning("After await action.");
-
-                source.Cancel();
-
-                Logger.LogWarning("Cancelled source.");
 
                 try
                 {
+                    source.Cancel();
+
                     await writeSynchronousArtifacts;
                 }
                 catch (OperationCanceledException)
                 {
-                    Logger.LogWarning("Cancelled the token.");
+                    // We intentionally cancel this token
                 }
 
-                await stream.FinalizeSyncAsync(token); // force to push the last part
-
-                //await stream.FinalizeAsync(token); // force to push the last part
+                await stream.FinalizeAsync(token); // force to push the last part
 
                 // an empty file was generated
                 if (stream.Parts.Count == 0)
