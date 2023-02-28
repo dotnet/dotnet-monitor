@@ -68,7 +68,7 @@ jobs:
             await github.rest.repos.createOrUpdateFileContents({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              branch: "${{ steps.calculate-branch-name.outputs.result }}",
+              branch: `${{ steps.calculate-branch-name.outputs.result }}`,
               message: 'Trigger branch mirroring',
               path: '.mirror',
               content: ''
