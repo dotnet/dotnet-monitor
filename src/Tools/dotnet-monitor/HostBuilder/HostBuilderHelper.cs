@@ -6,7 +6,6 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
@@ -21,10 +20,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IHostBuilder CreateHostBuilder(HostBuilderSettings settings)
         {
-            string aspnetUrls = string.Empty;
-            ServerUrlsBlockingConfigurationManager manager = new();
-            manager.IsBlocking = true;
-
             return new HostBuilder()
                 .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
                 {
@@ -43,11 +38,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     builder.AddCommandLine(arguments.ToArray());
                 })
                 .ConfigureDefaults(args: null)
+                .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
+                {
+                    if (settings.SimulateAspNetConfiguration)
+                    {
+                        builder.AddEnvironmentVariables("ASPNETCORE_");
+                    }
+                })
                 .UseContentRoot(settings.ContentRootDirectory)
                 .ConfigureAppConfiguration((HostBuilderContext context, IConfigurationBuilder builder) =>
                 {
-                    context.Properties[typeof(ServerUrlsBlockingConfigurationManager)] = manager;
-
                     HostBuilderResults hostBuilderResults = new HostBuilderResults();
                     context.Properties.Add(HostBuilderResults.ResultKey, hostBuilderResults);
 
@@ -109,96 +109,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                         builder.AddCommandLine(arguments.ToArray());
                     }
-                })
-                //Note this is necessary for config only because Kestrel configuration
-                //is not added until WebHostDefaults are added.
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    TestAssemblies.AddHostingStartup(webBuilder);
-
-                    // ASP.NET will initially create a configuration that primarily contains
-                    // the ASPNETCORE_* environment variables. This IWebHostBuilder configuration callback
-                    // is invoked before any of the usual configuration phases (host, app, service, container)
-                    // are executed. Thus, there is opportunity here to get the Urls option to store it and
-                    // clear it so that the initial WebHostOptions does not pick it up during host configuration.
-                    aspnetUrls = webBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
-                    webBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Empty);
-
-                    AddressListenResults listenResults = new AddressListenResults();
-                    webBuilder.ConfigureServices(services =>
-                    {
-                        services.AddSingleton(listenResults);
-                        services.AddSingleton<IStartupFilter, AddressListenResultsStartupFilter>();
-                        services.AddHostedService<StartupLoggingHostedService>();
-                    })
-                    .ConfigureKestrel((context, options) =>
-                    {
-                        //Note our priorities for hosting urls don't match the default behavior.
-                        //Default Kestrel behavior priority
-                        //1) ConfigureKestrel settings
-                        //2) Command line arguments (--urls)
-                        //3) Environment variables (ASPNETCORE_URLS, then DOTNETCORE_URLS)
-
-                        //Our precedence
-                        //1) Command line arguments (these have defaults) --urls, --metricUrls
-                        //2) Environment variables (ASPNETCORE_URLS, DotnetMonitor_Metrics__Endpoints)
-                        //3) ConfigureKestrel is used for fine control of the server, but honors the first two configurations.
-
-                        // Unblock reading of the Urls option from configuration, read it, and block it again so that Kestrel
-                        // is unable to read this option when it starts.
-                        manager.IsBlocking = false;
-                        string[] urls = ConfigurationHelper.SplitValue(context.Configuration[WebHostDefaults.ServerUrlsKey]);
-                        manager.IsBlocking = true;
-
-                        var metricsOptions = new MetricsOptions();
-                        context.Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
-
-                        string metricHostingUrls = metricsOptions.Endpoints;
-                        string[] metricUrls = ConfigurationHelper.SplitValue(metricHostingUrls);
-
-                        //Workaround for lack of default certificate. See https://github.com/dotnet/aspnetcore/issues/28120
-                        options.Configure(context.Configuration.GetSection("Kestrel")).Load();
-
-                        //By default, we bind to https for sensitive data (such as dumps and traces) and bind http for
-                        //non-sensitive data such as metrics. We may be missing a certificate for https binding. We want to continue with the
-                        //http binding in that scenario.
-                        listenResults.Listen(
-                            options,
-                            urls,
-                            metricsOptions.GetEnabled() ? metricUrls : Array.Empty<string>(),
-                            settings.AuthenticationMode != StartupAuthenticationMode.NoAuth);
-                    })
-                    .UseStartup<Startup>();
-                })
-                .ConfigureHostConfiguration((IConfigurationBuilder builder) =>
-                {
-                    // Restore the Urls option to the configuration provider that originally provided the value
-                    // before it was cleared during the IWebHostBuilder configuration callback.
-                    if (!string.IsNullOrEmpty(aspnetUrls) &&
-                        builder.TryGetProvider(WebHostDefaults.ServerUrlsKey, out IConfigurationProvider provider))
-                    {
-                        provider.Set(WebHostDefaults.ServerUrlsKey, aspnetUrls);
-                    }
-
-                    // The DOTNET_* and ASPNETCORE_* environment variables were added as part of the host configuration
-                    // phase. Before the phase is completed, add a configuration source that will conditionally block
-                    // reading of the Urls options so that they are not picked up by future Kestrel configuration callbacks.
-                    builder.Add(new ServerUrlsBlockingConfigurationSource(manager));
-                })
-                .ConfigureAppConfiguration((IConfigurationBuilder builder) =>
-                {
-                    // The settings.json, key-per-file, and DOTNETMONITOR_* environment variables were added as part
-                    // of the app configuration phase. Before the phase is completed, add a configuration source that will
-                    // conditionally block reading of the Urls options so that they are not picked up by future Kestrel
-                    // configuration callbacks.
-                    builder.Add(new ServerUrlsBlockingConfigurationSource(manager));
-                })
-                .ConfigureContainer((HostBuilderContext context, IServiceCollection services) =>
-                {
-                    // Container configuration is the last phase of building the host before the service provider is constructed.
-                    // At this point, all configuration callbacks have been executed. Lift the block on the Urls option so that
-                    // the option may be read from configuration by default.
-                    manager.IsBlocking = false;
                 });
         }
 

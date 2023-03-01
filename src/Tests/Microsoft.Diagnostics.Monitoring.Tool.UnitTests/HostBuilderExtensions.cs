@@ -8,8 +8,6 @@ using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
@@ -23,32 +21,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             return builder.ConfigureHostConfiguration(builder =>
             {
-                ReplaceSource(builder.Sources, IsAspNetChainedConfigurationSource, values);
+                ReplaceEnvironment(builder.Sources, prefix: "ASPNETCORE_", values);
             });
-
-            static bool IsAspNetChainedConfigurationSource(IConfigurationSource source)
-            {
-                // ASP.NET injects a precreated configuration source via AddConfiguration during host
-                // configuration. This shows up as a chained configuration source when enumerating the
-                // sources. Use a heuristic to find the chained configuration source added by ASP.NET.
-                return source is ChainedConfigurationSource chainedSource &&
-                    chainedSource.Configuration is ConfigurationRoot chainedConfiguration &&
-                    chainedConfiguration.Providers.Any(p => IsEnvironmentConfigurationProvider(p, "ASPNETCORE_"));
-            }
-
-            static bool IsEnvironmentConfigurationProvider(IConfigurationProvider provider, string prefix)
-            {
-                if (!(provider is EnvironmentVariablesConfigurationProvider envProvider))
-                {
-                    return false;
-                }
-
-                FieldInfo prefixField = typeof(EnvironmentVariablesConfigurationProvider)
-                    .GetField("_prefix", BindingFlags.Instance | BindingFlags.NonPublic);
-                Assert.NotNull(prefixField);
-
-                return string.Equals(prefixField.GetValue(envProvider) as string, prefix, StringComparison.OrdinalIgnoreCase);
-            }
         }
 
         /// <summary>

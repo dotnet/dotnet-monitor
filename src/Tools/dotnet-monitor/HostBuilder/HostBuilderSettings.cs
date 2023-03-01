@@ -61,6 +61,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public FileInfo UserProvidedConfigFilePath { get; set; }
 
         /// <summary>
+        /// When true, adds a host configuration phase that adds configuration
+        /// as if ASP.NET Core was configured. Allows tests and "config show" command
+        /// to simulate the settings without actually configuring ASP.NET Core.
+        /// </summary>
+        /// <remarks>
+        /// Should set to false if Kestrel is actually configured.
+        /// </remarks>
+        public bool SimulateAspNetConfiguration { get; set; } = true;
+
+        /// <summary>
         /// Create settings for dotnet-monitor hosting.
         /// </summary>
         public static HostBuilderSettings CreateMonitor(
