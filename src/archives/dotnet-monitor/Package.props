@@ -31,6 +31,10 @@
                    Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
       <PackagePath>shared\linux-musl-x64\native\</PackagePath>
     </FileToArchive>
+    <!-- Include managed assemblies loadable in target processes. -->
+    <FileToArchive Include="$(ArtifactsBinDir)Microsoft.Diagnostics.Monitoring.StartupHook\$(Configuration)\net6.0\Microsoft.Diagnostics.Monitoring.StartupHook.dll">
+      <PackagePath>shared\any\net6.0\</PackagePath>
+    </FileToArchive>
   </ItemGroup>
   <ItemGroup>
     <SymbolFileToArchive Include="@(MonitorProfilerSymbolsFile->WithMetadataValue('TargetRid', '$(RuntimeIdentifier)'))">

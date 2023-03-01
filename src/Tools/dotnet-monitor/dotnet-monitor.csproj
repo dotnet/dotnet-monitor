@@ -74,7 +74,10 @@
     </ItemGroup>
     <ItemGroup>
       <!-- Pack the file if it exists. -->
-      <TfmSpecificPackageFile Include="@(AdditionalPackageFile->Exists())" />
+      <TfmSpecificPackageFile Include="@(AdditionalPackageFile-&gt;Exists())" />
+      <TfmSpecificPackageFile Include="$(ArtifactsBinDir)Microsoft.Diagnostics.Monitoring.StartupHook\$(Configuration)\net6.0\Microsoft.Diagnostics.Monitoring.StartupHook.dll">
+        <PackagePath>tools/$(TargetFramework)/any/shared/any/net6.0</PackagePath>
+      </TfmSpecificPackageFile>
     </ItemGroup>
   </Target>
 
