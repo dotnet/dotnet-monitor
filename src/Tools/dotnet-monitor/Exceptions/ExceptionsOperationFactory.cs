@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {
-    public sealed class ExceptionsOperationFactory : IExceptionsOperationFactory
+    internal sealed class ExceptionsOperationFactory : IExceptionsOperationFactory
     {
-        IArtifactOperation IExceptionsOperationFactory.Create(IExceptionsStore store, ExceptionsFormat format)
+        public IArtifactOperation Create(IExceptionsStore store, ExceptionsFormat format)
         {
             return new ExceptionsOperation(store, format);
         }

@@ -15,6 +15,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {
     internal sealed class ExceptionsStore : IExceptionsStore, IAsyncDisposable
     {
+        private const int ChannelCapacity = 1000;
+
         private readonly Channel<ExceptionInstanceEntry> _channel;
         private readonly CancellationTokenSource _disposalSource = new();
         private readonly List<ExceptionInstance> _instances = new();
@@ -42,7 +44,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _disposalSource.Dispose();
         }
 
-        void IExceptionsStore.AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message)
+        public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message)
         {
             ExceptionInstanceEntry entry = new(cache, exceptionId, message);
             // This should never fail to write because the behavior is to drop the oldest.
@@ -61,7 +63,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         {
             // TODO: Hook callback for when items are dropped and report appropriately.
             return Channel.CreateBounded<ExceptionInstanceEntry>(
-                new BoundedChannelOptions(capacity: 1000)
+                new BoundedChannelOptions(ChannelCapacity)
                 {
                     AllowSynchronousContinuations = false,
                     FullMode = BoundedChannelFullMode.DropOldest,

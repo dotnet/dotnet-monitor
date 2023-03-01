@@ -17,6 +17,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
     internal sealed class ExceptionsService :
         BackgroundService
     {
+        private readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(5);
+
         private readonly IExceptionsStore _exceptionsStore;
         private readonly IDiagnosticServices _diagnosticServices;
         private readonly IInProcessFeatures _inProcessFeatures;
@@ -60,7 +62,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     {
                         await _pipeline.DisposeAsync();
                     }
-                    await Task.Delay(5000, stoppingToken);
+                    await Task.Delay(RetryDelay, stoppingToken);
                 }
             }
         }
