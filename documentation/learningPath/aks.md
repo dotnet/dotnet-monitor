@@ -53,7 +53,7 @@ docker build $env:TEMP\dotnet-monitor -f $env:TEMP\dotnet-monitor\Dockerfile.loc
 6. Push the Docker image to your ACR
 
 ```bash
-docker push name_of_acr.azurecr.io/localagent:latest
+docker push <name_of_acr>.azurecr.io/localagent:latest
 ```
 
 7. Update the aks deployment file to use your image instead of the published version of `dotnet monitor`
