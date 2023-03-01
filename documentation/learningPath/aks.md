@@ -47,7 +47,7 @@ az acr login --resource-group <name_of_resource_group> --name <name_of_acr>
 5. Build the Docker image locally
 
 ```bash
-docker build $env:TEMP\dotnet-monitor -f $env:TEMP\dotnet-monitor\Dockerfile.localagent -t name_of_acr.azurecr.io/localagent
+docker build $env:TEMP\dotnet-monitor -f $env:TEMP\dotnet-monitor\Dockerfile.localagent -t <name_of_acr>.azurecr.io/localagent
 ```
 
 6. Push the Docker image to your ACR
