@@ -35,9 +35,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         {
             SystemDiagnosticsMetricsTriggerSettings settings = new()
             {
-                ProviderName = options.ProviderName,
+                MeterName = options.MeterName ?? options.ProviderName,
                 CounterIntervalSeconds = _counterOptions.CurrentValue.GetIntervalSeconds(),
-                InstrumentName = options.InstrumentName,
+                InstrumentName = options.InstrumentName ?? options.CounterName,
                 GreaterThan = options.GreaterThan,
                 LessThan = options.LessThan,
                 HistogramPercentile = options.HistogramPercentile,

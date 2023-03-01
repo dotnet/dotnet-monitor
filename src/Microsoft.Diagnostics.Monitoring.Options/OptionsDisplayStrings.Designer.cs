@@ -1617,11 +1617,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name of the event source that provides the instrument information..
+        ///   Looks up a localized string similar to The name of the meter that provides the instrument information..
         /// </summary>
-        public static string DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_ProviderName {
+        public static string DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_MeterName {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_ProviderName", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_MeterName", resourceCulture);
             }
         }
         

@@ -257,7 +257,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_MinimumOptions()
         {
-            const string ExpectedProviderName = "Provider";
+            const string ExpectedMeterName = "Meter";
             const string ExpectedInstrumentName = "Instrument";
             const double ExpectedGreaterThan = 0.5;
 
@@ -267,7 +267,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetSystemDiagnosticsMetricsTrigger(options =>
                         {
-                            options.ProviderName = ExpectedProviderName;
+                            options.MeterName = ExpectedMeterName;
                             options.InstrumentName = ExpectedInstrumentName;
                             options.GreaterThan = ExpectedGreaterThan;
                         });
@@ -275,7 +275,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ruleOptions =>
                 {
                     SystemDiagnosticsMetricsOptions systemDiagnosticsMetricsOptions = ruleOptions.VerifySystemDiagnosticsMetricsTrigger();
-                    Assert.Equal(ExpectedProviderName, systemDiagnosticsMetricsOptions.ProviderName);
+                    Assert.Equal(ExpectedMeterName, systemDiagnosticsMetricsOptions.MeterName);
                     Assert.Equal(ExpectedInstrumentName, systemDiagnosticsMetricsOptions.InstrumentName);
                     Assert.Equal(ExpectedGreaterThan, systemDiagnosticsMetricsOptions.GreaterThan);
                 });
@@ -284,7 +284,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_Default_RoundTrip()
         {
-            const string ExpectedProviderName = "Provider";
+            const string ExpectedMeterName = "Meter";
             const string ExpectedInstrumentName = "Instrument";
             const double ExpectedGreaterThan = 0.5;
             const double ExpectedLessThan = 0.75;
@@ -297,7 +297,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetSystemDiagnosticsMetricsTrigger(options =>
                         {
-                            options.ProviderName = ExpectedProviderName;
+                            options.MeterName = ExpectedMeterName;
                             options.InstrumentName = ExpectedInstrumentName;
                             options.GreaterThan = ExpectedGreaterThan;
                             options.LessThan = ExpectedLessThan;
@@ -308,7 +308,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ruleOptions =>
                 {
                     SystemDiagnosticsMetricsOptions systemDiagnosticsMetricsOptions = ruleOptions.VerifySystemDiagnosticsMetricsTrigger();
-                    Assert.Equal(ExpectedProviderName, systemDiagnosticsMetricsOptions.ProviderName);
+                    Assert.Equal(ExpectedMeterName, systemDiagnosticsMetricsOptions.MeterName);
                     Assert.Equal(ExpectedInstrumentName, systemDiagnosticsMetricsOptions.InstrumentName);
                     Assert.Equal(ExpectedGreaterThan, systemDiagnosticsMetricsOptions.GreaterThan);
                     Assert.Equal(ExpectedLessThan, systemDiagnosticsMetricsOptions.LessThan);
@@ -320,7 +320,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_Histogram_RoundTrip()
         {
-            const string ExpectedProviderName = "Provider";
+            const string ExpectedMeterName = "Meter";
             const string ExpectedInstrumentName = "Instrument";
             TimeSpan ExpectedDuration = TimeSpan.FromSeconds(30);
             int ExpectedHistogramPercentile = 50;
@@ -332,7 +332,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetSystemDiagnosticsMetricsTrigger(options =>
                         {
-                            options.ProviderName = ExpectedProviderName;
+                            options.MeterName = ExpectedMeterName;
                             options.InstrumentName = ExpectedInstrumentName;
                             options.HistogramPercentile = ExpectedHistogramPercentile;
                             options.SlidingWindowDuration = ExpectedDuration;
@@ -342,7 +342,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ruleOptions =>
                 {
                     SystemDiagnosticsMetricsOptions systemDiagnosticsMetricsOptions = ruleOptions.VerifySystemDiagnosticsMetricsTrigger();
-                    Assert.Equal(ExpectedProviderName, systemDiagnosticsMetricsOptions.ProviderName);
+                    Assert.Equal(ExpectedMeterName, systemDiagnosticsMetricsOptions.MeterName);
                     Assert.Equal(ExpectedInstrumentName, systemDiagnosticsMetricsOptions.InstrumentName);
                     Assert.Equal(ExpectedHistogramPercentile, systemDiagnosticsMetricsOptions.HistogramPercentile);
                     Assert.Equal(ExpectedDuration, systemDiagnosticsMetricsOptions.SlidingWindowDuration);
@@ -366,12 +366,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     // Property validation failures will short-circuit the remainder of the validation
-                    // rules, thus only observe 3 errors when one might expect 4 (the fourth being that
-                    // either GreaterThan or LessThan should be specified).
-                    Assert.Equal(3, failures.Length);
-                    VerifyRequiredMessage(failures, 0, nameof(SystemDiagnosticsMetricsOptions.ProviderName));
-                    VerifyRequiredMessage(failures, 1, nameof(SystemDiagnosticsMetricsOptions.InstrumentName));
-                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(SystemDiagnosticsMetricsOptions.SlidingWindowDuration),
+                    // rules, thus only observe 1 error when one might expect 4 (the second being MeterName,
+                    // the third being InstrumentName, and the fourth being that either GreaterThan or LessThan should be specified).
+                    Assert.Single(failures);
+                    VerifyRangeMessage<TimeSpan>(failures, 0, nameof(SystemDiagnosticsMetricsOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
         }
@@ -379,7 +377,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_NoGreaterThanOrLessThan()
         {
-            const string ExpectedProviderName = "Provider";
+            const string ExpectedMeterName = "Meter";
             const string ExpectedInstrumentName = "Instrument";
 
             return ValidateFailure(
@@ -388,7 +386,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetSystemDiagnosticsMetricsTrigger(options =>
                         {
-                            options.ProviderName = ExpectedProviderName;
+                            options.MeterName = ExpectedMeterName;
                             options.InstrumentName = ExpectedInstrumentName;
                         });
                 },
@@ -402,8 +400,32 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
-        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_GreaterThanLargerThanLessThan()
+        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_NoInstrumentOrMeterName()
         {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetSystemDiagnosticsMetricsTrigger(options =>
+                        {
+                            options.GreaterThan = 0.5;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Equal(2, failures.Length);
+                    VerifyRequiredFieldMessage(failures, 0,
+                        nameof(SystemDiagnosticsMetricsOptions.MeterName));
+                    VerifyRequiredFieldMessage(failures, 1,
+                        nameof(SystemDiagnosticsMetricsOptions.InstrumentName));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_MeterAndProviderName()
+        {
+            const string ExpectedMeterName = "Meter";
             const string ExpectedProviderName = "Provider";
             const string ExpectedInstrumentName = "Instrument";
 
@@ -413,7 +435,64 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetSystemDiagnosticsMetricsTrigger(options =>
                         {
+                            options.GreaterThan = 0.5;
                             options.ProviderName = ExpectedProviderName;
+                            options.MeterName = ExpectedMeterName;
+                            options.InstrumentName = ExpectedInstrumentName;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyBothCannotBeSpecifiedMessage(failures, 0,
+                        nameof(SystemDiagnosticsMetricsOptions.MeterName),
+                        nameof(SystemDiagnosticsMetricsOptions.ProviderName));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_InstrumentAndCounterName()
+        {
+            const string ExpectedMeterName = "Meter";
+            const string ExpectedCounterName = "Counter";
+            const string ExpectedInstrumentName = "Instrument";
+
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetSystemDiagnosticsMetricsTrigger(options =>
+                        {
+                            options.GreaterThan = 0.5;
+                            options.MeterName = ExpectedMeterName;
+                            options.CounterName = ExpectedCounterName;
+                            options.InstrumentName = ExpectedInstrumentName;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyBothCannotBeSpecifiedMessage(failures, 0,
+                        nameof(SystemDiagnosticsMetricsOptions.InstrumentName),
+                        nameof(SystemDiagnosticsMetricsOptions.CounterName));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_GreaterThanLargerThanLessThan()
+        {
+            const string ExpectedMeterName = "Meter";
+            const string ExpectedInstrumentName = "Instrument";
+
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetSystemDiagnosticsMetricsTrigger(options =>
+                        {
+                            options.MeterName = ExpectedMeterName;
                             options.InstrumentName = ExpectedInstrumentName;
                             options.GreaterThan = 0.75;
                             options.LessThan = 0.5;
@@ -432,7 +511,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [InlineData(101)]
         public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_InvalidHistogramPercentile(int expectedHistogramPercentile)
         {
-            const string ExpectedProviderName = "Provider";
+            const string ExpectedMeterName = "Meter";
             const string ExpectedInstrumentName = "Instrument";
 
             return ValidateFailure(
@@ -441,7 +520,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetSystemDiagnosticsMetricsTrigger(options =>
                         {
-                            options.ProviderName = ExpectedProviderName;
+                            options.MeterName = ExpectedMeterName;
                             options.InstrumentName = ExpectedInstrumentName;
                             options.GreaterThan = 0.5;
                             options.HistogramPercentile = expectedHistogramPercentile;
@@ -2066,6 +2145,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Strings.ErrorMessage_TwoFieldsMissing,
                 fieldName1,
                 fieldName2);
+
+            Assert.Equal(message, failures[index]);
+        }
+
+        private static void VerifyRequiredFieldMessage(string[] failures, int index, string fieldName)
+        {
+            string message = string.Format(
+                CultureInfo.InvariantCulture,
+                Strings.ErrorMessage_FieldMissing,
+                fieldName);
 
             Assert.Equal(message, failures[index]);
         }

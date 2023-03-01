@@ -184,7 +184,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .SetSystemDiagnosticsMetricsTrigger(options =>
                         {
                             // gauge greater than 0 for 2 seconds
-                            options.ProviderName = LiveMetricsTestConstants.ProviderName1;
+                            options.MeterName = LiveMetricsTestConstants.ProviderName1;
                             options.InstrumentName = LiveMetricsTestConstants.GaugeName;
                             options.GreaterThan = 0;
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
@@ -250,7 +250,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .SetSystemDiagnosticsMetricsTrigger(options =>
                         {
                             // histogram 50th percentile greater than 45 for 2 seconds
-                            options.ProviderName = LiveMetricsTestConstants.ProviderName1;
+                            options.MeterName = LiveMetricsTestConstants.ProviderName1;
                             options.InstrumentName = LiveMetricsTestConstants.HistogramName1;
                             options.HistogramPercentile = 50;
                             options.GreaterThan = 45;
@@ -317,8 +317,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .SetSystemDiagnosticsMetricsTrigger(options =>
                         {
                             // histogram 95% percentile less than 99 for 2 seconds
+                            // The use of ProviderName/CounterName instead of MeterName/InstrumentName is intentional.
                             options.ProviderName = LiveMetricsTestConstants.ProviderName1;
-                            options.InstrumentName = LiveMetricsTestConstants.HistogramName1;
+                            options.CounterName = LiveMetricsTestConstants.HistogramName1;
                             options.HistogramPercentile = 95;
                             options.LessThan = 99;
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(2);

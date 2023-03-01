@@ -31,6 +31,42 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
                         nameof(LessThan))));
             }
 
+            if (!string.IsNullOrEmpty(ProviderName) && !string.IsNullOrEmpty(MeterName))
+            {
+                // Both ProviderName and MeterName cannot be specified simultaneously.
+                results.Add(new ValidationResult(
+                    string.Format(
+                        Strings.ErrorMessage_TwoFieldsCannotBeSpecified,
+                        nameof(MeterName),
+                        nameof(ProviderName))));
+            }
+            else if (string.IsNullOrEmpty(ProviderName) && string.IsNullOrEmpty(MeterName))
+            {
+                // Both ProviderName and MeterName cannot be empty.
+                results.Add(new ValidationResult(
+                    string.Format(
+                        Strings.ErrorMessage_FieldMissing,
+                        nameof(MeterName))));
+            }
+
+            if (!string.IsNullOrEmpty(CounterName) && !string.IsNullOrEmpty(InstrumentName))
+            {
+                // Both CounterName and InstrumentName cannot be specified simultaneously.
+                results.Add(new ValidationResult(
+                    string.Format(
+                        Strings.ErrorMessage_TwoFieldsCannotBeSpecified,
+                        nameof(InstrumentName),
+                        nameof(CounterName))));
+            }
+            else if (string.IsNullOrEmpty(CounterName) && string.IsNullOrEmpty(InstrumentName))
+            {
+                // Both CounterName and InstrumentName cannot be empty.
+                results.Add(new ValidationResult(
+                    string.Format(
+                        Strings.ErrorMessage_FieldMissing,
+                        nameof(InstrumentName))));
+            }
+
             return results;
         }
     }

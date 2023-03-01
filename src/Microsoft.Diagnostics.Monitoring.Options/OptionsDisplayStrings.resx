@@ -827,9 +827,9 @@
     <value>The threshold level the instrument must maintain (or lower) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.</value>
     <comment>The description provided for the LessThan parameter on SystemDiagnosticsMetricsOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_ProviderName" xml:space="preserve">
-    <value>The name of the event source that provides the instrument information.</value>
-    <comment>The description provided for the ProviderName parameter on SystemDiagnosticsMetricsOptions.</comment>
+  <data name="DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_MeterName" xml:space="preserve">
+    <value>The name of the meter that provides the instrument information.</value>
+    <comment>The description provided for the MeterName parameter on SystemDiagnosticsMetricsOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_SlidingWindowDuration" xml:space="preserve">
     <value>The sliding time window in which the instrument must maintain its value as specified by the threshold levels in GreaterThan and LessThan.</value>
