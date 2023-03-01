@@ -235,7 +235,7 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
       "Trigger": {
         "Type": "SystemDiagnosticsMetrics",
         "Settings": {
-          "ProviderName": "MyCustomProvider",
+          "MeterName": "MyCustomMeter",
           "InstrumentName": "MyCustomHistogram",
           "HistogramPercentile": "95",
           "GreaterThan": 175
@@ -262,7 +262,7 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
 
   ```yaml
   CollectionRules__HighHistogramValues__Trigger__Type: "SystemDiagnosticsMetrics"
-  CollectionRules__HighHistogramValues__Trigger__Settings__ProviderName: "MyCustomProvider"
+  CollectionRules__HighHistogramValues__Trigger__Settings__MeterName: "MyCustomMeter"
   CollectionRules__HighHistogramValues__Trigger__Settings__InstrumentName: "MyCustomHistogram"
   CollectionRules__HighHistogramValues__Trigger__Settings__HistogramPercentile: "95"
   CollectionRules__HighHistogramValues__Trigger__Settings__GreaterThan: "175"
@@ -280,8 +280,8 @@ This rule, named "HighCpuUsage", will trigger when a process named "MyProcessNam
   ```yaml
   - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Type
     value: "SystemDiagnosticsMetrics"
-  - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Settings__ProviderName
-    value: "MyCustomProvider"
+  - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Settings_MeterName
+    value: "MyCustomMeter"
   - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Settings__InstrumentName
     value: "MyCustomHistogram"
   - name: DotnetMonitor_CollectionRules__HighHistogramValues__Trigger__Settings__HistogramPercentile

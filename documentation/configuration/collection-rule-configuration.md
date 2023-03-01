@@ -424,7 +424,7 @@ A trigger that has its condition satisfied when the value of an instrument falls
 
 | Name | Type | Required | Description | Default Value | Min Value | Max Value |
 |---|---|---|---|---|---|---|
-| `ProviderName` | string | true | The name of the event source that provides the instrument information. | | | |
+| `MeterName` | string | true | The name of the meter that provides the instrument information. | | | |
 | `InstrumentName` | string | true | The name of the instrument to monitor. | | | |
 | `GreaterThan` | double? | false | The threshold level the instrument must maintain (or higher) for the specified duration. Either `GreaterThan` or `LessThan` (or both) must be specified for non-histogram instruments. | `null` | | |
 | `LessThan` | double? | false | The threshold level the instrument must maintain (or lower) for the specified duration. Either `GreaterThan` or `LessThan` (or both) must be specified for non-histogram instruments. | `null` | | |
@@ -440,7 +440,7 @@ Usage that is satisfied when the target application's custom gauge is greater th
 
   ```json
   {
-    "ProviderName": "MyMeterName",
+    "MeterName": "MyMeterName",
     "InstrumentName": "MyGaugeName",
     "GreaterThan": 20,
     "SlidingWindowDuration": "00:00:10"
@@ -452,7 +452,7 @@ Usage that is satisfied when the target application's custom gauge is greater th
   <summary>Kubernetes ConfigMap</summary>
 
   ```yaml
-  CollectionRules__RuleName__Trigger__Settings__ProviderName: "MyMeterName"
+  CollectionRules__RuleName__Trigger__Settings__MeterName: "MyMeterName"
   CollectionRules__RuleName__Trigger__Settings__InstrumentName: "MyGaugeName"
   CollectionRules__RuleName__Trigger__Settings__GreaterThan: "20"
   CollectionRules__RuleName__Trigger__Settings__SlidingWindowDuration: "00:00:10"
@@ -463,7 +463,7 @@ Usage that is satisfied when the target application's custom gauge is greater th
   <summary>Kubernetes Environment Variables</summary>
 
   ```yaml
-  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__MeterName
     value: "MyMeterName"
   - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__InstrumentName
     value: "MyGaugeName"
@@ -483,7 +483,7 @@ Usage that is satisfied when the target application's custom histogram for a 10 
 
   ```json
   {
-    "ProviderName": "MyMeterName",
+    "MeterName": "MyMeterName",
     "InstrumentName": "MyHistogramName",
     "GreaterThan": 200,
     "HistogramPercentile": 50,
@@ -496,7 +496,7 @@ Usage that is satisfied when the target application's custom histogram for a 10 
   <summary>Kubernetes ConfigMap</summary>
 
   ```yaml
-  CollectionRules__RuleName__Trigger__Settings__ProviderName: "MyMeterName"
+  CollectionRules__RuleName__Trigger__Settings__MeterName: "MyMeterName"
   CollectionRules__RuleName__Trigger__Settings__InstrumentName: "MyHistogramName"
   CollectionRules__RuleName__Trigger__Settings__GreaterThan: "200"
   CollectionRules__RuleName__Trigger__Settings__HistogramPercentile: "50"
@@ -508,7 +508,7 @@ Usage that is satisfied when the target application's custom histogram for a 10 
   <summary>Kubernetes Environment Variables</summary>
 
   ```yaml
-  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__ProviderName
+  - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__MeterName
     value: "MyMeterName"
   - name: DotnetMonitor_CollectionRules__RuleName__Trigger__Settings__InstrumentName
     value: "MyGaugeName"
