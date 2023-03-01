@@ -119,6 +119,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureDefaultProcess(context.Configuration);
                 services.AddSingleton<ProfilerChannel>();
                 services.ConfigureCollectionRules();
+                services.ConfigureLibrarySharing();
                 services.ConfigureProfiler();
                 services.ConfigureStartupLoggers(authConfigurator);
                 services.AddSingleton<IExperimentalFlags, ExperimentalFlags>();

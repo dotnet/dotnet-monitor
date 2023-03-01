@@ -9,7 +9,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
+namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
 {
     internal sealed class DefaultSharedLibraryInitializer :
         ISharedLibraryInitializer
@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
             _sharedLibraryTargetPath = _storageOptions.Value.SharedLibraryPath;
         }
 
-        public INativeFileProviderFactory Initialize()
+        public IFileProviderFactory Initialize()
         {
             // Copy the shared libraries to the path specified by Storage:SharedLibraryPath.
             // Copying, instead of linking or using them in-place, prevents file locks from the target process.
@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
             return new Factory(sharedLibraryPath);
         }
 
-        private sealed class Factory : INativeFileProviderFactory
+        private sealed class Factory : IFileProviderFactory
         {
             private readonly string _sharedLibraryPath;
 
@@ -94,9 +94,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 _sharedLibraryPath = sharedLibraryPath;
             }
 
-            public IFileProvider Create(string runtimeIdentifier)
+            public IFileProvider CreateNative(string runtimeIdentifier)
             {
-                return SharedNativeFileProvider.Create(runtimeIdentifier, _sharedLibraryPath);
+                return SharedFileProvider.CreateNative(runtimeIdentifier, _sharedLibraryPath);
             }
         }
     }
