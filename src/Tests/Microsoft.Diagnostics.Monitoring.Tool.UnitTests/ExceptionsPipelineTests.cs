@@ -226,7 +226,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 }
             }
 
-            public IEnumerable<IExceptionInstance> GetSnapshot()
+            public IReadOnlyList<IExceptionInstance> GetSnapshot()
             {
                 throw new NotSupportedException();
             }

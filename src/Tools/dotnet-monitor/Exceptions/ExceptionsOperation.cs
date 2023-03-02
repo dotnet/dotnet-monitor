@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text.Json;
 using System.Threading;
@@ -84,6 +85,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 await stream.WriteAsync(JsonSequenceRecordSeparator, token);
             }
 
+            // Make sure dotnet-monitor is self-consistent with other features that print type and stack information.
+            // For example, the stacks and exceptions features should print structured stack traces exactly the same way.
+            // CONSIDER: Investigate if other tools have "standard" formats for printing structured stacks and exceptions.
             await using (Utf8JsonWriter writer = new(stream, new JsonWriterOptions() { Indented = false }))
             {
                 writer.WriteStartObject();
@@ -113,10 +117,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
             await using StreamWriter writer = new(stream, leaveOpen: true);
 
-            await writer.WriteAsync("First chance exception. ");
-            await writer.WriteAsync(instance.TypeName);
-            await writer.WriteAsync(": ");
-            await writer.WriteLineAsync(instance.Message);
+            await writer.WriteLineAsync(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    Strings.OutputFormatString_FirstChanceException,
+                    instance.TypeName,
+                    instance.Message));
+
             await writer.FlushAsync();
         }
     }

@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _channel.Writer.TryWrite(entry);
         }
 
-        public IEnumerable<IExceptionInstance> GetSnapshot()
+        public IReadOnlyList<IExceptionInstance> GetSnapshot()
         {
             lock (_instances)
             {
