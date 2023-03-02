@@ -57,11 +57,22 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <!-- Targets and properties for ensuring publish before pack. -->
+  <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.StartupHook\ProjectsToPublish.props" />
+  <Import Project="$(RepositoryEngineeringDir)PublishProjects.targets" />
+
+  <!-- Publish projects if they were not published after build -->
+  <Target Name="PublishProjectsBeforePack"
+          Condition="'$(PublishProjectsAfterBuild)' != 'true'">
+    <CallTarget Targets="PublishProjects" />
+  </Target>
+
   <PropertyGroup>
-    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);GatherTfmNativeFilesInPackage</TargetsForTfmSpecificContentInPackage>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);CollectTfmSpecificPackageFiles</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
 
-  <Target Name="GatherTfmNativeFilesInPackage">
+  <Target Name="CollectTfmSpecificPackageFiles"
+          DependsOnTargets="PublishProjectsBeforePack">
     <ItemGroup>
       <!-- Pack the profiler library for each platform. -->
       <AdditionalPackageFile Include="@(MonitorProfilerLibraryFile)">
@@ -74,9 +85,13 @@
     </ItemGroup>
     <ItemGroup>
       <!-- Pack the file if it exists. -->
-      <TfmSpecificPackageFile Include="@(AdditionalPackageFile-&gt;Exists())" />
-      <TfmSpecificPackageFile Include="$(ArtifactsBinDir)Microsoft.Diagnostics.Monitoring.StartupHook\$(Configuration)\net6.0\Microsoft.Diagnostics.Monitoring.StartupHook.dll">
-        <PackagePath>tools/$(TargetFramework)/any/shared/any/net6.0</PackagePath>
+      <TfmSpecificPackageFile Include="@(AdditionalPackageFile->Exists())" />
+      <!-- Pack startup hook files -->
+      <TfmSpecificPackageFile Include="$(StartupHookLibraryPath)">
+        <PackagePath>tools/$(TargetFramework)/any/shared/any/$(StartupHookTargetFramework)</PackagePath>
+      </TfmSpecificPackageFile>
+      <TfmSpecificPackageFile Include="$(StartupHookSymbolsPath)">
+        <PackagePath>tools/$(TargetFramework)/any/shared/any/$(StartupHookTargetFramework)</PackagePath>
       </TfmSpecificPackageFile>
     </ItemGroup>
   </Target>

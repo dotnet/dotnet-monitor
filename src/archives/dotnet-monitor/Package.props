@@ -1,6 +1,7 @@
 <Project>
   <!-- Create dotnet-monitor product archive (RID and TFM specific) -->
   <Import Project="$(MSBuildThisFileDirectory)ProjectsToPublish.props" />
+  <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.StartupHook\ProjectsToPublish.props" />
   <PropertyGroup>
     <ExecutableName>dotnet-monitor</ExecutableName>
     <ArchiveName>dotnet-monitor</ArchiveName>
@@ -31,15 +32,19 @@
                    Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
       <PackagePath>shared\linux-musl-x64\native\</PackagePath>
     </FileToArchive>
-    <!-- Include managed assemblies loadable in target processes. -->
-    <FileToArchive Include="$(ArtifactsBinDir)Microsoft.Diagnostics.Monitoring.StartupHook\$(Configuration)\net6.0\Microsoft.Diagnostics.Monitoring.StartupHook.dll">
-      <PackagePath>shared\any\net6.0\</PackagePath>
+    <!-- Startup hook assemblies -->
+    <FileToArchive Include="$(StartupHookLibraryPath)">
+      <PackagePath>shared\any\$(StartupHookTargetFramework)\</PackagePath>
     </FileToArchive>
   </ItemGroup>
   <ItemGroup>
+    <!-- Do not include symbols for the extra native assemblies since they have their own symbols package. -->
     <SymbolFileToArchive Include="@(MonitorProfilerSymbolsFile->WithMetadataValue('TargetRid', '$(RuntimeIdentifier)'))">
       <PackagePath>shared\$(RuntimeIdentifier)\native\</PackagePath>
     </SymbolFileToArchive>
-    <!-- Do not include symbols for the extra native assemblies since they have their own symbols package. -->
+    <!-- Startup hook symbols -->
+    <SymbolFileToArchive Include="$(StartupHookSymbolsPath)">
+      <PackagePath>shared\any\$(StartupHookTargetFramework)\</PackagePath>
+    </SymbolFileToArchive>
   </ItemGroup>
 </Project>
