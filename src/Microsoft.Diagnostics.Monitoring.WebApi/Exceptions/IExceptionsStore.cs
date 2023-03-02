@@ -9,6 +9,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
     {
         void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message);
 
-        IEnumerable<IExceptionInstance> GetSnapshot();
+        IReadOnlyList<IExceptionInstance> GetSnapshot();
     }
 }
