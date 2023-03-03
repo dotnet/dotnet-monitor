@@ -1150,6 +1150,40 @@
         }
       }
     },
+    "/exceptions": {
+      "get": {
+        "tags": [
+          "Exceptions"
+        ],
+        "summary": "Gets the exceptions from the default process.",
+        "operationId": "GetExceptions",
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json-seq": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/metrics": {
       "get": {
         "tags": [
