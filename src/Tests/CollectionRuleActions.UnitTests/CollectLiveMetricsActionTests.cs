@@ -55,7 +55,7 @@ namespace CollectionRuleActions.UnitTests
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectLiveMetricsAction(ActionTestsConstants.ExpectedEgressProvider, options =>
                     {
-                        options.Duration = CommonTestTimeouts.LiveMetricsDurationSeconds;
+                        options.Duration = TimeSpan.FromSeconds(CommonTestTimeouts.LiveMetricsDurationSeconds);
                         options.IncludeDefaultProviders = false;
                         options.Providers = new[]
                         {
@@ -125,7 +125,7 @@ namespace CollectionRuleActions.UnitTests
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectLiveMetricsAction(ActionTestsConstants.ExpectedEgressProvider, options =>
                     {
-                        options.Duration = CommonTestTimeouts.LiveMetricsDurationSeconds;
+                        options.Duration = TimeSpan.FromSeconds(CommonTestTimeouts.LiveMetricsDurationSeconds);
                         options.IncludeDefaultProviders = false;
                         options.Meters = new[]
                         {
