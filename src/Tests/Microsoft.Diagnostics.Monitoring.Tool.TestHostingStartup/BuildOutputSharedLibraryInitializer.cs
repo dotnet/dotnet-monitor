@@ -32,6 +32,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
 
         private sealed class Factory : IFileProviderFactory
         {
+            public IFileProvider CreateManaged(string targetFramework)
+            {
+                return BuildOutputManagedFileProvider.Create(targetFramework, SharedLibrarySourcePath);
+            }
+
             public IFileProvider CreateNative(string runtimeIdentifier)
             {
                 return BuildOutputNativeFileProvider.Create(runtimeIdentifier, SharedLibrarySourcePath);

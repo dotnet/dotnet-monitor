@@ -189,7 +189,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 "Microsoft.Diagnostics.Monitoring.StartupHook",
                 TargetFrameworkMoniker.Net60);
 
-            runner.Environment.Add("DOTNET_STARTUP_HOOKS", startupHookPath);
+            runner.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, startupHookPath);
         }
 
         private sealed class TestExceptionsStore : IExceptionsStore

@@ -21,6 +21,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
             _basePath = basePath;
         }
 
+        public static IFileProvider CreateManaged(string targetFramework, string sharedLibraryPath)
+        {
+            return new SharedFileProvider(Path.Combine(sharedLibraryPath, "any", targetFramework));
+        }
+
         /// <summary>
         /// Creates an <see cref="IFileProvider"/> that can return native files from the shared library layout.
         /// The path of a returned file is {sharedLibraryPath}/{runtimeIdentifier}/native/{fileName}.
