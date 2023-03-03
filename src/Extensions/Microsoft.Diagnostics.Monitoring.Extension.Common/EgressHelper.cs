@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         {
             Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.");
 
-            egressCmd.SetHandler(() => Egress(provider, configureOptions));
+            egressCmd.SetHandler(async () => await Egress(provider, configureOptions));
 
             return egressCmd;
         }
