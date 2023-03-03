@@ -1475,6 +1475,33 @@
               "$ref": "#/components/schemas/EventMetricsProvider"
             },
             "nullable": true
+          },
+          "meters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventMetricsMeter"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EventMetricsMeter": {
+        "required": [
+          "meterName"
+        ],
+        "type": "object",
+        "properties": {
+          "meterName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "instrumentNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1495,9 +1522,6 @@
               "type": "string"
             },
             "nullable": true
-          },
-          "metricType": {
-            "$ref": "#/components/schemas/MetricProviderType"
           }
         },
         "additionalProperties": false
@@ -1589,14 +1613,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "MetricProviderType": {
-        "enum": [
-          "EventCounter",
-          "Meter",
-          "All"
-        ],
-        "type": "string"
       },
       "OperationError": {
         "type": "object",
