@@ -29,7 +29,6 @@ namespace CollectionRuleActions.UnitTests
 
         private const string DefaultRuleName = "LiveMetricsTestRule";
         private const int IntervalSeconds = 2;
-        private const int DurationSeconds = IntervalSeconds + 1;
 
         public CollectLiveMetricsActionTests(ITestOutputHelper outputHelper)
         {
@@ -56,7 +55,7 @@ namespace CollectionRuleActions.UnitTests
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectLiveMetricsAction(ActionTestsConstants.ExpectedEgressProvider, options =>
                     {
-                        options.Duration = TimeSpan.FromSeconds(DurationSeconds);
+                        options.Duration = CommonTestTimeouts.LiveMetricsDurationSeconds;
                         options.IncludeDefaultProviders = false;
                         options.Providers = new[]
                         {
@@ -126,7 +125,7 @@ namespace CollectionRuleActions.UnitTests
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectLiveMetricsAction(ActionTestsConstants.ExpectedEgressProvider, options =>
                     {
-                        options.Duration = TimeSpan.FromSeconds(DurationSeconds);
+                        options.Duration = CommonTestTimeouts.LiveMetricsDurationSeconds;
                         options.IncludeDefaultProviders = false;
                         options.Meters = new[]
                         {
