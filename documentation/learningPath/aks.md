@@ -21,25 +21,49 @@ cd C:\your-path\dotnet-monitor
 2. Publish `dotnet monitor` to your desired (local) target location (TEMP is used throughout this example)
 
 ```bash
-dotnet publish .\src\Tools\dotnet-monitor -o $env:TEMP\dotnet-monitor -c Release -f net6.0
+dotnet publish .\src\Tools\dotnet-monitor -o $env:TEMP\dotnet-monitor -c Release -f net8.0
 ```
 
 3. Add a Dockerfile to the `dotnet monitor` directory created in the previous step. Below is an example of the contents of the Dockerfile:
 
 ```bash
-FROM mcr.microsoft.com/dotnet/nightly/aspnet:6.0-alpine 
-ENV COMPlus_EnableDiagnostics 0
-ENV ASPNETCORE_URLS=
-ENV DOTNET_MONITOR_VERSION=6
+ARG REPO=mcr.microsoft.com/dotnet/aspnet
+FROM $REPO:7.0.3-alpine3.17-amd64
+
 WORKDIR /app
+
+ENV \
+    # Unset ASPNETCORE_URLS from aspnet base image
+    ASPNETCORE_URLS= \
+    # Disable debugger and profiler diagnostics to avoid diagnosing self.
+    COMPlus_EnableDiagnostics=0 \
+    # Default Filter
+    DefaultProcess__Filters__0__Key=ProcessId \
+    DefaultProcess__Filters__0__Value=1 \
+    # Remove Unix Domain Socket before starting diagnostic port server
+    DiagnosticPort__DeleteEndpointOnStartup=true \
+    # Server GC mode
+    DOTNET_gcServer=1 \
+    # Logging: JSON format so that analytic platforms can get discrete entry information
+    Logging__Console__FormatterName=json \
+    # Logging: Use round-trip date/time format without timezone information (always logged in UTC)
+    Logging__Console__FormatterOptions__TimestampFormat=yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z' \
+    # Logging: Write timestamps using UTC offset (+0:00)
+    Logging__Console__FormatterOptions__UseUtcTimestamp=true \
+    # Add dotnet-monitor path to front of PATH for easier, prioritized execution
+    PATH="/app:${PATH}"
+
 COPY . .
-ENTRYPOINT ["dotnet", "dotnet-monitor.dll", "collect", "--no-auth"]
+
+ENTRYPOINT [ "dotnet-monitor" ]
+CMD [ "collect", "--urls", "https://+:52323", "--metricUrls", "http://+:52325" ]
+
 ```
 
 4. Log in to your ACR
 
 ```bash
-az account set --subscription <subscription_id>
+az account set -s <subscription_id>
 az aks get-credentials --resource-group <name_of_resource_group> --name <name_of_aks>
 az acr login --resource-group <name_of_resource_group> --name <name_of_acr>
 ```
