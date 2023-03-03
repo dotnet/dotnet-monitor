@@ -1612,7 +1612,8 @@ An action that collects live metrics for the process that the collection rule is
 | Name | Type | Required | Description | Default Value | Min Value | Max Value |
 |---|---|---|---|---|---|---|
 | `IncludeDefaultProviders` | bool | false | Determines if the default counter providers should be used. | `true` | | |
-| `Providers` | [EventMetricsProvider](api/definitions.md#eventmetricsprovider)[] | false | The array of providers for metrics to collect. | | | |
+| `Providers` | [EventMetricsProvider](api/definitions.md#eventmetricsprovider)[] | false | The array of counter providers for metrics to collect. | | | |
+| `Meters` | [EventMetricsMeter](api/definitions.md#eventmetricsmeter)[] | false | The array of meters for metrics to collect. | | | |
 | `Duration` | TimeSpan? | false | The duration of the live metrics operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
 | `Egress` | string | true | The named [egress provider](egress.md) for egressing the collected live metrics. | | | |
 

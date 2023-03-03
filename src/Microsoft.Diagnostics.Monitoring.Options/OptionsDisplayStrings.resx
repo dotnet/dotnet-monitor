@@ -795,4 +795,8 @@
     <value>Multiple authentication modes were configured. Only one may be set.</value>
     <comment>Gets the format string for rejecting validation due to multiple authentication modes being specified in configuration. </comment>
   </data>
+  <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_Meters" xml:space="preserve">
+    <value>The array of meters for metrics to collect.</value>
+    <comment>The description provided for the Meters parameter on CollectLiveMetricsOptions.</comment>
+  </data>
 </root>

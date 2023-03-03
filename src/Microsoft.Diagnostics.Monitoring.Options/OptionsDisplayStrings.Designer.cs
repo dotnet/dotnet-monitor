@@ -644,6 +644,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The array of meters for metrics to collect..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectLiveMetricsOptions_Meters {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectLiveMetricsOptions_Meters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The array of providers for metrics to collect..
         /// </summary>
         public static string DisplayAttributeDescription_CollectLiveMetricsOptions_Providers {
@@ -716,7 +725,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The format used to display the callstacks..
+        ///   Looks up a localized string similar to The format used to display the call stacks..
         /// </summary>
         public static string DisplayAttributeDescription_CollectStacksOptions_Format {
             get {
@@ -1091,6 +1100,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_GlobalCounterOptions_IntervalSeconds {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_GlobalCounterOptions_IntervalSeconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dictionary of provider names and their global configuration..
+        /// </summary>
+        public static string DisplayAttributeDescription_GlobalCounterOptions_Providers {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_GlobalCounterOptions_Providers", resourceCulture);
             }
         }
         
