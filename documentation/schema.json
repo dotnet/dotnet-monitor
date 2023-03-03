@@ -1621,6 +1621,16 @@
             "$ref": "#/definitions/EventMetricsProvider"
           }
         },
+        "Meters": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "The array of meters for metrics to collect.",
+          "items": {
+            "$ref": "#/definitions/EventMetricsMeter"
+          }
+        },
         "Duration": {
           "type": [
             "null",
@@ -1656,16 +1666,28 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "EventMetricsMeter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "MeterName"
+      ],
+      "properties": {
+        "MeterName": {
+          "type": "string",
+          "minLength": 1
         },
-        "MetricType": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/MetricProviderType"
-            }
-          ]
+        "InstrumentNames": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

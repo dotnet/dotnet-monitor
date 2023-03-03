@@ -39,7 +39,7 @@ namespace CollectionRuleActions.UnitTests
 
         [Theory]
         [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
-        public async Task CollectLiveMetricsAction_Custom(TargetFrameworkMoniker tfm)
+        public async Task CollectLiveMetricsAction_CustomProviders(TargetFrameworkMoniker tfm)
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
@@ -103,6 +103,77 @@ namespace CollectionRuleActions.UnitTests
                         strict: true);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                });
+            });
+        }
+
+        [Theory]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
+        public async Task CollectLiveMetricsAction_CustomMeters(TargetFrameworkMoniker tfm)
+        {
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+
+            const string ExpectedMeterName = LiveMetricsTestConstants.ProviderName1;
+
+            var ExpectedInstrumentNames = new[] { LiveMetricsTestConstants.GaugeName, LiveMetricsTestConstants.HistogramName2 };
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                rootOptions.AddGlobalCounter(IntervalSeconds);
+
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectLiveMetricsAction(ActionTestsConstants.ExpectedEgressProvider, options =>
+                    {
+                        options.Duration = TimeSpan.FromSeconds(DurationSeconds);
+                        options.IncludeDefaultProviders = false;
+                        options.Meters = new[]
+                        {
+                            new EventMetricsMeter
+                            {
+                                MeterName = ExpectedMeterName,
+                                InstrumentNames = ExpectedInstrumentNames,
+                            }
+                        };
+                    })
+                    .SetStartupTrigger();
+            }, async host =>
+            {
+                CollectLiveMetricsOptions options = ActionTestsHelper.GetActionOptions<CollectLiveMetricsOptions>(host, DefaultRuleName);
+
+                ICollectionRuleActionFactoryProxy factory;
+                Assert.True(host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.CollectLiveMetrics, out factory));
+
+                EndpointInfoSourceCallback callback = new(_outputHelper);
+                await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
+
+                await using AppRunner runner = _endpointUtilities.CreateAppRunner(Assembly.GetExecutingAssembly(), sourceHolder.TransportName, tfm);
+                runner.ScenarioName = TestAppScenarios.Metrics.Name;
+
+                Task<IEndpointInfo> newEndpointInfoTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+
+                await runner.ExecuteAsync(async () =>
+                {
+                    IEndpointInfo endpointInfo = await newEndpointInfoTask;
+
+                    ICollectionRuleAction action = factory.Create(endpointInfo, options);
+
+                    CollectionRuleActionResult result = await ActionTestsHelper.ExecuteAndDisposeAsync(action, CommonTestTimeouts.LiveMetricsTimeout);
+
+                    string egressPath = ActionTestsHelper.ValidateEgressPath(result);
+
+                    using FileStream liveMetricsStream = new(egressPath, FileMode.Open, FileAccess.Read);
+                    Assert.NotNull(liveMetricsStream);
+
+                    var metrics = LiveMetricsTestUtilities.GetAllMetrics(liveMetricsStream);
+
+                    await LiveMetricsTestUtilities.ValidateMetrics(new[] { ExpectedMeterName },
+                        ExpectedInstrumentNames,
+                        metrics,
+                        strict: true);
+
+                    await runner.SendCommandAsync(TestAppScenarios.Metrics.Commands.Continue);
                 });
             });
         }
