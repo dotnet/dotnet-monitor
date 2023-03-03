@@ -1273,6 +1273,16 @@
           "items": {
             "$ref": "#/definitions/MetricProvider"
           }
+        },
+        "Meters": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "Names of meters to collect from the System.Diagnostics.Metrics provider.",
+          "items": {
+            "$ref": "#/definitions/MeterConfiguration"
+          }
         }
       }
     },
@@ -1297,35 +1307,31 @@
           "items": {
             "type": "string"
           }
-        },
-        "MetricType": {
-          "description": "The type of metrics this provider consumes",
-          "default": "All",
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/MetricProviderType"
-            }
-          ]
         }
       }
     },
-    "MetricProviderType": {
-      "type": "string",
-      "description": "",
-      "x-enumFlags": true,
-      "x-enumNames": [
-        "EventCounter",
-        "Meter",
-        "All"
-      ],
-      "enum": [
-        "EventCounter",
-        "Meter",
-        "All"
-      ]
+    "MeterConfiguration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "MeterName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Name of the custom meter."
+        },
+        "InstrumentNames": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "Names of the custom instruments.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     },
     "StorageOptions": {
       "type": "object",
