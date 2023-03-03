@@ -90,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             if (meters?.Count > 0)
             {
-                foreach(MeterConfiguration meter in meters)
+                foreach (MeterConfiguration meter in meters)
                 {
                     var customCounterGroup = new EventPipeCounterGroup { ProviderName = meter.MeterName, Type = CounterGroupType.Meter };
                     if (meter.InstrumentNames?.Count > 0)
