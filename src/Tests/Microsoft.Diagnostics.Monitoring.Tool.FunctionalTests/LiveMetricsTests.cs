@@ -119,77 +119,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        [Theory]
-        [InlineData(MetricProviderType.All, true)]
-        [InlineData(MetricProviderType.Meter, false)]
-        [InlineData(MetricProviderType.EventCounter, true)]
-        public Task TestCustomMetrics_MetricProviderType(MetricProviderType metricType, bool expectResults)
-        {
-            return ScenarioRunner.SingleTarget(_outputHelper,
-                _httpClientFactory,
-                DiagnosticPortConnectionMode.Connect,
-                TestAppScenarios.AsyncWait.Name,
-                async (appRunner, apiClient) =>
-                {
-                    var counterNames = new[] { "cpu-usage", "working-set" };
-
-                    using ResponseStreamHolder holder = await apiClient.CaptureMetricsAsync(await appRunner.ProcessIdTask,
-                        durationSeconds: CommonTestTimeouts.LiveMetricsDurationSeconds,
-                        metricsConfiguration: new EventMetricsConfiguration
-                        {
-                            IncludeDefaultProviders = false,
-                            Providers = new[]
-                            {
-                                new EventMetricsProvider
-                                {
-                                    ProviderName = EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName,
-                                    CounterNames = counterNames,
-                                    MetricType = metricType
-                                }
-                            }
-                        });
-
-                    var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
-
-                    List<string> actualProviders = new();
-                    List<string> actualNames = new();
-                    List<string> actualMetadata = new();
-
-                    await LiveMetricsTestUtilities.AggregateMetrics(metrics, actualProviders, actualNames, actualMetadata);
-
-                    if (expectResults)
-                    {
-                        LiveMetricsTestUtilities.ValidateMetrics(new[] { EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName },
-                            counterNames,
-                            actualProviders.ToHashSet(),
-                            actualNames.ToHashSet(),
-                            strict: true);
-                    }
-                    else
-                    {
-                        Assert.Empty(actualProviders);
-                        Assert.Empty(actualNames);
-                    }
-
-                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
-                },
-                configureTool: runner =>
-                {
-                    runner.WriteKeyPerValueConfiguration(new RootOptions()
-                    {
-                        GlobalCounter = new GlobalCounterOptions()
-                        {
-                            IntervalSeconds = 1
-                        }
-                    });
-                });
-        }
-
         [Fact]
         public async Task TestSystemDiagnosticsMetrics()
         {
-            var counterNamesP1 = new[] { Constants.CounterName, Constants.GaugeName, Constants.HistogramName1, Constants.HistogramName2 };
-            var counterNamesP2 = new[] { Constants.CounterName };
+            var instrumentNamesP1 = new[] { Constants.CounterName, Constants.GaugeName, Constants.HistogramName1, Constants.HistogramName2 };
+            var instrumentNamesP2 = new[] { Constants.CounterName };
 
             MetricProvider p1 = new MetricProvider()
             {
@@ -218,17 +152,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         metricsConfiguration: new EventMetricsConfiguration
                         {
                             IncludeDefaultProviders = false,
-                            Providers = new[]
+                            Meters = new[]
                             {
-                                new EventMetricsProvider
+                                new EventMetricsMeter
                                 {
-                                    ProviderName = p1.ProviderName,
-                                    CounterNames = counterNamesP1,
+                                    MeterName = p1.ProviderName,
+                                    InstrumentNames = instrumentNamesP1,
                                 },
-                                new EventMetricsProvider
+                                new EventMetricsMeter
                                 {
-                                    ProviderName = p2.ProviderName,
-                                    CounterNames = counterNamesP2,
+                                    MeterName = p2.ProviderName,
+                                    InstrumentNames = instrumentNamesP2,
                                 }
                             }
                         });
@@ -237,29 +171,29 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
 
-                    List<string> actualProviders = new();
-                    List<string> actualNames = new();
+                    List<string> actualMeterNames = new();
+                    List<string> actualInstrumentNames = new();
                     List<string> actualMetadata = new();
 
-                    await LiveMetricsTestUtilities.AggregateMetrics(metrics, actualProviders, actualNames, actualMetadata);
+                    await LiveMetricsTestUtilities.AggregateMetrics(metrics, actualMeterNames, actualInstrumentNames, actualMetadata);
 
                     LiveMetricsTestUtilities.ValidateMetrics(new[] { p1.ProviderName, p2.ProviderName },
-                        counterNamesP1,
-                        actualProviders.ToHashSet(),
-                        actualNames.ToHashSet(),
+                        instrumentNamesP1,
+                        actualMeterNames.ToHashSet(),
+                        actualInstrumentNames.ToHashSet(),
                         strict: true);
 
                     // NOTE: This assumes the default percentiles of 50/95/99 - if this changes, this test
                     // will fail and will need to be updated.
                     Regex regex = new Regex(@"\bPercentile=(50|95|99)");
 
-                    for (int index = 0; index < actualProviders.Count; ++index)
+                    for (int index = 0; index < actualMeterNames.Count; ++index)
                     {
-                        if (actualNames[index] == Constants.HistogramName1)
+                        if (actualInstrumentNames[index] == Constants.HistogramName1)
                         {
                             Assert.Matches(regex, actualMetadata[index]);
                         }
-                        else if (actualNames[index] == Constants.HistogramName2)
+                        else if (actualInstrumentNames[index] == Constants.HistogramName2)
                         {
                             var metadata = actualMetadata[index].Split(',');
                             Assert.Equal(2, metadata.Length);
@@ -286,93 +220,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        [Theory]
-        [InlineData(MetricProviderType.All, true)]
-        [InlineData(MetricProviderType.Meter, true)]
-        [InlineData(MetricProviderType.EventCounter, false)]
-        public async Task TestSystemDiagnosticsMetrics_MetricProviderType(MetricProviderType metricType, bool expectResults)
-        {
-            var counterNames = new[] { Constants.CounterName };
-
-            MetricProvider p1 = new MetricProvider()
-            {
-                ProviderName = Constants.ProviderName1
-            };
-
-            var providers = new List<MetricProvider>()
-            {
-                p1
-            };
-
-            await ScenarioRunner.SingleTarget(
-                _outputHelper,
-                _httpClientFactory,
-                DiagnosticPortConnectionMode.Connect,
-                TestAppScenarios.Metrics.Name,
-                appValidate: async (runner, client) =>
-                {
-                    using ResponseStreamHolder holder = await client.CaptureMetricsAsync(await runner.ProcessIdTask,
-                        durationSeconds: CommonTestTimeouts.LiveMetricsDurationSeconds,
-                        metricsConfiguration: new EventMetricsConfiguration
-                        {
-                            IncludeDefaultProviders = false,
-                            Providers = new[]
-                            {
-                                new EventMetricsProvider
-                                {
-                                    ProviderName = p1.ProviderName,
-                                    CounterNames = counterNames,
-                                    MetricType = metricType
-                                }
-                            }
-                        });
-
-                    await runner.SendCommandAsync(TestAppScenarios.Metrics.Commands.Continue);
-
-                    var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
-
-                    List<string> actualProviders = new();
-                    List<string> actualNames = new();
-                    List<string> actualMetadata = new();
-
-                    await LiveMetricsTestUtilities.AggregateMetrics(metrics, actualProviders, actualNames, actualMetadata);
-
-                    if (expectResults)
-                    {
-                        LiveMetricsTestUtilities.ValidateMetrics(new[] { p1.ProviderName },
-                            counterNames,
-                            actualProviders.ToHashSet(),
-                            actualNames.ToHashSet(),
-                            strict: true);
-                    }
-                    else
-                    {
-                        Assert.Empty(actualProviders);
-                        Assert.Empty(actualNames);
-                    }
-                },
-                configureTool: runner =>
-                {
-                    runner.WriteKeyPerValueConfiguration(new RootOptions()
-                    {
-                        Metrics = new MetricsOptions()
-                        {
-                            Enabled = true,
-                            IncludeDefaultProviders = false,
-                            Providers = providers
-                        },
-                        GlobalCounter = new GlobalCounterOptions()
-                        {
-                            IntervalSeconds = 1
-                        }
-                    });
-                });
-        }
-
         [Fact]
         public async Task TestSystemDiagnosticsMetrics_MaxHistograms()
         {
-            var counterNames = new[] { Constants.HistogramName1, Constants.HistogramName2 };
+            var instrumentNames = new[] { Constants.HistogramName1, Constants.HistogramName2 };
 
             MetricProvider p1 = new MetricProvider()
             {
@@ -396,12 +247,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         metricsConfiguration: new EventMetricsConfiguration
                         {
                             IncludeDefaultProviders = false,
-                            Providers = new[]
+                            Meters = new[]
                             {
-                                new EventMetricsProvider
+                                new EventMetricsMeter
                                 {
-                                    ProviderName = p1.ProviderName,
-                                    CounterNames = counterNames
+                                    MeterName = p1.ProviderName,
+                                    InstrumentNames = instrumentNames
                                 }
                             }
                         });
@@ -410,14 +261,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
 
-                    List<string> actualProviders = new();
-                    List<string> actualNames = new();
+                    List<string> actualMeterNames = new();
+                    List<string> actualInstrumentNames = new();
                     List<string> actualMetadata = new();
 
-                    await LiveMetricsTestUtilities.AggregateMetrics(metrics, actualProviders, actualNames, actualMetadata);
+                    await LiveMetricsTestUtilities.AggregateMetrics(metrics, actualMeterNames, actualInstrumentNames, actualMetadata);
 
-                    Assert.Contains(Constants.HistogramName1, actualNames);
-                    Assert.DoesNotContain(Constants.HistogramName2, actualNames);
+                    Assert.Contains(Constants.HistogramName1, actualInstrumentNames);
+                    Assert.DoesNotContain(Constants.HistogramName2, actualInstrumentNames);
                 },
                 configureTool: runner =>
                 {
@@ -441,7 +292,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public async Task TestSystemDiagnosticsMetrics_MaxTimeseries()
         {
-            var counterNames = new[] { Constants.CounterName, Constants.GaugeName, Constants.HistogramName1, Constants.HistogramName2 };
+            var instrumentNames = new[] { Constants.CounterName, Constants.GaugeName, Constants.HistogramName1, Constants.HistogramName2 };
 
             const int maxTimeSeries = 3;
 
@@ -467,12 +318,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         metricsConfiguration: new EventMetricsConfiguration
                         {
                             IncludeDefaultProviders = false,
-                            Providers = new[]
+                            Meters = new[]
                             {
-                                new EventMetricsProvider
+                                new EventMetricsMeter
                                 {
-                                    ProviderName = p1.ProviderName,
-                                    CounterNames = counterNames
+                                    MeterName = p1.ProviderName,
+                                    InstrumentNames = instrumentNames
                                 }
                             }
                         });
@@ -481,13 +332,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
 
-                    List<string> actualProviders = new();
-                    List<string> actualNames = new();
+                    List<string> actualMeterNames = new();
+                    List<string> actualInstrumentNames = new();
                     List<string> actualMetadata = new();
 
-                    await LiveMetricsTestUtilities.AggregateMetrics(metrics, actualProviders, actualNames, actualMetadata);
+                    await LiveMetricsTestUtilities.AggregateMetrics(metrics, actualMeterNames, actualInstrumentNames, actualMetadata);
 
-                    ISet<string> actualNamesSet = new HashSet<string>(actualNames);
+                    ISet<string> actualNamesSet = new HashSet<string>(actualInstrumentNames);
 
                     Assert.Equal(maxTimeSeries, actualNamesSet.Count);
                 },

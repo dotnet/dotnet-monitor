@@ -14,6 +14,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         [JsonPropertyName("providers")]
         public EventMetricsProvider[] Providers { get; set; }
+
+        [JsonPropertyName("meters")]
+        public EventMetricsMeter[] Meters { get; set; }
     }
 
     public class EventMetricsProvider
@@ -27,5 +30,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         [JsonPropertyName("metricType")]
         public MetricProviderType? MetricType { get; set; }
+    }
+
+    public class EventMetricsMeter
+    {
+        [Required]
+        [JsonPropertyName("meterName")]
+        public string MeterName { get; set; }
+
+        [JsonPropertyName("instrumentNames")]
+        public string[] InstrumentNames { get; set; }
     }
 }
