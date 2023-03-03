@@ -5,7 +5,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 
-namespace Microsoft.Diagnostics.Monitoring.TestCommon
+namespace Microsoft.Diagnostics.Tools.Monitor
 {
     public static class EnvironmentInformation
     {
@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
+                using WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
                 WindowsPrincipal principal = new(currentUser);
                 return principal.IsInRole(WindowsBuiltInRole.Administrator);
             }

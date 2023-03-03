@@ -10,7 +10,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Microsoft.Diagnostics.Tools.Monitor
+namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
     internal sealed class GeneratedJwtKey
     {

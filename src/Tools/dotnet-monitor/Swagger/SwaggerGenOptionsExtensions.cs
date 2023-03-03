@@ -31,11 +31,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
             options.IncludeXmlComments(documentationPath);
         }
 
-        public static void ConfigureMonitorSwaggerGenSecurity(this SwaggerGenOptions options)
+        public static void AddBearerTokenAuthOption(this SwaggerGenOptions options, string securityDefinitionName)
         {
-            const string ApiKeySecurityDefinitionName = "ApiKeyAuth";
-
-            options.AddSecurityDefinition(ApiKeySecurityDefinitionName, new OpenApiSecurityScheme
+            options.AddSecurityDefinition(securityDefinitionName, new OpenApiSecurityScheme
             {
                 Name = HeaderNames.Authorization,
                 Type = SecuritySchemeType.ApiKey,
@@ -50,7 +48,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
                 {
                     new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = ApiKeySecurityDefinitionName }
+                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = securityDefinitionName }
                     },
                     Array.Empty<string>()
                 }

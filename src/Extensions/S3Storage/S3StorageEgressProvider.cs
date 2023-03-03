@@ -68,7 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             }
             catch (AmazonS3Exception e)
             {
-                if (!uploadDone)
+                if (uploadId != null && !uploadDone)
                     await client.AbortMultipartUploadAsync(uploadId, token);
                 throw CreateException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressS3FailedDetailed, e.Message));
             }

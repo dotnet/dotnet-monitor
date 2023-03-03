@@ -100,12 +100,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
             }
 
+            string processName = GetProcessName(commandLine, endpointInfo.OperatingSystem);
+
+            return new ProcessInfoImpl(
+                endpointInfo,
+                commandLine,
+                processName);
+        }
+
+        internal static string GetProcessName(string commandLine, string operatingSystem)
+        {
             string processName = null;
             if (!string.IsNullOrEmpty(commandLine))
             {
                 // Get the process name from the command line
                 bool isWindowsProcess = false;
-                if (string.IsNullOrEmpty(endpointInfo.OperatingSystem))
+                if (string.IsNullOrEmpty(operatingSystem))
                 {
                     // If operating system is null, the process is likely .NET Core 3.1 (which doesn't have the GetProcessInfo command).
                     // Since the underlying diagnostic communication channel used by the .NET runtime requires that the diagnostic process
@@ -116,7 +126,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
                 else
                 {
-                    isWindowsProcess = ProcessOperatingSystemWindowsValue.Equals(endpointInfo.OperatingSystem, StringComparison.OrdinalIgnoreCase);
+                    isWindowsProcess = ProcessOperatingSystemWindowsValue.Equals(operatingSystem, StringComparison.OrdinalIgnoreCase);
                 }
 
                 string processPath = CommandLineHelper.ExtractExecutablePath(commandLine, isWindowsProcess);
@@ -131,10 +141,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
             }
 
-            return new ProcessInfoImpl(
-                endpointInfo,
-                commandLine,
-                processName);
+            return processName;
         }
 
         public IEndpointInfo EndpointInfo { get; }

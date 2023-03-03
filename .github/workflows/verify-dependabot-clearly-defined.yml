@@ -8,12 +8,13 @@ permissions:
 
 jobs:
   dependabotVerify:
-    runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+
     steps:
       - name: Fetch Dependabot metadata
         id: metadata
-        uses: dependabot/fetch-metadata@v1
+        uses: dependabot/fetch-metadata@4de7a6c08ce727a42e0adbbdc345f761a01240ce
 
       - name: Check ClearlyDefined
         if: ${{steps.metadata.outputs.package-ecosystem == 'nuget'}}

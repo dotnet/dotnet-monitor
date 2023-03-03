@@ -412,6 +412,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The following unrecoverable validation issues were found with the &apos;{0}&apos; configuration:
+        ///{1}.
+        /// </summary>
+        internal static string ErrorMessage_StartupConfigurationValidationException {
+            get {
+                return ResourceManager.GetString("ErrorMessage_StartupConfigurationValidationException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find a template with the name: {0}.
         /// </summary>
         internal static string ErrorMessage_TemplateNotFound {
@@ -678,6 +688,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string HelpDescription_SecurityDefinitionDescription_ApiKey {
             get {
                 return ResourceManager.GetString("HelpDescription_SecurityDefinitionDescription_ApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Swagger UI permission.
+        /// </summary>
+        internal static string HelpDescription_SwaggerScope_AzureAd {
+            get {
+                return ResourceManager.GetString("HelpDescription_SwaggerScope_AzureAd", resourceCulture);
             }
         }
         

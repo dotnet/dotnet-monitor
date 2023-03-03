@@ -9,7 +9,7 @@ using System.Linq;
 #if UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 #else
-namespace Microsoft.Diagnostics.Tools.Monitor
+namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 #endif
 {
     internal static class JwtAlgorithmChecker

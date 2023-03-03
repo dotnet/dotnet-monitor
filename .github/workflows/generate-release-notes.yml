@@ -9,19 +9,21 @@ on:
         required: true
         type: boolean
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   generate-release-notes:
     name: 'Generate release notes'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout release branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
         with:
+          persist-credentials: false
           fetch-depth: 0 # Fetch the entire repo for the below git commit graph operations
 
       - name: Calculate release information
@@ -31,14 +33,15 @@ jobs:
           # Grab the latest tag from the current branch. If it doesn't exist, grab the latest tag across all branches.
           last_release_tag=$(git describe --tags --abbrev=0 || git describe --tags $(git rev-list --tags --max-count=1))
           echo "Using tag: $last_release_tag"
-          echo "last_release_date=$(git log -1 --format=%aI ${last_release_tag})" >> $GITHUB_ENV
+          last_release_date=$(git log -1 --format=%aI "$last_release_tag")
+          echo "last_release_date=$last_release_date" >> $GITHUB_ENV
 
           versionFile="./eng/Versions.props"
           release_version=$(perl -ne '/<VersionPrefix>([^<]*)/ && print $1' $versionFile)
           release_version_label=$(perl -ne '/<PreReleaseVersionLabel>([^<]*)/ && print $1' $versionFile)
           major_minor_version=${release_version%.*}
 
-          if [[ "${{ inputs.test_run }}" == "true" ]]; then
+          if [[ "$TEST_RUN" == "true" ]]; then
             qualified_release_version="test-$release_version"
           else
             version_url="https://aka.ms/dotnet/diagnostics/monitor${major_minor_version}/release/dotnet-monitor.nupkg.version"
@@ -63,13 +66,17 @@ jobs:
             friendly_release_name="next official preview version"
           fi
 
-          echo "release_note_path=$(echo ./documentation/releaseNotes/releaseNotes.v${qualified_release_version}.md)" >> $GITHUB_ENV
-          echo "friendly_release_name=$(echo ${friendly_release_name})" >> $GITHUB_ENV
-          echo "qualified_release_version=$(echo ${qualified_release_version})" >> $GITHUB_ENV
+          release_note_path="./documentation/releaseNotes/releaseNotes.v${qualified_release_version}.md"
+          echo "release_note_path=$release_note_path" >> $GITHUB_ENV
+          echo "friendly_release_name=$friendly_release_name" >> $GITHUB_ENV
+          echo "qualified_release_version=$qualified_release_version" >> $GITHUB_ENV
+        env:
+          TEST_RUN: ${{ inputs.test_run }}
 
       - name: Checkout main
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
         with:
+          persist-credentials: true # We need to persist credentials to push the resulting changes upstream.
           ref: main
 
       - name: Generate release notes

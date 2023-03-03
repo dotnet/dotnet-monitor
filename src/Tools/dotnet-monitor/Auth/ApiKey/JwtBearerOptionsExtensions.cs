@@ -3,35 +3,14 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.Linq;
 
-namespace Microsoft.Diagnostics.Tools.Monitor
+namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
-    /// <summary>
-    /// Configures <see cref="JwtBearerOptions"/> based on <see cref="MonitorApiKeyConfiguration" /> configuration.
-    /// </summary>
-    internal sealed class JwtBearerPostConfigure :
-        IPostConfigureOptions<JwtBearerOptions>
+    internal static class JwtBearerOptionsExtensions
     {
-        private readonly IOptionsMonitor<MonitorApiKeyConfiguration> _apiKeyConfig;
-
-        public JwtBearerPostConfigure(
-            IOptionsMonitor<MonitorApiKeyConfiguration> apiKeyConfig)
+        public static void ConfigureApiKeyTokenValidation(this JwtBearerOptions options, SecurityKey publicKey)
         {
-            _apiKeyConfig = apiKeyConfig;
-        }
-
-        public void PostConfigure(string name, JwtBearerOptions options)
-        {
-            MonitorApiKeyConfiguration configSnapshot = _apiKeyConfig.CurrentValue;
-            if (!configSnapshot.Configured || configSnapshot.ValidationErrors.Any())
-            {
-                options.SecurityTokenValidators.Add(new RejectAllSecurityValidator());
-                return;
-            }
-
             TokenValidationParameters tokenValidationParameters = new TokenValidationParameters
             {
                 // Signing Settings
@@ -41,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // Issuer Settings
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKeys = new SecurityKey[] { configSnapshot.PublicKey },
+                IssuerSigningKeys = new SecurityKey[] { publicKey },
                 TryAllIssuerSigningKeys = true,
 
                 // Audience Settings

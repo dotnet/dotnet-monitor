@@ -803,4 +803,36 @@
   <data name="ErrorMessage_NestedProviderValidationError" xml:space="preserve">
     <value>Provider '{0}' validation error: '{1}'</value>
   </data>
+  <data name="DisplayAttributeDescription_AuthenticationOptions_AzureAd" xml:space="preserve">
+    <value>The parameters used to use configure authentication using Azure Active Directory.</value>
+    <comment>The description provided for the AzureAd parameter on AuthenticationOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureAdOptions_AppIdUri" xml:space="preserve">
+    <value>The App ID URI of the app registration. Defaults to api://{ClientId} if not specified.</value>
+    <comment>The description provided for the AppIdUri parameter on AzureAdOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureAdOptions_ClientId" xml:space="preserve">
+    <value>The unique application (client) id assigned to the app registration in Azure Active Directory.</value>
+    <comment>The description provided for the ClientId parameter on AzureAdOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureAdOptions_Instance" xml:space="preserve">
+    <value>Specifies the Azure cloud instance users are signing in from. Can be either the Azure public cloud or one of the national clouds.</value>
+    <comment>The description provided for the Instance parameter on AzureAdOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureAdOptions_RequiredRole" xml:space="preserve">
+    <value>The role required to be able to authenticate.</value>
+    <comment>The description provided for the RequiredRole parameter on AzureAdOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureAdOptions_SwaggerScope" xml:space="preserve">
+    <value>The API scope required by users to be able to interactively authenticate using the in-box Swagger UI. If not specified, users will not be able to interactively authenticate.</value>
+    <comment>The description provided for the SwaggerScope parameter on AzureAdOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_AzureAdOptions_TenantId" xml:space="preserve">
+    <value>The tenant id of the Azure Active Directory tenant, or its tenant domain.</value>
+    <comment>The description provided for the TenantId parameter on AzureAdOptions.</comment>
+  </data>
+  <data name="ErrorMessage_MultipleAuthenticationModesSpecified" xml:space="preserve">
+    <value>Multiple authentication modes were configured. Only one may be set.</value>
+    <comment>Gets the format string for rejecting validation due to multiple authentication modes being specified in configuration. </comment>
+  </data>
 </root>

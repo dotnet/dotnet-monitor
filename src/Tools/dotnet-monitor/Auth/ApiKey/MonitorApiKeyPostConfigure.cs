@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace Microsoft.Diagnostics.Tools.Monitor
+namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
     /// <summary>
     /// Sets options on <see cref="MonitorApiKeyConfiguration"/> based on <see cref="MonitorApiKeyOptions"/>.

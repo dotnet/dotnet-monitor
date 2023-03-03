@@ -6,15 +6,17 @@ on:
     types:
       - completed
 
-permissions:
-  issues: write
+permissions: {}
 
 jobs:
   submit-todo-issue:
-    runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
     steps:
-      - uses: actions/github-script@v6.4.0
+      - uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975
         id: check-user
         with:
           script: |
@@ -23,13 +25,17 @@ jobs:
               repo: context.repo.repo,
               username: context.payload.workflow_run.triggering_actor.login
             });
+
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+        with:
+          persist-credentials: false
+
       # Download the artifact from the workflow that kicked off this one.
       # The default artifact download action doesn't support cross-workflow
       # artifacts, so use a 3rd party one.
       - name: 'Download linting results'
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@5e780fc7bbd0cac69fc73271ed86edf5dcb72d67
         with:
           workflow: ${{env.workflow_name}}
           run_id: ${{github.event.workflow_run.id }}
