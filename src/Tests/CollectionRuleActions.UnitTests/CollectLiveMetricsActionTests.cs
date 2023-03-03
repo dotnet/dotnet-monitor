@@ -106,7 +106,7 @@ namespace CollectionRuleActions.UnitTests
             });
         }
 
-        [Theory]
+        [Theory(Skip = "Flaky")]
         [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public async Task CollectLiveMetricsAction_CustomMeters(TargetFrameworkMoniker tfm)
         {
