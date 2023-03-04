@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.AspNet;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.EventCounter;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
@@ -23,6 +24,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
+using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -254,6 +256,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddHostedServiceForwarder<ProfilerService>();
             services.AddSingleton<IEndpointInfoSourceCallbacks, ProfilerEndpointInfoSourceCallbacks>();
             services.TryAddSingleton<ISharedLibraryInitializer, DefaultSharedLibraryInitializer>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureExceptions(this IServiceCollection services)
+        {
+            services.AddSingleton<IExceptionsOperationFactory, ExceptionsOperationFactory>();
+            // The exceptions store for the default process; long term, create a store for each process
+            // that wants to participate in exception collection.
+            services.AddSingleton<IExceptionsStore, ExceptionsStore>();
+            services.AddHostedService<ExceptionsService>();
             return services;
         }
 

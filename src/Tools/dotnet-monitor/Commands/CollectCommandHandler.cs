@@ -120,6 +120,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<ProfilerChannel>();
                 services.ConfigureCollectionRules();
                 services.ConfigureProfiler();
+                services.ConfigureExceptions();
                 services.ConfigureStartupLoggers(authConfigurator);
                 services.AddSingleton<IExperimentalFlags, ExperimentalFlags>();
                 services.ConfigureInProcessFeatures(context.Configuration);

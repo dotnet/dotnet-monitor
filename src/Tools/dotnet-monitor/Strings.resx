@@ -795,6 +795,11 @@
     <value>Configuration Providers (High to Low Priority):</value>
     <comment>Gets the string for displaying the configuration providers with the --show-sources flag.</comment>
   </data>
+  <data name="OutputFormatString_FirstChanceException" xml:space="preserve">
+    <value>First chance exception. {0}: {1}</value>
+    <comment>{0} = Exception type name
+{1} = Exception message</comment>
+  </data>
   <data name="Placeholder_NotPresent" xml:space="preserve">
     <value>:NOT PRESENT:</value>
     <comment>Gets a string similar to ":NOT PRESENT:".</comment>
