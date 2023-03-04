@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,8 +30,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 
         public static void Write(Stream stream, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, FileInfo configurationFilePath, ConfigDisplayLevel level, bool showSources)
         {
-            IAuthConfiguration authConfiguration = HostBuilderHelper.CreateAuthConfiguration(noAuth, tempApiKey);
-            HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(urls, metricUrls, metrics, diagnosticPort, authConfiguration, configurationFilePath);
+            StartupAuthenticationMode startupAuthMode = HostBuilderHelper.GetStartupAuthenticationMode(noAuth, tempApiKey);
+            HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(urls, metricUrls, metrics, diagnosticPort, startupAuthMode, configurationFilePath);
             IHost host = HostBuilderHelper.CreateHostBuilder(settings).Build();
             IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
             using ConfigurationJsonWriter jsonWriter = new ConfigurationJsonWriter(stream);

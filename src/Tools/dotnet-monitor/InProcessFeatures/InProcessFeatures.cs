@@ -19,5 +19,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         }
 
         public bool IsCallStacksEnabled => _options.GetEnabled() && _experimentalFlags.IsCallStacksEnabled;
+
+        public bool IsExceptionsEnabled => _options.GetEnabled() && _experimentalFlags.IsExceptionsEnabled;
+
+        public bool IsProfilerRequired => IsCallStacksEnabled;
     }
 }

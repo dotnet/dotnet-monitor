@@ -394,7 +394,7 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
 
 ### Explanation
 
-This rule, named "HighRequestCount", will trigger when a process with a `ProcessId` of 12345 has 10 requests within a 1 minute sliding window. If the rule is triggered, information level logs will be collected for one minute and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the logs to the local filesystem). There is a limit that states that this may only be triggered for one hour (to prevent an excessive number of logs from being collected), and there is a default `ActionCount` limit stating that this rule may only be triggered 5 times.
+This rule, named "HighRequestCount", will trigger when a process with a `ProcessId` of 12345 has 10 requests within a 1 minute sliding window. If the rule is triggered, error level logs will be collected for one minute and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the logs to the local filesystem). There is a limit that states that this may only be triggered for one hour (to prevent an excessive number of logs from being collected), and there is a default `ActionCount` limit stating that this rule may only be triggered 5 times.
     
 ## Collect Trace - Too Many Long Requests (`AspNetRequestDuration` Trigger)
 

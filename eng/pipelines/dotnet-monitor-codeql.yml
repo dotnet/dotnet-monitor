@@ -1,4 +1,5 @@
 variables:
+- template: /eng/common/templates/variables/pool-providers.yml
 - name: _TeamName
   value: DotNetCore
     

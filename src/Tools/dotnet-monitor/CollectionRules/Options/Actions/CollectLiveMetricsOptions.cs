@@ -33,6 +33,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectLiveMetricsOptions_Meters))]
+        public EventMetricsMeter[] Meters { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectLiveMetricsOptions_Duration))]
         [Range(typeof(TimeSpan), ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue)]
         [DefaultValue(CollectLiveMetricsOptionsDefaults.Duration)]

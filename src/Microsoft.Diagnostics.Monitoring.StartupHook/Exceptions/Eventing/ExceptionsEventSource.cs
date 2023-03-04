@@ -2,27 +2,52 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 {
-    [EventSource(Name = SourceName)]
+    // This event source should be optimized for speed as much as possible since it will
+    // likely be sending many events every second. Avoid any APIs that use params/varargs
+    // style calls and avoid heap allocations as much as possible.
+    [EventSource(Name = ExceptionEvents.SourceName)]
     internal sealed class ExceptionsEventSource : EventSource
     {
-        public const int ExceptionIdEventId = 1;
-        public const int ExceptionEventId = 2;
-        public const int ClassDescriptionEventId = 3;
-        public const int FunctionDescriptionEventId = 4;
-        public const int ModuleDescriptionEventId = 5;
-        public const int TokenDescriptionEventId = 6;
+        // Arrays are expected to have a 16-bit field for the length of the array.
+        // The length of the array is the number of elements, not the number of bytes.
+        private const int ArrayLengthFieldSize = sizeof(short);
 
-        public const string SourceName = "Microsoft.Diagnostics.Monitoring.Exceptions";
+        /// <summary>
+        /// Amount of time to wait before sending batches of event source events in order to
+        /// avoid real-time buffering issues in the runtime eventing infrastructure and the
+        /// trace event library event processor.
+        /// </summary>
+        /// <remarks>
+        /// See: https://github.com/dotnet/runtime/issues/76704
+        /// </remarks>
+        private static readonly TimeSpan EventSourceBufferAvoidanceTimeout = TimeSpan.FromMilliseconds(200);
 
-        [Event(ExceptionIdEventId)]
-        public void WriteExceptionId(
+        private readonly Timer _flushEventsTimer;
+
+        // NOTE: Arrays with a non-"byte" element type are not supported well by in-proc EventListener
+        // when using self-describing event format. This format is used to easily support event pipe listening,
+        // which is the primary use of this event source.
+        public ExceptionsEventSource()
+            : base(EventSourceSettings.EtwSelfDescribingEventFormat)
+        {
+            _flushEventsTimer = new Timer(FlushTimerTick);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _flushEventsTimer.Dispose();
+            base.Dispose(disposing);
+        }
+
+        [Event(ExceptionEvents.EventIds.ExceptionIdentifier)]
+        public void ExceptionIdentifier(
             ulong ExceptionId,
             ulong ExceptionClassId,
             ulong ThrowingMethodId,
@@ -30,41 +55,34 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         {
             Span<EventData> data = stackalloc EventData[4];
 
-            SetValue(ref data[ExceptionEvents.ExceptionIdPayloads.ExceptionId], ExceptionId);
-            SetValue(ref data[ExceptionEvents.ExceptionIdPayloads.ExceptionClassId], ExceptionClassId);
-            SetValue(ref data[ExceptionEvents.ExceptionIdPayloads.ThrowingMethodId], ThrowingMethodId);
-            SetValue(ref data[ExceptionEvents.ExceptionIdPayloads.ILOffset], ILOffset);
+            SetValue(ref data[ExceptionEvents.ExceptionIdentifierPayloads.ExceptionId], ExceptionId);
+            SetValue(ref data[ExceptionEvents.ExceptionIdentifierPayloads.ExceptionClassId], ExceptionClassId);
+            SetValue(ref data[ExceptionEvents.ExceptionIdentifierPayloads.ThrowingMethodId], ThrowingMethodId);
+            SetValue(ref data[ExceptionEvents.ExceptionIdentifierPayloads.ILOffset], ILOffset);
 
-            WriteEventCore(ExceptionIdEventId, data);
+            WriteEventCore(ExceptionEvents.EventIds.ExceptionIdentifier, data);
+
+            RestartFlushingEventTimer();
         }
 
-        [Event(ExceptionEventId)]
-        public void WriteException(
+        [Event(ExceptionEvents.EventIds.ExceptionInstance)]
+        public void ExceptionInstance(
             ulong ExceptionId,
             string? ExceptionMessage)
         {
             Span<EventData> data = stackalloc EventData[2];
             using PinnedData namePinned = PinnedData.Create(ExceptionMessage);
 
-            SetValue(ref data[ExceptionEvents.ExceptionPayloads.ExceptionId], ExceptionId);
-            SetValue(ref data[ExceptionEvents.ExceptionPayloads.ExceptionMessage], namePinned);
+            SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionId], ExceptionId);
+            SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage], namePinned);
 
-            WriteEventCore(ExceptionEventId, data);
+            WriteEventCore(ExceptionEvents.EventIds.ExceptionInstance, data);
+
+            RestartFlushingEventTimer();
         }
 
-        [Event(ClassDescriptionEventId)]
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Instance method required for event source manifest generation.")]
-        private unsafe void WriteClassDescription(
-            ulong ClassId,
-            ulong ModuleId,
-            uint Token,
-            uint Flags,
-            byte* TypeArgs)
-        {
-        }
-
-        [NonEvent]
-        public void WriteClassDescription(
+        [Event(ExceptionEvents.EventIds.ClassDescription)]
+        public void ClassDescription(
             ulong ClassId,
             ulong ModuleId,
             uint Token,
@@ -72,32 +90,22 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             ulong[] TypeArgs)
         {
             Span<EventData> data = stackalloc EventData[5];
-            using PinnedData typeArgsPinned = PinnedData.Create(TypeArgs);
+            Span<byte> typeArgsSpan = stackalloc byte[GetArrayDataSize(TypeArgs)];
+            FillArrayData(typeArgsSpan, TypeArgs);
 
             SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.ClassId], ClassId);
             SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.ModuleId], ModuleId);
             SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.Token], Token);
             SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.Flags], Flags);
-            SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.TypeArgs], typeArgsPinned);
+            SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.TypeArgs], typeArgsSpan);
 
-            WriteEventCore(ClassDescriptionEventId, data);
+            WriteEventCore(ExceptionEvents.EventIds.ClassDescription, data);
+
+            RestartFlushingEventTimer();
         }
 
-        [Event(FunctionDescriptionEventId)]
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Instance method required for event source manifest generation.")]
-        private unsafe void WriteFunctionDescription(
-            ulong FunctionId,
-            ulong ClassId,
-            uint ClassToken,
-            ulong ModuleId,
-            string Name,
-            byte* TypeArgs)
-        {
-        }
-
-
-        [NonEvent]
-        public void WriteFunctionDescription(
+        [Event(ExceptionEvents.EventIds.FunctionDescription)]
+        public void FunctionDescription(
             ulong FunctionId,
             ulong ClassId,
             uint ClassToken,
@@ -107,20 +115,23 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         {
             Span<EventData> data = stackalloc EventData[6];
             using PinnedData namePinned = PinnedData.Create(Name);
-            using PinnedData typeArgsPinned = PinnedData.Create(TypeArgs);
+            Span<byte> typeArgsSpan = stackalloc byte[GetArrayDataSize(TypeArgs)];
+            FillArrayData(typeArgsSpan, TypeArgs);
 
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.FunctionId], FunctionId);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ClassId], ClassId);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ClassToken], ClassToken);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ModuleId], ModuleId);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.Name], namePinned);
-            SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.TypeArgs], typeArgsPinned);
+            SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.TypeArgs], typeArgsSpan);
 
-            WriteEventCore(FunctionDescriptionEventId, data);
+            WriteEventCore(ExceptionEvents.EventIds.FunctionDescription, data);
+
+            RestartFlushingEventTimer();
         }
 
-        [Event(ModuleDescriptionEventId)]
-        public void WriteModuleDescription(
+        [Event(ExceptionEvents.EventIds.ModuleDescription)]
+        public void ModuleDescription(
             ulong ModuleId,
             string Name)
         {
@@ -130,11 +141,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.ModuleDescPayloads.ModuleId], ModuleId);
             SetValue(ref data[NameIdentificationEvents.ModuleDescPayloads.Name], namePinned);
 
-            WriteEventCore(ModuleDescriptionEventId, data);
+            WriteEventCore(ExceptionEvents.EventIds.ModuleDescription, data);
+
+            RestartFlushingEventTimer();
         }
 
-        [Event(TokenDescriptionEventId)]
-        public void WriteTokenDescription(
+        [Event(ExceptionEvents.EventIds.TokenDescription)]
+        public void TokenDescription(
             ulong ModuleId,
             uint Token,
             uint OuterToken,
@@ -148,7 +161,29 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.OuterToken], OuterToken);
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.Name], namePinned);
 
-            WriteEventCore(TokenDescriptionEventId, data);
+            WriteEventCore(ExceptionEvents.EventIds.TokenDescription, data);
+
+            RestartFlushingEventTimer();
+        }
+
+        [Event(ExceptionEvents.EventIds.Flush)]
+        private void Flush()
+        {
+            WriteEvent(ExceptionEvents.EventIds.Flush);
+        }
+
+        [NonEvent]
+        private void FlushTimerTick(object? state)
+        {
+            Flush();
+        }
+
+        [NonEvent]
+        private void RestartFlushingEventTimer()
+        {
+            // This will reset the timer to fire after the specified time period. If the timer is already
+            // started, it will be reset. If it already finished, it will be started again.
+            _flushEventsTimer.Change(EventSourceBufferAvoidanceTimeout, Timeout.InfiniteTimeSpan);
         }
 
         [NonEvent]
@@ -168,10 +203,52 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         }
 
         [NonEvent]
+        private static unsafe void SetValue(ref EventData data, in Span<byte> value)
+        {
+            // It is expected that the Span is a wrapper around an array-like value
+            // that is pinned or is unmovable from the perspective of GC (e.g. stackalloc).
+            // Otherwise, GC might relocate the value after its address is acquired and
+            // potentially cause access violations or misinterpretation of the data.
+            data.DataPointer = (nint)Unsafe.AsPointer(ref value.GetPinnableReference());
+            data.Size = value.Length;
+        }
+
+        [NonEvent]
         private static void SetValue(ref EventData data, in PinnedData value)
         {
             data.DataPointer = value.Address;
             data.Size = value.Size;
+        }
+
+        private static int GetArrayDataSize<T>(T[] data) where T : unmanaged
+        {
+            // Arrays are written with a length prefix + the data as bytes
+            return ArrayLengthFieldSize + Unsafe.SizeOf<T>() * data.Length;
+        }
+
+        private static unsafe void FillArrayData<T>(Span<byte> target, T[] source) where T : unmanaged
+        {
+#if DEBUG
+            // Double-check that the Span is correctly sized. This shouldn't be encountered
+            // at runtime so long as Span is constructed correctly using GetArrayDataSize.
+            if (target.Length != GetArrayDataSize(source))
+                throw new ArgumentOutOfRangeException(nameof(source));
+#endif
+
+            // First, copy the length of the array to the beginning of the data
+            short length = checked((short)source.Length);
+            ReadOnlySpan<byte> lengthSpan = new(Unsafe.AsPointer(ref Unsafe.AsRef(length)), ArrayLengthFieldSize);
+            lengthSpan.CopyTo(target);
+
+            // Second, copy the array data as bytes
+            if (source.Length > 0)
+            {
+                ReadOnlySpan<byte> dataSpan = MemoryMarshal.CreateReadOnlySpan(
+                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetArrayDataReference(source)),
+                    Unsafe.SizeOf<T>() * source.Length);
+
+                dataSpan.CopyTo(target.Slice(ArrayLengthFieldSize));
+            }
         }
 
         private struct PinnedData : IDisposable
@@ -192,11 +269,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                     return new PinnedData(null, 0);
                 }
                 return new PinnedData(value, sizeof(char) * (value.Length + 1));
-            }
-
-            public static PinnedData Create<T>(in T[] value) where T : unmanaged
-            {
-                return new PinnedData(value, Unsafe.SizeOf<T>() * value.Length);
             }
 
             public void Dispose()

@@ -301,6 +301,14 @@
 1 Format Parameter:
 0. configName: The variable name for the provided string.</comment>
   </data>
+  <data name="ErrorMessage_StartupConfigurationValidationException" xml:space="preserve">
+    <value>The following unrecoverable validation issues were found with the '{0}' configuration:
+{1}</value>
+    <comment>Gets the format string that is printed when unrecoverable validation errors occur during startup.
+2 Format Parameter:
+0. configurationPath: The configuration path where the validation errors occurred.
+1. A list of validation failures.</comment>
+  </data>
   <data name="ErrorMessage_TemplateNotFound" xml:space="preserve">
     <value>Could not find a template with the name: {0}</value>
     <comment>Gets the format string for template resolution failure.
@@ -359,6 +367,9 @@
   </data>
   <data name="FeatureName_CallStacks" xml:space="preserve">
     <value>Call Stacks</value>
+  </data>
+  <data name="FeatureName_Exceptions" xml:space="preserve">
+    <value>Exceptions</value>
   </data>
   <data name="HelpDescription_CommandCollect" xml:space="preserve">
     <value>Monitor logs and metrics in a .NET application send the results to a chosen destination.</value>
@@ -422,6 +433,10 @@
   </data>
   <data name="HelpDescription_SecurityDefinitionDescription_ApiKey" xml:space="preserve">
     <value>JWT Authorization header using bearer token authentication. Put the Authorization header value ("Bearer" prefix and the JWT value) in the textbox when prompted.</value>
+    <comment>Gets a string used in the generated OpenAPI doc for the auth scheme</comment>
+  </data>
+  <data name="HelpDescription_SwaggerScope_AzureAd" xml:space="preserve">
+    <value>Swagger UI permission</value>
     <comment>Gets a string used in the generated OpenAPI doc for the auth scheme</comment>
   </data>
   <data name="LogFormatString_ActionSettingsTokenizationNotSupported" xml:space="preserve">
@@ -779,6 +794,11 @@
   <data name="Message_ShowSources" xml:space="preserve">
     <value>Configuration Providers (High to Low Priority):</value>
     <comment>Gets the string for displaying the configuration providers with the --show-sources flag.</comment>
+  </data>
+  <data name="OutputFormatString_FirstChanceException" xml:space="preserve">
+    <value>First chance exception. {0}: {1}</value>
+    <comment>{0} = Exception type name
+{1} = Exception message</comment>
   </data>
   <data name="Placeholder_NotPresent" xml:space="preserve">
     <value>:NOT PRESENT:</value>

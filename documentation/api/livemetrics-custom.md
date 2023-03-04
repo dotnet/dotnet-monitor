@@ -115,7 +115,7 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 }
 ```
 
-### System.Diagnostics.Metrics
+### System.Diagnostics.Metrics (8.0+)
 
 #### Sample Request
 
@@ -126,10 +126,10 @@ Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 
 {
     "includeDefaultProviders": false,
-    "providers": [
+    "meters": [
         {
-            "providerName": "CustomProvider",
-            "counterNames": [
+            "meterName": "CustomMeter",
+            "instrumentNames": [
                 "myHistogram"
             ]
         }
@@ -146,16 +146,33 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 
 {
     "timestamp": "2021-08-31T16:58:39.7514031+00:00",
-    "provider": "CustomProvider",
+    "provider": "CustomMeter",
     "name": "myHistogram",
     "displayName": "myHistogram",
     "unit": null,
     "counterType": "Metric",
-    "value": {
-        "0.5": 2892,
-        "0.95": 4848,
-        "0.99": 4984
-    }
+    "tags": "Percentile=50",
+    "value": 2292
+}
+{
+    "timestamp": "2021-08-31T16:58:39.7514031+00:00",
+    "provider": "CustomMeter",
+    "name": "myHistogram",
+    "displayName": "myHistogram",
+    "unit": null,
+    "counterType": "Metric",
+    "tags": "Percentile=95",
+    "value": 4616
+}
+{
+    "timestamp": "2021-08-31T16:58:39.7514031+00:00",
+    "provider": "CustomMeter",
+    "name": "myHistogram",
+    "displayName": "myHistogram",
+    "unit": null,
+    "counterType": "Metric",
+    "tags": "Percentile=99",
+    "value": 4960
 }
 ```
 

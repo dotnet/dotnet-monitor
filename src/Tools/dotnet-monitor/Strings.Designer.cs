@@ -385,6 +385,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The following unrecoverable validation issues were found with the &apos;{0}&apos; configuration:
+        ///{1}.
+        /// </summary>
+        internal static string ErrorMessage_StartupConfigurationValidationException {
+            get {
+                return ResourceManager.GetString("ErrorMessage_StartupConfigurationValidationException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find a template with the name: {0}.
         /// </summary>
         internal static string ErrorMessage_TemplateNotFound {
@@ -498,6 +508,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string FeatureName_CallStacks {
             get {
                 return ResourceManager.GetString("FeatureName_CallStacks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exceptions.
+        /// </summary>
+        internal static string FeatureName_Exceptions {
+            get {
+                return ResourceManager.GetString("FeatureName_Exceptions", resourceCulture);
             }
         }
         
@@ -642,6 +661,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string HelpDescription_SecurityDefinitionDescription_ApiKey {
             get {
                 return ResourceManager.GetString("HelpDescription_SecurityDefinitionDescription_ApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Swagger UI permission.
+        /// </summary>
+        internal static string HelpDescription_SwaggerScope_AzureAd {
+            get {
+                return ResourceManager.GetString("HelpDescription_SwaggerScope_AzureAd", resourceCulture);
             }
         }
         
@@ -1380,6 +1408,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string Message_ShowSources {
             get {
                 return ResourceManager.GetString("Message_ShowSources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to First chance exception. {0}: {1}.
+        /// </summary>
+        internal static string OutputFormatString_FirstChanceException {
+            get {
+                return ResourceManager.GetString("OutputFormatString_FirstChanceException", resourceCulture);
             }
         }
         

@@ -396,15 +396,26 @@
     "AuthenticationOptions": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "MonitorApiKey"
-      ],
       "properties": {
         "MonitorApiKey": {
           "description": "The parameters used to validate MonitorApiKey JWT tokens.",
           "oneOf": [
             {
+              "type": "null"
+            },
+            {
               "$ref": "#/definitions/MonitorApiKeyOptions"
+            }
+          ]
+        },
+        "AzureAd": {
+          "description": "The parameters used to use configure authentication using Azure Active Directory.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/AzureAdOptions"
             }
           ]
         }
@@ -428,6 +439,58 @@
           "description": "The public key used to sign the JWT (JSON Web Token) used for authentication. This field is a JSON Web Key serialized as JSON encoded with base64Url encoding. The JWK must have a kty field of RSA or EC and should not have the private key information.",
           "minLength": 1,
           "pattern": "[0-9a-zA-Z_-]+"
+        }
+      }
+    },
+    "AzureAdOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ClientId",
+        "RequiredRole"
+      ],
+      "properties": {
+        "Instance": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Specifies the Azure cloud instance users are signing in from. Can be either the Azure public cloud or one of the national clouds.",
+          "format": "uri",
+          "default": "https://login.microsoftonline.com"
+        },
+        "TenantId": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The tenant id of the Azure Active Directory tenant, or its tenant domain.",
+          "default": "organizations"
+        },
+        "ClientId": {
+          "type": "string",
+          "description": "The unique application (client) id assigned to the app registration in Azure Active Directory.",
+          "minLength": 1
+        },
+        "AppIdUri": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The App ID URI of the app registration. Defaults to api://{ClientId} if not specified.",
+          "format": "uri"
+        },
+        "RequiredRole": {
+          "type": "string",
+          "description": "The role required to be able to authenticate.",
+          "minLength": 1
+        },
+        "SwaggerScope": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The API scope required by users to be able to interactively authenticate using the in-box Swagger UI. If not specified, users will not be able to interactively authenticate."
         }
       }
     },
@@ -899,6 +962,31 @@
           "default": 1000,
           "maximum": 2147483647.0,
           "minimum": 1.0
+        },
+        "Providers": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "Dictionary of provider names and their global configuration.",
+          "additionalProperties": {
+            "$ref": "#/definitions/GlobalProviderOptions"
+          }
+        }
+      }
+    },
+    "GlobalProviderOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "IntervalSeconds": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "format": "float",
+          "maximum": 86400.0,
+          "minimum": 1.0
         }
       }
     },
@@ -1302,6 +1390,16 @@
           "items": {
             "$ref": "#/definitions/MetricProvider"
           }
+        },
+        "Meters": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "Names of meters to collect from the System.Diagnostics.Metrics provider.",
+          "items": {
+            "$ref": "#/definitions/MeterConfiguration"
+          }
         }
       }
     },
@@ -1355,6 +1453,29 @@
         "Meter",
         "All"
       ]
+    },
+    "MeterConfiguration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "MeterName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Name of the custom meter."
+        },
+        "InstrumentNames": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "Names of the custom instruments.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     },
     "StorageOptions": {
       "type": "object",
@@ -1650,6 +1771,16 @@
             "$ref": "#/definitions/EventMetricsProvider"
           }
         },
+        "Meters": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "The array of meters for metrics to collect.",
+          "items": {
+            "$ref": "#/definitions/EventMetricsMeter"
+          }
+        },
         "Duration": {
           "type": [
             "null",
@@ -1695,6 +1826,28 @@
               "$ref": "#/definitions/MetricProviderType"
             }
           ]
+        }
+      }
+    },
+    "EventMetricsMeter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "MeterName"
+      ],
+      "properties": {
+        "MeterName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "InstrumentNames": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
