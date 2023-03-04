@@ -7,7 +7,7 @@ on:
       release_type:
         description: 'Release type'
         required: true
-        default: 'preview' 
+        default: 'preview'
         type: choice
         options:
         - rtm
@@ -19,18 +19,21 @@ on:
         required: true
         type: string
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   update-release-version:
     name: 'Update release version'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+        with:
+          persist-credentials: true # We need to persist credentials to push the resulting changes upstream.
 
       - name: Update release information
         run: |
@@ -39,7 +42,7 @@ jobs:
               echo "Unexpected release version, valid format is major.minor.patch without any extra labels."
               exit 1
           fi
-      
+
           versionFile="./eng/Versions.props"
 
           current_release_version=$(perl -ne '/<VersionPrefix>([^<]*)/ && print $1' $versionFile)
@@ -87,7 +90,7 @@ jobs:
               sed -i "/<PreReleaseVersionLabel>.*/a\ \ \ \ <DotnetFinalVersionKind>release<\/DotnetFinalVersionKind>" $versionFile
           fi
 
-          echo "release_version_file=$(echo $versionFile)" >> $GITHUB_ENV
+          echo "release_version_file=$versionFile" >> $GITHUB_ENV
         env:
           release_type: ${{ inputs.release_type }}
           release_version: ${{ inputs.release_version }}

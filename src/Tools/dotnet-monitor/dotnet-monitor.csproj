@@ -9,7 +9,7 @@
     <ServerGarbageCollection>false</ServerGarbageCollection>
     <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="$(AwsSdkS3Version)" />
     <PackageReference Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
@@ -17,8 +17,10 @@
     <PackageReference Include="Azure.Storage.Queues" Version="$(AzureStorageQueuesVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiateVersion)" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="$(MicrosoftIdentityWebVersion)" />
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(MicrosoftIdentityModelTokensVersion)" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="$(SwashbuckleAspNetCoreVersion)" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="$(SwashbuckleAspNetCoreVersion)" />
   </ItemGroup>
 
@@ -44,7 +46,7 @@
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
     <InternalsVisibleTo Include="$(MoqInternalsVisibleTo)" Key="$(MoqInternalsVisibleToKey)" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Compile Update="Strings.Designer.cs">
       <DesignTime>True</DesignTime>

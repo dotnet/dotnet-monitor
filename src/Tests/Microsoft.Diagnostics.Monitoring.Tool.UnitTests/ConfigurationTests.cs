@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -122,7 +123,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Set up the initial settings used to create the host builder.
             HostBuilderSettings settings = new()
             {
-                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                AuthenticationMode = StartupAuthenticationMode.Deferred,
                 ContentRootDirectory = contentRootDirectory.FullName,
                 SharedConfigDirectory = sharedConfigDir.FullName,
                 UserConfigDirectory = userConfigDir.FullName,
@@ -210,7 +211,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Set up the initial settings used to create the host builder.
             HostBuilderSettings settings = new()
             {
-                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                AuthenticationMode = StartupAuthenticationMode.Deferred,
                 ContentRootDirectory = contentRootDirectory.FullName,
                 SharedConfigDirectory = sharedConfigDir.FullName,
                 UserConfigDirectory = userConfigDir.FullName
@@ -258,7 +259,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Set up the initial settings used to create the host builder.
             HostBuilderSettings settings = new()
             {
-                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                AuthenticationMode = StartupAuthenticationMode.Deferred,
                 ContentRootDirectory = contentRootDirectory.FullName,
                 SharedConfigDirectory = sharedConfigDir.FullName,
                 UserConfigDirectory = userConfigDir.FullName,
@@ -314,7 +315,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Set up the initial settings used to create the host builder.
             HostBuilderSettings settings = new()
             {
-                Authentication = HostBuilderHelper.CreateAuthConfiguration(noAuth: false, tempApiKey: false),
+                AuthenticationMode = StartupAuthenticationMode.Deferred,
                 ContentRootDirectory = contentRootDirectory.FullName,
                 SharedConfigDirectory = sharedConfigDir.FullName,
                 UserConfigDirectory = userConfigDir.FullName

@@ -1150,6 +1150,40 @@
         }
       }
     },
+    "/exceptions": {
+      "get": {
+        "tags": [
+          "Exceptions"
+        ],
+        "summary": "Gets the exceptions from the default process.",
+        "operationId": "GetExceptions",
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json-seq": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/metrics": {
       "get": {
         "tags": [
@@ -1439,6 +1473,33 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/EventMetricsProvider"
+            },
+            "nullable": true
+          },
+          "meters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventMetricsMeter"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EventMetricsMeter": {
+        "required": [
+          "meterName"
+        ],
+        "type": "object",
+        "properties": {
+          "meterName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "instrumentNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
             },
             "nullable": true
           }
@@ -1903,19 +1964,6 @@
           }
         }
       }
-    },
-    "securitySchemes": {
-      "ApiKeyAuth": {
-        "type": "apiKey",
-        "description": "JWT Authorization header using bearer token authentication. Put the Authorization header value (\"Bearer\" prefix and the JWT value) in the textbox when prompted.",
-        "name": "Authorization",
-        "in": "header"
-      }
     }
-  },
-  "security": [
-    {
-      "ApiKeyAuth": [ ]
-    }
-  ]
+  }
 }

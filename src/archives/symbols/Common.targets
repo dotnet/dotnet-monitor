@@ -1,0 +1,18 @@
+<Project>
+  <Target Name="GetTfmSymbolFilesForPackage"
+          DependsOnTargets="CollectPublishedFilesToArchive">
+    <ItemGroup>
+      <_SymbolFileToPack Remove="@(_SymbolFileToPack)" />
+      <_SymbolFileToPack Include="@(SymbolFileToArchive)">
+        <!-- The leading slash is important to get the file rooted in the package -->
+        <TargetPath Condition="$(RuntimeIdentifier.Contains(win))">\%(SymbolFileToArchive.PackagePath)%(Filename)%(Extension)</TargetPath>
+        <TargetPath Condition="!$(RuntimeIdentifier.Contains(win))">/%(SymbolFileToArchive.PackagePath)%(Filename)%(Extension)</TargetPath>
+        <TargetFramework>$(TargetFramework)</TargetFramework>
+      </_SymbolFileToPack>
+    </ItemGroup>
+    <ItemGroup>
+      <!-- Pack the file if it exists. -->
+      <TfmSpecificDebugSymbolsFile Include="@(_SymbolFileToPack->Exists())" />
+    </ItemGroup>
+  </Target>
+</Project>

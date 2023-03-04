@@ -19,7 +19,7 @@ Write-Verbose 'ReleaseData:'
 $releaseDataJson = $releaseData | ConvertTo-Json
 Write-Verbose $releaseDataJson
 
-[array]$matchingData = $releaseData | Where-Object { $_.name -match '.nupkg.buildversion$' }
+[array]$matchingData = $releaseData | Where-Object { $_.name -match 'MergedManifest.xml$' -and $_.nonShipping -ieq 'true' }
 
 if ($matchingData.Length -ne 1) {
     Write-Error 'Unable to obtain build version.'

@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -20,6 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return CreateSettings(includeDefaults,
                 durationSeconds,
                 counterOptions.GetIntervalSeconds(),
+                counterOptions.Providers,
                 counterOptions.GetMaxHistograms(),
                 counterOptions.GetMaxTimeSeries(),
                 () => new List<EventPipeCounterGroup>(0));
@@ -29,9 +31,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             return CreateSettings(options.IncludeDefaultProviders.GetValueOrDefault(MetricsOptionsDefaults.IncludeDefaultProviders),
                 Timeout.Infinite, counterOptions.GetIntervalSeconds(),
+                counterOptions.Providers,
                 counterOptions.GetMaxHistograms(),
                 counterOptions.GetMaxTimeSeries(),
-                () => ConvertCounterGroups(options.Providers));
+                () => ConvertCounterGroups(options.Providers, options.Meters));
         }
 
         public static MetricsPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, int durationSeconds,
@@ -40,14 +43,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return CreateSettings(configuration.IncludeDefaultProviders,
                 durationSeconds,
                 counterOptions.GetIntervalSeconds(),
+                counterOptions.Providers,
                 counterOptions.GetMaxHistograms(),
                 counterOptions.GetMaxTimeSeries(),
-                () => ConvertCounterGroups(configuration.Providers));
+                () => ConvertCounterGroups(configuration.Providers, configuration.Meters));
         }
 
         private static MetricsPipelineSettings CreateSettings(bool includeDefaults,
             int durationSeconds,
             float counterInterval,
+            IDictionary<string, GlobalProviderOptions> intervalMap,
             int maxHistograms,
             int maxTimeSeries,
             Func<List<EventPipeCounterGroup>> createCounterGroups)
@@ -61,6 +66,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.GrpcAspNetCoreServer, Type = CounterGroupType.EventCounter });
             }
 
+            foreach (EventPipeCounterGroup counterGroup in eventPipeCounterGroups)
+            {
+                if (intervalMap.TryGetValue(counterGroup.ProviderName, out GlobalProviderOptions providerInterval))
+                {
+                    Debug.Assert(counterGroup.IntervalSeconds == null, "Unexpected value for provider interval");
+                    counterGroup.IntervalSeconds = providerInterval.IntervalSeconds;
+                }
+            }
+
             return new MetricsPipelineSettings
             {
                 CounterGroups = eventPipeCounterGroups.ToArray(),
@@ -71,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             };
         }
 
-        private static List<EventPipeCounterGroup> ConvertCounterGroups(IList<MetricProvider> providers)
+        private static List<EventPipeCounterGroup> ConvertCounterGroups(IList<MetricProvider> providers, IList<MeterConfiguration> meters)
         {
             List<EventPipeCounterGroup> counterGroups = new();
 
@@ -79,8 +93,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 foreach (MetricProvider customProvider in providers)
                 {
-                    var customCounterGroup = new EventPipeCounterGroup { ProviderName = customProvider.ProviderName };
-                    if (customProvider.CounterNames.Count > 0)
+                    var customCounterGroup = new EventPipeCounterGroup { ProviderName = customProvider.ProviderName, Type = CounterGroupType.EventCounter };
+                    if (customProvider.CounterNames?.Count > 0)
                     {
                         customCounterGroup.CounterNames = customProvider.CounterNames.ToArray();
                     }
@@ -91,10 +105,23 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
             }
 
+            if (meters?.Count > 0)
+            {
+                foreach (MeterConfiguration meter in meters)
+                {
+                    var customCounterGroup = new EventPipeCounterGroup { ProviderName = meter.MeterName, Type = CounterGroupType.Meter };
+                    if (meter.InstrumentNames?.Count > 0)
+                    {
+                        customCounterGroup.CounterNames = meter.InstrumentNames.ToArray();
+                    }
+                    counterGroups.Add(customCounterGroup);
+                }
+            }
+
             return counterGroups;
         }
 
-        private static List<EventPipeCounterGroup> ConvertCounterGroups(IList<Models.EventMetricsProvider> providers)
+        private static List<EventPipeCounterGroup> ConvertCounterGroups(IList<Models.EventMetricsProvider> providers, IList<Models.EventMetricsMeter> meters)
         {
             List<EventPipeCounterGroup> counterGroups = new();
 
@@ -102,13 +129,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 foreach (Models.EventMetricsProvider customProvider in providers)
                 {
-                    var customCounterGroup = new EventPipeCounterGroup() { ProviderName = customProvider.ProviderName };
+                    EventPipeCounterGroup customCounterGroup = new() { ProviderName = customProvider.ProviderName, Type = CounterGroupType.EventCounter };
                     if (customProvider.CounterNames?.Length > 0)
                     {
                         customCounterGroup.CounterNames = customProvider.CounterNames.ToArray();
                     }
 
                     customCounterGroup.Type = (CounterGroupType)customProvider.MetricType.GetValueOrDefault(MetricsOptionsDefaults.MetricType);
+
+                    counterGroups.Add(customCounterGroup);
+                }
+            }
+
+            if (meters?.Count > 0)
+            {
+                foreach (Models.EventMetricsMeter customMeter in meters)
+                {
+                    EventPipeCounterGroup customCounterGroup = new() { ProviderName = customMeter.MeterName, Type = CounterGroupType.Meter };
+                    if (customMeter.InstrumentNames?.Length > 0)
+                    {
+                        customCounterGroup.CounterNames = customMeter.InstrumentNames.ToArray();
+                    }
 
                     counterGroups.Add(customCounterGroup);
                 }

@@ -9,7 +9,8 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "main"
-#@ for branch in ["main", "release/8.x", "release/7.x", "release/7.0", "release/6.x"]:
+#@ for branch in ["main", "release/7.x", "release/7.0", "release/6.x"]:
+#@ commit_prefix = "[" + branch + "] "
   - package-ecosystem: "nuget"
     directory: "/eng/dependabot"
     schedule:
@@ -18,11 +19,15 @@ updates:
     ignore:
       - dependency-name: "Microsoft.Extensions.*"
         update-types: [ "version-update:semver-major" ]
+    commit-message:
+      prefix: #@ commit_prefix
   - package-ecosystem: "nuget"
     directory: "/eng/dependabot/nuget.org"
     schedule:
       interval: "daily"
     target-branch: #@ branch
+    commit-message:
+      prefix: #@ commit_prefix
 #@ for tfm in ["net7.0", "net6.0", "netcoreapp3.1"]:
   - package-ecosystem: "nuget"
     directory: #@ "/eng/dependabot/" + tfm
@@ -32,5 +37,7 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: [ "version-update:semver-major" ]
+    commit-message:
+      prefix: #@ commit_prefix
 #@ end
 #@ end

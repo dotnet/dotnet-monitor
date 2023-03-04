@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Tools\dotnet-monitor\Auth\JwtAlgorithmChecker.cs" Link="Auth\JwtAlgorithmChecker.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\Auth\ApiKey\JwtAlgorithmChecker.cs" Link="Auth\ApiKey\JwtAlgorithmChecker.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\KnownCollectionRuleActions.cs" Link="Options\CollectionRules\KnownCollectionRuleActions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\KnownCollectionRuleTriggers.cs" Link="Options\CollectionRules\KnownCollectionRuleTriggers.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\ActionOptionsConstants.cs" Link="Options\CollectionRules\Actions\ActionOptionsConstants.cs" />
@@ -78,6 +78,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftExtensionsConfigurationAbstractionsVersion)" />
     <PackageReference Include="Microsoft.FileFormats" Version="$(MicrosoftFileFormatsVersion)" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="$(MicrosoftIdentityWebVersion)" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="$(MicrosoftIdentityModelTokensVersion)" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(MicrosoftIdentityModelTokensVersion)" />
   </ItemGroup>

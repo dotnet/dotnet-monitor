@@ -101,7 +101,15 @@ Describes custom metrics.
 | Name | Type | Description |
 |---|---|---|
 | `includeDefaultProviders` | bool | Determines if the default counter providers should be used (such as System.Runtime). |
-| `providers` | [EventMetricsProvider](#eventmetricsprovider)[] | Array of providers for metrics to collect. |
+| `providers` | [EventMetricsProvider](#eventmetricsprovider)[] | Array of counter providers for metrics to collect. |
+| `meters` | [EventMetricsMeter](#eventmetricsmeter)[] | Array of meters for metrics to collect. |
+
+## EventMetricsMeter
+
+| Name | Type | Description |
+|---|---|---|
+| `meterName` | string | The name of the meter. Note this is case-insensitive. |
+| `instrumentNames` | string[] | Array of instruments for metrics to collect for the specified meter. These are case-sensitive. |
 
 ## EventMetricsProvider
 
@@ -243,6 +251,16 @@ Object describing a metric from the application.
 | `unit` | string | The unit for the metric. Can be null. |
 | `counterType` | string | The type of metric. This is typically `Rate` or `Metric`. |
 | `value` | double | The value of the metric. |
+
+## MetricType (8.0+)
+
+Enumeration that describes the type of metrics a provider consumes.
+
+| Name |
+|---|
+| `EventCounter` |
+| `Meter` |
+| `All` |
 
 ## OperationError
 

@@ -1,6 +1,7 @@
 {
-  "MonitorApiKey": {
-    "Subject": "ae5473b6-8dad-498d-b915-ffffffffffff",
-    "PublicKey": ":REDACTED:"
-  }
+    "MonitorApiKey": {
+        "Subject": "ae5473b6-8dad-498d-b915-ffffffffffff",
+        "PublicKey": ":REDACTED:"
+    },
+    "AzureAd": ":NOTPRESENT:"
 }

@@ -14,20 +14,22 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+        with:
+          persist-credentials: false
 
       - name: Get base commit for the PR
         run: |
-          git fetch origin ${{ github.base_ref }}
-          echo "base_sha=$(git rev-parse origin/${{ github.base_ref }})" >> $GITHUB_ENV
-          echo "Merging ${{ github.sha }} into ${{ github.base_ref }}"
+          git fetch origin "$GITHUB_BASE_REF"
+          base_sha=$(git rev-parse "origin/$GITHUB_BASE_REF")
+          echo "base_sha=$base_sha" >> $GITHUB_ENV
+          echo "Merging ${GITHUB_SHA} into ${GITHUB_BASE_REF}"
 
       - name: Get changed files
         run: |
-          echo "Files changed: '$(git diff-tree --no-commit-id --name-only -r ${{ env.base_sha }} ${{ github.sha }})'"
-          changed_source_files=$(git diff-tree --no-commit-id --name-only -r ${{ env.base_sha }} ${{ github.sha }} -- documentation ':!documentation/releaseNotes/*' | { grep "**.md$" || test $? = 1; })
+          changed_source_files=$(git diff-tree --no-commit-id --name-only -r "$base_sha" "$GITHUB_SHA" -- documentation ':!documentation/releaseNotes/*' | { grep "**.md$" || test $? = 1; })
           echo "Files to validate: '${changed_source_files}'"
-          changed_source_files=$(echo ${changed_source_files} | sed 's/ documentation/,documentation/g')
+          changed_source_files=$(echo "$changed_source_files" | sed 's/ documentation/,documentation/g')
           echo "updated_files=$(echo ${changed_source_files})" >> $GITHUB_ENV
 
       - name: Append To File
@@ -40,12 +42,12 @@ jobs:
       - name: Generate artifacts
         run: |
           mkdir -p ./pr
-          cp $GITHUB_EVENT_PATH ./pr/pr-event.json
-          echo -n $GITHUB_EVENT_NAME > ./pr/pr-event-name
+          cp "$GITHUB_EVENT_PATH" ./pr/pr-event.json
+          echo -n "$GITHUB_EVENT_NAME" > ./pr/pr-event-name
           git diff > ./pr/linter.diff
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
         with:
           name: pr-linter
           path: pr/

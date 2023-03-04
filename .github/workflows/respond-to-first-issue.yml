@@ -1,0 +1,18 @@
+name: Respond To First Issue
+on:
+  issues:
+    types:
+      - opened
+
+permissions: {}
+
+jobs:
+  check-if-new-user:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/first-interaction@1d8459ca65b335265f1285568221e229d45a995e
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: "## Welcome to dotnet-monitor!\nThanks for creating your first issue; let us know what you think of dotnet-monitor by filling out our [survey](https://aka.ms/dotnet-monitor-survey?src=firstissue)."
