@@ -1424,35 +1424,8 @@
           "items": {
             "type": "string"
           }
-        },
-        "MetricType": {
-          "description": "The type of metrics this provider consumes",
-          "default": "All",
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/MetricProviderType"
-            }
-          ]
         }
       }
-    },
-    "MetricProviderType": {
-      "type": "string",
-      "description": "",
-      "x-enumFlags": true,
-      "x-enumNames": [
-        "EventCounter",
-        "Meter",
-        "All"
-      ],
-      "enum": [
-        "EventCounter",
-        "Meter",
-        "All"
-      ]
     },
     "MeterConfiguration": {
       "type": "object",
@@ -1816,16 +1789,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "MetricType": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/MetricProviderType"
-            }
-          ]
         }
       }
     },

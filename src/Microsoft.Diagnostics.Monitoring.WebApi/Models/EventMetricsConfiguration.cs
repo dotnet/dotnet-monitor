@@ -27,9 +27,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         [JsonPropertyName("counterNames")]
         public string[] CounterNames { get; set; }
-
-        [JsonPropertyName("metricType")]
-        public MetricProviderType? MetricType { get; set; }
     }
 
     public class EventMetricsMeter
