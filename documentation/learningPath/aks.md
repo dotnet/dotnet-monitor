@@ -51,7 +51,7 @@ ENV \
     # Server GC mode
     DOTNET_gcServer=1 \
     # Logging: JSON format so that analytic platforms can get discrete entry information
-    Logging__Console__FormatterName=json \
+    Logging__Console__FormatterName=simple \
     # Logging: Use round-trip date/time format without timezone information (always logged in UTC)
     Logging__Console__FormatterOptions__TimestampFormat=yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z' \
     # Logging: Write timestamps using UTC offset (+0:00)
@@ -62,7 +62,7 @@ ENV \
 COPY . .
 
 ENTRYPOINT [ "dotnet-monitor" ]
-CMD [ "collect", "--urls", "https://+:52323", "--metricUrls", "http://+:52325" ]
+CMD [ "collect", "--urls", "http://+:52323", "--metricUrls", "http://+:52325" ]
 
 ```
 
