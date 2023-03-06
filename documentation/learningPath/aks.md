@@ -24,11 +24,17 @@ cd C:\your-path\dotnet-monitor
 dotnet publish .\src\Tools\dotnet-monitor -o $env:TEMP\dotnet-monitor -c Release -f net8.0
 ```
 
-3. Add a Dockerfile to the `dotnet monitor` directory created in the previous step. Below is an example of the contents of the Dockerfile:
+3. Pull the lastest copy of the base image to avoid using a cached version (this should be the same as the REPO used in the next step)
+
+```bash
+docker pull mcr.microsoft.com/dotnet/aspnet:8.0-alpine-amd64
+```
+
+4. Add a Dockerfile to the `dotnet monitor` directory created in the previous step. Below is an example of the contents of the Dockerfile:
 
 ```bash
 ARG REPO=mcr.microsoft.com/dotnet/aspnet
-FROM $REPO:7.0.3-alpine3.17-amd64
+FROM $REPO:8.0-alpine-amd64
 
 WORKDIR /app
 
@@ -60,7 +66,7 @@ CMD [ "collect", "--urls", "https://+:52323", "--metricUrls", "http://+:52325" ]
 
 ```
 
-4. Log in to your ACR
+5. Log in to your ACR
 
 ```bash
 az account set -s <subscription_id>
@@ -68,16 +74,16 @@ az aks get-credentials --resource-group <name_of_resource_group> --name <name_of
 az acr login --resource-group <name_of_resource_group> --name <name_of_acr>
 ```
 
-5. Build the Docker image locally
+6. Build the Docker image locally
 
 ```bash
 docker build $env:TEMP\dotnet-monitor -f $env:TEMP\dotnet-monitor\Dockerfile.localagent -t <name_of_acr>.azurecr.io/localagent
 ```
 
-6. Push the Docker image to your ACR
+7. Push the Docker image to your ACR
 
 ```bash
 docker push <name_of_acr>.azurecr.io/localagent:latest
 ```
 
-7. Update the aks deployment file to use your image instead of the published version of `dotnet monitor`
+8. Update the aks deployment file to use your image instead of the published version of `dotnet monitor`
