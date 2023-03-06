@@ -24,7 +24,7 @@ cd C:\your-path\dotnet-monitor
 dotnet publish .\src\Tools\dotnet-monitor -o $env:TEMP\dotnet-monitor -c Release -f net8.0
 ```
 
-3. Pull the lastest copy of the base image to avoid using a cached version (this should be the same as the REPO used in the next step)
+3. Pull the latest copy of the base image to avoid using a cached version (this should be the same as the REPO used in the next step)
 
 ```bash
 docker pull mcr.microsoft.com/dotnet/aspnet:8.0-alpine-amd64
