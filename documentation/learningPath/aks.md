@@ -20,7 +20,7 @@ cd C:\your-path\dotnet-monitor
 
 2. Publish `dotnet monitor` to your desired (local) target location (TEMP is used throughout this example)
 
-```bash
+```ps1
 dotnet publish .\src\Tools\dotnet-monitor -o $env:TEMP\dotnet-monitor -c Release -f net8.0
 ```
 
