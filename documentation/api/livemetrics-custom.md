@@ -126,10 +126,10 @@ Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 
 {
     "includeDefaultProviders": false,
-    "providers": [
+    "meters": [
         {
-            "providerName": "CustomProvider",
-            "counterNames": [
+            "meterName": "CustomMeter",
+            "instrumentNames": [
                 "myHistogram"
             ]
         }
@@ -146,7 +146,7 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 
 {
     "timestamp": "2021-08-31T16:58:39.7514031+00:00",
-    "provider": "CustomProvider",
+    "provider": "CustomMeter",
     "name": "myHistogram",
     "displayName": "myHistogram",
     "unit": null,
@@ -156,7 +156,7 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 }
 {
     "timestamp": "2021-08-31T16:58:39.7514031+00:00",
-    "provider": "CustomProvider",
+    "provider": "CustomMeter",
     "name": "myHistogram",
     "displayName": "myHistogram",
     "unit": null,
@@ -166,7 +166,7 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 }
 {
     "timestamp": "2021-08-31T16:58:39.7514031+00:00",
-    "provider": "CustomProvider",
+    "provider": "CustomMeter",
     "name": "myHistogram",
     "displayName": "myHistogram",
     "unit": null,
