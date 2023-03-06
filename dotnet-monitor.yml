@@ -119,6 +119,7 @@ stages:
       SDLValidationParameters:
         enable: true
         continueOnError: true
+        publishGdn: true
         params: >-
           -SourceToolsList @("policheck","credscan")
           -TsaInstanceURL $(_TsaInstanceURL)
