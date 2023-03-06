@@ -155,7 +155,7 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 | awsProfileName | string | false | The AWS profile name to be used for login. |
 | awsProfilePath | string | false | The AWS profile path, if profile details not stored in default path. |
 | generatePreSignedUrl | bool | false | A boolean flag to control if either a pre-signed url is returned after successful upload or only the name of bucket and the artifacts S3 object key. |
-| regionName | string | false | A Region is a named set of AWS resources in the same geographical area. This option specifies the region to connect to. |
+| regionName | string | false | A Region is a named set of AWS resources in the same geographical area. This option specifies the region to connect to. If the Endpoint is specified, this is the AuthenticationRegion; otherwise, it is the RegionEndpoint. |
 | preSignedUrlExpiry | TimeStamp? | false | The amount of time the generated pre-signed url should be accessible. The value has to be between 1 minute and 1 day. |
 | forcePathStyle | bool | false | The boolean flag set for AWS connection configuration ForcePathStyle option. |
 | copyBufferSize | int | false | The buffer size to use when copying data from the original artifact to the blob stream. There is a minimum size of 5 MB which is set when the given value is lower.|
