@@ -32,7 +32,7 @@ docker pull mcr.microsoft.com/dotnet/aspnet:8.0-alpine-amd64
 
 4. Add a Dockerfile to the `dotnet monitor` directory created in the previous step. Below is an example of the contents of the Dockerfile:
 
-```bash
+```dockerfile
 ARG REPO=mcr.microsoft.com/dotnet/aspnet
 FROM $REPO:8.0-alpine-amd64
 
