@@ -13,7 +13,7 @@ This workflow takes your local development copy of `dotnet-monitor`, patches it 
 
 >**Note**: If your changes do not involve the [.NET Core Diagnostics Repo](https://github.com/dotnet/diagnostics#net-core-diagnostics-repo), you don't need to complete this step.
 
-```bash
+```ps1
 cd C:\your-path\dotnet-monitor 
 .\generate-dev-sln.ps1 C:\your-path\diagnostics
 ```
@@ -26,7 +26,7 @@ dotnet publish .\src\Tools\dotnet-monitor -o $env:TEMP\dotnet-monitor -c Release
 
 3. Pull the latest copy of the base image to avoid using a cached version (this should be the same as the REPO used in the next step)
 
-```bash
+```ps1
 docker pull mcr.microsoft.com/dotnet/aspnet:8.0-alpine-amd64
 ```
 
@@ -68,7 +68,7 @@ CMD [ "collect", "--urls", "https://+:52323", "--metricUrls", "http://+:52325" ]
 
 5. Log in to your ACR
 
-```bash
+```ps1
 az account set -s <subscription_id>
 az aks get-credentials --resource-group <name_of_resource_group> --name <name_of_aks>
 az acr login --resource-group <name_of_resource_group> --name <name_of_acr>
@@ -76,13 +76,13 @@ az acr login --resource-group <name_of_resource_group> --name <name_of_acr>
 
 6. Build the Docker image locally
 
-```bash
+```ps1
 docker build $env:TEMP\dotnet-monitor -f $env:TEMP\dotnet-monitor\Dockerfile.localagent -t <name_of_acr>.azurecr.io/localagent
 ```
 
 7. Push the Docker image to your ACR
 
-```bash
+```ps1
 docker push <name_of_acr>.azurecr.io/localagent:latest
 ```
 
