@@ -21,12 +21,12 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         {
             Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.");
 
-            egressCmd.SetHandler(async () => await Egress(provider, configureOptions));
+            egressCmd.SetHandler(async (token) => await Egress(provider, token, configureOptions));
 
             return egressCmd;
         }
 
-        private static async Task<int> Egress<TOptions>(EgressProvider<TOptions> provider, Action<ExtensionEgressPayload, TOptions> configureOptions = null) where TOptions : class, new()
+        private static async Task<int> Egress<TOptions>(EgressProvider<TOptions> provider, CancellationToken token, Action<ExtensionEgressPayload, TOptions> configureOptions = null) where TOptions : class, new()
         {
             EgressArtifactResult result = new();
             try
@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                 result.ArtifactPath = await provider.EgressAsync(options,
                     GetStream,
                     configPayload.Settings,
-                    CancelSource.Token);
+                    token);
 
                 result.Succeeded = true;
             }
