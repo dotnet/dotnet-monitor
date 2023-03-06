@@ -615,10 +615,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public async Task DoesNotStart_With_InvalidAuthenticationOptions()
         {
+            const string signingAlgo = "ES256";
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
 
+            // Configure AzureAD authentication from environment variables
             toolRunner.ConfigurationFromEnvironment.UseAzureAd();
-            toolRunner.ConfigurationFromEnvironment.UseApiKey("ES256", Guid.NewGuid(), out _);
+            // Configure API Key authentication from environment variables
+            toolRunner.ConfigurationFromEnvironment.UseApiKey(signingAlgo, Guid.NewGuid(), out _);
 
             // Start dotnet-monitor
             await Assert.ThrowsAsync<InvalidOperationException>(toolRunner.StartAsync);
