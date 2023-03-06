@@ -11,6 +11,7 @@ env:
 
 jobs:
   sync-branch:
+    if: github.repository == 'dotnet/dotnet-monitor'
     strategy:
       matrix:
         branch: ["release/6.x", "release/7.x", "release/7.0"]
