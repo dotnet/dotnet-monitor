@@ -793,10 +793,6 @@
     <value>The maximum number of time series that can be tracked. Each unique combination of provider name, metric name, and dimension values counts as one time series. Tracking more time series uses more memory in the target process so this bound guards against unintentional high memory use.</value>
     <comment>The description provided for the MaxTimeSeries parameter on MetricsOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_MetricProvider_MetricType" xml:space="preserve">
-    <value>The type of metrics this provider consumes</value>
-    <comment>The description provided for the MetricType parameter on MetricProvider.</comment>
-  </data>
   <data name="DisplayAttributeDescription_GlobalCounterOptions_Providers" xml:space="preserve">
     <value>Dictionary of provider names and their global configuration.</value>
   </data>
@@ -834,5 +830,18 @@
   <data name="ErrorMessage_MultipleAuthenticationModesSpecified" xml:space="preserve">
     <value>Multiple authentication modes were configured. Only one may be set.</value>
     <comment>Gets the format string for rejecting validation due to multiple authentication modes being specified in configuration. </comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_Meters" xml:space="preserve">
+    <value>The array of meters for metrics to collect.</value>
+    <comment>The description provided for the Meters parameter on CollectLiveMetricsOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_MeterConfiguration_InstrumentNames" xml:space="preserve">
+    <value>Names of the custom instruments.</value>
+  </data>
+  <data name="DisplayAttributeDescription_MeterConfiguration_MeterName" xml:space="preserve">
+    <value>Name of the custom meter.</value>
+  </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_Meters" xml:space="preserve">
+    <value>Names of meters to collect from the System.Diagnostics.Metrics provider.</value>
   </data>
 </root>

@@ -833,6 +833,15 @@
   <data name="LogFormatString_StartCollectArtifact" xml:space="preserve">
     <value>Started capturing {artifactType} artifact.</value>
   </data>
+  <data name="LogFormatString_StartupHookEnvironmentMissing" xml:space="preserve">
+    <value>The DOTNET_STARTUP_HOOKS environment variable is missing from target process {processId}.</value>
+  </data>
+  <data name="LogFormatString_StartupHookInstructions" xml:space="preserve">
+    <value>Exception-based features require that the DOTNET_STARTUP_HOOKS environment variable is set on the target process and must contain the path to the .NET Monitor startup hook library. The path to the library is "{path}".</value>
+  </data>
+  <data name="LogFormatString_StartupHookMissing" xml:space="preserve">
+    <value>The DOTNET_STARTUP_HOOKS environment variable for target process {processId} does not contain the '{name}' startup hook.</value>
+  </data>
   <data name="LogFormatString_UnableToApplyProfiler" xml:space="preserve">
     <value>Unable to apply profiler.</value>
   </data>
@@ -886,6 +895,11 @@
   <data name="Message_ShowSources" xml:space="preserve">
     <value>Configuration Providers (High to Low Priority):</value>
     <comment>Gets the string for displaying the configuration providers with the --show-sources flag.</comment>
+  </data>
+  <data name="OutputFormatString_FirstChanceException" xml:space="preserve">
+    <value>First chance exception. {0}: {1}</value>
+    <comment>{0} = Exception type name
+{1} = Exception message</comment>
   </data>
   <data name="Placeholder_NotPresent" xml:space="preserve">
     <value>:NOT PRESENT:</value>
