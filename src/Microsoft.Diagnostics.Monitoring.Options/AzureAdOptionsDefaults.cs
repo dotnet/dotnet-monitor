@@ -1,11 +1,11 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.Authorization;
-
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class AuthorizedUserRequirement : IAuthorizationRequirement
+    internal static class AzureAdOptionsDefaults
     {
+        public const string DefaultInstance = "https://login.microsoftonline.com";
+        public const string DefaultTenantId = "organizations";
     }
 }

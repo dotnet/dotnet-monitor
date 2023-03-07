@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return command;
         }
 
-        public static async Task ExecuteAsync(InvocationContext context)
+        public static async Task ExecuteAsync(InvocationContext context, CancellationToken token)
         {
             string[] acceptableCommands = new string[]
             {
@@ -54,9 +54,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                     while (!stopGeneratingEvents.IsSet)
                     {
                         TestScenarioEventSource.Log.RandomNumberGenerated(random.Next());
-                        await Task.Delay(TimeSpan.FromMilliseconds(100), context.GetCancellationToken());
+                        await Task.Delay(TimeSpan.FromMilliseconds(100), token);
                     }
-                }, context.GetCancellationToken());
+                }, token);
 
                 while (true)
                 {
@@ -67,11 +67,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                             break;
                         case TestAppScenarios.TraceEvents.Commands.ShutdownScenario:
                             stopGeneratingEvents.Set();
-                            eventEmitterTask.Wait(context.GetCancellationToken());
+                            eventEmitterTask.Wait(token);
                             return 0;
                     }
                 }
-            }, context.GetCancellationToken());
+            }, token);
         }
     }
 }

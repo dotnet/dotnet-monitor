@@ -98,6 +98,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                                     ProcessChildSection(monitorApiKey, nameof(MonitorApiKeyOptions.PublicKey), skipNotPresent, includeChildSections: false, redact: true, showSources: showSources);
                                 }
                             }
+
+                            // No sensitive information
+                            IConfigurationSection azureAd = ProcessChildSection(auth, ConfigurationKeys.AzureAd, skipNotPresent, includeChildSections: true, showSources: showSources);
                         }
                     }
 
