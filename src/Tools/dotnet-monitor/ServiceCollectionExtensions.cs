@@ -24,6 +24,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
+using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -246,12 +247,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
+        public static IServiceCollection ConfigureLibrarySharing(this IServiceCollection services)
+        {
+            services.AddSingleton<SharedLibraryService>();
+            services.AddSingletonForwarder<ISharedLibraryService, SharedLibraryService>();
+            services.AddHostedServiceForwarder<SharedLibraryService>();
+            services.TryAddSingleton<ISharedLibraryInitializer, DefaultSharedLibraryInitializer>();
+            return services;
+        }
+
         public static IServiceCollection ConfigureProfiler(this IServiceCollection services)
         {
             services.AddSingleton<ProfilerService>();
-            services.AddHostedServiceForwarder<ProfilerService>();
             services.AddSingleton<IEndpointInfoSourceCallbacks, ProfilerEndpointInfoSourceCallbacks>();
-            services.TryAddSingleton<ISharedLibraryInitializer, DefaultSharedLibraryInitializer>();
             return services;
         }
 

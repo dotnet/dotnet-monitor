@@ -3,10 +3,10 @@
 
 using Microsoft.Extensions.FileProviders;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
+namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
 {
-    internal interface INativeFileProviderFactory
+    public interface IFileProviderFactory
     {
-        IFileProvider Create(string runtimeIdentifier);
+        IFileProvider CreateNative(string runtimeIdentifier);
     }
 }
