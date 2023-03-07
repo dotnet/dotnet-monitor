@@ -10,7 +10,5 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const int MetricCount = 3;
 
         public const bool IncludeDefaultProviders = true;
-
-        public const MetricProviderType MetricType = MetricProviderType.All;
     }
 }

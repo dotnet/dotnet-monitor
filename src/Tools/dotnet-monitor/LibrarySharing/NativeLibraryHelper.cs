@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
+namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
 {
     internal static class NativeLibraryHelper
     {

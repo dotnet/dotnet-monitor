@@ -1,0 +1,3 @@
+<PoliCheckExclusions>
+	<Exclusion Type="FileName">CONFIGURECOMPILER.CMAKE|COR.H</Exclusion>
+</PoliCheckExclusions>
