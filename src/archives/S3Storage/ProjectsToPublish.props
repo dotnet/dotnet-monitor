@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <S3StoragePublishTargetFramework>$(LatestTargetFramework)</S3StoragePublishTargetFramework>
+    <S3StoragePublishTargetFramework Condition="'$(TargetFramework)' != ''">$(TargetFramework)</S3StoragePublishTargetFramework>
+    <S3StoragePublishPath>$(ArtifactsDir)pub\dotnet-monitor-egress-s3storage\$(Configuration)\$(S3StoragePublishTargetFramework)\$(PackageRid)\</S3StoragePublishPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectToPublish Include="$(RepoRoot)src\Extensions\S3Storage\S3Storage.csproj">
+      <AdditionalProperties>TargetFramework=$(S3StoragePublishTargetFramework);RuntimeIdentifier=$(PackageRid);PublishDir=$(S3StoragePublishPath)</AdditionalProperties>
+    </ProjectToPublish>
+  </ItemGroup>
+</Project>

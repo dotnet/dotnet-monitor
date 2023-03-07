@@ -4,4 +4,6 @@
           Condition="'$(CreateArchives)' == 'true'" />
   <Import Project="$(RepoRoot)src\archives\dotnet-monitor\ProjectsToBuild.props"
           Condition="'$(CreateArchives)' == 'true'" />
+  <Import Project="$(RepoRoot)src\archives\S3Storage\ProjectsToBuild.props"
+          Condition="'$(CreateArchives)' == 'true'" />
 </Project>

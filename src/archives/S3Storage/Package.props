@@ -1,0 +1,13 @@
+<Project>
+  <!-- Import ProjectToPublish items -->
+  <Import Project="$(MSBuildThisFileDirectory)ProjectsToPublish.props" />
+  <PropertyGroup>
+    <ExecutableName>dotnet-monitor-egress-s3storage</ExecutableName>
+    <ArchiveName>dotnet-monitor-egress-s3storage</ArchiveName>
+    <ArchiveContentRootPath>$(S3StoragePublishPath)</ArchiveContentRootPath>
+  </PropertyGroup>
+  <!-- These items are included in addition to those from publishing the AzureBlobStorage project. -->
+  <ItemGroup>
+    <FileToArchive Include="$(RepoRoot)LICENSE.TXT" />
+  </ItemGroup>
+</Project>
