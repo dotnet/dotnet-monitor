@@ -194,12 +194,6 @@
   <data name="ErrorMessage_ExpectedToFindSharedLibrariesAtPath" xml:space="preserve">
     <value>Expected to find shared libraries at '{0}'.</value>
   </data>
-  <data name="ErrorMessage_FieldMissing" xml:space="preserve">
-    <value>The {0} field is required.</value>
-    <comment>Gets the format string for rejecting validation due to a missing field.
-1 Format Parameters:
-0. fieldName: The name of the field that is missing</comment>
-  </data>
   <data name="ErrorMessage_FieldMustBeLessThanOtherField" xml:space="preserve">
     <value>The value of field {0} must be less than the value of field {1}.</value>
     <comment>{0} = Field name that must be lower.

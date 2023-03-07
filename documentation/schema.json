@@ -725,6 +725,9 @@
           }
         },
         {
+          "required": [
+            "Settings"
+          ],
           "properties": {
             "Type": {
               "const": "SystemDiagnosticsMetrics"
@@ -2478,20 +2481,20 @@
     "SystemDiagnosticsMetricsOptions": {
       "type": "object",
       "additionalProperties": false,
+      "required": [
+        "MeterName",
+        "InstrumentName"
+      ],
       "properties": {
         "MeterName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The name of the meter that provides the instrument information."
+          "type": "string",
+          "description": "The name of the meter that provides the instrument information.",
+          "minLength": 1
         },
         "InstrumentName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The name of the instrument to monitor."
+          "type": "string",
+          "description": "The name of the instrument to monitor.",
+          "minLength": 1
         },
         "GreaterThan": {
           "type": [
@@ -2522,7 +2525,7 @@
             "integer",
             "null"
           ],
-          "description": "When monitoring a histogram, this dictates which percentile to compare against using the value in GreaterThan/LessThan.",
+          "description": "When monitoring a histogram, this dictates which percentile to compare against using the value in GreaterThan/LessThan - by default, the percentile can be 50, 95, or 99.",
           "format": "int32",
           "maximum": 100.0,
           "minimum": 0.0

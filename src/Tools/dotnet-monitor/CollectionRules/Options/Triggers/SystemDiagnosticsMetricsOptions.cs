@@ -13,18 +13,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     /// </summary>
     internal sealed partial class SystemDiagnosticsMetricsOptions : ISlidingWindowDurationProperties
     {
-        public string ProviderName { get; set; }
-
-        public string CounterName { get; set; }
-
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_MeterName))]
+        [Required]
         public string MeterName { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_InstrumentName))]
+        [Required]
         public string InstrumentName { get; set; }
 
         [Display(

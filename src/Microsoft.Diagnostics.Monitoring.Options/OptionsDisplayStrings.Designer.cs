@@ -1590,7 +1590,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When monitoring a histogram, this dictates which percentile to compare against using the value in GreaterThan/LessThan..
+        ///   Looks up a localized string similar to When monitoring a histogram, this dictates which percentile to compare against using the value in GreaterThan/LessThan - by default, the percentile can be 50, 95, or 99..
         /// </summary>
         public static string DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_HistogramPercentile {
             get {

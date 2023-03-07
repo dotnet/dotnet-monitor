@@ -820,7 +820,7 @@
     <comment>The description provided for the GreaterThan parameter on SystemDiagnosticsMetricsOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_HistogramPercentile" xml:space="preserve">
-    <value>When monitoring a histogram, this dictates which percentile to compare against using the value in GreaterThan/LessThan.</value>
+    <value>When monitoring a histogram, this dictates which percentile to compare against using the value in GreaterThan/LessThan - by default, the percentile can be 50, 95, or 99.</value>
     <comment>The description provided for the HistogramPercentile parameter on SystemDiagnosticsMetricsOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_SystemDiagnosticsMetricsOptions_LessThan" xml:space="preserve">

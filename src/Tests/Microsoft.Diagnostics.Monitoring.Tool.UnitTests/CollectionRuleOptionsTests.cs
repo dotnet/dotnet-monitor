@@ -32,6 +32,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private const string DefaultRuleName = "TestRule";
         private const string UnknownEgressName = "UnknownEgress";
+        private const string ExpectedMeterName = "Meter";
+        private const string ExpectedInstrumentName = "Instrument";
 
         private readonly ITestOutputHelper _outputHelper;
 
@@ -257,8 +259,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_MinimumOptions()
         {
-            const string ExpectedMeterName = "Meter";
-            const string ExpectedInstrumentName = "Instrument";
             const double ExpectedGreaterThan = 0.5;
 
             return ValidateSuccess(
@@ -284,8 +284,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_Default_RoundTrip()
         {
-            const string ExpectedMeterName = "Meter";
-            const string ExpectedInstrumentName = "Instrument";
             const double ExpectedGreaterThan = 0.5;
             const double ExpectedLessThan = 0.75;
             const int ExpectedHistogramPercentile = 95;
@@ -320,8 +318,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_Histogram_RoundTrip()
         {
-            const string ExpectedMeterName = "Meter";
-            const string ExpectedInstrumentName = "Instrument";
             TimeSpan ExpectedDuration = TimeSpan.FromSeconds(30);
             int ExpectedHistogramPercentile = 50;
             int ExpectedGreaterThan = 1;
@@ -366,10 +362,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     // Property validation failures will short-circuit the remainder of the validation
-                    // rules, thus only observe 1 error when one might expect 4 (the second being MeterName,
-                    // the third being InstrumentName, and the fourth being that either GreaterThan or LessThan should be specified).
-                    Assert.Single(failures);
-                    VerifyRangeMessage<TimeSpan>(failures, 0, nameof(SystemDiagnosticsMetricsOptions.SlidingWindowDuration),
+                    // rules, thus only observe 3 errors when one might expect 4 (GreaterThan or LessThan should be specified).
+                    Assert.Equal(3, failures.Length);
+                    VerifyRequiredMessage(failures, 0, nameof(SystemDiagnosticsMetricsOptions.MeterName));
+                    VerifyRequiredMessage(failures, 1, nameof(SystemDiagnosticsMetricsOptions.InstrumentName));
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(SystemDiagnosticsMetricsOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
         }
@@ -377,9 +374,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_NoGreaterThanOrLessThan()
         {
-            const string ExpectedMeterName = "Meter";
-            const string ExpectedInstrumentName = "Instrument";
-
             return ValidateFailure(
                 rootOptions =>
                 {
@@ -415,77 +409,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Equal(2, failures.Length);
-                    VerifyRequiredFieldMessage(failures, 0,
-                        nameof(SystemDiagnosticsMetricsOptions.MeterName));
-                    VerifyRequiredFieldMessage(failures, 1,
-                        nameof(SystemDiagnosticsMetricsOptions.InstrumentName));
-                });
-        }
-
-        [Fact]
-        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_MeterAndProviderName()
-        {
-            const string ExpectedMeterName = "Meter";
-            const string ExpectedProviderName = "Provider";
-            const string ExpectedInstrumentName = "Instrument";
-
-            return ValidateFailure(
-                rootOptions =>
-                {
-                    rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetSystemDiagnosticsMetricsTrigger(options =>
-                        {
-                            options.GreaterThan = 0.5;
-                            options.ProviderName = ExpectedProviderName;
-                            options.MeterName = ExpectedMeterName;
-                            options.InstrumentName = ExpectedInstrumentName;
-                        });
-                },
-                ex =>
-                {
-                    string[] failures = ex.Failures.ToArray();
-                    Assert.Single(failures);
-                    VerifyBothCannotBeSpecifiedMessage(failures, 0,
-                        nameof(SystemDiagnosticsMetricsOptions.MeterName),
-                        nameof(SystemDiagnosticsMetricsOptions.ProviderName));
-                });
-        }
-
-        [Fact]
-        public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_InstrumentAndCounterName()
-        {
-            const string ExpectedMeterName = "Meter";
-            const string ExpectedCounterName = "Counter";
-            const string ExpectedInstrumentName = "Instrument";
-
-            return ValidateFailure(
-                rootOptions =>
-                {
-                    rootOptions.CreateCollectionRule(DefaultRuleName)
-                        .SetSystemDiagnosticsMetricsTrigger(options =>
-                        {
-                            options.GreaterThan = 0.5;
-                            options.MeterName = ExpectedMeterName;
-                            options.CounterName = ExpectedCounterName;
-                            options.InstrumentName = ExpectedInstrumentName;
-                        });
-                },
-                ex =>
-                {
-                    string[] failures = ex.Failures.ToArray();
-                    Assert.Single(failures);
-                    VerifyBothCannotBeSpecifiedMessage(failures, 0,
-                        nameof(SystemDiagnosticsMetricsOptions.InstrumentName),
-                        nameof(SystemDiagnosticsMetricsOptions.CounterName));
+                    VerifyRequiredMessage(failures, 0, nameof(SystemDiagnosticsMetricsOptions.MeterName));
+                    VerifyRequiredMessage(failures, 1, nameof(SystemDiagnosticsMetricsOptions.InstrumentName));
                 });
         }
 
         [Fact]
         public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_GreaterThanLargerThanLessThan()
         {
-            const string ExpectedMeterName = "Meter";
-            const string ExpectedInstrumentName = "Instrument";
-
             return ValidateFailure(
                 rootOptions =>
                 {
@@ -511,9 +442,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [InlineData(101)]
         public Task CollectionRuleOptions_SystemDiagnosticsMetricsTrigger_InvalidHistogramPercentile(int expectedHistogramPercentile)
         {
-            const string ExpectedMeterName = "Meter";
-            const string ExpectedInstrumentName = "Instrument";
-
             return ValidateFailure(
                 rootOptions =>
                 {
@@ -2145,16 +2073,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Strings.ErrorMessage_TwoFieldsMissing,
                 fieldName1,
                 fieldName2);
-
-            Assert.Equal(message, failures[index]);
-        }
-
-        private static void VerifyRequiredFieldMessage(string[] failures, int index, string fieldName)
-        {
-            string message = string.Format(
-                CultureInfo.InvariantCulture,
-                Strings.ErrorMessage_FieldMissing,
-                fieldName);
 
             Assert.Equal(message, failures[index]);
         }

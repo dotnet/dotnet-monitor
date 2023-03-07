@@ -35,9 +35,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         {
             SystemDiagnosticsMetricsTriggerSettings settings = new()
             {
-                MeterName = options.MeterName ?? options.ProviderName,
+                MeterName = options.MeterName,
                 CounterIntervalSeconds = _counterOptions.CurrentValue.GetIntervalSeconds(),
-                InstrumentName = options.InstrumentName ?? options.CounterName,
+                InstrumentName = options.InstrumentName,
                 GreaterThan = options.GreaterThan,
                 LessThan = options.LessThan,
                 HistogramPercentile = options.HistogramPercentile,
@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
 
             return EventPipeTriggerFactory.Create(
                 endpointInfo,
-                SystemDiagnosticsMetricsTrigger.CreateConfiguration(ref settings),
+                SystemDiagnosticsMetricsTrigger.CreateConfiguration(settings),
                 _traceEventTriggerFactory,
                 settings,
                 callback);

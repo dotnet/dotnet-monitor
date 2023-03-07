@@ -150,7 +150,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             AddCollectionRuleTriggerSchema<CPUUsageOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.CPUUsage);
             AddCollectionRuleTriggerSchema<GCHeapSizeOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.GCHeapSize);
             AddCollectionRuleTriggerSchema<ThreadpoolQueueLengthOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.ThreadpoolQueueLength);
-            AddCollectionRuleTriggerSchema<SystemDiagnosticsMetricsOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.SystemDiagnosticsMetrics, new(){ nameof(SystemDiagnosticsMetricsOptions.ProviderName), nameof(SystemDiagnosticsMetricsOptions.CounterName) });
+            AddCollectionRuleTriggerSchema<SystemDiagnosticsMetricsOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.SystemDiagnosticsMetrics);
             AddCollectionRuleTriggerSchema(context, triggerTypeSchema, KnownCollectionRuleTriggers.Startup);
         }
 
@@ -220,14 +220,6 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             if (settingsProperty.Reference.RequiredProperties.Count > 0)
             {
                 subSchema.RequiredProperties.Add(nameof(CollectionRuleTriggerOptions.Settings));
-            }
-
-            if (propertiesToOmit != null)
-            {
-                foreach (var property in propertiesToOmit)
-                {
-                    settingsProperty.Reference.Properties.Remove(property);
-                }
             }
 
             triggerTypeSchema.Enumeration.Add(triggerType);
