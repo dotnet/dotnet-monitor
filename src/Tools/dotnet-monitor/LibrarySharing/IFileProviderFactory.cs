@@ -7,6 +7,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
 {
     public interface IFileProviderFactory
     {
+        IFileProvider CreateManaged(string targetFramework);
+
         IFileProvider CreateNative(string runtimeIdentifier);
     }
 }

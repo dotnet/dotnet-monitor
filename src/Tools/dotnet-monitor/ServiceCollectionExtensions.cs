@@ -26,6 +26,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
+using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -270,6 +271,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // that wants to participate in exception collection.
             services.AddSingleton<IExceptionsStore, ExceptionsStore>();
             services.AddHostedService<ExceptionsService>();
+            services.AddSingleton<StartupHookValidator>();
             return services;
         }
 

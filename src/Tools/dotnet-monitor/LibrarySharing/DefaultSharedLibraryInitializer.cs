@@ -94,6 +94,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
                 _sharedLibraryPath = sharedLibraryPath;
             }
 
+            public IFileProvider CreateManaged(string targetFramework)
+            {
+                return SharedFileProvider.CreateManaged(targetFramework, _sharedLibraryPath);
+            }
+
             public IFileProvider CreateNative(string runtimeIdentifier)
             {
                 return SharedFileProvider.CreateNative(runtimeIdentifier, _sharedLibraryPath);
