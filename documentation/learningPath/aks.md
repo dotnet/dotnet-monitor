@@ -41,6 +41,8 @@ WORKDIR /app
 ENV \
     # Unset ASPNETCORE_URLS from aspnet base image
     ASPNETCORE_URLS= \
+    # Unset ASPNETCORE_HTTP_PORTS from aspnet base image (.NET 8+)
+    ASPNETCORE_HTTP_PORTS= \
     # Disable debugger and profiler diagnostics to avoid diagnosing self.
     COMPlus_EnableDiagnostics=0 \
     # Default Filter
