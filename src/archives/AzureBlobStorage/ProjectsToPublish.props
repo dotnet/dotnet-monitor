@@ -1,12 +1,23 @@
 <Project>
   <PropertyGroup>
-    <AzureBlobStoragePublishTargetFramework>$(LatestTargetFramework)</AzureBlobStoragePublishTargetFramework>
+    <AzureBlobStorageExtensionFolderName>AzureBlobStorage</AzureBlobStorageExtensionFolderName>
+    <AzureBlobStorageProjectPath>$(RepoRoot)src\Extensions\AzureBlobStorage\AzureBlobStorage.csproj</AzureBlobStorageProjectPath>
+    <AzureBlobStoragePublishTargetFramework>$(LatestToolTargetFramework)</AzureBlobStoragePublishTargetFramework>
     <AzureBlobStoragePublishTargetFramework Condition="'$(TargetFramework)' != ''">$(TargetFramework)</AzureBlobStoragePublishTargetFramework>
-    <AzureBlobStoragePublishPath>$(ArtifactsDir)pub\dotnet-monitor-egress-azureblobstorage\$(Configuration)\$(AzureBlobStoragePublishTargetFramework)\$(PackageRid)\</AzureBlobStoragePublishPath>
+    <AzureBlobStoragePublishRootPath>$(ArtifactsDir)pub\dotnet-monitor-egress-azureblobstorage\$(Configuration)\</AzureBlobStoragePublishRootPath>
+    <AzureBlobStoragePlatformSpecificPublishPath>$(AzureBlobStoragePublishRootPath)$(AzureBlobStoragePublishTargetFramework)\$(PackageRid)\</AzureBlobStoragePlatformSpecificPublishPath>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectToPublish Include="$(RepoRoot)src\Extensions\AzureBlobStorage\AzureBlobStorage.csproj">
-      <AdditionalProperties>TargetFramework=$(AzureBlobStoragePublishTargetFramework);RuntimeIdentifier=$(PackageRid);PublishDir=$(AzureBlobStoragePublishPath)</AdditionalProperties>
+    <ProjectToPublish Include="$(AzureBlobStorageProjectPath)">
+      <AdditionalProperties>TargetFramework=$(AzureBlobStoragePublishTargetFramework);RuntimeIdentifier=$(PackageRid);PublishDir=$(AzureBlobStoragePlatformSpecificPublishPath)</AdditionalProperties>
+    </ProjectToPublish>
+  </ItemGroup>
+  <ItemGroup Condition="'$(SkipPlatformNeutralPublish)' != 'true'">
+    <ProjectToPublish Include="$(AzureBlobStorageProjectPath)">
+      <AdditionalProperties>TargetFramework=$(LatestToolTargetFramework);RuntimeIdentifier=;PublishDir=$(AzureBlobStoragePublishRootPath)$(LatestToolTargetFramework)\any\</AdditionalProperties>
+    </ProjectToPublish>
+    <ProjectToPublish Include="$(AzureBlobStorageProjectPath)">
+      <AdditionalProperties>TargetFramework=$(OlderToolTargetFramework);RuntimeIdentifier=;PublishDir=$(AzureBlobStoragePublishRootPath)$(OlderToolTargetFramework)\any\</AdditionalProperties>
     </ProjectToPublish>
   </ItemGroup>
 </Project>
