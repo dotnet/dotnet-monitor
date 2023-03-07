@@ -6,7 +6,7 @@
     <ArchiveName>dotnet-monitor-egress-s3storage</ArchiveName>
     <ArchiveContentRootPath>$(S3StoragePublishPath)</ArchiveContentRootPath>
   </PropertyGroup>
-  <!-- These items are included in addition to those from publishing the AzureBlobStorage project. -->
+  <!-- These items are included in addition to those from publishing the S3Storage project. -->
   <ItemGroup>
     <FileToArchive Include="$(RepoRoot)LICENSE.TXT" />
   </ItemGroup>
