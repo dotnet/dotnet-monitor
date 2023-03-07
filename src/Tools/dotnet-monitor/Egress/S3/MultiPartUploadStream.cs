@@ -27,25 +27,28 @@ internal class MultiPartUploadStream : Stream
     public const int MinimumSize = 5 * 1024 * 1024; // the minimum size of an upload part (except for the last part)
     private readonly int _bufferSize;
 
-    private readonly byte[] _syncBuffer;
     private List<byte> _syncTempBuffer;
     private SemaphoreSlim _semaphore;
-    private int _syncOffset;
-    bool isSynchronous;
+
+    Task _writeSynchronousArtifacts;
+    bool _end;
 
     public MultiPartUploadStream(IS3Storage client, string bucketName, string objectKey, string uploadId, int bufferSize)
     {
         _bufferSize = Math.Max(bufferSize, MinimumSize); // has to be at least the minimum
         _buffer = ArrayPool<byte>.Shared.Rent(_bufferSize);
-        _syncBuffer = ArrayPool<byte>.Shared.Rent(_bufferSize);
         _syncTempBuffer = new();
         _offset = 0;
-        _syncOffset = 0;
         _client = client;
         _bucketName = bucketName;
         _objectKey = objectKey;
         _uploadId = uploadId;
         _semaphore = new SemaphoreSlim(1, 1);
+    }
+
+    public MultiPartUploadStream(IS3Storage client, string bucketName, string objectKey, string uploadId, int bufferSize, CancellationToken token) : this(client, bucketName, objectKey, uploadId, bufferSize)
+    {
+        _writeSynchronousArtifacts = StartAsyncLoop(token);
     }
 
     public override async Task FlushAsync(CancellationToken cancellationToken)
@@ -57,91 +60,40 @@ internal class MultiPartUploadStream : Stream
 
     public async Task FinalizeAsync(CancellationToken cancellationToken)
     {
-        if (isSynchronous)
+        if (_writeSynchronousArtifacts != null)
         {
-            await FinalizeSyncAsync(cancellationToken);
-        }
-        else
-        {
-            if (Closed)
-                throw new ObjectDisposedException(nameof(MultiPartUploadStream));
-            if (_offset == 0)
-                return;
+            _end = true;
 
-            await DoWriteAsync(true, cancellationToken);
+            await _writeSynchronousArtifacts;
         }
-    }
 
-    private async Task FinalizeSyncAsync(CancellationToken cancellationToken)
-    {
         if (Closed)
             throw new ObjectDisposedException(nameof(MultiPartUploadStream));
         if (_offset == 0)
             return;
 
-        while (_syncOffset > 0 || _offset > 0)
-        {
-            if (Closed)
-                throw new ObjectDisposedException(nameof(MultiPartUploadStream));
+        await DoWriteAsync(true, cancellationToken);
+    }
 
-            int BytesAvailableInBuffer() { return _bufferSize - _offset; }
-            do
+    public async Task StartAsyncLoop(CancellationToken cancellationToken)
+    {
+        while (!_end || _offset > 0)
+        {
+            if (_syncTempBuffer.Count != 0 || _end)
             {
+                if (Closed)
+                    throw new ObjectDisposedException(nameof(MultiPartUploadStream));
+
                 await _semaphore.WaitAsync(cancellationToken);
                 try
                 {
-                    int bytesToCopy = Math.Min(_syncOffset, BytesAvailableInBuffer());
-
-                    _syncTempBuffer.GetRange(0, bytesToCopy).ToArray().CopyTo(_syncBuffer.AsMemory(_offset));
+                    await WriteAsync(_syncTempBuffer.ToArray(), _end, cancellationToken);
                     _syncTempBuffer.Clear();
-                    _offset += bytesToCopy; // move the offset of the stream buffer
-                    _syncOffset -= bytesToCopy;
-                    _position += bytesToCopy; // move global position
-
-                    await DoSyncWriteAsync(true, cancellationToken);
                 }
                 finally
                 {
                     _semaphore.Release();
                 }
-            } while (_syncOffset > 0);
-
-            await Task.Delay(500, cancellationToken); // arbitrary
-        }
-    }
-
-    public async Task StartAsyncLoop(CancellationToken cancellationToken)
-    {
-        while (!cancellationToken.IsCancellationRequested || _syncOffset > 0 || _offset > 0)
-        {
-            if (isSynchronous)
-            {
-                if (Closed)
-                    throw new ObjectDisposedException(nameof(MultiPartUploadStream));
-
-                int BytesAvailableInBuffer() { return _bufferSize - _offset; }
-                do
-                {
-                    await _semaphore.WaitAsync(cancellationToken);
-                    try
-                    {
-                        int bytesToCopy = Math.Min(_syncOffset, BytesAvailableInBuffer());
-
-                        _syncTempBuffer.GetRange(0, bytesToCopy).ToArray().CopyTo(_syncBuffer.AsMemory(_offset));
-                        _syncTempBuffer.RemoveRange(0, bytesToCopy);
-                        _offset += bytesToCopy; // move the offset of the stream buffer
-                        _syncOffset -= bytesToCopy;
-                        _position += bytesToCopy; // move global position
-
-                        // part buffer is full -> trigger upload of part
-                        if (BytesAvailableInBuffer() == 0 || cancellationToken.IsCancellationRequested)
-                            await DoSyncWriteAsync(false, cancellationToken);
-                    }
-                    finally
-                    {
-                        _semaphore.Release();
-                    }
-                } while (_syncOffset > 0);
             }
 
             await Task.Delay(500, cancellationToken); // arbitrary
@@ -170,6 +122,11 @@ internal class MultiPartUploadStream : Stream
 
     public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
     {
+        await WriteAsync(buffer, false, cancellationToken);
+    }
+
+    public async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, bool allowPartialWrite, CancellationToken cancellationToken)
+    {
         if (Closed)
             throw new ObjectDisposedException(nameof(MultiPartUploadStream));
 
@@ -186,8 +143,8 @@ internal class MultiPartUploadStream : Stream
             _position += bytesToCopy; // move global position
 
             // part buffer is full -> trigger upload of part
-            if (BytesAvailableInBuffer() == 0)
-                await DoWriteAsync(false, cancellationToken);
+            if (BytesAvailableInBuffer() == 0 || allowPartialWrite)
+                await DoWriteAsync(allowPartialWrite, cancellationToken);
         } while (count > 0);
     }
 
@@ -212,27 +169,8 @@ internal class MultiPartUploadStream : Stream
         _offset = 0;
     }
 
-    private async Task DoSyncWriteAsync(bool allowPartialWrite, CancellationToken cancellationToken)
-    {
-        if (_offset == 0) // no data
-            return;
-
-        if (_offset < MinimumSize && !allowPartialWrite) // buffer not full
-            return;
-
-        await using var stream = new MemoryStream(_syncBuffer, 0, _offset);
-        stream.Position = 0;
-        // use _parts.Count + 1 to avoid a part #0 (part numbers for AWS must not be less than 1)
-        var eTag = await _client.UploadPartAsync(_uploadId, _parts.Count + 1, _offset, stream, cancellationToken);
-        _parts.Add(eTag);
-        _offset = 0;
-    }
-
     public override void Write(byte[] buffer, int offset, int count)
     {
-        isSynchronous = true;
-        var str = System.Text.Encoding.Default.GetString(buffer);
-
         if (Closed)
             throw new ObjectDisposedException(nameof(MultiPartUploadStream));
 
@@ -240,8 +178,6 @@ internal class MultiPartUploadStream : Stream
         try
         {
             _syncTempBuffer.AddRange(buffer.AsMemory().Slice(offset, count).ToArray().AsEnumerable());
-
-            _syncOffset += count;
         }
         finally
         {
