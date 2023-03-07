@@ -61,14 +61,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     UniqueProcessKey key = new(pi.EndpointInfo.ProcessId, pi.EndpointInfo.RuntimeInstanceCookie);
                     if (_unconfiguredProcesses.Contains(key))
                     {
-                        throw new MonitoringException(string.Empty);
+                        // This exception is not user visible.
+                        throw new NotSupportedException();
                     }
 
                     // Validate that the process is configured correctly for collecting exceptions.
                     if (!await _startupHookValidator.CheckAsync(pi.EndpointInfo, stoppingToken))
                     {
                         _unconfiguredProcesses.Add(key);
-                        throw new MonitoringException(string.Empty);
+
+                        // This exception is not user visible.
+                        throw new NotSupportedException();
                     }
 
                     DiagnosticsClient client = new(pi.EndpointInfo.Endpoint);

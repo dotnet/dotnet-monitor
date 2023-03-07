@@ -16,6 +16,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
 {
     internal sealed class StartupHookValidator
     {
+        // Intent is to ship a single TFM of the startup hook, which should be the lowest supported version.
+        // If necessary, the startup hook should dynamically access APIs for higher version TFMs and handle
+        // all exceptions appropriately.
         private const string StartupHookFileName = "Microsoft.Diagnostics.Monitoring.StartupHook.dll";
         private const string StartupHookTargetFramework = "net6.0";
 
