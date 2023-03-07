@@ -208,7 +208,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static Task<int> Main(string[] args)
         {
             // Prevent child processes from inheriting startup hooks
-            Environment.SetEnvironmentVariable("DOTNET_STARTUP_HOOKS", null);
+            Environment.SetEnvironmentVariable(ToolIdentifiers.EnvironmentVariables.StartupHooks, null);
 
             TestAssemblies.SimulateStartupHook();
 

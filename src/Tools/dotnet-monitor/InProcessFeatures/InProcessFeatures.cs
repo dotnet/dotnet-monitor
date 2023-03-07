@@ -23,5 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public bool IsExceptionsEnabled => _options.GetEnabled() && _experimentalFlags.IsExceptionsEnabled;
 
         public bool IsProfilerRequired => IsCallStacksEnabled;
+
+        public bool IsLibrarySharingRequired => IsCallStacksEnabled || IsExceptionsEnabled;
     }
 }

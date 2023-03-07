@@ -10,34 +10,34 @@ using System.IO;
 namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
 {
     /// <summary>
-    /// An abstraction around how native library files are found in the build output.
+    /// An abstraction around how managed library files are found in the build output.
     /// </summary>
-    internal sealed class BuildOutputNativeFileProvider : IFileProvider
+    internal sealed class BuildOutputManagedFileProvider : IFileProvider
     {
-        private readonly string _nativeFileBasePath;
-
-        private BuildOutputNativeFileProvider(string nativeFileBasePath)
-        {
-            _nativeFileBasePath = nativeFileBasePath;
-        }
-
-        /// <summary>
-        /// Creates an <see cref="IFileProvider"/> that can return native files from the build output of a
-        /// local or CI build from the dotnet-monitor repository.
-        /// The path of a returned file is {sharedLibraryPath}/{nativePlatformFolder}/{fileName}.
-        /// </summary>
-        public static IFileProvider Create(string runtimeIdentifier, string sharedLibraryPath)
-        {
-            string configurationName =
+        private const string ConfigurationName =
 #if DEBUG
             "Debug";
 #else
             "Release";
 #endif
 
-            string nativeOutputPath = Path.Combine(sharedLibraryPath, $"{runtimeIdentifier}.{configurationName}");
+        private readonly string _managedFileBasePath;
+        private readonly string _targetFramework;
 
-            return new BuildOutputNativeFileProvider(nativeOutputPath);
+        private BuildOutputManagedFileProvider(string managedFileBasePath, string targetFramework)
+        {
+            _managedFileBasePath = managedFileBasePath;
+            _targetFramework = targetFramework;
+        }
+
+        /// <summary>
+        /// Creates an <see cref="IFileProvider"/> that can return native files from the build output of a
+        /// local or CI build from the dotnet-monitor repository.
+        /// The path of a returned file is {sharedLibraryPath}/{libraryName}/{configuration}/{targetFramework}/{fileName}.
+        /// </summary>
+        public static IFileProvider Create(string targetFramework, string sharedLibraryPath)
+        {
+            return new BuildOutputManagedFileProvider(sharedLibraryPath, targetFramework);
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
@@ -47,7 +47,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            FileInfo fileInfo = new FileInfo(Path.Combine(_nativeFileBasePath, subpath));
+            string libraryName = Path.GetFileNameWithoutExtension(subpath);
+            FileInfo fileInfo = new FileInfo(Path.Combine(_managedFileBasePath, libraryName, ConfigurationName, _targetFramework, subpath));
             if (fileInfo.Exists)
             {
                 return new PhysicalFileInfo(fileInfo);

@@ -25,7 +25,9 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
+using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
+using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -250,12 +252,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
+        public static IServiceCollection ConfigureLibrarySharing(this IServiceCollection services)
+        {
+            services.AddSingleton<SharedLibraryService>();
+            services.AddSingletonForwarder<ISharedLibraryService, SharedLibraryService>();
+            services.AddHostedServiceForwarder<SharedLibraryService>();
+            services.TryAddSingleton<ISharedLibraryInitializer, DefaultSharedLibraryInitializer>();
+            return services;
+        }
+
         public static IServiceCollection ConfigureProfiler(this IServiceCollection services)
         {
             services.AddSingleton<ProfilerService>();
-            services.AddHostedServiceForwarder<ProfilerService>();
             services.AddSingleton<IEndpointInfoSourceCallbacks, ProfilerEndpointInfoSourceCallbacks>();
-            services.TryAddSingleton<ISharedLibraryInitializer, DefaultSharedLibraryInitializer>();
             return services;
         }
 
@@ -266,6 +275,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // that wants to participate in exception collection.
             services.AddSingleton<IExceptionsStore, ExceptionsStore>();
             services.AddHostedService<ExceptionsService>();
+            services.AddSingleton<StartupHookValidator>();
             return services;
         }
 
