@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Extension.S3Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
+namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
 {
-    /*
     public class MultiPartUploadStreamTests
     {
         public enum EWriteOperation
@@ -154,5 +154,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             Assert.True(_s3.Uploads.TryGetValue(uploadId, out List<InMemoryStorage.StorageData> data));
             Assert.Empty(data);
         }
-    }*/
+    }
 }
