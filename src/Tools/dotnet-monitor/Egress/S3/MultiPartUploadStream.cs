@@ -31,7 +31,7 @@ internal class MultiPartUploadStream : Stream
     private SemaphoreSlim _semaphore;
 
     Task _writeSynchronousArtifacts;
-    bool _end;
+    bool _finalize;
 
     public MultiPartUploadStream(IS3Storage client, string bucketName, string objectKey, string uploadId, int bufferSize)
     {
@@ -60,13 +60,11 @@ internal class MultiPartUploadStream : Stream
 
     public async Task FinalizeAsync(CancellationToken cancellationToken)
     {
+        _finalize = true;
+
         if (_writeSynchronousArtifacts != null)
-        {
-            _end = true;
-
             await _writeSynchronousArtifacts;
-        }
-
+        
         if (Closed)
             throw new ObjectDisposedException(nameof(MultiPartUploadStream));
         if (_offset == 0)
@@ -77,26 +75,23 @@ internal class MultiPartUploadStream : Stream
 
     public async Task StartAsyncLoop(CancellationToken cancellationToken)
     {
-        while (!_end || _offset > 0)
+        while (!_finalize || _syncTempBuffer.Count > 0)
         {
-            if (_syncTempBuffer.Count != 0 || _end)
-            {
-                if (Closed)
-                    throw new ObjectDisposedException(nameof(MultiPartUploadStream));
+            if (Closed)
+                throw new ObjectDisposedException(nameof(MultiPartUploadStream));
 
-                await _semaphore.WaitAsync(cancellationToken);
-                try
-                {
-                    await WriteAsync(_syncTempBuffer.ToArray(), _end, cancellationToken);
-                    _syncTempBuffer.Clear();
-                }
-                finally
-                {
-                    _semaphore.Release();
-                }
+            await _semaphore.WaitAsync(cancellationToken);
+            try
+            {
+                await WriteAsync(_syncTempBuffer.ToArray(), _finalize, cancellationToken);
+                _syncTempBuffer.Clear();
+            }
+            finally
+            {
+                _semaphore.Release();
             }
 
-            await Task.Delay(500, cancellationToken); // arbitrary
+            await Task.Delay(100, cancellationToken); // Delay is arbitrary
         }
     }
 
