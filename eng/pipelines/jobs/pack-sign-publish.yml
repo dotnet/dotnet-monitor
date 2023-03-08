@@ -40,6 +40,7 @@ jobs:
         /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
         /p:DotNetSignType=real
         /p:DotNetPublishUsingPipelines=true
+        /p:SkipPublishProjects=true
         /p:ThirdPartyNoticesFilePath='$(Build.SourcesDirectory)/$(_TPNFile)'
       displayName: Pack, Sign, and Publish
     # Intentionally copying file as "dotnet-monitor.nupkg.buildversion" for back compat

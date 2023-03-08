@@ -6,9 +6,9 @@
     <PublishSymbolsToDiskDependsOn>CollectPublishedFilesToArchive</PublishSymbolsToDiskDependsOn>
   </PropertyGroup>
 
-  <!-- Publish projects if they were not published after build -->
+  <!-- Ensure publishable projects are published unless skipped. -->
   <Target Name="PublishProjectsBeforeArchive"
-          Condition="'$(PublishProjectsAfterBuild)' != 'true'">
+          Condition="'$(SkipPublishProjects)' != 'true'">
     <CallTarget Targets="PublishProjects" />
   </Target>
 

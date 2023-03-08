@@ -65,7 +65,7 @@
 
   <!-- Publish projects if they were not published after build -->
   <Target Name="PublishProjectsBeforePack"
-          Condition="'$(PublishProjectsAfterBuild)' != 'true'">
+          Condition="'$(SkipPublishProjects)' != 'true'">
     <CallTarget Targets="PublishProjects" />
   </Target>
 
