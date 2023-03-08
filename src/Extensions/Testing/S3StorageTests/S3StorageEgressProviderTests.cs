@@ -17,12 +17,6 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests
 {
     public class S3StorageEgressProviderTests
     {
-        public enum EUploadAction
-        {
-            ProvideUploadStream,
-            WriteToProviderStream
-        }
-
         internal sealed class InMemoryS3ClientFactory : S3StorageEgressProvider.StorageFactory
         {
             public InMemoryStorage S3;
@@ -41,9 +35,8 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests
             _loggerProvider = new(outputHelper);
         }
 
-        [Theory]
-        [InlineData(EUploadAction.WriteToProviderStream)]
-        public async Task ItShouldUploadFile(EUploadAction uploadAction)
+        [Fact]
+        public async Task ItShouldUploadFile()
         {
             var clientFactory = new InMemoryS3ClientFactory();
             var sut = new S3StorageEgressProvider(_loggerProvider.CreateLogger<S3StorageEgressProvider>()) { ClientFactory = clientFactory };
@@ -55,11 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests
             // perform
             var totalBytes = MultiPartUploadStream.MinimumSize * 3 + 1024;
             using var stream = ConstructStream(totalBytes);
-            string resourceId = uploadAction switch
-            {
-                EUploadAction.WriteToProviderStream => await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
-                _ => throw new ArgumentException("Unsupported value", nameof(uploadAction))
-            };
+            string resourceId = await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None);
 
             // verify
             Assert.Equal($"BucketName={options.BucketName}, Key={artifactSettings.Name}", resourceId);
@@ -71,9 +60,8 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests
             Assert.Equal(stream.ToArray(), data.Bytes());
         }
 
-        [Theory]
-        [InlineData(EUploadAction.WriteToProviderStream)]
-        public async Task ItShouldUploadEmptyFile(EUploadAction uploadAction)
+        [Fact]
+        public async Task ItShouldUploadEmptyFile()
         {
             var clientFactory = new InMemoryS3ClientFactory();
             var sut = new S3StorageEgressProvider(_loggerProvider.CreateLogger<S3StorageEgressProvider>()) { ClientFactory = clientFactory };
@@ -85,11 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests
             // perform
             var totalBytes = 0;
             using var stream = ConstructStream(totalBytes);
-            string resourceId = uploadAction switch
-            {
-                EUploadAction.WriteToProviderStream => await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
-                _ => throw new ArgumentException("Unsupported value", nameof(uploadAction))
-            };
+            string resourceId = await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None);
 
             // verify
             Assert.Equal($"BucketName={options.BucketName}, Key={artifactSettings.Name}", resourceId);
@@ -100,8 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests
             Assert.Equal(totalBytes, data.Size);
             Assert.Equal(stream.ToArray(), data.Bytes());
 
-            if (uploadAction == EUploadAction.WriteToProviderStream)
-                Assert.Empty(storage.Uploads); // the upload should be aborted
+            Assert.Empty(storage.Uploads); // the upload should be aborted
         }
 
         [Fact]
@@ -122,9 +105,8 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests
             Assert.Empty(storage.Uploads); // the upload should be aborted
         }
 
-        [Theory]
-        [InlineData(EUploadAction.WriteToProviderStream)]
-        public async Task ItShouldUploadFileAndGeneratePreSignedUrl(EUploadAction uploadAction)
+        [Fact]
+        public async Task ItShouldUploadFileAndGeneratePreSignedUrl()
         {
             var clientFactory = new InMemoryS3ClientFactory();
             var sut = new S3StorageEgressProvider(_loggerProvider.CreateLogger<S3StorageEgressProvider>()) { ClientFactory = clientFactory };
@@ -138,11 +120,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests
             // perform
             var totalBytes = MultiPartUploadStream.MinimumSize * 3 + 1024;
             using var stream = ConstructStream(totalBytes);
-            string resourceId = uploadAction switch
-            {
-                EUploadAction.WriteToProviderStream => await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
-                _ => throw new ArgumentException("Unsupported value", nameof(uploadAction))
-            };
+            string resourceId = await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None);
 
             // verify
             var expiration = DateTime.UtcNow.Add(options.PreSignedUrlExpiry!.Value);
