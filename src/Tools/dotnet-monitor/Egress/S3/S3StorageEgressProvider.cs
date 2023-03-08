@@ -73,13 +73,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
                 int copyBufferSize = options.CopyBufferSize.GetValueOrDefault(0x100000);
                 await using var stream = new MultiPartUploadStream(client, options.BucketName, artifactSettings.Name, uploadId, copyBufferSize, token);
                 Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.S3Storage);
-
-                CancellationTokenSource source = new CancellationTokenSource();
-
-                Task writeSynchronousArtifacts = stream.StartAsyncLoop(source.Token);
-
                 await action(stream, token);
-
                 await stream.FinalizeAsync(token); // force to push the last part
 
                 // an empty file was generated
@@ -101,7 +95,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.S3
             }
             catch (AmazonS3Exception e)
             {
-                Console.WriteLine(e);
                 if (!uploadDone)
                     await client.AbortMultipartUploadAsync(uploadId, token);
                 throw CreateException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressS3FailedDetailed, e.Message));
