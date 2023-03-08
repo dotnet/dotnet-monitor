@@ -48,4 +48,5 @@ jobs:
           body: Sync branch with ${{ env.base_branch }}. This PR was auto generated and will not be automatically merged in.
           branch_name: sync/${{ matrix.branch }}
           fail_if_files_unchanged: false
+          labels: 'automatic-pr'
           auth_token: ${{ secrets.GITHUB_TOKEN }}
