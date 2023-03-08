@@ -35,7 +35,7 @@ jobs:
       -pack
       -skipmanaged
       -skipnative
-      /p:PublishProjectsAfterBuild=true
+      /p:SkipPublishProjects=true
       /p:ThirdPartyNoticesFilePath='$(Build.SourcesDirectory)/$(_TPNFile)'
 
     postBuildSteps:
