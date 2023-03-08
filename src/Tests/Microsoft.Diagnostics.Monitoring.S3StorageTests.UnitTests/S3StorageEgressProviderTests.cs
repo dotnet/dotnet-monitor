@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.S3StorageTests
+namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
 {
     public class S3StorageEgressProviderTests
     {

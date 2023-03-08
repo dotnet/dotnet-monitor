@@ -25,7 +25,7 @@ using System.Xml;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests
+namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public class AzureBlobEgressProviderTests : IClassFixture<AzuriteFixture>, IDisposable

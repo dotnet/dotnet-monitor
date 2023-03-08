@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Microsoft.Diagnostics.Monitoring.S3StorageTests
+namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
 {
     public class MultiPartUploadStreamTests
     {

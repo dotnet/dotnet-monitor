@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Monitoring.S3StorageTests
+namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
 {
     public class InMemoryStorage : IS3Storage
     {
