@@ -122,6 +122,7 @@ stages:
       SDLValidationParameters:
         enable: true
         continueOnError: true
+        publishGdn: true
         params: >-
           -SourceToolsList @("policheck","credscan")
           -TsaInstanceURL $(_TsaInstanceURL)
@@ -133,6 +134,7 @@ stages:
           -TsaRepositoryName "dotnet-monitor"
           -TsaCodebaseName "dotnet-monitor"
           -TsaPublish $True
+          -PoliCheckAdditionalRunConfigParams @("UserExclusionPath < $(Build.SourcesDirectory)/eng/PoliCheckExclusions.xml")
         artifactNames:
         - 'PackageArtifacts'
 # This sets up the bits to do a Release.

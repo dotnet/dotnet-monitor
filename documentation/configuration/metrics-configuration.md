@@ -8,7 +8,7 @@
 Due to limitations in event counters, `dotnet monitor` supports only **one** refresh interval when collecting metrics. This interval is used for
 Prometheus metrics, livemetrics, triggers, traces, and trigger actions that collect traces. The default interval is 5 seconds, but can be changed in configuration.
 
-[7.1+] For EventCounter providers, is possible to specify a different interval for each provider. See [Per provider intervals](#per-provider-intervals-71).
+[8.0+] For EventCounter providers, is possible to specify a different interval for each provider. See [Per provider intervals](#per-provider-intervals-71).
 
 <details>
   <summary>JSON</summary>
@@ -39,7 +39,7 @@ Prometheus metrics, livemetrics, triggers, traces, and trigger actions that coll
   ```
 </details>
 
-## Per provider intervals (7.1+)
+## Per provider intervals (8.0+)
 
 It is possible to override the global interval on a per provider basis. Note this forces all scenarios (triggers, live metrics, prometheus metrics, traces) that use a particular provider to use that interval. Metrics that are `System.Diagnostics.Metrics` based always use global interval.
 

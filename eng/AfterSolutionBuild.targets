@@ -1,6 +1,7 @@
 <Project>
   <!-- Import ProjectToPublish items; all projects that would participate in publishing should be listed here. -->
   <Import Project="$(RepoRoot)src\archives\dotnet-monitor\ProjectsToPublish.props" />
+  <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.StartupHook\ProjectsToPublish.props" />
 
   <!-- Only publish projects after build if opt-in -->
   <Target Name="PublishProjectsAfterBuild"

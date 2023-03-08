@@ -12,14 +12,6 @@
   </ItemGroup>
 
   <!-- Creates artifact files related to the package that will be uploaded to blob storage during publish. -->
-  <Target Name="GenerateNuGetPackageProjectFiles"
-          AfterTargets="Pack"
-          Condition="'$(DisableCustomBlobStoragePublishing)' != 'true' and '$(IsPackable)' == 'true'">
-    <!-- The path needs to be relative to the repository root to allow for correct path rooting across platforms and build machines. -->
-    <WriteLinesToFile File="$(PackageOutputPath)\$(PackageId).$(PackageVersion).nupkg.projectpath"
-                      Lines="$([MSBuild]::MakeRelative($(RepoRoot), $(MSBuildProjectFullPath)))"
-                      Overwrite="true" />
-  </Target>
   <Target Name="GenerateArchivePackageProjectFiles"
           AfterTargets="_CreateArchive"
           Condition="'$(DisableCustomBlobStoragePublishing)' != 'true' and '$(IsArchivable)' == 'true'">
@@ -60,7 +52,6 @@
   <Target Name="GetPackageFileName"
           Returns="@(PackageFileName)">
     <ItemGroup>
-      <PackageFileName Include="$(PackageId).$(PackageVersion).nupkg" Condition="'$(IsPackable)' == 'true'" />
       <!-- The archive targets use Version instead of PackageVersion; do the same to be consistent. -->
       <PackageFileName Include="$(ArchiveName)-$(Version)-$(RuntimeIdentifier).$(ArchiveFormat)" Condition="'$(IsArchivable)' == 'true' and '$(IsSymbolsArchive)' != 'true' " />
       <!-- Symbols archive names reverse the order of the version and runtime identifier compared to the product archive. -->

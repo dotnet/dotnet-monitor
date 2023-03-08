@@ -29,25 +29,25 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
                 switch (eventData.EventId)
                 {
-                    case ExceptionsEventSource.ExceptionEventId:
+                    case ExceptionEvents.EventIds.ExceptionInstance:
                         Exceptions.Add(
                             new ExceptionInstance()
                             {
-                                ExceptionId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionPayloads.ExceptionId]),
-                                ExceptionMessage = ToString(eventData.Payload[ExceptionEvents.ExceptionPayloads.ExceptionMessage])
+                                ExceptionId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionId]),
+                                ExceptionMessage = ToString(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage])
                             });
                         break;
-                    case ExceptionsEventSource.ExceptionIdEventId:
+                    case ExceptionEvents.EventIds.ExceptionIdentifier:
                         ExceptionIdentifiers.Add(
-                            ToUInt64(eventData.Payload[ExceptionEvents.ExceptionIdPayloads.ExceptionId]),
+                            ToUInt64(eventData.Payload[ExceptionEvents.ExceptionIdentifierPayloads.ExceptionId]),
                             new ExceptionIdentifierData()
                             {
-                                ExceptionClassId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionIdPayloads.ExceptionClassId]),
-                                ThrowingMethodId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionIdPayloads.ThrowingMethodId]),
-                                ILOffset = ToInt32(eventData.Payload[ExceptionEvents.ExceptionIdPayloads.ILOffset])
+                                ExceptionClassId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionIdentifierPayloads.ExceptionClassId]),
+                                ThrowingMethodId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionIdentifierPayloads.ThrowingMethodId]),
+                                ILOffset = ToInt32(eventData.Payload[ExceptionEvents.ExceptionIdentifierPayloads.ILOffset])
                             });
                         break;
-                    case ExceptionsEventSource.ClassDescriptionEventId:
+                    case ExceptionEvents.EventIds.ClassDescription:
                         NameCache.ClassData.TryAdd(
                             ToUInt64(eventData.Payload[NameIdentificationEvents.ClassDescPayloads.ClassId]),
                             new ClassData(
@@ -56,7 +56,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                                 (ClassFlags)ToUInt32(eventData.Payload[NameIdentificationEvents.ClassDescPayloads.Flags]),
                                 ToArray<ulong>(eventData.Payload[NameIdentificationEvents.ClassDescPayloads.TypeArgs])));
                         break;
-                    case ExceptionsEventSource.FunctionDescriptionEventId:
+                    case ExceptionEvents.EventIds.FunctionDescription:
                         NameCache.FunctionData.TryAdd(
                             ToUInt64(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.FunctionId]),
                             new FunctionData(
@@ -66,13 +66,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                                 ToUInt64(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ModuleId]),
                                 ToArray<ulong>(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.TypeArgs])));
                         break;
-                    case ExceptionsEventSource.ModuleDescriptionEventId:
+                    case ExceptionEvents.EventIds.ModuleDescription:
                         NameCache.ModuleData.TryAdd(
                             ToUInt64(eventData.Payload[NameIdentificationEvents.ModuleDescPayloads.ModuleId]),
                             new ModuleData(
                                 ToString(eventData.Payload[NameIdentificationEvents.ModuleDescPayloads.Name])));
                         break;
-                    case ExceptionsEventSource.TokenDescriptionEventId:
+                    case ExceptionEvents.EventIds.TokenDescription:
                         NameCache.TokenData.TryAdd(
                             new ModuleScopedToken(
                                 ToUInt64(eventData.Payload[NameIdentificationEvents.TokenDescPayloads.ModuleId]),
