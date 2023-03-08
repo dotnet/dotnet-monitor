@@ -4,4 +4,22 @@
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Include="..\..\..\Microsoft.Diagnostics.Monitoring.WebApi\ContentTypes.cs" Link="ContentTypes.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\S3Storage\S3Storage.csproj" />
+    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Extension.Common\Microsoft.Diagnostics.Monitoring.Extension.Common.csproj" />
+    <ProjectReference Include="..\..\..\Tests\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
+    <ProjectReference Include="..\..\..\Tests\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiateVersion)" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0-preview-20220707-01" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(MicrosoftIdentityModelTokensVersion)" />
+  </ItemGroup>
+
 </Project>

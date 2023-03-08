@@ -14,6 +14,7 @@
     <InternalsVisibleTo Include="dotnet-monitor-egress-azureblobstorage" />
     <InternalsVisibleTo Include="dotnet-monitor-egress-s3storage" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.S3StorageTests" />
   </ItemGroup>
 
   <ItemGroup>

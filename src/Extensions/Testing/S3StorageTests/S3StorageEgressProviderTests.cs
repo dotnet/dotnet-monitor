@@ -2,9 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Amazon.S3;
+using Microsoft.Diagnostics.Monitoring.Extension.Common;
+using Microsoft.Diagnostics.Monitoring.Extension.S3Storage;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using System;
 using System.IO;
 using System.Threading;
@@ -12,9 +13,8 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
+namespace Microsoft.Diagnostics.Monitoring.S3StorageTests
 {
-    /*
     public class S3StorageEgressProviderTests
     {
         public enum EUploadAction
@@ -42,7 +42,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
         }
 
         [Theory]
-        [InlineData(EUploadAction.ProvideUploadStream)]
         [InlineData(EUploadAction.WriteToProviderStream)]
         public async Task ItShouldUploadFile(EUploadAction uploadAction)
         {
@@ -58,8 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             using var stream = ConstructStream(totalBytes);
             string resourceId = uploadAction switch
             {
-                EUploadAction.ProvideUploadStream => await sut.EgressAsync(string.Empty, string.Empty, options, _ => Task.FromResult((Stream)stream), artifactSettings, CancellationToken.None),
-                EUploadAction.WriteToProviderStream => await sut.EgressAsync(string.Empty, string.Empty, options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
+                EUploadAction.WriteToProviderStream => await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
                 _ => throw new ArgumentException("Unsupported value", nameof(uploadAction))
             };
 
@@ -74,7 +72,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
         }
 
         [Theory]
-        [InlineData(EUploadAction.ProvideUploadStream)]
         [InlineData(EUploadAction.WriteToProviderStream)]
         public async Task ItShouldUploadEmptyFile(EUploadAction uploadAction)
         {
@@ -90,8 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             using var stream = ConstructStream(totalBytes);
             string resourceId = uploadAction switch
             {
-                EUploadAction.ProvideUploadStream => await sut.EgressAsync(string.Empty, string.Empty, options, _ => Task.FromResult((Stream)stream), artifactSettings, CancellationToken.None),
-                EUploadAction.WriteToProviderStream => await sut.EgressAsync(string.Empty, string.Empty, options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
+                EUploadAction.WriteToProviderStream => await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
                 _ => throw new ArgumentException("Unsupported value", nameof(uploadAction))
             };
 
@@ -119,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // perform
-            await Assert.ThrowsAnyAsync<Exception>(async () => await sut.EgressAsync(string.Empty, string.Empty, options, (stream, token) => throw new AmazonS3Exception(new Exception()), artifactSettings, CancellationToken.None));
+            await Assert.ThrowsAnyAsync<Exception>(async () => await sut.EgressAsync(options, (stream, token) => throw new AmazonS3Exception(new Exception()), artifactSettings, CancellationToken.None));
 
             var storage = clientFactory.S3;
             Assert.Empty(storage.Storage);
@@ -127,7 +123,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
         }
 
         [Theory]
-        [InlineData(EUploadAction.ProvideUploadStream)]
         [InlineData(EUploadAction.WriteToProviderStream)]
         public async Task ItShouldUploadFileAndGeneratePreSignedUrl(EUploadAction uploadAction)
         {
@@ -145,8 +140,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             using var stream = ConstructStream(totalBytes);
             string resourceId = uploadAction switch
             {
-                EUploadAction.ProvideUploadStream => await sut.EgressAsync(string.Empty, string.Empty, options, _ => Task.FromResult((Stream)stream), artifactSettings, CancellationToken.None),
-                EUploadAction.WriteToProviderStream => await sut.EgressAsync(string.Empty, string.Empty, options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
+                EUploadAction.WriteToProviderStream => await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None),
                 _ => throw new ArgumentException("Unsupported value", nameof(uploadAction))
             };
 
@@ -199,5 +193,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.S3
             MemoryStream stream = new(bytes);
             return stream;
         }
-    }*/
+    }
 }

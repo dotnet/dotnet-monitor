@@ -41,6 +41,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S3Storage", "src\Extensions
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests", "src\Extensions\Testing\AzureBlobStorageTests\Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.csproj", "{4276CFC4-B05F-4FCA-A4ED-0C82D541B23D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.S3StorageTests", "src\Extensions\Testing\S3StorageTests\Microsoft.Diagnostics.Monitoring.S3StorageTests.csproj", "{5761C008-71BC-4BAE-B6AB-570BB289359E}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Extension.Common", "src\Extensions\Microsoft.Diagnostics.Monitoring.Extension.Common\Microsoft.Diagnostics.Monitoring.Extension.Common.csproj", "{65C25244-F80E-4D59-98D6-CBB3D04E2B3C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Profiler.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.Profiler.UnitTests\Microsoft.Diagnostics.Monitoring.Profiler.UnitTests.csproj", "{A25AC517-F7C6-43C6-B892-4A447914C42C}"
@@ -134,6 +136,10 @@ Global
 		{4276CFC4-B05F-4FCA-A4ED-0C82D541B23D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4276CFC4-B05F-4FCA-A4ED-0C82D541B23D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4276CFC4-B05F-4FCA-A4ED-0C82D541B23D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5761C008-71BC-4BAE-B6AB-570BB289359E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5761C008-71BC-4BAE-B6AB-570BB289359E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5761C008-71BC-4BAE-B6AB-570BB289359E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5761C008-71BC-4BAE-B6AB-570BB289359E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{65C25244-F80E-4D59-98D6-CBB3D04E2B3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{65C25244-F80E-4D59-98D6-CBB3D04E2B3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65C25244-F80E-4D59-98D6-CBB3D04E2B3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -193,6 +199,7 @@ Global
 		{5ED61A7B-F0AA-45F2-9E9A-8972FF7F7278} = {B62728C8-1267-4043-B46F-5537BBAEC692}
 		{55309C3E-1DD2-4B4A-9126-CFA28C97F1AD} = {B62728C8-1267-4043-B46F-5537BBAEC692}
 		{4276CFC4-B05F-4FCA-A4ED-0C82D541B23D} = {C7568468-1C79-4944-8136-18812A7F9EA7}
+		{5761C008-71BC-4BAE-B6AB-570BB289359E} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{65C25244-F80E-4D59-98D6-CBB3D04E2B3C} = {B62728C8-1267-4043-B46F-5537BBAEC692}
 		{A25AC517-F7C6-43C6-B892-4A447914C42C} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{1CA2284B-A3A0-476A-9A93-A95E665E78BE} = {C7568468-1C79-4944-8136-18812A7F9EA7}
