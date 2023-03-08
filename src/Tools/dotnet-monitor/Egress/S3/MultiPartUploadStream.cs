@@ -163,7 +163,7 @@ internal class MultiPartUploadStream : Stream
 
         await using var stream = new MemoryStream(_buffer, 0, _offset);
         stream.Position = 0;
-        // use _parts.Count + 1 to avoid a part #0 (part numbers for AWS must not be less than 1)
+        // use _parts.Count + 1 to avoid a part #0 (part numbers must not be less than 1)
         var eTag = await _client.UploadPartAsync(_uploadId, _parts.Count + 1, _offset, stream, cancellationToken);
         _parts.Add(eTag);
         _offset = 0;

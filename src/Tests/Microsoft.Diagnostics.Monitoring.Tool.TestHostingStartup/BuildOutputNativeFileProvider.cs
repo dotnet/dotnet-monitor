@@ -7,7 +7,7 @@ using Microsoft.Extensions.Primitives;
 using System;
 using System.IO;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
+namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
 {
     /// <summary>
     /// An abstraction around how native library files are found in the build output.

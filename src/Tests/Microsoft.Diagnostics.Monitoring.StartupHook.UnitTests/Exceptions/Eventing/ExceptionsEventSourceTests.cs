@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Informational);
 
-            source.WriteExceptionId(id, classId, methodId, ilOffset);
+            source.ExceptionIdentifier(id, classId, methodId, ilOffset);
 
             (ulong exceptionId, ExceptionIdentifierData data) = Assert.Single(listener.ExceptionIdentifiers);
             Assert.Equal(id, exceptionId);
@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Warning);
 
-            source.WriteExceptionId(1, 2, 3, 4);
+            source.ExceptionIdentifier(1, 2, 3, 4);
 
             Assert.Empty(listener.ExceptionIdentifiers);
         }
@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
             using ExceptionsEventListener listener = new();
 
-            source.WriteExceptionId(4, 3, 2, 1);
+            source.ExceptionIdentifier(4, 3, 2, 1);
 
             Assert.Empty(listener.ExceptionIdentifiers);
         }
@@ -72,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Informational);
 
-            source.WriteException(id, message);
+            source.ExceptionInstance(id, message);
 
             ExceptionInstance instance = Assert.Single(listener.Exceptions);
             Assert.Equal(id, instance.ExceptionId);
@@ -87,7 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Warning);
 
-            source.WriteException(7, ObjectDisposedExceptionMessage);
+            source.ExceptionInstance(7, ObjectDisposedExceptionMessage);
 
             Assert.Empty(listener.Exceptions);
         }
@@ -99,7 +99,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
             using ExceptionsEventListener listener = new();
 
-            source.WriteException(9, OperationCancelledExceptionMessage);
+            source.ExceptionInstance(9, OperationCancelledExceptionMessage);
 
             Assert.Empty(listener.Exceptions);
         }

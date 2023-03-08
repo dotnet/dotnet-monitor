@@ -1310,12 +1310,24 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             const string providerName = EventPipe.MonitoringSourceConfiguration.SystemRuntimeEventSourceName;
             var counterNames = new[] { "cpu-usage", "working-set" };
 
+            const string ExpectedMeterName = "myMeter";
+            var ExpectedInstrumentNames = new[] { "thisGauge", "thatHistogram" };
+
             EventMetricsProvider[] ExpectedProviders = new[]
             {
                 new EventMetricsProvider
                 {
                     ProviderName = providerName,
                     CounterNames = counterNames,
+                }
+            };
+
+            EventMetricsMeter[] ExpectedMeters = new[]
+            {
+                new EventMetricsMeter
+                {
+                    MeterName = ExpectedMeterName,
+                    InstrumentNames = ExpectedInstrumentNames
                 }
             };
 
@@ -1329,6 +1341,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                             options.Duration = ExpectedDuration;
                             options.IncludeDefaultProviders = ExpectedIncludeDefaultProviders;
                             options.Providers = ExpectedProviders;
+                            options.Meters = ExpectedMeters;
                         });
                     rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
                 },
@@ -1340,6 +1353,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(ExpectedIncludeDefaultProviders, collectLiveMetricsOptions.IncludeDefaultProviders);
                     Assert.Equal(ExpectedProviders.Select(x => x.CounterNames.ToHashSet()), collectLiveMetricsOptions.Providers.Select(x => x.CounterNames.ToHashSet()));
                     Assert.Equal(ExpectedProviders.Select(x => x.ProviderName), collectLiveMetricsOptions.Providers.Select(x => x.ProviderName));
+                    Assert.Equal(ExpectedMeters.Select(x => x.InstrumentNames.ToHashSet()), collectLiveMetricsOptions.Meters.Select(x => x.InstrumentNames.ToHashSet()));
+                    Assert.Equal(ExpectedMeters.Select(x => x.MeterName), collectLiveMetricsOptions.Meters.Select(x => x.MeterName));
                 });
         }
 

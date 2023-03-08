@@ -40,15 +40,17 @@ jobs:
         /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
         /p:DotNetSignType=real
         /p:DotNetPublishUsingPipelines=true
+        /p:SkipPublishProjects=true
         /p:ThirdPartyNoticesFilePath='$(Build.SourcesDirectory)/$(_TPNFile)'
       displayName: Pack, Sign, and Publish
+    # Intentionally copying file as "dotnet-monitor.nupkg.buildversion" for back compat
     - task: powershell@2
       displayName: Generate Build Info
       inputs:
         targetType: inline
         script: |
             New-Item "$(Build.ArtifactStagingDirectory)/buildInfo" -Type Directory
-            Copy-Item "$(Build.SourcesDirectory)/artifacts/packages/Release/Shipping/dotnet-monitor.*.nupkg.buildversion" "$(Build.ArtifactStagingDirectory)/buildInfo/dotnet-monitor.nupkg.buildversion"
+            Copy-Item "$(Build.SourcesDirectory)/artifacts/packages/Release/Shipping/dotnet-monitor-*-win-x64.zip.buildversion" "$(Build.ArtifactStagingDirectory)/buildInfo/dotnet-monitor.nupkg.buildversion"
     - task: PublishPipelineArtifact@1
       displayName: Publish Build Info
       inputs:

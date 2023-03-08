@@ -3,7 +3,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup;
-using Microsoft.Diagnostics.Tools.Monitor.Profiler;
+using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: HostingStartup(typeof(HostingStartup))]
