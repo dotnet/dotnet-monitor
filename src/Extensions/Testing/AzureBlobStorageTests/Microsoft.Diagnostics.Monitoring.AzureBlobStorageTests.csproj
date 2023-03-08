@@ -2,9 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
-    <DefineConstants>$(DefineConstants);UNITTEST</DefineConstants>
   </PropertyGroup>
-
 
   <ItemGroup>
     <Compile Include="..\..\..\Microsoft.Diagnostics.Monitoring.WebApi\ContentTypes.cs" Link="ContentTypes.cs" />
