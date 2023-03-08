@@ -39,9 +39,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureBlobStorage", "src\Ext
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S3Storage", "src\Extensions\S3Storage\S3Storage.csproj", "{55309C3E-1DD2-4B4A-9126-CFA28C97F1AD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests", "src\Extensions\Testing\AzureBlobStorageTests\Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.csproj", "{4276CFC4-B05F-4FCA-A4ED-0C82D541B23D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests", "src\Extensions\Testing\AzureBlobStorageTests\Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.csproj", "{4276CFC4-B05F-4FCA-A4ED-0C82D541B23D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.S3StorageTests", "src\Extensions\Testing\S3StorageTests\Microsoft.Diagnostics.Monitoring.S3StorageTests.csproj", "{5761C008-71BC-4BAE-B6AB-570BB289359E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests", "src\Extensions\Testing\S3StorageTests\Microsoft.Diagnostics.Monitoring.S3StorageTests.csproj", "{5761C008-71BC-4BAE-B6AB-570BB289359E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Extension.Common", "src\Extensions\Microsoft.Diagnostics.Monitoring.Extension.Common\Microsoft.Diagnostics.Monitoring.Extension.Common.csproj", "{65C25244-F80E-4D59-98D6-CBB3D04E2B3C}"
 EndProject
