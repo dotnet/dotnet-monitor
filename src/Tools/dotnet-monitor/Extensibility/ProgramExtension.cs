@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Extensions.FileProviders;
@@ -75,20 +74,41 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             // This is really weird, yes, but this is one of 2 overloads for [Stream].WriteAsync(...) that supports a CancellationToken, so we use a ReadOnlyMemory<char> instead of a string.
             ReadOnlyMemory<char> NewLine = new ReadOnlyMemory<char>("\r\n".ToCharArray());
 
-            string exeName = Declaration.Program;
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            ProcessStartInfo pStart = new ProcessStartInfo()
             {
-                exeName += ".exe";
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+                UseShellExecute = false,
+            };
+
+            string executablePath;
+            if (Declaration.UseSharedDotNetHost)
+            {
+                executablePath = DotNetHost.Path;
+
+                string entrypointAssemblyRelativePath = Path.Combine(Path.GetDirectoryName(_exePath), $"{Declaration.Program}.dll");
+
+                IFileInfo entrypointAssemblyInfo = _fileSystem.GetFileInfo(entrypointAssemblyRelativePath);
+                ValidateExecutable(entrypointAssemblyInfo);
+
+                pStart.ArgumentList.Add(entrypointAssemblyInfo.PhysicalPath);
             }
-
-            string programRelPath = Path.Combine(Path.GetDirectoryName(_exePath), exeName);
-
-            IFileInfo progInfo = _fileSystem.GetFileInfo(programRelPath);
-            if (!progInfo.Exists || progInfo.IsDirectory || progInfo.PhysicalPath == null)
+            else
             {
-                _logger.ExtensionProgramMissing(_extensionName, Path.Combine(_targetFolder, _exePath), Declaration.Program);
-                ExtensionException.ThrowNotFound(_extensionName);
+                string exeName = Declaration.Program;
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    exeName += ".exe";
+                }
+
+                string programRelPath = Path.Combine(Path.GetDirectoryName(_exePath), exeName);
+
+                IFileInfo executableInfo = _fileSystem.GetFileInfo(programRelPath);
+                ValidateExecutable(executableInfo);
+                executablePath = executableInfo.PhysicalPath;
             }
 
             /* [TODOs]
@@ -98,15 +118,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
              * 4. [Done] Refactor WaitForExit to do an async wait
              * 5. [Simple first part done] Add well-factored protocol for returning information from an extension
              */
-            ProcessStartInfo pStart = new ProcessStartInfo()
-            {
-                FileName = progInfo.PhysicalPath,
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true,
-                UseShellExecute = false,
-            };
+            pStart.FileName = executablePath;
             pStart.ArgumentList.Add(ExtensionTypes.Egress);
 
             foreach ((string key, string value) in _processEnvironmentVariables)
@@ -184,6 +196,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 // This will never get hit, LogBrokenDeclaration will never filter this exception
                 // Do the logging in the filter so that the exception stack remains complete
                 throw;
+            }
+        }
+
+        private void ValidateExecutable(IFileInfo entrypointInfo)
+        {
+            if (!entrypointInfo.Exists || entrypointInfo.IsDirectory || entrypointInfo.PhysicalPath == null)
+            {
+                _logger.ExtensionProgramMissing(_extensionName, Path.Combine(_targetFolder, _exePath), Declaration.Program);
+                ExtensionException.ThrowNotFound(_extensionName);
             }
         }
 

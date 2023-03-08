@@ -28,17 +28,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             switch (moniker)
             {
                 case TargetFrameworkMoniker.Current:
-                    return DotNetHost.CurrentAspNetCoreVersionString;
+                    return TestDotNetHost.CurrentAspNetCoreVersionString;
                 case TargetFrameworkMoniker.NetCoreApp31:
-                    return DotNetHost.AspNetCore31VersionString;
+                    return TestDotNetHost.AspNetCore31VersionString;
                 case TargetFrameworkMoniker.Net50:
-                    return DotNetHost.AspNetCore50VersionString;
+                    return TestDotNetHost.AspNetCore50VersionString;
                 case TargetFrameworkMoniker.Net60:
-                    return DotNetHost.AspNetCore60VersionString;
+                    return TestDotNetHost.AspNetCore60VersionString;
                 case TargetFrameworkMoniker.Net70:
-                    return DotNetHost.AspNetCore70VersionString;
+                    return TestDotNetHost.AspNetCore70VersionString;
                 case TargetFrameworkMoniker.Net80:
-                    return DotNetHost.AspNetCore80VersionString;
+                    return TestDotNetHost.AspNetCore80VersionString;
             }
             throw CreateUnsupportedException(moniker);
         }
@@ -48,17 +48,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             switch (moniker)
             {
                 case TargetFrameworkMoniker.Current:
-                    return DotNetHost.CurrentNetCoreVersionString;
+                    return TestDotNetHost.CurrentNetCoreVersionString;
                 case TargetFrameworkMoniker.NetCoreApp31:
-                    return DotNetHost.NetCore31VersionString;
+                    return TestDotNetHost.NetCore31VersionString;
                 case TargetFrameworkMoniker.Net50:
-                    return DotNetHost.NetCore50VersionString;
+                    return TestDotNetHost.NetCore50VersionString;
                 case TargetFrameworkMoniker.Net60:
-                    return DotNetHost.NetCore60VersionString;
+                    return TestDotNetHost.NetCore60VersionString;
                 case TargetFrameworkMoniker.Net70:
-                    return DotNetHost.NetCore70VersionString;
+                    return TestDotNetHost.NetCore70VersionString;
                 case TargetFrameworkMoniker.Net80:
-                    return DotNetHost.NetCore80VersionString;
+                    return TestDotNetHost.NetCore80VersionString;
             }
             throw CreateUnsupportedException(moniker);
         }

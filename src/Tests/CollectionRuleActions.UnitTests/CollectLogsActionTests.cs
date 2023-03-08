@@ -301,8 +301,8 @@ namespace CollectionRuleActions.UnitTests
                 // fail frequently causing insertions and builds with unrelated changes to
                 // fail. See https://github.com/dotnet/dotnet-monitor/issues/807 for details.
                 return !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ||
-                    DotNetHost.RuntimeVersion.Major != 3 ||
-                    DotNetHost.RuntimeVersion.Minor != 1;
+                    TestDotNetHost.RuntimeVersion.Major != 3 ||
+                    TestDotNetHost.RuntimeVersion.Minor != 1;
             }
         }
     }
