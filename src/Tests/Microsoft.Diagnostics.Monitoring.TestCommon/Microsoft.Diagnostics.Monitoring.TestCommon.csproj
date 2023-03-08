@@ -35,6 +35,7 @@
     <InternalsVisibleTo Include="CollectionRuleActions.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests" />
   </ItemGroup>
 
   <Import Project="GenerateDotNetHost.targets" />

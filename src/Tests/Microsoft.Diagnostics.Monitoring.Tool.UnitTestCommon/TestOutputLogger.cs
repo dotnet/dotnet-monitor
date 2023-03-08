@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
-    internal sealed class TestOutputLoggerProvider : ILoggerProvider
+    public sealed class TestOutputLoggerProvider : ILoggerProvider
     {
         private readonly ConcurrentDictionary<string, TestOutputLogger> _loggers = new(StringComparer.OrdinalIgnoreCase);
         private readonly ITestOutputHelper _outputHelper;

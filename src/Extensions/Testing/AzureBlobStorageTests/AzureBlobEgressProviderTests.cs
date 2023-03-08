@@ -7,11 +7,11 @@ using Azure.Storage.Blobs.Models;
 using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
 using Azure.Storage.Sas;
+using Microsoft.Diagnostics.Monitoring.AzureBlobStorage;
+using Microsoft.Diagnostics.Monitoring.Extension.Common;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Tools.Monitor.Egress;
-using Microsoft.Diagnostics.Monitoring.AzureBlobStorage;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,12 +25,15 @@ using System.Xml;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
-{/*
+namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests
+{
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public class AzureBlobEgressProviderTests : IClassFixture<AzuriteFixture>, IDisposable
     {
-        
+        public const int EgressUnitTestTimeoutMs = 30 * 1000; // 30 seconds -> taken from TestTimeouts
+
+        // Need to add the new projects into the solution
+
         public enum UploadAction
         {
             ProvideUploadStream,
@@ -55,8 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             _testUploadFileHash = GetFileSHA256(_testUploadFile);
         }
 
-        [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
-        [InlineData(UploadAction.ProvideUploadStream)]
+        [ConditionalTheory(Timeout = EgressUnitTestTimeoutMs)]
         [InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_UploadsCorrectData(UploadAction uploadAction)
         {
@@ -82,8 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
         }
 
 
-        [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
-        [InlineData(UploadAction.ProvideUploadStream)]
+        [ConditionalTheory(Timeout = EgressUnitTestTimeoutMs)]
         [InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_Supports_QueueMessages(UploadAction uploadAction)
         {
@@ -109,8 +110,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             ValidateQueue(blobs, messages, expectedCount: 1);
         }
 
-        [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
-        [InlineData(UploadAction.ProvideUploadStream)]
+        [ConditionalTheory(Timeout = EgressUnitTestTimeoutMs)]
         [InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_Supports_RestrictiveSasToken(UploadAction uploadAction)
         {
@@ -137,8 +137,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             Assert.Equal(FormattableString.Invariant($"{providerOptions.BlobPrefix}/{artifactSettings.Name}"), resultingBlob.Name);
         }
 
-        [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
-        [InlineData(UploadAction.ProvideUploadStream)]
+        [ConditionalTheory(Timeout = EgressUnitTestTimeoutMs)]
         [InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_Supports_RestrictiveQueueSasToken(UploadAction uploadAction)
         {
@@ -167,8 +166,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             ValidateQueue(blobs, messages, expectedCount: 1);
         }
 
-        [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
-        [InlineData(UploadAction.ProvideUploadStream)]
+        [ConditionalTheory(Timeout = EgressUnitTestTimeoutMs)]
         [InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_Supports_OnlyRestrictiveSasTokens(UploadAction uploadAction)
         {
@@ -199,8 +197,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             ValidateQueue(blobs, messages, expectedCount: 1);
         }
 
-        [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs, Skip = "https://github.com/dotnet/dotnet-monitor/issues/2754")]
-        [InlineData(UploadAction.ProvideUploadStream)]
+        [ConditionalTheory(Timeout = EgressUnitTestTimeoutMs, Skip = "https://github.com/dotnet/dotnet-monitor/issues/2754")]
         [InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_ThrowsWhen_ContainerDoesNotExistAndUsingRestrictiveSasToken(UploadAction uploadAction)
         {
@@ -221,8 +218,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             await Assert.ThrowsAsync<EgressException>(async () => await EgressAsync(uploadAction, egressProvider, providerOptions, artifactSettings, CancellationToken.None));
         }
 
-        [ConditionalTheory(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
-        [InlineData(UploadAction.ProvideUploadStream)]
+        [ConditionalTheory(Timeout = EgressUnitTestTimeoutMs)]
         [InlineData(UploadAction.WriteToProviderStream)]
         public async Task AzureBlobEgress_DoesNotThrowWhen_QueueDoesNotExistAndUsingRestrictiveQueueSasToken(UploadAction uploadAction)
         {
@@ -252,11 +248,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             Assert.Empty(messages);
         }
 
-        private Task<Stream> ProvideUploadStreamAsync(CancellationToken token)
-        {
-            return Task.FromResult<Stream>(new FileStream(_testUploadFile, FileMode.Open, FileAccess.Read));
-        }
-
         private async Task WriteToEgressStreamAsync(Stream stream, CancellationToken token)
         {
             await using FileStream fs = new(_testUploadFile, FileMode.Open, FileAccess.Read);
@@ -267,7 +258,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
         {
             return uploadAction switch
             {
-                UploadAction.ProvideUploadStream => egressProvider.EgressAsync(options, ProvideUploadStreamAsync, artifactSettings, token),
                 UploadAction.WriteToProviderStream => egressProvider.EgressAsync(options, WriteToEgressStreamAsync, artifactSettings, token),
                 _ => throw new ArgumentException(nameof(uploadAction)),
             };
@@ -450,5 +440,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
         {
             _tempDirectory.Dispose();
         }
-    }*/
+    }
 }
