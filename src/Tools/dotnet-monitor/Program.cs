@@ -4,7 +4,6 @@
 using Microsoft.Diagnostics.Tools.Monitor.Commands;
 using System;
 using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -109,100 +108,89 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         }
 
         private static Option<string[]> UrlsOption =
-            new Option<string[]>(
-                aliases: new[] { "-u", "--urls" },
-                description: Strings.HelpDescription_OptionUrls,
-                defaultValueFactory: () => new[] { "https://localhost:52323" })
+            new Option<string[]>("--urls", "-u")
             {
-                ArgumentHelpName = "urls"
+                DefaultValueFactory = (_) => new[] { "https://localhost:52323" },
+                Description = Strings.HelpDescription_OptionUrls,
+                HelpName = "urls"
             };
 
         private static Option<string[]> MetricUrlsOption =
-            new Option<string[]>(
-                aliases: new[] { "--metricUrls" },
-                description: Strings.HelpDescription_OptionMetricsUrls,
-                defaultValueFactory: () => new[] { "http://localhost:52325" })
+            new Option<string[]>("--metricUrls")
             {
-                ArgumentHelpName = "metricUrls"
+                DefaultValueFactory = (_) => new[] { "http://localhost:52325" },
+                Description = Strings.HelpDescription_OptionMetricsUrls,
+                HelpName = "metricUrls"
             };
 
         private static Option<bool> ProvideMetricsOption =
-            new Option<bool>(
-                aliases: new[] { "-m", "--metrics" },
-                description: Strings.HelpDescription_OptionMetrics,
-                defaultValueFactory: () => true)
+            new Option<bool>("--metrics", "-m")
             {
-                ArgumentHelpName = "metrics"
+                DefaultValueFactory = (_) => true,
+                Description = Strings.HelpDescription_OptionMetrics,
+                HelpName = "metrics"
             };
 
         private static Option<string> DiagnosticPortOption =
-            new Option<string>(
-                name: "--diagnostic-port",
-                description: Strings.HelpDescription_OptionDiagnosticPort)
+            new Option<string>("--diagnostic-port")
             {
-                ArgumentHelpName = "diagnosticPort"
+                Description = Strings.HelpDescription_OptionDiagnosticPort,
+                HelpName = "diagnosticPort"
             };
 
         private static Option<FileInfo> ConfigurationFilePathOption =
-            new Option<FileInfo>(
-                name: "--configuration-file-path",
-                description: Strings.HelpDescription_OptionConfigurationFilePath)
+            new Option<FileInfo>("--configuration-file-path")
             {
-                ArgumentHelpName = "configurationFilePath"
+                Description = Strings.HelpDescription_OptionConfigurationFilePath,
+                HelpName = "configurationFilePath"
             };
 
         private static Option<bool> NoAuthOption =
-            new Option<bool>(
-                name: "--no-auth",
-                description: Strings.HelpDescription_OptionNoAuth,
-                defaultValueFactory: () => false)
+            new Option<bool>("--no-auth")
             {
-                ArgumentHelpName = "noAuth"
+                DefaultValueFactory = (_) => false,
+                Description = Strings.HelpDescription_OptionNoAuth,
+                HelpName = "noAuth"
             };
 
         private static Option<bool> NoHttpEgressOption =
-            new Option<bool>(
-                name: "--no-http-egress",
-                description: Strings.HelpDescription_OptionNoHttpEgress,
-                defaultValueFactory: () => false)
+            new Option<bool>("--no-http-egress")
             {
-                ArgumentHelpName = "noHttpEgress"
+                DefaultValueFactory = (_) => false,
+                Description = Strings.HelpDescription_OptionNoHttpEgress,
+                HelpName = "noHttpEgress"
             };
 
         private static Option<bool> TempApiKeyOption =
-            new Option<bool>(
-                name: "--temp-apikey",
-                description: Strings.HelpDescription_OptionTempApiKey,
-                defaultValueFactory: () => false)
+            new Option<bool>("--temp-apikey")
             {
-                ArgumentHelpName = "tempApiKey"
+                DefaultValueFactory = (_) => false,
+                Description = Strings.HelpDescription_OptionTempApiKey,
+                HelpName = "tempApiKey"
             };
 
         private static Option<OutputFormat> OutputOption =
-            new Option<OutputFormat>(
-                aliases: new[] { "-o", "--output" },
-                description: Strings.HelpDescription_OutputFormat,
-                defaultValueFactory: () => OutputFormat.Json)
+            new Option<OutputFormat>("--output", "-o")
             {
-                ArgumentHelpName = "output"
+                DefaultValueFactory = (_) => OutputFormat.Json,
+                Description = Strings.HelpDescription_OutputFormat,
+                HelpName = "output"
             };
 
         private static Option<ConfigDisplayLevel> ConfigLevelOption =
-            new Option<ConfigDisplayLevel>(
-                name: "--level",
-                description: Strings.HelpDescription_OptionLevel,
-                defaultValueFactory: () => ConfigDisplayLevel.Redacted)
+            new Option<ConfigDisplayLevel>("--level")
             {
-                ArgumentHelpName = "level"
+                DefaultValueFactory = (_) => ConfigDisplayLevel.Redacted,
+                Description = Strings.HelpDescription_OptionLevel,
+                HelpName = "level"
             };
 
         private static Option<bool> ShowSourcesOption =
-            new Option<bool>(
-                name: "--show-sources",
-                description: Strings.HelpDescription_OptionShowSources,
-                defaultValueFactory: () => false)
+            new Option<bool>("--show-sources")
             {
-                ArgumentHelpName = "showSources"
+                DefaultValueFactory = (_) => false,
+                Description = Strings.HelpDescription_OptionShowSources,
+                HelpName = "showSources"
             };
 
         public static Task<int> Main(string[] args)
