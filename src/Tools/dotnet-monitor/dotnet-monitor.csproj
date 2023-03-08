@@ -63,9 +63,9 @@
   <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.StartupHook\ProjectsToPublish.props" />
   <Import Project="$(RepositoryEngineeringDir)PublishProjects.targets" />
 
-  <!-- Publish projects if they were not published after build -->
+  <!-- Publish projects unless skipped -->
   <Target Name="PublishProjectsBeforePack"
-          Condition="'$(PublishProjectsAfterBuild)' != 'true'">
+          Condition="'$(SkipPublishProjects)' != 'true'">
     <CallTarget Targets="PublishProjects" />
   </Target>
 
