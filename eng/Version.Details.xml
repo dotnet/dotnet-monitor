@@ -38,9 +38,9 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>6b3afa7543dd5d69e621015cd1569fb0960b5f24</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Dotnet.Sdk.Internal" Version="8.0.100-preview.2.23153.6">
+    <Dependency Name="Microsoft.Dotnet.Sdk.Internal" Version="8.0.100-preview.2.23157.25">
       <Uri>https://github.com/dotnet/installer</Uri>
-      <Sha>39ee054d74d00c456565b82ec8db2b99a799e6f4</Sha>
+      <Sha>54801b24350f51a2e62845b1f5db36fffd976591</Sha>
     </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.412701">
       <Uri>https://github.com/dotnet/symstore</Uri>
