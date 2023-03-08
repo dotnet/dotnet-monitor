@@ -29,6 +29,10 @@ jobs:
     architecture: ${{ parameters.architecture }}
 
     variables:
+    - _PublishAfterBuildArgs: '/p:PublishProjectsAfterBuild=true /p:SkipPlatformNeutralPublish=true'
+    - ${{ if and(eq(parameters.targetRid, 'win-x64'), eq(parameters.configuration, 'Release')) }}:
+      - _PublishAfterBuildArgs: '/p:PublishProjectsAfterBuild=true'
+
     - ${{ if and(ne(parameters.testGroup, 'None'), ne(parameters.architecture, 'arm64')) }}:
       # If TestGroup == 'Default', choose the test group based on the type of pipeline run
       - ${{ if eq(parameters.testGroup, 'Default') }}:
@@ -76,7 +80,7 @@ jobs:
         - script: echo "##vso[task.prependpath]/usr/share/node/bin"
           displayName: Add Azurite to PATH
 
-    buildArgs: '/p:PublishProjectsAfterBuild=true'
+    buildArgs: '$(_PublishAfterBuildArgs)'
 
     postBuildSteps:
     - ${{ if and(eq(parameters.publishArtifacts, 'true'), eq(parameters.configuration, 'Release')) }}:
@@ -109,6 +113,11 @@ jobs:
           inputs:
             SourceFolder: '$(Build.SourcesDirectory)/artifacts/obj'
             TargetFolder: '$(Build.ArtifactStagingDirectory)/unified/obj'
+        - task: CopyFiles@2
+          displayName: Gather Artifacts (pub)
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)/artifacts/pub'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/unified/pub'
       - ${{ else }}:
         - task: CopyFiles@2
           displayName: Gather Artifacts (bin/${{ parameters.targetRid }}.${{ parameters.configuration }})
