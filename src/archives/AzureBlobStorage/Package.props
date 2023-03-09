@@ -4,7 +4,7 @@
   <PropertyGroup>
     <ExecutableName>dotnet-monitor-egress-azureblobstorage</ExecutableName>
     <ArchiveName>dotnet-monitor-egress-azureblobstorage</ArchiveName>
-    <ArchiveContentRootPath>$(AzureBlobStoragePublishPath)</ArchiveContentRootPath>
+    <ArchiveContentRootPath>$(AzureBlobStoragePlatformSpecificPublishPath)</ArchiveContentRootPath>
   </PropertyGroup>
   <!-- These items are included in addition to those from publishing the AzureBlobStorage project. -->
   <ItemGroup>
