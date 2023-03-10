@@ -10,10 +10,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static partial class DotNetHost
     {
-        private static readonly string ExecutableName =
+        private static readonly IDotNetHostHelper Helper =
             RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-            "dotnet.exe" :
-            "dotnet";
+            new WindowsDotNetHostHelper() :
+            new UnixDotNetHostHelper();
 
         private static readonly Lazy<string> PathLazy =
             new Lazy<string>(GetPath, LazyThreadSafetyMode.ExecutionAndPublication);
@@ -24,26 +24,41 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             // If current executable is already dotnet, return its path
             string executablePath = Environment.ProcessPath;
-            if (!string.IsNullOrEmpty(executablePath) && executablePath.EndsWith(ExecutableName, StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrEmpty(executablePath) &&
+                executablePath.EndsWith(Helper.ExecutableName, StringComparison.OrdinalIgnoreCase))
             {
                 return executablePath;
             }
+
+            // Host locating algorithm based on how apphost would look up the dotnet root:
+            // https://github.com/dotnet/runtime/blob/728fd85bc7ad04f5a0ea2ad0d4d8afe371ff9b64/src/native/corehost/fxr_resolver.cpp#L55
 
             // Get dotnet root from environment variable
             // TODO: check architecture specific environment variables (e.g. *_X86, *_X64, *_ARM64)
             string dotnetRoot = Environment.GetEnvironmentVariable("DOTNET_ROOT");
-            if (!string.IsNullOrEmpty(dotnetRoot))
+
+            if (string.IsNullOrEmpty(dotnetRoot) &&
+                !Helper.TryGetSelfRegisteredDirectory(out dotnetRoot) &&
+                !Helper.TryGetDefaultInstallationDirectory(out dotnetRoot))
             {
-                executablePath = System.IO.Path.Combine(dotnetRoot, ExecutableName);
-                if (!File.Exists(executablePath))
-                {
-                    throw new FileNotFoundException(null, executablePath);
-                }
-                return executablePath;
+                throw new DirectoryNotFoundException();
             }
 
-            // Rely on PATH lookup
-            return ExecutableName;
+            executablePath = System.IO.Path.Combine(dotnetRoot, Helper.ExecutableName);
+            if (!File.Exists(executablePath))
+            {
+                throw new FileNotFoundException(null, executablePath);
+            }
+            return executablePath;
+        }
+
+        private interface IDotNetHostHelper
+        {
+            bool TryGetSelfRegisteredDirectory(out string dotnetRoot);
+
+            bool TryGetDefaultInstallationDirectory(out string dotnetRoot);
+
+            string ExecutableName { get; }
         }
     }
 }
