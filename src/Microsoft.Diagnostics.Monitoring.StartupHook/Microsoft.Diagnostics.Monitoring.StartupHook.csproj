@@ -13,6 +13,7 @@
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\Stacks\NameCache.cs" Link="NameCache.cs" />
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\Stacks\NameIdentificationEvents.cs" Link="Exceptions\Eventing\NameIdentificationEvents.cs" />
     <Compile Include="..\Tools\dotnet-monitor\DisposableHelper.cs" Link="DisposableHelper.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\Exceptions\ExceptionEvents.cs" Link="Exceptions\Eventing\ExceptionEvents.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -12,10 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageFile Include="$(ArtifactsShippingPackagesDir)**/*.nupkg" IsShipping="true" />
     <PackageFile Include="$(ArtifactsShippingPackagesDir)**/*.tar.gz" IsShipping="true" />
     <PackageFile Include="$(ArtifactsShippingPackagesDir)**/*.zip" IsShipping="true" />
-    <PackageFile Include="$(ArtifactsNonShippingPackagesDir)**/*.nupkg" IsShipping="false" />
     <PackageFile Include="$(ArtifactsNonShippingPackagesDir)**/*.tar.gz" IsShipping="false" />
     <PackageFile Include="$(ArtifactsNonShippingPackagesDir)**/*.zip" IsShipping="false" />
   </ItemGroup>
@@ -137,7 +135,6 @@
 
     <!-- Package artifact file paths -->
     <PropertyGroup>
-      <!-- Example nupkg file name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg -->
       <!-- Example archive file name: dotnet-monitor-7.0.0-rtm.12345.6-win-x64.zip -->
       <_PackageWithBuildVersionFileName>@(_PackageWithBuildVersionFileName)</_PackageWithBuildVersionFileName>
       <_PackageWithBuildVersionFilePath>%(PackageToPublish.RootDir)%(PackageToPublish.Directory)$(_PackageWithBuildVersionFileName)</_PackageWithBuildVersionFilePath>
@@ -148,7 +145,6 @@
 
     <!--
       A file that contains the version of the package.
-      Example nupkg name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg.version
       Example archive name: dotnet-monitor-7.0.0-rtm.12345.6-win-x64.zip.version
       -->
     <WriteLinesToFile File="$(_PackageVersionFilePath)"
@@ -158,7 +154,6 @@
     <!--
       A file that contains the build version of the package. The name of this file contains the build
       version in order to avoid collisions when uploaded to blob storage.
-      Example nupkg name: dotnet-monitor.7.0.0-rtm.12345.6.nupkg.buildversion
       Example archive name: dotnet-monitor-7.0.0-rtm.12345.6-win-x64.zip.buildversion
       -->
     <WriteLinesToFile File="$(_BuildVersionFilePath)"
@@ -168,11 +163,6 @@
     <!-- Calculate manifest artifact data for each file type. -->
     <ItemGroup>
       <_CommonArtifactData Include="NonShipping=true" Condition="'%(PackageToPublish.IsShipping)' != 'true'" />
-    </ItemGroup>
-    <ItemGroup>
-      <_PackageArtifactData Include="@(_CommonArtifactData)" />
-      <!-- Set Category to OTHER so that nupkgs are also published to blob storage. -->
-      <_PackageArtifactData Include="Category=OTHER" Condition="'%(PackageToPublish.Extension)' == '.nupkg'" />
     </ItemGroup>
 
     <!-- Capture items that need to be published under the blob group. -->
@@ -190,10 +180,8 @@
       <_VersionContainerBlobItem Include="$(_ChecksumFilePath)" Condition="Exists('$(_ChecksumFilePath)')">
         <ManifestArtifactData Condition="'@(_CommonArtifactData)' != ''">@(_CommonArtifactData)</ManifestArtifactData>
       </_VersionContainerBlobItem>
-      <!-- Publish the nupkg as a blob in addition to their normal publishing mechanism
-           so that they can be retrieved from a stable location. -->
       <_VersionContainerBlobItem Include="%(PackageToPublish.FullPath)" Condition="Exists('%(PackageToPublish.FullPath)')" >
-        <ManifestArtifactData Condition="'@(_PackageArtifactData)' != ''">@(_PackageArtifactData)</ManifestArtifactData>
+        <ManifestArtifactData Condition="'@(_CommonArtifactData)' != ''">@(_CommonArtifactData)</ManifestArtifactData>
       </_VersionContainerBlobItem>
     </ItemGroup>
 

@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Tools.Monitor;
-using Microsoft.Diagnostics.Tools.Monitor.Profiler;
+using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using System.IO;
@@ -23,16 +23,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
             _logger = logger;
         }
 
-        public INativeFileProviderFactory Initialize()
+        public IFileProviderFactory Initialize()
         {
             _logger.SharedLibraryPath(SharedLibrarySourcePath);
 
             return new Factory();
         }
 
-        private sealed class Factory : INativeFileProviderFactory
+        private sealed class Factory : IFileProviderFactory
         {
-            public IFileProvider Create(string runtimeIdentifier)
+            public IFileProvider CreateManaged(string targetFramework)
+            {
+                return BuildOutputManagedFileProvider.Create(targetFramework, SharedLibrarySourcePath);
+            }
+
+            public IFileProvider CreateNative(string runtimeIdentifier)
             {
                 return BuildOutputNativeFileProvider.Create(runtimeIdentifier, SharedLibrarySourcePath);
             }

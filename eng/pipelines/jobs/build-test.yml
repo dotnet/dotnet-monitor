@@ -42,6 +42,12 @@ jobs:
           - _TestGroup: 'All'
       - ${{ else }}:
         - _TestGroup: '${{ parameters.testGroup }}'
+      - ${{ if ne(variables['System.TeamProject'], 'public') }}:
+        - group: DotNet-Monitor-IntegrationTests
+      - ${{ else }}:
+        # Provide blank versions of the secrets so we don't have to conditionally create
+        # internal vs public versions of tasks.
+        - DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET: ''
 
     preBuildSteps:
     - ${{ if and(ne(parameters.testGroup, 'None'), ne(parameters.architecture, 'arm64')) }}:
@@ -134,6 +140,9 @@ jobs:
           /m:1
         displayName: Test
         timeoutInMinutes: 60
+        env:
+          # This is blank in public builds
+          DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET: $(DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET)
 
       # Publish test results to Azure Pipelines
       - ${{ each testResultTfm in parameters.testResultTfms }}:

@@ -61,6 +61,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 CancellationToken token)
             {
                 EventMetricsProvider[] providers = Options.Providers;
+                EventMetricsMeter[] meters = Options.Meters;
                 bool includeDefaultProviders = Options.IncludeDefaultProviders.GetValueOrDefault(CollectLiveMetricsOptionsDefaults.IncludeDefaultProviders);
                 TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectLiveMetricsOptionsDefaults.Duration));
                 string egressProvider = Options.Egress;
@@ -68,7 +69,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 EventMetricsConfiguration configuration = new EventMetricsConfiguration()
                 {
                     IncludeDefaultProviders = includeDefaultProviders,
-                    Providers = providers
+                    Providers = providers,
+                    Meters = meters
                 };
 
                 MetricsPipelineSettings settings = MetricsSettingsFactory.CreateSettings(

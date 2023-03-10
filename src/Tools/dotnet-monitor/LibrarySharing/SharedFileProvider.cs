@@ -7,27 +7,32 @@ using Microsoft.Extensions.Primitives;
 using System;
 using System.IO;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
+namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
 {
     /// <summary>
-    /// An abstraction around how native library files are found in the file system.
+    /// An abstraction around how library files are found in the file system.
     /// </summary>
-    internal sealed class SharedNativeFileProvider : IFileProvider
+    internal sealed class SharedFileProvider : IFileProvider
     {
-        private readonly string _nativeFileBasePath;
+        private readonly string _basePath;
 
-        private SharedNativeFileProvider(string nativeFileBasePath)
+        private SharedFileProvider(string basePath)
         {
-            _nativeFileBasePath = nativeFileBasePath;
+            _basePath = basePath;
+        }
+
+        public static IFileProvider CreateManaged(string targetFramework, string sharedLibraryPath)
+        {
+            return new SharedFileProvider(Path.Combine(sharedLibraryPath, "any", targetFramework));
         }
 
         /// <summary>
         /// Creates an <see cref="IFileProvider"/> that can return native files from the shared library layout.
         /// The path of a returned file is {sharedLibraryPath}/{runtimeIdentifier}/native/{fileName}.
         /// </summary>
-        public static IFileProvider Create(string runtimeIdentifier, string sharedLibraryPath)
+        public static IFileProvider CreateNative(string runtimeIdentifier, string sharedLibraryPath)
         {
-            return new SharedNativeFileProvider(Path.Combine(sharedLibraryPath, runtimeIdentifier, "native"));
+            return new SharedFileProvider(Path.Combine(sharedLibraryPath, runtimeIdentifier, "native"));
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
@@ -37,7 +42,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            FileInfo fileInfo = new FileInfo(Path.Combine(_nativeFileBasePath, subpath));
+            FileInfo fileInfo = new FileInfo(Path.Combine(_basePath, subpath));
             if (fileInfo.Exists)
             {
                 return new PhysicalFileInfo(fileInfo);
