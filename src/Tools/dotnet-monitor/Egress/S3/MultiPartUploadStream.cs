@@ -29,9 +29,8 @@ internal class MultiPartUploadStream : Stream
 
     private List<byte> _syncTempBuffer;
     private SemaphoreSlim _semaphore;
-
-    Task _writeSynchronousArtifacts;
-    bool _finalize;
+    private Task _writeSynchronousArtifacts;
+    private bool _finalize;
 
     public MultiPartUploadStream(IS3Storage client, string bucketName, string objectKey, string uploadId, int bufferSize)
     {
@@ -69,7 +68,6 @@ internal class MultiPartUploadStream : Stream
             throw new ObjectDisposedException(nameof(MultiPartUploadStream));
         if (_offset == 0)
             return;
-
         await DoWriteAsync(true, cancellationToken);
     }
 
