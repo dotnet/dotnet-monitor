@@ -84,7 +84,10 @@ internal class MultiPartUploadStream : Stream
             try
             {
                 await WriteAsync(_syncTempBuffer.ToArray(), _finalize, cancellationToken);
-                _syncTempBuffer.Clear();
+                if (_syncTempBuffer.Count > 0)
+                {
+                    _syncTempBuffer = new();
+                }
             }
             finally
             {
