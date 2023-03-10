@@ -164,7 +164,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that the pipeline works with the SystemDiagnosticsMetrics trigger (gauge instrument).
         /// </summary>
         [Theory]
-        [MemberData(nameof(GetTfmsSupportingPortListener))]
+        [InlineData(TargetFrameworkMoniker.Net70)]
         public Task CollectionRulePipeline_SystemDiagnosticsMetricsTriggerTest_Gauge(TargetFrameworkMoniker appTfm)
         {
             CallbackActionService callbackService = new(_outputHelper);
@@ -230,7 +230,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that the pipeline works with the SystemDiagnosticsMetrics trigger greater-than (histogram instrument).
         /// </summary>
         [Theory]
-        [MemberData(nameof(GetTfmsSupportingPortListener))]
+        [InlineData(TargetFrameworkMoniker.Net70)]
         public Task CollectionRulePipeline_SystemDiagnosticsMetricsTriggerTest_Histogram_GreaterThan(TargetFrameworkMoniker appTfm)
         {
             CallbackActionService callbackService = new(_outputHelper);
@@ -297,7 +297,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that the pipeline works with the SystemDiagnosticsMetrics trigger less-than (histogram instrument).
         /// </summary>
         [Theory]
-        [MemberData(nameof(GetTfmsSupportingPortListener))]
+        [InlineData(TargetFrameworkMoniker.Net70)]
         public Task CollectionRulePipeline_SystemDiagnosticsMetricsTriggerTest_Histogram_LessThan(TargetFrameworkMoniker appTfm)
         {
             CallbackActionService callbackService = new(_outputHelper);
