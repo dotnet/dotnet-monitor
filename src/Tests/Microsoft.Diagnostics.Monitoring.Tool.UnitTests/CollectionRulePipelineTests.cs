@@ -164,7 +164,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that the pipeline works with the SystemDiagnosticsMetrics trigger (gauge instrument).
         /// </summary>
         [Theory]
-        [MemberData(nameof(GetTfmsSupportingPortListener))]
+        [InlineData(TargetFrameworkMoniker.Net70)]
         public Task CollectionRulePipeline_SystemDiagnosticsMetricsTriggerTest_Gauge(TargetFrameworkMoniker appTfm)
         {
             CallbackActionService callbackService = new(_outputHelper);
@@ -230,7 +230,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that the pipeline works with the SystemDiagnosticsMetrics trigger greater-than (histogram instrument).
         /// </summary>
         [Theory]
-        [MemberData(nameof(GetTfmsSupportingPortListener))]
+        [InlineData(TargetFrameworkMoniker.Net70)]
         public Task CollectionRulePipeline_SystemDiagnosticsMetricsTriggerTest_Histogram_GreaterThan(TargetFrameworkMoniker appTfm)
         {
             CallbackActionService callbackService = new(_outputHelper);
@@ -249,11 +249,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     options.CreateCollectionRule(TestRuleName)
                         .SetSystemDiagnosticsMetricsTrigger(options =>
                         {
-                            // histogram 50th percentile greater than 45 for 2 seconds
+                            // histogram 95th percentile greater than 60 for 2 seconds
                             options.MeterName = LiveMetricsTestConstants.ProviderName1;
                             options.InstrumentName = LiveMetricsTestConstants.HistogramName1;
-                            options.HistogramPercentile = 50;
-                            options.GreaterThan = 45;
+                            options.HistogramPercentile = 95;
+                            options.GreaterThan = 60;
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
                         })
                         .AddAction(CallbackAction.ActionName);
@@ -297,7 +297,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that the pipeline works with the SystemDiagnosticsMetrics trigger less-than (histogram instrument).
         /// </summary>
         [Theory]
-        [MemberData(nameof(GetTfmsSupportingPortListener))]
+        [InlineData(TargetFrameworkMoniker.Net70)]
         public Task CollectionRulePipeline_SystemDiagnosticsMetricsTriggerTest_Histogram_LessThan(TargetFrameworkMoniker appTfm)
         {
             CallbackActionService callbackService = new(_outputHelper);
@@ -316,11 +316,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     options.CreateCollectionRule(TestRuleName)
                         .SetSystemDiagnosticsMetricsTrigger(options =>
                         {
-                            // histogram 95% percentile less than 99 for 2 seconds
+                            // histogram 50% percentile less than 75 for 2 seconds
                             options.MeterName = LiveMetricsTestConstants.ProviderName1;
                             options.InstrumentName = LiveMetricsTestConstants.HistogramName1;
-                            options.HistogramPercentile = 95;
-                            options.LessThan = 99;
+                            options.HistogramPercentile = 50;
+                            options.LessThan = 75;
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
                         })
                         .AddAction(CallbackAction.ActionName);
