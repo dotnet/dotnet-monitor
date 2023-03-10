@@ -37,18 +37,18 @@ internal class MultiPartUploadStream : Stream
     {
         _bufferSize = Math.Max(bufferSize, MinimumSize); // has to be at least the minimum
         _buffer = ArrayPool<byte>.Shared.Rent(_bufferSize);
-        _syncTempBuffer = new();
         _offset = 0;
         _client = client;
         _bucketName = bucketName;
         _objectKey = objectKey;
         _uploadId = uploadId;
-        _semaphore = new SemaphoreSlim(1, 1);
     }
 
     public MultiPartUploadStream(IS3Storage client, string bucketName, string objectKey, string uploadId, int bufferSize, CancellationToken token) : this(client, bucketName, objectKey, uploadId, bufferSize)
     {
-        _writeSynchronousArtifacts = StartAsyncLoop(token);
+        _syncTempBuffer = new();
+        _semaphore = new SemaphoreSlim(1, 1);
+        _writeSynchronousArtifacts = WriteAsyncLoop(token);
     }
 
     public override async Task FlushAsync(CancellationToken cancellationToken)
@@ -73,7 +73,7 @@ internal class MultiPartUploadStream : Stream
         await DoWriteAsync(true, cancellationToken);
     }
 
-    public async Task StartAsyncLoop(CancellationToken cancellationToken)
+    public async Task WriteAsyncLoop(CancellationToken cancellationToken)
     {
         while (!_finalize || _syncTempBuffer.Count > 0)
         {
@@ -83,9 +83,9 @@ internal class MultiPartUploadStream : Stream
             await _semaphore.WaitAsync(cancellationToken);
             try
             {
-                await WriteAsync(_syncTempBuffer.ToArray(), _finalize, cancellationToken);
                 if (_syncTempBuffer.Count > 0)
                 {
+                    await WriteAsync(_syncTempBuffer.ToArray(), _finalize, cancellationToken);
                     _syncTempBuffer = new();
                 }
             }
