@@ -94,7 +94,7 @@ internal class MultiPartUploadStream : Stream
 
             if (writeBufferCopy.Count > 0)
                 await WriteAsync(writeBufferCopy.ToArray(), cancellationToken);
-       }
+        }
     }
 
     public override void Flush()
