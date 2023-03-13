@@ -146,6 +146,17 @@ For example, if action `A` has an output named `EgressPath`, and action `B` has 
 
 At this time, only the `Arguments` property of the `Execute` action may use an action output dependency.
 
+### Additional token substitution
+
+In addition to dependencies, the following list of token substitutions are also available for action settings:
+
+| Name | Description |
+|---|---|
+| `$(Process.RuntimeId)` | The unique identifier of the target process. Note for 3.1 applications, this will be the empty Guid. |
+| `$(Process.ProcessId)` | Process id of the target process. |
+| `$(Process.Name)` | Name of the target process. |
+| `$(Process.CommandLine)` | Command line of the target process. |
+
 ### Action List Execution
 
 When the action list of a rule is executed, the actions are started in the order in which they were specified within the list. However, each action may be completed asynchronously (this is the default behavior). For example, if an action list has actions `A`, `B`, `C`, then the execution of the list is:
