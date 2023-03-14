@@ -150,7 +150,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             AddCollectionRuleTriggerSchema<CPUUsageOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.CPUUsage);
             AddCollectionRuleTriggerSchema<GCHeapSizeOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.GCHeapSize);
             AddCollectionRuleTriggerSchema<ThreadpoolQueueLengthOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.ThreadpoolQueueLength);
-            AddCollectionRuleTriggerSchema<SystemDiagnosticsMetricsOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.SystemDiagnosticsMetrics);
+            AddCollectionRuleTriggerSchema<EventMeterOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.EventMeter);
             AddCollectionRuleTriggerSchema(context, triggerTypeSchema, KnownCollectionRuleTriggers.Startup);
         }
 
@@ -196,7 +196,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             triggerTypeSchema.Enumeration.Add(triggerType);
         }
 
-        private static void AddCollectionRuleTriggerSchema<TOptions>(GenerationContext context, JsonSchema triggerTypeSchema, string triggerType, List<string> propertiesToOmit = null)
+        private static void AddCollectionRuleTriggerSchema<TOptions>(GenerationContext context, JsonSchema triggerTypeSchema, string triggerType)
         {
             JsonSchema subSchema = new JsonSchema();
 

@@ -322,13 +322,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 });
         }
 
-        public static CollectionRuleOptions SetSystemDiagnosticsMetricsTrigger(this CollectionRuleOptions options, Action<SystemDiagnosticsMetricsOptions> callback = null)
+        public static CollectionRuleOptions SetEventMeterTrigger(this CollectionRuleOptions options, Action<EventMeterOptions> callback = null)
         {
             return options.SetTrigger(
-                KnownCollectionRuleTriggers.SystemDiagnosticsMetrics,
+                KnownCollectionRuleTriggers.EventMeter,
                 triggerOptions =>
                 {
-                    SystemDiagnosticsMetricsOptions settings = new();
+                    EventMeterOptions settings = new();
 
                     callback?.Invoke(settings);
 
@@ -412,10 +412,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return Assert.IsType<EventCounterOptions>(ruleOptions.Trigger.Settings);
         }
 
-        public static SystemDiagnosticsMetricsOptions VerifySystemDiagnosticsMetricsTrigger(this CollectionRuleOptions ruleOptions)
+        public static EventMeterOptions VerifyEventMeterTrigger(this CollectionRuleOptions ruleOptions)
         {
-            ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.SystemDiagnosticsMetrics);
-            return Assert.IsType<SystemDiagnosticsMetricsOptions>(ruleOptions.Trigger.Settings);
+            ruleOptions.VerifyTrigger(KnownCollectionRuleTriggers.EventMeter);
+            return Assert.IsType<EventMeterOptions>(ruleOptions.Trigger.Settings);
         }
 
         public static CPUUsageOptions VerifyCPUUsageTrigger(this CollectionRuleOptions ruleOptions)

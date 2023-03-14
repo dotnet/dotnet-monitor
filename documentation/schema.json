@@ -730,10 +730,10 @@
           ],
           "properties": {
             "Type": {
-              "const": "SystemDiagnosticsMetrics"
+              "const": "EventMeter"
             },
             "Settings": {
-              "$ref": "#/definitions/SystemDiagnosticsMetricsOptions"
+              "$ref": "#/definitions/EventMeterOptions"
             }
           }
         },
@@ -2210,7 +2210,7 @@
         "CPUUsage",
         "GCHeapSize",
         "ThreadpoolQueueLength",
-        "SystemDiagnosticsMetrics",
+        "EventMeter",
         "Startup"
       ]
     },
@@ -2506,7 +2506,7 @@
         }
       }
     },
-    "SystemDiagnosticsMetricsOptions": {
+    "EventMeterOptions": {
       "type": "object",
       "additionalProperties": false,
       "required": [

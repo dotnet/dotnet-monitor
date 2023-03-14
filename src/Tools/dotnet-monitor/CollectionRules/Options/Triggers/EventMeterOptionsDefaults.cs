@@ -3,7 +3,7 @@
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
 {
-    internal static class SystemDiagnosticsMetricsOptionsDefaults
+    internal static class EventMeterOptionsDefaults
     {
         public const string SlidingWindowDuration = TriggerOptionsConstants.SlidingWindowDuration_Default;
     }

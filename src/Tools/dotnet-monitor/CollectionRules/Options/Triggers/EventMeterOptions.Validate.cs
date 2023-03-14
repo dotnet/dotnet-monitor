@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
 {
-    partial class SystemDiagnosticsMetricsOptions : IValidatableObject
+    partial class EventMeterOptions : IValidatableObject
     {
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {

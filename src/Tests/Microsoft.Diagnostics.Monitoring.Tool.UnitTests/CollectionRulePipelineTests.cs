@@ -161,11 +161,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
-        /// Test that the pipeline works with the SystemDiagnosticsMetrics trigger (gauge instrument).
+        /// Test that the pipeline works with the EventMeter trigger (gauge instrument).
         /// </summary>
         [Theory]
         [InlineData(TargetFrameworkMoniker.Net70)]
-        public Task CollectionRulePipeline_SystemDiagnosticsMetricsTriggerTest_Gauge(TargetFrameworkMoniker appTfm)
+        public Task CollectionRulePipeline_EventMeterTriggerTest_Gauge(TargetFrameworkMoniker appTfm)
         {
             CallbackActionService callbackService = new(_outputHelper);
 
@@ -181,7 +181,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     };
 
                     options.CreateCollectionRule(TestRuleName)
-                        .SetSystemDiagnosticsMetricsTrigger(options =>
+                        .SetEventMeterTrigger(options =>
                         {
                             // gauge greater than 0 for 2 seconds
                             options.MeterName = LiveMetricsTestConstants.ProviderName1;
@@ -201,7 +201,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // the pipeline finishes starting.
                     Task actionStartedTask = await callbackService.StartWaitForCallbackAsync(cancellationSource.Token);
 
-                    // Start pipeline with SystemDiagnosticsMetrics trigger.
+                    // Start pipeline with EventMeter trigger.
                     Task runTask = pipeline.RunAsync(cancellationSource.Token);
 
                     await startedTask.WithCancellation(cancellationSource.Token);
@@ -227,11 +227,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
-        /// Test that the pipeline works with the SystemDiagnosticsMetrics trigger greater-than (histogram instrument).
+        /// Test that the pipeline works with the EventMeter trigger greater-than (histogram instrument).
         /// </summary>
         [Theory]
         [InlineData(TargetFrameworkMoniker.Net70)]
-        public Task CollectionRulePipeline_SystemDiagnosticsMetricsTriggerTest_Histogram_GreaterThan(TargetFrameworkMoniker appTfm)
+        public Task CollectionRulePipeline_EventMeterTriggerTest_Histogram_GreaterThan(TargetFrameworkMoniker appTfm)
         {
             CallbackActionService callbackService = new(_outputHelper);
 
@@ -247,7 +247,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     };
 
                     options.CreateCollectionRule(TestRuleName)
-                        .SetSystemDiagnosticsMetricsTrigger(options =>
+                        .SetEventMeterTrigger(options =>
                         {
                             // histogram 95th percentile greater than 60 for 2 seconds
                             options.MeterName = LiveMetricsTestConstants.ProviderName1;
@@ -268,7 +268,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // the pipeline finishes starting.
                     Task actionStartedTask = await callbackService.StartWaitForCallbackAsync(cancellationSource.Token);
 
-                    // Start pipeline with SystemDiagnosticsMetrics trigger.
+                    // Start pipeline with EventMeter trigger.
                     Task runTask = pipeline.RunAsync(cancellationSource.Token);
 
                     await startedTask.WithCancellation(cancellationSource.Token);
@@ -294,11 +294,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
-        /// Test that the pipeline works with the SystemDiagnosticsMetrics trigger less-than (histogram instrument).
+        /// Test that the pipeline works with the EventMeter trigger less-than (histogram instrument).
         /// </summary>
         [Theory]
         [InlineData(TargetFrameworkMoniker.Net70)]
-        public Task CollectionRulePipeline_SystemDiagnosticsMetricsTriggerTest_Histogram_LessThan(TargetFrameworkMoniker appTfm)
+        public Task CollectionRulePipeline_EventMeterTriggerTest_Histogram_LessThan(TargetFrameworkMoniker appTfm)
         {
             CallbackActionService callbackService = new(_outputHelper);
 
@@ -314,7 +314,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     };
 
                     options.CreateCollectionRule(TestRuleName)
-                        .SetSystemDiagnosticsMetricsTrigger(options =>
+                        .SetEventMeterTrigger(options =>
                         {
                             // histogram 50% percentile less than 75 for 2 seconds
                             options.MeterName = LiveMetricsTestConstants.ProviderName1;
@@ -335,7 +335,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     // the pipeline finishes starting.
                     Task actionStartedTask = await callbackService.StartWaitForCallbackAsync(cancellationSource.Token);
 
-                    // Start pipeline with SystemDiagnosticsMetrics trigger.
+                    // Start pipeline with EventMeter trigger.
                     Task runTask = pipeline.RunAsync(cancellationSource.Token);
 
                     await startedTask.WithCancellation(cancellationSource.Token);

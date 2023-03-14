@@ -11,16 +11,16 @@ using System;
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
 {
     /// <summary>
-    /// Factory for creating a new SystemDiagnosticsMetrics trigger.
+    /// Factory for creating a new EventMeter trigger.
     /// </summary>
-    internal sealed class SystemDiagnosticsMetricsTriggerFactory :
-        ICollectionRuleTriggerFactory<SystemDiagnosticsMetricsOptions>
+    internal sealed class EventMeterTriggerFactory :
+        ICollectionRuleTriggerFactory<EventMeterOptions>
     {
         private readonly EventPipeTriggerFactory _eventPipeTriggerFactory;
         private readonly ITraceEventTriggerFactory<SystemDiagnosticsMetricsTriggerSettings> _traceEventTriggerFactory;
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
 
-        public SystemDiagnosticsMetricsTriggerFactory(
+        public EventMeterTriggerFactory(
             IOptionsMonitor<GlobalCounterOptions> counterOptions,
             EventPipeTriggerFactory eventPipeTriggerFactory,
             ITraceEventTriggerFactory<SystemDiagnosticsMetricsTriggerSettings> traceEventTriggerFactory)
@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         }
 
         /// <inheritdoc/>
-        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, SystemDiagnosticsMetricsOptions options)
+        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, EventMeterOptions options)
         {
             SystemDiagnosticsMetricsTriggerSettings settings = new()
             {
@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 GreaterThan = options.GreaterThan,
                 LessThan = options.LessThan,
                 HistogramPercentile = options.HistogramPercentile,
-                SlidingWindowDuration = options.SlidingWindowDuration.GetValueOrDefault(TimeSpan.Parse(SystemDiagnosticsMetricsOptionsDefaults.SlidingWindowDuration)),
+                SlidingWindowDuration = options.SlidingWindowDuration.GetValueOrDefault(TimeSpan.Parse(EventMeterOptionsDefaults.SlidingWindowDuration)),
                 MaxHistograms = _counterOptions.CurrentValue.GetMaxHistograms(),
                 MaxTimeSeries = _counterOptions.CurrentValue.GetMaxTimeSeries(),
             };

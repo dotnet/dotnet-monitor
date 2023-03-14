@@ -135,7 +135,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, GCHeapSizeOptions>(KnownCollectionRuleTriggers.GCHeapSize);
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, ThreadpoolQueueLengthOptions>(KnownCollectionRuleTriggers.ThreadpoolQueueLength);
             services.RegisterCollectionRuleTrigger<StartupTriggerFactory>(KnownCollectionRuleTriggers.Startup);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.SystemDiagnosticsMetricsTriggerFactory, SystemDiagnosticsMetricsOptions>(KnownCollectionRuleTriggers.SystemDiagnosticsMetrics);
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventMeterTriggerFactory, EventMeterOptions>(KnownCollectionRuleTriggers.EventMeter);
 
             services.AddSingleton<EventPipeTriggerFactory>();
             services.AddSingleton<ITraceEventTriggerFactory<EventCounterTriggerSettings>, Monitoring.EventPipe.Triggers.EventCounter.EventCounterTriggerFactory>();
