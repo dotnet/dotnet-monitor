@@ -3,6 +3,7 @@
 
 using System;
 using System.CommandLine;
+using System.CommandLine.Invocation;
 
 namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp.Scenarios
 {
@@ -18,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp.Scenarios
             return command;
         }
 
-        public static void Execute()
+        public static void Execute(InvocationContext context)
         {
             ThrowCatch();
             ThrowCatchDeep();
