@@ -10,6 +10,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static partial class DotNetHost
     {
+        private const string DotNetName = "dotnet";
+        public const string ExecutableRootName = DotNetName;
+        public const string InstallationDirectoryName = DotNetName;
+
         private static readonly IDotNetHostHelper Helper =
             RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
             new WindowsDotNetHostHelper() :
@@ -18,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static readonly Lazy<string> PathLazy =
             new Lazy<string>(GetPath, LazyThreadSafetyMode.ExecutionAndPublication);
 
-        public static string Path => PathLazy.Value;
+        public static string ExecutablePath => PathLazy.Value;
 
         private static string GetPath()
         {

@@ -86,7 +86,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             string executablePath;
             if (Declaration.UseSharedDotNetHost)
             {
-                executablePath = DotNetHost.Path;
+                executablePath = DotNetHost.ExecutablePath;
 
                 string entrypointAssemblyRelativePath = Path.Combine(Path.GetDirectoryName(_exePath), $"{Declaration.Program}.dll");
 

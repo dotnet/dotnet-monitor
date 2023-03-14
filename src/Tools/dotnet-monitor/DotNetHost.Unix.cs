@@ -11,25 +11,31 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         private sealed class UnixDotNetHostHelper : IDotNetHostHelper
         {
-            private const string InstallationFilePath = "/etc/dotnet/install_location";
+            private const string DefaultPathLinux = $"/usr/share/{InstallationDirectoryName}";
+            private const string DefaultPathOSX = $"/usr/local/share/{InstallationDirectoryName}";
+            private const string InstallationFilePath = $"/etc/{InstallationDirectoryName}/install_location";
 
             private static readonly string CurrentArchInstallationFilePath =
                 FormattableString.Invariant($"{InstallationFilePath}_{RuntimeInformation.ProcessArchitecture.ToString("G").ToLowerInvariant()}");
 
-            public string ExecutableName => "dotnet";
+            public string ExecutableName => ExecutableRootName;
 
             public bool TryGetDefaultInstallationDirectory(out string dotnetRoot)
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
                     // CONSIDER: Account for emulation (emulated path would be under "./x64/")
-                    dotnetRoot = "/usr/local/share/dotnet";
+                    dotnetRoot = DefaultPathOSX;
+                    return true;
                 }
-                else
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
-                    dotnetRoot = "/usr/share/dotnet";
+                    dotnetRoot = DefaultPathLinux;
+                    return true;
                 }
-                return true;
+
+                dotnetRoot = null;
+                return false;
             }
 
             public bool TryGetSelfRegisteredDirectory(out string dotnetRoot)
