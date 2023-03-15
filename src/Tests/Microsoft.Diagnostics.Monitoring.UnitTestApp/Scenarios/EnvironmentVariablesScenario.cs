@@ -23,14 +23,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return command;
         }
 
-        public static async Task ExecuteAsync(InvocationContext context, CancellationToken token)
+        public static Task<int> ExecuteAsync(InvocationContext context, CancellationToken token)
         {
             string[] acceptableCommands = new string[]
             {
                 TestAppScenarios.EnvironmentVariables.Commands.IncVar,
                 TestAppScenarios.EnvironmentVariables.Commands.ShutdownScenario,
             };
-            context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
             {
                 while (true)
                 {
