@@ -15,8 +15,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         private readonly TaskCompletionSource<object> _eventStreamAvailableCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        public TraceOperation(IEndpointInfo endpointInfo, EventTracePipelineSettings settings, ILogger logger)
-            : base(endpointInfo, settings, logger) { }
+        public TraceOperation(IEndpointInfo endpointInfo, EventTracePipelineSettings settings, OperationTrackerService trackerService, ILogger logger)
+            : base(endpointInfo, settings, trackerService, logger) { }
 
         protected override EventTracePipeline CreatePipeline(Stream outputStream)
         {
