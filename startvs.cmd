@@ -14,6 +14,9 @@ SET DOTNET_MULTILEVEL_LOOKUP=0
 :: Put our local dotnet.exe on PATH first so Visual Studio knows which one to use
 SET PATH=%DOTNET_ROOT%;%PATH%
 
+:: Allow building of the latest target framework because SDK from the repository will be used to build
+SET ExcludeLatestTargetFramework=false
+
 SET sln=%~1
 
 IF NOT EXIST "%DOTNET_ROOT%\dotnet.exe" (
