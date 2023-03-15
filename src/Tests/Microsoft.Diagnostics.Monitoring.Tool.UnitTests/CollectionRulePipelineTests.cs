@@ -164,7 +164,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that the pipeline works with the EventMeter trigger (gauge instrument).
         /// </summary>
         [Theory]
-        [InlineData(TargetFrameworkMoniker.Net70)]
+        [MemberData(nameof(GetCurrentTfm))]
         public Task CollectionRulePipeline_EventMeterTriggerTest_Gauge(TargetFrameworkMoniker appTfm)
         {
             CallbackActionService callbackService = new(_outputHelper);
@@ -230,7 +230,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that the pipeline works with the EventMeter trigger greater-than (histogram instrument).
         /// </summary>
         [Theory]
-        [InlineData(TargetFrameworkMoniker.Net70)]
+        [MemberData(nameof(GetCurrentTfm))]
         public Task CollectionRulePipeline_EventMeterTriggerTest_Histogram_GreaterThan(TargetFrameworkMoniker appTfm)
         {
             CallbackActionService callbackService = new(_outputHelper);
@@ -297,7 +297,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that the pipeline works with the EventMeter trigger less-than (histogram instrument).
         /// </summary>
         [Theory]
-        [InlineData(TargetFrameworkMoniker.Net70)]
+        [MemberData(nameof(GetCurrentTfm))]
         public Task CollectionRulePipeline_EventMeterTriggerTest_Histogram_LessThan(TargetFrameworkMoniker appTfm)
         {
             CallbackActionService callbackService = new(_outputHelper);
@@ -578,6 +578,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             yield return new object[] { TargetFrameworkMoniker.Net70 };
 #if INCLUDE_NEXT_DOTNET
             yield return new object[] { TargetFrameworkMoniker.Net80 };
+#endif
+        }
+
+        public static IEnumerable<object[]> GetCurrentTfm()
+        {
+#if INCLUDE_NEXT_DOTNET
+            yield return new object[] { TargetFrameworkMoniker.Net80 };
+#else
+            yield return new object[] { TargetFrameworkMoniker.Net70 };
 #endif
         }
     }
