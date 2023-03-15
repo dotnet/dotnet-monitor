@@ -161,6 +161,206 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
+        /// Test that the pipeline works with the EventMeter trigger (gauge instrument).
+        /// </summary>
+        [Theory]
+        [MemberData(nameof(GetCurrentTfm))]
+        public Task CollectionRulePipeline_EventMeterTriggerTest_Gauge(TargetFrameworkMoniker appTfm)
+        {
+            CallbackActionService callbackService = new(_outputHelper);
+
+            return CollectionRulePipelineTestsHelper.ExecuteScenario(
+                appTfm,
+                TestAppScenarios.Metrics.Name,
+                TestRuleName,
+                options =>
+                {
+                    options.GlobalCounter = new WebApi.GlobalCounterOptions()
+                    {
+                        IntervalSeconds = 1
+                    };
+
+                    options.CreateCollectionRule(TestRuleName)
+                        .SetEventMeterTrigger(options =>
+                        {
+                            // gauge greater than 0 for 2 seconds
+                            options.MeterName = LiveMetricsTestConstants.ProviderName1;
+                            options.InstrumentName = LiveMetricsTestConstants.GaugeName;
+                            options.GreaterThan = 0;
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
+                        })
+                        .AddAction(CallbackAction.ActionName);
+                },
+                async (runner, pipeline, callbacks) =>
+                {
+                    using CancellationTokenSource cancellationSource = new(DefaultPipelineTimeout);
+
+                    Task startedTask = callbacks.StartWaitForPipelineStarted();
+
+                    // Register first callback before pipeline starts. This callback should be completed after
+                    // the pipeline finishes starting.
+                    Task actionStartedTask = await callbackService.StartWaitForCallbackAsync(cancellationSource.Token);
+
+                    // Start pipeline with EventMeter trigger.
+                    Task runTask = pipeline.RunAsync(cancellationSource.Token);
+
+                    await startedTask.WithCancellation(cancellationSource.Token);
+
+                    // This should not complete until the trigger conditions are satisfied for the first time.
+                    await actionStartedTask.WithCancellation(cancellationSource.Token);
+
+                    VerifyExecutionCount(callbackService, 1);
+
+                    await runner.SendCommandAsync(TestAppScenarios.Metrics.Commands.Continue);
+
+                    // Validate that the pipeline is not in a completed state.
+                    // The pipeline should already be running since it was started.
+                    Assert.False(runTask.IsCompleted);
+
+                    await pipeline.StopAsync(cancellationSource.Token);
+                },
+                _outputHelper,
+                services =>
+                {
+                    services.RegisterTestAction(callbackService);
+                });
+        }
+
+        /// <summary>
+        /// Test that the pipeline works with the EventMeter trigger greater-than (histogram instrument).
+        /// </summary>
+        [Theory]
+        [MemberData(nameof(GetCurrentTfm))]
+        public Task CollectionRulePipeline_EventMeterTriggerTest_Histogram_GreaterThan(TargetFrameworkMoniker appTfm)
+        {
+            CallbackActionService callbackService = new(_outputHelper);
+
+            return CollectionRulePipelineTestsHelper.ExecuteScenario(
+                appTfm,
+                TestAppScenarios.Metrics.Name,
+                TestRuleName,
+                options =>
+                {
+                    options.GlobalCounter = new WebApi.GlobalCounterOptions()
+                    {
+                        IntervalSeconds = 1
+                    };
+
+                    options.CreateCollectionRule(TestRuleName)
+                        .SetEventMeterTrigger(options =>
+                        {
+                            // histogram 95th percentile greater than 60 for 2 seconds
+                            options.MeterName = LiveMetricsTestConstants.ProviderName1;
+                            options.InstrumentName = LiveMetricsTestConstants.HistogramName1;
+                            options.HistogramPercentile = 95;
+                            options.GreaterThan = 60;
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
+                        })
+                        .AddAction(CallbackAction.ActionName);
+                },
+                async (runner, pipeline, callbacks) =>
+                {
+                    using CancellationTokenSource cancellationSource = new(DefaultPipelineTimeout);
+
+                    Task startedTask = callbacks.StartWaitForPipelineStarted();
+
+                    // Register first callback before pipeline starts. This callback should be completed after
+                    // the pipeline finishes starting.
+                    Task actionStartedTask = await callbackService.StartWaitForCallbackAsync(cancellationSource.Token);
+
+                    // Start pipeline with EventMeter trigger.
+                    Task runTask = pipeline.RunAsync(cancellationSource.Token);
+
+                    await startedTask.WithCancellation(cancellationSource.Token);
+
+                    // This should not complete until the trigger conditions are satisfied for the first time.
+                    await actionStartedTask.WithCancellation(cancellationSource.Token);
+
+                    VerifyExecutionCount(callbackService, 1);
+
+                    await runner.SendCommandAsync(TestAppScenarios.Metrics.Commands.Continue);
+
+                    // Validate that the pipeline is not in a completed state.
+                    // The pipeline should already be running since it was started.
+                    Assert.False(runTask.IsCompleted);
+
+                    await pipeline.StopAsync(cancellationSource.Token);
+                },
+                _outputHelper,
+                services =>
+                {
+                    services.RegisterTestAction(callbackService);
+                });
+        }
+
+        /// <summary>
+        /// Test that the pipeline works with the EventMeter trigger less-than (histogram instrument).
+        /// </summary>
+        [Theory]
+        [MemberData(nameof(GetCurrentTfm))]
+        public Task CollectionRulePipeline_EventMeterTriggerTest_Histogram_LessThan(TargetFrameworkMoniker appTfm)
+        {
+            CallbackActionService callbackService = new(_outputHelper);
+
+            return CollectionRulePipelineTestsHelper.ExecuteScenario(
+                appTfm,
+                TestAppScenarios.Metrics.Name,
+                TestRuleName,
+                options =>
+                {
+                    options.GlobalCounter = new WebApi.GlobalCounterOptions()
+                    {
+                        IntervalSeconds = 1
+                    };
+
+                    options.CreateCollectionRule(TestRuleName)
+                        .SetEventMeterTrigger(options =>
+                        {
+                            // histogram 50% percentile less than 75 for 2 seconds
+                            options.MeterName = LiveMetricsTestConstants.ProviderName1;
+                            options.InstrumentName = LiveMetricsTestConstants.HistogramName1;
+                            options.HistogramPercentile = 50;
+                            options.LessThan = 75;
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
+                        })
+                        .AddAction(CallbackAction.ActionName);
+                },
+                async (runner, pipeline, callbacks) =>
+                {
+                    using CancellationTokenSource cancellationSource = new(DefaultPipelineTimeout);
+
+                    Task startedTask = callbacks.StartWaitForPipelineStarted();
+
+                    // Register first callback before pipeline starts. This callback should be completed after
+                    // the pipeline finishes starting.
+                    Task actionStartedTask = await callbackService.StartWaitForCallbackAsync(cancellationSource.Token);
+
+                    // Start pipeline with EventMeter trigger.
+                    Task runTask = pipeline.RunAsync(cancellationSource.Token);
+
+                    await startedTask.WithCancellation(cancellationSource.Token);
+
+                    // This should not complete until the trigger conditions are satisfied for the first time.
+                    await actionStartedTask.WithCancellation(cancellationSource.Token);
+
+                    VerifyExecutionCount(callbackService, 1);
+
+                    await runner.SendCommandAsync(TestAppScenarios.Metrics.Commands.Continue);
+
+                    // Validate that the pipeline is not in a completed state.
+                    // The pipeline should already be running since it was started.
+                    Assert.False(runTask.IsCompleted);
+
+                    await pipeline.StopAsync(cancellationSource.Token);
+                },
+                _outputHelper,
+                services =>
+                {
+                    services.RegisterTestAction(callbackService);
+                });
+        }
+
+        /// <summary>
         /// Test that the CollectionRulePipeline completes to due to rule duration limit.
         /// </summary>
         [Theory]
@@ -378,6 +578,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             yield return new object[] { TargetFrameworkMoniker.Net70 };
 #if INCLUDE_NEXT_DOTNET
             yield return new object[] { TargetFrameworkMoniker.Net80 };
+#endif
+        }
+
+        public static IEnumerable<object[]> GetCurrentTfm()
+        {
+#if INCLUDE_NEXT_DOTNET
+            yield return new object[] { TargetFrameworkMoniker.Net80 };
+#else
+            yield return new object[] { TargetFrameworkMoniker.Net70 };
 #endif
         }
     }

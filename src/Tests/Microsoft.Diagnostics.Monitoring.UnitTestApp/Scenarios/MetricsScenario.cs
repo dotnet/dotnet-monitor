@@ -47,10 +47,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
                 while (!continueCommand.IsCompleted)
                 {
-                    for (int i = 0; i < 20; ++i)
+                    for (int i = 1; i <= 100; ++i)
                     {
-                        histogram1.Record(rd.Next(5000));
-                        histogram2.Record(rd.Next(5000), metadata.ToArray());
+                        histogram1.Record(i);
+                        histogram2.Record(i, metadata.ToArray());
                     }
 
                     counter2.Add(1);
