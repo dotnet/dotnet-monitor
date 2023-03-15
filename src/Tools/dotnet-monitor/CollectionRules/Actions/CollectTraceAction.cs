@@ -45,14 +45,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             private readonly IServiceProvider _serviceProvider;
             private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
-            private readonly OperationTrackerService _operationTrackerService;
 
             public CollectTraceAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectTraceOptions options)
                 : base(endpointInfo, options)
             {
                 _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
                 _counterOptions = _serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
-                _operationTrackerService = _serviceProvider.GetRequiredService<OperationTrackerService>();
             }
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
@@ -109,7 +107,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 EgressOperation egressOperation = new EgressOperation(
                     async (outputStream, token) =>
                     {
-                        using IDisposable operationRegistration = _operationTrackerService.Register(EndpointInfo);
                         await operation.ExecuteAsync(outputStream, startCompletionSource, token);
                     },
                     egressProvider,

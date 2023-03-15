@@ -9,16 +9,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class MetricsOperationFactory : IMetricsOperationFactory
     {
+        private readonly OperationTrackerService _operationTrackerService;
         private readonly ILogger<MetricsOperation> _logger;
 
-        public MetricsOperationFactory(ILogger<MetricsOperation> logger)
+        public MetricsOperationFactory(OperationTrackerService operationTrackerService, ILogger<MetricsOperation> logger)
         {
+            _operationTrackerService = operationTrackerService;
             _logger = logger;
         }
 
         public IArtifactOperation Create(IEndpointInfo endpointInfo, MetricsPipelineSettings settings)
         {
-            return new MetricsOperation(endpointInfo, settings, _logger);
+            return new MetricsOperation(endpointInfo, settings, _operationTrackerService, _logger);
         }
     }
 }
