@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return command;
         }
 
-        public static async Task ExecuteAsync(InvocationContext context, CancellationToken token)
+        public static Task<int> ExecuteAsync(InvocationContext context, CancellationToken token)
         {
             using StacksWorker worker = new StacksWorker();
 
@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             thread.Name = "TestThread";
             thread.Start(worker);
 
-            context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
             {
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Stacks.Commands.Continue, logger);
 
