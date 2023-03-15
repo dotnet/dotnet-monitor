@@ -642,12 +642,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 configuration,
                 duration);
 
-            if (_diagnosticPortOptions.Value.ConnectionMode == DiagnosticPortConnectionMode.Listen)
-            {
-                IDisposable operationRegistration = _operationTrackerService.Register(processInfo.EndpointInfo);
-                HttpContext.Response.RegisterForDispose(operationRegistration);
-            }
-
             return Result(
                 Utilities.ArtifactType_Trace,
                 egressProvider,

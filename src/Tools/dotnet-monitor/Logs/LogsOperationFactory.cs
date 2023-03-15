@@ -10,16 +10,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class LogsOperationFactory : ILogsOperationFactory
     {
+        private readonly OperationTrackerService _operationTrackerService;
         private readonly ILogger<LogsOperation> _logger;
 
-        public LogsOperationFactory(ILogger<LogsOperation> logger)
+        public LogsOperationFactory(OperationTrackerService operationTrackerService, ILogger<LogsOperation> logger)
         {
+            _operationTrackerService = operationTrackerService;
             _logger = logger;
         }
 
         public IArtifactOperation Create(IEndpointInfo endpointInfo, EventLogsPipelineSettings settings, LogFormat format)
         {
-            return new LogsOperation(endpointInfo, settings, format, _logger);
+            return new LogsOperation(endpointInfo, settings, format, _operationTrackerService, _logger);
         }
     }
 }
