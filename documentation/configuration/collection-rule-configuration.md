@@ -12,7 +12,7 @@ Collection rules are specified in configuration as a named item under the `Colle
   - [AspNetRequestDuration](#aspnetrequestduration-trigger)
   - [AspNetResponseStatus](#aspnetresponsestatus-trigger)
   - [EventCounter](#eventcounter-trigger)
-  - [SystemDiagnosticsMetrics](#systemdiagnosticsmetrics-trigger-71)
+  - [EventMeter](#eventmeter-trigger-80)
   - [Trigger shortcuts](../collectionrules/triggershortcuts.md) 
 - [`Actions`](#actions) - The action to be be performed
   - [CollectDump](#collectdump-action)
