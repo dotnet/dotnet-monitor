@@ -15,6 +15,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -743,8 +744,40 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         private static async Task<ValidationProblemDetailsException> CreateValidationProblemDetailsExceptionAsync(HttpResponseMessage responseMessage)
         {
+            ValidationProblemDetails details = await ReadContentAsync<ValidationProblemDetails>(responseMessage).ConfigureAwait(false);
+
+#if NET8_0_OR_GREATER
+            // Workaround for https://github.com/dotnet/aspnetcore/issues/47223
+            if (null != details.Extensions)
+            {
+                foreach (PropertyInfo propertyInfo in typeof(ValidationProblemDetails).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    Type interestedType = propertyInfo.PropertyType;
+                    // Get the underlying type if nullable
+                    if (interestedType.IsGenericType && interestedType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    {
+                        // Get the type parameter of the nullable (e.g. the T in Nullable<T> or T?)
+                        interestedType = interestedType.GenericTypeArguments[0];
+                    }
+
+                    // If the Extensions property contains this property, then extract it and set it on the object.
+                    string candidateExtensionKey = propertyInfo.Name.ToLowerInvariant();
+                    if ((interestedType.IsPrimitive || interestedType == typeof(string)) &&
+                        details.Extensions.TryGetValue(candidateExtensionKey, out object extensionPropertyValue))
+                    {
+                        if (extensionPropertyValue is JsonElement element)
+                        {
+                            extensionPropertyValue = JsonSerializer.Deserialize(element.GetRawText(), interestedType);
+                        }
+                        propertyInfo.SetValue(details, extensionPropertyValue);
+                        details.Extensions.Remove(candidateExtensionKey);
+                    }
+                }
+            }
+#endif
+
             return new ValidationProblemDetailsException(
-                await ReadContentAsync<ValidationProblemDetails>(responseMessage).ConfigureAwait(false),
+                details,
                 responseMessage.StatusCode);
         }
 
