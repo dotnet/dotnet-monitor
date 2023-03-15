@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp.Scenarios
             return command;
         }
 
-        public static void Execute(InvocationContext context)
+        public static int Execute(InvocationContext context)
         {
             throw new InvalidOperationException();
         }

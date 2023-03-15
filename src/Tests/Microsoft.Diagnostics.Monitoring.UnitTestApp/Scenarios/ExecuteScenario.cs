@@ -46,24 +46,26 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return command;
         }
 
-        private static void Execute_ZeroExitCode(InvocationContext context)
+        private static int Execute_ZeroExitCode(InvocationContext context)
         {
-            context.ExitCode = 0;
+            return 0;
         }
 
-        private static void Execute_NonZeroExitCode(InvocationContext context)
+        private static int Execute_NonZeroExitCode(InvocationContext context)
         {
-            context.ExitCode = 1;
+            return 1;
         }
 
-        private static void Execute_Sleep(InvocationContext context)
+        private static int Execute_Sleep(InvocationContext context)
         {
             Thread.Sleep(context.GetValue(DelayArgument));
+            return 0;
         }
 
-        private static void Execute_TextFileOutput(InvocationContext context)
+        private static int Execute_TextFileOutput(InvocationContext context)
         {
             File.WriteAllText(context.GetValue(PathArgument).FullName, context.GetValue(ContentArgument));
+            return 0;
         }
     }
 }
