@@ -33,14 +33,14 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
             _outputHelper = outputHelper;
         }
 
-        [Theory]
+        [Theory(Skip = "Exception tracking via profiler is currently disabled")]
         [MemberData(nameof(GetArchitectureProfilerPath))]
         public Task ExceptionThrowCatch(Architecture architecture, string profilerPath)
         {
             return RunAndCompare(nameof(ExceptionThrowCatch), architecture, profilerPath);
         }
 
-        [Theory]
+        [Theory(Skip = "Exception tracking via profiler is currently disabled")]
         [MemberData(nameof(GetArchitectureProfilerPath))]
         public Task ExceptionThrowCrash(Architecture architecture, string profilerPath)
         {

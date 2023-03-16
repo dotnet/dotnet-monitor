@@ -3,6 +3,7 @@
 
 #pragma once
 
+#ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
 #include <memory>
 #include "../Logging/Logger.h"
 #include "ThreadDataManager.h"
@@ -50,3 +51,4 @@ private:
         BYTE context[],
         void* clientData);
 };
+#endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
