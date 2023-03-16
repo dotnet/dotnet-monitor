@@ -725,6 +725,19 @@
           }
         },
         {
+          "required": [
+            "Settings"
+          ],
+          "properties": {
+            "Type": {
+              "const": "EventMeter"
+            },
+            "Settings": {
+              "$ref": "#/definitions/EventMeterOptions"
+            }
+          }
+        },
+        {
           "properties": {
             "Type": {
               "const": "Startup"
@@ -1984,6 +1997,7 @@
         "CPUUsage",
         "GCHeapSize",
         "ThreadpoolQueueLength",
+        "EventMeter",
         "Startup"
       ]
     },
@@ -2276,6 +2290,60 @@
           "description": "The sliding time window in which the counter must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
           "format": "duration",
           "default": "00:01:00"
+        }
+      }
+    },
+    "EventMeterOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "MeterName",
+        "InstrumentName"
+      ],
+      "properties": {
+        "MeterName": {
+          "type": "string",
+          "description": "The name of the meter that provides the instrument information.",
+          "minLength": 1
+        },
+        "InstrumentName": {
+          "type": "string",
+          "description": "The name of the instrument to monitor.",
+          "minLength": 1
+        },
+        "GreaterThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level the instrument must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "format": "double"
+        },
+        "LessThan": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The threshold level the instrument must maintain (or lower) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.",
+          "format": "double"
+        },
+        "SlidingWindowDuration": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The sliding time window in which the instrument must maintain its value as specified by the threshold levels in GreaterThan and LessThan.",
+          "format": "duration"
+        },
+        "HistogramPercentile": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "When monitoring a histogram, this dictates which percentile to compare against using the value in GreaterThan/LessThan - by default, the percentile can be 50, 95, or 99.",
+          "format": "int32",
+          "maximum": 100.0,
+          "minimum": 0.0
         }
       }
     },

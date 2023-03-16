@@ -11,10 +11,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class TraceOperationFactory : ITraceOperationFactory
     {
+        private readonly OperationTrackerService _operationTrackerService;
         private readonly ILogger<TraceOperation> _logger;
 
-        public TraceOperationFactory(ILogger<TraceOperation> logger)
+        public TraceOperationFactory(OperationTrackerService operationTrackerService, ILogger<TraceOperation> logger)
         {
+            _operationTrackerService = operationTrackerService;
             _logger = logger;
         }
 
@@ -26,7 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 Duration = duration
             };
 
-            return new TraceOperation(endpointInfo, settings, _logger);
+            return new TraceOperation(endpointInfo, settings, _operationTrackerService, _logger);
         }
 
         public IArtifactOperation Create(IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, string providerName, string eventName, IDictionary<string, string> payloadFilter)
@@ -37,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 Duration = duration
             };
 
-            return new TraceUntilEventOperation(endpointInfo, settings, providerName, eventName, payloadFilter, _logger);
+            return new TraceUntilEventOperation(endpointInfo, settings, providerName, eventName, payloadFilter, _operationTrackerService, _logger);
         }
     }
 }
