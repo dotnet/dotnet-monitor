@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     _eventStreamAvailableCompletionSource?.TrySetResult(null);
 
-                    await using EventMonitoringPassthroughStream eventMonitoringStream = new(
+                    await using EventMonitor eventMonitor = new EventMonitor(
                         _providerName,
                         _eventName,
                         _payloadFilter,
@@ -54,13 +54,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             _stoppingEventHitSource.TrySetResult(null);
                         },
                         onPayloadFilterMismatch: Logger.StoppingTraceEventPayloadFilterMismatch,
-                        eventStream,
-                        outputStream,
-                        DefaultBufferSize,
-                        callOnEventOnlyOnce: true,
-                        leaveDestinationStreamOpen: true /* We do not have ownership of the outputStream */);
+                        eventStream: new PassthroughStream(eventStream, outputStream, DefaultBufferSize, leaveDestinationStreamOpen: false /* We do not have ownership of the outputStream */),
+                        callOnEventOnlyOnce: true);
 
-                    await eventMonitoringStream.ProcessAsync(token);
+                    await eventMonitor.ProcessAsync(token);
                 });
         }
 
