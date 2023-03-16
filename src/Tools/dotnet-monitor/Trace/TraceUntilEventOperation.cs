@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     _eventStreamAvailableCompletionSource?.TrySetResult(null);
 
-                    await using EventMonitor eventMonitor = new EventMonitor(
+                    await using EventMonitor eventMonitor = new(
                         _providerName,
                         _eventName,
                         _payloadFilter,
