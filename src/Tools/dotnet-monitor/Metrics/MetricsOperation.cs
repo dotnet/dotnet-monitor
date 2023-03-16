@@ -17,8 +17,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         private readonly MetricsPipelineSettings _settings;
 
-        public MetricsOperation(IEndpointInfo endpointInfo, MetricsPipelineSettings settings, ILogger logger)
-            : base(logger, Utils.ArtifactType_Metrics, endpointInfo)
+        public MetricsOperation(IEndpointInfo endpointInfo, MetricsPipelineSettings settings, OperationTrackerService trackerService, ILogger logger)
+            : base(trackerService, logger, Utils.ArtifactType_Metrics, endpointInfo)
         {
             _settings = settings;
         }
