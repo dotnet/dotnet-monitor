@@ -54,8 +54,8 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
     IfFailLogRet(_environmentHelper->SetProductVersion());
 
     DWORD eventsLow = COR_PRF_MONITOR::COR_PRF_MONITOR_NONE;
-    ThreadDataManager::AddProfilerEventMask(eventsLow);
 #ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
+    ThreadDataManager::AddProfilerEventMask(eventsLow);
     _exceptionTracker->AddProfilerEventMask(eventsLow);
 #endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
     StackSampler::AddProfilerEventMask(eventsLow);
