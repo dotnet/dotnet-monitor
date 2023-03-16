@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             {
                 if (uploadId != null && !uploadDone)
                     await client.AbortMultipartUploadAsync(uploadId, token);
-                throw CreateException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressS3FailedDetailed, e.Message));
+                throw CreateException(e.Message);
             }
         }
 
@@ -94,7 +94,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
         {
             return !string.IsNullOrEmpty(innerMessage)
                 ? string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressS3FailedDetailed, innerMessage)
-                : Strings.ErrorMessage_EgressFileFailedGeneric;
+                : Strings.ErrorMessage_EgressS3FailedGeneric;
         }
     }
 }

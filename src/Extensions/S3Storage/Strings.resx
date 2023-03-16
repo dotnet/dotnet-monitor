@@ -117,15 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ErrorMessage_EgressFileFailedGeneric" xml:space="preserve">
-    <value>File system egress failed.</value>
-    <comment>Gets a string similar to "File system egress failed.".</comment>
-  </data>
   <data name="ErrorMessage_EgressS3FailedDetailed" xml:space="preserve">
     <value>S3 storage egress failed: {0}</value>
     <comment>Gets the format string for egress failure to S3 storage (with an inner message).
 1 Format Parameter:
 0. innerMessage: The detailed inner message with additional error context.</comment>
+  </data>
+  <data name="ErrorMessage_EgressS3FailedGeneric" xml:space="preserve">
+    <value>S3 system egress failed.</value>
+    <comment>Gets a string similar to S3 system egress failed.".</comment>
   </data>
   <data name="ErrorMessage_EgressS3FailedMissingOption" xml:space="preserve">
     <value>The {0} field is required.</value>
@@ -149,12 +149,5 @@
 2 Format Parameters:
 1. providerType: Type of the provider
 2. path: path where provider saved the stream</comment>
-  </data>
-  <data name="LogFormatString_EgressProviderUnableToFindPropertyKey" xml:space="preserve">
-    <value>Provider {providerType}: Unable to find '{keyName}' key in egress properties</value>
-    <comment>Gets the format string that is printed in the 10:EgressProviderUnableToFindPropertyKey event.
-2 Format Parameters:
-1. providerType: Type of the provider
-2. keyName: Name of the property that could not be found</comment>
   </data>
 </root>
