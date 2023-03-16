@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
-    public partial class DotNetHost
+    public partial class TestDotNetHost
     {
         private static Lazy<bool> s_HasHostInRepositoryLazy =
             new(() => File.Exists(GetHostFromRepository()));

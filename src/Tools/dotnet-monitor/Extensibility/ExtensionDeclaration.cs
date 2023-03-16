@@ -33,5 +33,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         /// This should contain values from <see cref="ExtensionTypes"/>.
         /// </summary>
         public string[] SupportedExtensionTypes { get; set; }
+
+        /// <summary>
+        /// Instructs dotnet-monitor to launch the extension using the shared .NET host (e.g. dotnet.exe).
+        /// </summary>
+        public bool UseSharedDotNetHost { get; set; }
     }
 }
