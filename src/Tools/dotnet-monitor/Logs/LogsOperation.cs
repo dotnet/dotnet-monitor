@@ -19,8 +19,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private readonly LogFormat _format;
         private readonly EventLogsPipelineSettings _settings;
 
-        public LogsOperation(IEndpointInfo endpointInfo, EventLogsPipelineSettings settings, LogFormat format, ILogger logger)
-            : base(logger, Utils.ArtifactType_Logs, endpointInfo)
+        public LogsOperation(IEndpointInfo endpointInfo, EventLogsPipelineSettings settings, LogFormat format, OperationTrackerService trackerService, ILogger logger)
+            : base(trackerService, logger, Utils.ArtifactType_Logs, endpointInfo)
         {
             _format = format;
             _settings = settings;

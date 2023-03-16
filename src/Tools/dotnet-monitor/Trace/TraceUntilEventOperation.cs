@@ -27,8 +27,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             string providerName,
             string eventName,
             IDictionary<string, string> payloadFilter,
+            OperationTrackerService trackerService,
             ILogger logger)
-            : base(endpointInfo, settings, logger)
+            : base(endpointInfo, settings, trackerService, logger)
         {
             _providerName = providerName;
             _eventName = eventName;
