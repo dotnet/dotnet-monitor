@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             _stoppingEventHitSource.TrySetResult(null);
                         },
                         onPayloadFilterMismatch: Logger.StoppingTraceEventPayloadFilterMismatch,
-                        eventStream: new PassthroughStream(eventStream, outputStream, DefaultBufferSize, leaveDestinationStreamOpen: false /* We do not have ownership of the outputStream */),
+                        eventStream: new PassthroughStream(eventStream, outputStream, DefaultBufferSize, leaveDestinationStreamOpen: true /* We do not have ownership of the outputStream */),
                         callOnEventOnlyOnce: true);
 
                     await eventMonitor.ProcessAsync(token);
