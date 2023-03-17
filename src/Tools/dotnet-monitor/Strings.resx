@@ -727,11 +727,10 @@
 3. program: The program defined to launch the executable</comment>
   </data>
   <data name="LogFormatString_ExtensionStarting" xml:space="preserve">
-    <value>Starting extension '{extensionPath} {cmdArgs}'.</value>
+    <value>Starting extension '{extensionName}'.</value>
     <comment>Gets the format string that is printed in the 66:ExtensionStarting event.
-2 Format Parameters:
-1. extensionPath: Path to the executable extension
-2. cmdArgs: the commandline arguments being passed to the executable</comment>
+1 Format Parameter:
+1. extensionName: The name of the extension or moniker</comment>
   </data>
   <data name="LogFormatString_ExperimentalFeatureEnabled" xml:space="preserve">
     <value>Experimental feature '{name}' is enabled.</value>

@@ -1223,7 +1223,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Starting extension &apos;{extensionPath} {cmdArgs}&apos;..
+        ///   Looks up a localized string similar to Starting extension &apos;{extensionName}&apos;..
         /// </summary>
         internal static string LogFormatString_ExtensionStarting {
             get {

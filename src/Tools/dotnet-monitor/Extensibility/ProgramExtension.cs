@@ -133,7 +133,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
             using OutputParser<EgressArtifactResult> parser = new(p, _logger);
 
-            _logger.ExtensionStarting(pStart.FileName, pStart.Arguments);
+            _logger.ExtensionStarting(_extensionName);
             if (!p.Start())
             {
                 ExtensionException.ThrowLaunchFailure(_extensionName);
