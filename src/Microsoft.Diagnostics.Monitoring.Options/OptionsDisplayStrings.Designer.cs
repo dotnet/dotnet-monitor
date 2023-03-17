@@ -1031,6 +1031,60 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The threshold level the instrument must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified..
+        /// </summary>
+        public static string DisplayAttributeDescription_EventMeterOptions_GreaterThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EventMeterOptions_GreaterThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When monitoring a histogram, this dictates which percentile to compare against using the value in GreaterThan/LessThan - by default, the percentile can be 50, 95, or 99..
+        /// </summary>
+        public static string DisplayAttributeDescription_EventMeterOptions_HistogramPercentile {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EventMeterOptions_HistogramPercentile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the instrument to monitor..
+        /// </summary>
+        public static string DisplayAttributeDescription_EventMeterOptions_InstrumentName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EventMeterOptions_InstrumentName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The threshold level the instrument must maintain (or lower) for the specified duration. Either GreaterThan or LessThan (or both) must be specified..
+        /// </summary>
+        public static string DisplayAttributeDescription_EventMeterOptions_LessThan {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EventMeterOptions_LessThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the meter that provides the instrument information..
+        /// </summary>
+        public static string DisplayAttributeDescription_EventMeterOptions_MeterName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EventMeterOptions_MeterName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The sliding time window in which the instrument must maintain its value as specified by the threshold levels in GreaterThan and LessThan..
+        /// </summary>
+        public static string DisplayAttributeDescription_EventMeterOptions_SlidingWindowDuration {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_EventMeterOptions_SlidingWindowDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The arguments to pass to the executable..
         /// </summary>
         public static string DisplayAttributeDescription_ExecuteOptions_Arguments {

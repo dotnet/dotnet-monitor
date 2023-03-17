@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.Text.Json;
 using Xunit;
 
@@ -20,14 +21,14 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 
             Command egressCmd = new Command("Egress");
 
-            egressCmd.SetHandler(() => Egress());
+            egressCmd.SetHandler(Egress);
 
             rootCommand.Add(egressCmd);
 
             return rootCommand.Invoke(args);
         }
 
-        private static int Egress()
+        private static int Egress(InvocationContext context)
         {
             EgressArtifactResult result = new();
             try
