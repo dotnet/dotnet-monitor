@@ -249,7 +249,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddFolderExtensionRepository(executingAssemblyFolder);
             services.AddFolderExtensionRepository(progDataFolder);
             services.AddFolderExtensionRepository(settingsFolder);
-            services.AddToolsExtensionRepository();
+            //services.AddToolsExtensionRepository(); // Leaving infrastructure in place for future support, but disabling as not currently supporting this scenario.
 
             return services;
         }
