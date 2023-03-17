@@ -332,8 +332,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_ExtensionProbeFailed);
 
-        private static readonly Action<ILogger, string, string, Exception> _extensionStarting =
-            LoggerMessage.Define<string, string>(
+        private static readonly Action<ILogger, string, Exception> _extensionStarting =
+            LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.ExtensionStarting.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_ExtensionStarting);
@@ -774,9 +774,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _extensionProbeFailed(logger, extensionName, null);
         }
 
-        public static void ExtensionStarting(this ILogger logger, string extensionPath, string arguments)
+        public static void ExtensionStarting(this ILogger logger, string extensionName)
         {
-            _extensionStarting(logger, extensionPath, arguments, null);
+            _extensionStarting(logger, extensionName, null);
         }
 
         public static void ExtensionConfigured(this ILogger logger, string extensionPath, int pid)
