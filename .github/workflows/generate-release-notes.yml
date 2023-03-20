@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout release branch
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f
         with:
           persist-credentials: false
           fetch-depth: 0 # Fetch the entire repo for the below git commit graph operations
@@ -74,7 +74,7 @@ jobs:
           TEST_RUN: ${{ inputs.test_run }}
 
       - name: Checkout main
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f
         with:
           persist-credentials: true # We need to persist credentials to push the resulting changes upstream.
           ref: main
