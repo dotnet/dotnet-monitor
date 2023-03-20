@@ -30,9 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 
             public CliActionWithExitCode(Func<InvocationContext, CancellationToken, Task<int>> action)
             {
-                ArgumentNullException.ThrowIfNull(action);
-
-                _action = action;
+                _action = action ?? throw new ArgumentNullException(nameof(action));
             }
 
             public override int Invoke(InvocationContext context)
