@@ -249,7 +249,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddFolderExtensionRepository(executingAssemblyFolder);
             services.AddFolderExtensionRepository(progDataFolder);
             services.AddFolderExtensionRepository(settingsFolder);
-            services.AddToolsExtensionRepository();
 
             return services;
         }
@@ -266,23 +265,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     IFileProvider fileProvider = GetFileProvider(targetExtensionFolder);
                     ILogger<ProgramExtension> logger = serviceProvider.GetRequiredService<ILogger<ProgramExtension>>();
                     return new FolderExtensionRepository(fileProvider, logger, targetExtensionFolder);
-                };
-
-            services.AddSingleton<ExtensionRepository>(createDelegate);
-
-            return services;
-        }
-
-        public static IServiceCollection AddToolsExtensionRepository(this IServiceCollection services)
-        {
-            Func<IServiceProvider, ExtensionRepository> createDelegate =
-                (IServiceProvider serviceProvider) =>
-                {
-                    var targetExtensionFolder = serviceProvider.GetService<IDotnetToolsFileSystem>().Path;
-
-                    IFileProvider fileProvider = GetFileProvider(targetExtensionFolder);
-                    ILogger<ProgramExtension> logger = serviceProvider.GetRequiredService<ILogger<ProgramExtension>>();
-                    return new ToolsExtensionRepository(fileProvider, logger, targetExtensionFolder);
                 };
 
             services.AddSingleton<ExtensionRepository>(createDelegate);
