@@ -41,7 +41,7 @@ jobs:
             body: backport_start_body
           });
     - name: Checkout repo
-      uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+      uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f
       with:
         persist-credentials: true # We need to persist credentials to push the resulting changes upstream.
         fetch-depth: 0
