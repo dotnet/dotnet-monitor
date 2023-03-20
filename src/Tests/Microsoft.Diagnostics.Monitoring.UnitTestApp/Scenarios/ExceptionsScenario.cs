@@ -16,19 +16,19 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         public static Command Command()
         {
             Command singleExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.SingleException);
-            singleExceptionCommand.SetHandler(SingleExceptionAsync);
+            singleExceptionCommand.SetActionWithExitCode(SingleExceptionAsync);
 
             Command repeatExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.RepeatException);
-            repeatExceptionCommand.SetHandler(RepeatExceptionAsync);
+            repeatExceptionCommand.SetActionWithExitCode(RepeatExceptionAsync);
 
             Command asyncExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.AsyncException);
-            asyncExceptionCommand.SetHandler(AsyncExceptionAsync);
+            asyncExceptionCommand.SetActionWithExitCode(AsyncExceptionAsync);
 
             Command frameworkExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.FrameworkException);
-            frameworkExceptionCommand.SetHandler(FrameworkExceptionAsync);
+            frameworkExceptionCommand.SetActionWithExitCode(FrameworkExceptionAsync);
 
             Command customExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.CustomException);
-            customExceptionCommand.SetHandler(CustomExceptionAsync);
+            customExceptionCommand.SetActionWithExitCode(CustomExceptionAsync);
 
             Command scenarioCommand = new(TestAppScenarios.Exceptions.Name);
             scenarioCommand.Subcommands.Add(singleExceptionCommand);
