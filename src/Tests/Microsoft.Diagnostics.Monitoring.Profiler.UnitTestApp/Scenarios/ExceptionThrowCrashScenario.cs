@@ -3,6 +3,7 @@
 
 using System;
 using System.CommandLine;
+using System.CommandLine.Invocation;
 
 namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp.Scenarios
 {
@@ -14,11 +15,11 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp.Scenarios
         public static Command Command()
         {
             Command command = new("ExceptionThrowCrash");
-            command.SetHandler(Execute);
+            command.SetAction(Execute);
             return command;
         }
 
-        public static void Execute()
+        public static void Execute(InvocationContext context)
         {
             throw new InvalidOperationException();
         }
