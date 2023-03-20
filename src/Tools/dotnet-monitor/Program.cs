@@ -21,10 +21,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 OutputOption
             };
 
-            command.SetHandler((context, token) =>
+            command.SetAction((context) =>
             {
-                return GenerateApiKeyCommandHandler.Invoke(
-                    token,
+                GenerateApiKeyCommandHandler.Invoke(
                     context.ParseResult.GetValue(OutputOption),
                     context.Console);
             });
@@ -48,7 +47,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ConfigurationFilePathOption
             };
 
-            command.SetHandler((context, token) =>
+            command.SetActionWithExitCode((context, token) =>
             {
                 return CollectCommandHandler.Invoke(
                     token,
@@ -83,7 +82,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ShowSourcesOption
             };
 
-            showCommand.SetHandler(context =>
+            showCommand.SetAction(context =>
             {
                 ConfigShowCommandHandler.Invoke(
                     context.ParseResult.GetValue(UrlsOption),
@@ -96,7 +95,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     context.ParseResult.GetValue(ConfigurationFilePathOption),
                     context.ParseResult.GetValue(ConfigLevelOption),
                     context.ParseResult.GetValue(ShowSourcesOption));
-                return 0;
             });
 
             Command configCommand = new Command(
