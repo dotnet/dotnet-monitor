@@ -6,6 +6,7 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
@@ -20,19 +21,19 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         public static Command Command()
         {
             Command nonZeroExitCodeCommand = new Command(ActionTestsConstants.NonZeroExitCode);
-            nonZeroExitCodeCommand.SetHandler(Execute_NonZeroExitCode);
+            nonZeroExitCodeCommand.SetActionWithExitCode(Execute_NonZeroExitCode);
 
             Command sleepCommand = new Command(ActionTestsConstants.Sleep);
             sleepCommand.Arguments.Add(DelayArgument);
-            sleepCommand.SetHandler(Execute_Sleep);
+            sleepCommand.SetAction(Execute_Sleep);
 
             Command textFileOutputCommand = new Command(ActionTestsConstants.TextFileOutput);
             textFileOutputCommand.Arguments.Add(PathArgument);
             textFileOutputCommand.Arguments.Add(ContentArgument);
-            textFileOutputCommand.SetHandler(Execute_TextFileOutput);
+            textFileOutputCommand.SetAction(Execute_TextFileOutput);
 
             Command zeroExitCodeCommand = new Command(ActionTestsConstants.ZeroExitCode);
-            zeroExitCodeCommand.SetHandler(Execute_ZeroExitCode);
+            zeroExitCodeCommand.SetActionWithExitCode(Execute_ZeroExitCode);
 
             Command command = new(TestAppScenarios.Execute.Name);
             command.Subcommands.Add(nonZeroExitCodeCommand);
@@ -42,26 +43,24 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return command;
         }
 
-        private static int Execute_ZeroExitCode(InvocationContext context)
+        private static Task<int> Execute_ZeroExitCode(InvocationContext context, CancellationToken token)
         {
-            return 0;
+            return Task.FromResult(0);
         }
 
-        private static int Execute_NonZeroExitCode(InvocationContext context)
+        private static Task<int> Execute_NonZeroExitCode(InvocationContext context, CancellationToken token)
         {
-            return 1;
+            return Task.FromResult(1);
         }
 
-        private static int Execute_Sleep(InvocationContext context)
+        private static void Execute_Sleep(InvocationContext context)
         {
             Thread.Sleep(context.GetValue(DelayArgument));
-            return 0;
         }
 
-        private static int Execute_TextFileOutput(InvocationContext context)
+        private static void Execute_TextFileOutput(InvocationContext context)
         {
             File.WriteAllText(context.GetValue(PathArgument).FullName, context.GetValue(ContentArgument));
-            return 0;
         }
     }
 }

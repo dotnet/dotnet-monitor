@@ -15,16 +15,15 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp.Scenarios
         public static Command Command()
         {
             Command command = new("ExceptionThrowCatch");
-            command.SetHandler(Execute);
+            command.SetAction(Execute);
             return command;
         }
 
-        public static int Execute(InvocationContext context)
+        public static void Execute(InvocationContext context)
         {
             ThrowCatch();
             ThrowCatchDeep();
             ThrowCatchRethrowCatch();
-            return 0;
         }
 
         private static void ThrowCatch()
