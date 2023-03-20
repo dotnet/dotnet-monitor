@@ -46,6 +46,7 @@ The following are the currently available triggers:
 | [AspNetRequestDuration](../configuration/collection-rule-configuration.md#aspnetrequestduration-trigger) | Event Pipe | Satisfied when the number of HTTP requests have response times longer than the threshold duration. |
 | [AspNetResponseStatus](../configuration/collection-rule-configuration.md#aspnetresponsestatus-trigger) | Event Pipe | Satisfied when the number of HTTP responses that have status codes matching the pattern list is above the specified threshold. |
 | [EventCounter](../configuration/collection-rule-configuration.md#eventcounter-trigger) | Event Pipe | Satisfied when the value of a counter falls above, below, or between the described threshold. |
+| [EventMeter](../configuration/collection-rule-configuration.md#eventmeter-trigger-80) | Event Pipe | Satisfied when the value of an instrument falls above, below, or between the described threshold. |
 
 ## Actions
 
@@ -145,6 +146,17 @@ For example, if action `A` has an output named `EgressPath`, and action `B` has 
 </details>
 
 At this time, only the `Arguments` property of the `Execute` action may use an action output dependency.
+
+### Additional token substitution
+
+In addition to dependencies, the following list of token substitutions are also available for action settings:
+
+| Name | Description |
+|---|---|
+| `$(Process.RuntimeId)` | The unique identifier of the target process. Note for 3.1 applications, this will be the empty Guid. |
+| `$(Process.ProcessId)` | Process id of the target process. |
+| `$(Process.Name)` | Name of the target process. |
+| `$(Process.CommandLine)` | Command line of the target process. |
 
 ### Action List Execution
 
