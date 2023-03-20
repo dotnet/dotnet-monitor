@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 
         private string GetResourceId(IS3Storage client, S3StorageEgressProviderOptions options, EgressArtifactSettings artifactSettings)
         {
-            if (!options.GeneratePreSignedUrl)
+            if (!options.PreSignedUrlExpiry.HasValue)
                 return $"BucketName={options.BucketName}, Key={artifactSettings.Name}";
 
             DateTime expires = DateTime.UtcNow.Add(options.PreSignedUrlExpiry!.Value);

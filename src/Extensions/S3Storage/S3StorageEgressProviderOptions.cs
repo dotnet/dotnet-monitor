@@ -26,8 +26,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 
         public string AwsProfilePath { get; set; }
 
-        public bool GeneratePreSignedUrl { get; set; }
-
         [Range(typeof(TimeSpan), "00:01:00", "1.00:00:00")]
         public TimeSpan? PreSignedUrlExpiry { get; set; }
 
