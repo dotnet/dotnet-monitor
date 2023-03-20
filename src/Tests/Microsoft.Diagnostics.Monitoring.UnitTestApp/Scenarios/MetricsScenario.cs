@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         public static Command Command()
         {
             Command command = new(TestAppScenarios.Metrics.Name);
-            command.SetHandler(ExecuteAsync);
+            command.SetActionWithExitCode(ExecuteAsync);
             return command;
         }
 
