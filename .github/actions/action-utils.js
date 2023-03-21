@@ -1,7 +1,7 @@
 const util = require("util");
 const jsExec = util.promisify(require("child_process").exec);
 
-export async function installAndRequirePackages(...newPackages)
+module.exports.installAndRequirePackages = async function(...newPackages)
 {
     console.log("Installing npm dependency");
     const { stdout, stderr } = await jsExec(`npm install ${newPackages.join(' ')}`);
@@ -17,10 +17,10 @@ export async function installAndRequirePackages(...newPackages)
     return requiredPackages;
 }
 
-export async function readFile(fileName) {
+module.exports.readFile = async function(fileName) {
     return await util.promisify(fs.readFile)(fileName, 'utf8');
 }
 
-export async function writeFile(fileName, contents) {
+module.exports.writeFile = async function(fileName, contents) {
     return await util.promisify(fs.writeFile)(fileName, contents);
 }

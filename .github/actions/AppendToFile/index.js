@@ -2,7 +2,7 @@ const actionUtils = require('../action-utils.js');
 const path = require('path')
 
 async function main() {
-    const core = await actionUtils.installAndRequirePackages("@actions/core");
+    const [core] = await actionUtils.installAndRequirePackages("@actions/core");
 
     try {
         const textToSearch = core.getInput('textToSearch', { required: true });
