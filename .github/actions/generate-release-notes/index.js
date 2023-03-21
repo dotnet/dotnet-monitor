@@ -1,11 +1,11 @@
-const actionsUtils = require('../actions-utils.js');
+const actionUtils = require('../actions-utils.js');
 const path = require('path');
 
 const UpdateReleaseNotesLabel = "update-release-notes";
 const BackportLabel = "backport";
 
 async function run() {
-    const [core, github] = await actionsUtils.installAndRequirePackages("@actions/core", "@actions/github");
+    const [core, github] = await actionUtils.installAndRequirePackages("@actions/core", "@actions/github");
 
     const octokit = github.getOctokit(core.getInput("auth_token", { required: true }));
 
@@ -36,7 +36,7 @@ async function run() {
         const monikerDescriptions = generateMonikerDescriptions(significantLabels);
 
         const releaseNotes = await generateReleaseNotes(path.join(__dirname, "releaseNotes.template.md"), buildDescription, changelog, monikerDescriptions);
-        await actionsUtils.writeFile(output, releaseNotes);
+        await actionUtils.writeFile(output, releaseNotes);
     } catch (error) {
         core.setFailed(error);
     }
@@ -155,7 +155,7 @@ async function generateChangelog(octokit, branch, repoOwner, repoName, minMergeD
 }
 
 async function generateReleaseNotes(templatePath, buildDescription, changelog, monikerDescriptions) {
-    let releaseNotes = await actionsUtils.readFile(templatePath);
+    let releaseNotes = await actionUtils.readFile(templatePath);
     releaseNotes = releaseNotes.replace("${buildDescription}", buildDescription);
     releaseNotes = releaseNotes.replace("${changelog}", changelog);
     releaseNotes = releaseNotes.replace("${monikerDescriptions}", monikerDescriptions);

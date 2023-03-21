@@ -1,8 +1,8 @@
-const actionsUtils = require('../actions-utils.js');
+const actionUtils = require('../actionUtils.js');
 const path = require('path')
 
 async function main() {
-    const core = await actionsUtils.installAndRequirePackages("@actions/core");
+    const core = await actionUtils.installAndRequirePackages("@actions/core");
 
     try {
         const textToSearch = core.getInput('textToSearch', { required: true });
@@ -19,7 +19,7 @@ async function main() {
         console.log("Paths: " + paths);
 
         for (const currPath of paths.split(',')) {
-            const content = await actionsUtils.readFile(currPath);
+            const content = await actionUtils.readFile(currPath);
             if (content && !content.includes(textToSearch))
             {
                 var updatedTextToAdd = textToAdd;
@@ -32,7 +32,7 @@ async function main() {
 
                 var contentStr = updatedTextToAdd + "\n\n" + content.toString();
 
-                await actionsUtils.writeFile(currPath, contentStr);
+                await actionUtils.writeFile(currPath, contentStr);
             }
         }
     } catch (error) {
