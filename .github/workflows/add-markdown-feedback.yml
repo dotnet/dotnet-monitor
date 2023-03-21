@@ -33,7 +33,7 @@ jobs:
           echo "updated_files=$(echo ${changed_source_files})" >> $GITHUB_ENV
 
       - name: Append To File
-        uses: ./.github/actions/AppendToFile
+        uses: ./.github/actions/append-to-file
         with:
           textToSearch: 'DGDQWXH'
           textToAdd: '### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src={insertFileName})'
