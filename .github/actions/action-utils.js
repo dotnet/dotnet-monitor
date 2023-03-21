@@ -18,10 +18,5 @@ module.exports.installAndRequirePackages = async function(...newPackages)
     return requiredPackages;
 }
 
-module.exports.readFile = async function(fileName) {
-    return await util.promisify(fs.readFile)(fileName, 'utf8');
-}
-
-module.exports.writeFile = async function(fileName, contents) {
-    return await util.promisify(fs.writeFile)(fileName, contents);
-}
+module.exports.readFile = (fileName) => util.promisify(fs.readFile)(fileName, 'utf8');
+module.exports.writeFile = (fileName, contents) => util.promisify(fs.writeFile)(fileName, contents);
