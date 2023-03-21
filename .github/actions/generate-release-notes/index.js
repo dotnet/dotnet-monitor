@@ -1,4 +1,4 @@
-const actionUtils = require('../actions-utils.js');
+const actionUtils = require('../action-utils.js');
 const path = require('path');
 
 const UpdateReleaseNotesLabel = "update-release-notes";

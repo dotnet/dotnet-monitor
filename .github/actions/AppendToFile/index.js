@@ -1,4 +1,4 @@
-const actionUtils = require('../actionUtils.js');
+const actionUtils = require('../action-utils.js');
 const path = require('path')
 
 async function main() {
