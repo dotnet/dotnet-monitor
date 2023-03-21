@@ -1,12 +1,13 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+using System.IO;
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
-using System.IO;
+
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
