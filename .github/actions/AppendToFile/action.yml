@@ -1,4 +1,4 @@
-name: 'Append text to files'
+name: 'AppendToFile Action'
 description: 'Appends text to a file (if it is not already there)'
 inputs:
   textToSearch:
