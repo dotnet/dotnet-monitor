@@ -1,4 +1,5 @@
 const util = require("util");
+const fs = require("fs");
 const jsExec = util.promisify(require("child_process").exec);
 
 module.exports.installAndRequirePackages = async function(...newPackages)
