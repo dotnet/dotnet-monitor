@@ -38,7 +38,7 @@ Functional tests are composed of 3 main parts:
 
 ## Native/Profiler Tests
 
-- [Microsoft.Diagnostics.Monitoring.Profiler](../../src/Tests/Microsoft.Diagnostics.Monitoring.Profiler/)
+- [Microsoft.Diagnostics.Monitoring.Profiler.UnitTests](../../src/Tests/Microsoft.Diagnostics.Monitoring.Profiler.UnitTests/)
 - [Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp](../../src/Tests/Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp/)
 
 This test assembly provides a test to make sure the dotnet-monitor profiler can load into a target app.
