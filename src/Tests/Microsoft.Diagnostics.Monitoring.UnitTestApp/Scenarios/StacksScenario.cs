@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         {
             Command command = new(TestAppScenarios.Stacks.Name);
 
-            command.SetHandler(ExecuteAsync);
+            command.SetActionWithExitCode(ExecuteAsync);
             return command;
         }
 
