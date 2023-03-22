@@ -7,7 +7,9 @@ using System.CommandLine.Invocation;
 using System.Threading;
 using System.Threading.Tasks;
 
-#if UNITTEST
+#if EXTENSION
+namespace Microsoft.Diagnostics.Monitoring.Extension.Common
+#elif UNITTEST
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 #else
 namespace Microsoft.Diagnostics.Tools.Monitor.Commands
