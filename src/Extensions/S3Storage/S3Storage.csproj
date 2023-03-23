@@ -39,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.ConfigurationSchema" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests" />
   </ItemGroup>
 
