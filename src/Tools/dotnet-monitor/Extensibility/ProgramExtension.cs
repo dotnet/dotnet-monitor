@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
@@ -66,10 +65,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         /// <inheritdoc/>
         public async Task<EgressArtifactResult> EgressArtifact(ExtensionEgressPayload configPayload, Func<Stream, CancellationToken, Task> getStreamAction, CancellationToken token)
         {
-            if (!Declaration.SupportedExtensionTypes.Contains(ExtensionTypes.Egress))
-            {
-                ExtensionException.ThrowWrongType(_extensionName, _declarationPath, typeof(IEgressExtension));
-            }
+            Declaration.Validate();
 
             // This is really weird, yes, but this is one of 2 overloads for [Stream].WriteAsync(...) that supports a CancellationToken, so we use a ReadOnlyMemory<char> instead of a string.
             ReadOnlyMemory<char> NewLine = new ReadOnlyMemory<char>("\r\n".ToCharArray());
@@ -84,20 +80,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             };
 
             string executablePath;
-            if (Declaration.UseSharedDotNetHost)
+            if (!string.IsNullOrEmpty(Declaration.AssemblyFileName))
             {
                 executablePath = DotNetHost.ExecutablePath;
 
-                string entrypointAssemblyRelativePath = Path.Combine(Path.GetDirectoryName(_exePath), $"{Declaration.Program}.dll");
+                string entrypointAssemblyRelativePath = Path.Combine(Path.GetDirectoryName(_exePath), $"{Declaration.AssemblyFileName}.dll");
 
                 IFileInfo entrypointAssemblyInfo = _fileSystem.GetFileInfo(entrypointAssemblyRelativePath);
                 ValidateExecutable(entrypointAssemblyInfo);
 
                 pStart.ArgumentList.Add(entrypointAssemblyInfo.PhysicalPath);
             }
-            else
+            else if (!string.IsNullOrEmpty(Declaration.ExecutableFileName))
             {
-                string exeName = Declaration.Program;
+                string exeName = Declaration.ExecutableFileName;
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
@@ -109,6 +105,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                 IFileInfo executableInfo = _fileSystem.GetFileInfo(programRelPath);
                 ValidateExecutable(executableInfo);
                 executablePath = executableInfo.PhysicalPath;
+            }
+            else
+            {
+                // Should never reach this point because validation should have checked this.
+                // This is a logical error in dotnet-monitor if execution reaches here.
+                throw new InvalidOperationException();
             }
 
             /* [TODOs]
@@ -203,7 +205,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         {
             if (!entrypointInfo.Exists || entrypointInfo.IsDirectory || entrypointInfo.PhysicalPath == null)
             {
-                _logger.ExtensionProgramMissing(_extensionName, Path.Combine(_targetFolder, _exePath), Declaration.Program);
+                _logger.ExtensionProgramMissing(_extensionName, Path.Combine(_targetFolder, _exePath), Declaration.ExecutableFileName);
                 ExtensionException.ThrowNotFound(_extensionName);
             }
         }

@@ -1,10 +1,4 @@
 {
-    "Id": "Microsoft.Diagnostics.Monitoring.AzureStorage",
-    "Version": "1.0.0",
-    "Program": "dotnet-monitor-egress-azureblobstorage",
-    "UseSharedDotNetHost": true,
     "Name": "AzureBlobStorage",
-    "SupportedExtensionTypes": [
-        "Egress"
-    ]
+    "AssemblyFileName": "dotnet-monitor-egress-azureblobstorage"
 }

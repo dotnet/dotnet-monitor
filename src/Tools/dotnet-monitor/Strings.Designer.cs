@@ -232,6 +232,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid extension manifest: {0}.
+        /// </summary>
+        internal static string ErrorMessage_ExtensionManifestInvalid {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ExtensionManifestInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to locate extension &apos;{0}&apos;..
         /// </summary>
         internal static string ErrorMessage_ExtensionNotFound {

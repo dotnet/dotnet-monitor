@@ -908,4 +908,7 @@
     <value>:REDACTED:</value>
     <comment>Gets a string similar to ":REDACTED:".</comment>
   </data>
+  <data name="ErrorMessage_ExtensionManifestInvalid" xml:space="preserve">
+    <value>Invalid extension manifest: {0}</value>
+  </data>
 </root>
