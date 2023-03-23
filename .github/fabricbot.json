@@ -522,6 +522,46 @@
         ],
         "taskName": "Remove needs-review Label On Comment"
       }
+    },
+    {
+      "taskType": "trigger",
+      "capabilityId": "IssueResponder",
+      "subCapability": "PullRequestResponder",
+      "version": "1.0",
+      "config": {
+        "conditions": {
+          "operator": "or",
+          "operands": [
+            {
+              "name": "isAction",
+              "parameters": {
+                "action": "closed"
+              }
+            },
+            {
+              "name": "isAction",
+              "parameters": {
+                "action": "merged"
+              }
+            }
+          ]
+        },
+        "eventType": "pull_request",
+        "eventNames": [
+          "pull_request",
+          "issues",
+          "project_card"
+        ],
+        "taskName": "Remove needs-review Label On Merge Or Close",
+        "actions": [
+          {
+            "name": "removeLabel",
+            "parameters": {
+              "label": "needs-review"
+            }
+          }
+        ]
+      }
     }
   ],
   "userGroups": []
