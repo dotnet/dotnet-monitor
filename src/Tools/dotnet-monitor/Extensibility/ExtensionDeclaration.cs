@@ -30,8 +30,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
         public void Validate()
         {
-            bool hasAssemblyFileName = string.IsNullOrEmpty(AssemblyFileName);
-            bool hasExecutableFileName = string.IsNullOrEmpty(ExecutableFileName);
+            bool hasAssemblyFileName = !string.IsNullOrEmpty(AssemblyFileName);
+            bool hasExecutableFileName = !string.IsNullOrEmpty(ExecutableFileName);
 
             if (hasAssemblyFileName && hasExecutableFileName)
             {
