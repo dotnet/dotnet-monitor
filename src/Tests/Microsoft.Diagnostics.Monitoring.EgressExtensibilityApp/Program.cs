@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
@@ -9,6 +8,8 @@ using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
@@ -21,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 
             Command egressCmd = new Command("Egress");
 
-            egressCmd.SetHandler(Egress);
+            egressCmd.Action = new CliActionWithExitCode(Egress);
 
             rootCommand.Add(egressCmd);
 
@@ -76,6 +77,30 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
             configurationRoot.Bind(options);
 
             return options;
+        }
+
+        // Due to https://github.com/dotnet/command-line-api/pull/2095, returning an exit code is "pay-for-play". A custom CliAction
+        // must be implemented in order to actually return the exit code.
+        private sealed class CliActionWithExitCode : CliAction
+        {
+            private Func<InvocationContext, int> _action;
+
+            public CliActionWithExitCode(Func<InvocationContext, int> action)
+            {
+                ArgumentNullException.ThrowIfNull(action);
+
+                _action = action;
+            }
+
+            public override int Invoke(InvocationContext context)
+            {
+                return _action(context);
+            }
+
+            public override Task<int> InvokeAsync(InvocationContext context, CancellationToken cancellationToken = default)
+            {
+                throw new NotSupportedException();
+            }
         }
     }
 }
