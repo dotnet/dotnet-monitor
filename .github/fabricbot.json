@@ -375,12 +375,30 @@
       "version": "1.0",
       "config": {
         "conditions": {
-          "operator": "and",
+          "operator": "or",
           "operands": [
             {
               "name": "isAction",
               "parameters": {
                 "action": "synchronize"
+              }
+            },
+            {
+              "name": "isAction",
+              "parameters": {
+                "action": "reopened"
+              }
+            },
+            {
+              "name": "isAction",
+              "parameters": {
+                "action": "opened"
+              }
+            },
+            {
+              "name": "isAction",
+              "parameters": {
+                "action": "review_requested"
               }
             }
           ]
@@ -398,7 +416,8 @@
               "label": "needs-review"
             }
           }
-        ]
+        ],
+        "taskName": "Add needs-review Label On Change"
       }
     },
     {
@@ -417,10 +436,24 @@
               }
             },
             {
-              "name": "isAction",
-              "parameters": {
-                "action": "submitted"
-              }
+              "operator": "or",
+              "operands": [
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "submitted"
+                  }
+                },
+                {
+                  "operator": "not",
+                  "operands": [
+                    {
+                      "name": "isOpen",
+                      "parameters": {}
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -435,7 +468,8 @@
               "label": "needs-review"
             }
           }
-        ]
+        ],
+        "taskName": "Remove needs-review Label On Review"
       }
     },
     {
@@ -485,7 +519,8 @@
               "label": "needs-review"
             }
           }
-        ]
+        ],
+        "taskName": "Remove needs-review Label On Comment"
       }
     }
   ],
