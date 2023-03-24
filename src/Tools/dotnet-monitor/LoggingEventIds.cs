@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ExtensionOutputMessage = 91,
         ExtensionErrorMessage = 92,
         ExtensionNotOfType = 93,
-        ExtensionDeclarationFileBroken = 94,
+        ExtensionManifestNotParsable = 94,
         ExtensionProgramMissing = 95,
         ExtensionMalformedOutput = 96
     }

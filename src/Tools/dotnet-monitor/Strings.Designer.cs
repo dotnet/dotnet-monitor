@@ -241,6 +241,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find extension manifest at &apos;{0}&apos;.
+        /// </summary>
+        internal static string ErrorMessage_ExtensionManifestNotFound {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ExtensionManifestNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to locate extension &apos;{0}&apos;..
         /// </summary>
         internal static string ErrorMessage_ExtensionNotFound {
@@ -1124,15 +1133,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The extension &apos;{extensionName}&apos; declaration file &apos;{extensionDeclarationFile}&apos; is missing or incorrectly formed..
-        /// </summary>
-        internal static string LogFormatString_ExtensionDeclarationFileBroken {
-            get {
-                return ResourceManager.GetString("LogFormatString_ExtensionDeclarationFileBroken", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Payload egress complete to extension process {pid}, waiting for process exit..
         /// </summary>
         internal static string LogFormatString_ExtensionEgressPayloadCompleted {
@@ -1165,6 +1165,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_ExtensionMalformedOutput {
             get {
                 return ResourceManager.GetString("LogFormatString_ExtensionMalformedOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The extension manifest file &apos;{manifestPath}&apos; is missing or incorrectly formed..
+        /// </summary>
+        internal static string LogFormatString_ExtensionManifestNotParsable {
+            get {
+                return ResourceManager.GetString("LogFormatString_ExtensionManifestNotParsable", resourceCulture);
             }
         }
         

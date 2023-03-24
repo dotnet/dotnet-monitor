@@ -45,11 +45,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
 
         private IExtension CreateProgramExtension(string extensionName, string extensionPath)
         {
+            string manifestPath = Path.Combine(extensionPath, ExtensionManifest.DefaultFileName);
+
             return new ProgramExtension(
+                ExtensionManifest.FromPath(manifestPath),
                 extensionName,
                 extensionPath,
                 new PhysicalFileProvider(extensionPath),
-                Constants.ExtensionDefinitionFile,
+                manifestPath,
                 _logger);
         }
     }

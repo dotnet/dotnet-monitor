@@ -642,12 +642,8 @@
 1. extensionPath: Path to the executable extension
 2. pid: Process ID of the started process</comment>
   </data>
-  <data name="LogFormatString_ExtensionDeclarationFileBroken" xml:space="preserve">
-    <value>The extension '{extensionName}' declaration file '{extensionDeclarationFile}' is missing or incorrectly formed.</value>
-    <comment>Gets the format string that is printed in the 73:ExtensionDeclarationFileBroken event.
-2 Format Parameters:
-1. extensionName The name of the extension or moniker
-2. extensionDeclarationFile: The constant name of the file where the extension is declared</comment>
+  <data name="LogFormatString_ExtensionManifestNotParsable" xml:space="preserve">
+    <value>The extension manifest file '{manifestPath}' is missing or incorrectly formed.</value>
   </data>
   <data name="LogFormatString_ExtensionEgressPayloadCompleted" xml:space="preserve">
     <value>Payload egress complete to extension process {pid}, waiting for process exit.</value>
@@ -906,5 +902,8 @@
   </data>
   <data name="ErrorMessage_ExtensionManifestInvalid" xml:space="preserve">
     <value>Invalid extension manifest: {0}</value>
+  </data>
+  <data name="ErrorMessage_ExtensionManifestNotFound" xml:space="preserve">
+    <value>Could not find extension manifest at '{0}'</value>
   </data>
 </root>
