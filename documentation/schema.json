@@ -1109,6 +1109,28 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "AzureBlobStorage": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "Mapping of Azure blob storage egress provider names to their options.",
+          "default": {},
+          "additionalProperties": {
+            "$ref": "#/definitions/AzureBlobEgressProviderOptions"
+          }
+        },
+        "S3Storage": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "Mapping of S3 storage egress provider names to their options.",
+          "default": {},
+          "additionalProperties": {
+            "$ref": "#/definitions/S3StorageEgressProviderOptions"
+          }
         }
       }
     },
@@ -2487,6 +2509,173 @@
           "type": "boolean",
           "description": "Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.",
           "default": false
+        }
+      }
+    },
+    "AzureBlobEgressProviderOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "AccountUri",
+        "ContainerName"
+      ],
+      "properties": {
+        "AccountUri": {
+          "type": "string",
+          "format": "uri",
+          "minLength": 1
+        },
+        "AccountKey": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "AccountKeyName": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "SharedAccessSignature": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "SharedAccessSignatureName": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "ManagedIdentityClientId": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "ContainerName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "BlobPrefix": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "CopyBufferSize": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int32"
+        },
+        "QueueName": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "QueueAccountUri": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "format": "uri"
+        },
+        "QueueSharedAccessSignature": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "QueueSharedAccessSignatureName": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "Metadata": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "S3StorageEgressProviderOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "BucketName"
+      ],
+      "properties": {
+        "Endpoint": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "BucketName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "RegionName": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "AccessKeyId": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "SecretAccessKey": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "AwsProfileName": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "AwsProfilePath": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "GeneratePreSignedUrl": {
+          "type": "boolean"
+        },
+        "PreSignedUrlExpiry": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "format": "duration"
+        },
+        "ForcePathStyle": {
+          "type": "boolean"
+        },
+        "CopyBufferSize": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
         }
       }
     }

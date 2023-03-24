@@ -1,6 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.AzureBlobStorage;
+using Microsoft.Diagnostics.Monitoring.Extension.S3Storage;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
@@ -35,6 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             AddCollectionRuleSchemas(context);
             AddConsoleLoggerFormatterSubSchemas(context);
             AddDiagnosticPortSchema(context, schema);
+            AddEgressExtensionSchemas(context);
 
             //TODO Figure out a better way to add object defaults
             schema.Definitions[nameof(EgressOptions)].Properties[nameof(EgressOptions.FileSystem)].Default = JsonSchema.CreateAnySchema();
@@ -234,6 +237,35 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             }
 
             return propertyNames;
+        }
+
+        private static void AddEgressExtensionSchemas(GenerationContext context)
+        {
+            AddEgressExtensionSchema<AzureBlobEgressProviderOptions>(
+                context,
+                AzureBlobStorage.Constants.AzureBlobStorageProviderName,
+                "Mapping of Azure blob storage egress provider names to their options.");
+            AddEgressExtensionSchema<S3StorageEgressProviderOptions>(
+                context,
+                Extension.S3Storage.Constants.S3StorageProviderName,
+                "Mapping of S3 storage egress provider names to their options.");
+        }
+
+        private static void AddEgressExtensionSchema<TOptions>(GenerationContext context, string name, string description)
+        {
+            JsonSchema egressProviderOptionsSchema = context.AddTypeIfNotExist<TOptions>();
+
+            JsonSchemaProperty egressProviderProperty = new JsonSchemaProperty();
+            egressProviderProperty.Type = JsonObjectType.Null | JsonObjectType.Object;
+            egressProviderProperty.Description = description;
+            egressProviderProperty.AdditionalPropertiesSchema = new JsonSchema()
+            {
+                Reference = egressProviderOptionsSchema
+            };
+            egressProviderProperty.Default = JsonSchema.CreateAnySchema();
+
+            JsonSchemaProperty egressProperty = context.Schema.Properties[nameof(RootOptions.Egress)];
+            egressProperty.ActualTypeSchema.Properties.Add(name, egressProviderProperty);
         }
 
         private static JsonSchemaProperty AddDiscriminatedSubSchema(
