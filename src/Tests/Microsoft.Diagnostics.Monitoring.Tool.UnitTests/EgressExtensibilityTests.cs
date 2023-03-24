@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility.Egress;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
@@ -99,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 UserConfigDirectory = userConfigDir.FullName
             };
 
-            ProgramExtension extension = (ProgramExtension)FindEgressExtension(ConfigDirectory.UserConfigDirectory, settings);
+            EgressExtension extension = (EgressExtension)FindEgressExtension(ConfigDirectory.UserConfigDirectory, settings);
 
             // This addresses an issue with the extension process not being able to find the required version of dotnet
             // Runtime Directory example: 'C:\\Users\\abc\\dotnet-monitor\\.dotnet\\shared\\Microsoft.NETCore.App\\6.0.11\\

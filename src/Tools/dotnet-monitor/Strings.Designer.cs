@@ -223,6 +223,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The extension file &apos;{0}&apos; for extension &apos;{1}&apos; could not be found..
+        /// </summary>
+        internal static string ErrorMessage_ExtensionFileNotFound {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ExtensionFileNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The extension &apos;{extensionName}&apos; failed to launch..
         /// </summary>
         internal static string ErrorMessage_ExtensionLaunchFailed {
@@ -1228,15 +1237,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_ExtensionProbeSucceeded {
             get {
                 return ResourceManager.GetString("LogFormatString_ExtensionProbeSucceeded", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The extension &apos;{extensionName}&apos;&apos;s program defined in &apos;{extensionDeclarationFile}&apos; is missing the program to execute &apos;{program}&apos;..
-        /// </summary>
-        internal static string LogFormatString_ExtensionProgramMissing {
-            get {
-                return ResourceManager.GetString("LogFormatString_ExtensionProgramMissing", resourceCulture);
             }
         }
         

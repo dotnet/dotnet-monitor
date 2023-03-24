@@ -3,7 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
-using Microsoft.Extensions.FileProviders;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility.Egress;
 using Microsoft.Extensions.Logging;
 using System.IO;
 
@@ -11,9 +11,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
 {
     internal sealed class BuildOutputExtensionRepository : ExtensionRepository
     {
-        private readonly ILogger<ProgramExtension> _logger;
+        private readonly ILogger<EgressExtension> _logger;
 
-        public BuildOutputExtensionRepository(ILogger<ProgramExtension> logger)
+        public BuildOutputExtensionRepository(ILogger<EgressExtension> logger)
         {
             _logger = logger;
         }
@@ -47,12 +47,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
         {
             string manifestPath = Path.Combine(extensionPath, ExtensionManifest.DefaultFileName);
 
-            return new ProgramExtension(
+            return new EgressExtension(
                 ExtensionManifest.FromPath(manifestPath),
-                extensionName,
                 extensionPath,
-                new PhysicalFileProvider(extensionPath),
-                manifestPath,
                 _logger);
         }
     }

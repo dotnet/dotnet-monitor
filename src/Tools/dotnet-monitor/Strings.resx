@@ -714,14 +714,6 @@
 1. extensionName: The name of the extension or moniker
 2. extension: The friendly name of the extension from the IExtension interface</comment>
   </data>
-  <data name="LogFormatString_ExtensionProgramMissing" xml:space="preserve">
-    <value>The extension '{extensionName}''s program defined in '{extensionDeclarationFile}' is missing the program to execute '{program}'.</value>
-    <comment>Gets the format string that is printed in the 74:ExtensionProgramMissing event.
-3 Format Parameters:
-1. extensionName The name of the extension or moniker
-2. extensionDeclarationFile: The constant name of the file where the extension is declared
-3. program: The program defined to launch the executable</comment>
-  </data>
   <data name="LogFormatString_ExtensionStarting" xml:space="preserve">
     <value>Starting extension '{extensionName}'.</value>
     <comment>Gets the format string that is printed in the 66:ExtensionStarting event.
@@ -905,5 +897,8 @@
   </data>
   <data name="ErrorMessage_ExtensionManifestNotFound" xml:space="preserve">
     <value>Could not find extension manifest at '{0}'</value>
+  </data>
+  <data name="ErrorMessage_ExtensionFileNotFound" xml:space="preserve">
+    <value>The extension file '{0}' for extension '{1}' could not be found.</value>
   </data>
 </root>

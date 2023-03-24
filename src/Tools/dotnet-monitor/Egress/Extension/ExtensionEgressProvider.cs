@@ -4,6 +4,7 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility.Egress;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;

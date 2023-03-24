@@ -104,8 +104,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ExtensionErrorMessage = 92,
         ExtensionNotOfType = 93,
         ExtensionManifestNotParsable = 94,
-        ExtensionProgramMissing = 95,
-        ExtensionMalformedOutput = 96
+        ExtensionMalformedOutput = 95
     }
 
     internal static class LoggingEventIdsExtensions

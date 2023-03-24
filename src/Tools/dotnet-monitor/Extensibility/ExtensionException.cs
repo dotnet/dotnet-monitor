@@ -45,6 +45,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             throw new ExtensionException(ex.Message, ex);
         }
 
+        public static void ThrowFileNotFound(string extensionName, string path)
+        {
+            throw new ExtensionException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_ExtensionFileNotFound, path, extensionName));
+        }
+
         [DoesNotReturn]
         public static void ThrowLaunchFailure(string extensionName)
         {
