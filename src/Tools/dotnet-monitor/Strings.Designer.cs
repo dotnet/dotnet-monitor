@@ -1493,15 +1493,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to folder &apos;{0}&apos;.
-        /// </summary>
-        internal static string Message_FolderExtensionRepoName {
-            get {
-                return ResourceManager.GetString("Message_FolderExtensionRepoName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Generated ApiKey for dotnet-monitor; use the following header for authorization:.
         /// </summary>
         internal static string Message_GenerateApiKey {

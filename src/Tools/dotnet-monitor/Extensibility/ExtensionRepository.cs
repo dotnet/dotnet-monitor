@@ -6,16 +6,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     internal abstract class ExtensionRepository
     {
-        public ExtensionRepository(string displayName)
-        {
-            DisplayName = displayName;
-        }
-
-        /// <summary>
-        /// Gets a friendly name to describe this instance of an <see cref="ExtensionRepository"/>. This is used in Logs.
-        /// </summary>
-        public string DisplayName { get; private init; }
-
         /// <summary>
         /// Gets a callable <see cref="IExtension"/> for the given extension moniker.
         /// </summary>

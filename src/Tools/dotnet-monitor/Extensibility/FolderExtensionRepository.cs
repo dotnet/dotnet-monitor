@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
@@ -15,7 +14,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         private readonly ILogger<ProgramExtension> _logger;
 
         public FolderExtensionRepository(IFileProvider fileSystem, ILogger<ProgramExtension> logger, string targetFolder)
-            : base(string.Format(CultureInfo.CurrentCulture, Strings.Message_FolderExtensionRepoName, targetFolder))
         {
             _fileSystem = fileSystem;
 

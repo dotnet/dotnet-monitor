@@ -867,10 +867,6 @@
   <data name="Message_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {0}</value>
   </data>
-  <data name="Message_FolderExtensionRepoName" xml:space="preserve">
-    <value>folder '{0}'</value>
-    <comment>Gets the string for describing a folder extension repo</comment>
-  </data>
   <data name="Message_GenerateApiKey" xml:space="preserve">
     <value>Generated ApiKey for dotnet-monitor; use the following header for authorization:</value>
     <comment>Gets a header string for the output of GenerateApiKeyCommand.</comment>
