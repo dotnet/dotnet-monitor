@@ -1,10 +1,4 @@
 {
-    "Id": "Microsoft.Diagnostics.Monitoring.S3",
-    "Version": "1.0.0",
-    "Program": "dotnet-monitor-egress-s3storage",
-    "UseSharedDotNetHost": true,
     "Name": "S3Storage",
-    "SupportedExtensionTypes": [
-        "Egress"
-    ]
+    "AssemblyFileName": "dotnet-monitor-egress-s3storage"
 }
