@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -81,7 +80,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                     {
                         // Expected that some things won't parse correctly
                     }
-                    _logger.ExtensionOutputMessage(_processId, Regex.Unescape(eventArgs.Data));
+                    _logger.ExtensionOutputMessage(_processId, eventArgs.Data);
                 }
             }
 
