@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -24,12 +25,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         private readonly string _exePath;
         private readonly IFileProvider _fileSystem;
         private readonly ILogger<ProgramExtension> _logger;
-        private Lazy<ExtensionDeclaration> _extensionDeclaration;
+        private ExtensionManifest _manifest;
         private IDictionary<string, string> _processEnvironmentVariables = new Dictionary<string, string>();
 
         private static readonly TimeSpan WaitForProcessExitTimeout = TimeSpan.FromMilliseconds(2000);
 
-        public ProgramExtension(string extensionName, string targetFolder, IFileProvider fileSystem, string declarationPath, ILogger<ProgramExtension> logger)
+        public ProgramExtension(ExtensionManifest manifest, string extensionName, string targetFolder, IFileProvider fileSystem, string declarationPath, ILogger<ProgramExtension> logger)
         {
             _extensionName = extensionName;
             _targetFolder = targetFolder;
@@ -37,25 +38,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             _declarationPath = declarationPath;
             _exePath = declarationPath;
             _logger = logger;
-            _extensionDeclaration = new Lazy<ExtensionDeclaration>(GetExtensionDeclaration, LazyThreadSafetyMode.ExecutionAndPublication);
-        }
-
-        public ProgramExtension(string extensionName, string targetFolder, IFileProvider fileSystem, string declarationPath, string exePath, ILogger<ProgramExtension> logger)
-            : this(extensionName, targetFolder, fileSystem, declarationPath, logger)
-        {
-            _exePath = exePath;
+            _manifest = manifest;
         }
 
         /// <inheritdoc/>
         public string DisplayName => Path.GetDirectoryName(_declarationPath);
-
-        public ExtensionDeclaration Declaration
-        {
-            get
-            {
-                return _extensionDeclaration.Value;
-            }
-        }
 
         public void AddEnvironmentVariable(string key, string value)
         {
@@ -65,7 +52,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         /// <inheritdoc/>
         public async Task<EgressArtifactResult> EgressArtifact(ExtensionEgressPayload configPayload, Func<Stream, CancellationToken, Task> getStreamAction, CancellationToken token)
         {
-            Declaration.Validate();
+            _manifest.Validate();
 
             // This is really weird, yes, but this is one of 2 overloads for [Stream].WriteAsync(...) that supports a CancellationToken, so we use a ReadOnlyMemory<char> instead of a string.
             ReadOnlyMemory<char> NewLine = new ReadOnlyMemory<char>("\r\n".ToCharArray());
@@ -80,29 +67,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             };
 
             string executablePath;
-            if (!string.IsNullOrEmpty(Declaration.AssemblyFileName))
+            if (!string.IsNullOrEmpty(_manifest.AssemblyFileName))
             {
                 executablePath = DotNetHost.ExecutablePath;
 
-                string entrypointAssemblyRelativePath = Path.Combine(Path.GetDirectoryName(_exePath), $"{Declaration.AssemblyFileName}.dll");
+                string entrypointAssemblyPath = Path.Combine(Path.GetDirectoryName(_exePath), $"{_manifest.AssemblyFileName}.dll");
 
-                IFileInfo entrypointAssemblyInfo = _fileSystem.GetFileInfo(entrypointAssemblyRelativePath);
+                IFileInfo entrypointAssemblyInfo = new PhysicalFileInfo(new FileInfo(entrypointAssemblyPath));
                 ValidateExecutable(entrypointAssemblyInfo);
 
                 pStart.ArgumentList.Add(entrypointAssemblyInfo.PhysicalPath);
             }
-            else if (!string.IsNullOrEmpty(Declaration.ExecutableFileName))
+            else if (!string.IsNullOrEmpty(_manifest.ExecutableFileName))
             {
-                string exeName = Declaration.ExecutableFileName;
+                string exeName = _manifest.ExecutableFileName;
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     exeName += ".exe";
                 }
 
-                string programRelPath = Path.Combine(Path.GetDirectoryName(_exePath), exeName);
+                string programPath = Path.Combine(Path.GetDirectoryName(_exePath), exeName);
 
-                IFileInfo executableInfo = _fileSystem.GetFileInfo(programRelPath);
+                IFileInfo executableInfo = new PhysicalFileInfo(new FileInfo(programPath));
                 ValidateExecutable(executableInfo);
                 executablePath = executableInfo.PhysicalPath;
             }
@@ -177,43 +164,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             return result;
         }
 
-        private ExtensionDeclaration GetExtensionDeclaration()
-        {
-            try
-            {
-                IFileInfo declFile = _fileSystem.GetFileInfo(_declarationPath);
-                if (!declFile.Exists || declFile.IsDirectory)
-                {
-                    ExtensionException.ThrowNotFound(_extensionName);
-                }
-
-                using (Stream declStream = declFile.CreateReadStream())
-                {
-                    ExtensionDeclaration declResult = JsonSerializer.Deserialize<ExtensionDeclaration>(declStream);
-                    return declResult;
-                }
-            }
-            catch (Exception ex) when (LogBrokenDeclaration(ex))
-            {
-                // This will never get hit, LogBrokenDeclaration will never filter this exception
-                // Do the logging in the filter so that the exception stack remains complete
-                throw;
-            }
-        }
-
         private void ValidateExecutable(IFileInfo entrypointInfo)
         {
             if (!entrypointInfo.Exists || entrypointInfo.IsDirectory || entrypointInfo.PhysicalPath == null)
             {
-                _logger.ExtensionProgramMissing(_extensionName, Path.Combine(_targetFolder, _exePath), Declaration.ExecutableFileName);
+                _logger.ExtensionProgramMissing(_extensionName, Path.Combine(_targetFolder, _exePath), _manifest.ExecutableFileName);
                 ExtensionException.ThrowNotFound(_extensionName);
             }
-        }
-
-        private bool LogBrokenDeclaration(Exception ex)
-        {
-            _logger.ExtensionDeclarationFileBroken(_extensionName, Path.Combine(_targetFolder, _declarationPath), ex);
-            return false;
         }
     }
 }

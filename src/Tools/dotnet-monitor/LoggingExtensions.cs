@@ -374,11 +374,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_ExtensionNotOfType);
 
-        private static readonly Action<ILogger, string, string, Exception> _extensionDeclarationFileBroken =
-            LoggerMessage.Define<string, string>(
-                eventId: LoggingEventIds.ExtensionDeclarationFileBroken.EventId(),
+        private static readonly Action<ILogger, string, Exception> _extensionManifestNotParsable =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ExtensionManifestNotParsable.EventId(),
                 logLevel: LogLevel.Error,
-                formatString: Strings.LogFormatString_ExtensionDeclarationFileBroken);
+                formatString: Strings.LogFormatString_ExtensionManifestNotParsable);
 
         private static readonly Action<ILogger, string, string, string, Exception> _extensionProgramMissing =
             LoggerMessage.Define<string, string, string>(
@@ -809,9 +809,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _extensionNotOfType(logger, extensionName, extension.DisplayName, desiredType.Name, null);
         }
 
-        public static void ExtensionDeclarationFileBroken(this ILogger logger, string extensionName, string extensionDeclarationFile, Exception ex)
+        public static void ExtensionManifestNotParsable(this ILogger logger, string manifestFile, Exception ex)
         {
-            _extensionDeclarationFileBroken(logger, extensionName, extensionDeclarationFile, ex);
+            _extensionManifestNotParsable(logger, manifestFile, ex);
         }
 
         public static void ExtensionProgramMissing(this ILogger logger, string extensionName, string extensionDeclarationFile, string program)
