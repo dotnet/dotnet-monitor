@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
@@ -8,7 +9,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility.Egress
+namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 {
     internal partial class EgressExtension
     {
