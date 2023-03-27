@@ -5,7 +5,9 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,6 +36,18 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                 string jsonConfig = Console.ReadLine();
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
                 TOptions options = BuildOptions(configPayload, configureOptions);
+
+                var context = new ValidationContext(options);
+
+                var results = new List<ValidationResult>();
+
+                if (!Validator.TryValidateObject(options, context, results, true))
+                {
+                    if (results.Count > 0)
+                    {
+                        throw new EgressException(results.First().ErrorMessage);
+                    }
+                }
 
                 Console.CancelKeyPress += Console_CancelKeyPress;
 

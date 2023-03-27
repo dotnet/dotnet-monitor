@@ -61,20 +61,20 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File system egress failed..
-        /// </summary>
-        internal static string ErrorMessage_EgressFileFailedGeneric {
-            get {
-                return ResourceManager.GetString("ErrorMessage_EgressFileFailedGeneric", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to S3 storage egress failed: {0}.
         /// </summary>
         internal static string ErrorMessage_EgressS3FailedDetailed {
             get {
                 return ResourceManager.GetString("ErrorMessage_EgressS3FailedDetailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to S3 system egress failed..
+        /// </summary>
+        internal static string ErrorMessage_EgressS3FailedGeneric {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressS3FailedGeneric", resourceCulture);
             }
         }
         
@@ -111,15 +111,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage {
         internal static string LogFormatString_EgressProviderSavedStream {
             get {
                 return ResourceManager.GetString("LogFormatString_EgressProviderSavedStream", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Provider {providerType}: Unable to find &apos;{keyName}&apos; key in egress properties.
-        /// </summary>
-        internal static string LogFormatString_EgressProviderUnableToFindPropertyKey {
-            get {
-                return ResourceManager.GetString("LogFormatString_EgressProviderUnableToFindPropertyKey", resourceCulture);
             }
         }
     }
