@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
     /// </summary>
     internal static class GenerateApiKeyCommandHandler
     {
-        public static void Invoke(OutputFormat output, IConsole console)
+        public static void Invoke(OutputFormat output, TextWriter outputWriter)
         {
             GeneratedJwtKey newJwt = GeneratedJwtKey.Create();
 
@@ -111,7 +111,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 outputBldr.AppendLine();
             }
 
-            console.Out.Write(outputBldr.ToString());
+            outputWriter.Write(outputBldr);
         }
 
         private static string GetFormatString(OutputFormat output)
