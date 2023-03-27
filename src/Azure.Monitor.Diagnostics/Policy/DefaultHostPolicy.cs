@@ -61,11 +61,6 @@ internal sealed class DefaultHostPolicy : HttpPipelineSynchronousPolicy
             throw new ArgumentNullException(paramName);
         }
 
-        if (!host.IsAbsoluteUri)
-        {
-            throw new ArgumentException("The host endpoint must be an absolute URI", paramName);
-        }
-
-        return host;
+        return host.IsAbsoluteUri ? host : throw new ArgumentException("The host endpoint must be an absolute URI", paramName);
     }
 }

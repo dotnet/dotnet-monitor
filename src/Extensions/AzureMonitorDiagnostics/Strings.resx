@@ -127,7 +127,7 @@
   </data>
   <data name="ErrorMessage_ConnectionStringMissingInstrumentationKey" xml:space="preserve">
     <value>The ConnectionString property must specify an instrumentation key.</value>
-    <comment>Gets the error message that is printed when the connection string doesn't sepcify an instrumentation key.</comment>
+    <comment>Gets the error message that is printed when the connection string doesn't specify an instrumentation key.</comment>
   </data>
   <data name="ErrorMessage_UnsupportedCompressionType" xml:space="preserve">
     <value>The Compression value is not recognized. It must be 'none' or 'gzip'.</value>

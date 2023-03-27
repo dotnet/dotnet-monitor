@@ -76,11 +76,8 @@ internal sealed class ConnectionString
         }
 
         string connectionString = nameof(InstrumentationKey) + "=" + instrumentationKey;
-        if (!TokenString.TryParse(connectionString, out TokenString? tokenString))
-        {
-            throw new ArgumentException("Instrumentation key contains invalid characters.", nameof(instrumentationKey));
-        }
-
-        return new ConnectionString(tokenString);
+        return TokenString.TryParse(connectionString, out TokenString? tokenString)
+            ? new ConnectionString(tokenString)
+            : throw new ArgumentException("Instrumentation key contains invalid characters.", nameof(instrumentationKey));
     }
 }

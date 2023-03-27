@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
-    <Description>Azure Monitor Diagnostics extsnsion for dotnet-monitor</Description>
+    <Description>Azure Monitor Diagnostics extension for dotnet-monitor</Description>
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
     <AssemblyName>dotnet-monitor-egress-azuremonitordiagnostics</AssemblyName>

@@ -48,12 +48,12 @@ internal sealed class AzureMonitorDiagnosticsEgressProvider : EgressProvider<Azu
         string iKey = connectionString.InstrumentationKey;
 
         // TODO: Create the appropriate TokenCredential from auth options.
-        var clientOptions = new DiagnosticsClientOptions
+        DiagnosticsClientOptions clientOptions = new()
         {
             Endpoint = ResolveDiagnosticsEndpoint(connectionString)
         };
 
-        var client = new DiagnosticsClient(clientOptions);
+        DiagnosticsClient client = new(clientOptions);
 
         // Use the name as the artifact ID, if it's a Guid.
         if (!Guid.TryParse(artifactSettings.Name, out Guid artifactId))
@@ -63,14 +63,14 @@ internal sealed class AzureMonitorDiagnosticsEgressProvider : EgressProvider<Azu
         }
 
         UploadToken uploadToken = await client.GetUploadTokenAsync(iKey, ArtifactKind.Profile, artifactId, token);
-        BlockBlobClient blobClient = new BlockBlobClient(uploadToken.BlobUri);
+        BlockBlobClient blobClient = new(uploadToken.BlobUri);
 
-        var httpHeaders = new BlobHttpHeaders
+        BlobHttpHeaders httpHeaders = new()
         {
             ContentType = artifactSettings.ContentType
         };
 
-        switch(options.Compression)
+        switch (options.Compression)
         {
             case CompressionType.GZip:
                 httpHeaders.ContentEncoding = "gzip";
@@ -81,7 +81,7 @@ internal sealed class AzureMonitorDiagnosticsEgressProvider : EgressProvider<Azu
                 break;
         }
 
-        var blobOptions = new BlockBlobOpenWriteOptions
+        BlockBlobOpenWriteOptions blobOptions = new()
         {
             HttpHeaders = httpHeaders
         };
@@ -100,7 +100,7 @@ internal sealed class AzureMonitorDiagnosticsEgressProvider : EgressProvider<Azu
             Dictionary<string, string> metadata = MergeMetadata(artifactSettings);
             blobInfo = await blobClient.SetMetadataAsync(metadata, cancellationToken: token);
         }
-        catch (Exception ex) when (ex is InvalidOperationException || ex is RequestFailedException)
+        catch (Exception ex) when (ex is InvalidOperationException or RequestFailedException)
         {
             _logger.InvalidMetadata(ex);
             blobInfo = await blobClient.SetMetadataAsync(artifactSettings.Metadata, cancellationToken: token);
@@ -129,10 +129,10 @@ internal sealed class AzureMonitorDiagnosticsEgressProvider : EgressProvider<Azu
     /// Create a metadata dictionary from the artifact settings.
     /// </summary>
     /// <param name="artifactSettings">The artifact settings.</param>
-    /// <returns>A dictionary continaing metadata for the uploaded artifact.</returns>
+    /// <returns>A dictionary containing metadata for the uploaded artifact.</returns>
     private Dictionary<string, string> MergeMetadata(EgressArtifactSettings artifactSettings)
     {
-        Dictionary<string, string> mergedMetadata = new Dictionary<string, string>(artifactSettings.Metadata);
+        Dictionary<string, string> mergedMetadata = new(artifactSettings.Metadata);
         foreach (KeyValuePair<string, string> metadataPair in artifactSettings.CustomMetadata)
         {
             if (!mergedMetadata.ContainsKey(metadataPair.Key))

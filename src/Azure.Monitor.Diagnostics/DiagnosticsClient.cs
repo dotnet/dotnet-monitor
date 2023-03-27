@@ -32,7 +32,7 @@ public class DiagnosticsClient
     /// <param name="options">Pipeline options for this client.</param>
     public DiagnosticsClient(DiagnosticsClientOptions options)
     {
-        var pipelineOptions = new DiagnosticsClientPipelineOptions(options);
+        DiagnosticsClientPipelineOptions pipelineOptions = new(options);
         _pipeline = HttpPipelineBuilder.Build(pipelineOptions);
     }
 
@@ -72,15 +72,12 @@ public class DiagnosticsClient
         using HttpMessage message = CreateArtifactRequest(iKey, artifactKind, artifactId, IngestionAction.GetToken);
         await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
         await ThrowIfRequestFailedAsync(message.Response, cancellationToken).ConfigureAwait(false);
-        if (message.Response.Headers.TryGetValue("Location", out string? location))
-        {
-            return Response.FromValue(new UploadToken
+        return message.Response.Headers.TryGetValue("Location", out string? location)
+            ? Response.FromValue(new UploadToken
             {
                 BlobUri = new Uri(location!)
-            }, message.Response);
-        }
-
-        throw new RequestFailedException("Response did not set the Location header.");
+            }, message.Response)
+            : throw new RequestFailedException("Response did not set the Location header.");
     }
 
     /// <summary>
@@ -253,7 +250,7 @@ public class DiagnosticsClient
     /// <returns>The serializer options.</returns>
     private static JsonSerializerOptions CreateJsonSerializerOptions()
     {
-        var jsonSerializerOptions = new JsonSerializerOptions
+        JsonSerializerOptions jsonSerializerOptions = new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             PropertyNameCaseInsensitive = true,

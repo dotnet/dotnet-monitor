@@ -56,12 +56,9 @@ internal sealed class ChallengeBasedAuthenticationPolicy : BearerTokenAuthentica
     /// <inheritdoc cref="BearerTokenAuthenticationPolicy.AuthorizeRequestAsync(HttpMessage)" />
     protected override ValueTask AuthorizeRequestAsync(HttpMessage message)
     {
-        if (TryGetChallengeParameters(message, out ChallengeParameters? challenge))
-        {
-            return AuthenticateAndAuthorizeRequestAsync(message, challenge!);
-        }
-
-        return default;
+        return TryGetChallengeParameters(message, out ChallengeParameters? challenge)
+            ? AuthenticateAndAuthorizeRequestAsync(message, challenge!)
+            : default;
     }
 
     /// <inheritdoc cref="BearerTokenAuthenticationPolicy.AuthorizeRequest(HttpMessage)" />

@@ -6,7 +6,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureMonitorDiagnostics;
 /// <summary>
 /// Type of compression to use when uploading artifacts.
 /// </summary>
-enum CompressionType
+public enum CompressionType
 {
     /// <summary>
     /// No compression is used.

@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureMonitorDiagnostics;
 
 internal sealed class Program
 {
-    static async Task<int> Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
         ILogger logger = Utilities.CreateLogger();
         AzureMonitorDiagnosticsEgressProvider provider = new(logger);

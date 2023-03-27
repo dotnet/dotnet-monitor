@@ -40,12 +40,7 @@ public class TokenString
     /// <exception cref="KeyNotFoundException">The key was not found.</exception>
     public string GetValue(string key, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
     {
-        if (TryGetValue(key, out var value, stringComparison))
-        {
-            return value;
-        }
-
-        throw new KeyNotFoundException();
+        return TryGetValue(key, out string? value, stringComparison) ? value : throw new KeyNotFoundException();
     }
 
     /// <summary>
@@ -73,7 +68,7 @@ public class TokenString
             return false;
         }
 
-        var tokens = new List<Token>();
+        List<Token> tokens = new();
         foreach ((int, int) split in Tokenize(value))
         {
             (int start, int length) = split;
@@ -130,7 +125,7 @@ public class TokenString
     /// <inheritdoc/>
     public override string ToString()
     {
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
         foreach (Token token in _tokens)
         {
             if (sb.Length > 0)
@@ -175,7 +170,7 @@ public class TokenString
     /// <returns>True if the token was found.</returns>
     private static bool TryGetValue(IReadOnlyList<Token> tokens, string key, [NotNullWhen(true)] out string? value, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
     {
-        foreach (var token in tokens)
+        foreach (Token token in tokens)
         {
             if (string.Equals(key, token.Key, stringComparison))
             {
