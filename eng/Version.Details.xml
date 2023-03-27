@@ -22,25 +22,25 @@
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
       <Sha>18cc03cdbca7cb66ae69930ab33b81346a2c1779</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="8.0.0-beta.23173.3">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="8.0.0-beta.23174.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>e3d501e3e78ab724254e6797473e34f787674857</Sha>
+      <Sha>1177b37e60c7271ab461098aefbdd03edc15b90d</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="8.0.0-beta.23173.3">
+    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="8.0.0-beta.23174.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>e3d501e3e78ab724254e6797473e34f787674857</Sha>
+      <Sha>1177b37e60c7271ab461098aefbdd03edc15b90d</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="8.0.0-beta.23173.3">
+    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="8.0.0-beta.23174.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>e3d501e3e78ab724254e6797473e34f787674857</Sha>
+      <Sha>1177b37e60c7271ab461098aefbdd03edc15b90d</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Dotnet.Sdk.Internal" Version="8.0.100-preview.4.23176.5">
       <Uri>https://github.com/dotnet/installer</Uri>
       <Sha>d109cba3ff8ff46fe70be93a40c45002e5770267</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="8.0.0-beta.23173.3">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="8.0.0-beta.23174.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>e3d501e3e78ab724254e6797473e34f787674857</Sha>
+      <Sha>1177b37e60c7271ab461098aefbdd03edc15b90d</Sha>
     </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.417001">
       <Uri>https://github.com/dotnet/symstore</Uri>
