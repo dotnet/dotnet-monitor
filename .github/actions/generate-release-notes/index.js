@@ -1,22 +1,11 @@
-const fs = require('fs');
+const actionUtils = require('../action-utils.js');
 const path = require('path');
-const util = require('util');
-const jsExec = util.promisify(require("child_process").exec);
-const readFile = (fileName) => util.promisify(fs.readFile)(fileName, 'utf8');
-const writeFile = (fileName, contents) => util.promisify(fs.writeFile)(fileName, contents);
 
 const UpdateReleaseNotesLabel = "update-release-notes";
 const BackportLabel = "backport";
 
 async function run() {
-    console.log("Installing npm dependencies");
-    const { stdout, stderr } = await jsExec("npm install @actions/core @actions/github");
-    console.log("npm-install stderr:\n\n" + stderr);
-    console.log("npm-install stdout:\n\n" + stdout);
-    console.log("Finished installing npm dependencies");
-
-    const github = require('@actions/github');
-    const core = require('@actions/core');
+    const [core, github] = await actionUtils.installAndRequirePackages("@actions/core", "@actions/github");
 
     const octokit = github.getOctokit(core.getInput("auth_token", { required: true }));
 
@@ -47,7 +36,7 @@ async function run() {
         const monikerDescriptions = generateMonikerDescriptions(significantLabels);
 
         const releaseNotes = await generateReleaseNotes(path.join(__dirname, "releaseNotes.template.md"), buildDescription, changelog, monikerDescriptions);
-        await writeFile(output, releaseNotes);
+        await actionUtils.writeFile(output, releaseNotes);
     } catch (error) {
         core.setFailed(error);
     }
@@ -166,7 +155,7 @@ async function generateChangelog(octokit, branch, repoOwner, repoName, minMergeD
 }
 
 async function generateReleaseNotes(templatePath, buildDescription, changelog, monikerDescriptions) {
-    let releaseNotes = await readFile(templatePath);
+    let releaseNotes = await actionUtils.readFile(templatePath);
     releaseNotes = releaseNotes.replace("${buildDescription}", buildDescription);
     releaseNotes = releaseNotes.replace("${changelog}", changelog);
     releaseNotes = releaseNotes.replace("${monikerDescriptions}", monikerDescriptions);
