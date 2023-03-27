@@ -5,7 +5,7 @@
 
 ## Running Tests
 
-Tests can be executed with the command line (via [build.cmd](../../Build.cmd) -test), as part of the PR build, or in Visual Studio. Note that because of limited resources in the build pool, tests ran from the command line or in the build pool are serialized. This avoids test failures associated with parallel testing. Visual Studio does not have such restrictions and is best used for individual tests and test investigations. When running from the command line, using the `-testgroup` parameter can be used to limit the amount tests executed. For example `build.cmd -test -testgroup PR` will run the same tests as the PR build.
+Tests can be executed with the command line (via [build.cmd](../../Build.cmd) -test), as part of the PR build, or in Visual Studio. Note that because of limited resources in the build pool, tests ran from the command line or in the build pool are serialized. This avoids test failures associated with parallel testing. Visual Studio does not have such restrictions and is best used for individual tests and test investigations. When running from the command line, using the `-testgroup` parameter can be used to limit the amount of tests executed. For example `build.cmd -test -testgroup PR` will run the same tests as the PR build.
 
 The framework of the test assemblies is controlled by [TestTargetFrameworks](../../eng/Versions.props). The test itself is attributed with a particular framework based on the [TargetFrameworkMonikerTraitAttribute](../../src/Tests/Microsoft.Diagnostics.Monitoring.TestCommon/TargetFrameworkMonikerTraitAttribute.cs).
 
