@@ -1,0 +1,10 @@
+{
+    "Id": "Microsoft.Diagnostics.Monitoring.AzureMonitorDiagnostics",
+    "Version": "1.0.0",
+    "Program": "dotnet-monitor-egress-azuremonitordiagnostics",
+    "UseSharedDotNetHost": true,
+    "Name": "AzureMonitorDiagnostics",
+    "SupportedExtensionTypes": [
+        "Egress"
+    ]
+}
