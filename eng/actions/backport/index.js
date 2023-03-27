@@ -7,18 +7,8 @@ function BackportException(message, postToGitHub = true) {
 }
 
 async function run() {
-  const util = require("util");
-  const jsExec = util.promisify(require("child_process").exec);
-
-  console.log("Installing npm dependencies");
-  const { stdout, stderr } = await jsExec("npm install @actions/core @actions/github @actions/exec");
-  console.log("npm-install stderr:\n\n" + stderr);
-  console.log("npm-install stdout:\n\n" + stdout);
-  console.log("Finished installing npm dependencies");
-
-  const core = require("@actions/core");
-  const github = require("@actions/github");
-  const exec = require("@actions/exec");
+  const actionUtils = require('../../../.github/actions/action-utils.js');
+  const [core, github, exec] = await actionUtils.installAndRequirePackages("@actions/core", "@actions/github", "@actions/exec");
 
   const repo_owner = github.context.payload.repository.owner.login;
   const repo_name = github.context.payload.repository.name;
