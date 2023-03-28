@@ -9,6 +9,7 @@ using Microsoft.Diagnostics.Monitoring.Extension.Common;
 using Microsoft.Extensions.Logging;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
+using static System.Globalization.CultureInfo;
 
 namespace Microsoft.Diagnostics.Monitoring.AzureMonitorDiagnostics;
 
@@ -88,7 +89,7 @@ internal sealed class AzureMonitorDiagnosticsEgressProvider : EgressProvider<Azu
 
         using (Stream blobStream = await blobClient.OpenWriteAsync(overwrite: true, blobOptions, token))
         {
-            _logger.EgressProviderInvokeStreamAction(Constants.ProviderName);
+            _logger.EgressProviderInvokeStreamAction(Constants.Provider.Name);
             await action(blobStream, token);
             await blobStream.FlushAsync(token);
         }
@@ -107,7 +108,7 @@ internal sealed class AzureMonitorDiagnosticsEgressProvider : EgressProvider<Azu
         }
 
         ArtifactAccepted artifactInfo = await client.CommitUploadAsync(iKey, ArtifactKind.Profile, artifactId, blobInfo.ETag, token);
-        _logger.EgressProviderSavedStream(Constants.ProviderName, artifactInfo.ArtifactLocationId!);
+        _logger.EgressProviderSavedStream(Constants.Provider.Name, artifactInfo.ArtifactLocationId!);
         return artifactInfo.ArtifactLocationId!;
     }
 
@@ -145,12 +146,19 @@ internal sealed class AzureMonitorDiagnosticsEgressProvider : EgressProvider<Azu
             }
         }
 
-        // TODO: Add required metadata for Service Profiler artifacts
-        mergedMetadata["spTraceFileFormat"] = "nettrace";
-        mergedMetadata["spMachineName"] = GetMachineName(artifactSettings);
+        // Required metadata for artifact handling.
+        mergedMetadata[Constants.Metadata.TraceFileFormat] = Constants.TraceFormat.NetTrace;
+        mergedMetadata[Constants.Metadata.MachineName] = GetMachineName(artifactSettings);
+        mergedMetadata[Constants.Metadata.OSPlatform] = GetOSPlatform();
 
-        // TODO: Use the EnvBlock in artifactSettings to determine the role name and instance
-        // (and maybe other useful things)
+        // TODO: This should be the processor architecture of the target application.
+        mergedMetadata[Constants.Metadata.ProcessorArch] = RuntimeInformation.ProcessArchitecture.ToString();
+
+        // TODO: This should be the triggering time for the trace.
+        mergedMetadata[Constants.Metadata.TraceStartTime] = DateTime.UtcNow.ToString("O", InvariantCulture);
+
+        // TODO: Determine the trigger type
+        mergedMetadata[Constants.Metadata.TriggerType] = "Default";
 
         return mergedMetadata;
     }
@@ -170,6 +178,21 @@ internal sealed class AzureMonitorDiagnosticsEgressProvider : EgressProvider<Azu
 
         // Fall back to getting the machine name from this process.
         return Environment.MachineName;
+    }
+
+    private static string GetOSPlatform()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            return nameof(OSPlatform.Linux);
+        }
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return nameof(OSPlatform.Windows);
+        }
+
+        return "Unknown";
     }
 
     /// <summary>
