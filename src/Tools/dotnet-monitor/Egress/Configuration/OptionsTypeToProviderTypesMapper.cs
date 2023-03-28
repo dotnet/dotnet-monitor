@@ -1,8 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
-using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -50,6 +48,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         /// <returns><see langword="true"/> if and only if the given section is one of of the pre-defined</returns>
         private static bool IsBuiltInSection(IConfigurationSection s)
         {
+            // The "Properties" key is the only built-in section under the "Egress" section.
+            // All other child sections should be egress providers that are contributed via extensibility.
             return ConfigurationKeys.Egress_Properties == s.Key;
         }
     }
