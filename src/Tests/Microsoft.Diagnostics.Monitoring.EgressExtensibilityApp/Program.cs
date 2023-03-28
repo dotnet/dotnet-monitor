@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 
             rootCommand.Add(egressCmd);
 
-            return rootCommand.Invoke(args);
+            return rootCommand.Parse(args).Invoke();
         }
 
         private static int Egress(InvocationContext context)

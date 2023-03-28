@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 
             rootCommand.Add(egressCmd);
 
-            return await rootCommand.InvokeAsync(args);
+            return await rootCommand.Parse(args).InvokeAsync();
         }
     }
 }
