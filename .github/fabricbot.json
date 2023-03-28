@@ -375,31 +375,47 @@
       "version": "1.0",
       "config": {
         "conditions": {
-          "operator": "or",
+          "operator": "and",
           "operands": [
             {
-              "name": "isAction",
-              "parameters": {
-                "action": "synchronize"
-              }
+              "operator": "not",
+              "operands": [
+                {
+                  "name": "isActivitySender",
+                  "parameters": {
+                    "user": "dotnet-maestro[bot]"
+                  }
+                }
+              ]
             },
             {
-              "name": "isAction",
-              "parameters": {
-                "action": "reopened"
-              }
-            },
-            {
-              "name": "isAction",
-              "parameters": {
-                "action": "opened"
-              }
-            },
-            {
-              "name": "isAction",
-              "parameters": {
-                "action": "review_requested"
-              }
+              "operator": "or",
+              "operands": [
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "synchronize"
+                  }
+                },
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "reopened"
+                  }
+                },
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "opened"
+                  }
+                },
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "review_requested"
+                  }
+                }
+              ]
             }
           ]
         },
@@ -436,22 +452,21 @@
               }
             },
             {
-              "operator": "or",
+              "name": "isAction",
+              "parameters": {
+                "action": "submitted"
+              }
+            },
+            {
+              "operator": "not",
               "operands": [
                 {
-                  "name": "isAction",
+                  "name": "isActivitySender",
                   "parameters": {
-                    "action": "submitted"
-                  }
-                },
-                {
-                  "operator": "not",
-                  "operands": [
-                    {
-                      "name": "isOpen",
-                      "parameters": {}
+                    "user": {
+                      "type": "author"
                     }
-                  ]
+                  }
                 }
               ]
             }
@@ -542,6 +557,12 @@
               "name": "isAction",
               "parameters": {
                 "action": "merged"
+              }
+            },
+            {
+              "name": "hasLabel",
+              "parameters": {
+                "label": "needs-review"
               }
             }
           ]
