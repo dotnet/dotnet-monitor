@@ -113,7 +113,6 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
 
             // prepare
             S3StorageEgressProviderOptions options = ConstructEgressProviderSettings();
-            options.GeneratePreSignedUrl = true;
             options.PreSignedUrlExpiry = TimeSpan.FromMinutes(10);
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 

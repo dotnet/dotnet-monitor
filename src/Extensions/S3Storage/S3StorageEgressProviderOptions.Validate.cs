@@ -15,8 +15,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
         {
             if (!string.IsNullOrEmpty(AccessKeyId) && string.IsNullOrEmpty(SecretAccessKey))
                 yield return new ValidationResult(Strings.ErrorMessage_EgressS3FailedMissingSecrets);
-            if (GeneratePreSignedUrl && !PreSignedUrlExpiry.HasValue)
-                yield return new ValidationResult(string.Format(Strings.ErrorMessage_EgressS3FailedMissingOption, nameof(PreSignedUrlExpiry)));
         }
     }
 }
