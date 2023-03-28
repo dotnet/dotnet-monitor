@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 GenerateApiKeyCommandHandler.Invoke(
                     context.ParseResult.GetValue(OutputOption),
-                    context.Console);
+                    context.ParseResult.Configuration.Output);
             });
 
             return command;
