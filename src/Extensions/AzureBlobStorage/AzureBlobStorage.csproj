@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.Extension.Common\Microsoft.Diagnostics.Monitoring.Extension.Common.csproj" />
   </ItemGroup>
 
@@ -29,6 +28,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="OptionsDisplayStrings.Designer.cs">
+      <DependentUpon>OptionsDisplayStrings.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Update="Strings.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -37,6 +41,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="OptionsDisplayStrings.resx">
+      <SubType>Designer</SubType>
+      <LastGenOutput>OptionsDisplayStrings.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
