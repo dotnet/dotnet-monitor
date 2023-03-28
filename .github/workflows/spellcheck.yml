@@ -13,11 +13,11 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f
+        uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3
         with:
           persist-credentials: false
 
-      - uses: streetsidesoftware/cspell-action@c5e5f42f5bba8df1c0b7e74596c5600a3167efab
+      - uses: streetsidesoftware/cspell-action@fb047b6866b3893c12bc3ef002327bc57c0037c8
         name: Documentation spellcheck
         if: ${{ !cancelled() }}
         with:
@@ -25,7 +25,7 @@ jobs:
             inline: error
             incremental_files_only: true
 
-      - uses: streetsidesoftware/cspell-action@c5e5f42f5bba8df1c0b7e74596c5600a3167efab
+      - uses: streetsidesoftware/cspell-action@fb047b6866b3893c12bc3ef002327bc57c0037c8
         name: Resx spellcheck
         if: ${{ !cancelled() }}
         with:
@@ -33,7 +33,7 @@ jobs:
             inline: error
             incremental_files_only: true
 
-      - uses: streetsidesoftware/cspell-action@c5e5f42f5bba8df1c0b7e74596c5600a3167efab
+      - uses: streetsidesoftware/cspell-action@fb047b6866b3893c12bc3ef002327bc57c0037c8
         name: Source code spellcheck
         if: ${{ !cancelled() }}
         with:

@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 
             rootCommand.Add(egressCmd);
 
-            return await rootCommand.InvokeAsync(args);
+            return await rootCommand.Parse(args).InvokeAsync();
         }
     }
 }
