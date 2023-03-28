@@ -959,33 +959,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mapping of file system egress provider names to their options..
-        /// </summary>
-        public static string DisplayAttributeDescription_EgressOptions_FileSystem {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_FileSystem", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Additional properties, such as secrets, that can be referenced by the provider definitions..
-        /// </summary>
-        public static string DisplayAttributeDescription_EgressOptions_Properties {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_Properties", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Mapping of S3 storage egress provider names to their options..
-        /// </summary>
-        public static string DisplayAttributeDescription_EgressOptions_S3Storage {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_S3Storage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The name of the counter to monitor..
         /// </summary>
         public static string DisplayAttributeDescription_EventCounterOptions_CounterName {

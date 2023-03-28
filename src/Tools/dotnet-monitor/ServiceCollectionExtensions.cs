@@ -22,6 +22,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.Event
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
+using Microsoft.Diagnostics.Tools.Monitor.Egress.Extension;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
@@ -229,10 +230,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services.Configure<T>(configuration.GetSection(key));
         }
 
-        public static IServiceCollection ConfigureExtensions(this IServiceCollection services, HostBuilderSettings settings)
+        public static IServiceCollection ConfigureExtensions(this IServiceCollection services)
         {
-            // Add the services to discover extensions
             services.AddSingleton<ExtensionDiscoverer>();
+            services.AddSingleton<ExtensionRepository, WellKnownEgressExtensionRepository>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureExtensionLocations(this IServiceCollection services, HostBuilderSettings settings)
+        {
             services.TryAddSingleton<IDotnetToolsFileSystem, DefaultDotnetToolsFileSystem>();
 
             string executingAssemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -292,10 +298,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IEgressPropertiesProvider, EgressPropertiesProvider>();
 
             services.AddSingleton<IOptionsTypeToProviderTypesMapper, OptionsTypeToProviderTypesMapper>();
-
-            // Register egress providers
-            services.RegisterEgressType<FileSystemEgressProviderOptions, FileSystemEgressProvider>();
-            services.AddSingleton<IConfigureOptions<FileSystemEgressProviderOptions>, EgressProviderConfigureNamedOptions<FileSystemEgressProviderOptions>>();
 
             services.RegisterEgressType<ExtensionEgressProviderOptions, ExtensionEgressProvider>();
 

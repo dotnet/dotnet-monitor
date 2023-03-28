@@ -19,7 +19,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public const string InProcessFeatures = nameof(RootOptions.InProcessFeatures);
 
-        public const string Egress = nameof(RootOptions.Egress);
+        public const string Egress = nameof(Egress);
+
+        public const string Egress_Properties = "Properties";
 
         public const string Metrics = nameof(RootOptions.Metrics);
 

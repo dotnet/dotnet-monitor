@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         /// </summary>
         public static IConfigurationSection GetEgressPropertiesSection(this IConfiguration configuration)
         {
-            return configuration.GetEgressSection().GetSection(nameof(EgressOptions.Properties));
+            return configuration.GetEgressSection().GetSection(ConfigurationKeys.Egress_Properties);
         }
     }
 }

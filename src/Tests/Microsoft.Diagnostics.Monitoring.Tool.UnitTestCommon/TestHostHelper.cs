@@ -102,10 +102,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     services.AddSingleton<OperationTrackerService>();
                     services.ConfigureCollectionRules();
 
+                    services.ConfigureExtensions();
                     if (settings != null)
                     {
                         services.AddSingleton<IDotnetToolsFileSystem, TestDotnetToolsFileSystem>();
-                        services.ConfigureExtensions(settings);
+                        services.ConfigureExtensionLocations(settings);
                     }
 
                     services.ConfigureEgress();
