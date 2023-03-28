@@ -337,14 +337,6 @@
     <value>In 'Listen' mode, the maximum amount of connections to accept.</value>
     <comment>The description provided for the MaxConnections parameter on DiagnosticPortOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_EgressOptions_FileSystem" xml:space="preserve">
-    <value>Mapping of file system egress provider names to their options.</value>
-    <comment>The description provided for the FileSystem parameter on EgressOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_EgressOptions_Properties" xml:space="preserve">
-    <value>Additional properties, such as secrets, that can be referenced by the provider definitions.</value>
-    <comment>The description provided for the Properties parameter on EgressOptions.</comment>
-  </data>
   <data name="DisplayAttributeDescription_EventCounterOptions_CounterName" xml:space="preserve">
     <value>The name of the counter to monitor.</value>
     <comment>The description provided for the CounterName parameter on EventCounterOptions.</comment>
@@ -657,10 +649,6 @@
   <data name="DisplayAttributeDescription_DiagnosticPortOptions_DeleteEndpointOnStartup" xml:space="preserve">
     <value>In 'Listen' connection mode, deletes the domain socket file used for diagnostic port communication.</value>
   </data>
-  <data name="DisplayAttributeDescription_EgressOptions_S3Storage" xml:space="preserve">
-    <value>Mapping of S3 storage egress provider names to their options.</value>
-    <comment>The description provided for the S3Storage parameter on EgressOptions.</comment>
-  </data>
   <data name="DisplayAttributeDescription_StorageOptions_SharedLibraryPath" xml:space="preserve">
     <value>The location to which libraries shared with target processes will be copied at startup.</value>
     <comment>The description provided for the SharedLibraryPath parameter on StorageOptions.</comment>
@@ -776,5 +764,11 @@
   </data>
   <data name="DisplayAttributeDescription_MetricsOptions_Meters" xml:space="preserve">
     <value>Names of meters to collect from the System.Diagnostics.Metrics provider.</value>
+  </data>
+  <data name="DisplayAttributeDescription_EgressOptions_FileSystem" xml:space="preserve">
+    <value>Mapping of file system egress provider names to their options.</value>
+  </data>
+  <data name="DisplayAttributeDescription_EgressOptions_Properties" xml:space="preserve">
+    <value>Additional properties, such as secrets, that can be referenced by the provider definitions.</value>
   </data>
 </root>

@@ -3,6 +3,8 @@
 
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Security;
@@ -14,31 +16,32 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
     /// <summary>
     /// Egress provider for egressing stream data to the file system.
     /// </summary>
-    internal class FileSystemEgressProvider :
-        EgressProvider<FileSystemEgressProviderOptions>
+    internal class FileSystemEgressExtension :
+        IEgressExtension
     {
-        ILogger<FileSystemEgressProvider> _logger;
+        private readonly ILogger<FileSystemEgressExtension> _logger;
 
-        public FileSystemEgressProvider(ILogger<FileSystemEgressProvider> logger)
-            : base(logger)
+        public string DisplayName => EgressProviderTypes.FileSystem;
+
+        public FileSystemEgressExtension(ILogger<FileSystemEgressExtension> logger)
         {
             _logger = logger;
         }
 
-        public override async Task<string> EgressAsync(
-            string providerType,
-            string providerName,
-            FileSystemEgressProviderOptions options,
+        public async Task<EgressArtifactResult> EgressArtifact(
+            ExtensionEgressPayload payload,
             Func<Stream, CancellationToken, Task> action,
-            EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
+            FileSystemEgressProviderOptions options = new();
+            Bind(options, payload.Configuration);
+
             if (!Directory.Exists(options.DirectoryPath))
             {
                 WrapException(() => Directory.CreateDirectory(options.DirectoryPath));
             }
 
-            string targetPath = Path.Combine(options.DirectoryPath, artifactSettings.Name);
+            string targetPath = Path.Combine(options.DirectoryPath, payload.Settings.Name);
 
             if (!string.IsNullOrEmpty(options.IntermediateDirectoryPath))
             {
@@ -90,8 +93,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
                 await WriteFileAsync(action, targetPath, token);
             }
 
-            Logger?.EgressProviderSavedStream(EgressProviderTypes.FileSystem, targetPath);
-            return targetPath;
+            _logger?.EgressProviderSavedStream(EgressProviderTypes.FileSystem, targetPath);
+
+            return new EgressArtifactResult() { Succeeded = true, ArtifactPath = targetPath };
         }
 
         private async Task WriteFileAsync(Func<Stream, CancellationToken, Task> action, string filePath, CancellationToken token)
@@ -99,7 +103,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
             using Stream fileStream = WrapException(
                 () => new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None));
 
-            Logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.FileSystem);
+            _logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.FileSystem);
+
             await action(fileStream, token);
 
             await fileStream.FlushAsync(token);
@@ -161,6 +166,34 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
             else
             {
                 return Strings.ErrorMessage_EgressFileFailedGeneric;
+            }
+        }
+
+        // This is a temporary stop-gap that simulates options binding from configuration. To do this properly, the extension
+        // egress provider or service should pass the configuration directly to the IEgressExtension implementation and allow
+        // it to decide how to pull information out of the configuration section.
+        private static void Bind(FileSystemEgressProviderOptions options, IDictionary<string, string> configuration)
+        {
+            if (configuration.TryGetValue(nameof(FileSystemEgressProviderOptions.CopyBufferSize), out string copyBufferSizeString) &&
+                !string.IsNullOrEmpty(copyBufferSizeString))
+            {
+                try
+                {
+                    options.CopyBufferSize = (int)TypeDescriptor.GetConverter(typeof(int)).ConvertFromInvariantString(copyBufferSizeString);
+                }
+                catch
+                {
+                }
+            }
+
+            if (configuration.TryGetValue(nameof(FileSystemEgressProviderOptions.DirectoryPath), out string directoryPath))
+            {
+                options.DirectoryPath = directoryPath;
+            }
+
+            if (configuration.TryGetValue(nameof(FileSystemEgressProviderOptions.IntermediateDirectoryPath), out string intermediateDirectoryPath))
+            {
+                options.IntermediateDirectoryPath = intermediateDirectoryPath;
             }
         }
     }

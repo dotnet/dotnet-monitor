@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -121,13 +122,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IList<string> processedSectionPaths = new List<string>();
 
             // Redact all the properties since they could include secrets such as storage keys
-            IConfigurationSection propertiesSection = ProcessChildSection(egress, nameof(EgressOptions.Properties), skipNotPresent, includeChildSections: true, redact: true, showSources: showSources);
+            IConfigurationSection propertiesSection = ProcessChildSection(egress, ConfigurationKeys.Egress_Properties, skipNotPresent, includeChildSections: true, redact: true, showSources: showSources);
             if (null != propertiesSection)
             {
                 processedSectionPaths.Add(propertiesSection.Path);
             }
 
-            IConfigurationSection fileSystemProviderSection = ProcessChildSection(egress, nameof(EgressOptions.FileSystem), skipNotPresent, includeChildSections: false, showSources: showSources);
+            IConfigurationSection fileSystemProviderSection = ProcessChildSection(egress, EgressProviderTypes.FileSystem, skipNotPresent, includeChildSections: false, showSources: showSources);
             if (fileSystemProviderSection != null)
             {
                 processedSectionPaths.Add(fileSystemProviderSection.Path);
