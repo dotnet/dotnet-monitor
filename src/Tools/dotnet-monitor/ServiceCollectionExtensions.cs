@@ -232,9 +232,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureExtensions(this IServiceCollection services)
         {
+            // Extension discovery
             services.AddSingleton<ExtensionDiscoverer>();
-            services.AddSingleton<ExtensionRepository, WellKnownExtensionRepository>();
+            // Extension type factories
+            services.AddSingleton<EgressExtensionFactory>();
             // Well-known extensions
+            services.AddSingleton<ExtensionRepository, WellKnownExtensionRepository>();
             services.AddSingleton<IWellKnownExtensionFactory, FileSystemEgressExtensionFactory>();
             return services;
         }
