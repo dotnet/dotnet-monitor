@@ -1,9 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Tools.Monitor.Egress;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.FileProviders.Physical;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -14,35 +12,27 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
+namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 {
-    [DebuggerDisplay("Extension {_extensionName,nq} @ {_declarationPath}")]
-    internal partial class ProgramExtension : IExtension, IEgressExtension
+    [DebuggerDisplay("{_manifest.Name,nq} Extension ({_extensionPath})")]
+    internal partial class EgressExtension : IExtension, IEgressExtension
     {
-        private readonly string _extensionName;
-        private readonly string _targetFolder;
-        private readonly string _declarationPath;
-        private readonly string _exePath;
-        private readonly IFileProvider _fileSystem;
-        private readonly ILogger<ProgramExtension> _logger;
+        private readonly string _extensionPath;
+        private readonly ILogger<EgressExtension> _logger;
         private ExtensionManifest _manifest;
         private IDictionary<string, string> _processEnvironmentVariables = new Dictionary<string, string>();
 
         private static readonly TimeSpan WaitForProcessExitTimeout = TimeSpan.FromMilliseconds(2000);
 
-        public ProgramExtension(ExtensionManifest manifest, string extensionName, string targetFolder, IFileProvider fileSystem, string declarationPath, ILogger<ProgramExtension> logger)
+        public EgressExtension(ExtensionManifest manifest, string extensionPath, ILogger<EgressExtension> logger)
         {
-            _extensionName = extensionName;
-            _targetFolder = targetFolder;
-            _fileSystem = fileSystem;
-            _declarationPath = declarationPath;
-            _exePath = declarationPath;
-            _logger = logger;
-            _manifest = manifest;
+            _extensionPath = extensionPath ?? throw new ArgumentNullException(nameof(extensionPath));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _manifest = manifest ?? throw new ArgumentNullException(nameof(manifest));
         }
 
         /// <inheritdoc/>
-        public string DisplayName => Path.GetDirectoryName(_declarationPath);
+        public string DisplayName => _extensionPath;
 
         public void AddEnvironmentVariable(string key, string value)
         {
@@ -71,12 +61,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             {
                 executablePath = DotNetHost.ExecutablePath;
 
-                string entrypointAssemblyPath = Path.Combine(Path.GetDirectoryName(_exePath), $"{_manifest.AssemblyFileName}.dll");
+                string assemblyPath = Path.Combine(_extensionPath, $"{_manifest.AssemblyFileName}.dll");
 
-                IFileInfo entrypointAssemblyInfo = new PhysicalFileInfo(new FileInfo(entrypointAssemblyPath));
-                ValidateExecutable(entrypointAssemblyInfo);
+                ValidateFileExists(new FileInfo(assemblyPath));
 
-                pStart.ArgumentList.Add(entrypointAssemblyInfo.PhysicalPath);
+                pStart.ArgumentList.Add(assemblyPath);
             }
             else if (!string.IsNullOrEmpty(_manifest.ExecutableFileName))
             {
@@ -87,11 +76,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                     exeName += ".exe";
                 }
 
-                string programPath = Path.Combine(Path.GetDirectoryName(_exePath), exeName);
+                executablePath = Path.Combine(_extensionPath, exeName);
 
-                IFileInfo executableInfo = new PhysicalFileInfo(new FileInfo(programPath));
-                ValidateExecutable(executableInfo);
-                executablePath = executableInfo.PhysicalPath;
+                ValidateFileExists(new FileInfo(executablePath));
             }
             else
             {
@@ -122,10 +109,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
             using OutputParser<EgressArtifactResult> parser = new(p, _logger);
 
-            _logger.ExtensionStarting(_extensionName);
+            _logger.ExtensionStarting(_manifest.Name);
             if (!p.Start())
             {
-                ExtensionException.ThrowLaunchFailure(_extensionName);
+                ExtensionException.ThrowLaunchFailure(_manifest.Name);
             }
 
             parser.BeginReading();
@@ -164,12 +151,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             return result;
         }
 
-        private void ValidateExecutable(IFileInfo entrypointInfo)
+        private void ValidateFileExists(FileInfo fileInfo)
         {
-            if (!entrypointInfo.Exists || entrypointInfo.IsDirectory || entrypointInfo.PhysicalPath == null)
+            if (!fileInfo.Exists)
             {
-                _logger.ExtensionProgramMissing(_extensionName, Path.Combine(_targetFolder, _exePath), _manifest.ExecutableFileName);
-                ExtensionException.ThrowNotFound(_extensionName);
+                ExtensionException.ThrowFileNotFound(_manifest.Name, fileInfo.FullName);
             }
         }
     }

@@ -380,12 +380,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_ExtensionManifestNotParsable);
 
-        private static readonly Action<ILogger, string, string, string, Exception> _extensionProgramMissing =
-            LoggerMessage.Define<string, string, string>(
-                eventId: LoggingEventIds.ExtensionProgramMissing.EventId(),
-                logLevel: LogLevel.Error,
-                formatString: Strings.LogFormatString_ExtensionProgramMissing);
-
         private static readonly Action<ILogger, int, string, string, Exception> _extensionMalformedOutput =
             LoggerMessage.Define<int, string, string>(
                 eventId: LoggingEventIds.ExtensionMalformedOutput.EventId(),
@@ -812,11 +806,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ExtensionManifestNotParsable(this ILogger logger, string manifestFile, Exception ex)
         {
             _extensionManifestNotParsable(logger, manifestFile, ex);
-        }
-
-        public static void ExtensionProgramMissing(this ILogger logger, string extensionName, string extensionDeclarationFile, string program)
-        {
-            _extensionProgramMissing(logger, extensionName, extensionDeclarationFile, program, null);
         }
 
         public static void ExtensionMalformedOutput(this ILogger logger, int pid, string message, Type resultType)

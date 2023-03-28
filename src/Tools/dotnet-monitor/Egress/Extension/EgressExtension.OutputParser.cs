@@ -1,7 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
@@ -9,20 +9,20 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
+namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 {
-    internal partial class ProgramExtension
+    internal partial class EgressExtension
     {
         internal class OutputParser<TResult> : IDisposable where TResult : class, IExtensionResult
         {
-            private readonly ILogger<ProgramExtension> _logger;
+            private readonly ILogger<EgressExtension> _logger;
             private readonly TaskCompletionSource<TResult> _resultCompletionSource;
             private readonly EventWaitHandle _beginReadsHandle;
             private readonly Process _process;
             // We need to store the process ID for logging because we can't access it after the process exits
             private int _processId = -1;
 
-            public OutputParser(Process process, ILogger<ProgramExtension> logger)
+            public OutputParser(Process process, ILogger<EgressExtension> logger)
             {
                 _process = process;
                 _logger = logger;

@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using System;
@@ -10,16 +11,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     internal class FolderExtensionRepository : ExtensionRepository
     {
-        private readonly string _targetFolder;
         private readonly IFileProvider _fileSystem;
-        private readonly ILogger<ProgramExtension> _logger;
+        private readonly ILogger<EgressExtension> _logger;
 
-        public FolderExtensionRepository(IFileProvider fileSystem, ILogger<ProgramExtension> logger, string targetFolder)
+        public FolderExtensionRepository(IFileProvider fileSystem, ILogger<EgressExtension> logger)
         {
             _fileSystem = fileSystem;
-
-            _targetFolder = targetFolder;
-
             _logger = logger;
         }
 
@@ -45,7 +42,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
                     if (extensionName == manifest.Name)
                     {
-                        extension = new ProgramExtension(manifest, extensionName, _targetFolder, _fileSystem, manifestPath, _logger);
+                        extension = new EgressExtension(manifest, extensionDir.PhysicalPath, _logger);
                         return true;
                     }
                 }

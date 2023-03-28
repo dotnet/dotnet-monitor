@@ -23,8 +23,8 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
-using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
@@ -263,8 +263,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 (IServiceProvider serviceProvider) =>
                 {
                     IFileProvider fileProvider = GetFileProvider(targetExtensionFolder);
-                    ILogger<ProgramExtension> logger = serviceProvider.GetRequiredService<ILogger<ProgramExtension>>();
-                    return new FolderExtensionRepository(fileProvider, logger, targetExtensionFolder);
+                    ILogger<EgressExtension> logger = serviceProvider.GetRequiredService<ILogger<EgressExtension>>();
+                    return new FolderExtensionRepository(fileProvider, logger);
                 };
 
             services.AddSingleton<ExtensionRepository>(createDelegate);
