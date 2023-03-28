@@ -117,3 +117,5 @@ Authentication can be turned off by specifying the `--no-auth` option to `dotnet
 ```powershell
 dotnet monitor collect --no-auth
 ```
+
+This is a test.
