@@ -8,9 +8,9 @@
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>615b21dd10832c0faaaa93d5f177e491ce9b3a09</Sha>
     </Dependency>
-    <Dependency Name="System.CommandLine" Version="2.0.0-beta4.23172.1">
+    <Dependency Name="System.CommandLine" Version="2.0.0-beta4.23174.1">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
-      <Sha>0403596afba9f622468d26c15a81fa17e881b1df</Sha>
+      <Sha>b90bff74067df7c75a8be5d4371a36d6051434ae</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
@@ -18,9 +18,9 @@
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>d50065c4a4fe31a66a1cc2e1a31896d30464da13</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.1-preview1.23160.1">
+    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.2-preview1.23177.7">
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
-      <Sha>6cf3e8b7f6d3681ef378c932dd62f23e4fbad4b6</Sha>
+      <Sha>d546fca80120210b26f83e3acfefd8129c45c6cb</Sha>
     </Dependency>
     <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="7.0.0-beta.23164.3">
       <Uri>https://github.com/dotnet/arcade</Uri>
