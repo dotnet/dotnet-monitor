@@ -856,4 +856,10 @@
   <data name="DisplayAttributeDescription_MetricsOptions_Meters" xml:space="preserve">
     <value>Names of meters to collect from the System.Diagnostics.Metrics provider.</value>
   </data>
+  <data name="DisplayAttributeDescription_EgressOptions_FileSystem" xml:space="preserve">
+    <value>Mapping of file system egress provider names to their options.</value>
+  </data>
+  <data name="DisplayAttributeDescription_EgressOptions_Properties" xml:space="preserve">
+    <value>Additional properties, such as secrets, that can be referenced by the provider definitions.</value>
+  </data>
 </root>
