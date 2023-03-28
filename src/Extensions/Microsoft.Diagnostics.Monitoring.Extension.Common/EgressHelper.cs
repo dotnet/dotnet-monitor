@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.IO;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,10 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                 result.FailureMessage = ex.Message;
             }
 
-            JsonSerializerOptions serializerOptions = new JsonSerializerOptions();
-            serializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
-
-            string jsonBlob = JsonSerializer.Serialize<EgressArtifactResult>(result, serializerOptions);
+            string jsonBlob = JsonSerializer.Serialize<EgressArtifactResult>(result);
             Console.Write(jsonBlob);
 
             // return non-zero exit code when failed
