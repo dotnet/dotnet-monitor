@@ -2,20 +2,20 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Tools.Monitor.Egress;
+using Microsoft.Diagnostics.Tools.Monitor.Egress.Extension;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
-using Microsoft.Extensions.Logging;
 using System.IO;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
 {
     internal sealed class BuildOutputExtensionRepository : ExtensionRepository
     {
-        private readonly ILogger<EgressExtension> _logger;
+        private readonly EgressExtensionFactory _egressExtensionFactory;
 
-        public BuildOutputExtensionRepository(ILogger<EgressExtension> logger)
+        public BuildOutputExtensionRepository(
+            EgressExtensionFactory egressExtensionFactory)
         {
-            _logger = logger;
+            _egressExtensionFactory = egressExtensionFactory;
         }
 
         public override bool TryFindExtension(string extensionName, out IExtension extension)
@@ -47,10 +47,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
         {
             string manifestPath = Path.Combine(extensionPath, ExtensionManifest.DefaultFileName);
 
-            return new EgressExtension(
+            return _egressExtensionFactory.Create(
                 ExtensionManifest.FromPath(manifestPath),
-                extensionPath,
-                _logger);
+                extensionPath);
         }
     }
 }

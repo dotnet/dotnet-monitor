@@ -22,6 +22,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.Event
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
+using Microsoft.Diagnostics.Tools.Monitor.Egress.Extension;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
@@ -270,8 +271,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 (IServiceProvider serviceProvider) =>
                 {
                     IFileProvider fileProvider = GetFileProvider(targetExtensionFolder);
-                    ILogger<EgressExtension> logger = serviceProvider.GetRequiredService<ILogger<EgressExtension>>();
-                    return new FolderExtensionRepository(fileProvider, logger);
+                    EgressExtensionFactory egressExtensionFactory = serviceProvider.GetRequiredService<EgressExtensionFactory>();
+                    ILogger<FolderExtensionRepository> logger = serviceProvider.GetRequiredService<ILogger<FolderExtensionRepository>>();
+                    return new FolderExtensionRepository(fileProvider, egressExtensionFactory, logger);
                 };
 
             services.AddSingleton<ExtensionRepository>(createDelegate);

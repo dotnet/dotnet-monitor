@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
     internal interface IEgressProviderConfigurationProvider
     {
         /// <summary>
-        /// The name of the provider types defined in configuration that use this options type. These keys can be passed to <see cref="GetConfigurationSection(string)"/> to get the specific configuration section.
+        /// The name of the provider types defined in configuration that use this options type. These keys can be passed to <see cref="GetProviderTypeConfigurationSection(string)"/> to get the specific configuration section.
         /// </summary>
         IEnumerable<string> ProviderTypes { get; }
 
@@ -24,10 +24,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         Type OptionsType { get; }
 
         /// <summary>
+        /// Gets the <see cref="IConfigurationSection"/> associated with the given <paramref name="providerType"/> and <paramref name="providerName"/>.
+        /// </summary>
+        /// <param name="providerType">The provider type, the element under "Egress:" in configuration. You can use <see cref="ProviderTypes"/> to get valid strings to use here.</param>
+        /// <param name="providerName">The provider name, the element under "Egress:{providerType}:" in configuration.</param>
+        IConfigurationSection GetProviderConfigurationSection(string providerType, string providerName);
+
+        /// <summary>
         /// Gets the <see cref="IConfigurationSection"/> associated with the given <paramref name="providerType"/>.
         /// </summary>
         /// <param name="providerType">The provider type, the element under "Egress:" in configuration. You can use <see cref="ProviderTypes"/> to get valid strings to use here.</param>
-        IConfigurationSection GetConfigurationSection(string providerType);
+        IConfigurationSection GetProviderTypeConfigurationSection(string providerType);
 
         /// <summary>
         /// The configuration section that should be monitored for changes. This will return the minimum set of <see cref="IConfigurationSection"/> to monitor for changes.

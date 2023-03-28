@@ -4,6 +4,7 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
@@ -36,8 +37,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
             }
         }
 
+        public IConfigurationSection GetProviderConfigurationSection(string providerType, string providerName)
+        {
+            IConfigurationSection section = GetProviderTypeConfigurationSection(providerType).GetSection(providerName);
+
+            if (!section.Exists())
+            {
+                throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
+            }
+
+            return section;
+        }
+
         /// <inheritdoc/>
-        public IConfigurationSection GetConfigurationSection(string providerType)
+        public IConfigurationSection GetProviderTypeConfigurationSection(string providerType)
         {
             return _optionsMapper.GetProviderSections(this.OptionsType).First(s => s.Key == providerType);
         }

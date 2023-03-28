@@ -170,7 +170,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 foreach (string providerType in provider.ProviderTypes)
                 {
                     _egressProviderMap.Add(providerType, provider);
-                    IConfigurationSection typeSection = provider.GetConfigurationSection(providerType);
+                    IConfigurationSection typeSection = provider.GetProviderTypeConfigurationSection(providerType);
 
                     foreach (IConfigurationSection optionsSection in typeSection.GetChildren())
                     {

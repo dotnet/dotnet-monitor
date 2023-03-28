@@ -1,12 +1,16 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
@@ -17,18 +21,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     [DebuggerDisplay("{_manifest.Name,nq} Extension ({_extensionPath})")]
     internal partial class EgressExtension : IExtension, IEgressExtension
     {
+        private readonly IEgressProviderConfigurationProvider _configurationProvider;
         private readonly string _extensionPath;
         private readonly ILogger<EgressExtension> _logger;
-        private ExtensionManifest _manifest;
-        private IDictionary<string, string> _processEnvironmentVariables = new Dictionary<string, string>();
+        private readonly ExtensionManifest _manifest;
+        private readonly IDictionary<string, string> _processEnvironmentVariables = new Dictionary<string, string>();
+        private readonly IEgressPropertiesProvider _propertiesProvider;
 
         private static readonly TimeSpan WaitForProcessExitTimeout = TimeSpan.FromMilliseconds(2000);
 
-        public EgressExtension(ExtensionManifest manifest, string extensionPath, ILogger<EgressExtension> logger)
+        public EgressExtension(
+            ExtensionManifest manifest,
+            string extensionPath,
+            IEgressProviderConfigurationProvider configurationProvider,
+            IEgressPropertiesProvider propertiesProvider,
+            ILogger<EgressExtension> logger)
         {
+            _configurationProvider = configurationProvider ?? throw new ArgumentNullException(nameof(configurationProvider));
             _extensionPath = extensionPath ?? throw new ArgumentNullException(nameof(extensionPath));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _manifest = manifest ?? throw new ArgumentNullException(nameof(manifest));
+            _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
         }
 
         /// <inheritdoc/>
@@ -40,7 +53,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         }
 
         /// <inheritdoc/>
-        public async Task<EgressArtifactResult> EgressArtifact(ExtensionEgressPayload configPayload, Func<Stream, CancellationToken, Task> getStreamAction, CancellationToken token)
+        public Task<EgressArtifactResult> EgressArtifact(
+            string providerName,
+            EgressArtifactSettings settings,
+            Func<Stream, CancellationToken, Task> action,
+            CancellationToken token)
+        {
+            ExtensionEgressPayload payload = new()
+            {
+                Settings = settings,
+                Configuration = GetConfigurationSection(providerName, _manifest.Name),
+                Properties = _propertiesProvider.GetAllProperties(),
+                ProviderName = providerName
+            };
+
+            return EgressArtifact(payload, action, token);
+        }
+
+        public async Task<EgressArtifactResult> EgressArtifact(
+            ExtensionEgressPayload payload,
+            Func<Stream, CancellationToken, Task> action,
+            CancellationToken token)
         {
             _manifest.Validate();
 
@@ -117,12 +150,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
             parser.BeginReading();
 
-            await JsonSerializer.SerializeAsync<ExtensionEgressPayload>(p.StandardInput.BaseStream, configPayload, options: null, token);
+            await JsonSerializer.SerializeAsync<ExtensionEgressPayload>(p.StandardInput.BaseStream, payload, options: null, token);
             await p.StandardInput.WriteAsync(NewLine, token);
             await p.StandardInput.BaseStream.FlushAsync(token);
             _logger.ExtensionConfigured(pStart.FileName, p.Id);
 
-            await getStreamAction(p.StandardInput.BaseStream, token);
+            await action(p.StandardInput.BaseStream, token);
             await p.StandardInput.BaseStream.FlushAsync(token);
             p.StandardInput.Close();
             _logger.ExtensionEgressPayloadCompleted(p.Id);
@@ -157,6 +190,35 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             {
                 ExtensionException.ThrowFileNotFound(_manifest.Name, fileInfo.FullName);
             }
+        }
+
+        private Dictionary<string, string> GetConfigurationSection(string providerName, string providerType)
+        {
+            IConfigurationSection providerTypeSection = _configurationProvider.GetProviderTypeConfigurationSection(providerType);
+            IConfigurationSection providerNameSection = providerTypeSection.GetSection(providerName);
+
+            if (!providerNameSection.Exists())
+            {
+                throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
+            }
+
+            var configAsDict = new Dictionary<string, string>();
+
+            foreach (var kvp in providerNameSection.AsEnumerable(makePathsRelative: true))
+            {
+                // Only exclude null values that have children.
+                if (kvp.Value == null)
+                {
+                    if (providerNameSection.GetSection(kvp.Key).GetChildren().Any())
+                    {
+                        continue;
+                    }
+                }
+
+                configAsDict[kvp.Key] = kvp.Value;
+            }
+
+            return configAsDict;
         }
     }
 }
