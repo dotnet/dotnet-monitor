@@ -62,21 +62,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             string providerType = GetProviderType(providerName);
         }
 
-        public async Task<EgressResult> EgressAsync(string providerName, Func<CancellationToken, Task<Stream>> action, string fileName, string contentType, IEndpointInfo source, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
-        {
-            string providerType = GetProviderType(providerName);
-            IEgressProviderInternal provider = GetProvider(providerType);
-
-            string value = await provider.EgressAsync(
-                providerType,
-                providerName,
-                action,
-                await CreateSettings(source, fileName, contentType, collectionRuleMetadata, token),
-                token);
-
-            return new EgressResult(value);
-        }
-
         public async Task<EgressResult> EgressAsync(string providerName, Func<Stream, CancellationToken, Task> action, string fileName, string contentType, IEndpointInfo source, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
             string providerType = GetProviderType(providerName);

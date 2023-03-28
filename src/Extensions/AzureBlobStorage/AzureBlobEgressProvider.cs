@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
     /// </remarks>
     internal partial class AzureBlobEgressProvider : EgressProvider<AzureBlobEgressProviderOptions>
     {
-        private int BlobStorageBufferSize = 4 * 1024 * 1024;
+        private int DefaultBlobStorageBufferSize = 4 * 1024 * 1024;
 
         public AzureBlobEgressProvider(ILogger logger) : base(logger)
         {
@@ -49,10 +49,10 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 
                 var bloboptions = new BlockBlobOpenWriteOptions
                 {
-                    BufferSize = BlobStorageBufferSize,
+                    BufferSize = options.CopyBufferSize.GetValueOrDefault(DefaultBlobStorageBufferSize),
                 };
                 using (Stream blobStream = await blobClient.OpenWriteAsync(overwrite: true, options: bloboptions, cancellationToken: token))
-                using (AutoFlushStream flushStream = new AutoFlushStream(blobStream, BlobStorageBufferSize))
+                using (AutoFlushStream flushStream = new AutoFlushStream(blobStream, bloboptions.BufferSize.Value))
                 {
                     //Azure's stream from OpenWriteAsync will do the following
                     //1. Write the data to a local buffer

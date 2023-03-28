@@ -45,47 +45,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         }
 
         /// <summary>
-        /// Egress a stream via a callback by returning the stream from the callback.
-        /// </summary>
-        /// <param name="options">Described to where stream data should be egressed.</param>
-        /// <param name="action">Callback that is invoked in order to get the stream to be egressed.</param>
-        /// <param name="artifactSettings">Describes data about the artifact, such as file name and content type.</param>
-        /// <param name="token">The token to monitor for cancellation requests.</param>
-        /// <returns>A task that completes with a value of the identifier of the egress result. Typically,
-        /// this is a path to access the stream without any information indicating whether any particular
-        /// user has access to it (e.g. no file system permissions or SAS tokens).</returns>
-        public virtual Task<string> EgressAsync(
-            string providerType,
-            string providerName,
-            TOptions options,
-            Func<CancellationToken, Task<Stream>> action,
-            EgressArtifactSettings artifactSettings,
-            CancellationToken token)
-        {
-            Func<Stream, CancellationToken, Task> wrappingAction = async (targetStream, token) =>
-            {
-                using var sourceStream = await action(token);
-
-                int copyBufferSize = options.CopyBufferSize.GetValueOrDefault(0x100000);
-
-                Logger?.EgressCopyActionStreamToEgressStream(copyBufferSize);
-
-                await sourceStream.CopyToAsync(
-                    targetStream,
-                    copyBufferSize,
-                    token);
-            };
-
-            return EgressAsync(
-                providerType,
-                providerName,
-                options,
-                wrappingAction,
-                artifactSettings,
-                token);
-        }
-
-        /// <summary>
         /// Egress a stream via a callback by writing to the provided stream.
         /// </summary>
         /// <param name="options">Described to where stream data should be egressed.</param>
