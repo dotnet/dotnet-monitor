@@ -14,14 +14,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             string providerType,
             string providerName,
             TOptions options,
-            Func<CancellationToken, Task<Stream>> action,
-            EgressArtifactSettings artifactSettings,
-            CancellationToken token);
-
-        Task<string> EgressAsync(
-            string providerType,
-            string providerName,
-            TOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
             CancellationToken token);

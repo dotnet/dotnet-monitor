@@ -55,6 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize))]
+        [Range(1, int.MaxValue)]
         public int? CopyBufferSize { get; set; }
 
         [Display(

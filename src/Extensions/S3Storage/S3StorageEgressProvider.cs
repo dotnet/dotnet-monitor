@@ -43,8 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             {
                 client = await ClientFactory.CreateAsync(options, artifactSettings, token);
                 uploadId = await client.InitMultiPartUploadAsync(artifactSettings.Metadata, token);
-                int copyBufferSize = options.CopyBufferSize.GetValueOrDefault(0x100000);
-                await using var stream = new MultiPartUploadStream(client, options.BucketName, artifactSettings.Name, uploadId, copyBufferSize);
+                await using var stream = new MultiPartUploadStream(client, options.BucketName, artifactSettings.Name, uploadId, options.CopyBufferSize);
                 _logger.EgressProviderInvokeStreamAction(Constants.S3StorageProviderName);
                 await action(stream, token);
                 await stream.FinalizeAsync(token); // force to push the last part

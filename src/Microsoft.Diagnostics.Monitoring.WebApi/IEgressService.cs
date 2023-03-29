@@ -14,15 +14,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         Task<EgressResult> EgressAsync(
             string providerName,
-            Func<CancellationToken, Task<Stream>> action,
-            string fileName,
-            string contentType,
-            IEndpointInfo source,
-            CollectionRuleMetadata collectionRuleMetadata,
-            CancellationToken token);
-
-        Task<EgressResult> EgressAsync(
-            string providerName,
             Func<Stream, CancellationToken, Task> action,
             string fileName,
             string contentType,

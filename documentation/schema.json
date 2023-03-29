@@ -2579,7 +2579,9 @@
             "null"
           ],
           "description": "Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.",
-          "format": "int32"
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
         },
         "QueueName": {
           "type": [

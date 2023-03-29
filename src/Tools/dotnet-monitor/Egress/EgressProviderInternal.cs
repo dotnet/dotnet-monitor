@@ -38,23 +38,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public Task<string> EgressAsync(
             string providerType,
             string providerName,
-            Func<CancellationToken, Task<Stream>> action,
-            EgressArtifactSettings artifactSettings,
-            CancellationToken token)
-        {
-            return _provider.EgressAsync(
-                providerType,
-                providerName,
-                GetOptions(providerName),
-                action,
-                artifactSettings,
-                token);
-        }
-
-        /// <inheritdoc/>
-        public Task<string> EgressAsync(
-            string providerType,
-            string providerName,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
