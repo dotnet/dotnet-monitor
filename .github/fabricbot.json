@@ -416,6 +416,17 @@
                   }
                 }
               ]
+            },
+            {
+              "operator": "not",
+              "operands": [
+                {
+                  "name": "hasLabel",
+                  "parameters": {
+                    "label": "needs-review"
+                  }
+                }
+              ]
             }
           ]
         },
