@@ -19,13 +19,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private Func<CancellationToken, Task> _stopFunc;
 
-        protected PipelineArtifactOperation(ILogger logger, string artifactType, IEndpointInfo endpointInfo, bool isStoppable = true)
+        protected OperationTrackerService OperationTrackerService { get; }
+
+        protected PipelineArtifactOperation(OperationTrackerService trackerService, ILogger logger, string artifactType, IEndpointInfo endpointInfo, bool isStoppable = true, bool register = false)
         {
             _artifactType = artifactType;
+            OperationTrackerService = trackerService;
 
             Logger = logger;
             EndpointInfo = endpointInfo;
             IsStoppable = isStoppable;
+            Register = register;
         }
 
         public async Task ExecuteAsync(Stream outputStream, TaskCompletionSource<object> startCompletionSource, CancellationToken token)
@@ -33,6 +37,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             await using T pipeline = CreatePipeline(outputStream);
 
             _stopFunc = pipeline.StopAsync;
+
+            using IDisposable trackerRegistration = Register ? OperationTrackerService.Register(EndpointInfo) : null;
 
             Task runTask = await StartPipelineAsync(pipeline, token);
 
@@ -64,6 +70,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public abstract string ContentType { get; }
 
         public bool IsStoppable { get; }
+
+        public bool Register { get; }
 
         protected abstract T CreatePipeline(Stream outputStream);
 

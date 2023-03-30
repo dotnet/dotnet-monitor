@@ -32,6 +32,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private const string DefaultRuleName = "TestRule";
         private const string UnknownEgressName = "UnknownEgress";
+        private const string ExpectedMeterName = "Meter";
+        private const string ExpectedInstrumentName = "Instrument";
 
         private readonly ITestOutputHelper _outputHelper;
 
@@ -251,6 +253,214 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
                     VerifyFieldLessThanOtherFieldMessage(failures, 0, nameof(EventCounterOptions.GreaterThan), nameof(EventCounterOptions.LessThan));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_EventMeterTrigger_MinimumOptions()
+        {
+            const double ExpectedGreaterThan = 0.5;
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetEventMeterTrigger(options =>
+                        {
+                            options.MeterName = ExpectedMeterName;
+                            options.InstrumentName = ExpectedInstrumentName;
+                            options.GreaterThan = ExpectedGreaterThan;
+                        });
+                },
+                ruleOptions =>
+                {
+                    EventMeterOptions eventMeterOptions = ruleOptions.VerifyEventMeterTrigger();
+                    Assert.Equal(ExpectedMeterName, eventMeterOptions.MeterName);
+                    Assert.Equal(ExpectedInstrumentName, eventMeterOptions.InstrumentName);
+                    Assert.Equal(ExpectedGreaterThan, eventMeterOptions.GreaterThan);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_EventMeterTrigger_Default_RoundTrip()
+        {
+            const double ExpectedGreaterThan = 0.5;
+            const double ExpectedLessThan = 0.75;
+            const int ExpectedHistogramPercentile = 95;
+            TimeSpan ExpectedDuration = TimeSpan.FromSeconds(30);
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetEventMeterTrigger(options =>
+                        {
+                            options.MeterName = ExpectedMeterName;
+                            options.InstrumentName = ExpectedInstrumentName;
+                            options.GreaterThan = ExpectedGreaterThan;
+                            options.LessThan = ExpectedLessThan;
+                            options.SlidingWindowDuration = ExpectedDuration;
+                            options.HistogramPercentile = ExpectedHistogramPercentile;
+                        });
+                },
+                ruleOptions =>
+                {
+                    EventMeterOptions eventMeterOptions = ruleOptions.VerifyEventMeterTrigger();
+                    Assert.Equal(ExpectedMeterName, eventMeterOptions.MeterName);
+                    Assert.Equal(ExpectedInstrumentName, eventMeterOptions.InstrumentName);
+                    Assert.Equal(ExpectedGreaterThan, eventMeterOptions.GreaterThan);
+                    Assert.Equal(ExpectedLessThan, eventMeterOptions.LessThan);
+                    Assert.Equal(ExpectedDuration, eventMeterOptions.SlidingWindowDuration);
+                    Assert.Equal(ExpectedHistogramPercentile, eventMeterOptions.HistogramPercentile);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_EventMeterTrigger_Histogram_RoundTrip()
+        {
+            TimeSpan ExpectedDuration = TimeSpan.FromSeconds(30);
+            int ExpectedHistogramPercentile = 50;
+            int ExpectedGreaterThan = 1;
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetEventMeterTrigger(options =>
+                        {
+                            options.MeterName = ExpectedMeterName;
+                            options.InstrumentName = ExpectedInstrumentName;
+                            options.HistogramPercentile = ExpectedHistogramPercentile;
+                            options.SlidingWindowDuration = ExpectedDuration;
+                            options.GreaterThan = ExpectedGreaterThan;
+                        });
+                },
+                ruleOptions =>
+                {
+                    EventMeterOptions eventMeterOptions = ruleOptions.VerifyEventMeterTrigger();
+                    Assert.Equal(ExpectedMeterName, eventMeterOptions.MeterName);
+                    Assert.Equal(ExpectedInstrumentName, eventMeterOptions.InstrumentName);
+                    Assert.Equal(ExpectedHistogramPercentile, eventMeterOptions.HistogramPercentile);
+                    Assert.Equal(ExpectedDuration, eventMeterOptions.SlidingWindowDuration);
+                    Assert.Equal(ExpectedGreaterThan, eventMeterOptions.GreaterThan);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_EventMeterTrigger_PropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetEventMeterTrigger(options =>
+                        {
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(-1);
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    // Property validation failures will short-circuit the remainder of the validation
+                    // rules, thus only observe 3 errors when one might expect 4 (GreaterThan or LessThan should be specified).
+                    Assert.Equal(3, failures.Length);
+                    VerifyRequiredMessage(failures, 0, nameof(EventMeterOptions.MeterName));
+                    VerifyRequiredMessage(failures, 1, nameof(EventMeterOptions.InstrumentName));
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(EventMeterOptions.SlidingWindowDuration),
+                        TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_EventMeterTrigger_NoGreaterThanOrLessThan()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetEventMeterTrigger(options =>
+                        {
+                            options.MeterName = ExpectedMeterName;
+                            options.InstrumentName = ExpectedInstrumentName;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyEitherRequiredMessage(failures, 0,
+                        nameof(EventMeterOptions.GreaterThan), nameof(EventMeterOptions.LessThan));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_EventMeterTrigger_NoInstrumentOrMeterName()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetEventMeterTrigger(options =>
+                        {
+                            options.GreaterThan = 0.5;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Equal(2, failures.Length);
+                    VerifyRequiredMessage(failures, 0, nameof(EventMeterOptions.MeterName));
+                    VerifyRequiredMessage(failures, 1, nameof(EventMeterOptions.InstrumentName));
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_EventMeterTrigger_GreaterThanLargerThanLessThan()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetEventMeterTrigger(options =>
+                        {
+                            options.MeterName = ExpectedMeterName;
+                            options.InstrumentName = ExpectedInstrumentName;
+                            options.GreaterThan = 0.75;
+                            options.LessThan = 0.5;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyFieldLessThanOtherFieldMessage(failures, 0, nameof(EventMeterOptions.GreaterThan), nameof(EventMeterOptions.LessThan));
+                });
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(101)]
+        public Task CollectionRuleOptions_EventMeterTrigger_InvalidHistogramPercentile(int expectedHistogramPercentile)
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetEventMeterTrigger(options =>
+                        {
+                            options.MeterName = ExpectedMeterName;
+                            options.InstrumentName = ExpectedInstrumentName;
+                            options.GreaterThan = 0.5;
+                            options.HistogramPercentile = expectedHistogramPercentile;
+                        });
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+
+                    VerifyRangeMessage<int>(failures, 0, nameof(EventMeterOptions.HistogramPercentile),
+                        TriggerOptionsConstants.Percentage_MinValue.ToString(), TriggerOptionsConstants.Percentage_MaxValue.ToString());
                 });
         }
 

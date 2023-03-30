@@ -3,8 +3,8 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -15,48 +15,23 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 {
-    internal sealed class ProfilerService : BackgroundService
+    internal sealed class ProfilerService
     {
-        private readonly TaskCompletionSource<INativeFileProviderFactory> _fileProviderFactorySource = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly IInProcessFeatures _inProcessFeatures;
-        private readonly ISharedLibraryInitializer _sharedLibraryInitializer;
+        private readonly ISharedLibraryService _sharedLibraryService;
         private readonly IOptions<StorageOptions> _storageOptions;
         private readonly ILogger<ProfilerService> _logger;
 
         public ProfilerService(
-            ISharedLibraryInitializer sharedLibraryInitializer,
+            ISharedLibraryService sharedLibraryService,
             IOptions<StorageOptions> storageOptions,
             IInProcessFeatures inProcessFeatures,
             ILogger<ProfilerService> logger)
         {
             _inProcessFeatures = inProcessFeatures;
             _logger = logger;
-            _sharedLibraryInitializer = sharedLibraryInitializer;
+            _sharedLibraryService = sharedLibraryService;
             _storageOptions = storageOptions;
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            if (!_inProcessFeatures.IsProfilerRequired)
-            {
-                return;
-            }
-
-            using IDisposable _ = stoppingToken.Register(() => _fileProviderFactorySource.TrySetCanceled(stoppingToken));
-
-            // Yield to allow other hosting services to start
-            await Task.Yield();
-
-            try
-            {
-                _fileProviderFactorySource.SetResult(_sharedLibraryInitializer.Initialize());
-            }
-            catch (Exception ex)
-            {
-                _logger.FailedInitializeSharedLibraryStorage(ex);
-
-                _fileProviderFactorySource.SetException(ex);
-            }
         }
 
         public async Task ApplyProfiler(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
@@ -89,9 +64,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 }
                 else
                 {
-                    INativeFileProviderFactory fileProviderFactory = await _fileProviderFactorySource.Task;
+                    IFileProviderFactory fileProviderFactory = await _sharedLibraryService.GetFactoryAsync(cancellationToken);
 
-                    IFileProvider nativeFileProvider = fileProviderFactory.Create(runtimeIdentifier);
+                    IFileProvider nativeFileProvider = fileProviderFactory.CreateNative(runtimeIdentifier);
 
                     string libraryName = NativeLibraryHelper.GetSharedLibraryName(ProfilerIdentifiers.LibraryRootFileName);
 

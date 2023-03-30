@@ -13,8 +13,6 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 {
@@ -25,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
     /// </summary>
     internal static class GenerateApiKeyCommandHandler
     {
-        public static Task<int> Invoke(CancellationToken token, OutputFormat output, IConsole console)
+        public static void Invoke(OutputFormat output, TextWriter outputWriter)
         {
             GeneratedJwtKey newJwt = GeneratedJwtKey.Create();
 
@@ -114,9 +112,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 outputBldr.AppendLine();
             }
 
-            console.Out.Write(outputBldr.ToString());
-
-            return Task.FromResult(0);
+            outputWriter.Write(outputBldr);
         }
 
         private static string GetFormatString(OutputFormat output)

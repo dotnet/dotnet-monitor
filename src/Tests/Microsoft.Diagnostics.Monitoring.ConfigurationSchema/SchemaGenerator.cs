@@ -150,6 +150,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             AddCollectionRuleTriggerSchema<CPUUsageOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.CPUUsage);
             AddCollectionRuleTriggerSchema<GCHeapSizeOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.GCHeapSize);
             AddCollectionRuleTriggerSchema<ThreadpoolQueueLengthOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.ThreadpoolQueueLength);
+            AddCollectionRuleTriggerSchema<EventMeterOptions>(context, triggerTypeSchema, KnownCollectionRuleTriggers.EventMeter);
             AddCollectionRuleTriggerSchema(context, triggerTypeSchema, KnownCollectionRuleTriggers.Startup);
         }
 

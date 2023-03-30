@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup>
+    <StartupHookTargetFramework>net6.0</StartupHookTargetFramework>
+    <StartupHookLibraryName>Microsoft.Diagnostics.Monitoring.StartupHook</StartupHookLibraryName>
+    <StartupHookPublishPath>$(ArtifactsDir)pub\$(StartupHookLibraryName)\$(Configuration)\$(StartupHookTargetFramework)\</StartupHookPublishPath>
+    <StartupHookLibraryPath>$(StartupHookPublishPath)$(StartupHookLibraryName).dll</StartupHookLibraryPath>
+    <StartupHookSymbolsPath>$(StartupHookPublishPath)$(StartupHookLibraryName).pdb</StartupHookSymbolsPath>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(SkipPlatformNeutralPublish)' != 'true'">
+    <ProjectToPublish Include="$(MSBuildThisFileDirectory)Microsoft.Diagnostics.Monitoring.StartupHook.csproj">
+      <!-- The RuntimeIdentifier is intentionally left blank to get a platform-neutral publish output. -->
+      <AdditionalProperties>TargetFramework=$(StartupHookTargetFramework);RuntimeIdentifier=;PublishDir=$(StartupHookPublishPath)</AdditionalProperties>
+    </ProjectToPublish>
+  </ItemGroup>
+</Project>

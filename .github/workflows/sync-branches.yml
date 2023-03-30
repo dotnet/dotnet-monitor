@@ -14,7 +14,7 @@ jobs:
     if: github.repository == 'dotnet/dotnet-monitor'
     strategy:
       matrix:
-        branch: ["release/6.x", "release/7.x", "release/7.0"]
+        branch: ["release/6.x", "release/7.x", "release/7.1", "release/7.0"]
     name: 'Sync ${{ matrix.branch }}'
     runs-on: ubuntu-latest
     permissions:
@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+        uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3
         with:
           persist-credentials: true # We need to persist credentials to push the resulting changes upstream.
           fetch-depth: 0 # Fetch the entire repo for the below git operations
@@ -48,4 +48,5 @@ jobs:
           body: Sync branch with ${{ env.base_branch }}. This PR was auto generated and will not be automatically merged in.
           branch_name: sync/${{ matrix.branch }}
           fail_if_files_unchanged: false
+          labels: 'automatic-pr'
           auth_token: ${{ secrets.GITHUB_TOKEN }}

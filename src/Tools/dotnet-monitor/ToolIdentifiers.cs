@@ -21,6 +21,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // This environment variable is manually applied to target processes to inform dotnet-monitor
             // which runtime variant of the shared libraries should be loaded into target processes.
             public const string RuntimeIdentifier = StandardPrefix + nameof(RuntimeIdentifier);
+
+            public const string StartupHooks = "DOTNET_STARTUP_HOOKS";
         }
     }
 }
