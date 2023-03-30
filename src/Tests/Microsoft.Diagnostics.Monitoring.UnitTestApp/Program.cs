@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios;
 using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
@@ -12,17 +11,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
     {
         public static Task<int> Main(string[] args)
         {
-            return new CommandLineBuilder(new RootCommand()
+            RootCommand root = new()
             {
                 AsyncWaitScenario.Command(),
                 ExecuteScenario.Command(),
                 LoggerScenario.Command(),
                 SpinWaitScenario.Command(),
                 EnvironmentVariablesScenario.Command()
-            })
-            .UseDefaults()
-            .Build()
-            .InvokeAsync(args);
+            };
+
+            return root.Parse(args).InvokeAsync();
         }
     }
 }
