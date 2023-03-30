@@ -99,7 +99,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             Assert.Equal(3, lines.Count);
             Assert.Equal($"# HELP {metricName}{payload.Unit} {payload.DisplayName}", lines[0]);
-            Assert.Equal($"# TYPE {metricName} counter", lines[1]);
+            Assert.Equal($"# TYPE {metricName} gauge", lines[1]);
             Assert.Equal($"{metricName} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}", lines[2]);
         }
 
