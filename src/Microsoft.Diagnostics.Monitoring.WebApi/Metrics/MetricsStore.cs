@@ -200,8 +200,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             switch (eventType)
             {
+                // In Prometheus, rates are treated as gauges due to their non-monotonic nature
                 case EventType.Rate:
-                    return "counter";
                 case EventType.Gauge:
                     return "gauge";
                 case EventType.Histogram:
