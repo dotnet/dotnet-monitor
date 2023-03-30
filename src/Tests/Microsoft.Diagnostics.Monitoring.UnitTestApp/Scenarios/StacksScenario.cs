@@ -4,7 +4,6 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System;
 using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -40,11 +39,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         {
             Command command = new(TestAppScenarios.Stacks.Name);
 
-            command.SetActionWithExitCode(ExecuteAsync);
+            command.SetAction(ExecuteAsync);
             return command;
         }
 
-        public static Task<int> ExecuteAsync(InvocationContext context, CancellationToken token)
+        public static Task<int> ExecuteAsync(ParseResult result, CancellationToken token)
         {
             using StacksWorker worker = new StacksWorker();
 
