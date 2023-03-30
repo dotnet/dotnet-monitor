@@ -556,25 +556,30 @@
       "version": "1.0",
       "config": {
         "conditions": {
-          "operator": "or",
+          "operator": "and",
           "operands": [
-            {
-              "name": "isAction",
-              "parameters": {
-                "action": "closed"
-              }
-            },
-            {
-              "name": "isAction",
-              "parameters": {
-                "action": "merged"
-              }
-            },
             {
               "name": "hasLabel",
               "parameters": {
                 "label": "needs-review"
               }
+            },
+            {
+              "operator": "or",
+              "operands": [
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "closed"
+                  }
+                },
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "merged"
+                  }
+                }
+              ]
             }
           ]
         },
