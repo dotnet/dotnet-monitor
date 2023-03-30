@@ -9,11 +9,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
 {
     internal sealed class FileSystemEgressExtensionFactory : IWellKnownExtensionFactory
     {
-        private readonly IEgressProviderConfigurationProvider _configurationProvider;
+        private readonly IEgressConfigurationProvider _configurationProvider;
         private readonly ILogger<FileSystemEgressExtension> _logger;
 
         public FileSystemEgressExtensionFactory(
-            IEgressProviderConfigurationProvider configurationProvider,
+            IEgressConfigurationProvider configurationProvider,
             ILogger<FileSystemEgressExtension> logger)
         {
             _configurationProvider = configurationProvider;

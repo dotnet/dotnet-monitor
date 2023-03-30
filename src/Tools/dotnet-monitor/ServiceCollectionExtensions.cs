@@ -296,16 +296,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureEgress(this IServiceCollection services)
         {
-            // Register IEgressService implementation that provides egressing
-            // of artifacts for the REST server.
+            services.AddSingleton<IEgressConfigurationProvider, EgressConfigurationProvider>();
             services.AddSingleton<IEgressService, EgressService>();
-
-            services.AddSingleton<IEgressPropertiesConfigurationProvider, EgressPropertiesConfigurationProvider>();
-            services.AddSingleton<IEgressPropertiesProvider, EgressPropertiesProvider>();
-
-            services.AddSingleton<IOptionsTypeToProviderTypesMapper, OptionsTypeToProviderTypesMapper>();
-
-            services.RegisterEgressType<ExtensionEgressProviderOptions, ExtensionEgressProvider>();
 
             return services;
         }
@@ -359,33 +351,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ILogger<Startup> logger = services.GetRequiredService<ILogger<Startup>>();
                 return authConfigurator.CreateStartupLogger(logger, services);
             });
-            return services;
-        }
-
-        public static IServiceCollection RegisterEgressType<TOptions, TProvider>(this IServiceCollection services)
-            where TProvider : class, IEgressProvider<TOptions>
-            where TOptions : class
-        {
-            // These Singletons are "IEnumerable<T>" services where there are multiple services registered (if TOptions is the same)
-            // Add services to provide raw configuration for the options type
-            services.AddSingleton<EgressProviderConfigurationProvider<TOptions>>();
-            services.AddSingletonForwarder<IEgressProviderConfigurationProvider<TOptions>, EgressProviderConfigurationProvider<TOptions>>();
-            services.AddSingletonForwarder<IEgressProviderConfigurationProvider, EgressProviderConfigurationProvider<TOptions>>();
-
-            // Register change sources for the options type
-            services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressPropertiesConfigurationChangeTokenSource<TOptions>>();
-            services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressProviderConfigurationChangeTokenSource<TOptions>>();
-
-            // Add options services for configuring the options type
-            services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
-
-            // Add custom options cache to override behavior of default named options
-            services.AddSingleton<IOptionsMonitorCache<TOptions>, DynamicNamedOptionsCache<TOptions>>();
-
-            // Add egress provider and internal provider wrapper
-            services.AddSingleton<IEgressProvider<TOptions>, TProvider>();
-            services.AddSingleton<IEgressProviderInternal<TOptions>, EgressProviderInternal<TOptions>>();
-
             return services;
         }
 
