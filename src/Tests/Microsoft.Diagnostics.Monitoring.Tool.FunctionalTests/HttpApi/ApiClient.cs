@@ -31,6 +31,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             = CreateJsonDeserializeOptions();
         private static readonly JsonSerializerOptions DefaultJsonSerializeOptions
             = CreateJsonSerializeOptions();
+        private static readonly JsonSerializerOptions ValidationProblemDetailsDeserializeOptions
+            = CreateValidationProblemDetailsDeserializeOptions();
 
         private readonly HttpClient _httpClient;
         private readonly ITestOutputHelper _outputHelper;
@@ -710,6 +712,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return await JsonSerializer.DeserializeAsync<T>(contentStream, DefaultJsonDeserializeOptions).ConfigureAwait(false);
         }
 
+        private static async Task<ValidationProblemDetails> ReadValidationProblemDetailsAsync(HttpResponseMessage responseMessage)
+        {
+            using Stream contentStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            return await JsonSerializer.DeserializeAsync<ValidationProblemDetails>(contentStream, ValidationProblemDetailsDeserializeOptions).ConfigureAwait(false);
+        }
+
         private static Task<List<T>> ReadContentEnumerableAsync<T>(HttpResponseMessage responseMessage)
         {
             return ReadContentAsync<List<T>>(responseMessage);
@@ -744,7 +752,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         private static async Task<ValidationProblemDetailsException> CreateValidationProblemDetailsExceptionAsync(HttpResponseMessage responseMessage)
         {
             return new ValidationProblemDetailsException(
-                await ReadContentAsync<ValidationProblemDetails>(responseMessage).ConfigureAwait(false),
+                await ReadValidationProblemDetailsAsync(responseMessage),
                 responseMessage.StatusCode);
         }
 
@@ -856,6 +864,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         {
             JsonSerializerOptions options = new();
             options.Converters.Add(new JsonStringEnumConverter());
+            return options;
+        }
+
+        private static JsonSerializerOptions CreateValidationProblemDetailsDeserializeOptions()
+        {
+            JsonSerializerOptions options = CreateJsonDeserializeOptions();
+#if NET8_0_OR_GREATER
+            // Workaround for https://github.com/dotnet/aspnetcore/issues/47223
+            options.PropertyNameCaseInsensitive = true;
+#endif
             return options;
         }
     }

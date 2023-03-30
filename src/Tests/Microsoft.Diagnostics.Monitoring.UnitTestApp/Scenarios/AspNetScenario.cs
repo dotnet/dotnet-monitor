@@ -19,13 +19,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         public static Command Command()
         {
             Command command = new(TestAppScenarios.AspNet.Name);
-            command.SetHandler(ExecuteAsync);
+            command.SetActionWithExitCode(ExecuteAsync);
             return command;
         }
 
-        public static async Task ExecuteAsync(InvocationContext context, CancellationToken token)
+        public static Task<int> ExecuteAsync(InvocationContext context, CancellationToken token)
         {
-            context.ExitCode = await ScenarioHelpers.RunWebScenarioAsync<Startup>(async logger =>
+            return ScenarioHelpers.RunWebScenarioAsync<Startup>(async logger =>
             {
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.AspNet.Commands.Continue, logger);
 

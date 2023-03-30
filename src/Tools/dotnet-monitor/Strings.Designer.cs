@@ -1304,6 +1304,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The DOTNET_STARTUP_HOOKS environment variable is missing from target process {processId}..
+        /// </summary>
+        internal static string LogFormatString_StartupHookEnvironmentMissing {
+            get {
+                return ResourceManager.GetString("LogFormatString_StartupHookEnvironmentMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exception-based features require that the DOTNET_STARTUP_HOOKS environment variable is set on the target process and must contain the path to the .NET Monitor startup hook library. The path to the library is &quot;{path}&quot;..
+        /// </summary>
+        internal static string LogFormatString_StartupHookInstructions {
+            get {
+                return ResourceManager.GetString("LogFormatString_StartupHookInstructions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DOTNET_STARTUP_HOOKS environment variable for target process {processId} does not contain the &apos;{name}&apos; startup hook..
+        /// </summary>
+        internal static string LogFormatString_StartupHookMissing {
+            get {
+                return ResourceManager.GetString("LogFormatString_StartupHookMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to apply profiler..
         /// </summary>
         internal static string LogFormatString_UnableToApplyProfiler {

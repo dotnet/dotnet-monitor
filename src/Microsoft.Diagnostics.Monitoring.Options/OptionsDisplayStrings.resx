@@ -807,6 +807,30 @@
     <value>The maximum number of time series that can be tracked. Each unique combination of provider name, metric name, and dimension values counts as one time series. Tracking more time series uses more memory in the target process so this bound guards against unintentional high memory use.</value>
     <comment>The description provided for the MaxTimeSeries parameter on MetricsOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_EventMeterOptions_InstrumentName" xml:space="preserve">
+    <value>The name of the instrument to monitor.</value>
+    <comment>The description provided for the InstrumentName parameter on EventMeterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EventMeterOptions_GreaterThan" xml:space="preserve">
+    <value>The threshold level the instrument must maintain (or higher) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.</value>
+    <comment>The description provided for the GreaterThan parameter on EventMeterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EventMeterOptions_HistogramPercentile" xml:space="preserve">
+    <value>When monitoring a histogram, this dictates which percentile to compare against using the value in GreaterThan/LessThan - by default, the percentile can be 50, 95, or 99.</value>
+    <comment>The description provided for the HistogramPercentile parameter on EventMeterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EventMeterOptions_LessThan" xml:space="preserve">
+    <value>The threshold level the instrument must maintain (or lower) for the specified duration. Either GreaterThan or LessThan (or both) must be specified.</value>
+    <comment>The description provided for the LessThan parameter on EventMeterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EventMeterOptions_MeterName" xml:space="preserve">
+    <value>The name of the meter that provides the instrument information.</value>
+    <comment>The description provided for the MeterName parameter on EventMeterOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_EventMeterOptions_SlidingWindowDuration" xml:space="preserve">
+    <value>The sliding time window in which the instrument must maintain its value as specified by the threshold levels in GreaterThan and LessThan.</value>
+    <comment>The description provided for the SlidingWindowDuration parameter on EventMeterOptions.</comment>
+  </data>
   <data name="DisplayAttributeDescription_GlobalCounterOptions_Providers" xml:space="preserve">
     <value>Dictionary of provider names and their global configuration.</value>
   </data>

@@ -10,5 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         bool IsExceptionsEnabled { get; }
 
         bool IsProfilerRequired { get; }
+
+        bool IsLibrarySharingRequired { get; }
     }
 }

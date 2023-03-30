@@ -59,11 +59,22 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <!-- Targets and properties for ensuring publish before pack. -->
+  <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.StartupHook\ProjectsToPublish.props" />
+  <Import Project="$(RepositoryEngineeringDir)PublishProjects.targets" />
+
+  <!-- Publish projects unless skipped -->
+  <Target Name="PublishProjectsBeforePack"
+          Condition="'$(SkipPublishProjects)' != 'true'">
+    <CallTarget Targets="PublishProjects" />
+  </Target>
+
   <PropertyGroup>
-    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);GatherTfmNativeFilesInPackage</TargetsForTfmSpecificContentInPackage>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);CollectTfmSpecificPackageFiles</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
 
-  <Target Name="GatherTfmNativeFilesInPackage">
+  <Target Name="CollectTfmSpecificPackageFiles"
+          DependsOnTargets="PublishProjectsBeforePack">
     <ItemGroup>
       <!-- Pack the profiler library for each platform. -->
       <AdditionalPackageFile Include="@(MonitorProfilerLibraryFile)">
@@ -77,6 +88,13 @@
     <ItemGroup>
       <!-- Pack the file if it exists. -->
       <TfmSpecificPackageFile Include="@(AdditionalPackageFile->Exists())" />
+      <!-- Pack startup hook files -->
+      <TfmSpecificPackageFile Include="$(StartupHookLibraryPath)">
+        <PackagePath>tools/$(TargetFramework)/any/shared/any/$(StartupHookTargetFramework)</PackagePath>
+      </TfmSpecificPackageFile>
+      <TfmSpecificPackageFile Include="$(StartupHookSymbolsPath)">
+        <PackagePath>tools/$(TargetFramework)/any/shared/any/$(StartupHookTargetFramework)</PackagePath>
+      </TfmSpecificPackageFile>
     </ItemGroup>
   </Target>
 

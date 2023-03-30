@@ -32,11 +32,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         public static Command Command()
         {
             Command command = new(TestAppScenarios.TraceEvents.Name);
-            command.SetHandler(ExecuteAsync);
+            command.SetActionWithExitCode(ExecuteAsync);
             return command;
         }
 
-        public static async Task ExecuteAsync(InvocationContext context, CancellationToken token)
+        public static Task<int> ExecuteAsync(InvocationContext context, CancellationToken token)
         {
             string[] acceptableCommands = new string[]
             {
@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 TestAppScenarios.TraceEvents.Commands.ShutdownScenario
             };
 
-            context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
             {
                 using ManualResetEventSlim stopGeneratingEvents = new(initialState: false);
 

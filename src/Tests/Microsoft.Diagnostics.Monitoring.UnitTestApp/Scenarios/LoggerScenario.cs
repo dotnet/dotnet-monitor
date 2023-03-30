@@ -20,13 +20,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         public static Command Command()
         {
             Command command = new(TestAppScenarios.Logger.Name);
-            command.SetHandler(ExecuteAsync);
+            command.SetActionWithExitCode(ExecuteAsync);
             return command;
         }
 
-        public static async Task ExecuteAsync(InvocationContext context, CancellationToken token)
+        public static Task<int> ExecuteAsync(InvocationContext context, CancellationToken token)
         {
-            context.ExitCode = await ScenarioHelpers.RunScenarioAsync(async logger =>
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
             {
                 ServiceProvider services = null;
                 try
