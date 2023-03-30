@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         public static Command Command()
         {
             Command nonZeroExitCodeCommand = new Command(ActionTestsConstants.NonZeroExitCode);
-            nonZeroExitCodeCommand.SetActionWithExitCode(Execute_NonZeroExitCode);
+            nonZeroExitCodeCommand.SetAction(Execute_NonZeroExitCode);
 
             Command sleepCommand = new Command(ActionTestsConstants.Sleep);
             sleepCommand.Arguments.Add(DelayArgument);
@@ -33,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             textFileOutputCommand.SetAction(Execute_TextFileOutput);
 
             Command zeroExitCodeCommand = new Command(ActionTestsConstants.ZeroExitCode);
-            zeroExitCodeCommand.SetActionWithExitCode(Execute_ZeroExitCode);
+            zeroExitCodeCommand.SetAction(Execute_ZeroExitCode);
 
             Command command = new(TestAppScenarios.Execute.Name);
             command.Subcommands.Add(nonZeroExitCodeCommand);
@@ -43,24 +42,24 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return command;
         }
 
-        private static Task<int> Execute_ZeroExitCode(InvocationContext context, CancellationToken token)
+        private static Task<int> Execute_ZeroExitCode(ParseResult result, CancellationToken token)
         {
             return Task.FromResult(0);
         }
 
-        private static Task<int> Execute_NonZeroExitCode(InvocationContext context, CancellationToken token)
+        private static Task<int> Execute_NonZeroExitCode(ParseResult result, CancellationToken token)
         {
             return Task.FromResult(1);
         }
 
-        private static void Execute_Sleep(InvocationContext context)
+        private static void Execute_Sleep(ParseResult result)
         {
-            Thread.Sleep(context.GetValue(DelayArgument));
+            Thread.Sleep(result.GetValue(DelayArgument));
         }
 
-        private static void Execute_TextFileOutput(InvocationContext context)
+        private static void Execute_TextFileOutput(ParseResult result)
         {
-            File.WriteAllText(context.GetValue(PathArgument).FullName, context.GetValue(ContentArgument));
+            File.WriteAllText(result.GetValue(PathArgument).FullName, result.GetValue(ContentArgument));
         }
     }
 }
