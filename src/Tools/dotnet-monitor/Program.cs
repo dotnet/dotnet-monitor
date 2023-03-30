@@ -19,11 +19,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 OutputOption
             };
 
-            command.SetAction((context) =>
+            command.SetAction((result) =>
             {
                 GenerateApiKeyCommandHandler.Invoke(
-                    context.ParseResult.GetValue(OutputOption),
-                    context.ParseResult.Configuration.Output);
+                    result.GetValue(OutputOption),
+                    result.Configuration.Output);
             });
 
             return command;
@@ -45,18 +45,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ConfigurationFilePathOption
             };
 
-            command.SetActionWithExitCode((context, token) =>
+            command.SetAction((result, token) =>
             {
                 return CollectCommandHandler.Invoke(
                     token,
-                    context.ParseResult.GetValue(UrlsOption),
-                    context.ParseResult.GetValue(MetricUrlsOption),
-                    context.ParseResult.GetValue(ProvideMetricsOption),
-                    context.ParseResult.GetValue(DiagnosticPortOption),
-                    context.ParseResult.GetValue(NoAuthOption),
-                    context.ParseResult.GetValue(TempApiKeyOption),
-                    context.ParseResult.GetValue(NoHttpEgressOption),
-                    context.ParseResult.GetValue(ConfigurationFilePathOption));
+                    result.GetValue(UrlsOption),
+                    result.GetValue(MetricUrlsOption),
+                    result.GetValue(ProvideMetricsOption),
+                    result.GetValue(DiagnosticPortOption),
+                    result.GetValue(NoAuthOption),
+                    result.GetValue(TempApiKeyOption),
+                    result.GetValue(NoHttpEgressOption),
+                    result.GetValue(ConfigurationFilePathOption));
             });
 
             return command;
@@ -80,19 +80,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ShowSourcesOption
             };
 
-            showCommand.SetAction(context =>
+            showCommand.SetAction(result =>
             {
                 ConfigShowCommandHandler.Invoke(
-                    context.ParseResult.GetValue(UrlsOption),
-                    context.ParseResult.GetValue(MetricUrlsOption),
-                    context.ParseResult.GetValue(ProvideMetricsOption),
-                    context.ParseResult.GetValue(DiagnosticPortOption),
-                    context.ParseResult.GetValue(NoAuthOption),
-                    context.ParseResult.GetValue(TempApiKeyOption),
-                    context.ParseResult.GetValue(NoHttpEgressOption),
-                    context.ParseResult.GetValue(ConfigurationFilePathOption),
-                    context.ParseResult.GetValue(ConfigLevelOption),
-                    context.ParseResult.GetValue(ShowSourcesOption));
+                    result.GetValue(UrlsOption),
+                    result.GetValue(MetricUrlsOption),
+                    result.GetValue(ProvideMetricsOption),
+                    result.GetValue(DiagnosticPortOption),
+                    result.GetValue(NoAuthOption),
+                    result.GetValue(TempApiKeyOption),
+                    result.GetValue(NoHttpEgressOption),
+                    result.GetValue(ConfigurationFilePathOption),
+                    result.GetValue(ConfigLevelOption),
+                    result.GetValue(ShowSourcesOption));
             });
 
             Command configCommand = new Command(
@@ -193,16 +193,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static Task<int> Main(string[] args)
         {
-            var parser = new CommandLineBuilder(new RootCommand()
+            RootCommand root = new()
             {
                 CollectCommand(),
                 ConfigCommand(),
                 GenerateApiKeyCommand()
-            })
-            .UseDefaults()
-            .Build();
+            };
 
-            return parser.InvokeAsync(args);
+            return root.Parse(args).InvokeAsync();
         }
     }
 
