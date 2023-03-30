@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios;
 using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
@@ -12,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
     {
         public static Task<int> Main(string[] args)
         {
-            return new CommandLineBuilder(new RootCommand()
+            RootCommand root = new()
             {
                 MetricsScenario.Command(),
                 AspNetScenario.Command(),
@@ -24,10 +23,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                 EnvironmentVariablesScenario.Command(),
                 StacksScenario.Command(),
                 TraceEventsScenario.Command()
-            })
-            .UseDefaults()
-            .Build()
-            .InvokeAsync(args);
+            };
+
+            return root.Parse(args).InvokeAsync();
         }
     }
 }

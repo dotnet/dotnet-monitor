@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,11 +16,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         public static Command Command()
         {
             Command command = new(TestAppScenarios.AsyncWait.Name);
-            command.SetActionWithExitCode(ExecuteAsync);
+            command.SetAction(ExecuteAsync);
             return command;
         }
 
-        public static Task<int> ExecuteAsync(InvocationContext context, CancellationToken token)
+        public static Task<int> ExecuteAsync(ParseResult result, CancellationToken token)
         {
             return ScenarioHelpers.RunScenarioAsync(async logger =>
             {
