@@ -3,13 +3,9 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,16 +40,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
-            ExtensionEgressPayload payload = new ExtensionEgressPayload()
-            {
-                Settings = artifactSettings,
-                Configuration = GetConfigurationSection(providerName, providerType),
-                Properties = _propertyProvider.GetAllProperties(),
-                ProviderName = providerName,
-            };
-
             IEgressExtension ext = _extensionDiscoverer.FindExtension<IEgressExtension>(providerType);
-            EgressArtifactResult result = await ext.EgressArtifact(payload, action, token);
+            EgressArtifactResult result = await ext.EgressArtifact(
+                providerName,
+                artifactSettings,
+                action,
+                token);
 
             if (!result.Succeeded)
             {
@@ -61,35 +53,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             }
 
             return result.ArtifactPath;
-        }
-
-        private Dictionary<string, string> GetConfigurationSection(string providerName, string providerType)
-        {
-            IConfigurationSection providerTypeSection = _configurationProvider.GetConfigurationSection(providerType);
-            IConfigurationSection providerNameSection = providerTypeSection.GetSection(providerName);
-
-            if (!providerNameSection.Exists())
-            {
-                throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
-            }
-
-            var configAsDict = new Dictionary<string, string>();
-
-            foreach (var kvp in providerNameSection.AsEnumerable(makePathsRelative: true))
-            {
-                // Only exclude null values that have children.
-                if (kvp.Value == null)
-                {
-                    if (providerNameSection.GetSection(kvp.Key).GetChildren().Any())
-                    {
-                        continue;
-                    }
-                }
-
-                configAsDict[kvp.Key] = kvp.Value;
-            }
-
-            return configAsDict;
         }
     }
 }
