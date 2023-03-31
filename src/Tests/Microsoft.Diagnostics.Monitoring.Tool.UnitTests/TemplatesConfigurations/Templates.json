@@ -19,7 +19,7 @@
       "ActionTemplate2": {
         "Type": "CollectTrace",
         "Settings": {
-          "Egress": "monitorBlob",
+          "Egress": "artifacts2",
           "Profile": "Cpu"
         }
       }
