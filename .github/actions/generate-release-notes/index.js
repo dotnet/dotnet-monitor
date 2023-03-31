@@ -34,7 +34,7 @@ async function run() {
         ];
 
         const parsedLastReleaseDate = new Date(lastReleaseDate);
-        jsISODateRepresentation = parsedLastReleaseDate.toISOString();
+        const jsISODateRepresentation = parsedLastReleaseDate.toISOString();
 
         const changelog = await generateChangelog(octokit, branch, repoOwner, repoName, jsISODateRepresentation, significantLabels);
         const monikerDescriptions = generateMonikerDescriptions(significantLabels);
