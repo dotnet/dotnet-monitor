@@ -16,19 +16,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 {
     internal sealed class EgressProviderSource : IDisposable
     {
+        private readonly Lazy<IDisposable> _changeRegistrationLazy;
         private readonly IEgressConfigurationProvider _configurationProvider;
         private readonly ExtensionDiscoverer _extensionDiscoverer;
         private readonly ILogger _logger;
         private readonly IDictionary<string, string> _providerNameToTypeMap;
-
-        private IDisposable _changeRegistration;
-        private long _initialized;
 
         public EgressProviderSource(
             IEgressConfigurationProvider configurationProvider,
             ExtensionDiscoverer extensionDiscoverer,
             ILogger<EgressProviderSource> logger)
         {
+            _changeRegistrationLazy = new Lazy<IDisposable>(CreateChangeRegistration, LazyThreadSafetyMode.ExecutionAndPublication);
             _configurationProvider = configurationProvider;
             _extensionDiscoverer = extensionDiscoverer;
             _logger = logger;
@@ -37,19 +36,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         public void Dispose()
         {
-            _changeRegistration.Dispose();
+            if (_changeRegistrationLazy.IsValueCreated)
+            {
+                _changeRegistrationLazy.Value.Dispose();
+            }
         }
 
         public void Initialize()
         {
-            if (0 != Interlocked.CompareExchange(ref _initialized, 1, 0))
-                return;
-
-            _changeRegistration = ChangeToken.OnChange(
-                _configurationProvider.GetReloadToken,
-                Reload);
-
-            Reload();
+            _ = _changeRegistrationLazy.Value;
         }
 
         public IEgressExtension GetEgressProvider(string name)
@@ -60,6 +55,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             }
 
             return _extensionDiscoverer.FindExtension<IEgressExtension>(providerType);
+        }
+
+        private IDisposable CreateChangeRegistration()
+        {
+            IDisposable changeRegistration = ChangeToken.OnChange(
+                _configurationProvider.GetReloadToken,
+                Reload);
+
+            Reload();
+
+            return changeRegistration;
         }
 
         private void Reload()
