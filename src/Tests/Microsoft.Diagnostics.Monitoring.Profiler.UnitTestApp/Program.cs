@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp.Scenarios;
 using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp
@@ -12,13 +11,13 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp
     {
         public static Task<int> Main(string[] args)
         {
-            return new CommandLineBuilder(new RootCommand()
+            RootCommand root = new()
             {
                 ExceptionThrowCatchScenario.Command(),
                 ExceptionThrowCrashScenario.Command()
-            })
-            .Build()
-            .InvokeAsync(args);
+            };
+
+            return root.Parse(args).InvokeAsync();
         }
     }
 }
