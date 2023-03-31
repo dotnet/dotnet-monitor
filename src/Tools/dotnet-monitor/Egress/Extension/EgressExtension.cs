@@ -135,6 +135,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 pStart.Environment.Add(key, value);
             }
 
+            List<LogLevel> logLevels = Enum.GetValues(typeof(LogLevel)).Cast<LogLevel>().ToList();
+            logLevels.Reverse();
+
+            foreach (var level in logLevels)
+            if (_logger.IsEnabled(level))
+            {
+                pStart.Environment.Add("LogLevel", level.ToString());
+            }
+
             using Process p = new Process()
             {
                 StartInfo = pStart,
