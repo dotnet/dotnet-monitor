@@ -4,8 +4,8 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using System;
@@ -25,26 +25,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     internal class EgressService : IEgressService, IDisposable
     {
         private readonly IDisposable _changeRegistration;
+        private readonly ExtensionDiscoverer _extensionDiscoverer;
         private readonly ILogger<EgressService> _logger;
-        private readonly IEnumerable<IEgressProviderConfigurationProvider> _providers;
-        private readonly IDictionary<string, IEgressProviderConfigurationProvider> _egressProviderMap;
+        private readonly IEgressConfigurationProvider _configurationProvider;
         private readonly IDictionary<string, string> _providerNameToTypeMap;
-        private readonly IServiceProvider _serviceProvider;
 
         public EgressService(
-            IServiceProvider serviceProvider,
-            ILogger<EgressService> logger,
-            IConfiguration configuration,
-            IEnumerable<IEgressProviderConfigurationProvider> providers)
+            IEgressConfigurationProvider configurationProvider,
+            ExtensionDiscoverer extensionDiscoverer,
+            ILogger<EgressService> logger)
         {
+            _configurationProvider = configurationProvider;
+            _extensionDiscoverer = extensionDiscoverer;
             _logger = logger;
-            _providers = providers;
-            _egressProviderMap = new ConcurrentDictionary<string, IEgressProviderConfigurationProvider>(StringComparer.OrdinalIgnoreCase);
             _providerNameToTypeMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            _serviceProvider = serviceProvider;
 
             _changeRegistration = ChangeToken.OnChange(
-                () => configuration.GetEgressSection().GetReloadToken(),
+                _configurationProvider.GetReloadToken,
                 Reload);
 
             Reload();
@@ -57,24 +54,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         public void ValidateProvider(string providerName)
         {
-            // GetProvider should never return null so no need to check; it will throw
+            // GetProviderType should never return null so no need to check; it will throw
             // if the egress provider could not be located or instantiated.
-            string providerType = GetProviderType(providerName);
+            string _ = GetProviderType(providerName);
         }
 
         public async Task<EgressResult> EgressAsync(string providerName, Func<Stream, CancellationToken, Task> action, string fileName, string contentType, IEndpointInfo source, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
             string providerType = GetProviderType(providerName);
-            IEgressProviderInternal provider = GetProvider(providerType);
 
-            string value = await provider.EgressAsync(
-                providerType,
+            IEgressExtension extension = _extensionDiscoverer.FindExtension<IEgressExtension>(providerType);
+
+            EgressArtifactResult result = await extension.EgressArtifact(
                 providerName,
-                action,
                 await CreateSettings(source, fileName, contentType, collectionRuleMetadata, token),
+                action,
                 token);
 
-            return new EgressResult(value);
+            if (!result.Succeeded)
+            {
+                throw new EgressException(Strings.ErrorMessage_EgressExtensionFailed);
+            }
+
+            return new EgressResult(result.ArtifactPath);
         }
 
         private string GetProviderType(string providerName)
@@ -84,22 +86,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
             }
             return providerType;
-        }
-
-        private IEgressProviderInternal GetProvider(string providerType)
-        {
-            if (!_egressProviderMap.TryGetValue(providerType, out IEgressProviderConfigurationProvider configProvider))
-            {
-                throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderTypeNotRegistered, providerType));
-            }
-
-            // Get the egress provider that matches the options type and return the weaker-typed
-            // interface in order to allow egressing from the service without having to use reflection
-            // to invoke it.            
-            Type serviceType = typeof(IEgressProviderInternal<>).MakeGenericType(configProvider.OptionsType);
-            object serviceReference = _serviceProvider.GetRequiredService(serviceType);
-            IEgressProviderInternal typedServiceReference = (IEgressProviderInternal)serviceReference;
-            return typedServiceReference;
         }
 
         private static async Task<EgressArtifactSettings> CreateSettings(IEndpointInfo source, string fileName, string contentType, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
@@ -144,30 +130,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         private void Reload()
         {
-            _egressProviderMap.Clear();
             _providerNameToTypeMap.Clear();
 
-            // Deliberately fill the maps in the reverse order of how they are accessed
-            // by the GetProvider method to avoid indeterminate accessing of the option
-            // information.
-            foreach (IEgressProviderConfigurationProvider provider in _providers)
+            foreach (string providerType in _configurationProvider.ProviderTypes)
             {
-                foreach (string providerType in provider.ProviderTypes)
-                {
-                    _egressProviderMap.Add(providerType, provider);
-                    IConfigurationSection typeSection = provider.GetProviderTypeConfigurationSection(providerType);
+                IConfigurationSection typeSection = _configurationProvider.GetProviderTypeConfigurationSection(providerType);
 
-                    foreach (IConfigurationSection optionsSection in typeSection.GetChildren())
+                foreach (IConfigurationSection optionsSection in typeSection.GetChildren())
+                {
+                    string providerName = optionsSection.Key;
+                    if (_providerNameToTypeMap.TryGetValue(providerName, out string existingProviderType))
                     {
-                        string providerName = optionsSection.Key;
-                        if (_providerNameToTypeMap.TryGetValue(providerName, out string existingProviderType))
-                        {
-                            _logger.DuplicateEgressProviderIgnored(providerName, providerType, existingProviderType);
-                        }
-                        else
-                        {
-                            _providerNameToTypeMap.Add(providerName, providerType);
-                        }
+                        _logger.DuplicateEgressProviderIgnored(providerName, providerType, existingProviderType);
+                    }
+                    else
+                    {
+                        _providerNameToTypeMap.Add(providerName, providerType);
                     }
                 }
             }
