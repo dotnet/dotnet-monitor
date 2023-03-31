@@ -191,8 +191,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         private Dictionary<string, string> GetConfigurationSection(string providerName, string providerType)
         {
-            IConfigurationSection providerTypeSection = _configurationProvider.GetProviderTypeConfigurationSection(providerType);
-            IConfigurationSection providerNameSection = providerTypeSection.GetSection(providerName);
+            IConfigurationSection providerNameSection = _configurationProvider.GetProviderConfigurationSection(providerType, providerName);
 
             if (!providerNameSection.Exists())
             {

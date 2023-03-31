@@ -297,6 +297,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureEgress(this IServiceCollection services)
         {
             services.AddSingleton<IEgressConfigurationProvider, EgressConfigurationProvider>();
+            services.AddSingleton<EgressProviderSource>();
             services.AddSingleton<IEgressService, EgressService>();
 
             return services;
@@ -351,6 +352,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ILogger<Startup> logger = services.GetRequiredService<ILogger<Startup>>();
                 return authConfigurator.CreateStartupLogger(logger, services);
             });
+            services.AddSingleton<IStartupLogger, EgressStartupLogger>();
             return services;
         }
 

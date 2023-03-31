@@ -3,14 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
-using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -22,48 +15,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     /// <summary>
     /// Egress service implementation required by the REST server.
     /// </summary>
-    internal class EgressService : IEgressService, IDisposable
+    internal class EgressService : IEgressService
     {
-        private readonly IDisposable _changeRegistration;
-        private readonly ExtensionDiscoverer _extensionDiscoverer;
-        private readonly ILogger<EgressService> _logger;
-        private readonly IEgressConfigurationProvider _configurationProvider;
-        private readonly IDictionary<string, string> _providerNameToTypeMap;
+        private readonly EgressProviderSource _source;
 
-        public EgressService(
-            IEgressConfigurationProvider configurationProvider,
-            ExtensionDiscoverer extensionDiscoverer,
-            ILogger<EgressService> logger)
+        public EgressService(EgressProviderSource source)
         {
-            _configurationProvider = configurationProvider;
-            _extensionDiscoverer = extensionDiscoverer;
-            _logger = logger;
-            _providerNameToTypeMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            _source = source;
 
-            _changeRegistration = ChangeToken.OnChange(
-                _configurationProvider.GetReloadToken,
-                Reload);
-
-            Reload();
-        }
-
-        public void Dispose()
-        {
-            _changeRegistration.Dispose();
+            _source.Initialize();
         }
 
         public void ValidateProvider(string providerName)
         {
             // GetProviderType should never return null so no need to check; it will throw
             // if the egress provider could not be located or instantiated.
-            string _ = GetProviderType(providerName);
+            _ = _source.GetEgressProvider(providerName);
         }
 
         public async Task<EgressResult> EgressAsync(string providerName, Func<Stream, CancellationToken, Task> action, string fileName, string contentType, IEndpointInfo source, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
-            string providerType = GetProviderType(providerName);
-
-            IEgressExtension extension = _extensionDiscoverer.FindExtension<IEgressExtension>(providerType);
+            IEgressExtension extension = _source.GetEgressProvider(providerName);
 
             EgressArtifactResult result = await extension.EgressArtifact(
                 providerName,
@@ -77,15 +49,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             }
 
             return new EgressResult(result.ArtifactPath);
-        }
-
-        private string GetProviderType(string providerName)
-        {
-            if (!_providerNameToTypeMap.TryGetValue(providerName, out string providerType))
-            {
-                throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
-            }
-            return providerType;
         }
 
         private static async Task<EgressArtifactSettings> CreateSettings(IEndpointInfo source, string fileName, string contentType, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
@@ -126,29 +89,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private static void AddMetadata(EgressArtifactSettings settings, string key, string value)
         {
             settings.Metadata.Add($"{ToolIdentifiers.StandardPrefix}{key}", value);
-        }
-
-        private void Reload()
-        {
-            _providerNameToTypeMap.Clear();
-
-            foreach (string providerType in _configurationProvider.ProviderTypes)
-            {
-                IConfigurationSection typeSection = _configurationProvider.GetProviderTypeConfigurationSection(providerType);
-
-                foreach (IConfigurationSection optionsSection in typeSection.GetChildren())
-                {
-                    string providerName = optionsSection.Key;
-                    if (_providerNameToTypeMap.TryGetValue(providerName, out string existingProviderType))
-                    {
-                        _logger.DuplicateEgressProviderIgnored(providerName, providerType, existingProviderType);
-                    }
-                    else
-                    {
-                        _providerNameToTypeMap.Add(providerName, providerType);
-                    }
-                }
-            }
         }
     }
 }

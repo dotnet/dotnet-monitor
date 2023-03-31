@@ -59,7 +59,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         /// <inheritdoc/>
         public IConfigurationSection GetProviderTypeConfigurationSection(string providerType)
         {
-            return GetProviderSections().First(s => s.Key == providerType);
+            foreach (IConfigurationSection providerTypeSection in GetProviderSections())
+            {
+                if (providerType == providerTypeSection.Key)
+                {
+                    return providerTypeSection;
+                }
+            }
+
+            throw new EgressException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_EgressProviderTypeNotRegistered, providerType));
         }
 
         public IChangeToken GetReloadToken()
