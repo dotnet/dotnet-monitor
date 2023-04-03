@@ -253,7 +253,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                             options.MeterName = LiveMetricsTestConstants.ProviderName1;
                             options.InstrumentName = LiveMetricsTestConstants.HistogramName1;
                             options.HistogramPercentile = 95;
-                            options.GreaterThan = 60;
+                            options.GreaterThan = 0;
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
                         })
                         .AddAction(CallbackAction.ActionName);
@@ -320,7 +320,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                             options.MeterName = LiveMetricsTestConstants.ProviderName1;
                             options.InstrumentName = LiveMetricsTestConstants.HistogramName1;
                             options.HistogramPercentile = 50;
-                            options.LessThan = 75;
+                            options.LessThan = 101;
                             options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
                         })
                         .AddAction(CallbackAction.ActionName);
