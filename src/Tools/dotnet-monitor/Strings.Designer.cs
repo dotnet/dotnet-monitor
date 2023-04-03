@@ -1106,6 +1106,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Egress provider type &apos;{type}&apos; does not exist..
+        /// </summary>
+        internal static string LogFormatString_EgressProviderTypeNotExist {
+            get {
+                return ResourceManager.GetString("LogFormatString_EgressProviderTypeNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unexpected timeout from process {processId}. Process will no longer be monitored..
         /// </summary>
         internal static string LogFormatString_EndpointTimeout {
