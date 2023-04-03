@@ -12,6 +12,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public IDictionary<string, string> Properties { get; set; }
         public IDictionary<string, string> Configuration { get; set; }
         public string ProviderName { get; set; }
-        public LogLevel MinimumLogLevel { get; set; }
+        public LogLevel LogLevel { get; set; }
     }
 }

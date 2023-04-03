@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 {
     internal abstract class EgressProvider<TOptions> where TOptions : class
     {
-        internal ILogger Logger { get; set; }
+        protected ILogger Logger { get; set; }
 
         public EgressProvider() { }
 

@@ -37,10 +37,11 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                 string jsonConfig = Console.ReadLine();
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
 
-                ILogger logger = LoggerFactory.Create(builder =>
+                using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
                 {
-                    builder.AddConsole().SetMinimumLevel(configPayload.MinimumLogLevel);
-                }).CreateLogger<EgressHelper>();
+                    builder.AddConsole().SetMinimumLevel(configPayload.LogLevel);
+                });
+                ILogger logger = loggerFactory.CreateLogger<EgressHelper>();
 
                 TOptions options = BuildOptions(configPayload, logger, configureOptions);
 
@@ -122,6 +123,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         public Dictionary<string, string> Properties { get; set; }
         public Dictionary<string, string> Configuration { get; set; }
         public string ProviderName { get; set; }
-        public LogLevel MinimumLogLevel { get; set; }
+        public LogLevel LogLevel { get; set; }
     }
 }

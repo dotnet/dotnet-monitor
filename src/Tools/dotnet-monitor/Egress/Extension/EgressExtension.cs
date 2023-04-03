@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 Configuration = GetConfigurationSection(providerName, _manifest.Name),
                 Properties = _configurationProvider.GetAllProperties(),
                 ProviderName = providerName,
-                MinimumLogLevel = GetMinimumLogLevel()
+                LogLevel = GetMinimumLogLevel()
             };
 
             return EgressArtifact(payload, action, token);
