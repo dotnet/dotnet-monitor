@@ -32,7 +32,11 @@ async function run() {
                 inChangelog: false
             }
         ];
-        const changelog = await generateChangelog(octokit, branch, repoOwner, repoName, lastReleaseDate, significantLabels);
+
+        const parsedLastReleaseDate = new Date(lastReleaseDate);
+        const jsISODateRepresentation = parsedLastReleaseDate.toISOString();
+
+        const changelog = await generateChangelog(octokit, branch, repoOwner, repoName, jsISODateRepresentation, significantLabels);
         const monikerDescriptions = generateMonikerDescriptions(significantLabels);
 
         const releaseNotes = await generateReleaseNotes(path.join(__dirname, "releaseNotes.template.md"), buildDescription, changelog, monikerDescriptions);
