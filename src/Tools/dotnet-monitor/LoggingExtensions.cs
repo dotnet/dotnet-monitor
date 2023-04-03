@@ -307,7 +307,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: LoggingEventIds.ExperienceSurvey.EventId(),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_ExperienceSurvey);
-                
+
         private static readonly Action<ILogger, Exception> _diagnosticPortNotInListenModeForCollectionRules =
             LoggerMessage.Define(
                 eventId: LoggingEventIds.DiagnosticPortNotInListenModeForCollectionRules.EventId(),
@@ -753,7 +753,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             _experienceSurvey(logger, Monitor.ExperienceSurvey.ExperienceSurveyLink, null);
         }
-        
+
         public static void DiagnosticPortNotInListenModeForCollectionRules(this ILogger logger)
         {
             _diagnosticPortNotInListenModeForCollectionRules(logger, null);

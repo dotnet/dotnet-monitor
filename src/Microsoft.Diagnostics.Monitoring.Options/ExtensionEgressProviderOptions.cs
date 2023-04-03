@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     /// <summary>
     /// Egress provider options for external egress providers.
     /// </summary>
-    internal sealed partial class ExtensionEgressProviderOptions : 
+    internal sealed partial class ExtensionEgressProviderOptions :
         Dictionary<string, string>,
         IEgressProviderCommonOptions
     {
