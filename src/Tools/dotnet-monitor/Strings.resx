@@ -901,4 +901,7 @@
   <data name="ErrorMessage_ExtensionFileNotFound" xml:space="preserve">
     <value>The extension file '{0}' for extension '{1}' could not be found.</value>
   </data>
+  <data name="LogFormatString_EgressProviderTypeNotExist" xml:space="preserve">
+    <value>Egress provider type '{type}' does not exist.</value>
+  </data>
 </root>

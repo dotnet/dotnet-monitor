@@ -6,10 +6,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
@@ -22,14 +19,14 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 
             Command egressCmd = new Command("Egress");
 
-            egressCmd.Action = new CliActionWithExitCode(Egress);
+            egressCmd.SetAction(Egress);
 
             rootCommand.Add(egressCmd);
 
             return rootCommand.Parse(args).Invoke();
         }
 
-        private static int Egress(InvocationContext context)
+        private static int Egress(ParseResult parseResult)
         {
             EgressArtifactResult result = new();
             try
@@ -77,30 +74,6 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
             configurationRoot.Bind(options);
 
             return options;
-        }
-
-        // Due to https://github.com/dotnet/command-line-api/pull/2095, returning an exit code is "pay-for-play". A custom CliAction
-        // must be implemented in order to actually return the exit code.
-        private sealed class CliActionWithExitCode : CliAction
-        {
-            private Func<InvocationContext, int> _action;
-
-            public CliActionWithExitCode(Func<InvocationContext, int> action)
-            {
-                ArgumentNullException.ThrowIfNull(action);
-
-                _action = action;
-            }
-
-            public override int Invoke(InvocationContext context)
-            {
-                return _action(context);
-            }
-
-            public override Task<int> InvokeAsync(InvocationContext context, CancellationToken cancellationToken = default)
-            {
-                throw new NotSupportedException();
-            }
         }
     }
 }

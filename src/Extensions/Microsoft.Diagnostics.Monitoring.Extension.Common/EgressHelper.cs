@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         {
             Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.");
 
-            egressCmd.SetActionWithExitCode((context, token) => Egress(provider, token, configureOptions));
+            egressCmd.SetAction((result, token) => Egress(provider, token, configureOptions));
 
             return egressCmd;
         }
@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                 ILogger logger = LoggerFactory.Create(builder =>
                 {
                     builder.AddConsole().SetMinimumLevel(configPayload.MinimumLogLevel);
-                }).CreateLogger<EgressHelper>(); // might want generic for this
+                }).CreateLogger<EgressHelper>();
 
                 TOptions options = BuildOptions(configPayload, logger, configureOptions);
 

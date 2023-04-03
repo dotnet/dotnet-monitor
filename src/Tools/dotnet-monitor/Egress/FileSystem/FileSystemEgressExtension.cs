@@ -19,12 +19,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
     internal class FileSystemEgressExtension :
         IEgressExtension
     {
-        private readonly IEgressProviderConfigurationProvider _configurationProvider;
+        private readonly IEgressConfigurationProvider _configurationProvider;
         private readonly ILogger<FileSystemEgressExtension> _logger;
 
         public string DisplayName => EgressProviderTypes.FileSystem;
 
-        public FileSystemEgressExtension(IEgressProviderConfigurationProvider configurationProvider, ILogger<FileSystemEgressExtension> logger)
+        public FileSystemEgressExtension(IEgressConfigurationProvider configurationProvider, ILogger<FileSystemEgressExtension> logger)
         {
             _configurationProvider = configurationProvider;
             _logger = logger;

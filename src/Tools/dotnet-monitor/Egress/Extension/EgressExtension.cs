@@ -21,27 +21,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     [DebuggerDisplay("{_manifest.Name,nq} Extension ({_extensionPath})")]
     internal partial class EgressExtension : IExtension, IEgressExtension
     {
-        private readonly IEgressProviderConfigurationProvider _configurationProvider;
+        private readonly IEgressConfigurationProvider _configurationProvider;
         private readonly string _extensionPath;
         private readonly ILogger<EgressExtension> _logger;
         private readonly ExtensionManifest _manifest;
         private readonly IDictionary<string, string> _processEnvironmentVariables = new Dictionary<string, string>();
-        private readonly IEgressPropertiesProvider _propertiesProvider;
 
         private static readonly TimeSpan WaitForProcessExitTimeout = TimeSpan.FromMilliseconds(2000);
 
         public EgressExtension(
             ExtensionManifest manifest,
             string extensionPath,
-            IEgressProviderConfigurationProvider configurationProvider,
-            IEgressPropertiesProvider propertiesProvider,
+            IEgressConfigurationProvider configurationProvider,
             ILogger<EgressExtension> logger)
         {
             _configurationProvider = configurationProvider ?? throw new ArgumentNullException(nameof(configurationProvider));
             _extensionPath = extensionPath ?? throw new ArgumentNullException(nameof(extensionPath));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _manifest = manifest ?? throw new ArgumentNullException(nameof(manifest));
-            _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
         }
 
         /// <inheritdoc/>
@@ -63,7 +60,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             {
                 Settings = settings,
                 Configuration = GetConfigurationSection(providerName, _manifest.Name),
-                Properties = _propertiesProvider.GetAllProperties(),
+                Properties = _configurationProvider.GetAllProperties(),
                 ProviderName = providerName,
                 MinimumLogLevel = GetMinimumLogLevel()
             };
@@ -210,8 +207,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         private Dictionary<string, string> GetConfigurationSection(string providerName, string providerType)
         {
-            IConfigurationSection providerTypeSection = _configurationProvider.GetProviderTypeConfigurationSection(providerType);
-            IConfigurationSection providerNameSection = providerTypeSection.GetSection(providerName);
+            IConfigurationSection providerNameSection = _configurationProvider.GetProviderConfigurationSection(providerType, providerName);
 
             if (!providerNameSection.Exists())
             {

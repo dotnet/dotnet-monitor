@@ -8,7 +8,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -20,11 +19,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         public static Command Command()
         {
             Command command = new(TestAppScenarios.Logger.Name);
-            command.SetActionWithExitCode(ExecuteAsync);
+            command.SetAction(ExecuteAsync);
             return command;
         }
 
-        public static Task<int> ExecuteAsync(InvocationContext context, CancellationToken token)
+        public static Task<int> ExecuteAsync(ParseResult result, CancellationToken token)
         {
             return ScenarioHelpers.RunScenarioAsync(async logger =>
             {

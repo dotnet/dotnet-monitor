@@ -488,6 +488,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_StartupHookInstructions);
 
+        private static readonly Action<ILogger, string, Exception> _egressProviderTypeNotExist =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.EgressProviderTypeNotExist.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EgressProviderTypeNotExist);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -896,6 +902,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void StartupHookInstructions(this ILogger logger, string startupHookLibraryPath)
         {
             _startupHookInstructions(logger, startupHookLibraryPath, null);
+        }
+
+        public static void EgressProviderTypeNotExist(this ILogger logger, string providerType)
+        {
+            _egressProviderTypeNotExist(logger, providerType, null);
         }
     }
 }

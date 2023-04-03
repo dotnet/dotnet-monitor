@@ -9,23 +9,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Extension
 {
     internal sealed class EgressExtensionFactory
     {
-        private readonly IEgressProviderConfigurationProvider _configurationProvider;
+        private readonly IEgressConfigurationProvider _configurationProvider;
         private readonly ILogger<EgressExtension> _logger;
-        private readonly IEgressPropertiesProvider _propertiesProvider;
 
         public EgressExtensionFactory(
-            IEgressProviderConfigurationProvider configurationProvider,
-            IEgressPropertiesProvider propertiesProvider,
+            IEgressConfigurationProvider configurationProvider,
             ILogger<EgressExtension> logger)
         {
             _configurationProvider = configurationProvider;
             _logger = logger;
-            _propertiesProvider = propertiesProvider;
         }
 
         public IEgressExtension Create(ExtensionManifest manifest, string path)
         {
-            return new EgressExtension(manifest, path, _configurationProvider, _propertiesProvider, _logger);
+            return new EgressExtension(manifest, path, _configurationProvider, _logger);
         }
     }
 }
