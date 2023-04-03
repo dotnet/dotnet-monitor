@@ -25,11 +25,10 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
     {
         private int DefaultBlobStorageBufferSize = 4 * 1024 * 1024;
 
-        public AzureBlobEgressProvider(ILogger logger) : base(logger)
-        {
-        }
+        private ILogger _logger;
 
         public override async Task<string> EgressAsync(
+            ILogger logger,
             AzureBlobEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
@@ -37,6 +36,8 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
         {
             try
             {
+                _logger = logger;
+
                 AddConfiguredMetadataAsync(options, artifactSettings);
 
                 var containerClient = await GetBlobContainerClientAsync(options, token);

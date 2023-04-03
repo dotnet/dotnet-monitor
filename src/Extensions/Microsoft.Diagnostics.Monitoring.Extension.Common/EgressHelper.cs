@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
@@ -51,7 +52,13 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 
                 Console.CancelKeyPress += Console_CancelKeyPress;
 
-                result.ArtifactPath = await provider.EgressAsync(options,
+                ILogger logger = LoggerFactory.Create(builder =>
+                {
+                    builder.AddConsole().SetMinimumLevel(configPayload.ConsoleLogLevel);
+                }).CreateLogger<EgressHelper>(); // might want generic for this
+
+                result.ArtifactPath = await provider.EgressAsync(logger,
+                    options,
                     GetStream,
                     configPayload.Settings,
                     token);
@@ -114,5 +121,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         public Dictionary<string, string> Properties { get; set; }
         public Dictionary<string, string> Configuration { get; set; }
         public string ProviderName { get; set; }
+        public LogLevel ConsoleLogLevel { get; set; }
+
     }
 }

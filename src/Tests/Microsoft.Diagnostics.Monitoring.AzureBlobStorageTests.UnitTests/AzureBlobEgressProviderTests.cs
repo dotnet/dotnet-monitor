@@ -12,6 +12,7 @@ using Microsoft.Diagnostics.Monitoring.Extension.Common;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -57,14 +58,14 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
 
             // Arrange
             TestOutputLoggerProvider loggerProvider = new(_outputHelper);
-            AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
+            AzureBlobEgressProvider egressProvider = new();
 
             BlobContainerClient containerClient = await ConstructBlobContainerClientAsync(create: false);
             AzureBlobEgressProviderOptions providerOptions = ConstructEgressProviderSettings(containerClient);
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
-            await EgressAsync(egressProvider, providerOptions, artifactSettings, CancellationToken.None);
+            await EgressAsync(loggerProvider.CreateLogger<AzureBlobEgressProvider>(), egressProvider, providerOptions, artifactSettings, CancellationToken.None);
 
             // Assert
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
@@ -82,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
 
             // Arrange
             TestOutputLoggerProvider loggerProvider = new(_outputHelper);
-            AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
+            AzureBlobEgressProvider egressProvider = new();
 
             BlobContainerClient containerClient = await ConstructBlobContainerClientAsync(create: false);
             QueueClient queueClient = await ConstructQueueContainerClientAsync(create: false);
@@ -91,7 +92,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
-            await EgressAsync(egressProvider, providerOptions, artifactSettings, CancellationToken.None);
+            await EgressAsync(loggerProvider.CreateLogger<AzureBlobEgressProvider>(), egressProvider, providerOptions, artifactSettings, CancellationToken.None);
 
             // Assert
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
@@ -107,7 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
 
             // Arrange
             TestOutputLoggerProvider loggerProvider = new(_outputHelper);
-            AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
+            AzureBlobEgressProvider egressProvider = new();
 
             BlobContainerClient containerClient = await ConstructBlobContainerClientAsync();
 
@@ -117,7 +118,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
-            await EgressAsync(egressProvider, providerOptions, artifactSettings, CancellationToken.None);
+            await EgressAsync(loggerProvider.CreateLogger<AzureBlobEgressProvider>(), egressProvider, providerOptions, artifactSettings, CancellationToken.None);
 
             // Assert
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
@@ -133,7 +134,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
 
             // Arrange
             TestOutputLoggerProvider loggerProvider = new(_outputHelper);
-            AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
+            AzureBlobEgressProvider egressProvider = new();
 
             BlobContainerClient containerClient = await ConstructBlobContainerClientAsync();
             QueueClient queueClient = await ConstructQueueContainerClientAsync(create: true);
@@ -145,7 +146,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
-            await EgressAsync(egressProvider, providerOptions, artifactSettings, CancellationToken.None);
+            await EgressAsync(loggerProvider.CreateLogger<AzureBlobEgressProvider>(), egressProvider, providerOptions, artifactSettings, CancellationToken.None);
 
             // Assert
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
@@ -161,7 +162,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
 
             // Arrange
             TestOutputLoggerProvider loggerProvider = new(_outputHelper);
-            AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
+            AzureBlobEgressProvider egressProvider = new();
 
             BlobContainerClient containerClient = await ConstructBlobContainerClientAsync(create: true);
             QueueClient queueClient = await ConstructQueueContainerClientAsync(create: true);
@@ -175,7 +176,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
-            await EgressAsync(egressProvider, providerOptions, artifactSettings, CancellationToken.None);
+            await EgressAsync(loggerProvider.CreateLogger<AzureBlobEgressProvider>(), egressProvider, providerOptions, artifactSettings, CancellationToken.None);
 
             // Assert
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
@@ -191,7 +192,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
 
             // Arrange
             TestOutputLoggerProvider loggerProvider = new(_outputHelper);
-            AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
+            AzureBlobEgressProvider egressProvider = new();
 
             BlobContainerClient containerClient = await ConstructBlobContainerClientAsync(create: false);
 
@@ -201,7 +202,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act & Assert
-            await Assert.ThrowsAsync<EgressException>(async () => await EgressAsync(egressProvider, providerOptions, artifactSettings, CancellationToken.None));
+            await Assert.ThrowsAsync<EgressException>(async () => await EgressAsync(loggerProvider.CreateLogger<AzureBlobEgressProvider>(), egressProvider, providerOptions, artifactSettings, CancellationToken.None));
         }
 
         [ConditionalFact(Timeout = EgressUnitTestTimeoutMs)]
@@ -211,7 +212,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
 
             // Arrange
             TestOutputLoggerProvider loggerProvider = new(_outputHelper);
-            AzureBlobEgressProvider egressProvider = new(loggerProvider.CreateLogger<AzureBlobEgressProvider>());
+            AzureBlobEgressProvider egressProvider = new();
 
             BlobContainerClient containerClient = await ConstructBlobContainerClientAsync();
             QueueClient queueClient = await ConstructQueueContainerClientAsync(create: false);
@@ -223,7 +224,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // Act
-            await EgressAsync(egressProvider, providerOptions, artifactSettings, CancellationToken.None);
+            await EgressAsync(loggerProvider.CreateLogger<AzureBlobEgressProvider>(), egressProvider, providerOptions, artifactSettings, CancellationToken.None);
 
             // Assert
             List<BlobItem> blobs = await GetAllBlobsAsync(containerClient);
@@ -239,9 +240,9 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
             await fs.CopyToAsync(stream, token);
         }
 
-        private Task EgressAsync(AzureBlobEgressProvider egressProvider, AzureBlobEgressProviderOptions options, EgressArtifactSettings artifactSettings, CancellationToken token)
+        private Task EgressAsync(ILogger logger, AzureBlobEgressProvider egressProvider, AzureBlobEgressProviderOptions options, EgressArtifactSettings artifactSettings, CancellationToken token)
         {
-            return egressProvider.EgressAsync(options, WriteToEgressStreamAsync, artifactSettings, token);
+            return egressProvider.EgressAsync(logger, options, WriteToEgressStreamAsync, artifactSettings, token);
         }
 
         private async Task<BlobContainerClient> ConstructBlobContainerClientAsync(string containerName = null, bool create = true)
