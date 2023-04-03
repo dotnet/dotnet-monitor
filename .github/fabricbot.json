@@ -375,31 +375,58 @@
       "version": "1.0",
       "config": {
         "conditions": {
-          "operator": "or",
+          "operator": "and",
           "operands": [
             {
-              "name": "isAction",
-              "parameters": {
-                "action": "synchronize"
-              }
+              "operator": "not",
+              "operands": [
+                {
+                  "name": "isActivitySender",
+                  "parameters": {
+                    "user": "dotnet-maestro[bot]"
+                  }
+                }
+              ]
             },
             {
-              "name": "isAction",
-              "parameters": {
-                "action": "reopened"
-              }
+              "operator": "or",
+              "operands": [
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "synchronize"
+                  }
+                },
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "reopened"
+                  }
+                },
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "opened"
+                  }
+                },
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "review_requested"
+                  }
+                }
+              ]
             },
             {
-              "name": "isAction",
-              "parameters": {
-                "action": "opened"
-              }
-            },
-            {
-              "name": "isAction",
-              "parameters": {
-                "action": "review_requested"
-              }
+              "operator": "not",
+              "operands": [
+                {
+                  "name": "hasLabel",
+                  "parameters": {
+                    "label": "needs-review"
+                  }
+                }
+              ]
             }
           ]
         },
@@ -436,22 +463,21 @@
               }
             },
             {
-              "operator": "or",
+              "name": "isAction",
+              "parameters": {
+                "action": "submitted"
+              }
+            },
+            {
+              "operator": "not",
               "operands": [
                 {
-                  "name": "isAction",
+                  "name": "isActivitySender",
                   "parameters": {
-                    "action": "submitted"
-                  }
-                },
-                {
-                  "operator": "not",
-                  "operands": [
-                    {
-                      "name": "isOpen",
-                      "parameters": {}
+                    "user": {
+                      "type": "author"
                     }
-                  ]
+                  }
                 }
               ]
             }
@@ -530,19 +556,30 @@
       "version": "1.0",
       "config": {
         "conditions": {
-          "operator": "or",
+          "operator": "and",
           "operands": [
             {
-              "name": "isAction",
+              "name": "hasLabel",
               "parameters": {
-                "action": "closed"
+                "label": "needs-review"
               }
             },
             {
-              "name": "isAction",
-              "parameters": {
-                "action": "merged"
-              }
+              "operator": "or",
+              "operands": [
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "closed"
+                  }
+                },
+                {
+                  "name": "isAction",
+                  "parameters": {
+                    "action": "merged"
+                  }
+                }
+              ]
             }
           ]
         },
