@@ -11,11 +11,9 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
     {
         static async Task<int> Main(string[] args)
         {
-            ILogger logger = Utilities.CreateLogger(); // need to figure out what to do with this.
-
             AzureBlobEgressProvider provider = new();
 
-            Action<ExtensionEgressPayload, AzureBlobEgressProviderOptions> configureOptions = (configPayload, options) =>
+            Action<ExtensionEgressPayload, AzureBlobEgressProviderOptions, ILogger> configureOptions = (configPayload, options, logger) =>
             {
                 // If account key was not provided but the name was provided,
                 // lookup the account key property value from EgressOptions.Properties

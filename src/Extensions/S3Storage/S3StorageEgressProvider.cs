@@ -25,11 +25,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 #pragma warning restore CA1852
 
         internal StorageFactory ClientFactory = new();
-        private ILogger _logger;
-
-        public S3StorageEgressProvider() : base()
-        {
-        }
 
         public override async Task<string> EgressAsync(
             ILogger logger,
@@ -38,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
-            _logger = logger;
+            Logger = logger;
             IS3Storage client = null;
             string uploadId = null;
             bool uploadDone = false;
@@ -47,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
                 client = await ClientFactory.CreateAsync(options, artifactSettings, token);
                 uploadId = await client.InitMultiPartUploadAsync(artifactSettings.Metadata, token);
                 await using var stream = new MultiPartUploadStream(client, options.BucketName, artifactSettings.Name, uploadId, options.CopyBufferSize);
-                _logger.EgressProviderInvokeStreamAction(Constants.S3StorageProviderName);
+                Logger.EgressProviderInvokeStreamAction(Constants.S3StorageProviderName);
                 await action(stream, token);
                 await stream.FinalizeAsync(token); // force to push the last part
 
@@ -83,7 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 
             DateTime expires = DateTime.UtcNow.Add(options.PreSignedUrlExpiry!.Value);
             string resourceId = client.GetTemporaryResourceUrl(expires);
-            _logger.EgressProviderSavedStream(Constants.S3StorageProviderName, resourceId);
+            Logger.EgressProviderSavedStream(Constants.S3StorageProviderName, resourceId);
             return resourceId;
         }
 
