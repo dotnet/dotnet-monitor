@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         {
             Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.");
 
-            egressCmd.SetActionWithExitCode((context, token) => Egress(provider, token, configureOptions));
+            egressCmd.SetAction((result, token) => Egress(provider, token, configureOptions));
 
             return egressCmd;
         }

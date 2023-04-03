@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Validates that an AspNetResponseStatus trigger will fire following an HTTP trace.
         /// </summary>
-        [Theory]
+        [Theory(Skip = "https://github.com/dotnet/dotnet-monitor/issues/2762")]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
         public async Task OverlappingEventSourceTests_AspNetResponseStatusTest(DiagnosticPortConnectionMode mode)
         {

@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Tools\dotnet-monitor\Commands\CommandExtensions.cs" Link="CommandExtensions.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
   </ItemGroup>
 
