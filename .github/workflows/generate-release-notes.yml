@@ -1,13 +1,8 @@
 name: 'Generate release notes'
-run-name: '[${{ github.ref_name }}] Generate release notes (test: ${{ inputs.test_run }})'
+run-name: '[${{ github.ref_name }}] Generate release notes'
 
 on:
   workflow_dispatch:
-    inputs:
-      test_run:
-        description: 'Test run?'
-        required: true
-        type: boolean
 
 permissions: {}
 
@@ -39,27 +34,14 @@ jobs:
           versionFile="./eng/Versions.props"
           release_version=$(perl -ne '/<VersionPrefix>([^<]*)/ && print $1' $versionFile)
           release_version_label=$(perl -ne '/<PreReleaseVersionLabel>([^<]*)/ && print $1' $versionFile)
-          major_minor_version=${release_version%.*}
-
-          if [[ "$TEST_RUN" == "true" ]]; then
-            qualified_release_version="test-$release_version"
-          else
-            version_url="https://aka.ms/dotnet/diagnostics/monitor${major_minor_version}/release/dotnet-monitor.nupkg.version"
-            qualified_release_version=$(curl -sL $version_url)
-            # Check if the aka.ms url existed
-            if [[ "$qualified_release_version" =~ "<html" || -z "$qualified_release_version" ]]; then
-              echo "Could not determine qualified release version, $version_url did not contain the expected information"
-              exit 1
-            fi
-
-            # trim the return carriage
-            qualified_release_version=$(echo $qualified_release_version | tr -d '\r')
-          fi
+          release_version_iteration=$(perl -ne '/<PreReleaseVersionIteration>([^<]*)/ && print $1' $versionFile)
 
           friendly_release_name=""
+          qualified_release_version="$release_version-$release_version_label.$release_version_iteration"
 
           if [ "$release_version_label" == "rtm" ] || [ "$release_version_label" == "servicing" ]; then
             friendly_release_name="$release_version build"
+            qualified_release_version="$release_version"
           elif [ "$release_version_label" == "rc" ]; then
             friendly_release_name="official $release_version Release Candidate"
           else
@@ -88,21 +70,7 @@ jobs:
           auth_token: ${{ secrets.GITHUB_TOKEN }}
           branch_name: ${{ github.ref_name }}
 
-      - name: Open PR (test run)
-        if: ${{ inputs.test_run }}
-        uses: ./.github/actions/open-pr
-        with:
-          draft: true
-          files_to_commit: ${{ env.release_note_path }}
-          title: "[test] Add ${{ env.qualified_release_version }} release notes"
-          commit_message: generate release notes
-          body: This is a test PR. Add ${{ env.qualified_release_version }} release notes. This PR was auto generated and will not be automatically merged in.
-          branch_name: releaseNotes/test/${{ env.qualified_release_version }}
-          fail_if_files_unchanged: true
-          auth_token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Open PR
-        if: ${{ !inputs.test_run }}
         uses: ./.github/actions/open-pr
         with:
           files_to_commit: ${{ env.release_note_path }}
