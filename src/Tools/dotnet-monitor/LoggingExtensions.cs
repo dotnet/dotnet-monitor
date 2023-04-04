@@ -1,7 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -31,12 +31,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: LoggingEventIds.EgressProviderOptionsValidationFailure.EventId(),
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_EgressProviderOptionsValidationError);
-
-        private static readonly Action<ILogger, string, string, Exception> _egressProviderUnableToFindPropertyKey =
-            LoggerMessage.Define<string, string>(
-                eventId: LoggingEventIds.EgressProvideUnableToFindPropertyKey.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_EgressProvideUnableToFindPropertyKey);
 
         private static readonly Action<ILogger, string, Exception> _egressProviderInvokeStreamAction =
             LoggerMessage.Define<string>(
@@ -308,24 +302,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ApiKeyNotConfigured);
 
-        private static readonly Action<ILogger, string, string, string, Exception> _queueDoesNotExist =
-            LoggerMessage.Define<string, string, string>(
-                eventId: LoggingEventIds.QueueDoesNotExist.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_QueueDoesNotExist);
-
-        private static readonly Action<ILogger, string, string, Exception> _queueOptionsPartiallySet =
-            LoggerMessage.Define<string, string>(
-                eventId: LoggingEventIds.QueueOptionsPartiallySet.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_QueueOptionsPartiallySet);
-
-        private static readonly Action<ILogger, string, Exception> _writingMessageToQueueFailed =
-            LoggerMessage.Define<string>(
-                eventId: LoggingEventIds.WritingMessageToQueueFailed.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_WritingMessageToQueueFailed);
-
         private static readonly Action<ILogger, string, Exception> _experienceSurvey =
             LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.ExperienceSurvey.EventId(),
@@ -337,6 +313,78 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: LoggingEventIds.DiagnosticPortNotInListenModeForCollectionRules.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticPortNotInListenModeForCollectionRules);
+
+        private static readonly Action<ILogger, string, Exception> _extensionProbeStart =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ExtensionProbeStart.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_ExtensionProbeStart);
+
+        private static readonly Action<ILogger, string, string, Exception> _extensionProbeSucceeded =
+            LoggerMessage.Define<string, string>(
+                eventId: LoggingEventIds.ExtensionProbeSucceeded.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ExtensionProbeSucceeded);
+
+        private static readonly Action<ILogger, string, Exception> _extensionProbeFailed =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ExtensionProbeFailed.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_ExtensionProbeFailed);
+
+        private static readonly Action<ILogger, string, Exception> _extensionStarting =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ExtensionStarting.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ExtensionStarting);
+
+        private static readonly Action<ILogger, string, int, Exception> _extensionConfigured =
+            LoggerMessage.Define<string, int>(
+                eventId: LoggingEventIds.ExtensionConfigured.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_ExtensionConfigured);
+
+        private static readonly Action<ILogger, int, Exception> _extensionEgressPayloadCompleted =
+            LoggerMessage.Define<int>(
+                eventId: LoggingEventIds.ExtensionEgressPayloadCompleted.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_ExtensionEgressPayloadCompleted);
+
+        private static readonly Action<ILogger, int, int, Exception> _extensionExited =
+            LoggerMessage.Define<int, int>(
+                eventId: LoggingEventIds.ExtensionExited.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ExtensionExited);
+
+        private static readonly Action<ILogger, int, string, Exception> _extensionOutputMessage =
+            LoggerMessage.Define<int, string>(
+                eventId: LoggingEventIds.ExtensionOutputMessage.EventId(),
+                logLevel: LogLevel.Information,
+                formatString: Strings.LogFormatString_ExtensionOutputMessage);
+
+        private static readonly Action<ILogger, int, string, Exception> _extensionErrorMessage =
+            LoggerMessage.Define<int, string>(
+                eventId: LoggingEventIds.ExtensionErrorMessage.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ExtensionErrorMessage);
+
+        private static readonly Action<ILogger, string, string, string, Exception> _extensionNotOfType =
+            LoggerMessage.Define<string, string, string>(
+                eventId: LoggingEventIds.ExtensionNotOfType.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_ExtensionNotOfType);
+
+        private static readonly Action<ILogger, string, Exception> _extensionManifestNotParsable =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ExtensionManifestNotParsable.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_ExtensionManifestNotParsable);
+
+        private static readonly Action<ILogger, int, string, string, Exception> _extensionMalformedOutput =
+            LoggerMessage.Define<int, string, string>(
+                eventId: LoggingEventIds.ExtensionMalformedOutput.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_ExtensionMalformedOutput);
 
         private static readonly Action<ILogger, Exception> _runtimeInstanceCookieFailedToFilterSelf =
             LoggerMessage.Define(
@@ -379,30 +427,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: LoggingEventIds.DiagnosticPortWatchingFailed.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DiagnosticPortWatchingFailed);
-
-        private static readonly Action<ILogger, Exception> _invalidMetadata =
-            LoggerMessage.Define(
-                eventId: LoggingEventIds.InvalidMetadata.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_InvalidMetadata);
-
-        private static readonly Action<ILogger, string, Exception> _duplicateKeyInMetadata =
-            LoggerMessage.Define<string>(
-                eventId: LoggingEventIds.DuplicateKeyInMetadata.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_DuplicateKeyInMetadata);
-
-        private static readonly Action<ILogger, string, Exception> _environmentVariableNotFound =
-            LoggerMessage.Define<string>(
-                eventId: LoggingEventIds.EnvironmentVariableNotFound.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_EnvironmentVariableNotFound);
-
-        private static readonly Action<ILogger, Exception> _environmentBlockNotSupported =
-            LoggerMessage.Define(
-                eventId: LoggingEventIds.EnvironmentBlockNotSupported.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_EnvironmentBlockNotSupported);
 
         private static readonly Action<ILogger, Exception> _failedInitializeSharedLibraryStorage =
             LoggerMessage.Define(
@@ -464,6 +488,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_StartupHookInstructions);
 
+        private static readonly Action<ILogger, string, Exception> _egressProviderTypeNotExist =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.EgressProviderTypeNotExist.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EgressProviderTypeNotExist);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -477,11 +507,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void EgressProviderOptionsValidationFailure(this ILogger logger, string providerName, string failureMessage)
         {
             _egressProviderOptionsValidationFailure(logger, providerName, failureMessage, null);
-        }
-
-        public static void EgressProviderUnableToFindPropertyKey(this ILogger logger, string providerName, string keyName)
-        {
-            _egressProviderUnableToFindPropertyKey(logger, providerName, keyName, null);
         }
 
         public static void EgressProviderInvokeStreamAction(this ILogger logger, string providerName)
@@ -724,21 +749,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 CultureInfo.CurrentUICulture.LCID);
         }
 
-        public static void QueueDoesNotExist(this ILogger logger, string queueName)
-        {
-            _queueDoesNotExist(logger, queueName, nameof(AzureBlobEgressProviderOptions.QueueName), nameof(AzureBlobEgressProviderOptions.QueueAccountUri), null);
-        }
-
-        public static void QueueOptionsPartiallySet(this ILogger logger)
-        {
-            _queueOptionsPartiallySet(logger, nameof(AzureBlobEgressProviderOptions.QueueName), nameof(AzureBlobEgressProviderOptions.QueueAccountUri), null);
-        }
-
-        public static void WritingMessageToQueueFailed(this ILogger logger, string queueName, Exception ex)
-        {
-            _writingMessageToQueueFailed(logger, queueName, ex);
-        }
-
         public static void ExperienceSurvey(this ILogger logger)
         {
             _experienceSurvey(logger, Monitor.ExperienceSurvey.ExperienceSurveyLink, null);
@@ -747,6 +757,66 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DiagnosticPortNotInListenModeForCollectionRules(this ILogger logger)
         {
             _diagnosticPortNotInListenModeForCollectionRules(logger, null);
+        }
+
+        public static void ExtensionProbeStart(this ILogger logger, string extensionName)
+        {
+            _extensionProbeStart(logger, extensionName, null);
+        }
+
+        public static void ExtensionProbeSucceeded(this ILogger logger, string extensionName, IExtension extension)
+        {
+            _extensionProbeSucceeded(logger, extensionName, extension.DisplayName, null);
+        }
+
+        public static void ExtensionProbeFailed(this ILogger logger, string extensionName)
+        {
+            _extensionProbeFailed(logger, extensionName, null);
+        }
+
+        public static void ExtensionStarting(this ILogger logger, string extensionName)
+        {
+            _extensionStarting(logger, extensionName, null);
+        }
+
+        public static void ExtensionConfigured(this ILogger logger, string extensionPath, int pid)
+        {
+            _extensionConfigured(logger, extensionPath, pid, null);
+        }
+
+        public static void ExtensionEgressPayloadCompleted(this ILogger logger, int pid)
+        {
+            _extensionEgressPayloadCompleted(logger, pid, null);
+        }
+
+        public static void ExtensionExited(this ILogger logger, int pid, int exitCode)
+        {
+            _extensionExited(logger, pid, exitCode, null);
+        }
+
+        public static void ExtensionOutputMessage(this ILogger logger, int pid, string message)
+        {
+            _extensionOutputMessage(logger, pid, message, null);
+        }
+
+        public static void ExtensionErrorMessage(this ILogger logger, int pid, string message)
+        {
+            _extensionErrorMessage(logger, pid, message, null);
+        }
+
+        public static void ExtensionNotOfType(this ILogger logger, string extensionName, IExtension extension, Type desiredType)
+        {
+            _extensionNotOfType(logger, extensionName, extension.DisplayName, desiredType.Name, null);
+        }
+
+        public static void ExtensionManifestNotParsable(this ILogger logger, string manifestFile, Exception ex)
+        {
+            _extensionManifestNotParsable(logger, manifestFile, ex);
+        }
+
+        public static void ExtensionMalformedOutput(this ILogger logger, int pid, string message, Type resultType)
+        {
+            _extensionMalformedOutput(logger, pid, message, resultType.Name, null);
         }
 
         public static void RuntimeInstanceCookieFailedToFilterSelf(this ILogger logger, Exception ex)
@@ -782,25 +852,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void DiagnosticPortWatchingFailed(this ILogger logger, string diagnosticPort, Exception ex)
         {
             _diagnosticPortWatchingFailed(logger, diagnosticPort, ex);
-        }
-        public static void InvalidMetadata(this ILogger logger, Exception ex)
-        {
-            _invalidMetadata(logger, ex);
-        }
-
-        public static void DuplicateKeyInMetadata(this ILogger logger, string duplicateKey)
-        {
-            _duplicateKeyInMetadata(logger, duplicateKey, null);
-        }
-
-        public static void EnvironmentVariableNotFound(this ILogger logger, string environmentVariable)
-        {
-            _environmentVariableNotFound(logger, environmentVariable, null);
-        }
-
-        public static void EnvironmentBlockNotSupported(this ILogger logger)
-        {
-            _environmentBlockNotSupported(logger, null);
         }
 
         public static void FailedInitializeSharedLibraryStorage(this ILogger logger, Exception ex)
@@ -851,6 +902,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void StartupHookInstructions(this ILogger logger, string startupHookLibraryPath)
         {
             _startupHookInstructions(logger, startupHookLibraryPath, null);
+        }
+
+        public static void EgressProviderTypeNotExist(this ILogger logger, string providerType)
+        {
+            _egressProviderTypeNotExist(logger, providerType, null);
         }
     }
 }

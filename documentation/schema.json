@@ -1088,27 +1088,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "AzureBlobStorage": {
-          "type": [
-            "null",
-            "object"
-          ],
-          "description": "Mapping of Azure blob storage egress provider names to their options.",
-          "default": {},
-          "additionalProperties": {
-            "$ref": "#/definitions/AzureBlobEgressProviderOptions"
-          }
-        },
-        "S3Storage": {
-          "type": [
-            "null",
-            "object"
-          ],
-          "description": "Mapping of S3 storage egress provider names to their options.",
-          "additionalProperties": {
-            "$ref": "#/definitions/S3StorageEgressProviderOptions"
-          }
-        },
         "FileSystem": {
           "type": [
             "null",
@@ -1130,198 +1109,28 @@
           "additionalProperties": {
             "type": "string"
           }
-        }
-      }
-    },
-    "AzureBlobEgressProviderOptions": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "AccountUri",
-        "ContainerName"
-      ],
-      "properties": {
-        "AccountUri": {
-          "type": "string",
-          "description": "The URI of the Azure blob storage account.",
-          "format": "uri",
-          "minLength": 1
         },
-        "AccountKey": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The account key used to access the Azure blob storage account."
-        },
-        "AccountKeyName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The name of the account key used to look up the value from the Egress options Properties map."
-        },
-        "SharedAccessSignature": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The shared access signature (SAS) used to access the Azure blob and optionally queue storage accounts."
-        },
-        "SharedAccessSignatureName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The name of the shared access signature (SAS) used to look up the value from the Egress options Properties map."
-        },
-        "ManagedIdentityClientId": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage."
-        },
-        "ContainerName": {
-          "type": "string",
-          "description": "The name of the container to which the blob will be egressed. If egressing to the root container, use the \"$root\" sentinel value.",
-          "minLength": 1
-        },
-        "BlobPrefix": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The prefix to prepend to the blob name."
-        },
-        "CopyBufferSize": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "description": "Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.",
-          "format": "int32"
-        },
-        "QueueName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The name of the queue to which a message will be dispatched upon writing to a blob."
-        },
-        "QueueAccountUri": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The URI of the Azure queue storage account.",
-          "format": "uri"
-        },
-        "QueueSharedAccessSignature": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The shared access signature (SAS) used to access the Azure queue storage account."
-        },
-        "QueueSharedAccessSignatureName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map."
-        },
-        "Metadata": {
+        "AzureBlobStorage": {
           "type": [
             "null",
             "object"
           ],
-          "description": "A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.",
+          "description": "Mapping of Azure blob storage egress provider names to their options.",
+          "default": {},
           "additionalProperties": {
-            "type": "string"
+            "$ref": "#/definitions/AzureBlobEgressProviderOptions"
           }
-        }
-      }
-    },
-    "S3StorageEgressProviderOptions": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "BucketName"
-      ],
-      "properties": {
-        "Endpoint": {
+        },
+        "S3Storage": {
           "type": [
             "null",
-            "string"
+            "object"
           ],
-          "description": "The endpoint of S3 to connect to. This is optional in case of using AWS storage."
-        },
-        "BucketName": {
-          "type": "string",
-          "description": "The name of the bucket used for storage",
-          "minLength": 1
-        },
-        "RegionName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The name of the S3 region"
-        },
-        "AccessKeyId": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The AWS AccessKeyId for IAM user to login"
-        },
-        "SecretAccessKey": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The AWS SecretAccessKey associated AccessKeyId for IAM user to login"
-        },
-        "AwsProfileName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The AWS profile name to be used for login"
-        },
-        "AwsProfilePath": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The AWS profile path, if profile details not stored in default path"
-        },
-        "GeneratePreSignedUrl": {
-          "type": "boolean",
-          "description": "A boolean flag indicates if the return value of egress provider should be a pre-signed URL or only the bucket name and object id of uploaded entry."
-        },
-        "PreSignedUrlExpiry": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The amount of time the generated pre-signed url will be accessible.",
-          "format": "duration"
-        },
-        "ForcePathStyle": {
-          "type": "boolean",
-          "description": "The boolean flag set for AWS connection configuration ForcePathStyle option."
-        },
-        "CopyBufferSize": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "description": "Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.",
-          "format": "int32",
-          "maximum": 2147483647.0,
-          "minimum": 1.0
+          "description": "Mapping of S3 storage egress provider names to their options.",
+          "default": {},
+          "additionalProperties": {
+            "$ref": "#/definitions/S3StorageEgressProviderOptions"
+          }
         }
       }
     },
@@ -2700,6 +2509,196 @@
           "type": "boolean",
           "description": "Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.",
           "default": false
+        }
+      }
+    },
+    "AzureBlobEgressProviderOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "AccountUri",
+        "ContainerName"
+      ],
+      "properties": {
+        "AccountUri": {
+          "type": "string",
+          "description": "The URI of the Azure blob storage account.",
+          "format": "uri",
+          "minLength": 1
+        },
+        "AccountKey": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The account key used to access the Azure blob storage account."
+        },
+        "AccountKeyName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the account key used to look up the value from the Egress options Properties map."
+        },
+        "SharedAccessSignature": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The shared access signature (SAS) used to access the Azure blob and optionally queue storage accounts."
+        },
+        "SharedAccessSignatureName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the shared access signature (SAS) used to look up the value from the Egress options Properties map."
+        },
+        "ManagedIdentityClientId": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage."
+        },
+        "ContainerName": {
+          "type": "string",
+          "description": "The name of the container to which the blob will be egressed. If egressing to the root container, use the \"$root\" sentinel value.",
+          "minLength": 1
+        },
+        "BlobPrefix": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The prefix to prepend to the blob name."
+        },
+        "CopyBufferSize": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
+        },
+        "QueueName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the queue to which a message will be dispatched upon writing to a blob."
+        },
+        "QueueAccountUri": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The URI of the Azure queue storage account.",
+          "format": "uri"
+        },
+        "QueueSharedAccessSignature": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The shared access signature (SAS) used to access the Azure queue storage account."
+        },
+        "QueueSharedAccessSignatureName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map."
+        },
+        "Metadata": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "S3StorageEgressProviderOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "BucketName"
+      ],
+      "properties": {
+        "Endpoint": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The endpoint of S3 to connect to. This is optional in case of using AWS storage."
+        },
+        "BucketName": {
+          "type": "string",
+          "description": "The name of the bucket used for storage",
+          "minLength": 1
+        },
+        "RegionName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the S3 region"
+        },
+        "AccessKeyId": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The AWS AccessKeyId for IAM user to login"
+        },
+        "SecretAccessKey": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The AWS SecretAccessKey associated AccessKeyId for IAM user to login"
+        },
+        "AwsProfileName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The AWS profile name to be used for login"
+        },
+        "AwsProfilePath": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The AWS profile path, if profile details not stored in default path"
+        },
+        "PreSignedUrlExpiry": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The amount of time the generated pre-signed url will be accessible.",
+          "format": "duration"
+        },
+        "ForcePathStyle": {
+          "type": "boolean",
+          "description": "The boolean flag set for AWS connection configuration ForcePathStyle option."
+        },
+        "CopyBufferSize": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
         }
       }
     }

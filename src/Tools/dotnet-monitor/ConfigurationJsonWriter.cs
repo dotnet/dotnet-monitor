@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
+using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -122,44 +122,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IList<string> processedSectionPaths = new List<string>();
 
             // Redact all the properties since they could include secrets such as storage keys
-            IConfigurationSection propertiesSection = ProcessChildSection(egress, nameof(EgressOptions.Properties), skipNotPresent, includeChildSections: true, redact: true, showSources: showSources);
+            IConfigurationSection propertiesSection = ProcessChildSection(egress, ConfigurationKeys.Egress_Properties, skipNotPresent, includeChildSections: true, redact: true, showSources: showSources);
             if (null != propertiesSection)
             {
                 processedSectionPaths.Add(propertiesSection.Path);
             }
 
-            IConfigurationSection azureBlobProviderSection = ProcessChildSection(egress, nameof(EgressOptions.AzureBlobStorage), skipNotPresent, includeChildSections: false, showSources: showSources);
-            if (azureBlobProviderSection != null)
-            {
-                processedSectionPaths.Add(azureBlobProviderSection.Path);
-
-                using (new JsonObjectContext(_writer))
-                {
-                    foreach (IConfigurationSection optionsSection in azureBlobProviderSection.GetChildren())
-                    {
-                        _writer.WritePropertyName(optionsSection.Key);
-                        using (new JsonObjectContext(_writer))
-                        {
-                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.AccountUri), skipNotPresent, includeChildSections: false, showSources: showSources);
-                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.BlobPrefix), skipNotPresent, includeChildSections: false, showSources: showSources);
-                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.ContainerName), skipNotPresent, includeChildSections: false, showSources: showSources);
-                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.CopyBufferSize), skipNotPresent, includeChildSections: false, showSources: showSources);
-                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.QueueName), skipNotPresent, includeChildSections: false, showSources: showSources);
-                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.QueueAccountUri), skipNotPresent, includeChildSections: false, showSources: showSources);
-                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.SharedAccessSignature), skipNotPresent, includeChildSections: false, redact: true, showSources: showSources);
-                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.AccountKey), skipNotPresent, includeChildSections: false, redact: true, showSources: showSources);
-                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.SharedAccessSignatureName), skipNotPresent, includeChildSections: false, redact: false, showSources: showSources);
-                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.AccountKeyName), skipNotPresent, includeChildSections: false, redact: false, showSources: showSources);
-                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.ManagedIdentityClientId), skipNotPresent, includeChildSections: false, redact: false, showSources: showSources);
-                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.QueueSharedAccessSignature), skipNotPresent, includeChildSections: false, redact: true, showSources: showSources);
-                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.QueueSharedAccessSignatureName), skipNotPresent, includeChildSections: false, redact: false, showSources: showSources);
-                            ProcessChildSection(optionsSection, nameof(AzureBlobEgressProviderOptions.Metadata), skipNotPresent, includeChildSections: true, redact: false, showSources: showSources);
-                        }
-                    }
-                }
-            }
-
-            IConfigurationSection fileSystemProviderSection = ProcessChildSection(egress, nameof(EgressOptions.FileSystem), skipNotPresent, includeChildSections: false, showSources: showSources);
+            IConfigurationSection fileSystemProviderSection = ProcessChildSection(egress, EgressProviderTypes.FileSystem, skipNotPresent, includeChildSections: false, showSources: showSources);
             if (fileSystemProviderSection != null)
             {
                 processedSectionPaths.Add(fileSystemProviderSection.Path);

@@ -153,6 +153,9 @@
     <value>Azure blob egress failed.</value>
     <comment>Gets a string similar to "Azure blob egress failed.".</comment>
   </data>
+  <data name="ErrorMessage_EgressExtensionFailed" xml:space="preserve">
+    <value>Extension egress failed.</value>
+  </data>
   <data name="ErrorMessage_EgressFileFailedDetailed" xml:space="preserve">
     <value>File system egress failed: {0}</value>
     <comment>Gets the format string for egress failure to File (with an inner message).
@@ -190,6 +193,15 @@
     <comment>Gets the format string for file system egress provider failure due to inability to create an intermediate file.
 1 Format Parameter:
 0. intermediateFileDirectory: The directory where the intermediate file was attempted to be created.</comment>
+  </data>
+  <data name="ErrorMessage_ExtensionLaunchFailed" xml:space="preserve">
+    <value>The extension '{extensionName}' failed to launch.</value>
+    <comment>Gets the format string for a launch failure.
+1. extensionName The name of the extension or moniker</comment>
+  </data>
+  <data name="ErrorMessage_ExtensionNotFound" xml:space="preserve">
+    <value>Failed to locate extension '{0}'.</value>
+    <comment>Gets the error message string for ExtensionNotFoundException. 1 Format parameter: extensionMoniker</comment>
   </data>
   <data name="ErrorMessage_ExpectedToFindSharedLibrariesAtPath" xml:space="preserve">
     <value>Expected to find shared libraries at '{0}'.</value>
@@ -585,10 +597,6 @@
 2. providerType: The type of provider that the new provider was attempting to be registered.
 3. existingProviderType: The type of provider that the new provider name was already registered.</comment>
   </data>
-  <data name="LogFormatString_DuplicateKeyInMetadata" xml:space="preserve">
-    <value>Metadata cannot include duplicate keys; please change or remove the key '{key}'</value>
-    <comment>Gets a string similar to "Metadata cannot include duplicate keys; please change or remove the key '{key}'".</comment>
-  </data>
   <data name="LogFormatString_EgressCopyActionStreamToEgressStream" xml:space="preserve">
     <value>Copying action stream to egress stream with buffer size {bufferSize}</value>
     <comment>Gets the format string that is printed in the 5:EgressCopyActionStreamToEgressStream event.
@@ -621,25 +629,96 @@
 1. providerType: Type of the provider
 2. path: path where provider saved the stream</comment>
   </data>
-  <data name="LogFormatString_EgressProvideUnableToFindPropertyKey" xml:space="preserve">
-    <value>Provider {providerType}: Unable to find '{keyName}' key in egress properties</value>
-    <comment>Gets the format string that is printed in the 10:EgressProvideUnableToFindPropertyKey event.
-2 Format Parameters:
-1. providerType: Type of the provider
-2. keyName: Name of the property that could not be found</comment>
-  </data>
   <data name="LogFormatString_EndpointTimeout" xml:space="preserve">
     <value>Unexpected timeout from process {processId}. Process will no longer be monitored.</value>
   </data>
-  <data name="LogFormatString_EnvironmentBlockNotSupported" xml:space="preserve">
-    <value>Target framework does not support custom egress metadata.</value>
-  </data>
-  <data name="LogFormatString_EnvironmentVariableNotFound" xml:space="preserve">
-    <value>The environment variable '{name}' could not be found on the target process.</value>
-    <comment>Gets a string similar to "The environment variable '{name}' could not be found on the target process.".</comment>
-  </data>
   <data name="LogFormatString_ExperienceSurvey" xml:space="preserve">
     <value>Tell us about your experience with dotnet monitor: {link}</value>
+  </data>
+  <data name="LogFormatString_ExtensionConfigured" xml:space="preserve">
+    <value>Extension '{extensionPath}' started process {pid}, configuration sent.</value>
+    <comment>Gets the format string that is printed in the 67:ExtensionConfigured event.
+2 Format Parameters:
+1. extensionPath: Path to the executable extension
+2. pid: Process ID of the started process</comment>
+  </data>
+  <data name="LogFormatString_ExtensionManifestNotParsable" xml:space="preserve">
+    <value>The extension manifest file '{manifestPath}' is missing or incorrectly formed.</value>
+  </data>
+  <data name="LogFormatString_ExtensionEgressPayloadCompleted" xml:space="preserve">
+    <value>Payload egress complete to extension process {pid}, waiting for process exit.</value>
+    <comment>Gets the format string that is printed in the 68:ExtensionEgressPayloadCompleted event.
+1 Format Parameter:
+1. pid: Process ID of the extension process</comment>
+  </data>
+  <data name="LogFormatString_ExtensionErrorMessage" xml:space="preserve">
+    <value>Extension process {pid} wrote error: {message}</value>
+    <comment>Gets the format string that is printed in the 71:ExtensionErrorMessage event.
+2 Format Parameters:
+1. pid: Process ID of the started process
+2. message: the line output message from the process written to standard error</comment>
+  </data>
+  <data name="LogFormatString_ExtensionExited" xml:space="preserve">
+    <value>Extension process {pid} exited with code {exitCode}.</value>
+    <comment>Gets the format string that is printed in the 69:ExtensionExited event.
+2 Format Parameters:
+1. pid: Process ID of the started process
+2. exitCode: Exit code of the extension process</comment>
+  </data>
+  <data name="LogFormatString_ExtensionMalformedOutput" xml:space="preserve">
+    <value>Extension process {pid} wrote output message '{message}'. This message was parsed correctly as '{resultType}' but contained malformed data or was missing critical data to be considered valid.</value>
+    <comment>Gets the format string that is printed in the 75:ExtensionMalformedOutput event.
+2 Format Parameters:
+1. pid: Process ID of the started process
+2. message: the line output message from the process written to standard out that was parsed correctly but was missing critical data.
+3. resultType: the type that the message was parsed to but not considered valid</comment>
+  </data>
+  <data name="LogFormatString_ExtensionNotOfType" xml:space="preserve">
+    <value>The extension'{extensionName} at {extension} was not the required type {extensionType}. This most likely means the extension definition does not specify support for this usage type.</value>
+    <comment>Gets the format string that is printed in the 72:ExtensionNotOfType event.
+3 Format Parameters:
+1. extensionName: The name of the extension or moniker
+2. extension: The friendly name of the extension from the IExtension interface
+3. extensionType: The type that the extension failed to be typed to</comment>
+  </data>
+  <data name="LogFormatString_ExtensionOutputMessage" xml:space="preserve">
+    <value>Extension process {pid} wrote output: {message}</value>
+    <comment>Gets the format string that is printed in the 70:ExtensionOutputMessage event.
+2 Format Parameters:
+1. pid: Process ID of the started process
+2. message: the line output message from the process written to standard out</comment>
+  </data>
+  <data name="LogFormatString_ExtensionProbeFailed" xml:space="preserve">
+    <value>Failed to locate extension '{extensionName}'.</value>
+    <comment>Gets the format string that is printed in the 65:ExtensionProbeFailed event.
+1 Format Parameter:
+1. extensionName: The name of the extension or moniker</comment>
+  </data>
+  <data name="LogFormatString_ExtensionProbeRepo" xml:space="preserve">
+    <value>Searching {extensionRepository} for extension '{extensionName}'.</value>
+    <comment>Gets the format string that is printed in the 63:ExtensionProbeRepo event.
+1 Format Parameter:
+1. extensionName: The name of the extension or moniker
+2. extensionRepository: The friendly name of the extension repository</comment>
+  </data>
+  <data name="LogFormatString_ExtensionProbeStart" xml:space="preserve">
+    <value>Attempting to locate extension '{extensionName}'.</value>
+    <comment>Gets the format string that is printed in the 62:ExtensionProbeStart event.
+1 Format Parameter:
+1. extensionName: The name of the extension or moniker</comment>
+  </data>
+  <data name="LogFormatString_ExtensionProbeSucceeded" xml:space="preserve">
+    <value>Found extension '{extensionName}' at {extension}.</value>
+    <comment>Gets the format string that is printed in the 64:ExtensionProbeSucceeded event.
+1 Format Parameter:
+1. extensionName: The name of the extension or moniker
+2. extension: The friendly name of the extension from the IExtension interface</comment>
+  </data>
+  <data name="LogFormatString_ExtensionStarting" xml:space="preserve">
+    <value>Starting extension '{extensionName}'.</value>
+    <comment>Gets the format string that is printed in the 66:ExtensionStarting event.
+1 Format Parameter:
+1. extensionName: The name of the extension or moniker</comment>
   </data>
   <data name="LogFormatString_ExperimentalFeatureEnabled" xml:space="preserve">
     <value>Experimental feature '{name}' is enabled.</value>
@@ -667,10 +746,6 @@
   </data>
   <data name="LogFormatString_InvalidActionResultReference" xml:space="preserve">
     <value>Invalid result reference '{actionToken}'.</value>
-  </data>
-  <data name="LogFormatString_InvalidMetadata" xml:space="preserve">
-    <value>Invalid metadata; custom metadata keys must be valid C# identifiers.</value>
-    <comment>Gets a string similar to "Invalid metadata; custom metadata keys must be valid C# identifiers.".</comment>
   </data>
   <data name="LogFormatString_InvalidToken" xml:space="preserve">
     <value>Action '{actionName}' with setting '{setting}' has invalid tokens.</value>
@@ -816,5 +891,17 @@
   <data name="Placeholder_Redacted" xml:space="preserve">
     <value>:REDACTED:</value>
     <comment>Gets a string similar to ":REDACTED:".</comment>
+  </data>
+  <data name="ErrorMessage_ExtensionManifestInvalid" xml:space="preserve">
+    <value>Invalid extension manifest: {0}</value>
+  </data>
+  <data name="ErrorMessage_ExtensionManifestNotFound" xml:space="preserve">
+    <value>Could not find extension manifest at '{0}'</value>
+  </data>
+  <data name="ErrorMessage_ExtensionFileNotFound" xml:space="preserve">
+    <value>The extension file '{0}' for extension '{1}' could not be found.</value>
+  </data>
+  <data name="LogFormatString_EgressProviderTypeNotExist" xml:space="preserve">
+    <value>Egress provider type '{type}' does not exist.</value>
   </data>
 </root>

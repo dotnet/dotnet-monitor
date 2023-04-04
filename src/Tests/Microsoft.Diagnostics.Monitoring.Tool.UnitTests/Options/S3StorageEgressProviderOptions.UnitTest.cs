@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -11,6 +10,7 @@ using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
 {
+    /*
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public class S3StorageEgressProviderOptionsTests
     {
@@ -109,4 +109,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
             Assert.Equal($"The field {nameof(S3StorageEgressProviderOptions.PreSignedUrlExpiry)} must be between 00:01:00 and 1.00:00:00.", result[0].ErrorMessage);
         }
     }
+    */
 }

@@ -1,0 +1,14 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props"/>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RuntimeIdentifiers>$(DefaultRuntimeIdentifiers)</RuntimeIdentifiers>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+    <IsShipping>true</IsShipping>
+    <PackAsTool>true</PackAsTool>
+    <PackAsToolShimRuntimeIdentifiers Condition="'$(PackAsTool)' == 'true'">$(SignOnlyRuntimeIdentifiers)</PackAsToolShimRuntimeIdentifiers>
+    <PackagedShimOutputRootDirectory>$(OutputPath)</PackagedShimOutputRootDirectory>
+  </PropertyGroup>
+</Project>

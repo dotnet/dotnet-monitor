@@ -173,34 +173,6 @@
     <value>The list of HTTP response status codes to monitor. Each item of the list can be a single code or a range of codes (e.g. "400-499").</value>
     <comment>The description provided for the StatusCodes parameter on AspNetResponseStatusOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKey" xml:space="preserve">
-    <value>The account key used to access the Azure blob storage account.</value>
-    <comment>The description provided for the AccountKey parameter on AzureBlobEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKeyName" xml:space="preserve">
-    <value>The name of the account key used to look up the value from the Egress options Properties map.</value>
-    <comment>The description provided for the AccountKeyName parameter on AzureBlobEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountUri" xml:space="preserve">
-    <value>The URI of the Azure blob storage account.</value>
-    <comment>The description provided for the AccountUri parameter on AzureBlobEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_BlobPrefix" xml:space="preserve">
-    <value>The prefix to prepend to the blob name.</value>
-    <comment>The description provided for the BlobPrefix parameter on AzureBlobEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_ContainerName" xml:space="preserve">
-    <value>The name of the container to which the blob will be egressed. If egressing to the root container, use the "$root" sentinel value.</value>
-    <comment>The description provided for the ContainerName parameter on AzureBlobEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignature" xml:space="preserve">
-    <value>The shared access signature (SAS) used to access the Azure blob and optionally queue storage accounts.</value>
-    <comment>The description provided for the SharedAccessSignature parameter on AzureBlobEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignatureName" xml:space="preserve">
-    <value>The name of the shared access signature (SAS) used to look up the value from the Egress options Properties map.</value>
-    <comment>The description provided for the SharedAccessSignatureName parameter on AzureBlobEgressProviderOptions.</comment>
-  </data>
   <data name="DisplayAttributeDescription_CollectDumpOptions_Egress" xml:space="preserve">
     <value>The name of the egress provider to which the dump is egressed.</value>
     <comment>The description provided for the Egress parameter on CollectDumpOptions.</comment>
@@ -364,18 +336,6 @@
   <data name="DisplayAttributeDescription_DiagnosticPortOptions_MaxConnections" xml:space="preserve">
     <value>In 'Listen' mode, the maximum amount of connections to accept.</value>
     <comment>The description provided for the MaxConnections parameter on DiagnosticPortOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_EgressOptions_AzureBlobStorage" xml:space="preserve">
-    <value>Mapping of Azure blob storage egress provider names to their options.</value>
-    <comment>The description provided for the AzureBlobStorage parameter on EgressOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_EgressOptions_FileSystem" xml:space="preserve">
-    <value>Mapping of file system egress provider names to their options.</value>
-    <comment>The description provided for the FileSystem parameter on EgressOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_EgressOptions_Properties" xml:space="preserve">
-    <value>Additional properties, such as secrets, that can be referenced by the provider definitions.</value>
-    <comment>The description provided for the Properties parameter on EgressOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_EventCounterOptions_CounterName" xml:space="preserve">
     <value>The name of the counter to monitor.</value>
@@ -572,14 +532,6 @@
     <value>The name of the environment variable to get.</value>
     <comment>The description provided for the Name parameter on GetEnvironmentVariableOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri" xml:space="preserve">
-    <value>The URI of the Azure queue storage account.</value>
-    <comment>The description provided for the QueueAccountUri parameter on AzureBlobEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueName" xml:space="preserve">
-    <value>The name of the queue to which a message will be dispatched upon writing to a blob.</value>
-    <comment>The description provided for the QueueName parameter on AzureBlobEgressProviderOptions.</comment>
-  </data>
   <data name="DisplayAttributeDescription_ProcessFilterDescriptor_CommandLine" xml:space="preserve">
     <value>Performs a match based on the contents of the command passed to launch the process on the system; this typically includes the executable path and arguments to the process.</value>
     <comment>The description provided for the CommandLine parameter on ProcessFilterDescriptor.</comment>
@@ -678,59 +630,6 @@
     <value>The threshold level the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null.</value>
     <comment>The description provided for the LessThan parameter on ThreadpoolQueueLengthOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientId" xml:space="preserve">
-    <value>Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage.</value>
-  </data>
-  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_BucketName" xml:space="preserve">
-    <value>The name of the bucket used for storage</value>
-    <comment>The description provided for the BucketName parameter on S3StorageEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_Endpoint" xml:space="preserve">
-    <value>The endpoint of S3 to connect to. This is optional in case of using AWS storage.</value>
-    <comment>The description provided for the Endpoint parameter on S3StorageEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfileName" xml:space="preserve">
-    <value>The AWS profile name to be used for login</value>
-    <comment>The description provided for the AWSProfileName parameter on S3StorageEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfilePath" xml:space="preserve">
-    <value>The AWS profile path, if profile details not stored in default path</value>
-    <comment>The description provided for the AWSProfilePath parameter on S3StorageEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_RegionName" xml:space="preserve">
-    <value>The name of the S3 region</value>
-    <comment>The description provided for the RegionName parameter on S3StorageEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_AccessKeyId" xml:space="preserve">
-    <value>The AWS AccessKeyId for IAM user to login</value>
-    <comment>The description provided for the AccessKeyId parameter on S3StorageEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey" xml:space="preserve">
-    <value>The AWS SecretAccessKey associated AccessKeyId for IAM user to login</value>
-    <comment>The description provided for the SecretAccessKey parameter on S3StorageEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_GeneratePreSignedUrl" xml:space="preserve">
-    <value>A boolean flag indicates if the return value of egress provider should be a pre-signed URL or only the bucket name and object id of uploaded entry.</value>
-    <comment>The description provided for the GeneratePresSignedUrl parameter on S3StorageEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiry" xml:space="preserve">
-    <value>The amount of time the generated pre-signed url will be accessible.</value>
-    <comment>The description provided for the PreSignedUrlExpiry parameter on S3StorageEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_ForcePathStyle" xml:space="preserve">
-    <value>The boolean flag set for AWS connection configuration ForcePathStyle option.</value>
-    <comment>The description provided for the ForcePathStyle parameter on S3StorageEgressProviderOptions.</comment>
-  </data>
-  <data name="ErrorMessage_EgressS3FailedMissingSecrets" xml:space="preserve">
-    <value>S3 storage egress failed: Neither the secrets file nor the password are specified.</value>
-    <comment>Gets the string for rejecting validation due to missing credentials for S3 options.</comment>
-  </data>
-  <data name="ErrorMessage_EgressS3FailedMissingOption" xml:space="preserve">
-    <value>The {0} field is required.</value>
-    <comment>Gets the string for rejecting validation due to missing field.
-1 Format Parameter:
-0. fieldName: The name of the field that is missing</comment>
-  </data>
   <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_Duration" xml:space="preserve">
     <value>The duration of time in which live metrics are collected.</value>
     <comment>The description provided for the Duration parameter on CollectLiveMetricsOptions.</comment>
@@ -749,22 +648,6 @@
   </data>
   <data name="DisplayAttributeDescription_DiagnosticPortOptions_DeleteEndpointOnStartup" xml:space="preserve">
     <value>In 'Listen' connection mode, deletes the domain socket file used for diagnostic port communication.</value>
-  </data>
-  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_Metadata" xml:space="preserve">
-    <value>A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.</value>
-    <comment>The description provided for the Metadata parameter on AzureBlobEgressProviderOptions</comment>
-  </data>
-  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignature" xml:space="preserve">
-    <value>The shared access signature (SAS) used to access the Azure queue storage account.</value>
-    <comment>The description provided for the QueueSharedAccessSignature parameter on AzureBlobEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignatureName" xml:space="preserve">
-    <value>The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map.</value>
-    <comment>The description provided for the QueueSharedAccessSignatureName parameter on AzureBlobEgressProviderOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_EgressOptions_S3Storage" xml:space="preserve">
-    <value>Mapping of S3 storage egress provider names to their options.</value>
-    <comment>The description provided for the S3Storage parameter on EgressOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_StorageOptions_SharedLibraryPath" xml:space="preserve">
     <value>The location to which libraries shared with target processes will be copied at startup.</value>
@@ -881,5 +764,11 @@
   </data>
   <data name="DisplayAttributeDescription_MetricsOptions_Meters" xml:space="preserve">
     <value>Names of meters to collect from the System.Diagnostics.Metrics provider.</value>
+  </data>
+  <data name="DisplayAttributeDescription_EgressOptions_FileSystem" xml:space="preserve">
+    <value>Mapping of file system egress provider names to their options.</value>
+  </data>
+  <data name="DisplayAttributeDescription_EgressOptions_Properties" xml:space="preserve">
+    <value>Additional properties, such as secrets, that can be referenced by the provider definitions.</value>
   </data>
 </root>

@@ -1,0 +1,4 @@
+{
+    "Name": "AzureBlobStorage",
+    "AssemblyFileName": "dotnet-monitor-egress-azureblobstorage"
+}

@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(urls, metricUrls, metrics, diagnosticPort, authMode, configurationFilePath);
 
                 IHost host = HostBuilderHelper.CreateHostBuilder(settings)
-                    .Configure(authMode, noHttpEgress)
+                    .Configure(authMode, noHttpEgress, settings)
                     .Build();
 
                 try
@@ -75,7 +75,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             return 0;
         }
 
-        private static IHostBuilder Configure(this IHostBuilder builder, StartupAuthenticationMode startupAuthMode, bool noHttpEgress)
+        private static IHostBuilder Configure(this IHostBuilder builder, StartupAuthenticationMode startupAuthMode, bool noHttpEgress, HostBuilderSettings settings)
         {
             return builder.ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
             {
@@ -113,6 +113,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<IEndpointInfoSourceCallbacks, OperationTrackerServiceEndpointInfoSourceCallback>();
                 services.AddSingleton<IRequestLimitTracker, RequestLimitTracker>();
                 services.ConfigureOperationStore();
+                services.ConfigureExtensions();
+                services.ConfigureExtensionLocations(settings);
                 services.ConfigureEgress();
                 services.ConfigureMetrics(context.Configuration);
                 services.ConfigureStorage(context.Configuration);
