@@ -44,7 +44,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 SlidingWindowDuration = options.SlidingWindowDuration ?? TimeSpan.Parse(AspNetRequestDurationOptionsDefaults.SlidingWindowDuration, CultureInfo.InvariantCulture),
             };
 
-            var aspnetTriggerSourceConfiguration = new AspNetTriggerSourceConfiguration(_counterOptions.CurrentValue.GetIntervalSeconds());
+            //HACK we get the provider specific interval for the configuration
+            var aspnetTriggerSourceConfiguration = new AspNetTriggerSourceConfiguration(_counterOptions.CurrentValue.GetProviderSpecificInterval(MonitoringSourceConfiguration.MicrosoftAspNetCoreHostingEventSourceName));
 
             return EventPipeTriggerFactory.Create(endpointInfo, aspnetTriggerSourceConfiguration, _traceEventTriggerFactory, settings, callback);
         }
