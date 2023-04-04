@@ -1,6 +1,6 @@
 <Project>
   <!-- Import ProjectToPublish items; all projects that would participate in publishing should be listed here. -->
-  <Import Project="$(RepoRoot)src\archives\dotnet-monitor\ProjectsToPublish.props" />
+  <Import Project="$(RepoRoot)src\archives\dotnet-monitor-base\ProjectsToPublish.props" />
   <Import Project="$(RepoRoot)src\archives\AzureBlobStorage\ProjectsToPublish.props" />
   <Import Project="$(RepoRoot)src\archives\S3Storage\ProjectsToPublish.props" />
   <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.StartupHook\ProjectsToPublish.props" />

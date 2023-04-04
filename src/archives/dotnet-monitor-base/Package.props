@@ -4,7 +4,7 @@
   <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.StartupHook\ProjectsToPublish.props" />
   <PropertyGroup>
     <ExecutableName>dotnet-monitor</ExecutableName>
-    <ArchiveName>dotnet-monitor</ArchiveName>
+    <ArchiveName>dotnet-monitor-base</ArchiveName>
     <ArchiveContentRootPath>$(DotnetMonitorPublishPath)</ArchiveContentRootPath>
   </PropertyGroup>
   <!-- These items are included in addition to those from publishing the dotnet-monitor project. -->
