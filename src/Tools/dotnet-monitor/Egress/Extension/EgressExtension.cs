@@ -61,7 +61,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 Settings = settings,
                 Configuration = GetConfigurationSection(providerName, _manifest.Name),
                 Properties = _configurationProvider.GetAllProperties(),
-                ProviderName = providerName
+                ProviderName = providerName,
+                LogLevel = GetMinimumLogLevel()
             };
 
             return EgressArtifact(payload, action, token);
@@ -179,6 +180,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             _logger.ExtensionExited(p.Id, p.ExitCode);
 
             return result;
+        }
+
+        private LogLevel GetMinimumLogLevel()
+        {
+            List<LogLevel> logLevels = Enum.GetValues(typeof(LogLevel)).Cast<LogLevel>().ToList();
+
+            foreach (var logLevel in logLevels)
+            {
+                if (_logger.IsEnabled(logLevel))
+                {
+                    return logLevel;
+                }
+            }
+
+            return LogLevel.None;
         }
 
         private void ValidateFileExists(FileInfo fileInfo)
