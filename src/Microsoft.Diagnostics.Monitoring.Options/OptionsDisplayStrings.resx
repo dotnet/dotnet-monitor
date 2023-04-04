@@ -804,7 +804,4 @@
   <data name="DisplayAttributeDescription_MetricsOptions_Meters" xml:space="preserve">
     <value>Names of meters to collect from the System.Diagnostics.Metrics provider.</value>
   </data>
-  <data name="DisplayAttributeDescription_GlobalCounterOptions_Providers" xml:space="preserve">
-    <value>Dictionary of provider names and their global configuration.</value>
-  </data>
 </root>

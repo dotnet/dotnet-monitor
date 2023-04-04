@@ -12,6 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
+using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 {
