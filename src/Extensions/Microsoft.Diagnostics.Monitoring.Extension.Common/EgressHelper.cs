@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -123,6 +124,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         public Dictionary<string, string> Properties { get; set; }
         public Dictionary<string, string> Configuration { get; set; }
         public string ProviderName { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public LogLevel LogLevel { get; set; }
     }
 }

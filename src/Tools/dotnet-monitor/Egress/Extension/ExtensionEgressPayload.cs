@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 {
@@ -12,6 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public IDictionary<string, string> Properties { get; set; }
         public IDictionary<string, string> Configuration { get; set; }
         public string ProviderName { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public LogLevel LogLevel { get; set; }
     }
 }
