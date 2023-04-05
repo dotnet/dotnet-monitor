@@ -47,7 +47,7 @@ runs:
           git checkout -b "$pr_branch_name"
         fi
 
-        base_branch_name=${BASE_BRANCH_NAME:-${current_branch_name:-default}}
+        base_branch_name=${BASE_BRANCH_NAME:-${current_branch_name}}
 
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"

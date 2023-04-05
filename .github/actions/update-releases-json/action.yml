@@ -1,5 +1,5 @@
-name: 'Manage releases'
-description: 'Manage releases'
+name: 'Update releases json file'
+description: 'Update releases json file'
 inputs:
   auth_token:
     description: 'The token used to authenticate to GitHub.'
