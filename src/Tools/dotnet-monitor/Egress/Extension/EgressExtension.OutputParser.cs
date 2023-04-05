@@ -19,13 +19,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             private readonly TaskCompletionSource<TResult> _resultCompletionSource;
             private readonly EventWaitHandle _beginReadsHandle;
             private readonly Process _process;
+
             // We need to store the process ID for logging because we can't access it after the process exits
             private int _processId = -1;
 
-            public OutputParser(Process process, ILogger<EgressExtension> logger)
+            public OutputParser(Process process, ILogger<EgressExtension> logger, bool validationMode)
             {
                 _process = process;
-                _logger = logger;
+                _logger = validationMode ? null : logger;
                 _resultCompletionSource = new TaskCompletionSource<TResult>();
                 _beginReadsHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
@@ -73,14 +74,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                         }
                         else
                         {
-                            _logger.ExtensionMalformedOutput(_processId, eventArgs.Data, typeof(TResult));
+                            _logger?.ExtensionMalformedOutput(_processId, eventArgs.Data, typeof(TResult));
                         }
                     }
                     catch (JsonException)
                     {
                         // Expected that some things won't parse correctly
                     }
-                    _logger.ExtensionOutputMessage(_processId, eventArgs.Data);
+                    _logger?.ExtensionOutputMessage(_processId, eventArgs.Data);
                 }
             }
 
@@ -88,7 +89,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             {
                 if (eventArgs.Data != null)
                 {
-                    _logger.ExtensionErrorMessage(_processId, eventArgs.Data);
+                    _logger?.ExtensionErrorMessage(_processId, eventArgs.Data);
                 }
             }
 

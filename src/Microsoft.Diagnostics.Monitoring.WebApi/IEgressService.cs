@@ -20,5 +20,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             IEndpointInfo source,
             CollectionRuleMetadata collectionRuleMetadata,
             CancellationToken token);
+
+        Task<EgressResult> ValidateProviderAsync(
+            string providerName,
+            CancellationToken token);
     }
 }

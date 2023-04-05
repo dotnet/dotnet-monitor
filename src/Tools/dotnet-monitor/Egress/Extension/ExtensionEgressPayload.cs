@@ -11,5 +11,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public IDictionary<string, string> Properties { get; set; }
         public IDictionary<string, string> Configuration { get; set; }
         public string ProviderName { get; set; }
+        public bool ValidationCheck { get; set; }
     }
 }

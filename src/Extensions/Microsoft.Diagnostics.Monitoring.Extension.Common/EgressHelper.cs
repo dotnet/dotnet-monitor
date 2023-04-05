@@ -49,12 +49,19 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                     }
                 }
 
-                Console.CancelKeyPress += Console_CancelKeyPress;
+                if (!configPayload.CurrentMode.HasValue)
+                {
+                    Console.CancelKeyPress += Console_CancelKeyPress;
 
-                result.ArtifactPath = await provider.EgressAsync(options,
-                    GetStream,
-                    configPayload.Settings,
-                    token);
+                    result.ArtifactPath = await provider.EgressAsync(options,
+                        GetStream,
+                        configPayload.Settings,
+                        token);
+                }
+                else if (configPayload.CurrentMode == ExtensionModes.Validate)
+                {
+                    result.ArtifactPath = string.Empty;
+                }
 
                 result.Succeeded = true;
             }
@@ -114,5 +121,11 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         public Dictionary<string, string> Properties { get; set; }
         public Dictionary<string, string> Configuration { get; set; }
         public string ProviderName { get; set; }
+        public ExtensionModes? CurrentMode { get; set; }
+    }
+
+    internal enum ExtensionModes
+    {
+        Validate
     }
 }

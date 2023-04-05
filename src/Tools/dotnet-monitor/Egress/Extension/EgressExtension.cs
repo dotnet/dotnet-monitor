@@ -67,6 +67,40 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             return EgressArtifact(payload, action, token);
         }
 
+        /// <inheritdoc/>
+        public async Task<EgressArtifactResult> ValidateProviderAsync(
+            string providerName,
+            EgressArtifactSettings settings,
+            Func<Stream, CancellationToken, Task> action,
+            CancellationToken token)
+        {
+            EgressArtifactResult result;
+
+            if (!_manifest.Modes.Any())
+            {
+                result = new()
+                {
+                    Succeeded = true,
+                    ArtifactPath = string.Empty // might not be valid this way               
+                };
+            }
+            else
+            {
+                ExtensionEgressPayload payload = new()
+                {
+                    Settings = settings,
+                    Configuration = GetConfigurationSection(providerName, _manifest.Name),
+                    Properties = _configurationProvider.GetAllProperties(),
+                    ProviderName = providerName,
+                    ValidationCheck = true
+                };
+
+                result = await EgressArtifact(payload, action, token);
+            }
+
+            return result;
+        }
+
         public async Task<EgressArtifactResult> EgressArtifact(
             ExtensionEgressPayload payload,
             Func<Stream, CancellationToken, Task> action,
@@ -137,7 +171,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 StartInfo = pStart,
             };
 
-            using OutputParser<EgressArtifactResult> parser = new(p, _logger);
+            using OutputParser<EgressArtifactResult> parser = new(p, _logger, payload.ValidationCheck);
 
             _logger.ExtensionStarting(_manifest.Name);
             if (!p.Start())
@@ -152,7 +186,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             await p.StandardInput.BaseStream.FlushAsync(token);
             _logger.ExtensionConfigured(pStart.FileName, p.Id);
 
-            await action(p.StandardInput.BaseStream, token);
+            if (!payload.ValidationCheck)
+                await action(p.StandardInput.BaseStream, token);
             await p.StandardInput.BaseStream.FlushAsync(token);
             p.StandardInput.Close();
             _logger.ExtensionEgressPayloadCompleted(p.Id);

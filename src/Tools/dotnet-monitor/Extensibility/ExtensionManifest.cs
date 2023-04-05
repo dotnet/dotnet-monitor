@@ -36,6 +36,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         /// </remarks>
         public string AssemblyFileName { get; set; }
 
+        /// <summary>
+        /// Additional execution modes supported by the extension; the ability to run is assumed.
+        /// </summary>
+        public List<ExtensionModes> Modes { get; set; } = new List<ExtensionModes>();
+
         public static ExtensionManifest FromPath(string path)
         {
             if (!File.Exists(path))

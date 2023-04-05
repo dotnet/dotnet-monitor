@@ -173,5 +173,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
                 return Strings.ErrorMessage_EgressFileFailedGeneric;
             }
         }
+
+        public Task<EgressArtifactResult> ValidateProviderAsync(string providerName, EgressArtifactSettings settings, Func<Stream, CancellationToken, Task> action, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

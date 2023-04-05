@@ -51,6 +51,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             return new EgressResult(result.ArtifactPath);
         }
 
+        public async Task<EgressResult> ValidateProviderAsync(string providerName, CancellationToken token)
+        {
+            IEgressExtension extension = _source.GetEgressProvider(providerName);
+
+            EgressArtifactResult result = await extension.ValidateProviderAsync(
+                providerName,
+                null,
+                null,
+                token);
+
+            if (!result.Succeeded)
+            {
+                string validationFailureMessage = $"The {providerName} egress provider failed validation: {result.FailureMessage}";
+                throw new EgressException(validationFailureMessage);
+            }
+
+            return new EgressResult(result.ArtifactPath);
+        }
+
         private static async Task<EgressArtifactSettings> CreateSettings(IEndpointInfo source, string fileName, string contentType, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
             EgressArtifactSettings settings = new();

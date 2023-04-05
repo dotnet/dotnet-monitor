@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 {
@@ -22,16 +24,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private readonly ILogger _logger;
         private readonly IDictionary<string, string> _providerNameToTypeMap;
 
+        private IServiceProvider _serviceProvider;
+
         public EgressProviderSource(
             IEgressConfigurationProvider configurationProvider,
             ExtensionDiscoverer extensionDiscoverer,
-            ILogger<EgressProviderSource> logger)
+            ILogger<EgressProviderSource> logger,
+            IServiceProvider serviceProvider)
         {
             _changeRegistrationLazy = new Lazy<IDisposable>(CreateChangeRegistration, LazyThreadSafetyMode.ExecutionAndPublication);
             _configurationProvider = configurationProvider;
             _extensionDiscoverer = extensionDiscoverer;
             _logger = logger;
             _providerNameToTypeMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            _serviceProvider = serviceProvider;
         }
 
         public void Dispose()
@@ -97,6 +104,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                         _providerNameToTypeMap.Add(providerName, providerType);
                     }
                 }
+            }
+
+            ///////////////
+
+            CancellationTokenSource source = new();
+
+            foreach (var providerName in _providerNameToTypeMap.Keys)
+            {
+                Task.Run(() => EgressOperation.ValidateAsync(_serviceProvider, providerName, source.Token));
             }
         }
     }
