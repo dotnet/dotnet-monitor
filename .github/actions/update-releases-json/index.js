@@ -204,7 +204,7 @@ async function tryToAnnounceVersionHasEndOfSupport(core, octokit, category, repo
         const title =  `${major}.${minor}.X End of Support On ${friendlyDate}`;
 
         discussionBody = discussionBody.replace("${endOfSupportDate}", friendlyDate);
-        discussionBody = discussionBody.replace("${majorMinorVersion}", `${major}.${minor}`); // todo: strio
+        discussionBody = discussionBody.replace("${majorMinorVersion}", `${major}.${minor}`);
 
         // https://docs.github.com/en/graphql/reference/mutations#creatediscussion
         // https://docs.github.com/en/graphql/reference/input-objects#creatediscussioninput

@@ -20,7 +20,6 @@ permissions: {}
 jobs:
   update-shipping-branch:
     name: 'Update shipping branch'
-    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -63,7 +62,6 @@ jobs:
               content: ''
             });
 
-  # Always run this job regardless of the triggering event to keep this workflow simple.
   calculate-supported-frameworks:
     name: 'Calculated supported frameworks'
     runs-on: ubuntu-latest
@@ -89,15 +87,12 @@ jobs:
           supported_frameworks=$(ls ./artifacts/bin/dotnet-monitor/Release | grep "net" | xargs)
           echo "supported_frameworks=$supported_frameworks" >> "$GITHUB_OUTPUT"
 
-  # Always run this job regardless of the triggering event to keep this workflow simple.
   ensure-target-ref-exists:
     name: 'Ensure target ref exists'
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
-    # Spin a managed build and analyze the output to determine the supported frameworks for a given commit.
-    # It's simpler than trying to parse our `eng/Versions.prop` due to the conditionals in it.
     steps:
       - name: Checkout
         uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3
