@@ -323,7 +323,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static readonly Action<ILogger, string, string, Exception> _extensionProbeSucceeded =
             LoggerMessage.Define<string, string>(
                 eventId: LoggingEventIds.ExtensionProbeSucceeded.EventId(),
-                logLevel: LogLevel.Information,
+                logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_ExtensionProbeSucceeded);
 
         private static readonly Action<ILogger, string, Exception> _extensionProbeFailed =
@@ -335,7 +335,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static readonly Action<ILogger, string, Exception> _extensionStarting =
             LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.ExtensionStarting.EventId(),
-                logLevel: LogLevel.Information,
+                logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_ExtensionStarting);
 
         private static readonly Action<ILogger, string, int, Exception> _extensionConfigured =
