@@ -18,5 +18,30 @@ module.exports.installAndRequirePackages = async function(...newPackages)
     return requiredPackages;
 }
 
+module.exports.splitVersionTag = function(tag) {
+    const regex = /v(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(-(?<versionLabel>[a-zA-Z]+)\.(?<iteration>\d+))?/;
+    const releaseVersion = regex.exec(tag);
+    if (releaseVersion == null) throw "Error: Unexpected tag format";
+
+    return [
+        Number(releaseVersion.groups.major),
+        Number(releaseVersion.groups.minor),
+        Number(releaseVersion.groups.patch),
+        (releaseVersion.groups.iteration === undefined) ? undefined : Number(releaseVersion.groups.iteration),
+        releaseVersion.groups.versionLabel
+    ];
+}
+
+module.exports.friendlyDateFromISODate = function(isoDate) {
+    if (isoDate == undefined) {
+        return undefined;
+    }
+
+    return new Date(isoDate).toLocaleString(
+        "en-us", {
+            dateStyle: "long"
+        });
+}
+
 module.exports.readFile = (fileName) => util.promisify(fs.readFile)(fileName, 'utf8');
 module.exports.writeFile = (fileName, contents) => util.promisify(fs.writeFile)(fileName, contents);

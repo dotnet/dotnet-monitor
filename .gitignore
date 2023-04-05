@@ -9,6 +9,11 @@
 *.VC.db
 .vscode/innerloop/
 
+# GitHub Actions development/
+node_modules
+package.json
+package-lock.json
+
 # Build results
 [Aa]rtifacts/
 [Dd]ebug/

@@ -4,6 +4,9 @@ inputs:
   branch_name:
     description: 'The branch name to create. Will be prefixed with "bot/".'
     required: true
+  base_branch:
+    description: 'The base branch name to open a PR against. Will default to the current branch if not specified.'
+    required: false
   title:
     description: 'The PR title.'
     required: true
@@ -22,6 +25,9 @@ inputs:
   fail_if_files_unchanged:
     description: 'Fails the action if all of the specified files_to_commit are unchanged.'
     required: false
+  update_if_already_exists:
+    description: 'Allows updating an existing PR, or re-opening it if closed.'
+    required: false
   auth_token:
     description: 'The token used to authenticate to GitHub.'
     required: true
@@ -37,16 +43,21 @@ runs:
         current_branch_name=$(git symbolic-ref --short HEAD)
         pr_branch_name="bot/$BRANCH_NAME"
 
+        if [[ "$UPDATE_IF_ALREADY_EXISTS" != "true" ]] || [[ "$current_branch_name" != "$pr_branch_name" ]]; then
+          git checkout -b "$pr_branch_name"
+        fi
+
+        base_branch_name=${BASE_BRANCH_NAME:-${current_branch_name:-default}}
+
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
-        git checkout -b "$pr_branch_name"
         git add ${{ inputs.files_to_commit }}
 
         are_files_changed=""
         git diff --name-only --cached --exit-code || are_files_changed="1"
         if [ "$are_files_changed" != "1" ]; then
           echo "No files changed, nothing to do."
-          if [ "${{ inputs.fail_if_files_unchanged }}" == "true" ]; then
+          if [ "$FAIL_IF_FILES_UNCHANGED" == "true" ]; then
             exit 1
           fi
 
@@ -61,13 +72,16 @@ runs:
           extraArgs="${extraArgs} --draft"
         fi
 
-        gh pr create --repo "${{ github.repository }}" --base "$current_branch_name" -t "$TITLE" -b "$BODY_MESSAGE" $extraArgs --label "$LABELS"
+        gh pr create --repo "${{ github.repository }}" --base "$base_branch_name" -t "$TITLE" -b "$BODY_MESSAGE" $extraArgs --label "$LABELS" || [[ "$UPDATE_IF_ALREADY_EXISTS" == "true" ]]
       shell: bash
       env:
         BODY_MESSAGE: ${{ inputs.body }}
         BRANCH_NAME: ${{ inputs.branch_name }}
+        BASE_BRANCH_NAME: ${{ inputs.base_branch }}
         COMMIT_MESSAGE: ${{ inputs.commit_message }}
         DRAFT: ${{ inputs.draft }}
         LABELS: ${{ inputs.labels }}
+        FAIL_IF_FILES_UNCHANGED: ${{ inputs.fail_if_files_unchanged }}
+        UPDATE_IF_ALREADY_EXISTS: ${{ inputs.update_if_already_exists }}
         TITLE: ${{ inputs.title }}
         GITHUB_TOKEN: ${{ inputs.auth_token }}
