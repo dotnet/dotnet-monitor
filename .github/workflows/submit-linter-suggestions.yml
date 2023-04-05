@@ -50,13 +50,13 @@ jobs:
         uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975
         with:
           script: |
-            const prNumber = context.payload.workflow_run.pull_requests[0];
+            const prNumber = context.payload.workflow_run.pull_requests[0].number;
             const actionUtils = require('./.github/actions/action-utils.js');
 
             const parsedArtifactEvent = JSON.parse(await actionUtils.readFile('./pr-linter/pr-event.json'));
             if (parsedArtifactEvent.number !== prNumber ||
                 parsedArtifactEvent.pull_request.number !== prNumber) {
-              core.error("Invalid artifact");
+              core.setFailed("Invalid artifact");
             }
 
       - name: 'Setup reviewdog'
