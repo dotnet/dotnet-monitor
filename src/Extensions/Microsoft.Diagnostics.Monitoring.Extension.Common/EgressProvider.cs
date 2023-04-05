@@ -11,14 +11,12 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 {
     internal abstract class EgressProvider<TOptions> where TOptions : class
     {
-        protected readonly ILogger _logger;
+        protected ILogger Logger { get; set; }
 
-        public EgressProvider(ILogger logger)
-        {
-            _logger = logger;
-        }
+        public EgressProvider() { }
 
         public abstract Task<string> EgressAsync(
+            ILogger logger,
             TOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,

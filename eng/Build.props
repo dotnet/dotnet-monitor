@@ -2,7 +2,7 @@
   <Import Project="$(MSBuildThisFileDirectory)Common.props" />
   <Import Project="$(RepoRoot)src\archives\AzureBlobStorage\ProjectsToBuild.props"
           Condition="'$(CreateArchives)' == 'true'" />
-  <Import Project="$(RepoRoot)src\archives\dotnet-monitor\ProjectsToBuild.props"
+  <Import Project="$(RepoRoot)src\archives\dotnet-monitor-base\ProjectsToBuild.props"
           Condition="'$(CreateArchives)' == 'true'" />
   <Import Project="$(RepoRoot)src\archives\S3Storage\ProjectsToBuild.props"
           Condition="'$(CreateArchives)' == 'true'" />
