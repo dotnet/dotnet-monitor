@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                     }
                 }
 
-                if (!configPayload.CurrentMode.HasValue)
+                if (!configPayload.Mode.HasValue)
                 {
                     Console.CancelKeyPress += Console_CancelKeyPress;
 
@@ -68,7 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                         configPayload.Settings,
                         token);
                 }
-                else if (configPayload.CurrentMode == ExtensionModes.Validate)
+                else if (configPayload.Mode == ExtensionModes.Validate)
                 {
                     result.ArtifactPath = string.Empty;
                 }
@@ -133,9 +133,11 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         public string ProviderName { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public LogLevel LogLevel { get; set; }
-        public ExtensionModes? CurrentMode { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ExtensionModes? Mode { get; set; }
     }
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     internal enum ExtensionModes
     {
         Validate

@@ -93,7 +93,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                     Configuration = GetConfigurationSection(providerName, _manifest.Name),
                     Properties = _configurationProvider.GetAllProperties(),
                     ProviderName = providerName,
-                    ValidationCheck = true
+                    Mode = ExtensionModes.Validate
                 };
 
                 result = await EgressArtifact(payload, action, token);
@@ -172,7 +172,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 StartInfo = pStart,
             };
 
-            using OutputParser<EgressArtifactResult> parser = new(p, _logger, payload.ValidationCheck);
+            using OutputParser<EgressArtifactResult> parser = new(p, _logger, payload.Mode);
 
             _logger.ExtensionStarting(_manifest.Name);
             if (!p.Start())
@@ -187,7 +187,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             await p.StandardInput.BaseStream.FlushAsync(token);
             _logger.ExtensionConfigured(pStart.FileName, p.Id);
 
-            if (!payload.ValidationCheck)
+            if (payload.Mode != ExtensionModes.Validate)
                 await action(p.StandardInput.BaseStream, token);
             await p.StandardInput.BaseStream.FlushAsync(token);
             p.StandardInput.Close();
