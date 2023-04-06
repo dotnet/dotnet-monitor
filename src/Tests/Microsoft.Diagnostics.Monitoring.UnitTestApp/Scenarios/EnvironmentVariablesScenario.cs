@@ -15,9 +15,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
     /// </summary>
     internal static class EnvironmentVariablesScenario
     {
-        public static Command Command()
+        public static CliCommand Command()
         {
-            Command command = new(TestAppScenarios.EnvironmentVariables.Name);
+            CliCommand command = new(TestAppScenarios.EnvironmentVariables.Name);
             command.SetAction(ExecuteAsync);
             return command;
         }
