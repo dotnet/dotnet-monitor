@@ -27,8 +27,8 @@
   <Import Project="$(MSBuildThisFileDirectory)Common.props" />
   <PropertyGroup Label="TargetFrameworks">
     <!-- Conditionally exclude when building in Visual Studio until stable SDK is available. -->
-    <ExcludeLatestTargetFramework>false</ExcludeLatestTargetFramework>
-    <!-- <ExcludeLatestTargetFramework Condition="'$(BuildingInsideVisualStudio)' == 'true'">true</ExcludeLatestTargetFramework> -->
+    <!--<ExcludeLatestTargetFramework Condition="'$(ExcludeLatestTargetFramework)' == '' and '$(BuildingInsideVisualStudio)' == 'true'">true</ExcludeLatestTargetFramework>-->
+    <ExcludeLatestTargetFramework Condition="'$(ExcludeLatestTargetFramework)' == ''">false</ExcludeLatestTargetFramework>
     <!-- The TFMs of the dotnet-monitor tool.  -->
     <ToolTargetFrameworks>net6.0</ToolTargetFrameworks>
     <ToolTargetFrameworks Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(ToolTargetFrameworks);$(LatestTargetFramework)</ToolTargetFrameworks>
