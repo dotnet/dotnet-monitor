@@ -14,30 +14,30 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
     /// </summary>
     internal static class ExecuteScenario
     {
-        private static readonly Argument<string> ContentArgument = new Argument<string>("content");
+        private static readonly CliArgument<string> ContentArgument = new CliArgument<string>("content");
 
-        private static readonly Argument<int> DelayArgument = new Argument<int>("delay");
+        private static readonly CliArgument<int> DelayArgument = new CliArgument<int>("delay");
 
-        private static readonly Argument<FileInfo> PathArgument = new Argument<FileInfo>("path");
+        private static readonly CliArgument<FileInfo> PathArgument = new CliArgument<FileInfo>("path");
 
-        public static Command Command()
+        public static CliCommand Command()
         {
-            Command nonZeroExitCodeCommand = new Command(ActionTestsConstants.NonZeroExitCode);
+            CliCommand nonZeroExitCodeCommand = new CliCommand(ActionTestsConstants.NonZeroExitCode);
             nonZeroExitCodeCommand.SetAction(Execute_NonZeroExitCode);
 
-            Command sleepCommand = new Command(ActionTestsConstants.Sleep);
+            CliCommand sleepCommand = new CliCommand(ActionTestsConstants.Sleep);
             sleepCommand.Arguments.Add(DelayArgument);
             sleepCommand.SetAction(Execute_Sleep);
 
-            Command textFileOutputCommand = new Command(ActionTestsConstants.TextFileOutput);
+            CliCommand textFileOutputCommand = new CliCommand(ActionTestsConstants.TextFileOutput);
             textFileOutputCommand.Arguments.Add(PathArgument);
             textFileOutputCommand.Arguments.Add(ContentArgument);
             textFileOutputCommand.SetAction(Execute_TextFileOutput);
 
-            Command zeroExitCodeCommand = new Command(ActionTestsConstants.ZeroExitCode);
+            CliCommand zeroExitCodeCommand = new CliCommand(ActionTestsConstants.ZeroExitCode);
             zeroExitCodeCommand.SetAction(Execute_ZeroExitCode);
 
-            Command command = new(TestAppScenarios.Execute.Name);
+            CliCommand command = new(TestAppScenarios.Execute.Name);
             command.Subcommands.Add(nonZeroExitCodeCommand);
             command.Subcommands.Add(sleepCommand);
             command.Subcommands.Add(textFileOutputCommand);

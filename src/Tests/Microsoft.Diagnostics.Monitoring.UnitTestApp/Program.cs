@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
     {
         public static Task<int> Main(string[] args)
         {
-            RootCommand root = new()
+            CliRootCommand root = new()
             {
                 AsyncWaitScenario.Command(),
                 ExecuteScenario.Command(),
