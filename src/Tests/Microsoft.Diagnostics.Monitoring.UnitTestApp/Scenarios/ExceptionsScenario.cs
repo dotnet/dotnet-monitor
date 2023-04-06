@@ -12,24 +12,24 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
     internal static class ExceptionsScenario
     {
-        public static Command Command()
+        public static CliCommand Command()
         {
-            Command singleExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.SingleException);
+            CliCommand singleExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.SingleException);
             singleExceptionCommand.SetAction(SingleExceptionAsync);
 
-            Command repeatExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.RepeatException);
+            CliCommand repeatExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.RepeatException);
             repeatExceptionCommand.SetAction(RepeatExceptionAsync);
 
-            Command asyncExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.AsyncException);
+            CliCommand asyncExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.AsyncException);
             asyncExceptionCommand.SetAction(AsyncExceptionAsync);
 
-            Command frameworkExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.FrameworkException);
+            CliCommand frameworkExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.FrameworkException);
             frameworkExceptionCommand.SetAction(FrameworkExceptionAsync);
 
-            Command customExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.CustomException);
+            CliCommand customExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.CustomException);
             customExceptionCommand.SetAction(CustomExceptionAsync);
 
-            Command scenarioCommand = new(TestAppScenarios.Exceptions.Name);
+            CliCommand scenarioCommand = new(TestAppScenarios.Exceptions.Name);
             scenarioCommand.Subcommands.Add(singleExceptionCommand);
             scenarioCommand.Subcommands.Add(repeatExceptionCommand);
             scenarioCommand.Subcommands.Add(asyncExceptionCommand);
