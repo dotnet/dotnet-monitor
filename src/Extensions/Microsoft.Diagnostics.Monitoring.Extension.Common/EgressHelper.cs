@@ -21,9 +21,9 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         private static Stream StdInStream;
         private static CancellationTokenSource CancelSource = new CancellationTokenSource();
 
-        internal static Command CreateEgressCommand<TOptions>(EgressProvider<TOptions> provider, Action<ExtensionEgressPayload, TOptions, ILogger> configureOptions = null) where TOptions : class, new()
+        internal static CliCommand CreateEgressCommand<TOptions>(EgressProvider<TOptions> provider, Action<ExtensionEgressPayload, TOptions, ILogger> configureOptions = null) where TOptions : class, new()
         {
-            Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.");
+            CliCommand egressCmd = new CliCommand("Egress", "The class of extension being invoked; Egress is for egressing an artifact.");
 
             egressCmd.SetAction((result, token) => Egress(provider, token, configureOptions));
 

@@ -15,9 +15,9 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
     {
         static int Main(string[] args)
         {
-            RootCommand rootCommand = new RootCommand();
+            CliRootCommand rootCommand = new CliRootCommand();
 
-            Command egressCmd = new Command("Egress");
+            CliCommand egressCmd = new CliCommand("Egress");
 
             egressCmd.SetAction(Egress);
 
