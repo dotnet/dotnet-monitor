@@ -5,7 +5,6 @@ async function run() {
     const [core, github] = await actionUtils.installAndRequirePackages("@actions/core", "@actions/github");
 
     const releasesDataFile = core.getInput("releases_json_file", { required: true });
-
     let octokit = undefined;
     {
         const auth_token = core.getInput("auth_token", { required: false });
@@ -26,100 +25,31 @@ async function run() {
         const releasesData = JSON.parse(await actionUtils.readFile(releasesDataFile));
 
         if (releasePayload !== undefined) {
-            const deprecatedRelease = addNewReleaseAndDeprecatePriorVersion(releasePayload, supportedFrameworks, releasesData);
-            if (endOfSupportDiscussionCategory !== undefined && endOfSupportDiscussionCategory.length > 0 && deprecatedRelease !== undefined) {
+            const deprecatedRelease = addNewReleaseVersion(releasePayload, supportedFrameworks, releasesData);
+            if (deprecatedRelease !== undefined && octokit !== undefined && endOfSupportDiscussionCategory !== undefined && endOfSupportDiscussionCategory.length > 0) {
                 _ = await tryToAnnounceVersionHasEndOfSupport(core, octokit, endOfSupportDiscussionCategory, repoName, repoOwner, deprecatedRelease);
             }
-
         }
 
-        cleanupPreviewVersions(releasesData);
-        cleanupSupportedVersions(releasesData);
-        cleanupUnsupportedVersions(releasesData);
+        regenerateCategories(releasesData);
 
-        // Save to disk.
         await actionUtils.writeFile(releasesDataFile, JSON.stringify(releasesData, null, 2));
     } catch (error) {
         core.setFailed(error);
     }
 }
 
-function cleanupPreviewVersions(releasesData) {
-    let versionsStillInPreview = [];
-
-    for (const releaseKey of releasesData.preview) {
-        const releaseData = releasesData.releases[releaseKey];
-        const [_, __, ___, iteration] = actionUtils.splitVersionTag(releaseData.tag);
-        if (iteration !== undefined) {
-            versionsStillInPreview.push(releaseKey);
-        }
-    }
-
-    releasesData.preview = versionsStillInPreview;
-}
-
-function cleanupSupportedVersions(releasesData) {
-    const currentDate = new Date();
-    let stillSupportedVersion = [];
-
-    for (const releaseKey of releasesData.supported) {
-        const release = releasesData.releases[releaseKey];
-        if (release.outOfSupportDate === undefined) {
-            stillSupportedVersion.push(releaseKey);
-            continue;
-        }
-
-        const endOfSupportDate = new Date(release.outOfSupportDate);
-        if (currentDate >= endOfSupportDate) {
-            releasesData.unsupported.unshift(releaseKey);
-        } else {
-            stillSupportedVersion.push(releaseKey);
-        }
-    }
-
-    releasesData.supported = stillSupportedVersion;
-}
-
-function cleanupUnsupportedVersions(releasesData) {
-    const currentDate = new Date();
-    let versionsToStillMention = [];
-
-    for (const releaseKey of releasesData.unsupported) {
-        const release = releasesData.releases[releaseKey];
-
-        const dateToNoLongerMention = new Date(release.outOfSupportDate);
-        dateToNoLongerMention.setMonth(dateToNoLongerMention.getMonth() + releasesData.policy.cleanupUnsupportedReleasesAfterMonths);
-
-        if (currentDate >= dateToNoLongerMention) {
-            delete releasesData.releases[releaseKey];
-        } else {
-            versionsToStillMention.push(releaseKey);
-        }
-    }
-
-    releasesData.unsupported = versionsToStillMention;
-}
-
 // Returns the release that is now out-of-support, if any.
-function addNewReleaseAndDeprecatePriorVersion(releasePayload, supportedFrameworks, releasesData) {
+function addNewReleaseVersion(releasePayload, supportedFrameworks, releasesData) {
     const releaseDate = new Date(releasePayload.published_at);
     // To keep things simple mark the release date as midnight.
     releaseDate.setHours(0, 0, 0, 0);
 
     const [majorVersion, minorVersion, patchVersion, iteration] = actionUtils.splitVersionTag(releasePayload.tag_name);
-
     const releaseMajorMinorVersion = `${majorVersion}.${minorVersion}`;
 
     // See if we're updating a release
     let existingRelease = releasesData.releases[releaseMajorMinorVersion];
-
-    // Check if we're promoting a preview to RTM, if so re-create everything
-    if (existingRelease !== undefined && iteration === undefined) {
-        const [_, __, ___, existingIteration] = actionUtils.splitVersionTag(existingRelease.tag);
-        if (existingIteration !== undefined) {
-            existingRelease = undefined;
-        }
-    }
 
     const newRelease = {
         tag: releasePayload.tag_name,
@@ -128,13 +58,8 @@ function addNewReleaseAndDeprecatePriorVersion(releasePayload, supportedFramewor
         supportedFrameworks: supportedFrameworks.split(' ')
     };
 
-    if (existingRelease === undefined) {
-        if (iteration === undefined) {
-            releasesData.supported.unshift(releaseMajorMinorVersion);
-        } else {
-            releasesData.preview.unshift(releaseMajorMinorVersion);
-        }
-    } else if (iteration !== undefined) {
+    // Patch the minor release date if this needed for RTM releases.
+    if (existingRelease !== undefined && iteration !== undefined) {
         newRelease.minorReleaseDate = existingRelease.minorReleaseDate;
     }
 
@@ -151,6 +76,64 @@ function addNewReleaseAndDeprecatePriorVersion(releasePayload, supportedFramewor
     }
 
     return undefined;
+}
+
+function regenerateCategories(releasesData) {
+    const currentDate = new Date();
+
+    let previewVersions = [];
+    let supportedVersions = [];
+    let unsupportedVersions = [];
+    let versionsToNoLongerMention = [];
+
+    for (const releaseProperty in releasesData.releases) {
+        const release = releasesData.releases[releaseProperty];
+
+        const isRTM = actionUtils.isVersionTagRTM(release.tag);
+        if (!isRTM) {
+            // It's a preview
+            previewVersions.push(releaseProperty);
+        } else if (release.outOfSupportDate === undefined) {
+            supportedVersions.push(releaseProperty);
+        } else {
+            const outOfSupportDate = new Date(release.outOfSupportDate);
+            const dateToNoLongerMention = new Date(release.outOfSupportDate);
+            dateToNoLongerMention.setMonth(dateToNoLongerMention.getMonth() + releasesData.policy.cleanupUnsupportedReleasesAfterMonths);
+
+            if (currentDate >= dateToNoLongerMention) {
+                versionsToNoLongerMention.push(releaseProperty);
+            } else if (currentDate >= outOfSupportDate) {
+                unsupportedVersions.push(releaseProperty);
+            } else {
+                supportedVersions.push(releaseProperty);
+            }
+        }
+    }
+
+    for (const releaseKey of versionsToNoLongerMention) {
+        delete releasesData.releases[releaseKey];
+    }
+
+    // Sort the releases by their major.minor version
+    previewVersions.sort(compareVersionKeys);
+    supportedVersions.sort(compareVersionKeys);
+    unsupportedVersions.sort(compareVersionKeys);
+
+    releasesData.preview = previewVersions;
+    releasesData.supported = supportedVersions;
+    releasesData.unsupported = unsupportedVersions;
+}
+
+// Compares two version keys (major.minor)
+function compareVersionKeys(a, b) {
+    const parsedA = Number(a);
+    const parsedB = Number(b);
+
+    if (isNaN(parsedA) || isNaN(parsedB)) {
+        throw new Error(`Unexpected version keys: ${a} ${b}`)
+    }
+    
+    return parsedB - parsedA;
 }
 
 async function tryToAnnounceVersionHasEndOfSupport(core, octokit, category, repoName, repoOwner, version) {

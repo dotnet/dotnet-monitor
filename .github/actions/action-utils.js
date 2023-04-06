@@ -18,7 +18,7 @@ module.exports.installAndRequirePackages = async function(...newPackages)
     return requiredPackages;
 }
 
-module.exports.splitVersionTag = function(tag) {
+function splitVersionTag(tag) {
     const regex = /v(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(-(?<versionLabel>[a-zA-Z]+)\.(?<iteration>\d+))?/;
     const releaseVersion = regex.exec(tag);
     if (releaseVersion == null) throw "Error: Unexpected tag format";
@@ -32,8 +32,14 @@ module.exports.splitVersionTag = function(tag) {
     ];
 }
 
+module.exports.isVersionTagRTM = function(tag) {
+    const [_, __, ___, iteration] = splitVersionTag(tag);
+
+    return iteration === undefined;
+}
+
 module.exports.friendlyDateFromISODate = function(isoDate) {
-    if (isoDate == undefined) {
+    if (isoDate === undefined) {
         return undefined;
     }
 
@@ -43,5 +49,6 @@ module.exports.friendlyDateFromISODate = function(isoDate) {
         });
 }
 
+module.exports.splitVersionTag = splitVersionTag;
 module.exports.readFile = (fileName) => util.promisify(fs.readFile)(fileName, 'utf8');
 module.exports.writeFile = (fileName, contents) => util.promisify(fs.writeFile)(fileName, contents);

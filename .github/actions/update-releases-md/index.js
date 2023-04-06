@@ -61,11 +61,14 @@ function generateReleasesMdContent(releasesData, repoOwner, repoName) {
 }
 
 function generateTableHeader(rtmVersions) {
-    let headers = ['Version', 'Original Release Date', 'Latest Patch Version'];
-    if (rtmVersions === true) {
-        headers.push('Patch Release Date');
-        headers.push('End of Support');
+    let headers = ['Version'];
+    if (rtmVersions) {
+        headers.push('Original Release Date', 'Latest Patch Version', 'Patch Release Date', 'End of Support');
+    } else {
+        headers.push('Release Date');
+        headers.push('Latest Version');
     }
+
     headers.push('Runtime Frameworks');
 
     let headerString = `${convertArrayIntoTableRow(headers)}\n`;
@@ -91,7 +94,7 @@ function generateTableRow(release, repoOwner, repoName, rtmVersions) {
         `[${fqVersion}](${htmlUrl})`
     ];
 
-    if (rtmVersions === true) {
+    if (rtmVersions) {
         columns.push(actionUtils.friendlyDateFromISODate(release.patchReleaseDate));
         columns.push(actionUtils.friendlyDateFromISODate(release.outOfSupportDate));
     }
