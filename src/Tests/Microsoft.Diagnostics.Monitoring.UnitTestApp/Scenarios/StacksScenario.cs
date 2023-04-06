@@ -36,9 +36,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return IntPtr.Zero;
         }
 
-        public static Command Command()
+        public static CliCommand Command()
         {
-            Command command = new(TestAppScenarios.Stacks.Name);
+            CliCommand command = new(TestAppScenarios.Stacks.Name);
 
             command.SetAction(ExecuteAsync);
             return command;
