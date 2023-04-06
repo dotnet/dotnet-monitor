@@ -28,9 +28,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             public void UniqueEvent(string message) => WriteEvent(2, message);
         }
 
-        public static Command Command()
+        public static CliCommand Command()
         {
-            Command command = new(TestAppScenarios.TraceEvents.Name);
+            CliCommand command = new(TestAppScenarios.TraceEvents.Name);
             command.SetAction(ExecuteAsync);
             return command;
         }
