@@ -19,7 +19,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             private readonly TaskCompletionSource<TResult> _resultCompletionSource;
             private readonly EventWaitHandle _beginReadsHandle;
             private readonly Process _process;
-
             // We need to store the process ID for logging because we can't access it after the process exits
             private int _processId = -1;
 

@@ -5,8 +5,11 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,69 +39,96 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
             Func<Stream, CancellationToken, Task> action,
             CancellationToken token)
         {
+            return await EgressArtifact(providerName, settings, action, false, token);
+        }
+
+        public async Task<EgressArtifactResult> EgressArtifact(
+            string providerName,
+            EgressArtifactSettings settings,
+            Func<Stream, CancellationToken, Task> action,
+            bool validateOnly,
+            CancellationToken token)
+        {
             IConfigurationSection configuration = _configurationProvider.GetProviderConfigurationSection(EgressProviderTypes.FileSystem, providerName);
 
             FileSystemEgressProviderOptions options = new();
             configuration.Bind(options);
 
-            if (!Directory.Exists(options.DirectoryPath))
+            var context = new ValidationContext(options);
+
+            var results = new List<ValidationResult>();
+
+            if (!Validator.TryValidateObject(options, context, results, true))
             {
-                WrapException(() => Directory.CreateDirectory(options.DirectoryPath));
+                if (results.Count > 0)
+                {
+                    throw new EgressException(results.First().ErrorMessage);
+                }
             }
 
-            string targetPath = Path.Combine(options.DirectoryPath, settings.Name);
+            string targetPath = string.Empty;
 
-            if (!string.IsNullOrEmpty(options.IntermediateDirectoryPath))
+            if (!validateOnly)
             {
-                if (!Directory.Exists(options.IntermediateDirectoryPath))
+                if (!Directory.Exists(options.DirectoryPath))
                 {
-                    WrapException(() => Directory.CreateDirectory(options.IntermediateDirectoryPath));
+                    WrapException(() => Directory.CreateDirectory(options.DirectoryPath));
                 }
 
-                string intermediateFilePath = null;
-                try
-                {
-                    int remainingAttempts = 10;
-                    bool intermediatePathExists;
-                    do
-                    {
-                        intermediateFilePath = Path.Combine(options.IntermediateDirectoryPath, Path.GetRandomFileName());
-                        intermediatePathExists = File.Exists(intermediateFilePath);
-                        remainingAttempts--;
-                    }
-                    while (intermediatePathExists && remainingAttempts > 0);
+                targetPath = Path.Combine(options.DirectoryPath, settings.Name);
 
-                    if (intermediatePathExists)
+                if (!string.IsNullOrEmpty(options.IntermediateDirectoryPath))
+                {
+                    if (!Directory.Exists(options.IntermediateDirectoryPath))
                     {
-                        throw CreateException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressUnableToCreateIntermediateFile, options.IntermediateDirectoryPath));
+                        WrapException(() => Directory.CreateDirectory(options.IntermediateDirectoryPath));
                     }
 
-                    await WriteFileAsync(action, intermediateFilePath, token);
-
-                    WrapException(() => File.Move(intermediateFilePath, targetPath));
-                }
-                finally
-                {
-                    // Attempt to delete the intermediate file if it exists.
+                    string intermediateFilePath = null;
                     try
                     {
-                        if (File.Exists(intermediateFilePath))
+                        int remainingAttempts = 10;
+                        bool intermediatePathExists;
+                        do
                         {
-                            File.Delete(intermediateFilePath);
+                            intermediateFilePath = Path.Combine(options.IntermediateDirectoryPath, Path.GetRandomFileName());
+                            intermediatePathExists = File.Exists(intermediateFilePath);
+                            remainingAttempts--;
+                        }
+                        while (intermediatePathExists && remainingAttempts > 0);
+
+                        if (intermediatePathExists)
+                        {
+                            throw CreateException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressUnableToCreateIntermediateFile, options.IntermediateDirectoryPath));
+                        }
+
+                        await WriteFileAsync(action, intermediateFilePath, token);
+
+                        WrapException(() => File.Move(intermediateFilePath, targetPath));
+                    }
+                    finally
+                    {
+                        // Attempt to delete the intermediate file if it exists.
+                        try
+                        {
+                            if (File.Exists(intermediateFilePath))
+                            {
+                                File.Delete(intermediateFilePath);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.IntermediateFileDeletionFailed(intermediateFilePath, ex);
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        _logger.IntermediateFileDeletionFailed(intermediateFilePath, ex);
-                    }
                 }
-            }
-            else
-            {
-                await WriteFileAsync(action, targetPath, token);
-            }
+                else
+                {
+                    await WriteFileAsync(action, targetPath, token);
+                }
 
-            _logger?.EgressProviderSavedStream(EgressProviderTypes.FileSystem, targetPath);
+                _logger?.EgressProviderSavedStream(EgressProviderTypes.FileSystem, targetPath);
+            }
 
             return new EgressArtifactResult() { Succeeded = true, ArtifactPath = targetPath };
         }
@@ -174,9 +204,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
             }
         }
 
-        public Task<EgressArtifactResult> ValidateProviderAsync(string providerName, EgressArtifactSettings settings, Func<Stream, CancellationToken, Task> action, CancellationToken token)
+        public async Task<EgressArtifactResult> ValidateProviderAsync(string providerName, EgressArtifactSettings settings, Func<Stream, CancellationToken, Task> action, CancellationToken token)
         {
-            throw new NotImplementedException();
+            EgressArtifactResult result = new();
+            try
+            {
+                result = await EgressArtifact(providerName, settings, action, true, token);
+            }
+            catch (Exception ex)
+            {
+                result = new()
+                {
+                    Succeeded = false,
+                    FailureMessage = ex.Message
+                };
+            }
+
+            return result;
         }
     }
 }

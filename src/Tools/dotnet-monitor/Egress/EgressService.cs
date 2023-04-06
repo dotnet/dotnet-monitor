@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
             EgressArtifactResult result = await extension.ValidateProviderAsync(
                 providerName,
-                null,
+                new EgressArtifactSettings() { Name = string.Empty },
                 null,
                 token);
 

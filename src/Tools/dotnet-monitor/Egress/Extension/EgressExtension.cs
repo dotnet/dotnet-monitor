@@ -81,8 +81,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             {
                 result = new()
                 {
-                    Succeeded = true,
-                    ArtifactPath = string.Empty // might not be valid this way               
+                    Succeeded = true
                 };
             }
             else
@@ -187,8 +186,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             await p.StandardInput.BaseStream.FlushAsync(token);
             _logger.ExtensionConfigured(pStart.FileName, p.Id);
 
-            if (payload.Mode != ExtensionModes.Validate)
+            if (payload.Mode == null)
+            {
                 await action(p.StandardInput.BaseStream, token);
+            }
+
             await p.StandardInput.BaseStream.FlushAsync(token);
             p.StandardInput.Close();
             _logger.ExtensionEgressPayloadCompleted(p.Id);
