@@ -92,10 +92,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                     Configuration = GetConfigurationSection(providerName, _manifest.Name),
                     Properties = _configurationProvider.GetAllProperties(),
                     ProviderName = providerName,
-                    Mode = ExtensionModes.Validate
                 };
 
-                result = await EgressArtifact(payload, action, token);
+                result = await EgressArtifact(payload, action, token, ExtensionModes.Validate);
             }
 
             return result;
@@ -104,7 +103,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public async Task<EgressArtifactResult> EgressArtifact(
             ExtensionEgressPayload payload,
             Func<Stream, CancellationToken, Task> action,
-            CancellationToken token)
+            CancellationToken token,
+            ExtensionModes mode = ExtensionModes.Execute)
         {
             _manifest.Validate();
 
@@ -160,6 +160,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
              */
             pStart.FileName = executablePath;
             pStart.ArgumentList.Add(ExtensionTypes.Egress);
+            pStart.ArgumentList.Add(mode.ToString());
 
             foreach ((string key, string value) in _processEnvironmentVariables)
             {
@@ -171,7 +172,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 StartInfo = pStart,
             };
 
-            using OutputParser<EgressArtifactResult> parser = new(p, _logger, payload.Mode);
+            using OutputParser<EgressArtifactResult> parser = new(p, _logger, mode);
 
             _logger.ExtensionStarting(_manifest.Name);
             if (!p.Start())
@@ -186,7 +187,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             await p.StandardInput.BaseStream.FlushAsync(token);
             _logger.ExtensionConfigured(pStart.FileName, p.Id);
 
-            if (payload.Mode == null)
+            if (mode == ExtensionModes.Execute)
             {
                 await action(p.StandardInput.BaseStream, token);
             }

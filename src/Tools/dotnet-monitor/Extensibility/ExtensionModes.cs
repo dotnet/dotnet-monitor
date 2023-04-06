@@ -8,6 +8,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
     [JsonConverter(typeof(JsonStringEnumConverter))]
     internal enum ExtensionModes
     {
+        Execute,
         Validate
     }
 }

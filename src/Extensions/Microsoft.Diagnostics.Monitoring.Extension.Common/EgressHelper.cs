@@ -23,14 +23,22 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 
         internal static Command CreateEgressCommand<TOptions>(EgressProvider<TOptions> provider, Action<ExtensionEgressPayload, TOptions, ILogger> configureOptions = null) where TOptions : class, new()
         {
-            Command egressCmd = new Command("Egress", "The class of extension being invoked; Egress is for egressing an artifact.");
+            Command executeCommand = new Command("Execute", "Execute is for egressing an artifact.");
+            executeCommand.SetAction((result, token) => Egress(provider, ExtensionModes.Execute, token, configureOptions));
 
-            egressCmd.SetAction((result, token) => Egress(provider, token, configureOptions));
+            Command validateCommand = new Command("Validate", "Validate is for validating an extension's options on configuration change");
+            validateCommand.SetAction((result, token) => Egress(provider, ExtensionModes.Validate, token, configureOptions));
 
-            return egressCmd;
+            Command egressCommand = new Command("Egress", "The class of extension being invoked.")
+            {
+                executeCommand,
+                validateCommand
+            };
+
+            return egressCommand;
         }
 
-        private static async Task<int> Egress<TOptions>(EgressProvider<TOptions> provider, CancellationToken token, Action<ExtensionEgressPayload, TOptions, ILogger> configureOptions = null) where TOptions : class, new()
+        private static async Task<int> Egress<TOptions>(EgressProvider<TOptions> provider, ExtensionModes mode, CancellationToken token, Action<ExtensionEgressPayload, TOptions, ILogger> configureOptions = null) where TOptions : class, new()
         {
             EgressArtifactResult result = new();
             try
@@ -58,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                     }
                 }
 
-                if (!configPayload.Mode.HasValue)
+                if (mode == ExtensionModes.Execute)
                 {
                     Console.CancelKeyPress += Console_CancelKeyPress;
 
@@ -68,7 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                         configPayload.Settings,
                         token);
                 }
-                else if (configPayload.Mode == ExtensionModes.Validate)
+                else if (mode == ExtensionModes.Validate)
                 {
                     result.ArtifactPath = string.Empty;
                 }
@@ -133,13 +141,11 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         public string ProviderName { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public LogLevel LogLevel { get; set; }
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public ExtensionModes? Mode { get; set; }
     }
 
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     internal enum ExtensionModes
     {
+        Execute,
         Validate
     }
 }

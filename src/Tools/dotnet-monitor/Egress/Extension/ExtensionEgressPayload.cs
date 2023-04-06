@@ -1,7 +1,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
@@ -16,7 +15,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public string ProviderName { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public LogLevel LogLevel { get; set; }
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public ExtensionModes? Mode { get; set; }
     }
 }
