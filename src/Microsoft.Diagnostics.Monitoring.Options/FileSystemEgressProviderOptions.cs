@@ -12,6 +12,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
     internal sealed class FileSystemEgressProviderOptions :
         IEgressProviderCommonOptions
     {
+        public const int CopyBufferSize_MinValue = 1;
+        public const int CopyBufferSize_MaxValue = int.MaxValue;
+
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_FileSystemEgressProviderOptions_DirectoryPath))]
@@ -26,7 +29,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize))]
-        [Range(1, int.MaxValue)]
+        [Range(CopyBufferSize_MinValue, CopyBufferSize_MaxValue)]
         public int? CopyBufferSize { get; set; }
     }
 }
