@@ -58,8 +58,8 @@ function addNewReleaseVersion(releasePayload, supportedFrameworks, releasesData)
         supportedFrameworks: supportedFrameworks.split(' ')
     };
 
-    // Patch the minor release date if this needed for RTM releases.
-    if (existingRelease !== undefined && iteration !== undefined) {
+    // Preserve the original minor release date for RTM releases
+    if (existingRelease !== undefined && iteration === undefined) {
         newRelease.minorReleaseDate = existingRelease.minorReleaseDate;
     }
 
