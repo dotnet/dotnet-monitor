@@ -103,7 +103,7 @@ jobs:
       # using GitHub APIs.
       #
       # Also check if there's an existing PR open from our target ref.
-      # If so, multiple releases have occured in the same time span
+      # If so, multiple releases have occurred in the same time span
       # and we want to update that PR.
       #
       - name: Ensure target ref exists

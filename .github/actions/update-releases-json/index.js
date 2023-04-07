@@ -184,7 +184,7 @@ async function tryToAnnounceVersionHasEndOfSupport(core, octokit, category, repo
         const [major, minor] = actionUtils.splitVersionTag(version.tag);
         const friendlyDate = actionUtils.friendlyDateFromISODate(version.outOfSupportDate);
 
-        const title =  `${major}.${minor}.X End of Support On ${friendlyDate}`;
+        const title = `${major}.${minor}.X End of Support On ${friendlyDate}`;
 
         discussionBody = discussionBody.replace("${endOfSupportDate}", friendlyDate);
         discussionBody = discussionBody.replace("${majorMinorVersion}", `${major}.${minor}`);

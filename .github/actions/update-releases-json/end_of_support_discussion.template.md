@@ -6,7 +6,7 @@ Please update to a newer version in order to remain in support using one of the 
 
 ## .NET Tool
 
-This will update the installation to most recent release of `dotnet monitor`:
+This will update the installation to the most recent release of `dotnet monitor`:
 
 ```
 dotnet tool update -g dotnet-monitor
