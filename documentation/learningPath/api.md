@@ -11,7 +11,7 @@ The API surface is defined by a series of controllers [here](../../src/Microsoft
 
 Controllers with `[Authorize(Policy = AuthConstants.PolicyName)]` class attribute will require authentication on all routes defined within. Learn more about how Authentication is handled [here](#authentication).
 
-If the new API needs to return structured data, a model should be used  which are defined [here](../../src/Microsoft.Diagnostics.Monitoring.WebApi/Models/).
+If the new API needs to either accept or return structured data, a model should be used. Models are defined [here](../../src/Microsoft.Diagnostics.Monitoring.WebApi/Models/).
 
 When adding a new API, it's important to also update the [openapi.json](../openapi.json) spec which describes the API surface. There are CI tests that will ensure this file has been updated to reflect any API changes. Learn more about updating `openapi.json` [here](./testing.md#openapi-generation).
 
