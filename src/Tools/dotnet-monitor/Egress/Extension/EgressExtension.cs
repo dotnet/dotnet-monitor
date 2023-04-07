@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Dia2Lib;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
@@ -147,12 +146,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             parser.BeginReading();
 
             using Stream intermediateStream = new MemoryStream();
-
             await JsonSerializer.SerializeAsync(intermediateStream, payload, options: null, token);
-
-            intermediateStream.Position = 0;
-            using var reader = new StreamReader(intermediateStream);
-            Console.WriteLine(reader.ReadToEnd());
 
             await p.StandardInput.BaseStream.WriteAsync(BitConverter.GetBytes(intermediateStream.Position), token);
             intermediateStream.Position = 0;
