@@ -4,14 +4,14 @@ parameters:
   default: false
 
 stages:
-- stage: PrepareReleaseStage
-  displayName: Release Preparation
+- stage: StageBuildAssetsStage
+  displayName: Stage Build Assets
   dependsOn:
   - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}:
     - publish_using_darc
   jobs:
-  - job: PrepareReleaseJob
-    displayName: Prepare release with Darc
+  - job: StageBuildAssetsJob
+    displayName: Stage Build Assets
     pool:
       ${{ if eq(variables['System.TeamProject'], 'public') }}:
         name: $(DncEngPublicBuildPool)
@@ -26,30 +26,21 @@ stages:
       - group: Release-Pipeline
     steps:
     - task: UseDotNet@2
-      displayName: 'Use .NET Core runtime 3.1.x'
-      inputs:
-        packageType: runtime
-        version: 3.1.x
-        installationPath: '$(Build.Repository.LocalPath)\.dotnet'
-    - task: UseDotNet@2
-      displayName: 'Use .NET Core runtime 6.x'
+      displayName: 'Use .NET 6'
       inputs:
         packageType: runtime
         version: 6.x
         installationPath: '$(Build.Repository.LocalPath)\.dotnet'
-    - ${{ if not(and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/')))) }}:
-      - script: '$(Build.SourcesDirectory)\dotnet.cmd build $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release /bl'
-        workingDirectory: '$(System.ArtifactsDirectory)\'
-        displayName: 'Build Manifest generation and asset publishing tool'
-      - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: '$(System.ArtifactsDirectory)\'
-          publishLocation: 'pipeline'
-          artifact: 'DiagnosticsReleaseToolBin'
+    - script: mkdir $(System.ArtifactsDirectory)\StagingToolLogs
+      displayName: Create Staging Tool Logs Directory
+    - script: '$(Build.SourcesDirectory)\dotnet.cmd build $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release /bl'
+      workingDirectory: '$(System.ArtifactsDirectory)\StagingToolLogs'
+      displayName: 'Build Staging Tool'
+    # Run tool for release and test release branches
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}:
       - template: /eng/common/templates/post-build/setup-maestro-vars.yml
       - task: PowerShell@2
-        displayName: 'DARC Gather build'
+        displayName: 'Download Build Assets'
         inputs:
           targetType: filePath
           filePath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
@@ -58,35 +49,41 @@ stages:
             -AzdoToken "$(dn-bot-dotnet-all-scopes)"
             -MaestroToken "$(MaestroAccessToken)"
             -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)"
-            -DownloadTargetPath "$(System.ArtifactsDirectory)\ReleaseTarget"
+            -DownloadTargetPath "$(System.ArtifactsDirectory)\BuildAssets"
             -SasSuffixes "$(dotnetclichecksumsmsrc-dotnet-read-list-sas-token),$(dotnetclimsrc-read-sas-token)"
             -ReleaseVersion "$(Build.BuildNumber)"
           workingDirectory: '$(Build.Repository.LocalPath)'
       - script: >-
-          dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release
+          $(Build.SourcesDirectory)\dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release
           --
           prepare-release
-          --input-drop-path "$(System.ArtifactsDirectory)\ReleaseTarget"
+          --input-drop-path "$(System.ArtifactsDirectory)\BuildAssets"
           --tool-manifest "$(Build.Repository.LocalPath)\eng\release\tool-list.json"
-          --staging-directory "$(System.ArtifactsDirectory)\ReleaseStaging"
+          --staging-directory "$(System.ArtifactsDirectory)\AssetsLayout"
           --release-name "$(Build.BuildNumber)"
           --account-name "$(dotnet-diagnostics-storage-accountname)"
           --account-key "$(dotnetstage-storage-key)"
           --sas-valid-days "$(dotnet-diagnostics-storage-retentiondays)"
           -v True
-        workingDirectory: '$(Build.Repository.LocalPath)\'
-        displayName: 'Manifest generation and asset publishing'
+        workingDirectory: '$(System.ArtifactsDirectory)\StagingToolLogs'
+        displayName: 'Stage Build Assets and Manifest'
       - task: PublishPipelineArtifact@1
+        displayName: 'Upload Assets Layout'
         inputs:
-          targetPath: '$(System.ArtifactsDirectory)\ReleaseStaging'
-          publishLocation: 'pipeline'
-          artifact: 'MonitorRelease'
-      - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'))) }}:
+          targetPath: '$(System.ArtifactsDirectory)\AssetsLayout'
+          artifact: 'StagingToolAssetsLayout'
+      # Only tag build from real release branches
+      - ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/')) }}:
         - task: tagBuildOrRelease@0
-          displayName: 'Tag Build with Monitor Release'
+          displayName: 'Tag Build with MonitorRelease'
           inputs:
             type: 'Build'
             tags: 'MonitorRelease'
+    - task: PublishPipelineArtifact@1
+      displayName: 'Upload Staging Tool Logs'
+      inputs:
+        targetPath: '$(System.ArtifactsDirectory)\StagingToolLogs'
+        artifact: 'StagingToolLogs'
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
       - task: tagBuildOrRelease@0
         displayName: 'Tag Build with update-docker'

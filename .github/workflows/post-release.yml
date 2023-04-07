@@ -31,7 +31,7 @@ jobs:
           persist-credentials: false
 
       - name: Calculate branch name
-        uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410
         id: calculate-branch-name
         with:
           result-encoding: string
@@ -41,7 +41,7 @@ jobs:
             return `shipped/v${major}.${minor}`;
 
       - name: Create or update shipped branch
-        uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410
         with:
           retries: 3
           script: |

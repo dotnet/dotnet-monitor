@@ -9,8 +9,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
     /// <summary>
     /// Egress provider options for file system egress.
     /// </summary>
-    internal sealed class FileSystemEgressProviderOptions :
-        IEgressProviderCommonOptions
+    internal sealed class FileSystemEgressProviderOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

@@ -14,10 +14,10 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             S3StorageEgressProvider provider = new();
 
             // Expected command line format is: dotnet-monitor-egress-s3storage.exe Egress
-            RootCommand rootCommand = new RootCommand("Egresses an artifact to S3 storage.");
+            CliRootCommand rootCommand = new CliRootCommand("Egresses an artifact to S3 storage.");
 
             // TODO: Not currently doing any extra configuration/validation for S3 here
-            Command egressCmd = EgressHelper.CreateEgressCommand(provider);
+            CliCommand egressCmd = EgressHelper.CreateEgressCommand(provider);
 
             rootCommand.Add(egressCmd);
 
