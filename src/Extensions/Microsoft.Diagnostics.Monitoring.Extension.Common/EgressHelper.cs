@@ -21,6 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
     {
         private static Stream StdInStream;
         private static CancellationTokenSource CancelSource = new CancellationTokenSource();
+        private const int PayloadVersion = 1;
 
         private const string GenericEgressFailureMessage = "The egress operation failed due to an internal error.";
 
@@ -40,23 +41,17 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             {
                 StdInStream = Console.OpenStandardInput();
 
-                const int payloadLengthBufferSize = sizeof(long); // Stream's Position is a long
+                var payloadVersionBuffer = await ReadFromStream(sizeof(int), token); // Payload Version
 
-                Memory<byte> payloadLengthBuffer = new(new byte[payloadLengthBufferSize]);
-                if (payloadLengthBufferSize != await ReadHelper(payloadLengthBuffer, payloadLengthBufferSize, token))
+                if (BitConverter.ToInt32(payloadVersionBuffer) != PayloadVersion)
                 {
                     throw new EgressException(GenericEgressFailureMessage);
                 }
 
-                long payloadBufferSize = BitConverter.ToInt64(payloadLengthBuffer.ToArray());
+                var payloadLengthBuffer = await ReadFromStream(sizeof(long), token); // Payload Length
+                var payloadBuffer = await ReadFromStream(BitConverter.ToInt64(payloadLengthBuffer), token); // Payload
 
-                Memory<byte> payloadBuffer = new(new byte[payloadBufferSize]);
-                if (payloadBufferSize != await ReadHelper(payloadBuffer, payloadLengthBufferSize, token))
-                {
-                    throw new EgressException(GenericEgressFailureMessage);
-                }
-
-                ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer.ToArray());
+                ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
 
                 using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
                 {
@@ -136,6 +131,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             await StdInStream.CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
         }
 
+        // TODO: For .NET 7 and above, can use Stream.ReadExactly
         private static async Task<int> ReadHelper(Memory<byte> buffer, long bufferSize, CancellationToken token)
         {
             Debug.Assert(bufferSize <= buffer.Length);
@@ -153,6 +149,17 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             }
 
             return totalRead;
+        }
+
+        private static async Task<byte[]> ReadFromStream(long bufferSize, CancellationToken token)
+        {
+            Memory<byte> buffer = new(new byte[bufferSize]);
+            if (bufferSize != await ReadHelper(buffer, bufferSize, token))
+            {
+                throw new EgressException(GenericEgressFailureMessage);
+            }
+
+            return buffer.ToArray();
         }
     }
 
