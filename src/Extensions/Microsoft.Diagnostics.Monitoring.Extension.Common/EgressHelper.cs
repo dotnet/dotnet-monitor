@@ -35,8 +35,15 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             EgressArtifactResult result = new();
             try
             {
-                string jsonConfig = Console.ReadLine();
-                ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
+                StdInStream = Console.OpenStandardInput();
+
+                byte[] payloadLengthBuffer = new byte[sizeof(long)]; // Stream's Position is a long
+                _ = StdInStream.Read(payloadLengthBuffer);
+
+                byte[] payloadBuffer = new byte[BitConverter.ToInt64(payloadLengthBuffer)];
+                _ = StdInStream.Read(payloadBuffer);
+
+                ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
 
                 using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
                 {
@@ -113,7 +120,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         {
             const int DefaultBufferSize = 0x10000;
 
-            StdInStream = Console.OpenStandardInput();
             await StdInStream.CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
         }
     }

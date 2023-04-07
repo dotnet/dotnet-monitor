@@ -75,9 +75,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         {
             _manifest.Validate();
 
-            // This is really weird, yes, but this is one of 2 overloads for [Stream].WriteAsync(...) that supports a CancellationToken, so we use a ReadOnlyMemory<char> instead of a string.
-            ReadOnlyMemory<char> NewLine = new ReadOnlyMemory<char>("\r\n".ToCharArray());
-
             ProcessStartInfo pStart = new ProcessStartInfo()
             {
                 RedirectStandardInput = true,
@@ -148,8 +145,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
             parser.BeginReading();
 
-            await JsonSerializer.SerializeAsync<ExtensionEgressPayload>(p.StandardInput.BaseStream, payload, options: null, token);
-            await p.StandardInput.WriteAsync(NewLine, token);
+            Stream intermediateStream = new MemoryStream();
+            await JsonSerializer.SerializeAsync(intermediateStream, payload, options: null, token);
+
+            await p.StandardInput.BaseStream.WriteAsync(BitConverter.GetBytes(intermediateStream.Position), token);
+            intermediateStream.Position = 0;
+
+            await intermediateStream.CopyToAsync(p.StandardInput.BaseStream, token);
             await p.StandardInput.BaseStream.FlushAsync(token);
             _logger.ExtensionConfigured(pStart.FileName, p.Id);
 
