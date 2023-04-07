@@ -29,12 +29,12 @@ function generateReleasesMdContent(releasesData, repoOwner, repoName) {
         supportedReleasesTable += `${generateTableRow(releasesData.releases[releaseKey], repoOwner, repoName, true)}\n`;
     }
 
-    for (const releaseKey of releasesData.preview) {
-        previewReleasesTable += `${generateTableRow(releasesData.releases[releaseKey], repoOwner, repoName, false)}\n`;
-    }
-
     for (const releaseKey of releasesData.unsupported) {
         outOfSupportReleasesTable += `${generateTableRow(releasesData.releases[releaseKey], repoOwner, repoName, true)}\n`;
+    }
+
+    for (const releaseKey of releasesData.preview) {
+        previewReleasesTable += `${generateTableRow(releasesData.releases[releaseKey], repoOwner, repoName, false)}\n`;
     }
 
     let content =`
@@ -73,8 +73,8 @@ function generateTableHeader(rtmVersions) {
 
     let headerString = `${convertArrayIntoTableRow(headers)}\n`;
 
-    const seperators = Array(headers.length).fill('---');
-    headerString += convertArrayIntoTableRow(seperators);
+    const separators = Array(headers.length).fill('---');
+    headerString += convertArrayIntoTableRow(separators);
 
     return headerString;
 }
@@ -105,6 +105,8 @@ function generateTableRow(release, repoOwner, repoName, rtmVersions) {
 }
 
 function convertArrayIntoTableRow(array) {
+    // Don't bother with escaping for now as we have a limited set of input that we control.
+    // If we want to re-use this code for generating other tables this will need to change.
     return `| ${array.join(' | ')} |`;
 }
 

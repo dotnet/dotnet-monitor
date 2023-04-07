@@ -126,14 +126,27 @@ function regenerateCategories(releasesData) {
 
 // Compares two version keys (major.minor)
 function compareVersionKeys(a, b) {
-    const parsedA = Number(a);
-    const parsedB = Number(b);
+    const aSegments = a.split('.');
+    const bSegments = b.split('.');
 
-    if (isNaN(parsedA) || isNaN(parsedB)) {
-        throw new Error(`Unexpected version keys: ${a} ${b}`)
+    if (aSegments.length !== bSegments.length) {
+        throw new Error(`Version keys have a different number of segments: ${a} ${b}`)
     }
-    
-    return parsedB - parsedA;
+
+    for (let i = 0; i < aSegments.length; i++) {
+        const aSegmentValue = Number(aSegments[i]);
+        const bSegmentValue = Number(bSegments[i]);
+
+        if (isNaN(aSegmentValue) || isNaN(bSegmentValue)) {
+            throw new Error(`Unexpected version keys: ${a} ${b}`)
+        }
+
+        if (aSegmentValue !== bSegmentValue) {
+            return bSegmentValue - aSegmentValue;
+        }
+    }
+
+    return 0;
 }
 
 async function tryToAnnounceVersionHasEndOfSupport(core, octokit, category, repoName, repoOwner, version) {
@@ -146,12 +159,14 @@ async function tryToAnnounceVersionHasEndOfSupport(core, octokit, category, repo
         //
         // Don't bother with pagination yet , we're only looking for a single category
         // and there are only a few registered.
+        // Instead just limit the results to the first 10 (arbitrarily chosen)
+        // as we currently have ~5 discussion categories.
         //
         const result = await octokit.graphql(`
         query ($repoName: String!, $owner: String!) {
             repository(name: $repoName, owner: $owner) {
             id
-            discussionCategories (first: 15) {
+            discussionCategories (first: 10) {
                 edges {
                 node {
                     id

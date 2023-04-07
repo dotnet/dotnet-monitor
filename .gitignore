@@ -9,8 +9,8 @@
 *.VC.db
 .vscode/innerloop/
 
-# GitHub Actions development/
-node_modules
+# GitHub Actions development
+node_modules/
 package.json
 package-lock.json
 

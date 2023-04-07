@@ -5,7 +5,7 @@ inputs:
     description: 'The token used to authenticate to GitHub.'
     required: false
   releases_json_file:
-    description: 'The input releases json file.'
+    description: 'The input releases json file path.'
     required: true
   supported_frameworks:
     description: 'The frameworks supported by the new release.'
