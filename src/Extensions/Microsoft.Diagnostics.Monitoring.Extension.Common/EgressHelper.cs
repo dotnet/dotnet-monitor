@@ -21,6 +21,8 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         private static Stream StdInStream;
         private static CancellationTokenSource CancelSource = new CancellationTokenSource();
 
+        private const string GenericEgressFailureMessage = "The egress operation failed due to an internal error.";
+
         internal static CliCommand CreateEgressCommand<TOptions>(EgressProvider<TOptions> provider, Action<ExtensionEgressPayload, TOptions, ILogger> configureOptions = null) where TOptions : class, new()
         {
             CliCommand egressCmd = new CliCommand("Egress", "The class of extension being invoked; Egress is for egressing an artifact.");
@@ -37,11 +39,23 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             {
                 StdInStream = Console.OpenStandardInput();
 
-                byte[] payloadLengthBuffer = new byte[sizeof(long)]; // Stream's Position is a long
-                _ = StdInStream.Read(payloadLengthBuffer);
+                const int payloadLengthBufferSize = sizeof(long); // Stream's Position is a long
 
-                byte[] payloadBuffer = new byte[BitConverter.ToInt64(payloadLengthBuffer)];
-                _ = StdInStream.Read(payloadBuffer);
+                byte[] payloadLengthBuffer = new byte[payloadLengthBufferSize]; 
+
+                if (payloadLengthBufferSize != await StdInStream.ReadAsync(payloadLengthBuffer))
+                {
+                    throw new EgressException(GenericEgressFailureMessage);
+                }
+
+                long payloadBufferSize = BitConverter.ToInt64(payloadLengthBuffer);
+
+                byte[] payloadBuffer = new byte[payloadBufferSize];
+
+                if (payloadBufferSize != await StdInStream.ReadAsync(payloadBuffer))
+                {
+                    throw new EgressException(GenericEgressFailureMessage);
+                }
 
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
 
