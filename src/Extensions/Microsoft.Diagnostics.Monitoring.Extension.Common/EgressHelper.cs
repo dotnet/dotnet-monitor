@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -41,23 +42,21 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 
                 const int payloadLengthBufferSize = sizeof(long); // Stream's Position is a long
 
-                byte[] payloadLengthBuffer = new byte[payloadLengthBufferSize]; 
-
-                if (payloadLengthBufferSize != await StdInStream.ReadAsync(payloadLengthBuffer))
+                Memory<byte> payloadLengthBuffer = new(new byte[payloadLengthBufferSize]);
+                if (payloadLengthBufferSize != await ReadHelper(payloadLengthBuffer, payloadLengthBufferSize, token))
                 {
                     throw new EgressException(GenericEgressFailureMessage);
                 }
 
-                long payloadBufferSize = BitConverter.ToInt64(payloadLengthBuffer);
+                long payloadBufferSize = BitConverter.ToInt64(payloadLengthBuffer.ToArray());
 
-                byte[] payloadBuffer = new byte[payloadBufferSize];
-
-                if (payloadBufferSize != await StdInStream.ReadAsync(payloadBuffer))
+                Memory<byte> payloadBuffer = new(new byte[payloadBufferSize]);
+                if (payloadBufferSize != await ReadHelper(payloadBuffer, payloadLengthBufferSize, token))
                 {
                     throw new EgressException(GenericEgressFailureMessage);
                 }
 
-                ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
+                ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer.ToArray());
 
                 using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
                 {
@@ -135,6 +134,25 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             const int DefaultBufferSize = 0x10000;
 
             await StdInStream.CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
+        }
+
+        private static async Task<int> ReadHelper(Memory<byte> buffer, long bufferSize, CancellationToken token)
+        {
+            Debug.Assert(bufferSize <= buffer.Length);
+
+            int totalRead = 0;
+            while (totalRead < bufferSize)
+            {
+                int read = await StdInStream.ReadAsync(buffer.Slice(totalRead), token).ConfigureAwait(false);
+                if (read == 0)
+                {
+                    break;
+                }
+
+                totalRead += read;
+            }
+
+            return totalRead;
         }
     }
 
