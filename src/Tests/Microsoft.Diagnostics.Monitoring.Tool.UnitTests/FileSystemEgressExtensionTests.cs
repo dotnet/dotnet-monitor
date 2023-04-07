@@ -10,9 +10,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -23,6 +25,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     public sealed class FileSystemEgressExtensionTests
     {
         const string ProviderName = "TestProvider";
+        const string ExpectedFileName = "EgressedData.txt";
+        const string ExpectedFileContent = "This is egressed data.";
 
         private static readonly string CopyBufferSize_RangeErrorMessage = CreateRangeMessage<int>(
             nameof(FileSystemEgressProviderOptions.CopyBufferSize),
@@ -40,17 +44,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public async Task FileSystemEgressExtension_EmptyConfiguration_ThrowsException()
         {
             // Arrange
-            Mock<IEgressConfigurationProvider> mockConfigurationProvider = new();
-            mockConfigurationProvider.Setup(provider => provider.GetProviderConfigurationSection(EgressProviderTypes.FileSystem, ProviderName))
-                .Returns(CreateConfigurationSection());
-
-            Mock<ILogger<FileSystemEgressExtension>> mockLogger = new();
-
-            FileSystemEgressExtension extension = new(mockConfigurationProvider.Object, mockLogger.Object);
+            IEgressExtension extension = CreateExtension();
 
             // Act & Assert
             OptionsValidationException exception = await Assert.ThrowsAsync<OptionsValidationException>(
-                () => extension.EgressArtifact(ProviderName, null, (stream, token) => Task.CompletedTask, CancellationToken.None));
+                () => extension.EgressArtifact(ProviderName, CreateSettings(), WriteFileContent, CancellationToken.None));
             string errorMessage = Assert.Single(exception.Failures);
             Assert.Equal(CreateRequiredMessage(nameof(FileSystemEgressProviderOptions.DirectoryPath)), errorMessage);
         }
@@ -59,23 +57,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public async Task FileSystemEgressExtension_CopyBufferSizeZero_ThrowsException()
         {
             // Arrange
-            using TemporaryDirectory temporaryDirectory = new(_outputHelper);
+            using TemporaryDirectory targetDirectory = new(_outputHelper);
 
-            IConfigurationSection egressProviderSection = CreateConfigurationSection();
-            egressProviderSection[nameof(FileSystemEgressProviderOptions.DirectoryPath)] = temporaryDirectory.FullName;
-            egressProviderSection[nameof(FileSystemEgressProviderOptions.CopyBufferSize)] = "0";
-
-            Mock<IEgressConfigurationProvider> mockConfigurationProvider = new();
-            mockConfigurationProvider.Setup(provider => provider.GetProviderConfigurationSection(EgressProviderTypes.FileSystem, ProviderName))
-                .Returns(egressProviderSection);
-
-            Mock<ILogger<FileSystemEgressExtension>> mockLogger = new();
-
-            FileSystemEgressExtension extension = new(mockConfigurationProvider.Object, mockLogger.Object);
+            IEgressExtension extension = CreateExtension(section =>
+            {
+                section[nameof(FileSystemEgressProviderOptions.DirectoryPath)] = targetDirectory.FullName;
+                section[nameof(FileSystemEgressProviderOptions.CopyBufferSize)] = "0";
+            });
 
             // Act & Assert
             OptionsValidationException exception = await Assert.ThrowsAsync<OptionsValidationException>(
-                () => extension.EgressArtifact(ProviderName, null, (stream, token) => Task.CompletedTask, CancellationToken.None));
+                () => extension.EgressArtifact(ProviderName, CreateSettings(), WriteFileContent, CancellationToken.None));
             string errorMessage = Assert.Single(exception.Failures);
             Assert.Equal(CopyBufferSize_RangeErrorMessage, errorMessage);
         }
@@ -83,33 +75,76 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task FileSystemEgressExtension_DirectoryPath_Success()
         {
-            const string ExpectedFileName = "EgressedData.txt";
-
             // Arrange
-            using TemporaryDirectory temporaryDirectory = new(_outputHelper);
+            using TemporaryDirectory targetDirectory = new(_outputHelper);
 
-            IConfigurationSection egressProviderSection = CreateConfigurationSection();
-            egressProviderSection[nameof(FileSystemEgressProviderOptions.DirectoryPath)] = temporaryDirectory.FullName;
-
-            Mock<IEgressConfigurationProvider> mockConfigurationProvider = new();
-            mockConfigurationProvider.Setup(provider => provider.GetProviderConfigurationSection(EgressProviderTypes.FileSystem, ProviderName))
-                .Returns(egressProviderSection);
-
-            Mock<ILogger<FileSystemEgressExtension>> mockLogger = new();
-
-            FileSystemEgressExtension extension = new(mockConfigurationProvider.Object, mockLogger.Object);
-
-            EgressArtifactSettings settings = new EgressArtifactSettings() { Name = ExpectedFileName };
+            IEgressExtension extension = CreateExtension(section =>
+            {
+                section[nameof(FileSystemEgressProviderOptions.DirectoryPath)] = targetDirectory.FullName;
+            });
 
             // Act
-            EgressArtifactResult result = await extension.EgressArtifact(ProviderName, settings, (stream, token) => Task.CompletedTask, CancellationToken.None);
+            EgressArtifactResult result = await extension.EgressArtifact(
+                ProviderName,
+                CreateSettings(),
+                WriteFileContent,
+                CancellationToken.None);
 
             // Assert
-            Assert.True(result.Succeeded, "Expected egress to succeed.");
-            Assert.True(File.Exists(Path.Combine(temporaryDirectory.FullName, ExpectedFileName)), "Expected file to be written.");
+            ValidateSuccess(result, targetDirectory);
         }
 
-        private static IConfigurationSection CreateConfigurationSection()
+        [Fact]
+        public async Task FileSystemEgressExtension_CopyBufferSize_Success()
+        {
+            // Arrange
+            using TemporaryDirectory targetDirectory = new(_outputHelper);
+
+            IEgressExtension extension = CreateExtension(section =>
+            {
+                section[nameof(FileSystemEgressProviderOptions.DirectoryPath)] = targetDirectory.FullName;
+                section[nameof(FileSystemEgressProviderOptions.CopyBufferSize)] = "10";
+            });
+
+            // Act
+            EgressArtifactResult result = await extension.EgressArtifact(
+                ProviderName,
+                CreateSettings(),
+                WriteFileContent,
+                CancellationToken.None);
+
+            // Assert
+            ValidateSuccess(result, targetDirectory);
+        }
+
+        [Fact]
+        public async Task FileSystemEgressExtension_IntermediateDirectoryPath_Success()
+        {
+            // Arrange
+            using TemporaryDirectory targetDirectory = new(_outputHelper);
+            using TemporaryDirectory intermediateDirectory = new(_outputHelper);
+
+            IEgressExtension extension = CreateExtension(section =>
+            {
+                section[nameof(FileSystemEgressProviderOptions.DirectoryPath)] = targetDirectory.FullName;
+                section[nameof(FileSystemEgressProviderOptions.IntermediateDirectoryPath)] = intermediateDirectory.FullName;
+            });
+
+            // Act
+            EgressArtifactResult result = await extension.EgressArtifact(
+                ProviderName,
+                CreateSettings(),
+                WriteFileContent,
+                CancellationToken.None);
+
+            // Assert
+            ValidateSuccess(result, targetDirectory);
+            DirectoryInfo intermediateDirInfo = new DirectoryInfo(intermediateDirectory.FullName);
+            Assert.True(intermediateDirInfo.Exists, "Intermediate directory should still exist.");
+            Assert.False(intermediateDirInfo.EnumerateFiles().Any(), "Intermediate directory should not contain any files.");
+        }
+
+        private static IEgressExtension CreateExtension(Action<ConfigurationSection> callback = null)
         {
             List<IConfigurationProvider> configProviders = new()
             {
@@ -117,7 +152,25 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             };
             ConfigurationRoot configurationRoot = new(configProviders);
             string configurationPath = ConfigurationPath.Combine(ConfigurationKeys.Egress, EgressProviderTypes.FileSystem, ProviderName);
-            return new ConfigurationSection(configurationRoot, configurationPath);
+            ConfigurationSection configurationSection = new(configurationRoot, configurationPath);
+
+            callback?.Invoke(configurationSection);
+
+            Mock<IEgressConfigurationProvider> mockConfigurationProvider = new();
+            mockConfigurationProvider.Setup(provider => provider.GetProviderConfigurationSection(EgressProviderTypes.FileSystem, ProviderName))
+                .Returns(configurationSection);
+
+            Mock<ILogger<FileSystemEgressExtension>> mockLogger = new();
+
+            return new FileSystemEgressExtension(mockConfigurationProvider.Object, mockLogger.Object);
+        }
+
+        private static EgressArtifactSettings CreateSettings()
+        {
+            return new EgressArtifactSettings()
+            {
+                Name = ExpectedFileName
+            };
         }
 
         private static string CreateRangeMessage<T>(string fieldName, string min, string max)
@@ -128,6 +181,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private static string CreateRequiredMessage(string fieldName)
         {
             return (new RequiredAttribute()).FormatErrorMessage(fieldName);
+        }
+
+        private static async Task WriteFileContent(Stream stream, CancellationToken token)
+        {
+            using StreamWriter writer = new StreamWriter(stream, leaveOpen: true);
+            await writer.WriteAsync(ExpectedFileContent.AsMemory(), token);
+        }
+
+        private static void ValidateSuccess(EgressArtifactResult result, TemporaryDirectory targetDirectory)
+        {
+            Assert.True(result.Succeeded, "Expected egress to succeed.");
+            string filePath = Path.Combine(targetDirectory.FullName, ExpectedFileName);
+            Assert.True(File.Exists(filePath), "Expected file to be written.");
+            string content = File.ReadAllText(filePath);
+            Assert.Equal(ExpectedFileContent, content);
         }
 
         private sealed class EmptyConfigurationProvider : ConfigurationProvider { }
