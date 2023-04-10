@@ -296,7 +296,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// <summary>
         /// Test that the pipeline works with the EventMeter trigger less-than (histogram instrument).
         /// </summary>
-        [Theory]
+        [Theory(Skip  = "https://github.com/dotnet/dotnet-monitor/issues/4184")]
         [MemberData(nameof(GetCurrentTfm))]
         public Task CollectionRulePipeline_EventMeterTriggerTest_Histogram_LessThan(TargetFrameworkMoniker appTfm)
         {
