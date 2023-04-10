@@ -44,6 +44,7 @@
     "cSpell.blockCheckingWhenTextChunkSizeGreaterThan": 1000,
     "cSpell.enableFiletypes": [
         "xml",
-        "msbuild"
+        "msbuild",
+        "javascript"
     ]
 }
