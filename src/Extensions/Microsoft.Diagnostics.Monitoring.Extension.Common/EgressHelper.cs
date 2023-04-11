@@ -39,19 +39,19 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             {
                 StdInStream = Console.OpenStandardInput();
 
-                var payloadVersionBuffer = stackalloc byte[sizeof(int)].ToArray();
-                await ReadExactlyAsync(payloadVersionBuffer, token); // Payload Version
+                var payloadVersionBuffer = new byte[sizeof(int)];
+                await ReadExactlyAsync(payloadVersionBuffer, token);
 
-                int dotnetMonitorPayloadProtcolVersion = BitConverter.ToInt32(payloadVersionBuffer);
-                if (dotnetMonitorPayloadProtcolVersion != ExpectedPayloadProtocolVersion)
+                int dotnetMonitorPayloadProtocolVersion = BitConverter.ToInt32(payloadVersionBuffer);
+                if (dotnetMonitorPayloadProtocolVersion != ExpectedPayloadProtocolVersion)
                 {
-                    throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_IncorrectPayloadVersion, dotnetMonitorPayloadProtcolVersion, ExpectedPayloadProtocolVersion));
+                    throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_IncorrectPayloadVersion, dotnetMonitorPayloadProtocolVersion, ExpectedPayloadProtocolVersion));
                 }
 
-                var payloadLengthBuffer = stackalloc byte[sizeof(long)].ToArray();
+                var payloadLengthBuffer = new byte[sizeof(long)].ToArray();
                 await ReadExactlyAsync(payloadLengthBuffer, token);
 
-                var payloadBuffer = new byte[BitConverter.ToInt64(payloadLengthBuffer)].ToArray();
+                var payloadBuffer = new byte[BitConverter.ToInt64(payloadLengthBuffer)];
                 await ReadExactlyAsync(payloadBuffer, token);
 
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
