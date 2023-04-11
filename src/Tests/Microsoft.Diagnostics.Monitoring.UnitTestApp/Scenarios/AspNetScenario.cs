@@ -16,9 +16,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 #if NET6_0_OR_GREATER
     internal sealed class AspNetScenario
     {
-        public static Command Command()
+        public static CliCommand Command()
         {
-            Command command = new(TestAppScenarios.AspNet.Name);
+            CliCommand command = new(TestAppScenarios.AspNet.Name);
             command.SetAction(ExecuteAsync);
             return command;
         }
