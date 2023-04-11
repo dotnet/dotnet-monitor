@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -40,7 +39,8 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             {
                 StdInStream = Console.OpenStandardInput();
 
-                var payloadVersionBuffer = await ReadFromStream(sizeof(int), token); // Payload Version
+                var payloadVersionBuffer = stackalloc byte[sizeof(int)].ToArray();
+                await ReadExactlyAsync(payloadVersionBuffer, token); // Payload Version
 
                 int dotnetMonitorPayloadProtcolVersion = BitConverter.ToInt32(payloadVersionBuffer);
                 if (dotnetMonitorPayloadProtcolVersion != ExpectedPayloadProtocolVersion)
@@ -48,8 +48,11 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                     throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_IncorrectPayloadVersion, dotnetMonitorPayloadProtcolVersion, ExpectedPayloadProtocolVersion));
                 }
 
-                var payloadLengthBuffer = await ReadFromStream(sizeof(long), token); // Payload Length
-                var payloadBuffer = await ReadFromStream(BitConverter.ToInt64(payloadLengthBuffer), token); // Payload
+                var payloadLengthBuffer = stackalloc byte[sizeof(long)].ToArray();
+                await ReadExactlyAsync(payloadLengthBuffer, token);
+
+                var payloadBuffer = new byte[BitConverter.ToInt64(payloadLengthBuffer)].ToArray();
+                await ReadExactlyAsync(payloadBuffer, token);
 
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
 
@@ -131,35 +134,23 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             await StdInStream.CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
         }
 
-        // TODO: For .NET 7 and above, can use Stream.ReadExactly
-        private static async Task<int> ReadHelper(Memory<byte> buffer, long bufferSize, CancellationToken token)
+        private static async Task ReadExactlyAsync(Memory<byte> buffer, CancellationToken token)
         {
-            Debug.Assert(bufferSize <= buffer.Length);
-
+#if NET7_0_OR_GREATER
+            await StdInStream.ReadExactlyAsync(buffer, token);
+#else
             int totalRead = 0;
-            while (totalRead < bufferSize)
+            while (totalRead < buffer.Length)
             {
                 int read = await StdInStream.ReadAsync(buffer.Slice(totalRead), token).ConfigureAwait(false);
                 if (read == 0)
                 {
-                    break;
+                    throw new EndOfStreamException();
                 }
 
                 totalRead += read;
             }
-
-            return totalRead;
-        }
-
-        private static async Task<byte[]> ReadFromStream(long bufferSize, CancellationToken token)
-        {
-            Memory<byte> buffer = new(new byte[bufferSize]);
-            if (bufferSize != await ReadHelper(buffer, bufferSize, token))
-            {
-                throw new EgressException(Strings.ErrorMessage_GenericEgressFailure);
-            }
-
-            return buffer.ToArray();
+#endif
         }
     }
 
