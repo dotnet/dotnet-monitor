@@ -1,0 +1,88 @@
+{
+  "policy": {
+    "additionalMonthsOfSupportOnNewMinorRelease": 3,
+    "cleanupUnsupportedReleasesAfterMonths": 12
+  },
+  "preview": [
+    "8.0"
+  ],
+  "supported": [
+    "7.1",
+    "7.0",
+    "6.3"
+  ],
+  "unsupported": [
+    "6.2",
+    "6.1",
+    "6.0"
+  ],
+  "releases": {
+    "6.0": {
+      "tag": "v6.0.2",
+      "minorReleaseDate": "2021-11-08T00:00:00.000Z",
+      "patchReleaseDate": "2022-02-08T00:00:00.000Z",
+      "supportedFrameworks": [
+        "netcoreapp3.1 (with major roll forward)",
+        "net6.0"
+      ],
+      "outOfSupportDate": "2022-05-17T00:00:00.000Z"
+    },
+    "6.1": {
+      "tag": "v6.1.4",
+      "minorReleaseDate": "2022-02-17T00:00:00.000Z",
+      "patchReleaseDate": "2022-08-09T00:00:00.000Z",
+      "supportedFrameworks": [
+        "netcoreapp3.1 (with major roll forward)",
+        "net6.0"
+      ],
+      "outOfSupportDate": "2022-09-14T00:00:00.000Z"
+    },
+    "6.2": {
+      "tag": "v6.2.2",
+      "minorReleaseDate": "2022-06-14T00:00:00.000Z",
+      "patchReleaseDate": "2022-08-09T00:00:00.000Z",
+      "supportedFrameworks": [
+        "netcoreapp3.1 (with major roll forward)",
+        "net6.0"
+      ],
+      "outOfSupportDate": "2023-01-11T00:00:00.000Z"
+    },
+    "6.3": {
+      "tag": "v6.3.2",
+      "minorReleaseDate": "2022-10-11T00:00:00.000Z",
+      "patchReleaseDate": "2023-02-14T00:00:00.000Z",
+      "supportedFrameworks": [
+        "netcoreapp3.1 (with major roll forward)",
+        "net6.0"
+      ]
+    },
+    "7.0": {
+      "tag": "v7.0.2",
+      "minorReleaseDate": "2022-11-11T00:00:00.000Z",
+      "patchReleaseDate": "2023-02-14T00:00:00.000Z",
+      "supportedFrameworks": [
+        "net6.0",
+        "net7.0"
+      ],
+      "outOfSupportDate": "2023-06-14T00:00:00.000Z"
+    },
+    "7.1": {
+      "tag": "v7.1.0",
+      "minorReleaseDate": "2023-03-14T00:00:00.000Z",
+      "patchReleaseDate": "2023-03-14T00:00:00.000Z",
+      "supportedFrameworks": [
+        "net6.0",
+        "net7.0"
+      ]
+    },
+    "8.0": {
+      "tag": "v8.0.0-preview.2.23155.4",
+      "minorReleaseDate": "2023-03-14T00:00:00.000Z",
+      "patchReleaseDate": "2023-03-14T00:00:00.000Z",
+      "supportedFrameworks": [
+        "net6.0",
+        "net8.0"
+      ]
+    }
+  }
+}
