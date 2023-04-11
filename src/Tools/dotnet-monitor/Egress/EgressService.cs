@@ -63,8 +63,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
             if (!result.Succeeded)
             {
-                string validationFailureMessage = $"The {providerName} egress provider failed validation: {result.FailureMessage}";
-                throw new EgressException(validationFailureMessage);
+                throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderFailedValidation, providerName, result.FailureMessage));
             }
 
             return new EgressResult(result.ArtifactPath);

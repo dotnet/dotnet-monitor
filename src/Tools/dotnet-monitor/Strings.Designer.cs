@@ -187,6 +187,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The {0} egress provider failed validation: {1}.
+        /// </summary>
+        internal static string ErrorMessage_EgressProviderFailedValidation {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressProviderFailedValidation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Egress provider type &apos;{0}&apos; was not registered..
         /// </summary>
         internal static string ErrorMessage_EgressProviderTypeNotRegistered {

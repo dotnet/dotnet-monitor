@@ -75,16 +75,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             Func<Stream, CancellationToken, Task> action,
             CancellationToken token)
         {
-            EgressArtifactResult result;
+            EgressArtifactResult result = new();
 
             if (!_manifest.Modes.Any())
             {
-                result = new()
-                {
-                    Succeeded = true
-                };
+                result.Succeeded = true;
             }
-            else
+            else if (_manifest.Modes.Contains(ExtensionModes.Validate))
             {
                 ExtensionEgressPayload payload = new()
                 {

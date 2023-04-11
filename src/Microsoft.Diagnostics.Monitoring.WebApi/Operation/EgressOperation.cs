@@ -48,9 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public async Task<ExecutionResult<EgressResult>> ExecuteAsync(IServiceProvider serviceProvider, CancellationToken token)
         {
-            ILogger<EgressOperation> logger = serviceProvider
-                .GetRequiredService<ILoggerFactory>()
-                .CreateLogger<EgressOperation>();
+            ILogger<EgressOperation> logger = CreateLogger(serviceProvider);
 
             using var _ = logger.BeginScope(_scope);
 
@@ -81,17 +79,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public static async Task<ExecutionResult<EgressResult>> ValidateAsync(IServiceProvider serviceProvider, string endpointName, CancellationToken token)
         {
-            ILogger<EgressOperation> logger = serviceProvider
-                .GetRequiredService<ILoggerFactory>()
-                .CreateLogger<EgressOperation>();
+            ILogger<EgressOperation> logger = CreateLogger(serviceProvider);
+
             return await ExecutionHelper.InvokeAsync(async (token) =>
             {
                 IEgressService egressService = serviceProvider
                     .GetRequiredService<IEgressService>();
 
-                Func<IEgressService, CancellationToken, Task<EgressResult>> egress = (service, token) => service.ValidateProviderAsync(endpointName, token);
-
-                EgressResult egressResult = await egress(egressService, token);
+                EgressResult egressResult = await egressService.ValidateProviderAsync(endpointName, token);
 
                 return ExecutionResult<EgressResult>.Succeeded(egressResult);
             }, logger, token);
@@ -105,6 +100,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             return _operation.StopAsync(token);
+        }
+
+        private static ILogger<EgressOperation> CreateLogger(IServiceProvider serviceProvider)
+        {
+           return serviceProvider
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger<EgressOperation>();
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             // We need to store the process ID for logging because we can't access it after the process exits
             private int _processId = -1;
 
-            public OutputParser(Process process, ILogger<EgressExtension> logger, ExtensionModes? mode)
+            public OutputParser(Process process, ILogger<EgressExtension> logger, ExtensionModes mode)
             {
                 _process = process;
                 _logger = mode == ExtensionModes.Validate ? null : logger;

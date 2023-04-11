@@ -229,11 +229,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
             }
             catch (Exception ex)
             {
-                result = new()
-                {
-                    Succeeded = false,
-                    FailureMessage = ex.Message
-                };
+                result.Succeeded = false;
+                result.FailureMessage = ex.Message;
             }
 
             return result;

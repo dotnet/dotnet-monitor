@@ -23,8 +23,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private readonly ExtensionDiscoverer _extensionDiscoverer;
         private readonly ILogger _logger;
         private readonly IDictionary<string, string> _providerNameToTypeMap;
-
-        private IServiceProvider _serviceProvider;
+        private readonly IServiceProvider _serviceProvider;
+        private const int ValidationTimeoutMilliseconds = 30 * 1000;
 
         public EgressProviderSource(
             IEgressConfigurationProvider configurationProvider,
@@ -37,7 +37,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             _extensionDiscoverer = extensionDiscoverer;
             _logger = logger;
             _providerNameToTypeMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
             _serviceProvider = serviceProvider;
         }
 
@@ -106,9 +105,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 }
             }
 
-            ///////////////
-
-            CancellationTokenSource source = new();
+            CancellationTokenSource source = new(ValidationTimeoutMilliseconds);
 
             foreach (var providerName in _providerNameToTypeMap.Keys)
             {
