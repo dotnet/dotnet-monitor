@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private readonly ILogger<EgressExtension> _logger;
         private readonly ExtensionManifest _manifest;
         private readonly IDictionary<string, string> _processEnvironmentVariables = new Dictionary<string, string>();
-        private const int PayloadVersion = 1;
+        private const int PayloadProtocolVersion = 1;
 
         private static readonly TimeSpan WaitForProcessExitTimeout = TimeSpan.FromMilliseconds(2000);
 
@@ -150,7 +150,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             using Stream intermediateStream = new MemoryStream();
             await JsonSerializer.SerializeAsync(intermediateStream, payload, options: null, token);
 
-            await p.StandardInput.BaseStream.WriteAsync(BitConverter.GetBytes(PayloadVersion), token);
+            await p.StandardInput.BaseStream.WriteAsync(BitConverter.GetBytes(PayloadProtocolVersion), token);
             await p.StandardInput.BaseStream.WriteAsync(BitConverter.GetBytes(intermediateStream.Position), token);
             intermediateStream.Position = 0;
 

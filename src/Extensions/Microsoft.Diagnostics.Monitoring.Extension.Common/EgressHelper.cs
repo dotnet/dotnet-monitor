@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -21,9 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
     {
         private static Stream StdInStream;
         private static CancellationTokenSource CancelSource = new CancellationTokenSource();
-        private const int PayloadVersion = 1;
-
-        private const string GenericEgressFailureMessage = "The egress operation failed due to an internal error.";
+        private const int ExpectedPayloadProtocolVersion = 1;
 
         internal static CliCommand CreateEgressCommand<TOptions>(EgressProvider<TOptions> provider, Action<ExtensionEgressPayload, TOptions, ILogger> configureOptions = null) where TOptions : class, new()
         {
@@ -43,9 +42,10 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 
                 var payloadVersionBuffer = await ReadFromStream(sizeof(int), token); // Payload Version
 
-                if (BitConverter.ToInt32(payloadVersionBuffer) != PayloadVersion)
+                int dotnetMonitorPayloadProtcolVersion = BitConverter.ToInt32(payloadVersionBuffer);
+                if (dotnetMonitorPayloadProtcolVersion != ExpectedPayloadProtocolVersion)
                 {
-                    throw new EgressException(GenericEgressFailureMessage);
+                    throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_IncorrectPayloadVersion, dotnetMonitorPayloadProtcolVersion, ExpectedPayloadProtocolVersion));
                 }
 
                 var payloadLengthBuffer = await ReadFromStream(sizeof(long), token); // Payload Length
@@ -156,7 +156,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             Memory<byte> buffer = new(new byte[bufferSize]);
             if (bufferSize != await ReadHelper(buffer, bufferSize, token))
             {
-                throw new EgressException(GenericEgressFailureMessage);
+                throw new EgressException(Strings.ErrorMessage_GenericEgressFailure);
             }
 
             return buffer.ToArray();
