@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
@@ -71,14 +70,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
                 if (failures.Count > 0)
                 {
                     throw new OptionsValidationException(string.Empty, typeof(FileSystemEgressProviderOptions), failures);
-                }
-            }
-
-            if (!Directory.Exists(options.DirectoryPath))
-            {
-                if (results.Count > 0)
-                {
-                    throw new EgressException(results.First().ErrorMessage);
                 }
             }
 

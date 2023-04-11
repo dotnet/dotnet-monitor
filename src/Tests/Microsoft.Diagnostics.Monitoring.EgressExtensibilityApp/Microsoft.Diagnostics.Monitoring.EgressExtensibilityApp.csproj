@@ -11,7 +11,6 @@
 
   <ItemGroup>
     <Compile Include="..\..\Tools\dotnet-monitor\Egress\Extension\EgressArtifactResult.cs" Link="Options\Egress\Extension\EgressArtifactResult.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Extensibility\ExtensionModes.cs" Link="Options\Extensibility\ExtensionModes.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Extensibility\IExtensionResult.cs" Link="Options\Extensibility\IExtensionResult.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Egress\Extension\ExtensionEgressPayload.cs" Link="Options\Egress\Extension\ExtensionEgressPayload.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Egress\EgressArtifactSettings.cs" Link="Options\Egress\EgressArtifactSettings.cs" />
