@@ -4,7 +4,10 @@
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.IO;
 using System.Security;
@@ -40,6 +43,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
 
             FileSystemEgressProviderOptions options = new();
             configuration.Bind(options);
+
+            ValidationContext context = new(options);
+            List<ValidationResult> results = new();
+            if (!Validator.TryValidateObject(options, context, results, validateAllProperties: true))
+            {
+                IList<string> failures = new List<string>();
+                foreach (ValidationResult result in results)
+                {
+                    if (ValidationResult.Success != result)
+                    {
+                        failures.Add(result.ErrorMessage);
+                    }
+                }
+
+                if (failures.Count > 0)
+                {
+                    throw new OptionsValidationException(string.Empty, typeof(FileSystemEgressProviderOptions), failures);
+                }
+            }
 
             if (!Directory.Exists(options.DirectoryPath))
             {
