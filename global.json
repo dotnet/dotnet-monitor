@@ -1,6 +1,6 @@
 {
   "tools": {
-    "dotnet": "8.0.100-preview.2.23157.25",
+    "dotnet": "8.0.100-preview.3.23178.7",
     "runtimes": {
       "aspnetcore": [
         "$(MicrosoftAspNetCoreApp60Version)",
@@ -26,6 +26,6 @@
   },
   "msbuild-sdks": {
     "Microsoft.Build.NoTargets": "3.7.0",
-    "Microsoft.DotNet.Arcade.Sdk": "8.0.0-beta.23210.3"
+    "Microsoft.DotNet.Arcade.Sdk": "8.0.0-beta.23211.8"
   }
 }
