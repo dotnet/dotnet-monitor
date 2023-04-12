@@ -14,7 +14,7 @@ Controllers with `[Authorize(Policy = AuthConstants.PolicyName)]` class attribut
 
 If the new API needs to either accept or return structured data, a dedicated model should be used. Models are defined [here](../../src/Microsoft.Diagnostics.Monitoring.WebApi/Models/).
 
-When adding a new API, it's important to also update the [openapi.json](../openapi.json) spec which describes the API surface. There are CI tests that will ensure this file has been updated to reflect any API changes. Learn more about updating `openapi.json` [here](./testing.md#openapi-generation).
+When adding a new API, it's important to also update the [`openapi.json`](../openapi.json) spec which describes the API surface. There are CI tests that will ensure this file has been updated to reflect any API changes. Learn more about updating `openapi.json` [here](./testing.md#openapi-generation).
 
 ### Adding Tests
 
