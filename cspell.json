@@ -23,6 +23,7 @@
         "callstacks",
         "CLSID",
         "codespace",
+        "configurator",
         "coreclr",
         "darc",
         "dbug",
