@@ -44,19 +44,17 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                 long payloadLengthBuffer;
                 byte[] payloadBuffer;
 
-                using (var reader = new BinaryReader(StdInStream, Encoding.UTF8, true))
+                using (BinaryReader reader = new BinaryReader(StdInStream, Encoding.UTF8, leaveOpen: true))
                 {
                     dotnetMonitorPayloadProtocolVersion = reader.ReadInt32();
+                    if (dotnetMonitorPayloadProtocolVersion != ExpectedPayloadProtocolVersion)
+                    {
+                        throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_IncorrectPayloadVersion, dotnetMonitorPayloadProtocolVersion, ExpectedPayloadProtocolVersion));
+                    }
+
                     payloadLengthBuffer = reader.ReadInt64();
-
                     payloadBuffer = new byte[payloadLengthBuffer];
-
-                    reader.Read(payloadBuffer, 0, (int)payloadLengthBuffer); // this should be safe, given we know the payload is small
-                }
-
-                if (dotnetMonitorPayloadProtocolVersion != ExpectedPayloadProtocolVersion)
-                {
-                    throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_IncorrectPayloadVersion, dotnetMonitorPayloadProtocolVersion, ExpectedPayloadProtocolVersion));
+                    await ReadExactlyAsync(payloadBuffer, token);
                 }
 
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
@@ -137,6 +135,25 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             const int DefaultBufferSize = 0x10000;
 
             await StdInStream.CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
+        }
+
+        private static async Task ReadExactlyAsync(Memory<byte> buffer, CancellationToken token)
+        {
+#if NET7_0_OR_GREATER
+            await StdInStream.ReadExactlyAsync(buffer, token);
+#else
+            int totalRead = 0;
+            while (totalRead < buffer.Length)
+            {
+                int read = await StdInStream.ReadAsync(buffer.Slice(totalRead), token).ConfigureAwait(false);
+                if (read == 0)
+                {
+                    throw new EndOfStreamException();
+                }
+
+                totalRead += read;
+            }
+#endif
         }
     }
 

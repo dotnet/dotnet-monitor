@@ -151,19 +151,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             using Stream intermediateStream = new MemoryStream();
             await JsonSerializer.SerializeAsync(intermediateStream, payload, options: null, token);
 
-            using (var writer = new BinaryWriter(p.StandardInput.BaseStream, Encoding.UTF8, true))
+            using (BinaryWriter writer = new BinaryWriter(p.StandardInput.BaseStream, Encoding.UTF8, leaveOpen: true))
             {
-                writer.Write(BitConverter.GetBytes(PayloadProtocolVersion));
-                writer.Write(BitConverter.GetBytes(intermediateStream.Position));
+                writer.Write(PayloadProtocolVersion);
+                writer.Write(intermediateStream.Position);
 
                 intermediateStream.Position = 0;
 
                 writer.Flush();
-
-                await intermediateStream.CopyToAsync(writer.BaseStream, token);
-
-                writer.Flush();
             }
+
+            await intermediateStream.CopyToAsync(p.StandardInput.BaseStream, token);
+            await p.StandardInput.BaseStream.FlushAsync(token);
 
             _logger.ExtensionConfigured(pStart.FileName, p.Id);
 
