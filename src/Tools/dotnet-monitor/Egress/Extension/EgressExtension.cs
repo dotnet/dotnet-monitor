@@ -12,6 +12,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -150,12 +151,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             using Stream intermediateStream = new MemoryStream();
             await JsonSerializer.SerializeAsync(intermediateStream, payload, options: null, token);
 
-            await p.StandardInput.BaseStream.WriteAsync(BitConverter.GetBytes(PayloadProtocolVersion), token);
-            await p.StandardInput.BaseStream.WriteAsync(BitConverter.GetBytes(intermediateStream.Position), token);
-            intermediateStream.Position = 0;
+            using (var writer = new BinaryWriter(p.StandardInput.BaseStream, Encoding.UTF8, true))
+            {
+                writer.Write(BitConverter.GetBytes(PayloadProtocolVersion));
+                writer.Write(BitConverter.GetBytes(intermediateStream.Position));
 
-            await intermediateStream.CopyToAsync(p.StandardInput.BaseStream, token);
-            await p.StandardInput.BaseStream.FlushAsync(token);
+                intermediateStream.Position = 0;
+
+                writer.Flush();
+
+                await intermediateStream.CopyToAsync(writer.BaseStream, token);
+
+                writer.Flush();
+            }
+
             _logger.ExtensionConfigured(pStart.FileName, p.Id);
 
             await action(p.StandardInput.BaseStream, token);

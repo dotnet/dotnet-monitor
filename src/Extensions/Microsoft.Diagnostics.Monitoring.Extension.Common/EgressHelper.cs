@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -39,20 +40,24 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             {
                 StdInStream = Console.OpenStandardInput();
 
-                var payloadVersionBuffer = new byte[sizeof(int)];
-                await ReadExactlyAsync(payloadVersionBuffer, token);
+                int dotnetMonitorPayloadProtocolVersion;
+                long payloadLengthBuffer;
+                byte[] payloadBuffer;
 
-                int dotnetMonitorPayloadProtocolVersion = BitConverter.ToInt32(payloadVersionBuffer);
+                using (var reader = new BinaryReader(StdInStream, Encoding.UTF8, true))
+                {
+                    dotnetMonitorPayloadProtocolVersion = reader.ReadInt32();
+                    payloadLengthBuffer = reader.ReadInt64();
+
+                    payloadBuffer = new byte[payloadLengthBuffer];
+
+                    reader.Read(payloadBuffer, 0, (int)payloadLengthBuffer); // this should be safe, given we know the payload is small
+                }
+
                 if (dotnetMonitorPayloadProtocolVersion != ExpectedPayloadProtocolVersion)
                 {
                     throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_IncorrectPayloadVersion, dotnetMonitorPayloadProtocolVersion, ExpectedPayloadProtocolVersion));
                 }
-
-                var payloadLengthBuffer = new byte[sizeof(long)].ToArray();
-                await ReadExactlyAsync(payloadLengthBuffer, token);
-
-                var payloadBuffer = new byte[BitConverter.ToInt64(payloadLengthBuffer)];
-                await ReadExactlyAsync(payloadBuffer, token);
 
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
 
@@ -132,25 +137,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             const int DefaultBufferSize = 0x10000;
 
             await StdInStream.CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
-        }
-
-        private static async Task ReadExactlyAsync(Memory<byte> buffer, CancellationToken token)
-        {
-#if NET7_0_OR_GREATER
-            await StdInStream.ReadExactlyAsync(buffer, token);
-#else
-            int totalRead = 0;
-            while (totalRead < buffer.Length)
-            {
-                int read = await StdInStream.ReadAsync(buffer.Slice(totalRead), token).ConfigureAwait(false);
-                if (read == 0)
-                {
-                    throw new EndOfStreamException();
-                }
-
-                totalRead += read;
-            }
-#endif
         }
     }
 
