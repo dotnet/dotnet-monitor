@@ -53,9 +53,10 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                     }
 
                     payloadLengthBuffer = reader.ReadInt64();
-                    payloadBuffer = new byte[payloadLengthBuffer];
-                    await ReadExactlyAsync(payloadBuffer, token);
                 }
+
+                payloadBuffer = new byte[payloadLengthBuffer];
+                await ReadExactlyAsync(payloadBuffer, token);
 
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
 
