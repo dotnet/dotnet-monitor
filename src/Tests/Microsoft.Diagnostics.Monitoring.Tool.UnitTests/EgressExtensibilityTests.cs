@@ -19,6 +19,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMoniker.Current)]
     public sealed class EgressExtensibilityTests
     {
         private ITestOutputHelper _outputHelper;

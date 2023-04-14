@@ -51,31 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             EgressArtifactResult result = new();
             try
             {
-                StdInStream = Console.OpenStandardInput();
-
-                int dotnetMonitorPayloadProtocolVersion;
-                long payloadLengthBuffer;
-                byte[] payloadBuffer;
-
-                using (BinaryReader reader = new BinaryReader(StdInStream, Encoding.UTF8, leaveOpen: true))
-                {
-                    dotnetMonitorPayloadProtocolVersion = reader.ReadInt32();
-                    if (dotnetMonitorPayloadProtocolVersion != ExpectedPayloadProtocolVersion)
-                    {
-                        throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_IncorrectPayloadVersion, dotnetMonitorPayloadProtocolVersion, ExpectedPayloadProtocolVersion));
-                    }
-
-                    payloadLengthBuffer = reader.ReadInt64();
-
-                    if (payloadLengthBuffer < 0)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(payloadLengthBuffer));
-                    }
-                }
-
-                payloadBuffer = new byte[payloadLengthBuffer];
-                await ReadExactlyAsync(payloadBuffer, token);
-
+                byte[] payloadBuffer = await GetPayloadBuffer(token);
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
 
                 ServiceCollection services = CreateServices<TOptions>(configPayload, configureServices);
@@ -113,6 +89,36 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 
             // return non-zero exit code when failed
             return result.Succeeded ? 0 : 1;
+        }
+
+        internal static async Task<byte[]> GetPayloadBuffer(CancellationToken token)
+        {
+            StdInStream = Console.OpenStandardInput();
+
+            int dotnetMonitorPayloadProtocolVersion;
+            long payloadLengthBuffer;
+            byte[] payloadBuffer;
+
+            using (BinaryReader reader = new BinaryReader(StdInStream, Encoding.UTF8, leaveOpen: true))
+            {
+                dotnetMonitorPayloadProtocolVersion = reader.ReadInt32();
+                if (dotnetMonitorPayloadProtocolVersion != ExpectedPayloadProtocolVersion)
+                {
+                    throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_IncorrectPayloadVersion, dotnetMonitorPayloadProtocolVersion, ExpectedPayloadProtocolVersion));
+                }
+
+                payloadLengthBuffer = reader.ReadInt64();
+
+                if (payloadLengthBuffer < 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(payloadLengthBuffer));
+                }
+            }
+
+            payloadBuffer = new byte[payloadLengthBuffer];
+            await ReadExactlyAsync(payloadBuffer, token);
+
+            return payloadBuffer;
         }
 
         private static ServiceCollection CreateServices<TOptions>(ExtensionEgressPayload payload, Action<IServiceCollection> configureServices)
@@ -161,7 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             await StdInStream.CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
         }
 
-        private static async Task ReadExactlyAsync(Memory<byte> buffer, CancellationToken token)
+        internal static async Task ReadExactlyAsync(Memory<byte> buffer, CancellationToken token)
         {
 #if NET7_0_OR_GREATER
             await StdInStream.ReadExactlyAsync(buffer, token);

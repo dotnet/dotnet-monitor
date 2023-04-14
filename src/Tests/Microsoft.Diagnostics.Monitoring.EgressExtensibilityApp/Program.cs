@@ -2,12 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
-using Microsoft.Diagnostics.Tools.Monitor.Egress;
+using Microsoft.Diagnostics.Monitoring.Extension.Common;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.CommandLine;
-using System.IO;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Threading;
@@ -17,9 +15,6 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 {
     internal sealed class Program
     {
-        private static Stream StdInStream;
-        private const int ExpectedPayloadProtocolVersion = 1; // This should match what's in EgressExtension.cs
-
         static int Main(string[] args)
         {
             CliRootCommand rootCommand = new CliRootCommand();
@@ -38,30 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
             EgressArtifactResult result = new();
             try
             {
-                StdInStream = Console.OpenStandardInput();
-
-                int dotnetMonitorPayloadProtocolVersion;
-                long payloadLengthBuffer;
-                byte[] payloadBuffer;
-
-                using (BinaryReader reader = new BinaryReader(StdInStream, Encoding.UTF8, leaveOpen: true))
-                {
-                    dotnetMonitorPayloadProtocolVersion = reader.ReadInt32();
-                    if (dotnetMonitorPayloadProtocolVersion != ExpectedPayloadProtocolVersion)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(dotnetMonitorPayloadProtocolVersion));
-                    }
-
-                    payloadLengthBuffer = reader.ReadInt64();
-
-                    if (payloadLengthBuffer < 0)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(payloadLengthBuffer));
-                    }
-                }
-
-                payloadBuffer = new byte[payloadLengthBuffer];
-                await ReadExactlyAsync(payloadBuffer, token);
+                byte[] payloadBuffer = await EgressHelper.GetPayloadBuffer(token);
 
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
                 TestEgressProviderOptions options = BuildOptions(configPayload);
@@ -104,25 +76,6 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
             configurationRoot.Bind(options);
 
             return options;
-        }
-
-        private static async Task ReadExactlyAsync(Memory<byte> buffer, CancellationToken token)
-        {
-#if NET7_0_OR_GREATER
-            await StdInStream.ReadExactlyAsync(buffer, token);
-#else
-            int totalRead = 0;
-            while (totalRead < buffer.Length)
-            {
-                int read = await StdInStream.ReadAsync(buffer.Slice(totalRead), token).ConfigureAwait(false);
-                if (read == 0)
-                {
-                    throw new EndOfStreamException();
-                }
-
-                totalRead += read;
-            }
-#endif
         }
     }
 }
