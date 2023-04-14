@@ -12,5 +12,8 @@
     <FileToArchive Include="$(RepoRoot)LICENSE.TXT">
       <PackagePath>$(ArchiveContentPackagePath)</PackagePath>
     </FileToArchive>
+    <FileToArchive Include="$(ThirdPartyNoticesFilePath)" Condition="Exists('$(ThirdPartyNoticesFilePath)')">
+      <PackagePath>$(ArchiveContentPackagePath)</PackagePath>
+    </FileToArchive>
   </ItemGroup>
 </Project>

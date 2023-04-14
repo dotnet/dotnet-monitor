@@ -12,6 +12,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private readonly ILogger<EgressExtension> _logger;
         private readonly ExtensionManifest _manifest;
         private readonly IDictionary<string, string> _processEnvironmentVariables = new Dictionary<string, string>();
+        private const int PayloadProtocolVersion = 1;
 
         private static readonly TimeSpan WaitForProcessExitTimeout = TimeSpan.FromMilliseconds(2000);
 
@@ -74,9 +76,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             CancellationToken token)
         {
             _manifest.Validate();
-
-            // This is really weird, yes, but this is one of 2 overloads for [Stream].WriteAsync(...) that supports a CancellationToken, so we use a ReadOnlyMemory<char> instead of a string.
-            ReadOnlyMemory<char> NewLine = new ReadOnlyMemory<char>("\r\n".ToCharArray());
 
             ProcessStartInfo pStart = new ProcessStartInfo()
             {
@@ -148,9 +147,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
             parser.BeginReading();
 
-            await JsonSerializer.SerializeAsync<ExtensionEgressPayload>(p.StandardInput.BaseStream, payload, options: null, token);
-            await p.StandardInput.WriteAsync(NewLine, token);
+            // p.StandardInput.BaseStream Format: Version (int), Payload Length (long), Payload, Artifact
+            using Stream intermediateStream = new MemoryStream();
+            await JsonSerializer.SerializeAsync(intermediateStream, payload, options: null, token);
+
+            using (BinaryWriter writer = new BinaryWriter(p.StandardInput.BaseStream, Encoding.UTF8, leaveOpen: true))
+            {
+                writer.Write(PayloadProtocolVersion);
+                writer.Write(intermediateStream.Position);
+
+                intermediateStream.Position = 0;
+
+                writer.Flush();
+            }
+
+            await intermediateStream.CopyToAsync(p.StandardInput.BaseStream, token);
             await p.StandardInput.BaseStream.FlushAsync(token);
+
             _logger.ExtensionConfigured(pStart.FileName, p.Id);
 
             await action(p.StandardInput.BaseStream, token);
