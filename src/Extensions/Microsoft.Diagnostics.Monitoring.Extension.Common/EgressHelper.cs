@@ -7,8 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -20,6 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
     {
         private static Stream StdInStream;
         private static CancellationTokenSource CancelSource = new CancellationTokenSource();
+        private const int ExpectedPayloadProtocolVersion = 1;
 
         internal static CliCommand CreateEgressCommand<TOptions>(EgressProvider<TOptions> provider, Action<ExtensionEgressPayload, TOptions, ILogger> configureOptions = null) where TOptions : class, new()
         {
@@ -35,8 +38,32 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             EgressArtifactResult result = new();
             try
             {
-                string jsonConfig = Console.ReadLine();
-                ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
+                StdInStream = Console.OpenStandardInput();
+
+                int dotnetMonitorPayloadProtocolVersion;
+                long payloadLengthBuffer;
+                byte[] payloadBuffer;
+
+                using (BinaryReader reader = new BinaryReader(StdInStream, Encoding.UTF8, leaveOpen: true))
+                {
+                    dotnetMonitorPayloadProtocolVersion = reader.ReadInt32();
+                    if (dotnetMonitorPayloadProtocolVersion != ExpectedPayloadProtocolVersion)
+                    {
+                        throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_IncorrectPayloadVersion, dotnetMonitorPayloadProtocolVersion, ExpectedPayloadProtocolVersion));
+                    }
+
+                    payloadLengthBuffer = reader.ReadInt64();
+
+                    if (payloadLengthBuffer < 0)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(payloadLengthBuffer));
+                    }
+                }
+
+                payloadBuffer = new byte[payloadLengthBuffer];
+                await ReadExactlyAsync(payloadBuffer, token);
+
+                ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
 
                 using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
                 {
@@ -113,8 +140,26 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         {
             const int DefaultBufferSize = 0x10000;
 
-            StdInStream = Console.OpenStandardInput();
             await StdInStream.CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
+        }
+
+        private static async Task ReadExactlyAsync(Memory<byte> buffer, CancellationToken token)
+        {
+#if NET7_0_OR_GREATER
+            await StdInStream.ReadExactlyAsync(buffer, token);
+#else
+            int totalRead = 0;
+            while (totalRead < buffer.Length)
+            {
+                int read = await StdInStream.ReadAsync(buffer.Slice(totalRead), token).ConfigureAwait(false);
+                if (read == 0)
+                {
+                    throw new EndOfStreamException();
+                }
+
+                totalRead += read;
+            }
+#endif
         }
     }
 
