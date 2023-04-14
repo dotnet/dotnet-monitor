@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                 string jsonConfig = Console.ReadLine();
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
 
-                ServiceCollection services = CreateServices<TProvider, TOptions>(configPayload, configureServices);
+                ServiceCollection services = CreateServices<TOptions>(configPayload, configureServices);
 
                 // Attempt to register the egress provider if not already registered; this allows the service configuration
                 // callback to register the egress provider if it has additional requirements that cannot be fulfilled by
@@ -88,8 +88,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             return result.Succeeded ? 0 : 1;
         }
 
-        private static ServiceCollection CreateServices<TProvider, TOptions>(ExtensionEgressPayload payload, Action<IServiceCollection> configureServices)
-            where TProvider : EgressProvider<TOptions>
+        private static ServiceCollection CreateServices<TOptions>(ExtensionEgressPayload payload, Action<IServiceCollection> configureServices)
             where TOptions : class, new()
         {
             ServiceCollection services = new();
