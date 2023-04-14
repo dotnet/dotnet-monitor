@@ -27,7 +27,6 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
             CliCommand egressCmd = new CliCommand("Egress");
 
             egressCmd.SetAction((result, token) => Egress(token));
-            //egressCmd.SetAction(Egress);
 
             rootCommand.Add(egressCmd);
 
