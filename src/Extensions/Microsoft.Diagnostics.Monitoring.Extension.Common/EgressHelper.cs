@@ -51,8 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             EgressArtifactResult result = new();
             try
             {
-                byte[] payloadBuffer = await GetPayloadBuffer(token);
-                ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
+                ExtensionEgressPayload configPayload = await GetPayload(token);
 
                 ServiceCollection services = CreateServices<TOptions>(configPayload, configureServices);
 
@@ -91,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             return result.Succeeded ? 0 : 1;
         }
 
-        internal static async Task<byte[]> GetPayloadBuffer(CancellationToken token)
+        internal static async Task<ExtensionEgressPayload> GetPayload(CancellationToken token)
         {
             StdInStream = Console.OpenStandardInput();
 
@@ -118,7 +117,9 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             payloadBuffer = new byte[payloadLengthBuffer];
             await ReadExactlyAsync(payloadBuffer, token);
 
-            return payloadBuffer;
+            ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
+
+            return configPayload;
         }
 
         private static ServiceCollection CreateServices<TOptions>(ExtensionEgressPayload payload, Action<IServiceCollection> configureServices)

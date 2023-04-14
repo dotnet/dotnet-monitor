@@ -33,9 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
             EgressArtifactResult result = new();
             try
             {
-                byte[] payloadBuffer = await EgressHelper.GetPayloadBuffer(token);
-
-                ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
+                ExtensionEgressPayload configPayload = await EgressHelper.GetPayload(token);
                 TestEgressProviderOptions options = BuildOptions(configPayload);
 
                 Assert.Single(options.Metadata.Keys);
