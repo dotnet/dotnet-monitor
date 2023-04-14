@@ -51,32 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                 string jsonConfig = Console.ReadLine();
                 ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
 
-                ServiceCollection services = new();
-
-                // Logging
-                services.AddLogging(builder =>
-                {
-                    builder.SetMinimumLevel(configPayload.LogLevel);
-                    builder.AddConsole();
-                });
-
-                // Options configuration, validation, etc
-                services.AddOptions<TOptions>(configPayload.ProviderName)
-                    .Configure(options =>
-                    {
-                        IConfigurationBuilder builder = new ConfigurationBuilder();
-                        builder
-                            .AddInMemoryCollection(configPayload.Configuration)
-                            .Build()
-                            .Bind(options);
-                    });
-                services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
-
-                services.AddSingleton(new EgressProperties(configPayload.Properties));
-
-                // Optionally allow additional services; this allows the caller to participate in dependency injection
-                // and fulfillment of services that the common egress infrastructure has no knowledge about.
-                configureServices?.Invoke(services);
+                ServiceCollection services = CreateServices<TProvider, TOptions>(configPayload, configureServices);
 
                 // Attempt to register the egress provider if not already registered; this allows the service configuration
                 // callback to register the egress provider if it has additional requirements that cannot be fulfilled by
@@ -112,6 +87,40 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 
             // return non-zero exit code when failed
             return result.Succeeded ? 0 : 1;
+        }
+
+        private static ServiceCollection CreateServices<TProvider, TOptions>(ExtensionEgressPayload payload, Action<IServiceCollection> configureServices)
+            where TProvider : EgressProvider<TOptions>
+            where TOptions : class, new()
+        {
+            ServiceCollection services = new();
+
+            // Logging
+            services.AddLogging(builder =>
+            {
+                builder.SetMinimumLevel(payload.LogLevel);
+                builder.AddConsole();
+            });
+
+            // Options configuration, validation, etc
+            services.AddOptions<TOptions>(payload.ProviderName)
+                .Configure(options =>
+                {
+                    IConfigurationBuilder builder = new ConfigurationBuilder();
+                    builder
+                        .AddInMemoryCollection(payload.Configuration)
+                        .Build()
+                        .Bind(options);
+                });
+            services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
+
+            services.AddSingleton(new EgressProperties(payload.Properties));
+
+            // Optionally allow additional services; this allows the caller to participate in dependency injection
+            // and fulfillment of services that the common egress infrastructure has no knowledge about.
+            configureServices?.Invoke(services);
+
+            return services;
         }
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
