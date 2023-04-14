@@ -17,6 +17,8 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
     /// </summary>
     internal sealed class S3StorageEgressProvider : EgressProvider<S3StorageEgressProviderOptions>
     {
+        private readonly ILogger _logger;
+
 #pragma warning disable CA1852
         internal class StorageFactory
         {
@@ -26,14 +28,17 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 
         internal StorageFactory ClientFactory = new();
 
+        public S3StorageEgressProvider(ILogger<S3StorageEgressProvider> logger)
+        {
+            _logger = logger;
+        }
+
         public override async Task<string> EgressAsync(
-            ILogger logger,
             S3StorageEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
-            Logger = logger;
             IS3Storage client = null;
             string uploadId = null;
             bool uploadDone = false;
@@ -42,7 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
                 client = await ClientFactory.CreateAsync(options, artifactSettings, token);
                 uploadId = await client.InitMultiPartUploadAsync(artifactSettings.Metadata, token);
                 await using var stream = new MultiPartUploadStream(client, options.BucketName, artifactSettings.Name, uploadId, options.CopyBufferSize);
-                Logger.EgressProviderInvokeStreamAction(Constants.S3StorageProviderName);
+                _logger.EgressProviderInvokeStreamAction(Constants.S3StorageProviderName);
                 await action(stream, token);
                 await stream.FinalizeAsync(token); // force to push the last part
 
@@ -78,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 
             DateTime expires = DateTime.UtcNow.Add(options.PreSignedUrlExpiry!.Value);
             string resourceId = client.GetTemporaryResourceUrl(expires);
-            Logger.EgressProviderSavedStream(Constants.S3StorageProviderName, resourceId);
+            _logger.EgressProviderSavedStream(Constants.S3StorageProviderName, resourceId);
             return resourceId;
         }
 
