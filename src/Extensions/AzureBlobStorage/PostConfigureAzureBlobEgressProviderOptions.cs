@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
         public void PostConfigure(string name, AzureBlobEgressProviderOptions options)
         {
             // If account key was not provided but the name was provided,
-            // lookup the account key property value from EgressOptions.Properties
+            // lookup the account key property value from the egress properties
             if (string.IsNullOrEmpty(options.AccountKey) && !string.IsNullOrEmpty(options.AccountKeyName))
             {
                 if (_properties.TryGetValue(options.AccountKeyName, out string accountKey))
@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
             }
 
             // If shared access signature (SAS) was not provided but the name was provided,
-            // lookup the SAS property value from EgressOptions.Properties
+            // lookup the SAS property value from the egress properties
             if (string.IsNullOrEmpty(options.SharedAccessSignature) && !string.IsNullOrEmpty(options.SharedAccessSignatureName))
             {
                 if (_properties.TryGetValue(options.SharedAccessSignatureName, out string sasSig))
@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
             }
 
             // If queue shared access signature (SAS) was not provided but the name was provided,
-            // lookup the SAS property value from EgressOptions.Properties
+            // lookup the SAS property value from the egress properties
             if (string.IsNullOrEmpty(options.QueueSharedAccessSignature) && !string.IsNullOrEmpty(options.QueueSharedAccessSignatureName))
             {
                 if (_properties.TryGetValue(options.QueueSharedAccessSignatureName, out string signature))
