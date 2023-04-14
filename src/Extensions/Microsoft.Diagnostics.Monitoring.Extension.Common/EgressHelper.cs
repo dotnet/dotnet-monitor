@@ -53,6 +53,11 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                     }
 
                     payloadLengthBuffer = reader.ReadInt64();
+
+                    if (payloadLengthBuffer < 0)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(payloadLengthBuffer));
+                    }
                 }
 
                 payloadBuffer = new byte[payloadLengthBuffer];
