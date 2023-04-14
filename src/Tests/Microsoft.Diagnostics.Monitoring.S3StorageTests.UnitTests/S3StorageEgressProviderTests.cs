@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
             // perform
             var totalBytes = MultiPartUploadStream.MinimumSize * 3 + 1024;
             using var stream = ConstructStream(totalBytes);
-            string resourceId = await sut.EgressAsync(string.Empty, options, stream.CopyToAsync, artifactSettings, CancellationToken.None);
+            string resourceId = await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None);
 
             // verify
             Assert.Equal($"BucketName={options.BucketName}, Key={artifactSettings.Name}", resourceId);
@@ -73,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
             // perform
             var totalBytes = 0;
             using var stream = ConstructStream(totalBytes);
-            string resourceId = await sut.EgressAsync(string.Empty, options, stream.CopyToAsync, artifactSettings, CancellationToken.None);
+            string resourceId = await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None);
 
             // verify
             Assert.Equal($"BucketName={options.BucketName}, Key={artifactSettings.Name}", resourceId);
@@ -98,7 +98,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // perform
-            await Assert.ThrowsAnyAsync<Exception>(async () => await sut.EgressAsync(string.Empty, options, (stream, token) => throw new AmazonS3Exception(new Exception()), artifactSettings, CancellationToken.None));
+            await Assert.ThrowsAnyAsync<Exception>(async () => await sut.EgressAsync(options, (stream, token) => throw new AmazonS3Exception(new Exception()), artifactSettings, CancellationToken.None));
 
             var storage = clientFactory.S3;
             Assert.Empty(storage.Storage);
@@ -119,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
             // perform
             var totalBytes = MultiPartUploadStream.MinimumSize * 3 + 1024;
             using var stream = ConstructStream(totalBytes);
-            string resourceId = await sut.EgressAsync(string.Empty, options, stream.CopyToAsync, artifactSettings, CancellationToken.None);
+            string resourceId = await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None);
 
             // verify
             var expiration = DateTime.UtcNow.Add(options.PreSignedUrlExpiry!.Value);

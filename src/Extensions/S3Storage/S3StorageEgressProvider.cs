@@ -34,7 +34,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
         }
 
         public override async Task<string> EgressAsync(
-            string providerName,
             S3StorageEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,

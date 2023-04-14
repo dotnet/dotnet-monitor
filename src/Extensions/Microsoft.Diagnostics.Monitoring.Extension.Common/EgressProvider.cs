@@ -13,7 +13,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         protected EgressProvider() { }
 
         public abstract Task<string> EgressAsync(
-            string providerName,
             TOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,

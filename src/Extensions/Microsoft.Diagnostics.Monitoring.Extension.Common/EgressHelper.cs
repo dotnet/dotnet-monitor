@@ -68,7 +68,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                 Console.CancelKeyPress += Console_CancelKeyPress;
 
                 result.ArtifactPath = await provider.EgressAsync(
-                    configPayload.ProviderName,
                     options,
                     GetStream,
                     configPayload.Settings,

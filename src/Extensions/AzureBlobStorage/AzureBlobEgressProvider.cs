@@ -33,7 +33,6 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
         }
 
         public override async Task<string> EgressAsync(
-            string providerName,
             AzureBlobEgressProviderOptions options,
             Func<Stream, CancellationToken, Task> action,
             EgressArtifactSettings artifactSettings,

@@ -241,7 +241,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
 
         private Task EgressAsync(AzureBlobEgressProvider egressProvider, AzureBlobEgressProviderOptions options, EgressArtifactSettings artifactSettings, CancellationToken token)
         {
-            return egressProvider.EgressAsync(string.Empty, options, WriteToEgressStreamAsync, artifactSettings, token);
+            return egressProvider.EgressAsync(options, WriteToEgressStreamAsync, artifactSettings, token);
         }
 
         private async Task<BlobContainerClient> ConstructBlobContainerClientAsync(string containerName = null, bool create = true)
