@@ -158,7 +158,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             return actualFrameId;
         }
 
-        public ulong[] GetOrAdd(StackFrame[] frames)
+        public ulong[] GetOrAdd(ReadOnlySpan<StackFrame> frames)
         {
             ulong[] frameIds;
             if (frames.Length > 0)

@@ -41,10 +41,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             // the events once the listener is registered to effectively "catch up".
             if (_eventSource.IsEnabled())
             {
-                ulong identifier = _identifierCache.GetOrAdd(new ExceptionIdentifier(exception));
+                ReadOnlySpan<StackFrame> stackFrames = ComputeEffectiveCallStack(exception);
 
-                StackTrace stackTrace = new(exception, fNeedFileInfo: false);
-                ulong[] frameIds = _identifierCache.GetOrAdd(stackTrace.GetFrames());
+                ulong identifier = _identifierCache.GetOrAdd(new ExceptionIdentifier(exception, stackFrames));
+
+                ulong[] frameIds = _identifierCache.GetOrAdd(stackFrames);
 
                 _eventSource.ExceptionInstance(
                     identifier,
@@ -53,6 +54,51 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             }
 
             _next(exception);
+        }
+
+        private static ReadOnlySpan<StackFrame> ComputeEffectiveCallStack(Exception exception)
+        {
+            // The stack trace of thrown exceptions is populated as the exception unwinds the
+            // stack. In the case of observing the exception from the FirstChanceException event,
+            // there is only one frame on the stack (the throwing frame). In order to get the
+            // full call stack of the exception, get the current call stack of the thread and
+            // filter out the call frames that are "above" the exceptions's throwing frame.
+            StackFrame? throwingFrame = null;
+            StackTrace exceptionStackTrace = new(exception, fNeedFileInfo: false);
+            foreach (StackFrame stackFrame in exceptionStackTrace.GetFrames())
+            {
+                if (null != stackFrame.GetMethod())
+                {
+                    throwingFrame = stackFrame;
+                    break;
+                }
+            }
+
+            if (null == throwingFrame)
+            {
+                return ReadOnlySpan<StackFrame>.Empty;
+            }
+
+            StackTrace threadStackTrace = new(fNeedFileInfo: false);
+            ReadOnlySpan<StackFrame> threadStackFrames = threadStackTrace.GetFrames();
+            int index = 0;
+            while (index < threadStackFrames.Length)
+            {
+                StackFrame threadStackFrame = threadStackFrames[index];
+                if (throwingFrame.GetMethod() == threadStackFrame.GetMethod() &&
+                    throwingFrame.GetILOffset() == threadStackFrame.GetILOffset())
+                {
+                    break;
+                }
+
+                index++;
+            }
+
+            if (index < threadStackTrace.FrameCount)
+            {
+                return threadStackFrames.Slice(index);
+            }
+            return ReadOnlySpan<StackFrame>.Empty;
         }
     }
 }

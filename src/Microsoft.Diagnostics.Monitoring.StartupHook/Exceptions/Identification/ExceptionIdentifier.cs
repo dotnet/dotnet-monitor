@@ -21,7 +21,21 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             ExceptionType = ex.GetType();
 
             StackTrace stackTrace = new(ex, fNeedFileInfo: false);
-            foreach (StackFrame stackFrame in stackTrace.GetFrames())
+            SetThrowingFrame(stackTrace.GetFrames());
+        }
+
+        public ExceptionIdentifier(Exception ex, ReadOnlySpan<StackFrame> stackFrames)
+        {
+            ArgumentNullException.ThrowIfNull(ex);
+
+            ExceptionType = ex.GetType();
+
+            SetThrowingFrame(stackFrames);
+        }
+
+        private void SetThrowingFrame(ReadOnlySpan<StackFrame> stackFrames)
+        {
+            foreach (StackFrame stackFrame in stackFrames)
             {
                 ThrowingMethod = stackFrame.GetMethod();
                 if (null != ThrowingMethod)
@@ -34,8 +48,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 
         public Type ExceptionType { get; }
 
-        public MethodBase? ThrowingMethod { get; }
+        public MethodBase? ThrowingMethod { get; private set; }
 
-        public int ILOffset { get; }
+        public int ILOffset { get; private set; }
     }
 }
