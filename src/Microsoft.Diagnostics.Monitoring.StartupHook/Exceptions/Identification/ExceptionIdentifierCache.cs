@@ -127,7 +127,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 
         /// <summary>
         /// Gets the identifier of the <see cref="StackFrame"/> instance and
-        /// caches its data if it has not be encountered yet.
+        /// caches its data if it has not been encountered yet.
         /// </summary>
         /// <returns>
         /// An identifier that uniquely identifies the <see cref="StackFrame"/> in this cache.
