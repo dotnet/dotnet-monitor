@@ -2,11 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
-using Microsoft.Diagnostics.Tools.Monitor.Egress;
+using Microsoft.Diagnostics.Monitoring.Extension.Common;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.CommandLine;
 using System.Text.Json;
+using System.Threading.Tasks;
+using System.Threading;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
@@ -19,21 +21,19 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
 
             CliCommand egressCmd = new CliCommand("Egress");
 
-            egressCmd.SetAction(Egress);
+            egressCmd.SetAction((result, token) => Egress(token));
 
             rootCommand.Add(egressCmd);
 
             return rootCommand.Parse(args).Invoke();
         }
 
-        private static int Egress(ParseResult parseResult)
+        private static async Task<int> Egress(CancellationToken token)
         {
             EgressArtifactResult result = new();
             try
             {
-                string jsonConfig = Console.ReadLine();
-
-                ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(jsonConfig);
+                ExtensionEgressPayload configPayload = await EgressHelper.GetPayload(token);
                 TestEgressProviderOptions options = BuildOptions(configPayload);
 
                 Assert.Single(options.Metadata.Keys);

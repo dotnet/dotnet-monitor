@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
         public async Task ItShouldUploadFile()
         {
             var clientFactory = new InMemoryS3ClientFactory();
-            var sut = new S3StorageEgressProvider() { ClientFactory = clientFactory };
+            var sut = new S3StorageEgressProvider(_loggerProvider.CreateLogger<S3StorageEgressProvider>()) { ClientFactory = clientFactory };
 
             // prepare
             S3StorageEgressProviderOptions options = ConstructEgressProviderSettings();
@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
             // perform
             var totalBytes = MultiPartUploadStream.MinimumSize * 3 + 1024;
             using var stream = ConstructStream(totalBytes);
-            string resourceId = await sut.EgressAsync(_loggerProvider.CreateLogger<S3StorageEgressProvider>(), options, stream.CopyToAsync, artifactSettings, CancellationToken.None);
+            string resourceId = await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None);
 
             // verify
             Assert.Equal($"BucketName={options.BucketName}, Key={artifactSettings.Name}", resourceId);
@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
         public async Task ItShouldUploadEmptyFile()
         {
             var clientFactory = new InMemoryS3ClientFactory();
-            var sut = new S3StorageEgressProvider() { ClientFactory = clientFactory };
+            var sut = new S3StorageEgressProvider(_loggerProvider.CreateLogger<S3StorageEgressProvider>()) { ClientFactory = clientFactory };
 
             // prepare
             S3StorageEgressProviderOptions options = ConstructEgressProviderSettings();
@@ -73,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
             // perform
             var totalBytes = 0;
             using var stream = ConstructStream(totalBytes);
-            string resourceId = await sut.EgressAsync(_loggerProvider.CreateLogger<S3StorageEgressProvider>(), options, stream.CopyToAsync, artifactSettings, CancellationToken.None);
+            string resourceId = await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None);
 
             // verify
             Assert.Equal($"BucketName={options.BucketName}, Key={artifactSettings.Name}", resourceId);
@@ -91,14 +91,14 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
         public async Task ItShouldAbortOnError()
         {
             var clientFactory = new InMemoryS3ClientFactory();
-            var sut = new S3StorageEgressProvider() { ClientFactory = clientFactory };
+            var sut = new S3StorageEgressProvider(_loggerProvider.CreateLogger<S3StorageEgressProvider>()) { ClientFactory = clientFactory };
 
             // prepare
             S3StorageEgressProviderOptions options = ConstructEgressProviderSettings();
             EgressArtifactSettings artifactSettings = ConstructArtifactSettings();
 
             // perform
-            await Assert.ThrowsAnyAsync<Exception>(async () => await sut.EgressAsync(_loggerProvider.CreateLogger<S3StorageEgressProvider>(), options, (stream, token) => throw new AmazonS3Exception(new Exception()), artifactSettings, CancellationToken.None));
+            await Assert.ThrowsAnyAsync<Exception>(async () => await sut.EgressAsync(options, (stream, token) => throw new AmazonS3Exception(new Exception()), artifactSettings, CancellationToken.None));
 
             var storage = clientFactory.S3;
             Assert.Empty(storage.Storage);
@@ -109,7 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
         public async Task ItShouldUploadFileAndGeneratePreSignedUrl()
         {
             var clientFactory = new InMemoryS3ClientFactory();
-            var sut = new S3StorageEgressProvider() { ClientFactory = clientFactory };
+            var sut = new S3StorageEgressProvider(_loggerProvider.CreateLogger<S3StorageEgressProvider>()) { ClientFactory = clientFactory };
 
             // prepare
             S3StorageEgressProviderOptions options = ConstructEgressProviderSettings();
@@ -119,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests
             // perform
             var totalBytes = MultiPartUploadStream.MinimumSize * 3 + 1024;
             using var stream = ConstructStream(totalBytes);
-            string resourceId = await sut.EgressAsync(_loggerProvider.CreateLogger<S3StorageEgressProvider>(), options, stream.CopyToAsync, artifactSettings, CancellationToken.None);
+            string resourceId = await sut.EgressAsync(options, stream.CopyToAsync, artifactSettings, CancellationToken.None);
 
             // verify
             var expiration = DateTime.UtcNow.Add(options.PreSignedUrlExpiry!.Value);

@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\Tools\dotnet-monitor\DataAnnotationValidateOptions.cs" Link="DataAnnotationValidateOptions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
   </ItemGroup>
 
@@ -16,10 +20,27 @@
     <InternalsVisibleTo Include="dotnet-monitor-egress-s3storage" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsLoggingVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftExtensionsLoggingConsoleVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Strings.Designer.cs">
+      <DependentUpon>Strings.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Strings.resx">
+      <SubType>Designer</SubType>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
