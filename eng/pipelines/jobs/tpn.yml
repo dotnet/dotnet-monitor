@@ -9,13 +9,21 @@ jobs:
       name: $(DncEngInternalBuildPool)
       demands: ImageOverride -equals 1es-windows-2019
     steps:
-    # Only restore the dotnet-monitor project so only packages we ship get included in the below CG scan
+    # Only restore the projects that are shipped so only packages we ship get included in the below CG scan
+    - script: >-
+        $(Build.SourcesDirectory)/restore.cmd -ci -projects $(Build.SourcesDirectory)/src/Extensions/AzureBlobStorage/AzureBlobStorage.csproj
+      displayName: Restore AzureBlobStorage
+
     - script: >-
         $(Build.SourcesDirectory)/restore.cmd -ci -projects $(Build.SourcesDirectory)/src/Tools/dotnet-monitor/dotnet-monitor.csproj
-      displayName: Restore dotnet-monitor tool packages
+      displayName: Restore dotnet-monitor
+    
+    - script: >-
+        $(Build.SourcesDirectory)/restore.cmd -ci -projects $(Build.SourcesDirectory)/src/Extensions/S3Storage/S3Storage.csproj
+      displayName: Restore S3Storage
         
     - task: ComponentGovernanceComponentDetection@0
-      displayName: Component Detection (dotnet-monitor tool)
+      displayName: Component Detection
 
     - task: notice@0
       displayName: Generate TPN file
