@@ -67,18 +67,18 @@
       "outOfSupportDate": "2023-06-14T00:00:00.000Z"
     },
     "7.1": {
-      "tag": "v7.1.0",
+      "tag": "v7.1.1",
       "minorReleaseDate": "2023-03-14T00:00:00.000Z",
-      "patchReleaseDate": "2023-03-14T00:00:00.000Z",
+      "patchReleaseDate": "2023-04-11T00:00:00.000Z",
       "supportedFrameworks": [
         "net6.0",
         "net7.0"
       ]
     },
     "8.0": {
-      "tag": "v8.0.0-preview.2.23155.4",
-      "minorReleaseDate": "2023-03-14T00:00:00.000Z",
-      "patchReleaseDate": "2023-03-14T00:00:00.000Z",
+      "tag": "v8.0.0-preview.3.23180.9",
+      "minorReleaseDate": "2023-04-11T00:00:00.000Z",
+      "patchReleaseDate": "2023-04-11T00:00:00.000Z",
       "supportedFrameworks": [
         "net6.0",
         "net8.0"
