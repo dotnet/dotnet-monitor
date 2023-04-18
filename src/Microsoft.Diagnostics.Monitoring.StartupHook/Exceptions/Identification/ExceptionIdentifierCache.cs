@@ -16,6 +16,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
     /// </summary>
     internal sealed class ExceptionIdentifierCache
     {
+        private const ulong InvalidId = 0;
+
         // List of callbacks to invoke for newly provided metadata.
         private readonly IEnumerable<ExceptionIdentifierCacheCallback> _callbacks;
 
@@ -83,6 +85,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         /// </returns>
         public ulong GetOrAdd(MethodBase method)
         {
+            // Dynamic methods do not have method handles and can be detected by checking if their declaring type is null
+            // Do not attempt to create an identifier for these and skip them.
+            // CONSIDER: Can an artificial identifier be created that does not collide with the algorithm used in GetId(MethodBase)?
+            if (null == method.DeclaringType)
+            {
+                return InvalidId;
+            }
+
             ulong methodId = GetId(method);
             if (!_nameCache.FunctionData.ContainsKey(methodId))
             {
