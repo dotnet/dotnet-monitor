@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -67,14 +68,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 LogLevel = GetMinimumLogLevel()
             };
 
-            return EgressArtifact(payload, action, token);
+            return EgressArtifact(payload, action, ExtensionModes.Execute, token);
         }
 
         /// <inheritdoc/>
         public async Task<EgressArtifactResult> ValidateProviderAsync(
             string providerName,
             EgressArtifactSettings settings,
-            Func<Stream, CancellationToken, Task> action,
             CancellationToken token)
         {
             EgressArtifactResult result = new();
@@ -93,7 +93,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                     ProviderName = providerName,
                 };
 
-                result = await EgressArtifact(payload, action, token, ExtensionModes.Validate);
+                result = await EgressArtifact(payload, null, ExtensionModes.Validate, token);
             }
 
             return result;
@@ -102,8 +102,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public async Task<EgressArtifactResult> EgressArtifact(
             ExtensionEgressPayload payload,
             Func<Stream, CancellationToken, Task> action,
-            CancellationToken token,
-            ExtensionModes mode = ExtensionModes.Execute)
+            ExtensionModes mode,
+            CancellationToken token)
         {
             _manifest.Validate();
 
@@ -168,7 +168,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 StartInfo = pStart,
             };
 
-            using OutputParser<EgressArtifactResult> parser = new(p, _logger, mode);
+            var parserLogger = mode == ExtensionModes.Execute ? _logger : NullLogger<EgressExtension>.Instance;
+            using OutputParser<EgressArtifactResult> parser = new(p, parserLogger);
 
             _logger.ExtensionStarting(_manifest.Name);
             if (!p.Start())

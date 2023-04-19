@@ -30,7 +30,7 @@ namespace CollectionRuleActions.UnitTests
             return new EgressArtifactResult() { Succeeded = true };
         }
 
-        public Task<EgressArtifactResult> ValidateProviderAsync(string providerName, EgressArtifactSettings settings, Func<Stream, CancellationToken, Task> action, CancellationToken token)
+        public Task<EgressArtifactResult> ValidateProviderAsync(string providerName, EgressArtifactSettings settings, CancellationToken token)
         {
             throw new NotImplementedException();
         }

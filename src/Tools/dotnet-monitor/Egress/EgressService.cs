@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             _source.Initialize();
         }
 
-        public void ValidateProvider(string providerName)
+        public void ValidateProviderExists(string providerName)
         {
             // GetProviderType should never return null so no need to check; it will throw
             // if the egress provider could not be located or instantiated.
@@ -51,22 +51,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             return new EgressResult(result.ArtifactPath);
         }
 
-        public async Task<EgressResult> ValidateProviderAsync(string providerName, CancellationToken token)
+        public async Task ValidateProviderOptionsAsync(string providerName, CancellationToken token)
         {
             IEgressExtension extension = _source.GetEgressProvider(providerName);
 
             EgressArtifactResult result = await extension.ValidateProviderAsync(
                 providerName,
                 new EgressArtifactSettings(),
-                null,
                 token);
 
             if (!result.Succeeded)
             {
                 throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderFailedValidation, providerName, result.FailureMessage));
             }
-
-            return new EgressResult(result.ArtifactPath);
         }
 
         private static async Task<EgressArtifactSettings> CreateSettings(IEndpointInfo source, string fileName, string contentType, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)

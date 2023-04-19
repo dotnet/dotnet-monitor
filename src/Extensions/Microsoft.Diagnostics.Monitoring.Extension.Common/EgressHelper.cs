@@ -53,7 +53,10 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             try
             {
                 ExtensionEgressPayload configPayload = await GetPayload(token);
-                (TOptions options, EgressProvider<TOptions> provider) = await GetProviderAndOptions<TProvider, TOptions>(configureServices, configPayload);
+                await using var serviceProvider = BuildServiceProvider<TProvider, TOptions>(configureServices, configPayload);
+
+                EgressProvider<TOptions> provider = serviceProvider.GetRequiredService<EgressProvider<TOptions>>();
+                TOptions options = serviceProvider.GetRequiredService<IOptionsSnapshot<TOptions>>().Get(configPayload.ProviderName);
 
                 Console.CancelKeyPress += Console_CancelKeyPress;
 
@@ -82,7 +85,9 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             try
             {
                 ExtensionEgressPayload configPayload = await GetPayload(token);
-                _ = await GetProviderAndOptions<TProvider, TOptions>(configureServices, configPayload);
+                await using var serviceProvider = BuildServiceProvider<TProvider, TOptions>(configureServices, configPayload);
+
+                TOptions options = serviceProvider.GetRequiredService<IOptionsSnapshot<TOptions>>().Get(configPayload.ProviderName);
 
                 result.ArtifactPath = string.Empty;
                 result.Succeeded = true;
@@ -104,7 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             return result.Succeeded ? 0 : 1;
         }
 
-        private static async Task<(TOptions, EgressProvider<TOptions>)> GetProviderAndOptions<TProvider, TOptions>(Action<IServiceCollection> configureServices, ExtensionEgressPayload configPayload)
+        private static ServiceProvider BuildServiceProvider<TProvider, TOptions>(Action<IServiceCollection> configureServices, ExtensionEgressPayload configPayload)
             where TProvider : EgressProvider<TOptions>
             where TOptions : class, new()
         {
@@ -126,12 +131,9 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 
             services.MakeReadOnly();
 
-            await using ServiceProvider serviceProvider = services.BuildServiceProvider();
+            ServiceProvider serviceProvider = services.BuildServiceProvider();
 
-            EgressProvider<TOptions> provider = serviceProvider.GetRequiredService<EgressProvider<TOptions>>();
-            TOptions options = serviceProvider.GetRequiredService<IOptionsSnapshot<TOptions>>().Get(configPayload.ProviderName);
-
-            return (options, provider);
+            return serviceProvider;
         }
 
         internal static async Task<ExtensionEgressPayload> GetPayload(CancellationToken token)
@@ -240,11 +242,5 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         public string ProviderName { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public LogLevel LogLevel { get; set; }
-    }
-
-    internal enum ExtensionModes
-    {
-        Execute,
-        Validate
     }
 }

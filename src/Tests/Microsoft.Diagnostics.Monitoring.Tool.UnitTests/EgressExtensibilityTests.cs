@@ -116,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             CancellationTokenSource tokenSource = new(CommonTestTimeouts.GeneralTimeout);
 
-            return await extension.EgressArtifact(payload, GetStream, tokenSource.Token);
+            return await extension.EgressArtifact(payload, GetStream, ExtensionModes.Execute, tokenSource.Token);
         }
 
         private IEgressExtension FindEgressExtension(ConfigDirectory configDirectory, HostBuilderSettings settings)

@@ -74,7 +74,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             serviceProvider
                 .GetRequiredService<IEgressService>()
-                .ValidateProvider(EgressProviderName);
+                .ValidateProviderExists(EgressProviderName);
         }
 
         public static async Task<ExecutionResult<EgressResult>> ValidateAsync(IServiceProvider serviceProvider, string endpointName, CancellationToken token)
@@ -86,9 +86,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 IEgressService egressService = serviceProvider
                     .GetRequiredService<IEgressService>();
 
-                EgressResult egressResult = await egressService.ValidateProviderAsync(endpointName, token);
+                await egressService.ValidateProviderOptionsAsync(endpointName, token);
 
-                return ExecutionResult<EgressResult>.Succeeded(egressResult);
+                return ExecutionResult<EgressResult>.Succeeded(new EgressResult());
             }, logger, token);
         }
 
