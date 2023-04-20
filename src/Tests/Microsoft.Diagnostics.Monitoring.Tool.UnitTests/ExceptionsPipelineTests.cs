@@ -138,6 +138,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
+        [Fact]
+        public Task EventExceptionsPipeline_ReversePInvokeException()
+        {
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.ReversePInvokeException,
+                expectedInstanceCount: 1,
+                validate: instances =>
+                {
+                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
+                    Assert.NotNull(instance);
+                    Assert.NotEqual(0UL, instance.ExceptionId);
+                    Assert.Equal("Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomException`2[System.Int32,System.String]", instance.TypeName);
+                    Assert.False(string.IsNullOrEmpty(instance.Message));
+                    Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
+                });
+        }
+
         private async Task Execute(
             string subScenarioName,
             int expectedInstanceCount,

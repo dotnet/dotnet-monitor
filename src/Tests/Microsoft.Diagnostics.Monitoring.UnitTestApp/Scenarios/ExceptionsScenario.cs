@@ -29,12 +29,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             CliCommand customExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.CustomException);
             customExceptionCommand.SetAction(CustomExceptionAsync);
 
+            CliCommand reversePInvokeExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ReversePInvokeException);
+            reversePInvokeExceptionCommand.SetAction(ReversePInvokeExceptionAsync);
+
             CliCommand scenarioCommand = new(TestAppScenarios.Exceptions.Name);
             scenarioCommand.Subcommands.Add(singleExceptionCommand);
             scenarioCommand.Subcommands.Add(repeatExceptionCommand);
             scenarioCommand.Subcommands.Add(asyncExceptionCommand);
             scenarioCommand.Subcommands.Add(frameworkExceptionCommand);
             scenarioCommand.Subcommands.Add(customExceptionCommand);
+            scenarioCommand.Subcommands.Add(reversePInvokeExceptionCommand);
             return scenarioCommand;
         }
 
@@ -103,6 +107,22 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
 
                 ThrowAndCatchCustomException();
+
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
+
+                return 0;
+            }, token);
+        }
+
+        public static Task<int> ReversePInvokeExceptionAsync(ParseResult result, CancellationToken token)
+        {
+            MonitorLibrary.InitializeResolver();
+
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
+
+                MonitorLibrary.TestHook(ThrowAndCatchInvalidOperationException);
 
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
 
