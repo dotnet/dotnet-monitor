@@ -68,7 +68,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 LogLevel = GetMinimumLogLevel()
             };
 
-            return EgressArtifact(payload, action, ExtensionModes.Execute, token);
+            return EgressArtifact(payload, action, ExtensionMode.Execute, token);
         }
 
         /// <inheritdoc/>
@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             {
                 result.Succeeded = true;
             }
-            else if (_manifest.Modes.Contains(ExtensionModes.Validate))
+            else if (_manifest.Modes.Contains(ExtensionMode.Validate))
             {
                 ExtensionEgressPayload payload = new()
                 {
@@ -93,7 +93,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                     ProviderName = providerName,
                 };
 
-                result = await EgressArtifact(payload, null, ExtensionModes.Validate, token);
+                result = await EgressArtifact(payload, null, ExtensionMode.Validate, token);
             }
 
             return result;
@@ -102,7 +102,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public async Task<EgressArtifactResult> EgressArtifact(
             ExtensionEgressPayload payload,
             Func<Stream, CancellationToken, Task> action,
-            ExtensionModes mode,
+            ExtensionMode mode,
             CancellationToken token)
         {
             _manifest.Validate();
@@ -168,7 +168,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 StartInfo = pStart,
             };
 
-            var parserLogger = mode == ExtensionModes.Execute ? _logger : NullLogger<EgressExtension>.Instance;
+            var parserLogger = mode == ExtensionMode.Execute ? _logger : NullLogger<EgressExtension>.Instance;
             using OutputParser<EgressArtifactResult> parser = new(p, parserLogger);
 
             _logger.ExtensionStarting(_manifest.Name);
@@ -198,7 +198,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
             _logger.ExtensionConfigured(pStart.FileName, p.Id);
 
-            if (mode == ExtensionModes.Execute)
+            if (mode == ExtensionMode.Execute)
             {
                 await action(p.StandardInput.BaseStream, token);
             }

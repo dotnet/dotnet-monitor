@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         /// <summary>
         /// Additional execution modes supported by the extension; the ability to run is assumed.
         /// </summary>
-        public List<ExtensionModes> Modes { get; set; } = new List<ExtensionModes>();
+        public List<ExtensionMode> Modes { get; set; } = new List<ExtensionMode>();
 
         public static ExtensionManifest FromPath(string path)
         {

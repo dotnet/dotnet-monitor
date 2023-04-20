@@ -73,14 +73,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                         }
                         else
                         {
-                            _logger?.ExtensionMalformedOutput(_processId, eventArgs.Data, typeof(TResult));
+                            _logger.ExtensionMalformedOutput(_processId, eventArgs.Data, typeof(TResult));
                         }
                     }
                     catch (JsonException)
                     {
                         // Expected that some things won't parse correctly
                     }
-                    _logger?.ExtensionOutputMessage(_processId, eventArgs.Data);
+                    _logger.ExtensionOutputMessage(_processId, eventArgs.Data);
                 }
             }
 
@@ -88,7 +88,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             {
                 if (eventArgs.Data != null)
                 {
-                    _logger?.ExtensionErrorMessage(_processId, eventArgs.Data);
+                    _logger.ExtensionErrorMessage(_processId, eventArgs.Data);
                 }
             }
 

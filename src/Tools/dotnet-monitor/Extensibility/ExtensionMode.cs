@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    internal enum ExtensionModes
+    internal enum ExtensionMode
     {
         Execute,
         Validate

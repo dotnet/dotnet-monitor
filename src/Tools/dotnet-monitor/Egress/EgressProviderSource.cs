@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +11,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 {
@@ -22,22 +20,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private readonly IEgressConfigurationProvider _configurationProvider;
         private readonly ExtensionDiscoverer _extensionDiscoverer;
         private readonly ILogger _logger;
-        private readonly IDictionary<string, string> _providerNameToTypeMap;
-        private readonly IServiceProvider _serviceProvider;
-        private const int ValidationTimeoutMilliseconds = 30 * 1000;
+        private readonly IDictionary<string, string> ProviderNameToTypeMap;
+        public IEnumerable<string> ProviderNames { get; set; } = new List<string>();
+        public event EventHandler ConfigurationChanged;
 
         public EgressProviderSource(
             IEgressConfigurationProvider configurationProvider,
             ExtensionDiscoverer extensionDiscoverer,
-            ILogger<EgressProviderSource> logger,
-            IServiceProvider serviceProvider)
+            ILogger<EgressProviderSource> logger)
         {
             _changeRegistrationLazy = new Lazy<IDisposable>(CreateChangeRegistration, LazyThreadSafetyMode.ExecutionAndPublication);
             _configurationProvider = configurationProvider;
             _extensionDiscoverer = extensionDiscoverer;
             _logger = logger;
-            _providerNameToTypeMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            _serviceProvider = serviceProvider;
+            ProviderNameToTypeMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
         public void Dispose()
@@ -55,7 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         public IEgressExtension GetEgressProvider(string name)
         {
-            if (!_providerNameToTypeMap.TryGetValue(name, out string providerType))
+            if (!ProviderNameToTypeMap.TryGetValue(name, out string providerType))
             {
                 throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, name));
             }
@@ -76,7 +72,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         private void Reload()
         {
-            _providerNameToTypeMap.Clear();
+            ProviderNameToTypeMap.Clear();
 
             foreach (string providerType in _configurationProvider.ProviderTypes)
             {
@@ -94,23 +90,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 foreach (IConfigurationSection optionsSection in typeSection.GetChildren())
                 {
                     string providerName = optionsSection.Key;
-                    if (_providerNameToTypeMap.TryGetValue(providerName, out string existingProviderType))
+                    if (ProviderNameToTypeMap.TryGetValue(providerName, out string existingProviderType))
                     {
                         _logger.DuplicateEgressProviderIgnored(providerName, providerType, existingProviderType);
                     }
                     else
                     {
-                        _providerNameToTypeMap.Add(providerName, providerType);
+                        ProviderNameToTypeMap.Add(providerName, providerType);
                     }
                 }
             }
 
-            CancellationTokenSource source = new(ValidationTimeoutMilliseconds);
-
-            foreach (var providerName in _providerNameToTypeMap.Keys)
+            lock(ProviderNames)
             {
-                Task.Run(() => EgressOperation.ValidateAsync(_serviceProvider, providerName, source.Token));
+                ProviderNames = new List<string>(ProviderNameToTypeMap.Keys);
             }
+
+            ConfigurationChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

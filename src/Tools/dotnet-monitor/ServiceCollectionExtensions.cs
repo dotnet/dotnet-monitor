@@ -239,6 +239,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // Well-known extensions
             services.AddSingleton<ExtensionRepository, WellKnownExtensionRepository>();
             services.AddSingleton<IWellKnownExtensionFactory, FileSystemEgressExtensionFactory>();
+            services.AddHostedService<EgressValidationService>();
             return services;
         }
 
