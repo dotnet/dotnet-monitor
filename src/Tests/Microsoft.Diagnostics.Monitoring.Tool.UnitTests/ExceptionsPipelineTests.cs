@@ -138,6 +138,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
+        /// <summary>
+        /// Tests that exceptions from reverse p/invoke are detectable.
+        /// </summary>
         [Fact]
         public Task EventExceptionsPipeline_ReversePInvokeException()
         {
@@ -155,6 +158,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 });
         }
 
+        /// <summary>
+        /// Tests that exceptions from dynamic methods are detectable.
+        /// </summary>
         [Fact]
         public Task EventExceptionsPipeline_DynamicMethodException()
         {
@@ -167,6 +173,26 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.NotNull(instance);
                     Assert.NotEqual(0UL, instance.ExceptionId);
                     Assert.Equal("Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomSimpleException", instance.TypeName);
+                    Assert.False(string.IsNullOrEmpty(instance.Message));
+                    Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
+                });
+        }
+
+        /// <summary>
+        /// Tests that exceptions from array types are detectable.
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_ArrayException()
+        {
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.ArrayException,
+                expectedInstanceCount: 1,
+                validate: instances =>
+                {
+                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
+                    Assert.NotNull(instance);
+                    Assert.NotEqual(0UL, instance.ExceptionId);
+                    Assert.Equal(typeof(IndexOutOfRangeException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
                 });

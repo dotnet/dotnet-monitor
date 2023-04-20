@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System;
 using System.CommandLine;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
@@ -37,6 +38,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             CliCommand dynamicMethodExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.DynamicMethodException);
             dynamicMethodExceptionCommand.SetAction(DynamicMethodExceptionAsync);
 
+            CliCommand arrayExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ArrayException);
+            arrayExceptionCommand.SetAction(ArrayExceptionAsync);
+
             CliCommand scenarioCommand = new(TestAppScenarios.Exceptions.Name);
             scenarioCommand.Subcommands.Add(singleExceptionCommand);
             scenarioCommand.Subcommands.Add(repeatExceptionCommand);
@@ -45,6 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             scenarioCommand.Subcommands.Add(customExceptionCommand);
             scenarioCommand.Subcommands.Add(reversePInvokeExceptionCommand);
             scenarioCommand.Subcommands.Add(dynamicMethodExceptionCommand);
+            scenarioCommand.Subcommands.Add(arrayExceptionCommand);
             return scenarioCommand;
         }
 
@@ -181,6 +186,27 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 Action dynamicMethodDelegate = (Action)dynamicMethod.CreateDelegate(typeof(Action));
 
                 dynamicMethodDelegate();
+
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
+
+                return 0;
+            }, token);
+        }
+
+        public static Task<int> ArrayExceptionAsync(ParseResult result, CancellationToken token)
+        {
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
+
+                int[] values = Enumerable.Range(1, 100).ToArray();
+                try
+                {
+                    object value = values.GetValue(200);
+                }
+                catch (Exception)
+                {
+                }
 
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
 
