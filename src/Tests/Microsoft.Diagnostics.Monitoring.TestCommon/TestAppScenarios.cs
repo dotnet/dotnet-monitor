@@ -54,6 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string FrameworkException = nameof(FrameworkException);
                 public const string CustomException = nameof(CustomException);
                 public const string ReversePInvokeException = nameof(ReversePInvokeException);
+                public const string DynamicMethodException = nameof(DynamicMethodException);
             }
 
             public static class Commands

@@ -16,14 +16,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
     /// </summary>
     internal sealed class ExceptionIdentifierCache
     {
-        private const ulong InvalidId = 0;
-
         // List of callbacks to invoke for newly provided metadata.
         private readonly IEnumerable<ExceptionIdentifierCacheCallback> _callbacks;
 
         // Mapping of ExceptionIdentifier to a unique ID; ExceptionIdentifier itself does not have a way
         // of uniquely identifying itself using a primitive type.
         private readonly ConcurrentDictionary<ExceptionIdentifier, ulong> _exceptionIds = new();
+
+        private readonly ConcurrentDictionary<MethodBase, ulong> _methodIds = new();
 
         // Mapping of Module to a unique ID; Module itself does not have a way
         // of uniquely identifying itself using a primitive type.
@@ -35,6 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         private readonly NameCache _nameCache = new();
 
         private ulong _nextRegistrationId = 1;
+        private ulong _nextMethodId = 1;
         private ulong _nextModuleId = 1;
         private ulong _nextStackFrameId = 1;
 
@@ -85,23 +86,37 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         /// </returns>
         public ulong GetOrAdd(MethodBase method)
         {
-            // Dynamic methods do not have method handles and can be detected by checking if their declaring type is null
-            // Do not attempt to create an identifier for these and skip them.
-            // CONSIDER: Can an artificial identifier be created that does not collide with the algorithm used in GetId(MethodBase)?
-            if (null == method.DeclaringType)
-            {
-                return InvalidId;
-            }
+            if (_methodIds.TryGetValue(method, out ulong methodId))
+                return methodId;
 
-            ulong methodId = GetId(method);
-            if (!_nameCache.FunctionData.ContainsKey(methodId))
+            methodId = Interlocked.Increment(ref _nextMethodId);
+
+            ulong actualMethodId = _methodIds.GetOrAdd(method, methodId);
+
+            if (methodId == actualMethodId)
             {
+                // Dynamic methods do not have metadata tokens
+                uint metadataToken = 0;
+                try
+                {
+                    metadataToken = Convert.ToUInt32(method.MetadataToken);
+                }
+                catch (Exception) { }
+
+                // RTDynamicMethod does not implement GetGenericArguments.
+                Type[] genericArguments = Array.Empty<Type>();
+                try
+                {
+                    genericArguments = method.GetGenericArguments();
+                }
+                catch (Exception) { }
+
                 FunctionData data = new(
                     method.Name,
                     AddOrDefault(method.DeclaringType),
-                    Convert.ToUInt32(method.MetadataToken),
+                    metadataToken,
                     GetOrAdd(method.Module),
-                    GetOrAdd(method.GetGenericArguments())
+                    GetOrAdd(genericArguments)
                     );
 
                 if (_nameCache.FunctionData.TryAdd(methodId, data))
@@ -276,11 +291,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                 return default;
 
             return GetOrAdd(type);
-        }
-
-        private static ulong GetId(MethodBase method)
-        {
-            return Convert.ToUInt64(method.MethodHandle.Value.ToInt64());
         }
 
         private ulong GetId(Module module)
