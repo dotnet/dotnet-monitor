@@ -43,7 +43,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests\Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests.csproj", "{5761C008-71BC-4BAE-B6AB-570BB289359E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Extension.Common", "src\Extensions\Microsoft.Diagnostics.Monitoring.Extension.Common\Microsoft.Diagnostics.Monitoring.Extension.Common.csproj", "{65C25244-F80E-4D59-98D6-CBB3D04E2B3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Extension.Common", "src\Microsoft.Diagnostics.Monitoring.Extension.Common\Microsoft.Diagnostics.Monitoring.Extension.Common.csproj", "{65C25244-F80E-4D59-98D6-CBB3D04E2B3C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Profiler.UnitTests", "src\Tests\Microsoft.Diagnostics.Monitoring.Profiler.UnitTests\Microsoft.Diagnostics.Monitoring.Profiler.UnitTests.csproj", "{A25AC517-F7C6-43C6-B892-4A447914C42C}"
 EndProject
@@ -202,7 +202,7 @@ Global
 		{55309C3E-1DD2-4B4A-9126-CFA28C97F1AD} = {D3FEE1C0-E1E7-4796-A217-B46E3B6CCCCD}
 		{4276CFC4-B05F-4FCA-A4ED-0C82D541B23D} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{5761C008-71BC-4BAE-B6AB-570BB289359E} = {C7568468-1C79-4944-8136-18812A7F9EA7}
-		{65C25244-F80E-4D59-98D6-CBB3D04E2B3C} = {D3FEE1C0-E1E7-4796-A217-B46E3B6CCCCD}
+		{65C25244-F80E-4D59-98D6-CBB3D04E2B3C} = {19FAB78C-3351-4911-8F0C-8C6056401740}
 		{A25AC517-F7C6-43C6-B892-4A447914C42C} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{1CA2284B-A3A0-476A-9A93-A95E665E78BE} = {C7568468-1C79-4944-8136-18812A7F9EA7}
 		{F324BAD6-C9C0-42DE-9150-D8307D972E9A} = {C7568468-1C79-4944-8136-18812A7F9EA7}

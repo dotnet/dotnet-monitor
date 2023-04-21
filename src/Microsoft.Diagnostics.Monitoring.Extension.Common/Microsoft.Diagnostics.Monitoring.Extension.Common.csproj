@@ -5,10 +5,12 @@
     <PackAsTool>false</PackAsTool>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
     <DefineConstants>$(DefineConstants);EXTENSION</DefineConstants>
+    <IsPackable>true</IsPackable>
+    <IsShippingAssembly>true</IsShippingAssembly>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Tools\dotnet-monitor\DataAnnotationValidateOptions.cs" Link="DataAnnotationValidateOptions.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\DataAnnotationValidateOptions.cs" Link="DataAnnotationValidateOptions.cs" />
   </ItemGroup>
 
   <ItemGroup>
