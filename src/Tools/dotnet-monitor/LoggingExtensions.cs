@@ -353,7 +353,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static readonly Action<ILogger, int, int, Exception> _extensionExited =
             LoggerMessage.Define<int, int>(
                 eventId: LoggingEventIds.ExtensionExited.EventId(),
-                logLevel: LogLevel.Information,
+                logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_ExtensionExited);
 
         private static readonly Action<ILogger, int, string, Exception> _extensionOutputMessage =

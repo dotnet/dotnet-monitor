@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private readonly IEgressConfigurationProvider _configurationProvider;
         private readonly ExtensionDiscoverer _extensionDiscoverer;
         private readonly ILogger _logger;
-        private readonly IDictionary<string, string> ProviderNameToTypeMap;
+        private readonly IDictionary<string, string> _providerNameToTypeMap;
         public IEnumerable<string> ProviderNames { get; set; } = new List<string>();
         public event EventHandler ConfigurationChanged;
 
@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             _configurationProvider = configurationProvider;
             _extensionDiscoverer = extensionDiscoverer;
             _logger = logger;
-            ProviderNameToTypeMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            _providerNameToTypeMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
         public void Dispose()
@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         public IEgressExtension GetEgressProvider(string name)
         {
-            if (!ProviderNameToTypeMap.TryGetValue(name, out string providerType))
+            if (!_providerNameToTypeMap.TryGetValue(name, out string providerType))
             {
                 throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, name));
             }
@@ -72,7 +72,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         private void Reload()
         {
-            ProviderNameToTypeMap.Clear();
+            _providerNameToTypeMap.Clear();
 
             foreach (string providerType in _configurationProvider.ProviderTypes)
             {
@@ -90,20 +90,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 foreach (IConfigurationSection optionsSection in typeSection.GetChildren())
                 {
                     string providerName = optionsSection.Key;
-                    if (ProviderNameToTypeMap.TryGetValue(providerName, out string existingProviderType))
+                    if (_providerNameToTypeMap.TryGetValue(providerName, out string existingProviderType))
                     {
                         _logger.DuplicateEgressProviderIgnored(providerName, providerType, existingProviderType);
                     }
                     else
                     {
-                        ProviderNameToTypeMap.Add(providerName, providerType);
+                        _providerNameToTypeMap.Add(providerName, providerType);
                     }
                 }
             }
 
             lock(ProviderNames)
             {
-                ProviderNames = new List<string>(ProviderNameToTypeMap.Keys);
+                ProviderNames = new List<string>(_providerNameToTypeMap.Keys);
             }
 
             ConfigurationChanged?.Invoke(this, EventArgs.Empty);
