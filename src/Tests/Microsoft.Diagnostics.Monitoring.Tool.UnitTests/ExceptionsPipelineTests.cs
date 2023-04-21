@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -141,8 +142,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// <summary>
         /// Tests that exceptions from reverse p/invoke are detectable.
         /// </summary>
-        [Fact(Skip = "Loading profiler library from managed code on Windows x86 build leg doesn't work because process runs as x64.")]
-        public Task EventExceptionsPipeline_ReversePInvokeException()
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public Task EventExceptionsPipeline_ReversePInvokeException(Architecture architecture)
         {
             return Execute(
                 TestAppScenarios.Exceptions.SubScenarios.ReversePInvokeException,
@@ -155,7 +157,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(typeof(InvalidOperationException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
-                });
+                },
+                architecture);
         }
 
         /// <summary>
@@ -201,7 +204,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private async Task Execute(
             string subScenarioName,
             int expectedInstanceCount,
-            Action<IEnumerable<TestExceptionsStore.ExceptionInstance>> validate)
+            Action<IEnumerable<TestExceptionsStore.ExceptionInstance>> validate,
+            Architecture? architecture = null)
         {
             EndpointInfoSourceCallback callback = new(_outputHelper);
             await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
@@ -210,6 +214,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assembly.GetExecutingAssembly(),
                 sourceHolder.TransportName,
                 TargetFrameworkMoniker.Current);
+            runner.Architecture = architecture;
             runner.ScenarioName = TestAppScenarios.Exceptions.Name + " " + subScenarioName;
 
             AddStartupHookEnvironmentVariable(runner);
