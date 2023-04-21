@@ -5,12 +5,9 @@
 
 dotnet-monitor exposes functionality through both [collection rules](./collectionrules.md) and a web API surface. The web api is built using [ASP.NET Core](https://dotnet.microsoft.com/learn/aspnet/what-is-aspnet-core) and enables on-demand extraction of diagnostic information and artifacts from discoverable processes.
 
-
 ## Adding New APIs
 
-The web API surface is defined by a series of controllers [here](../../src/Microsoft.Diagnostics.Monitoring.WebApi/Controllers/). It's common for an API to expose functionality also available via [Actions](./collectionrules.md#actions) and so methods in these controllers are often wrappers around a shared implementation.
-
-Controllers with `[Authorize(Policy = AuthConstants.PolicyName)]` class attribute will require authentication on all routes defined within. Learn more about how Authentication is handled [here](#authentication).
+The web API surface is defined by a series of controllers [here](../../src/Microsoft.Diagnostics.Monitoring.WebApi/Controllers/). It's common for an API to expose functionality also available via [Actions](./collectionrules.md#actions) and so methods in these controllers are often wrappers around a shared implementation. Each controller may have one or more attributes that configure how and where it is exposed, you can learn more about the notable controller atributes [here](#notable-controller-attibutes).
 
 If the new API needs to either accept or return structured data, a dedicated model should be used. Models are defined [here](../../src/Microsoft.Diagnostics.Monitoring.WebApi/Models/).
 
@@ -19,6 +16,18 @@ When adding a new API, it's important to also update the [`openapi.json`](../ope
 ### Adding Tests
 
 Web APIs in dotnet-monitor are typically tested using functional tests that leverage the [ApiClient](../../src/Tests/Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests/HttpApi/ApiClient.cs) to call a specific API. Learn more about how the functional tests are defined and operate [here](./testing.md#functional-tests).
+
+## Notable Controller Attibutes
+
+### Authorization
+
+Controllers with `[Authorize(Policy = AuthConstants.PolicyName)]` class attribute will require authentication on all routes defined within. Learn more about how Authentication is handled [here](#authentication).
+
+### HostRestriction
+
+In addition to the default URLs that dotnet-monitor will accept API requests on, there are also metrics urls which do not require any authentication and are generally considered safe to expose as they don't serve any sensitive data (unless explicitly configured so by the user). Learn more about the metrics urls [here](../configuration/metrics-configuration.md#metrics-urls).
+
+If an API may potentially serve sensitive data, such as logs or dumps, then it must be in a controller with the `[HostRestriction]` attribute to avoid exposing it on the unauthenticated metrics urls.
 
 ## Authentication
 
