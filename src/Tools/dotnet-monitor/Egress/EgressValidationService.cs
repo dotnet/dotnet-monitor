@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         protected override async Task ExecuteAsync(CancellationToken token)
         {
-            // Indicates that rules changed while validating a previous change.
+            // Indicates that configuration changed while validating a previous change.
             // Used to indicate that the next iteration should not wait for
             // another configuration change since a change was already detected.
             bool configurationChanged = false;
@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                         handler => _egressProviderSource.ConfigurationChanged -= handler,
                         token);
 
-                    // Wait for the rules to be changed
+                    // Wait for the configuration to be changed
                     await configurationChangedTaskSource.Task;
                 }
 
@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
                 EventHandler configChangedHandler = (s, e) =>
                 {
-                    // Remember that the rules were changed (so that the next iteration doesn't
+                    // Remember that the configuration was changed (so that the next iteration doesn't
                     // have to wait for them to change again) and signal cancellation due to the
                     // change.
                     configurationChanged = true;
@@ -87,7 +87,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 }
                 catch (OperationCanceledException) when (configChangedCancellationSource.IsCancellationRequested)
                 {
-                    // Catch exception if due to rule change.
+                    // Catch exception if due to configuration change.
                 }
                 finally
                 {
