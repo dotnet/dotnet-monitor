@@ -6,8 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.IO;
 using System.Security;
@@ -176,7 +174,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
             }
         }
 
-        public Task<EgressArtifactResult> ValidateProviderAsync(string providerName, EgressArtifactSettings settings, CancellationToken token)
+        public Task<EgressArtifactResult> ValidateProviderAsync(string providerName,
+            EgressArtifactSettings settings,
+            CancellationToken token)
         {
             EgressArtifactResult result = new();
             try
@@ -200,23 +200,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
             FileSystemEgressProviderOptions options = new();
             configuration.Bind(options);
 
-            ValidationContext context = new(options);
-            List<ValidationResult> results = new();
-            if (!Validator.TryValidateObject(options, context, results, validateAllProperties: true))
-            {
-                IList<string> failures = new List<string>();
-                foreach (ValidationResult result in results)
-                {
-                    if (ValidationResult.Success != result)
-                    {
-                        failures.Add(result.ErrorMessage);
-                    }
-                }
+            DataAnnotationValidateOptions<FileSystemEgressProviderOptions> validateOptions = new(null);
+            var validationResult = validateOptions.Validate(providerName, options);
 
-                if (failures.Count > 0)
-                {
-                    throw new OptionsValidationException(string.Empty, typeof(FileSystemEgressProviderOptions), failures);
-                }
+            if (validationResult.Failed)
+            {
+                throw new OptionsValidationException(string.Empty, typeof(FileSystemEgressProviderOptions), validationResult.Failures);
             }
 
             return options;

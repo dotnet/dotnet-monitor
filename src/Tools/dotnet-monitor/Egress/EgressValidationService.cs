@@ -4,7 +4,6 @@
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -16,12 +15,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     {
         private readonly IServiceProvider _serviceProvider;
         private EgressProviderSource _egressProviderSource;
-        private List<Task> _validationTasks = new();
 
-        public EgressValidationService(IServiceProvider serviceProvider, EgressProviderSource source)
+        public EgressValidationService(EgressProviderSource source, IServiceProvider serviceProvider)
         {
-            _serviceProvider = serviceProvider;
             _egressProviderSource = source;
+            _serviceProvider = serviceProvider;
         }
 
         protected override async Task ExecuteAsync(CancellationToken token)
@@ -30,16 +28,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             // Used to indicate that the next iteration should not wait for
             // another configuration change since a change was already detected.
             bool configurationChanged = false;
-
             bool initialLoad = true;
 
             while (!token.IsCancellationRequested)
             {
                 token.ThrowIfCancellationRequested();
 
-                if (!_egressProviderSource.ProviderNames.IsNullOrEmpty() && initialLoad)
+                if (initialLoad)
                 {
                     // Guarantees we do an initial validation
+                    _egressProviderSource.Initialize();
+                    initialLoad = false;
                 }
                 else if (!configurationChanged)
                 {
@@ -70,6 +69,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                     configChangedCancellationSource.SafeCancel();
                 };
 
+                List<Task> validationTasks = new();
+
                 try
                 {
                     _egressProviderSource.ConfigurationChanged += configChangedHandler;
@@ -78,12 +79,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                     {
                         foreach (var providerName in _egressProviderSource.ProviderNames)
                         {
-                            _validationTasks.Add(Task.Run(() => EgressOperation.ValidateAsync(_serviceProvider, providerName, token).SafeAwait(), token));
+                            validationTasks.Add(Task.Run(() => EgressOperation.ValidateAsync(_serviceProvider, providerName, linkedToken), linkedToken).SafeAwait());
                         }
                     }
 
-                    Task.WaitAll(_validationTasks.ToArray(), linkedToken);
-
+                    await Task.WhenAll(validationTasks);
                 }
                 catch (OperationCanceledException) when (configChangedCancellationSource.IsCancellationRequested)
                 {
@@ -91,8 +91,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 }
                 finally
                 {
-                    _validationTasks.Clear();
-
                     _egressProviderSource.ConfigurationChanged -= configChangedHandler;
                 }
             }
