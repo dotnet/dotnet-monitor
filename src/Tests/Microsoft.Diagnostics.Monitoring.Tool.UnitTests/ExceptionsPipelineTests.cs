@@ -141,7 +141,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// <summary>
         /// Tests that exceptions from reverse p/invoke are detectable.
         /// </summary>
-        [Fact]
+        [Fact(Skip = "Loading profiler library from managed code on Windows x86 build leg doesn't work because process runs as x64.")]
         public Task EventExceptionsPipeline_ReversePInvokeException()
         {
             return Execute(
