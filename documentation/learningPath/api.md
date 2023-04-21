@@ -7,7 +7,7 @@ dotnet-monitor exposes functionality through both [collection rules](./collectio
 
 ## Adding New APIs
 
-The web API surface is defined by a series of controllers [here](../../src/Microsoft.Diagnostics.Monitoring.WebApi/Controllers/). It's common for an API to expose functionality also available via [Actions](./collectionrules.md#actions) and so methods in these controllers are often wrappers around a shared implementation. Each controller may have one or more attributes that configure how and where it is exposed, you can learn more about the notable controller atributes [here](#notable-controller-attibutes).
+The web API surface is defined by a series of controllers [here](../../src/Microsoft.Diagnostics.Monitoring.WebApi/Controllers/). It's common for an API to expose functionality also available via [Actions](./collectionrules.md#actions) and so methods in these controllers are often wrappers around a shared implementation. Each controller may have one or more attributes that configure how and where it is exposed, you can learn more about the notable controller attributes [here](#notable-controller-attributes).
 
 If the new API needs to either accept or return structured data, a dedicated model should be used. Models are defined [here](../../src/Microsoft.Diagnostics.Monitoring.WebApi/Models/).
 
@@ -17,7 +17,7 @@ When adding a new API, it's important to also update the [`openapi.json`](../ope
 
 Web APIs in dotnet-monitor are typically tested using functional tests that leverage the [ApiClient](../../src/Tests/Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests/HttpApi/ApiClient.cs) to call a specific API. Learn more about how the functional tests are defined and operate [here](./testing.md#functional-tests).
 
-## Notable Controller Attibutes
+## Notable Controller Attributes
 
 ### Authorization
 
