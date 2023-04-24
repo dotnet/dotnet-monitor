@@ -92,7 +92,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                 result.ArtifactPath = string.Empty;
                 result.Succeeded = true;
             }
-            catch (Exception ex)
+            catch (OptionsValidationException ex)
             {
                 result.Succeeded = false;
                 result.FailureMessage = ex.Message;

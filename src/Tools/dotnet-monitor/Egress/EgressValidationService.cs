@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         {
             _egressProviderSource.Initialize();
 
-            SemaphoreSlim semaphore = new(0, 1);
+            SemaphoreSlim semaphore = new(initialCount: 0, maxCount: 1);
 
             while (!token.IsCancellationRequested)
             {
@@ -54,12 +54,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 {
                     _egressProviderSource.ProvidersChanged += configChangedHandler;
                     List<Task> validationTasks = new();
-                    lock (_egressProviderSource.ProviderNames)
+                    foreach (var providerName in _egressProviderSource.ProviderNames)
                     {
-                        foreach (var providerName in _egressProviderSource.ProviderNames)
-                        {
-                            validationTasks.Add(Task.Run(() => EgressOperation.ValidateAsync(_serviceProvider, providerName, linkedToken), linkedToken).SafeAwait());
-                        }
+                        validationTasks.Add(Task.Run(() => EgressOperation.ValidateAsync(_serviceProvider, providerName, linkedToken), linkedToken).SafeAwait());
                     }
                     await Task.WhenAll(validationTasks);
                 }

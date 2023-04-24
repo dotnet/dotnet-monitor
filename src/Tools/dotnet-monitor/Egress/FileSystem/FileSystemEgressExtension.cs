@@ -184,7 +184,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
                 FileSystemEgressProviderOptions options = ValidateOptions(providerName);
                 result.Succeeded = true;
             }
-            catch (Exception ex)
+            catch (OptionsValidationException ex)
             {
                 result.Succeeded = false;
                 result.FailureMessage = ex.Message;
