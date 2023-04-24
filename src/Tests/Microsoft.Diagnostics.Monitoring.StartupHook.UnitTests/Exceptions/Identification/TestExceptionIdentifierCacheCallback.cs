@@ -13,6 +13,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 
         public readonly Dictionary<ulong, ExceptionIdentifierData> ExceptionIdentifierData = new();
 
+        public readonly Dictionary<ulong, StackFrameData> StackFrameData = new();
+
         public override void OnClassData(ulong classId, ClassData data)
         {
             Assert.True(NameCache.ClassData.TryAdd(classId, data));
@@ -31,6 +33,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         public override void OnModuleData(ulong moduleId, ModuleData data)
         {
             Assert.True(NameCache.ModuleData.TryAdd(moduleId, data));
+        }
+
+        public override void OnStackFrameData(ulong frameId, StackFrameData data)
+        {
+            Assert.True(StackFrameData.TryAdd(frameId, data));
         }
 
         public override void OnTokenData(ulong moduleId, uint typeToken, TokenData data)

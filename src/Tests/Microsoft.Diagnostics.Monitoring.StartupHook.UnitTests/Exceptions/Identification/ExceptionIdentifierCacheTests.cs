@@ -1,13 +1,16 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMoniker.Current)]
     public sealed class ExceptionIdentifierCacheTests
     {
         private const ulong InvalidId = 0;
@@ -78,6 +81,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             Assert.NotNull(exceptionIdData);
             Assert.Equal(classId, exceptionIdData.ExceptionClassId);
             Assert.Equal(InvalidId, exceptionIdData.ThrowingMethodId);
+
+            // Validate stack frame data (expect none since exception was not thrown)
+            StackTrace stackTrace = new(ex, fNeedFileInfo: false);
+            ulong[] frameIds = cache.GetOrAdd(stackTrace.GetFrames());
+            Assert.Empty(frameIds);
         }
 
         [Fact]
@@ -173,6 +181,27 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             Assert.NotEqual(InvalidId, throwingMethodData.ParentClass);
             Assert.NotEqual(InvalidToken, throwingMethodData.ParentToken);
             Assert.Empty(throwingMethodData.TypeArgs);
+
+            // Validate stack frame data
+            StackTrace stackTrace = new(ex, fNeedFileInfo: false);
+            ulong[] frameIds = cache.GetOrAdd(stackTrace.GetFrames());
+            Assert.Equal(stackTrace.FrameCount, frameIds.Length);
+            for (int i = 0; i < frameIds.Length; i++)
+            {
+                ulong frameId = frameIds[i];
+
+                Assert.True(callback.StackFrameData.TryGetValue(frameId, out StackFrameData? frameData));
+                Assert.NotEqual(InvalidId, frameData.MethodId);
+
+                Assert.True(callback.NameCache.FunctionData.TryGetValue(frameData.MethodId, out FunctionData? frameMethodData));
+
+                StackFrame? frame = stackTrace.GetFrame(i);
+                Assert.NotNull(frame);
+                MethodBase? method = frame.GetMethod();
+                Assert.NotNull(method);
+
+                Assert.Equal(method.Name, frameMethodData.Name);
+            }
         }
 
         private static uint ValidateTokenAndGetOuterToken(NameCache cache, ulong moduleId, uint token, Type expectedType)

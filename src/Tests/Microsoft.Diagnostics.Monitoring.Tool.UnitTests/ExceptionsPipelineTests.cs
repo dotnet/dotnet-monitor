@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -132,7 +133,69 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
                     Assert.NotNull(instance);
                     Assert.NotEqual(0UL, instance.ExceptionId);
-                    Assert.Equal("Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomException`2[System.Int32,System.String]", instance.TypeName);
+                    Assert.Equal("Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomGenericsException`2[System.Int32,System.String]", instance.TypeName);
+                    Assert.False(string.IsNullOrEmpty(instance.Message));
+                    Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
+                });
+        }
+
+        /// <summary>
+        /// Tests that exceptions from reverse p/invoke are detectable.
+        /// </summary>
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public Task EventExceptionsPipeline_ReversePInvokeException(Architecture architecture)
+        {
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.ReversePInvokeException,
+                expectedInstanceCount: 1,
+                validate: instances =>
+                {
+                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
+                    Assert.NotNull(instance);
+                    Assert.NotEqual(0UL, instance.ExceptionId);
+                    Assert.Equal(typeof(InvalidOperationException).FullName, instance.TypeName);
+                    Assert.False(string.IsNullOrEmpty(instance.Message));
+                    Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
+                },
+                architecture);
+        }
+
+        /// <summary>
+        /// Tests that exceptions from dynamic methods are detectable.
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_DynamicMethodException()
+        {
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.DynamicMethodException,
+                expectedInstanceCount: 1,
+                validate: instances =>
+                {
+                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
+                    Assert.NotNull(instance);
+                    Assert.NotEqual(0UL, instance.ExceptionId);
+                    Assert.Equal("Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomSimpleException", instance.TypeName);
+                    Assert.False(string.IsNullOrEmpty(instance.Message));
+                    Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
+                });
+        }
+
+        /// <summary>
+        /// Tests that exceptions from array types are detectable.
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_ArrayException()
+        {
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.ArrayException,
+                expectedInstanceCount: 1,
+                validate: instances =>
+                {
+                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
+                    Assert.NotNull(instance);
+                    Assert.NotEqual(0UL, instance.ExceptionId);
+                    Assert.Equal(typeof(IndexOutOfRangeException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
                 });
@@ -141,7 +204,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private async Task Execute(
             string subScenarioName,
             int expectedInstanceCount,
-            Action<IEnumerable<TestExceptionsStore.ExceptionInstance>> validate)
+            Action<IEnumerable<TestExceptionsStore.ExceptionInstance>> validate,
+            Architecture? architecture = null)
         {
             EndpointInfoSourceCallback callback = new(_outputHelper);
             await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
@@ -150,6 +214,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assembly.GetExecutingAssembly(),
                 sourceHolder.TransportName,
                 TargetFrameworkMoniker.Current);
+            runner.Architecture = architecture;
             runner.ScenarioName = TestAppScenarios.Exceptions.Name + " " + subScenarioName;
 
             AddStartupHookEnvironmentVariable(runner);
@@ -212,12 +277,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message)
             {
-                Assert.True(cache.TryGetExceptionId(exceptionId, out ulong exceptionClassId, out ulong throwingMethodId, out _));
-
                 StringBuilder typeBuilder = new();
-                NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId);
+                FunctionData throwingMethodData;
+                try
+                {
+                    Assert.True(cache.TryGetExceptionId(exceptionId, out ulong exceptionClassId, out ulong throwingMethodId, out _));
 
-                Assert.True(cache.NameCache.FunctionData.TryGetValue(throwingMethodId, out FunctionData throwingMethodData));
+                    NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId);
+
+                    Assert.True(cache.NameCache.FunctionData.TryGetValue(throwingMethodId, out throwingMethodData));
+                }
+                catch (Exception ex)
+                {
+                    _instanceThresholdSource.TrySetException(ex);
+
+                    throw;
+                }
 
                 _instances.Add(new ExceptionInstance(exceptionId, typeBuilder.ToString(), message, throwingMethodData.Name));
                 if (++_instanceCount >= _instanceThreshold)

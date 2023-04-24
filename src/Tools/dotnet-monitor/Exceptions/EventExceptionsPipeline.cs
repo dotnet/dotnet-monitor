@@ -98,6 +98,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         traceEvent.GetPayload<string>(NameIdentificationEvents.ModuleDescPayloads.Name)
                         );
                     break;
+                case "StackFrameDescription":
+                    // Not Yet Implemented
+                    break;
                 case "TokenDescription":
                     _cache.AddToken(
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.TokenDescPayloads.ModuleId),

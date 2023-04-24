@@ -52,6 +52,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                 data.Name);
         }
 
+        public override void OnStackFrameData(ulong frameId, StackFrameData data)
+        {
+            _source.StackFrameDescription(
+                frameId,
+                data.MethodId,
+                data.ILOffset);
+        }
+
         public override void OnTokenData(ulong moduleId, uint typeToken, TokenData data)
         {
             _source.TokenDescription(

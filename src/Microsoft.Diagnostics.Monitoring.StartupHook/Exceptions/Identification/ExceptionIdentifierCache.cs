@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 
@@ -22,15 +23,21 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         // of uniquely identifying itself using a primitive type.
         private readonly ConcurrentDictionary<ExceptionIdentifier, ulong> _exceptionIds = new();
 
+        private readonly ConcurrentDictionary<MethodBase, ulong> _methodIds = new();
+
         // Mapping of Module to a unique ID; Module itself does not have a way
         // of uniquely identifying itself using a primitive type.
         private readonly ConcurrentDictionary<Module, ulong> _moduleIds = new();
+
+        private readonly ConcurrentDictionary<StackFrameIdentifier, ulong> _stackFrameIds = new();
 
         // Name cache for all provided metadata
         private readonly NameCache _nameCache = new();
 
         private ulong _nextRegistrationId = 1;
+        private ulong _nextMethodId = 1;
         private ulong _nextModuleId = 1;
+        private ulong _nextStackFrameId = 1;
 
         public ExceptionIdentifierCache(IEnumerable<ExceptionIdentifierCacheCallback> callbacks)
         {
@@ -48,26 +55,19 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         /// </returns>
         public ulong GetOrAdd(ExceptionIdentifier exceptionId)
         {
-            if (_exceptionIds.TryGetValue(exceptionId, out ulong registrationId))
+            if (!GetOrCreateIdentifier(_exceptionIds, exceptionId, ref _nextRegistrationId, out ulong registrationId))
                 return registrationId;
 
-            registrationId = Interlocked.Increment(ref _nextRegistrationId);
-
-            ulong actualRegistrationId = _exceptionIds.GetOrAdd(exceptionId, registrationId);
-
-            if (registrationId == actualRegistrationId)
+            ExceptionIdentifierData data = new()
             {
-                ExceptionIdentifierData data = new()
-                {
-                    ExceptionClassId = GetOrAdd(exceptionId.ExceptionType),
-                    ThrowingMethodId = AddOrDefault(exceptionId.ThrowingMethod),
-                    ILOffset = exceptionId.ILOffset
-                };
+                ExceptionClassId = GetOrAdd(exceptionId.ExceptionType),
+                ThrowingMethodId = AddOrDefault(exceptionId.ThrowingMethod),
+                ILOffset = exceptionId.ILOffset
+            };
 
-                InvokeExceptionIdentifierCallbacks(registrationId, data);
-            }
+            InvokeExceptionIdentifierCallbacks(registrationId, data);
 
-            return actualRegistrationId;
+            return registrationId;
         }
 
         /// <summary>
@@ -79,22 +79,38 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         /// </returns>
         public ulong GetOrAdd(MethodBase method)
         {
-            ulong methodId = GetId(method);
-            if (!_nameCache.FunctionData.ContainsKey(methodId))
-            {
-                FunctionData data = new(
-                    method.Name,
-                    AddOrDefault(method.DeclaringType),
-                    Convert.ToUInt32(method.MetadataToken),
-                    GetOrAdd(method.Module),
-                    GetOrAdd(method.GetGenericArguments())
-                    );
+            if (!GetOrCreateIdentifier(_methodIds, method, ref _nextMethodId, out ulong methodId))
+                return methodId;
 
-                if (_nameCache.FunctionData.TryAdd(methodId, data))
-                {
-                    InvokeFunctionDataCallbacks(methodId, data);
-                }
+            // Dynamic methods do not have metadata tokens
+            uint metadataToken = 0;
+            try
+            {
+                metadataToken = Convert.ToUInt32(method.MetadataToken);
             }
+            catch (Exception) { }
+
+            // RTDynamicMethod does not implement GetGenericArguments.
+            Type[] genericArguments = Array.Empty<Type>();
+            try
+            {
+                genericArguments = method.GetGenericArguments();
+            }
+            catch (Exception) { }
+
+            FunctionData data = new(
+                method.Name,
+                AddOrDefault(method.DeclaringType),
+                metadataToken,
+                GetOrAdd(method.Module),
+                GetOrAdd(genericArguments)
+                );
+
+            if (_nameCache.FunctionData.TryAdd(methodId, data))
+            {
+                InvokeFunctionDataCallbacks(methodId, data);
+            }
+
             return methodId;
         }
 
@@ -108,17 +124,62 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         /// </returns>
         public ulong GetOrAdd(Module module)
         {
-            ulong moduleId = GetId(module);
-            if (!_nameCache.ModuleData.ContainsKey(moduleId))
-            {
-                ModuleData data = new(module.Name);
+            if (!GetOrCreateIdentifier(_moduleIds, module, ref _nextModuleId, out ulong moduleId))
+                return moduleId;
 
-                if (_nameCache.ModuleData.TryAdd(moduleId, data))
+            ModuleData data = new(module.Name);
+
+            if (_nameCache.ModuleData.TryAdd(moduleId, data))
+            {
+                InvokeModuleDataCallbacks(moduleId, data);
+            }
+
+            return moduleId;
+        }
+
+        /// <summary>
+        /// Gets the identifier of the <see cref="StackFrame"/> instance and
+        /// caches its data if it has not been encountered yet.
+        /// </summary>
+        /// <returns>
+        /// An identifier that uniquely identifies the <see cref="StackFrame"/> in this cache.
+        /// </returns>
+        public ulong GetOrAdd(StackFrame frame)
+        {
+            StackFrameIdentifier identifier = new(
+                AddOrDefault(frame.GetMethod()),
+                frame.GetILOffset());
+
+            if (!GetOrCreateIdentifier(_stackFrameIds, identifier, ref _nextStackFrameId, out ulong frameId))
+                return frameId;
+
+            StackFrameData data = new()
+            {
+                MethodId = identifier.MethodId,
+                ILOffset = identifier.ILOffset
+            };
+
+            InvokeStackFrameDataCallbacks(frameId, data);
+
+            return frameId;
+        }
+
+        public ulong[] GetOrAdd(ReadOnlySpan<StackFrame> frames)
+        {
+            ulong[] frameIds;
+            if (frames.Length > 0)
+            {
+                frameIds = new ulong[frames.Length];
+                for (int i = 0; i < frames.Length; i++)
                 {
-                    InvokeModuleDataCallbacks(moduleId, data);
+                    frameIds[i] = GetOrAdd(frames[i]);
                 }
             }
-            return moduleId;
+            else
+            {
+                frameIds = Array.Empty<ulong>();
+            }
+            return frameIds;
         }
 
         /// <summary>
@@ -213,11 +274,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             return GetOrAdd(type);
         }
 
-        private static ulong GetId(MethodBase method)
-        {
-            return Convert.ToUInt64(method.MethodHandle.Value.ToInt64());
-        }
-
         private ulong GetId(Module module)
         {
             return _moduleIds.GetOrAdd(module, _ => _nextModuleId++);
@@ -226,6 +282,51 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         private static ulong GetId(Type type)
         {
             return Convert.ToUInt64(type.TypeHandle.Value.ToInt64());
+        }
+
+        /// <summary>
+        /// Gets the current identifier for the <paramref name="key"/> or creates a new
+        /// identifier from <paramref name="nextIdentifier"/>.
+        /// </summary>
+        /// <param name="dictionary">The dictionary that contains the mapping from keys to identifiers.</param>
+        /// <param name="key">The value to find in the dictionary or to insert if it doesn't exist.</param>
+        /// <param name="nextIdentifier">Reference that tracks the next usable identifier.</param>
+        /// <param name="identifier">The identifier associated with the <paramref name="key"/> value.</param>
+        /// <returns>True if newly inserted into dictionary; otherwise false.</returns>
+        /// <remarks>
+        /// This method guarantees that a given <paramref name="key"/> will always have one unique identifier;
+        /// it ensures that concurrent inserts into the dictionary are resolved to have the same reported identifier.
+        /// </remarks>
+        private static bool GetOrCreateIdentifier<T>(
+            ConcurrentDictionary<T, ulong> dictionary,
+            T key,
+            ref ulong nextIdentifier,
+            out ulong identifier) where T : notnull
+        {
+            if (dictionary.TryGetValue(key, out identifier))
+                return false;
+
+            // Lock against multiple threads attempting to create the identifier for the key. If the threads are acting
+            // for different keys, the assigned identifier value being different is desired. If the threads are acting for
+            // the same keys, its okay if multiple identifiers are created for the same key; it will be reconciled when attempting
+            // to add the identifier to the dictionary.
+            identifier = Interlocked.Increment(ref nextIdentifier);
+
+            // If multiple threads try to GetOrAdd for the same key at the same time, one of them will do the
+            // actual add and the others will return immediately. The return value indicates the value in the dictionary
+            // that corresponds to the key. Compare this returned value to the one that the thread tried to add; if they
+            // are the same, then the thread is the one that actually added the value to the dictionary.
+            ulong actualIdentifier = dictionary.GetOrAdd(key, identifier);
+
+            // If the candidate identifier is the same as the actual value from the dictionary, then this thread
+            // was reponsible for inserting the identifier. Otherwise, some other concurrent thread inserted the identifier.
+            if (actualIdentifier == identifier)
+            {
+                return true;
+            }
+
+            identifier = actualIdentifier;
+            return false;
         }
 
         private void InvokeExceptionIdentifierCallbacks(ulong registrationId, ExceptionIdentifierData data)
@@ -257,6 +358,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             foreach (ExceptionIdentifierCacheCallback callback in _callbacks)
             {
                 callback.OnModuleData(moduleId, data);
+            }
+        }
+
+        private void InvokeStackFrameDataCallbacks(ulong moduleId, StackFrameData data)
+        {
+            foreach (ExceptionIdentifierCacheCallback callback in _callbacks)
+            {
+                callback.OnStackFrameData(moduleId, data);
             }
         }
 
