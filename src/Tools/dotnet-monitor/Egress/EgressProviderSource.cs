@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private readonly ILogger _logger;
         private readonly IDictionary<string, string> _providerNameToTypeMap;
         public IEnumerable<string> ProviderNames { get; set; } = new List<string>();
-        public event EventHandler ConfigurationChanged;
+        public event EventHandler ProvidersChanged;
 
         public EgressProviderSource(
             IEgressConfigurationProvider configurationProvider,
@@ -101,12 +101,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 }
             }
 
-            lock(ProviderNames)
-            {
-                ProviderNames = new List<string>(_providerNameToTypeMap.Keys);
-            }
+            ProviderNames = new List<string>(_providerNameToTypeMap.Keys);
 
-            ConfigurationChanged?.Invoke(this, EventArgs.Empty);
+            ProvidersChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }
