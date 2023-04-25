@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -22,11 +23,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
     {
         private readonly IEgressConfigurationProvider _configurationProvider;
         private readonly ILogger<FileSystemEgressExtension> _logger;
+        private readonly IServiceProvider _serviceProvider;
 
         public string DisplayName => EgressProviderTypes.FileSystem;
 
-        public FileSystemEgressExtension(IEgressConfigurationProvider configurationProvider, ILogger<FileSystemEgressExtension> logger)
+        public FileSystemEgressExtension(IServiceProvider serviceProvider, IEgressConfigurationProvider configurationProvider, ILogger<FileSystemEgressExtension> logger)
         {
+            _serviceProvider = serviceProvider;
             _configurationProvider = configurationProvider;
             _logger = logger;
         }
@@ -200,7 +203,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
             FileSystemEgressProviderOptions options = new();
             configuration.Bind(options);
 
-            DataAnnotationValidateOptions<FileSystemEgressProviderOptions> validateOptions = new(null);
+            DataAnnotationValidateOptions<FileSystemEgressProviderOptions> validateOptions = new(_serviceProvider);
             var validationResult = validateOptions.Validate(providerName, options);
 
             if (validationResult.Failed)
