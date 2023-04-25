@@ -118,12 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ErrorMessage_CredentialsMissing" xml:space="preserve">
-    <value>The {0} field, {1} field, or {2} field is required.</value>
+    <value>The {0} field, {1} field, {2} field, or {3} field is required.</value>
     <comment>Gets the format string for rejecting validation due to 3 missing fields where at least one is required.
 3 Format Parameters:
 0. fieldNameOne: The name of the first field that is missing
 1. fieldNameTwo: The name of the second field that is missing
-2. fieldNameThree: The name of the third field that is missing</comment>
+2. fieldNameThree: The name of the third field that is missing
+3. fieldNameFour: The name of the fourth field that is missing</comment>
   </data>
   <data name="ErrorMessage_EgressAzureFailedDetailed" xml:space="preserve">
     <value>Azure blob egress failed: {0}</value>
@@ -136,8 +137,8 @@
     <comment>Gets a string similar to "Azure blob egress failed.".</comment>
   </data>
   <data name="ErrorMessage_EgressMissingCredentials" xml:space="preserve">
-    <value>SharedAccessSignature, AccountKey, or ManagedIdentityClientId must be specified.</value>
-    <comment>Gets a string similar to "SharedAccessSignature, AccountKey, or ManagedIdentityClientId must be specified.".</comment>
+    <value>SharedAccessSignature, AccountKey, ManagedIdentityClientId, or UseWorkflowIdentity must be specified.</value>
+    <comment>Gets a string similar to "SharedAccessSignature, AccountKey, ManagedIdentityClientId, or UseWorkflowIdentity must be specified.".</comment>
   </data>
   <data name="LogFormatString_DuplicateKeyInMetadata" xml:space="preserve">
     <value>Metadata cannot include duplicate keys; please change or remove the key '{key}'</value>

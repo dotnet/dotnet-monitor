@@ -43,6 +43,11 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureBlobEgressProviderOptions_UseWorkloadIdentity))]
+        public bool UseWorkloadIdentity { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureBlobEgressProviderOptions_ContainerName))]
         [Required]
         public string ContainerName { get; set; }
