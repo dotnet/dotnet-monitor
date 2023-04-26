@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal interface IEgressService
     {
-        void ValidateProvider(string providerName);
+        void ValidateProviderExists(string providerName);
 
         Task<EgressResult> EgressAsync(
             string providerName,
@@ -19,6 +19,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             string contentType,
             IEndpointInfo source,
             CollectionRuleMetadata collectionRuleMetadata,
+            CancellationToken token);
+
+        Task ValidateProviderOptionsAsync(
+            string providerName,
             CancellationToken token);
     }
 }

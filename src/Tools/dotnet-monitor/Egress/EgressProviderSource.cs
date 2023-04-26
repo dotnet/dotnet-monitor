@@ -21,6 +21,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private readonly ExtensionDiscoverer _extensionDiscoverer;
         private readonly ILogger _logger;
         private readonly IDictionary<string, string> _providerNameToTypeMap;
+        public IReadOnlyCollection<string> ProviderNames { get; set; } = new List<string>();
+        public event EventHandler ProvidersChanged;
 
         public EgressProviderSource(
             IEgressConfigurationProvider configurationProvider,
@@ -98,6 +100,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                     }
                 }
             }
+
+            ProviderNames = new List<string>(_providerNameToTypeMap.Keys).AsReadOnly();
+
+            ProvidersChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

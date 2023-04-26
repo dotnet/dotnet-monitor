@@ -904,4 +904,11 @@
   <data name="LogFormatString_EgressProviderTypeNotExist" xml:space="preserve">
     <value>Egress provider type '{type}' does not exist.</value>
   </data>
+  <data name="ErrorMessage_EgressProviderFailedValidation" xml:space="preserve">
+    <value>The {0} egress provider failed validation: {1}</value>
+    <comment>Gets the format string for an egress provider failing validation.
+2 Format Parameters:
+0. providerName: The name of the provider that failed validation.
+1. errorMessage: The validation failure message</comment>
+  </data>
 </root>

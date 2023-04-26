@@ -19,11 +19,15 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
         {
             CliRootCommand rootCommand = new CliRootCommand();
 
-            CliCommand egressCmd = new CliCommand("Egress");
+            CliCommand executeCommand = new CliCommand("Execute", "Execute is for egressing an artifact.");
+            executeCommand.SetAction((result, token) => Egress(token));
 
-            egressCmd.SetAction((result, token) => Egress(token));
+            CliCommand egressCommand = new CliCommand("Egress", "The class of extension being invoked.")
+            {
+                executeCommand
+            };
 
-            rootCommand.Add(egressCmd);
+            rootCommand.Add(egressCommand);
 
             return rootCommand.Parse(args).Invoke();
         }

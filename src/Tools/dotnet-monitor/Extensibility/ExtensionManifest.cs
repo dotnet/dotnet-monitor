@@ -7,11 +7,17 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     internal class ExtensionManifest : IValidatableObject
     {
+        private static readonly JsonSerializerOptions _serializerOptions = new()
+        {
+            Converters = { new JsonStringEnumConverter() }
+        };
+
         public const string DefaultFileName = "extension.json";
 
         /// <summary>
@@ -36,6 +42,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
         /// </remarks>
         public string AssemblyFileName { get; set; }
 
+        /// <summary>
+        /// Additional execution modes supported by the extension; the ability to run is assumed.
+        /// </summary>
+        public List<ExtensionMode> Modes { get; set; } = new List<ExtensionMode>();
+
         public static ExtensionManifest FromPath(string path)
         {
             if (!File.Exists(path))
@@ -47,7 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
             try
             {
-                return JsonSerializer.Deserialize<ExtensionManifest>(stream);
+                return JsonSerializer.Deserialize<ExtensionManifest>(stream, _serializerOptions);
             }
             catch (JsonException ex)
             {

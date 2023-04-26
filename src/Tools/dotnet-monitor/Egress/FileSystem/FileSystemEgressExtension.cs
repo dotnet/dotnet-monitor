@@ -3,11 +3,10 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.IO;
 using System.Security;
@@ -24,11 +23,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
     {
         private readonly IEgressConfigurationProvider _configurationProvider;
         private readonly ILogger<FileSystemEgressExtension> _logger;
+        private readonly IServiceProvider _serviceProvider;
 
         public string DisplayName => EgressProviderTypes.FileSystem;
 
-        public FileSystemEgressExtension(IEgressConfigurationProvider configurationProvider, ILogger<FileSystemEgressExtension> logger)
+        public FileSystemEgressExtension(IServiceProvider serviceProvider, IEgressConfigurationProvider configurationProvider, ILogger<FileSystemEgressExtension> logger)
         {
+            _serviceProvider = serviceProvider;
             _configurationProvider = configurationProvider;
             _logger = logger;
         }
@@ -39,36 +40,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
             Func<Stream, CancellationToken, Task> action,
             CancellationToken token)
         {
-            IConfigurationSection configuration = _configurationProvider.GetProviderConfigurationSection(EgressProviderTypes.FileSystem, providerName);
+            FileSystemEgressProviderOptions options = ValidateOptions(providerName);
 
-            FileSystemEgressProviderOptions options = new();
-            configuration.Bind(options);
-
-            ValidationContext context = new(options);
-            List<ValidationResult> results = new();
-            if (!Validator.TryValidateObject(options, context, results, validateAllProperties: true))
-            {
-                IList<string> failures = new List<string>();
-                foreach (ValidationResult result in results)
-                {
-                    if (ValidationResult.Success != result)
-                    {
-                        failures.Add(result.ErrorMessage);
-                    }
-                }
-
-                if (failures.Count > 0)
-                {
-                    throw new OptionsValidationException(string.Empty, typeof(FileSystemEgressProviderOptions), failures);
-                }
-            }
+            string targetPath = string.Empty;
 
             if (!Directory.Exists(options.DirectoryPath))
             {
                 WrapException(() => Directory.CreateDirectory(options.DirectoryPath));
             }
 
-            string targetPath = Path.Combine(options.DirectoryPath, settings.Name);
+            targetPath = Path.Combine(options.DirectoryPath, settings.Name);
 
             if (!string.IsNullOrEmpty(options.IntermediateDirectoryPath))
             {
@@ -194,6 +175,43 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
             {
                 return Strings.ErrorMessage_EgressFileFailedGeneric;
             }
+        }
+
+        public Task<EgressArtifactResult> ValidateProviderAsync(string providerName,
+            EgressArtifactSettings settings,
+            CancellationToken token)
+        {
+            EgressArtifactResult result = new();
+            try
+            {
+                FileSystemEgressProviderOptions options = ValidateOptions(providerName);
+                result.Succeeded = true;
+            }
+            catch (OptionsValidationException ex)
+            {
+                result.Succeeded = false;
+                result.FailureMessage = ex.Message;
+            }
+
+            return Task.FromResult(result);
+        }
+
+        private FileSystemEgressProviderOptions ValidateOptions(string providerName)
+        {
+            IConfigurationSection configuration = _configurationProvider.GetProviderConfigurationSection(EgressProviderTypes.FileSystem, providerName);
+
+            FileSystemEgressProviderOptions options = new();
+            configuration.Bind(options);
+
+            DataAnnotationValidateOptions<FileSystemEgressProviderOptions> validateOptions = new(_serviceProvider);
+            var validationResult = validateOptions.Validate(providerName, options);
+
+            if (validationResult.Failed)
+            {
+                throw new OptionsValidationException(string.Empty, typeof(FileSystemEgressProviderOptions), validationResult.Failures);
+            }
+
+            return options;
         }
     }
 }

@@ -27,5 +27,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             EgressArtifactSettings settings,
             Func<Stream, CancellationToken, Task> action,
             CancellationToken token);
+
+        Task<EgressArtifactResult> ValidateProviderAsync(
+            string providerName,
+            EgressArtifactSettings settings,
+            CancellationToken token);
     }
 }

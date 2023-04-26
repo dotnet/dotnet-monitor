@@ -17,8 +17,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         {
             if (Succeeded)
             {
-                // If Success, we must have an artifact path, and no failure message
-                return !string.IsNullOrEmpty(ArtifactPath) && string.IsNullOrEmpty(FailureMessage);
+                // If Success, we must have no failure message
+                return string.IsNullOrEmpty(FailureMessage);
             }
             else
             {

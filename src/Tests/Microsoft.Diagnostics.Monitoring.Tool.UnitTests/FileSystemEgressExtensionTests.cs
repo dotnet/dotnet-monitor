@@ -161,8 +161,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 .Returns(configurationSection);
 
             Mock<ILogger<FileSystemEgressExtension>> mockLogger = new();
+            Mock<IServiceProvider> mockServiceProvider = new();
 
-            return new FileSystemEgressExtension(mockConfigurationProvider.Object, mockLogger.Object);
+            return new FileSystemEgressExtension(mockServiceProvider.Object, mockConfigurationProvider.Object, mockLogger.Object);
         }
 
         private static EgressArtifactSettings CreateSettings()

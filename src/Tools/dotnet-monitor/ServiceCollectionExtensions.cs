@@ -299,6 +299,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IEgressConfigurationProvider, EgressConfigurationProvider>();
             services.AddSingleton<EgressProviderSource>();
             services.AddSingleton<IEgressService, EgressService>();
+            services.AddHostedService<EgressValidationService>();
 
             return services;
         }

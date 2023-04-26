@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -67,12 +68,41 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 LogLevel = GetMinimumLogLevel()
             };
 
-            return EgressArtifact(payload, action, token);
+            return EgressArtifact(payload, action, ExtensionMode.Execute, token);
+        }
+
+        /// <inheritdoc/>
+        public async Task<EgressArtifactResult> ValidateProviderAsync(
+            string providerName,
+            EgressArtifactSettings settings,
+            CancellationToken token)
+        {
+            EgressArtifactResult result = new();
+
+            if (!_manifest.Modes.Any())
+            {
+                result.Succeeded = true;
+            }
+            else if (_manifest.Modes.Contains(ExtensionMode.Validate))
+            {
+                ExtensionEgressPayload payload = new()
+                {
+                    Settings = settings,
+                    Configuration = GetConfigurationSection(providerName, _manifest.Name),
+                    Properties = _configurationProvider.GetAllProperties(),
+                    ProviderName = providerName,
+                };
+
+                result = await EgressArtifact(payload, null, ExtensionMode.Validate, token);
+            }
+
+            return result;
         }
 
         public async Task<EgressArtifactResult> EgressArtifact(
             ExtensionEgressPayload payload,
             Func<Stream, CancellationToken, Task> action,
+            ExtensionMode mode,
             CancellationToken token)
         {
             _manifest.Validate();
@@ -126,6 +156,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
              */
             pStart.FileName = executablePath;
             pStart.ArgumentList.Add(ExtensionTypes.Egress);
+            pStart.ArgumentList.Add(mode.ToString());
 
             foreach ((string key, string value) in _processEnvironmentVariables)
             {
@@ -137,7 +168,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 StartInfo = pStart,
             };
 
-            using OutputParser<EgressArtifactResult> parser = new(p, _logger);
+            var parserLogger = mode == ExtensionMode.Execute ? _logger : NullLogger<EgressExtension>.Instance;
+            using OutputParser<EgressArtifactResult> parser = new(p, parserLogger);
 
             _logger.ExtensionStarting(_manifest.Name);
             if (!p.Start())
@@ -166,7 +198,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
             _logger.ExtensionConfigured(pStart.FileName, p.Id);
 
-            await action(p.StandardInput.BaseStream, token);
+            if (mode == ExtensionMode.Execute)
+            {
+                await action(p.StandardInput.BaseStream, token);
+            }
+
             await p.StandardInput.BaseStream.FlushAsync(token);
             p.StandardInput.Close();
             _logger.ExtensionEgressPayloadCompleted(p.Id);

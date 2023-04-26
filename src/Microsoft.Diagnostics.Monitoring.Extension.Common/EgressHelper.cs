@@ -29,40 +29,31 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             where TProvider : EgressProvider<TOptions>
             where TOptions : class, new()
         {
-            CliCommand egressCmd = new CliCommand("Egress", "The class of extension being invoked; Egress is for egressing an artifact.");
+            CliCommand executeCommand = new CliCommand("Execute", "Execute is for egressing an artifact.");
+            executeCommand.SetAction((result, token) => Egress<TProvider, TOptions>(configureServices, token));
 
-            egressCmd.SetAction((result, token) => Egress<TProvider, TOptions>(configureServices, token));
+            CliCommand validateCommand = new CliCommand("Validate", "Validate is for validating an extension's options on configuration change.");
+            validateCommand.SetAction((result, token) => Validate<TProvider, TOptions>(configureServices, token));
 
-            return egressCmd;
+            CliCommand egressCommand = new CliCommand("Egress", "The class of extension being invoked.")
+            {
+                executeCommand,
+                validateCommand
+            };
+
+            return egressCommand;
         }
+
 
         private static async Task<int> Egress<TProvider, TOptions>(Action<IServiceCollection> configureServices, CancellationToken token)
             where TProvider : EgressProvider<TOptions>
             where TOptions : class, new()
         {
-            // Design Points:
-            // - The serialization model is separate from the parts that interact directly with the egress implementation.
-            //   For example, the egress implementations are not able to access the ExtensionEgressPayload instance. This
-            //   allows changing the serialization format and structure without affecting the egress implementations.
-            // - The use of dependency injection allows the caller to contribute their custom services that are unknown
-            //   to the egress infrastructure; it further eliminates the need for this method to understand how to validate
-            //   egress options (barring the generic data annotation validator), how to further configure egress options
-            //   (if anything additional is necessary), creating and passing optional services such as loggers, etc.
             EgressArtifactResult result = new();
             try
             {
                 ExtensionEgressPayload configPayload = await GetPayload(token);
-
-                ServiceCollection services = CreateServices<TOptions>(configPayload, configureServices);
-
-                // Attempt to register the egress provider if not already registered; this allows the service configuration
-                // callback to register the egress provider if it has additional requirements that cannot be fulfilled by
-                // dependency injection.
-                services.TryAddSingleton<EgressProvider<TOptions>, TProvider>();
-
-                services.MakeReadOnly();
-
-                await using ServiceProvider serviceProvider = services.BuildServiceProvider();
+                await using var serviceProvider = BuildServiceProvider<TProvider, TOptions>(configureServices, configPayload);
 
                 EgressProvider<TOptions> provider = serviceProvider.GetRequiredService<EgressProvider<TOptions>>();
                 TOptions options = serviceProvider.GetRequiredService<IOptionsSnapshot<TOptions>>().Get(configPayload.ProviderName);
@@ -83,11 +74,66 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                 result.FailureMessage = ex.Message;
             }
 
+            return ProcessEgressResult(result);
+        }
+
+        private static async Task<int> Validate<TProvider, TOptions>(Action<IServiceCollection> configureServices, CancellationToken token)
+            where TProvider : EgressProvider<TOptions>
+            where TOptions : class, new()
+        {
+            EgressArtifactResult result = new();
+            try
+            {
+                ExtensionEgressPayload configPayload = await GetPayload(token);
+                await using var serviceProvider = BuildServiceProvider<TProvider, TOptions>(configureServices, configPayload);
+
+                TOptions options = serviceProvider.GetRequiredService<IOptionsSnapshot<TOptions>>().Get(configPayload.ProviderName);
+
+                result.ArtifactPath = string.Empty;
+                result.Succeeded = true;
+            }
+            catch (OptionsValidationException ex)
+            {
+                result.Succeeded = false;
+                result.FailureMessage = ex.Message;
+            }
+
+            return ProcessEgressResult(result);
+        }
+
+        private static int ProcessEgressResult(EgressArtifactResult result)
+        {
             string jsonBlob = JsonSerializer.Serialize(result);
             Console.Write(jsonBlob);
-
             // return non-zero exit code when failed
             return result.Succeeded ? 0 : 1;
+        }
+
+        private static ServiceProvider BuildServiceProvider<TProvider, TOptions>(Action<IServiceCollection> configureServices, ExtensionEgressPayload configPayload)
+            where TProvider : EgressProvider<TOptions>
+            where TOptions : class, new()
+        {
+            // Design Points:
+            // - The serialization model is separate from the parts that interact directly with the egress implementation.
+            //   For example, the egress implementations are not able to access the ExtensionEgressPayload instance. This
+            //   allows changing the serialization format and structure without affecting the egress implementations.
+            // - The use of dependency injection allows the caller to contribute their custom services that are unknown
+            //   to the egress infrastructure; it further eliminates the need for this method to understand how to validate
+            //   egress options (barring the generic data annotation validator), how to further configure egress options
+            //   (if anything additional is necessary), creating and passing optional services such as loggers, etc.
+
+            ServiceCollection services = CreateServices<TOptions>(configPayload, configureServices);
+
+            // Attempt to register the egress provider if not already registered; this allows the service configuration
+            // callback to register the egress provider if it has additional requirements that cannot be fulfilled by
+            // dependency injection.
+            services.TryAddSingleton<EgressProvider<TOptions>, TProvider>();
+
+            services.MakeReadOnly();
+
+            ServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            return serviceProvider;
         }
 
         internal static async Task<ExtensionEgressPayload> GetPayload(CancellationToken token)
