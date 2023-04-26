@@ -73,7 +73,7 @@ jobs:
       ${{ if eq(parameters.architecture, 'arm64') }}:
         container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64
       ${{ else }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04
 
     ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
       ${{ if eq(parameters.architecture, 'arm64') }}:
