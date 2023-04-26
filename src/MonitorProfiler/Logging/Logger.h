@@ -69,7 +69,7 @@ public:
 
         // Call LogV method with the pack expansion converting strings to the
         // appropriate string width for the target platform.
-        return LogV(level, format, ConvertArg(args, argStrings)...);
+        return LogV(level, format.c_str(), ConvertArg(args, argStrings)...);
     }
 
 private:
@@ -100,7 +100,7 @@ private:
     /// <summary>
     /// Formats the format string with the variable arguments and calls the Log(level, message) function.
     /// </summary>
-    STDMETHODIMP LogV(LogLevel level, const lstring format, ...);
+    STDMETHODIMP LogV(LogLevel level, const LCHAR* format, ...);
 };
 
 // Checks if EXPR is a failed HRESULT
