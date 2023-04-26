@@ -53,8 +53,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 try
                 {
                     _egressProviderSource.ProvidersChanged += configChangedHandler;
-                    List<Task> validationTasks = new();
-                    foreach (var providerName in _egressProviderSource.ProviderNames)
+                    IReadOnlyCollection providerNames = _egressProviderSource.ProviderNames;
+                    List<Task> validationTasks = new(providerNames.Count);
+                    foreach (var providerName in providerNames)
                     {
                         validationTasks.Add(Task.Run(() => EgressOperation.ValidateAsync(_serviceProvider, providerName, linkedToken), linkedToken).SafeAwait());
                     }
