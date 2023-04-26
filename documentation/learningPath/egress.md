@@ -18,7 +18,6 @@ graph LR
     N --> 3
     end
     subgraph ide2 [Extensions]
-    2 ---> R{AzureBlobStorage}
     3 ---> R{AzureBlobStorage}
     R --> 4
     R --> 5
@@ -27,9 +26,9 @@ graph LR
     class ide2 altColor
 ```
 
-1. User initiates collection of artifact with a designated egress provider
-1. Find and start extension as separate process
-1. Pass configuration/artifact via StdIn
+1. [User initiates collection of artifact with a designated egress provider](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Microsoft.Diagnostics.Monitoring.WebApi/Operation/EgressOperation.cs#L49)
+1. Locate extension's executable and manifest 
+1. [Start extension and pass configuration/artifact via StdIn to the other process](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressExtension.cs#L102)
 1. Connect to egress provider using configuration and send artifact
 1. Provide success/failure information via StdOut to dotnet-monitor
 
@@ -38,8 +37,11 @@ graph LR
 
 ## Building An Egress Provider
 
+### Extension Manifest
 
+### Configuration
 
+### Communicating With Dotnet-Monitor
 
 ## Keeping Documentation Up-To-Date
 
