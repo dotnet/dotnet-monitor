@@ -13,6 +13,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
     internal class ExtensionManifest : IValidatableObject
     {
+        private static readonly JsonSerializerOptions _serializerOptions = new()
+        {
+            Converters = { new JsonStringEnumConverter() }
+        };
+
         public const string DefaultFileName = "extension.json";
 
         /// <summary>
@@ -53,11 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
             try
             {
-                JsonSerializerOptions serializerOptions = new()
-                {
-                    Converters = { new JsonStringEnumConverter() }
-                };
-                return JsonSerializer.Deserialize<ExtensionManifest>(stream, serializerOptions);
+                return JsonSerializer.Deserialize<ExtensionManifest>(stream, _serializerOptions);
             }
             catch (JsonException ex)
             {
