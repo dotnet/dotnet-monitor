@@ -101,7 +101,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 }
             }
 
-            ProviderNames = new List<string>(_providerNameToTypeMap.Keys);
+            ProviderNames = new List<string>(_providerNameToTypeMap.Keys).AsReadOnly();
 
             ProvidersChanged?.Invoke(this, EventArgs.Empty);
         }
