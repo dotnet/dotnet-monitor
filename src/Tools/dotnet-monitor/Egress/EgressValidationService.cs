@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 try
                 {
                     _egressProviderSource.ProvidersChanged += configChangedHandler;
-                    IReadOnlyCollection providerNames = _egressProviderSource.ProviderNames;
+                    IReadOnlyCollection<string> providerNames = _egressProviderSource.ProviderNames;
                     List<Task> validationTasks = new(providerNames.Count);
                     foreach (var providerName in providerNames)
                     {

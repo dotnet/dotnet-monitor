@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
@@ -52,7 +53,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
             try
             {
-                return JsonSerializer.Deserialize<ExtensionManifest>(stream);
+                JsonSerializerOptions serializerOptions = new()
+                {
+                    Converters = { new JsonStringEnumConverter() }
+                };
+                return JsonSerializer.Deserialize<ExtensionManifest>(stream, serializerOptions);
             }
             catch (JsonException ex)
             {
