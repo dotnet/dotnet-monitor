@@ -35,6 +35,12 @@ graph LR
 
 ## Distribution and Acquisition Model
 
+### Dotnet-Monitor Versions
+
+### Well Known Egress Provider Locations
+
+### Manually Acquiring An Egress Provider 
+
 ## Building An Egress Provider
 
 ### Extension Manifest
@@ -43,12 +49,16 @@ All extensions must include a manifest titled `extension.json` that provides `do
 
 | Name | Required | Type | Description |
 |---|---|---|---|
-| `Name` | true | string | The name of the extension (e.g. AzureBlobStorage). |
+| `Name` | true | string | The name of the extension (e.g. AzureBlobStorage) that users will use when writing configuration for the egress provider. |
 | `ExecutableFileName` | false | string | If specified, the executable file (without extension) to be launched when executing the extension; either `AssemblyFileName` or `ExecutableFileName` must be specified. |
 | `AssemblyFileName` | false | string | If specified, executes the extension using the shared .NET host (e.g. dotnet.exe) with the specified entry point assembly (without extension); either `AssemblyFileName` or `ExecutableFileName` must be specified. |
-| `Modes` | false | [[ExtensionMode](NEED THIS)] | string | Additional modes the extension can be configured to run in. |
+| `Modes` | false | [[ExtensionMode](NEED THIS)] | Additional modes the extension can be configured to run in. |
 
 ### Configuration
+
+Extensions are designed to receive all user configuration through `dotnet monitor` - the extension itself should not rely on any additional configuration sources. [`dotnet monitor` will pass serialized configuration via `StdIn` to the extension](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressExtension.cs#L182); an example of how the `AzureBlobStorage` egress provider interprets the egress payload can be found [here](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Microsoft.Diagnostics.Monitoring.Extension.Common/EgressHelper.cs#L139).
+
+In addition to the configuration provided specifically for your egress provider, `dotnet-monitor` also includes the values stored in [`Properties`](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Microsoft.Diagnostics.Monitoring.Options/EgressOptions.cs#L21). Note that `Properties` may include information that is not relevant to the current egress provider, since it is a shared bucket between all configured egress providers.
 
 ### Communicating With Dotnet-Monitor
 
