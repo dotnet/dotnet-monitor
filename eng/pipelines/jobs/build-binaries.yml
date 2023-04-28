@@ -1,0 +1,90 @@
+# Builds and tests dotnet-monitor for a specific platform and configuration
+
+parameters:
+  # Operating system group (Windows, Linux, MacOS, etc)
+  osGroup: Windows
+  # Build configuration (Debug, Release)
+  configuration: Release
+  # Build architecture (arm64, x64, x86, etc)
+  architecture: x64
+  # RID (runtime identifier) of build output
+  targetRid: win-x64
+  # Enable/disable publishing build output as Azure Pipeline artifact
+  publishArtifacts: false
+  # Enable/disable publishing binaries as Azure Pipeline artifact
+  publishBinaries: false
+
+jobs:
+- template: /eng/pipelines/jobs/build.yml
+  parameters:
+    prefix: Build
+    osGroup: ${{ parameters.osGroup }}
+    configuration: ${{ parameters.configuration }}
+    architecture: ${{ parameters.architecture }}
+
+    ${{ if and(eq(parameters.targetRid, 'win-x64'), eq(parameters.configuration, 'Release')) }}:
+      buildArgs: '/p:PublishProjectsAfterBuild=true'
+    ${{ else }}:
+      buildArgs: '/p:PublishProjectsAfterBuild=true /p:SkipPlatformNeutralPublish=true'
+
+    postBuildSteps:
+    - ${{ if eq(parameters.publishBinaries, 'true') }}:
+      - task: CopyFiles@2
+        displayName: Gather Artifacts (bin)
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/binaries/bin'
+
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Artifacts (Binaries)
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)/binaries'
+          artifactName: Build_Binaries_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
+
+    - ${{ if and(eq(parameters.publishArtifacts, 'true'), eq(parameters.configuration, 'Release')) }}:
+      - task: CopyFiles@2
+        displayName: Gather Artifacts (pub)
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/artifacts/pub'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/pub'
+      
+      - task: CopyFiles@2
+        displayName: Gather Artifacts (bin/${{ parameters.targetRid }}.${{ parameters.configuration }})
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
+
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Artifacts (Published)
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
+          artifactName: Build_Published_${{ parameters.configuration }}
+
+      - ${{ if eq(parameters.targetRid, 'win-x64') }}:
+        - task: CopyFiles@2
+          displayName: Gather Artifacts (bin)
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/unified/bin'
+        - task: CopyFiles@2
+          displayName: Gather Artifacts (obj)
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)/artifacts/obj'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/unified/obj'
+        - task: CopyFiles@2
+          displayName: Gather Artifacts (pub)
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)/artifacts/pub'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/unified/pub'
+      - ${{ else }}:
+        - task: CopyFiles@2
+          displayName: Gather Artifacts (bin/${{ parameters.targetRid }}.${{ parameters.configuration }})
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/unified/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
+      
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Artifacts (Unified)
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)/unified'
+          artifactName: Build_Unified_${{ parameters.configuration }}

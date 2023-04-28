@@ -7,10 +7,6 @@ parameters:
   configuration: Release
   # Build architecture (arm64, x64, x86, etc)
   architecture: x64
-  # Sub paths under 'artifacts' folder from which files are published to artifacts location
-  publishArtifactsSubPaths: []
-  # Group of tests to be run
-  testGroup: Default
   # Enables TSA results upload
   enableTsa: false
 
