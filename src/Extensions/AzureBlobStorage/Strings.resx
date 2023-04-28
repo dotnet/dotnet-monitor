@@ -137,7 +137,7 @@
     <comment>Gets a string similar to "Azure blob egress failed.".</comment>
   </data>
   <data name="ErrorMessage_EgressMissingCredentials" xml:space="preserve">
-    <value>SharedAccessSignature, AccountKey, ManagedIdentityClientId, or UseWorkflowIdentity must be specified.</value>
+    <value>SharedAccessSignature, AccountKey, ManagedIdentityClientId, or UseWorkloadIdentityFromEnvironment must be specified.</value>
     <comment>Gets a string similar to "SharedAccessSignature, AccountKey, ManagedIdentityClientId, or UseWorkflowIdentity must be specified.".</comment>
   </data>
   <data name="LogFormatString_DuplicateKeyInMetadata" xml:space="preserve">

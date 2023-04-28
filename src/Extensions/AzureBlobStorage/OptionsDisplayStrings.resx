@@ -172,7 +172,7 @@
     <value>Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.</value>
     <comment>The description provided for the CopyBufferSize parameter on all egress provider options.</comment>
   </data>
-  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_UseWorkloadIdentity" xml:space="preserve">
-    <value>Uses WorkflowIdentity for authentication. The environment variables AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_FEDERATED_TOKEN_FILE, and AZURE_AUTHORITY_HOST are used to authenticate.</value>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_UseWorkloadIdentityFromEnvironment" xml:space="preserve">
+    <value>Uses WorkloadIdentity for authentication. The environment variables AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_FEDERATED_TOKEN_FILE, and AZURE_AUTHORITY_HOST are used to authenticate.</value>
   </data>
 </root>

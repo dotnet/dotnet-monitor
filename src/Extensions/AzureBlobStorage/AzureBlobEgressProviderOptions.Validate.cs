@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
             IList<ValidationResult> results = new List<ValidationResult>();
 
             // One of the authentication keys/tokens is required
-            if (string.IsNullOrEmpty(AccountKey) && string.IsNullOrEmpty(SharedAccessSignature) && string.IsNullOrEmpty(ManagedIdentityClientId) && !UseWorkloadIdentity)
+            if (string.IsNullOrEmpty(AccountKey) && string.IsNullOrEmpty(SharedAccessSignature) && string.IsNullOrEmpty(ManagedIdentityClientId) && !(UseWorkloadIdentityFromEnvironment == true))
             {
                 results.Add(
                     new ValidationResult(
@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
                             nameof(AccountKey),
                             nameof(SharedAccessSignature),
                             nameof(ManagedIdentityClientId),
-                            nameof(UseWorkloadIdentity))));
+                            nameof(UseWorkloadIdentityFromEnvironment))));
             }
 
             return results;

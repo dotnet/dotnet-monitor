@@ -88,7 +88,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SharedAccessSignature, AccountKey, ManagedIdentityClientId, or UseWorkflowIdentity must be specified..
+        ///   Looks up a localized string similar to SharedAccessSignature, AccountKey, ManagedIdentityClientId, or UseWorkloadIdentityFromEnvironment must be specified..
         /// </summary>
         internal static string ErrorMessage_EgressMissingCredentials {
             get {

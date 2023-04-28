@@ -182,11 +182,12 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Uses WorkflowIdentity for authentication. The environment variables AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_FEDERATED_TOKEN_FILE, and AZURE_AUTHORITY_HOST are used to authenticate..
+        ///   Looks up a localized string similar to Uses WorkloadIdentity for authentication. The environment variables AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_FEDERATED_TOKEN_FILE, and AZURE_AUTHORITY_HOST are used to authenticate..
         /// </summary>
-        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_UseWorkloadIdentity {
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_UseWorkloadIdentityFromEnvironment {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_UseWorkloadIdentity", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_UseWorkloadIdentityFro" +
+                        "mEnvironment", resourceCulture);
             }
         }
         

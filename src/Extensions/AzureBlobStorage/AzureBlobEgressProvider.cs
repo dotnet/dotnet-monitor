@@ -377,13 +377,13 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
         }
 
         private static bool UseDefaultCredentials(AzureBlobEgressProviderOptions options) =>
-            !string.IsNullOrEmpty(options.ManagedIdentityClientId) || options.UseWorkloadIdentity;
+            !string.IsNullOrEmpty(options.ManagedIdentityClientId) || options.UseWorkloadIdentityFromEnvironment == true;
 
         private static TokenCredential CreateDefaultCredential(AzureBlobEgressProviderOptions options)
         {
             DefaultAzureCredentialOptions credOptions = GetDefaultCredentialOptions();
 
-            if (options.UseWorkloadIdentity)
+            if (options.UseWorkloadIdentityFromEnvironment == true)
             {
                 credOptions.ExcludeWorkloadIdentityCredential = false;
             }

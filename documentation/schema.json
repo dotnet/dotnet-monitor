@@ -2561,9 +2561,12 @@
           ],
           "description": "Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage."
         },
-        "UseWorkloadIdentity": {
-          "type": "boolean",
-          "description": "Uses WorkflowIdentity for authentication. The environment variables AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_FEDERATED_TOKEN_FILE, and AZURE_AUTHORITY_HOST are used to authenticate."
+        "UseWorkloadIdentityFromEnvironment": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Uses WorkloadIdentity for authentication. The environment variables AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_FEDERATED_TOKEN_FILE, and AZURE_AUTHORITY_HOST are used to authenticate."
         },
         "ContainerName": {
           "type": "string",
