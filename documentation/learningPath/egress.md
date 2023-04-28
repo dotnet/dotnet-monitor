@@ -39,6 +39,15 @@ graph LR
 
 ### Extension Manifest
 
+All extensions must include a manifest titled `extension.json` that provides `dotnet-monitor` with some basic information about the extension.
+
+| Name | Required | Type | Description |
+|---|---|---|---|
+| `Name` | true | string | The name of the extension (e.g. AzureBlobStorage). |
+| `ExecutableFileName` | false | string | If specified, the executable file (without extension) to be launched when executing the extension; either `AssemblyFileName` or `ExecutableFileName` must be specified. |
+| `AssemblyFileName` | false | string | If specified, executes the extension using the shared .NET host (e.g. dotnet.exe) with the specified entry point assembly (without extension); either `AssemblyFileName` or `ExecutableFileName` must be specified. |
+| `Modes` | false | [[ExtensionMode](NEED THIS)] | string | Additional modes the extension can be configured to run in. |
+
 ### Configuration
 
 ### Communicating With Dotnet-Monitor
