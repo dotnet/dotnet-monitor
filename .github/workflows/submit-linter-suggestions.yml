@@ -60,7 +60,7 @@ jobs:
             }
 
       - name: 'Setup reviewdog'
-        uses: reviewdog/action-setup@8f2ec89e6b467ca9175527d2a1641bbd0c05783b
+        uses: reviewdog/action-setup@8dc47785c4a3a899d16d7371637b070e600cd65f
 
       # Manually supply the triggering PR event information since when a PR is from a fork,
       # this workflow running in the base repo will not be given information about it.
