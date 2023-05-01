@@ -41,6 +41,13 @@ graph LR
 
 ### Manually Acquiring An Egress Provider 
 
+These are a few recommended workflows to manually acquire an officially supported egress provider - this is not an exhaustive list, and other mechanisms may be preferable depending on your use case.
+
+1. Multi-Stage Build-Your-Own .NET Monitor Image
+1.
+
+The distribution/acquisition model for third-party egress providers is determined by the author of the extension.
+
 ## Building An Egress Provider
 
 ### Extension Manifest
