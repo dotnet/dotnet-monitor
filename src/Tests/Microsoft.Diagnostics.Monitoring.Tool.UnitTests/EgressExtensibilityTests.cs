@@ -143,9 +143,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ProcessStartInfo startInfo = new()
                 {
                     FileName = "chmod",
-                    Arguments = "+x " + executablePath,
                     UseShellExecute = true
                 };
+                startInfo.ArgumentList.Add("+x");
+                startInfo.ArgumentList.Add(executablePath);
 
                 using Process proc = Process.Start(startInfo);
                 if (!proc.WaitForExit(60_000)) // 1 minute
