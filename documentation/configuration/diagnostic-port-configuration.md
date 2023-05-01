@@ -88,7 +88,7 @@ When operating in `Listen` mode, you can also specify the maximum number of inco
   ```json
   {
     "DiagnosticPort": {
-      "MaxConnections": "10"
+      "MaxConnections": 10
     }
   }
   ```
