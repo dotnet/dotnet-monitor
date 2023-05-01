@@ -150,7 +150,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 using Process proc = Process.Start(startInfo);
                 if (!proc.WaitForExit(60_000)) // 1 minute
                 {
-                    throw new InvalidOperationException("Unable to make extension executable: Timeout out.");
+                    throw new InvalidOperationException("Unable to make extension executable: Timed out.");
                 }
                 if (0 != proc.ExitCode)
                 {
