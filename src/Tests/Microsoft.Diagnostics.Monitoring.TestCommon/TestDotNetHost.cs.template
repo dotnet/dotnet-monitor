@@ -1,0 +1,25 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+// THIS FILE IS AUTO-GENERATED DURING BUILD.  MODIFICATIONS _WILL_ BE OVERWRITTEN!
+
+namespace Microsoft.Diagnostics.Monitoring.TestCommon
+{
+    public partial class TestDotNetHost
+    {
+        public static readonly string CurrentAspNetCoreVersionString = "$MicrosoftAspNetCoreAppVersion$";
+        public static readonly string CurrentNetCoreVersionString = "$MicrosoftNetCoreAppVersion$";
+
+        public static readonly string NetCore31VersionString = "$MicrosoftNetCoreApp31Version$";
+        public static readonly string NetCore50VersionString = "$MicrosoftNetCoreApp50Version$";
+        public static readonly string NetCore60VersionString = "$MicrosoftNetCoreApp60Version$";
+        public static readonly string NetCore70VersionString = "$MicrosoftNetCoreApp70Version$";
+        public static readonly string NetCore80VersionString = "$MicrosoftNetCoreApp80Version$";
+
+        public static readonly string AspNetCore31VersionString = "$MicrosoftAspNetCoreApp31Version$";
+        public static readonly string AspNetCore50VersionString = "$MicrosoftAspNetCoreApp50Version$";
+        public static readonly string AspNetCore60VersionString = "$MicrosoftAspNetCoreApp60Version$";
+        public static readonly string AspNetCore70VersionString = "$MicrosoftAspNetCoreApp70Version$";
+        public static readonly string AspNetCore80VersionString = "$MicrosoftAspNetCoreApp80Version$";
+    }
+}

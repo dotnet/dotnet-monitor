@@ -11,10 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="$(AwsSdkS3Version)" />
-    <PackageReference Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
-    <PackageReference Include="Azure.Storage.Queues" Version="$(AzureStorageQueuesVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiateVersion)" />
     <PackageReference Include="Microsoft.Identity.Web" Version="$(MicrosoftIdentityWebVersion)" />
@@ -60,6 +56,8 @@
   </ItemGroup>
 
   <!-- Targets and properties for ensuring publish before pack. -->
+  <Import Project="$(RepoRoot)src\archives\AzureBlobStorage\ProjectsToPublish.props" />
+  <Import Project="$(RepoRoot)src\archives\S3Storage\ProjectsToPublish.props" />
   <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.StartupHook\ProjectsToPublish.props" />
   <Import Project="$(RepositoryEngineeringDir)PublishProjects.targets" />
 
@@ -94,6 +92,13 @@
       </TfmSpecificPackageFile>
       <TfmSpecificPackageFile Include="$(StartupHookSymbolsPath)">
         <PackagePath>tools/$(TargetFramework)/any/shared/any/$(StartupHookTargetFramework)</PackagePath>
+      </TfmSpecificPackageFile>
+      <!-- Pack extension files -->
+      <TfmSpecificPackageFile Include="$(AzureBlobStoragePublishRootPath)$(TargetFramework)\any\**">
+        <PackagePath>tools/$(TargetFramework)/any/extensions/$(AzureBlobStorageExtensionFolderName)</PackagePath>
+      </TfmSpecificPackageFile>
+      <TfmSpecificPackageFile Include="$(S3StoragePublishRootPath)$(TargetFramework)\any\**">
+        <PackagePath>tools/$(TargetFramework)/any/extensions/$(S3StorageExtensionFolderName)</PackagePath>
       </TfmSpecificPackageFile>
     </ItemGroup>
   </Target>

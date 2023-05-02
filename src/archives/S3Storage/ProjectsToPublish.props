@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <S3StorageExtensionFolderName>S3Storage</S3StorageExtensionFolderName>
+    <S3StorageProjectPath>$(RepoRoot)src\Extensions\S3Storage\S3Storage.csproj</S3StorageProjectPath>
+    <S3StoragePublishTargetFramework>$(LatestTargetFramework)</S3StoragePublishTargetFramework>
+    <S3StoragePublishTargetFramework Condition="'$(TargetFramework)' != ''">$(TargetFramework)</S3StoragePublishTargetFramework>
+    <S3StoragePublishRootPath>$(ArtifactsDir)pub\dotnet-monitor-egress-s3storage\$(Configuration)\</S3StoragePublishRootPath>
+    <S3StoragePlatformSpecificPublishPath>$(ArtifactsDir)pub\dotnet-monitor-egress-s3storage\$(Configuration)\$(S3StoragePublishTargetFramework)\$(PackageRid)\</S3StoragePlatformSpecificPublishPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectToPublish Include="$(S3StorageProjectPath)">
+      <AdditionalProperties>TargetFramework=$(S3StoragePublishTargetFramework);RuntimeIdentifier=$(PackageRid);PublishDir=$(S3StoragePlatformSpecificPublishPath)</AdditionalProperties>
+    </ProjectToPublish>
+  </ItemGroup>
+  <ItemGroup Condition="'$(SkipPlatformNeutralPublish)' != 'true'">
+    <ProjectToPublish Include="$(S3StorageProjectPath)">
+      <AdditionalProperties>TargetFramework=$(LatestToolTargetFramework);RuntimeIdentifier=;PublishDir=$(S3StoragePublishRootPath)$(LatestToolTargetFramework)\any\</AdditionalProperties>
+    </ProjectToPublish>
+    <ProjectToPublish Include="$(S3StorageProjectPath)">
+      <AdditionalProperties>TargetFramework=$(OlderToolTargetFramework);RuntimeIdentifier=;PublishDir=$(S3StoragePublishRootPath)$(OlderToolTargetFramework)\any\</AdditionalProperties>
+    </ProjectToPublish>
+  </ItemGroup>
+</Project>

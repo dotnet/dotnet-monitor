@@ -78,6 +78,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Extensions\AzureBlobStorage\AzureBlobStorage.csproj" />
+    <ProjectReference Include="..\..\Extensions\S3Storage\S3Storage.csproj" />
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
   </ItemGroup>
 

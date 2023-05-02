@@ -14,13 +14,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
     /// </summary>
     internal sealed class BuildOutputManagedFileProvider : IFileProvider
     {
-        private const string ConfigurationName =
-#if DEBUG
-            "Debug";
-#else
-            "Release";
-#endif
-
         private readonly string _managedFileBasePath;
         private readonly string _targetFramework;
 
@@ -48,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
         public IFileInfo GetFileInfo(string subpath)
         {
             string libraryName = Path.GetFileNameWithoutExtension(subpath);
-            FileInfo fileInfo = new FileInfo(Path.Combine(_managedFileBasePath, libraryName, ConfigurationName, _targetFramework, subpath));
+            FileInfo fileInfo = new FileInfo(Path.Combine(_managedFileBasePath, libraryName, BuildOutput.ConfigurationName, _targetFramework, subpath));
             if (fileInfo.Exists)
             {
                 return new PhysicalFileInfo(fileInfo);

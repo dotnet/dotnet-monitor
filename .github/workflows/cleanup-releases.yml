@@ -1,0 +1,46 @@
+run-name: 'Cleanup releases'
+
+on:
+  schedule: # Run once a week to detect and manage out-of-support versions.
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  cleanup-release-information:
+    if: github.repository == 'dotnet/dotnet-monitor'
+    name: 'Cleanup releases'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+        with:
+          persist-credentials: true # We need to persist credentials inorder to open a PR.
+
+      - name: Update releases.json
+        uses: ./.github/actions/update-releases-json
+        with:
+          releases_json_file: ./.github/releases.json
+
+      - name: Update releases.md
+        uses: ./.github/actions/update-releases-md
+        with:
+          releases_json_file: ./.github/releases.json
+          releases_md_file: ./documentation/releases.md
+
+      - name: Open PR
+        uses: ./.github/actions/open-pr
+        with:
+          files_to_commit: ./.github/releases.json ./documentation/releases.md
+          title: "Update release information"
+          commit_message: Update releases information.
+          body: Update release information.
+          branch_name: release-info/cleanup
+          labels: automatic-pr
+          fail_if_files_unchanged: false
+          auth_token: ${{ secrets.GITHUB_TOKEN }}

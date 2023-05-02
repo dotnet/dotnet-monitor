@@ -19,13 +19,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public const string InProcessFeatures = nameof(RootOptions.InProcessFeatures);
 
-        public const string Egress = nameof(RootOptions.Egress);
+        public const string Egress = nameof(Egress);
+
+        public const string Egress_Properties = "Properties";
 
         public const string Metrics = nameof(RootOptions.Metrics);
 
         public const string Storage = nameof(RootOptions.Storage);
 
-        public const string DefaultProcess = nameof(DefaultProcess);
+        public const string DefaultProcess = nameof(RootOptions.DefaultProcess);
 
         public const string Logging = nameof(Logging);
 
@@ -34,5 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const string CollectionRuleDefaults = nameof(RootOptions.CollectionRuleDefaults);
 
         public const string Templates = nameof(RootOptions.Templates);
+
+        public const string InternalHostBuilderSettings = nameof(InternalHostBuilderSettings);
     }
 }

@@ -173,14 +173,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 
         public static CollectionRuleOptions AddExecuteActionAppAction(this CollectionRuleOptions options, Assembly testAssembly, params string[] args)
         {
-            options.AddExecuteAction(DotNetHost.GetPath(), ExecuteActionTestHelper.GenerateArgumentsString(testAssembly, args));
+            options.AddExecuteAction(TestDotNetHost.GetPath(), ExecuteActionTestHelper.GenerateArgumentsString(testAssembly, args));
 
             return options;
         }
 
         public static CollectionRuleOptions AddExecuteActionAppAction(this CollectionRuleOptions options, Assembly testAssembly, bool waitForCompletion, params string[] args)
         {
-            options.AddExecuteAction(DotNetHost.GetPath(), ExecuteActionTestHelper.GenerateArgumentsString(testAssembly, args), waitForCompletion);
+            options.AddExecuteAction(TestDotNetHost.GetPath(), ExecuteActionTestHelper.GenerateArgumentsString(testAssembly, args), waitForCompletion);
 
             return options;
         }

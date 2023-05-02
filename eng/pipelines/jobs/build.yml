@@ -19,13 +19,12 @@ parameters:
   timeoutInMinutes: 180
   # Job dependencies
   dependsOn: ''
-  # Sub paths under 'artifacts' folder from which files are published to artifacts location
-  publishArtifactsSubPaths: []
   # Disable Component Governance injection and analysis
   disableComponentGovernance: false
   # Disable SBOM generation
   disableSbom: false
   buildArgs: ''
+  buildEnv: {}
 
 jobs:
 - template: /eng/common/templates/job/job.yml
@@ -73,7 +72,7 @@ jobs:
       ${{ if eq(parameters.architecture, 'arm64') }}:
         container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64
       ${{ else }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04
 
     ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
       ${{ if eq(parameters.architecture, 'arm64') }}:
@@ -161,8 +160,9 @@ jobs:
         $(_InternalInstallArgs)
         $(_InternalBuildArgs)
       displayName: Build
-      ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
-        env:
+      env:
+        ${{ insert }}: ${{ parameters.buildEnv }}
+        ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
           ROOTFS_DIR: '/crossrootfs/arm64'
 
     - ${{ each step in parameters.postBuildSteps }}:

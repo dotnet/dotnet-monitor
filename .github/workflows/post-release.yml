@@ -1,0 +1,181 @@
+run-name: '[${{ github.ref_name }}] Post release'
+
+on:
+  release: # Run on every release to add new version information.
+    types: [released]
+
+# Only process one release at a time so we can generate cumulative results in the same PR.
+# NOTE: This is currently restricted to only having 2 releases at the exact same time, any more and
+# the pending jobs will be cancelled (but can be manually re-invoked).
+concurrency:
+  group: post-release-workflow
+  cancel-in-progress: false
+
+env:
+  BASE_BRANCH: main
+  TARGET_BRANCH_POSTFIX: release-info/on-release
+
+permissions: {}
+
+jobs:
+  update-shipping-branch:
+    name: 'Update shipping branch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+        with:
+          persist-credentials: false
+
+      - name: Calculate branch name
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410
+        id: calculate-branch-name
+        with:
+          result-encoding: string
+          script: |
+            const actionUtils = require('./.github/actions/action-utils.js');
+            const [major, minor] = actionUtils.splitVersionTag(context.payload.release.tag_name);
+            return `shipped/v${major}.${minor}`;
+
+      - name: Create or update shipped branch
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410
+        with:
+          retries: 3
+          script: |
+            const branchName = '${{ steps.calculate-branch-name.outputs.result }}';
+            const createOrUpdateRef = require('./.github/actions/gh-script-utils/create-or-update-ref.js');
+            await createOrUpdateRef(github, context, context.sha, branchName);
+
+            //
+            // Trigger branch mirror, empty commits and new refs will **not** trigger mirroring.
+            // The simplest way of doing this is to create an empty file on the desired branch.
+            //
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              branch: branchName,
+              message: 'Trigger branch mirroring',
+              path: '.mirror',
+              content: ''
+            });
+
+  calculate-supported-frameworks:
+    name: 'Calculated supported frameworks'
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.scan.outputs.supported_frameworks }}
+
+    # Spin a managed build and analyze the output to determine the supported frameworks for a given commit.
+    # It's simpler than trying to parse our `eng/Versions.prop` due to the conditionals in it.
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+        with:
+          persist-credentials: false
+
+      - name: Build
+        id: build
+        run: |
+          ./build.sh -ci -c Release -skipnative
+
+      - name: Scan supported frameworks
+        id: scan
+        run: |
+          supported_frameworks=$(ls ./artifacts/bin/dotnet-monitor/Release | grep "net" | xargs)
+          echo "supported_frameworks=$supported_frameworks" >> "$GITHUB_OUTPUT"
+
+  ensure-target-ref-exists:
+    name: 'Ensure target ref exists'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+        with:
+          persist-credentials: false
+
+      # To avoid permission issues, create the target ref we will be updating
+      # using GitHub APIs.
+      #
+      # Also check if there's an existing PR open from our target ref.
+      # If so, multiple releases have occurred in the same time span
+      # and we want to update that PR.
+      #
+      - name: Ensure target ref exists
+        uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975
+        with:
+          retries: 3
+          script: |
+            const branchName = `bot/${process.env.TARGET_BRANCH_POSTFIX}`;
+
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${branchName}`,
+              base: process.env.BASE_BRANCH
+            });
+
+            if (prs !== undefined && prs.length > 0) {
+              return;
+            }
+
+            const baseRefName = `heads/${process.env.BASE_BRANCH}`
+
+            const baseRef = await github.rest.git.getRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: baseRefName
+            });
+
+            const createOrUpdateRef = require('./.github/actions/gh-script-utils/create-or-update-ref.js');
+            await createOrUpdateRef(github, context, baseRef.data.object.sha, branchName);
+
+  register-release-information:
+    name: 'Register new release'
+    needs: [calculate-supported-frameworks, ensure-target-ref-exists]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      discussions: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+        with:
+          persist-credentials: true # We need to persist credentials inorder to open a PR.
+          ref: bot/${{ env.TARGET_BRANCH_POSTFIX }}
+
+      - name: Update releases.json
+        uses: ./.github/actions/update-releases-json
+        with:
+          auth_token: ${{ secrets.GITHUB_TOKEN }}
+          releases_json_file: ./.github/releases.json
+          end_of_support_discussion_category: Announcements
+          supported_frameworks: ${{needs.calculate-supported-frameworks.outputs.result}}
+
+      - name: Update releases.md
+        uses: ./.github/actions/update-releases-md
+        with:
+          releases_json_file: ./.github/releases.json
+          releases_md_file: ./documentation/releases.md
+
+      - name: Open PR
+        uses: ./.github/actions/open-pr
+        with:
+          files_to_commit: ./.github/releases.json ./documentation/releases.md
+          title: "Register new release information"
+          commit_message: Register ${{ github.ref_name }} release information
+          body: Register new release information.
+          branch_name: ${{ env.TARGET_BRANCH_POSTFIX }}
+          base_branch: ${{ env.BASE_BRANCH }}
+          labels: automatic-pr
+          fail_if_files_unchanged: true # If we're responding to a release, we must have updates.
+          update_if_already_exists: true
+          auth_token: ${{ secrets.GITHUB_TOKEN }}

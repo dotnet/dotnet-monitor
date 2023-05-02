@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -61,7 +62,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             Action<RootOptions> setup,
             Action<IServiceCollection> servicesCallback,
             Action<ILoggingBuilder> loggingCallback = null,
-            List<IConfigurationSource> overrideSource = null)
+            List<IConfigurationSource> overrideSource = null,
+            HostBuilderSettings settings = null)
         {
             return new HostBuilder()
                 .ConfigureAppConfiguration(builder =>
@@ -99,6 +101,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     services.ConfigureTemplates(context.Configuration);
                     services.AddSingleton<OperationTrackerService>();
                     services.ConfigureCollectionRules();
+
+                    services.ConfigureExtensions();
+                    if (settings != null)
+                    {
+                        services.AddSingleton<IDotnetToolsFileSystem, TestDotnetToolsFileSystem>();
+                        services.ConfigureExtensionLocations(settings);
+                    }
+
                     services.ConfigureEgress();
 
                     services.ConfigureDiagnosticPort(context.Configuration);

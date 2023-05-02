@@ -1,12 +1,4 @@
 {
-  "AzureBlobStorage": {
-    "monitorBlob": {
-      "accountKeyName": "MonitorBlobAccountKey" /*JsonConfigurationProvider for 'UserSpecifiedFile.json' (Optional)*/,
-      "accountUri": "https://exampleaccount.blob.core.windows.net" /*JsonConfigurationProvider for 'UserSpecifiedFile.json' (Optional)*/,
-      "blobPrefix": "artifacts" /*JsonConfigurationProvider for 'UserSpecifiedFile.json' (Optional)*/,
-      "containerName": "dotnet-monitor" /*JsonConfigurationProvider for 'UserSpecifiedFile.json' (Optional)*/
-    }
-  },
   "FileSystem": {
     "artifacts": {
       "directoryPath": "/artifacts" /*JsonConfigurationProvider for 'UserSpecifiedFile.json' (Optional)*/

@@ -2,24 +2,6 @@
   "Properties": {
     "MonitorBlobAccountKey": ":REDACTED:"
   },
-  "AzureBlobStorage": {
-    "monitorBlob": {
-      "AccountUri": "https://exampleaccount.blob.core.windows.net",
-      "BlobPrefix": "artifacts",
-      "ContainerName": "dotnet-monitor",
-      "CopyBufferSize": ":NOT PRESENT:",
-      "QueueName": ":NOT PRESENT:",
-      "QueueAccountUri": ":NOT PRESENT:",
-      "SharedAccessSignature": ":NOT PRESENT:",
-      "AccountKey": ":NOT PRESENT:",
-      "SharedAccessSignatureName": ":NOT PRESENT:",
-      "AccountKeyName": "MonitorBlobAccountKey",
-      "ManagedIdentityClientId": ":NOT PRESENT:",
-      "QueueSharedAccessSignature": ":NOT PRESENT:",
-      "QueueSharedAccessSignatureName": ":NOT PRESENT:",
-      "Metadata": ":NOT PRESENT:"
-    }
-  },
   "FileSystem": {
     "artifacts": {
       "DirectoryPath": " /artifacts",
