@@ -62,11 +62,11 @@ jobs:
       ${{ if eq(parameters.osGroup, 'Windows') }}:
         ${{ if eq(variables['System.TeamProject'], 'public') }}:
           name: $(DncEngPublicBuildPool)
-          demands: ImageOverride -equals windows.vs2019.amd64.open
+          demands: ImageOverride -equals windows.vs2022.amd64.open
 
         ${{ if ne(variables['System.TeamProject'], 'public') }}:
           name: $(DncEngInternalBuildPool)
-          demands: ImageOverride -equals windows.vs2019.amd64
+          demands: ImageOverride -equals windows.vs2022.amd64
 
     ${{ if eq(parameters.osGroup, 'Linux') }}:
       ${{ if eq(parameters.architecture, 'arm64') }}:

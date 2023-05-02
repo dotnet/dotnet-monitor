@@ -1,4 +1,4 @@
-# Builds and tests dotnet-monitor for a specific platform and configuration
+# Builds dotnet-monitor for a specific platform and configuration
 
 parameters:
   # Operating system group (Windows, Linux, MacOS, etc)

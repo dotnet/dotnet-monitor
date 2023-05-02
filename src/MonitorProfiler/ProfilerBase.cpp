@@ -510,7 +510,7 @@ STDMETHODIMP ProfilerBase::EventPipeProviderCreated(EVENTPIPE_PROVIDER provider)
     return S_OK;
 }
 
-STDMETHODIMP ProfilerBase::LoadAsNotficationOnly(BOOL *pbNotificationOnly)
+STDMETHODIMP ProfilerBase::LoadAsNotificationOnly(BOOL *pbNotificationOnly)
 {
     return S_OK;
 }

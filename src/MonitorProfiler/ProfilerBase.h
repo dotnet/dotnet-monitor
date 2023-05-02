@@ -163,5 +163,5 @@ public:
     STDMETHOD(EventPipeProviderCreated)(EVENTPIPE_PROVIDER provider) override;
 
     // ICorProfilerCallback11
-    STDMETHOD(LoadAsNotficationOnly)(BOOL *pbNotificationOnly) override;
+    STDMETHOD(LoadAsNotificationOnly)(BOOL *pbNotificationOnly) override;
 };

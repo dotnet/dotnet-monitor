@@ -25,6 +25,7 @@ if defined VS160COMNTOOLS (
 :: Set the default arguments for build
 
 set __BuildArch=x64
+set __TargetOS=windows
 if /i "%PROCESSOR_ARCHITECTURE%" == "amd64" set __BuildArch=x64
 if /i "%PROCESSOR_ARCHITECTURE%" == "x86" set __BuildArch=x86
 set __BuildType=Debug
@@ -133,7 +134,7 @@ if %__CI% EQU 1 (
 )
 
 :: Version header arguments
-set "__GenerateVersionLog=%__LogDir%\GenNativeVersion_%__BuildOS%.%__BuildArch%.%__BuildType%.binlog"
+set "__GenerateVersionLog=%__LogDir%\GenNativeVersion.binlog"
 
 if not exist "%__BinDir%"           md "%__BinDir%"
 if not exist "%__IntermediatesDir%" md "%__IntermediatesDir%"
@@ -154,6 +155,8 @@ REM ===
 REM =========================================================================================
 
 @if defined _echo @echo on
+
+call "%__ProjectDir%\eng\native\version\copy_version_files.cmd"
 
 REM =========================================================================================
 REM ===
@@ -194,7 +197,7 @@ if /i %__BuildCrossArch% EQU 1 (
     set __ExtraCmakeArgs="-DCLR_MANAGED_BINARY_DIR=!__ManagedBinaryDir!" "-DCLR_BUILD_TYPE=%__BuildType%" "-DCLR_CMAKE_TARGET_ARCH=%__BuildArch%" "-DCMAKE_SYSTEM_VERSION=10.0" "-DNUGET_PACKAGES=%NUGET_PACKAGES:\=/%"
 
     pushd "%__CrossCompIntermediatesDir%"
-    call "%__ProjectDir%\eng\native\gen-buildsys.cmd" "%__ProjectDir%" "%__CrossCompIntermediatesDir%" %__VSVersion% %__CrossArch% !__ExtraCmakeArgs!
+    call "%__ProjectDir%\eng\native\gen-buildsys.cmd" "%__ProjectDir%" "%__CrossCompIntermediatesDir%" %__VSVersion% %__CrossArch% %__TargetOS% !__ExtraCmakeArgs!
     @if defined _echo @echo on
     popd
 
@@ -252,7 +255,7 @@ if %__Build% EQU 1 (
     )
 
     echo Generating Version Header
-    set "__VersionHeaderFile=%__IntermediatesDir%\_version.h"
+    set "__VersionHeaderFile=%__ArtifactsIntermediatesDir%\_version.h"
     powershell -NoProfile -ExecutionPolicy ByPass -NoLogo -File "%__ProjectDir%\eng\common\msbuild.ps1" /clp:nosummary %__ArcadeScriptArgs% "%__ProjectDir%\eng\empty.csproj" /t:GenerateRuntimeVersionFile /restore /p:NativeVersionFile=!__VersionHeaderFile! /bl:%__GenerateVersionLog% %__CommonBuildArgs%
     if not !errorlevel! == 0 (
         echo Generate Version Header FAILED
@@ -267,7 +270,7 @@ if %__Build% EQU 1 (
     set __ExtraCmakeArgs="-DCMAKE_SYSTEM_VERSION=10.0" "-DCLR_MANAGED_BINARY_DIR=!__ManagedBinaryDir!" "-DCLR_BUILD_TYPE=%__BuildType%" "-DCLR_CMAKE_TARGET_ARCH=%__BuildArch%" "-DNUGET_PACKAGES=%NUGET_PACKAGES:\=/%"
 
     pushd "%__IntermediatesDir%"
-    call "%__ProjectDir%\eng\native\gen-buildsys.cmd" "%__ProjectDir%" "%__IntermediatesDir%" %__VSVersion% %__BuildArch% !__ExtraCmakeArgs!
+    call "%__ProjectDir%\eng\native\gen-buildsys.cmd" "%__ProjectDir%" "%__IntermediatesDir%" %__VSVersion% %__BuildArch% %__TargetOS% !__ExtraCmakeArgs!
     @if defined _echo @echo on
     popd
 

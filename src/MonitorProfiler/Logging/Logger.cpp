@@ -38,7 +38,7 @@ const LCHAR* ILogger::ConvertArg(const tstring& str, std::vector<lstring>& argSt
 #endif
 }
 
-STDMETHODIMP ILogger::LogV(LogLevel level, const lstring format, ...)
+STDMETHODIMP ILogger::LogV(LogLevel level, const LCHAR* format, ...)
 {
     // CONSIDER: The current approach of formatting the format string before
     // sending it off to the individual logger implementations prevents
@@ -53,7 +53,7 @@ STDMETHODIMP ILogger::LogV(LogLevel level, const lstring format, ...)
     va_list args;
     va_start(args, format);
 
-    hr = LoggerHelper::FormatTruncate(message, format.c_str(), args);
+    hr = LoggerHelper::FormatTruncate(message, format, args);
 
     va_end(args);
 

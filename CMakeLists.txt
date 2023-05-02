@@ -3,11 +3,12 @@ cmake_minimum_required(VERSION 3.14)
 project(dotnet-monitor)
 
 include(eng/native/configurepaths.cmake)
-include(${CLR_ENG_NATIVE_DIR}/configurecompiler.cmake)
+include(${CLR_ENG_NATIVE_DIR}/override/configurecompiler.cmake)
 
 include_directories(
     src/external/runtime/src/coreclr/pal/prebuilt/inc
     src/inc
+    ${CLR_ARTIFACTS_OBJ_DIR}
     )
 
 include_directories(${PROJECT_BINARY_DIR})
@@ -32,16 +33,11 @@ set(PROFILER_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/external/runtime/src/coreclr/pal/prebuilt/idl/corprof_i.cpp
     )
 
-# Add version files
+# Add version files (non-Windows version embeddeding supported by add_library_clr function)
 if(CLR_CMAKE_HOST_WIN32)
     set(SOURCES
         ${SOURCES}
-        ${PROJECT_BINARY_DIR}/NativeVersion.rc
-        )
-else(CLR_CMAKE_HOST_WIN32)
-    set(SOURCES
-        ${SOURCES}
-        ${PROJECT_BINARY_DIR}/version.c
+        ${VERSION_FILE_RC_PATH}
         )
 endif(CLR_CMAKE_HOST_WIN32)
 
