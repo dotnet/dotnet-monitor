@@ -8,7 +8,6 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,14 +15,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
     internal sealed class AspNetScenario
     {
-        public static Command Command()
+        public static CliCommand Command()
         {
-            Command command = new(TestAppScenarios.AspNet.Name);
-            command.SetActionWithExitCode(ExecuteAsync);
+            CliCommand command = new(TestAppScenarios.AspNet.Name);
+            command.SetAction(ExecuteAsync);
             return command;
         }
 
-        public static Task<int> ExecuteAsync(InvocationContext context, CancellationToken token)
+        public static Task<int> ExecuteAsync(ParseResult result, CancellationToken token)
         {
             return ScenarioHelpers.RunWebScenarioAsync<Startup>(async logger =>
             {

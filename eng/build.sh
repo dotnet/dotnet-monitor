@@ -259,6 +259,7 @@ if [[ "$__Test" == 1 ]]; then
         /bl:"$__LogsDir"/Test.binlog \
         /p:TestGroup="$__TestGroup" \
         $__CommonMSBuildArgs \
+        $__ManagedBuildArgs \
         $__ArcadeScriptArgs \
         $__UnprocessedBuildArgs
 

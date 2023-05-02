@@ -4,7 +4,6 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System;
 using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.Diagnostics.Tracing;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,14 +28,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             public void UniqueEvent(string message) => WriteEvent(2, message);
         }
 
-        public static Command Command()
+        public static CliCommand Command()
         {
-            Command command = new(TestAppScenarios.TraceEvents.Name);
-            command.SetActionWithExitCode(ExecuteAsync);
+            CliCommand command = new(TestAppScenarios.TraceEvents.Name);
+            command.SetAction(ExecuteAsync);
             return command;
         }
 
-        public static Task<int> ExecuteAsync(InvocationContext context, CancellationToken token)
+        public static Task<int> ExecuteAsync(ParseResult result, CancellationToken token)
         {
             string[] acceptableCommands = new string[]
             {

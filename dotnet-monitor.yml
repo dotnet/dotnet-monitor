@@ -61,15 +61,23 @@ stages:
     # Generate a TPN for only the dotnet-monitor project
     - template: /eng/pipelines/jobs/tpn.yml
 
-  # Build and test binaries
+  # Build and (optionally) test binaries
   - template: /eng/pipelines/jobs/platform-matrix.yml
     parameters:
-      jobTemplate: /eng/pipelines/jobs/build-test.yml
+      jobTemplate: /eng/pipelines/jobs/build-binaries.yml
       includeArm64: ${{ ne(variables['System.TeamProject'], 'public') }}
       includeDebug: true
       jobParameters:
+        publishBinaries: true
         publishArtifacts: ${{ and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}
-        testGroup: ${{ parameters.testGroup }}
+
+  - ${{ if ne(parameters.testGroup, 'None') }}:
+    - template: /eng/pipelines/jobs/platform-matrix.yml
+      parameters:
+        jobTemplate: /eng/pipelines/jobs/test-binaries.yml
+        includeDebug: true
+        jobParameters:
+          testGroup: ${{ parameters.testGroup }}
 
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   - stage: Archive

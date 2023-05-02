@@ -22,17 +22,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private readonly IArtifactOperation _operation;
 
-
-        public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope, string tags, CollectionRuleMetadata collectionRuleMetadata = null)
-        {
-            _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, processInfo.EndpointInfo, collectionRuleMetadata, token);
-            _scope = scope;
-
-            EgressProviderName = endpointName;
-            ProcessInfo = new EgressProcessInfo(processInfo.ProcessName, processInfo.EndpointInfo.ProcessId, processInfo.EndpointInfo.RuntimeInstanceCookie);
-            Tags = Utilities.SplitTags(tags);
-        }
-
         public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IProcessInfo processInfo, string contentType, KeyValueLogScope scope, string tags, CollectionRuleMetadata collectionRuleMetadata = null)
         {
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, processInfo.EndpointInfo, collectionRuleMetadata, token);
@@ -57,18 +46,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _scope = scope;
         }
 
-        public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata)
-        {
-            _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, source, collectionRuleMetadata, token);
-            EgressProviderName = endpointName;
-            _scope = scope;
-        }
-
         public async Task<ExecutionResult<EgressResult>> ExecuteAsync(IServiceProvider serviceProvider, CancellationToken token)
         {
-            ILogger<EgressOperation> logger = serviceProvider
-                .GetRequiredService<ILoggerFactory>()
-                .CreateLogger<EgressOperation>();
+            ILogger<EgressOperation> logger = CreateLogger(serviceProvider);
 
             using var _ = logger.BeginScope(_scope);
 
@@ -94,7 +74,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             serviceProvider
                 .GetRequiredService<IEgressService>()
-                .ValidateProvider(EgressProviderName);
+                .ValidateProviderExists(EgressProviderName);
+        }
+
+        public static async Task ValidateAsync(IServiceProvider serviceProvider, string endpointName, CancellationToken token)
+        {
+            ILogger<EgressOperation> logger = CreateLogger(serviceProvider);
+
+            await ExecutionHelper.InvokeAsync(async (token) =>
+            {
+                IEgressService egressService = serviceProvider
+                    .GetRequiredService<IEgressService>();
+
+                await egressService.ValidateProviderOptionsAsync(endpointName, token);
+
+                return ExecutionResult<EgressResult>.Succeeded(new EgressResult());
+            }, logger, token);
         }
 
         public Task StopAsync(CancellationToken token)
@@ -105,6 +100,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             return _operation.StopAsync(token);
+        }
+
+        private static ILogger<EgressOperation> CreateLogger(IServiceProvider serviceProvider)
+        {
+           return serviceProvider
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger<EgressOperation>();
         }
     }
 }

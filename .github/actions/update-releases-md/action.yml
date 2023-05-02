@@ -1,0 +1,13 @@
+name: 'Update releases documentation'
+description: 'Update releases documentation'
+inputs:
+  releases_json_file:
+    description: 'The input releases json file path.'
+    required: true
+  releases_md_file:
+    description: 'The output markdown file path.'
+    required: true
+
+runs:
+  using: 'node16'
+  main: 'index.js'

@@ -1,0 +1,5 @@
+{
+    "Name": "S3Storage",
+    "AssemblyFileName": "dotnet-monitor-egress-s3storage",
+    "Modes": [ "Validate" ]
+}

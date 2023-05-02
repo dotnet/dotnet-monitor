@@ -32,15 +32,6 @@ The official build will not automatically trigger for release branches. Each tim
 1. Wait for changes to be mirrored from [GitHub repository](https://github.com/dotnet/dotnet-monitor) to the [internal repository](https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet-monitor).
 1. Invoke the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) for the release branch. Make sure the `Update dotnet-docker?` parameter is set to true. Setting this will cause a successful build to trigger an update in the `dotnet-docker` repository.
 
-The result of the successful build pushes packages to the [dotnet-tools](https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json) feed, pushes symbols to symbol feeds, and generates aka.ms links for the following:
-- `aka.ms/dotnet/diagnostics/monitor{channel}/dotnet-monitor.nupkg.version`
-- `aka.ms/dotnet/diagnostics/monitor{channel}/dotnet-monitor.nupkg.sha512`
-
-> **Note**:
-> The `channel` value is:
-> - `{major}.{minor}/daily` for builds from non-release branches. For example, `channel` is `5.0/daily` for the `main` branch.
-> - `{majorVersion}.{minorVersion}/release` for final release in release branches. For example, `channel` is `5.0/release` for the `release/5.0` if its `<BlobGroupBuildQuality>` is set to `release`.
-
 ## Update Nightly Docker Ingestion
 
 ### Updating tags
@@ -108,6 +99,5 @@ The release image is `mcr.microsoft.com/dotnet/monitor`. The tag list is https:/
 ## After the Release
 
 1. Change the `NightlyUpdateDockerFromMain` variable to `true` in the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) to begin the consumption of nightly builds into dotnet-docker.
-1. Update [releases.md](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/releases.md) with the latest version.
+1. Review and merge the automatically create `Register new release information` PR.
 1. When necessary, update this document if its instructions were unclear or incorrect.
-1. When releasing a new minor version, include an announcement that the previous version will soon be out of support. For example, https://github.com/dotnet/dotnet-monitor/discussions/1871

@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,30 +11,30 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
     internal static class ExecuteScenario
     {
-        private static readonly Argument<string> ContentArgument = new Argument<string>("content");
+        private static readonly CliArgument<string> ContentArgument = new CliArgument<string>("content");
 
-        private static readonly Argument<int> DelayArgument = new Argument<int>("delay");
+        private static readonly CliArgument<int> DelayArgument = new CliArgument<int>("delay");
 
-        private static readonly Argument<FileInfo> PathArgument = new Argument<FileInfo>("path");
+        private static readonly CliArgument<FileInfo> PathArgument = new CliArgument<FileInfo>("path");
 
-        public static Command Command()
+        public static CliCommand Command()
         {
-            Command nonZeroExitCodeCommand = new Command(ActionTestsConstants.NonZeroExitCode);
-            nonZeroExitCodeCommand.SetActionWithExitCode(Execute_NonZeroExitCode);
+            CliCommand nonZeroExitCodeCommand = new CliCommand(ActionTestsConstants.NonZeroExitCode);
+            nonZeroExitCodeCommand.SetAction(Execute_NonZeroExitCode);
 
-            Command sleepCommand = new Command(ActionTestsConstants.Sleep);
+            CliCommand sleepCommand = new CliCommand(ActionTestsConstants.Sleep);
             sleepCommand.Arguments.Add(DelayArgument);
             sleepCommand.SetAction(Execute_Sleep);
 
-            Command textFileOutputCommand = new Command(ActionTestsConstants.TextFileOutput);
+            CliCommand textFileOutputCommand = new CliCommand(ActionTestsConstants.TextFileOutput);
             textFileOutputCommand.Arguments.Add(PathArgument);
             textFileOutputCommand.Arguments.Add(ContentArgument);
             textFileOutputCommand.SetAction(Execute_TextFileOutput);
 
-            Command zeroExitCodeCommand = new Command(ActionTestsConstants.ZeroExitCode);
-            zeroExitCodeCommand.SetActionWithExitCode(Execute_ZeroExitCode);
+            CliCommand zeroExitCodeCommand = new CliCommand(ActionTestsConstants.ZeroExitCode);
+            zeroExitCodeCommand.SetAction(Execute_ZeroExitCode);
 
-            Command command = new(TestAppScenarios.Execute.Name);
+            CliCommand command = new(TestAppScenarios.Execute.Name);
             command.Subcommands.Add(nonZeroExitCodeCommand);
             command.Subcommands.Add(sleepCommand);
             command.Subcommands.Add(textFileOutputCommand);
@@ -43,24 +42,24 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return command;
         }
 
-        private static Task<int> Execute_ZeroExitCode(InvocationContext context, CancellationToken token)
+        private static Task<int> Execute_ZeroExitCode(ParseResult result, CancellationToken token)
         {
             return Task.FromResult(0);
         }
 
-        private static Task<int> Execute_NonZeroExitCode(InvocationContext context, CancellationToken token)
+        private static Task<int> Execute_NonZeroExitCode(ParseResult result, CancellationToken token)
         {
             return Task.FromResult(1);
         }
 
-        private static void Execute_Sleep(InvocationContext context)
+        private static void Execute_Sleep(ParseResult result)
         {
-            Thread.Sleep(context.GetValue(DelayArgument));
+            Thread.Sleep(result.GetValue(DelayArgument));
         }
 
-        private static void Execute_TextFileOutput(InvocationContext context)
+        private static void Execute_TextFileOutput(ParseResult result)
         {
-            File.WriteAllText(context.GetValue(PathArgument).FullName, context.GetValue(ContentArgument));
+            File.WriteAllText(result.GetValue(PathArgument).FullName, result.GetValue(ContentArgument));
         }
     }
 }
