@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
             IList<ValidationResult> results = new List<ValidationResult>();
 
             // One of the authentication keys/tokens is required
-            if (string.IsNullOrEmpty(AccountKey) && string.IsNullOrEmpty(SharedAccessSignature) && string.IsNullOrEmpty(ManagedIdentityClientId))
+            if (string.IsNullOrEmpty(AccountKey) && string.IsNullOrEmpty(SharedAccessSignature) && string.IsNullOrEmpty(ManagedIdentityClientId) && !(UseWorkloadIdentityFromEnvironment == true))
             {
                 results.Add(
                     new ValidationResult(
@@ -25,7 +25,8 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
                             Strings.ErrorMessage_CredentialsMissing,
                             nameof(AccountKey),
                             nameof(SharedAccessSignature),
-                            nameof(ManagedIdentityClientId))));
+                            nameof(ManagedIdentityClientId),
+                            nameof(UseWorkloadIdentityFromEnvironment))));
             }
 
             return results;
