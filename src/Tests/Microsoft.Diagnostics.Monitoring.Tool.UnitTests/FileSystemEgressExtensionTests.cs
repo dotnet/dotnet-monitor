@@ -198,7 +198,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             string content = File.ReadAllText(filePath);
             Assert.Equal(ExpectedFileContent, content);
         }
-
-        private sealed class EmptyConfigurationProvider : ConfigurationProvider { }
     }
 }

@@ -13,7 +13,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public const string ExtensionsFolder = "extensions";
         public const string SampleArtifactPath = "sample\\path";
         public const string SampleFailureMessage = "the extension failed";
-        public const string ProviderName = "TestingProvider"; // Must match the name in extension.json
+        public const string ProviderTypeName = "TestEgress"; // Must match the name in extension.json
+        public const string ProviderName = "TestProvider";
         public const string AppName = "Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp";
         public static readonly string DotnetToolsExtensionDir = Path.Combine(".store", "tool-name", "7.0", "tool-name", "7.0", "tools", "net7.0", "any");
         public const string DotnetToolsExeDir = "";
