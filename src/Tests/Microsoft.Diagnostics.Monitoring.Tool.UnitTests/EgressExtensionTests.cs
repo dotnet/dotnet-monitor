@@ -10,9 +10,12 @@ using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -107,6 +110,32 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 manifest.AssemblyFileName = null;
                 manifest.ExecutableFileName = EgressExtensibilityTestsConstants.AppName;
+
+                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    string executablePath = Path.Combine(extensionPath, EgressExtensibilityTestsConstants.AppName);
+#if NET7_0_OR_GREATER
+                    File.SetUnixFileMode(executablePath, UnixFileMode.UserExecute);
+#else
+                    ProcessStartInfo startInfo = new()
+                    {
+                        FileName = "chmod",
+                        UseShellExecute = true
+                    };
+                    startInfo.ArgumentList.Add("+x");
+                    startInfo.ArgumentList.Add(executablePath);
+
+                    using Process proc = Process.Start(startInfo);
+                    if (!proc.WaitForExit(60_000)) // 1 minute
+                    {
+                        throw new InvalidOperationException("Unable to make extension executable: Timed out.");
+                    }
+                    if (0 != proc.ExitCode)
+                    {
+                        throw new InvalidOperationException("Unable to make extension executable: Failed.");
+                    }
+#endif
+                }
             }
             else
             {
