@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} field, {1} field, or {2} field is required..
+        ///   Looks up a localized string similar to The {0} field, {1} field, {2} field, or {3} field is required..
         /// </summary>
         internal static string ErrorMessage_CredentialsMissing {
             get {
@@ -88,7 +88,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SharedAccessSignature, AccountKey, or ManagedIdentityClientId must be specified..
+        ///   Looks up a localized string similar to SharedAccessSignature, AccountKey, ManagedIdentityClientId, or UseWorkloadIdentityFromEnvironment must be specified..
         /// </summary>
         internal static string ErrorMessage_EgressMissingCredentials {
             get {
