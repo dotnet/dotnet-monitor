@@ -401,6 +401,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
             new DefaultAzureCredentialOptions
             {
                 ExcludeAzureCliCredential = true,
+                ExcludeAzureDeveloperCliCredential = true,
                 ExcludeManagedIdentityCredential = true,
                 ExcludeWorkloadIdentityCredential= true,
                 ExcludeAzurePowerShellCredential = true,
