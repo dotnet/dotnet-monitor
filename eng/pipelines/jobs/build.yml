@@ -9,6 +9,9 @@ parameters:
   configuration: Release
   # Build architecture (arm64, x64, x86, etc)
   architecture: x64
+  # Docker container in which job steps shall be run (leave empty to choose default build container).
+  # This should be empty unless exclusively testing on a specific container image.
+  container: ''
   # Additional job variables
   variables: []
   # Additional steps to execute before build
@@ -68,17 +71,20 @@ jobs:
           name: $(DncEngInternalBuildPool)
           demands: ImageOverride -equals windows.vs2022.amd64
 
-    ${{ if eq(parameters.osGroup, 'Linux') }}:
-      ${{ if eq(parameters.architecture, 'arm64') }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64
-      ${{ else }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04
-
-    ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
-      ${{ if eq(parameters.architecture, 'arm64') }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-alpine
-      ${{ else }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-WithNode
+    ${{ if ne(parameters.container, '') }}:
+      container: ${{ parameters.container }}
+    ${{ else }}:
+      # Fallback to default Linux x64 build container that optionally support cross building
+      ${{ if eq(parameters.osGroup, 'Linux') }}:
+        ${{ if eq(parameters.architecture, 'arm64') }}:
+          container: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-arm64
+        ${{ else }}:
+          container: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-amd64
+      ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
+        ${{ if eq(parameters.architecture, 'arm64') }}:
+          container: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-arm64-alpine
+        ${{ else }}:
+          container: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-amd64-alpine
 
     ${{ if ne(parameters.dependsOn, '') }}:
       dependsOn: ${{ parameters.dependsOn }}
@@ -91,7 +97,6 @@ jobs:
     - _BuildConfig: ${{ parameters.configuration }}
     - _HelixType: build/product
     - _HelixBuildConfig: ${{ parameters.configuration }}
-    - _CrossBuildArgs: ''
     - _InternalInstallArgs: ''
     - _InternalBuildArgs: ''
     - ${{ each variable in parameters.variables }}:
@@ -100,10 +105,6 @@ jobs:
     # Component Governance does not work on Musl
     - ${{ if or(eq(parameters.disableComponentGovernance, 'true'), eq(parameters.osGroup, 'Linux_Musl')) }}:
       - skipComponentGovernanceDetection: true
-    
-    # Cross build for arm64 non-Windows builds
-    - ${{ if and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')) }}:
-      - _CrossBuildArgs: '-cross'
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - group: DotNet-MSRC-Storage
@@ -153,17 +154,14 @@ jobs:
 
     - script: >-
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
-        ${{ parameters.buildArgs }}
         -configuration ${{ parameters.configuration }}
         -architecture ${{ parameters.architecture }}
-        $(_CrossBuildArgs)
+        ${{ parameters.buildArgs }}
         $(_InternalInstallArgs)
         $(_InternalBuildArgs)
       displayName: Build
       env:
         ${{ insert }}: ${{ parameters.buildEnv }}
-        ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
-          ROOTFS_DIR: '/crossrootfs/arm64'
 
     - ${{ each step in parameters.postBuildSteps }}:
       - ${{ step }}

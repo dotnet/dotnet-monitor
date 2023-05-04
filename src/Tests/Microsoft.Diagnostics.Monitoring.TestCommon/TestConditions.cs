@@ -3,11 +3,13 @@
 
 using System.Runtime.InteropServices;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
+namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     internal static class TestConditions
     {
         public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+        public static bool IsNotAlpine => !DistroInformation.IsAlpineLinux;
 
         public static bool IsNotWindows => !IsWindows;
     }

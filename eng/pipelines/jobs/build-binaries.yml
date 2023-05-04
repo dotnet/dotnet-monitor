@@ -1,6 +1,8 @@
 # Builds dotnet-monitor for a specific platform and configuration
 
 parameters:
+  # Job prefix
+  prefix: Build
   # Operating system group (Windows, Linux, MacOS, etc)
   osGroup: Windows
   # Build configuration (Debug, Release)
@@ -9,6 +11,16 @@ parameters:
   architecture: x64
   # RID (runtime identifier) of build output
   targetRid: win-x64
+  # Additional job variables
+  variables: []
+  # Additional steps to execute before build
+  preBuildSteps: []
+  # Additional steps to execute after build
+  postBuildSteps: []
+  # Disable Component Governance injection and analysis
+  disableComponentGovernance: false
+  # Disable SBOM generation
+  disableSbom: false
   # Enable/disable publishing build output as Azure Pipeline artifact
   publishArtifacts: false
   # Enable/disable publishing binaries as Azure Pipeline artifact
@@ -17,17 +29,44 @@ parameters:
 jobs:
 - template: /eng/pipelines/jobs/build.yml
   parameters:
-    prefix: Build
+    prefix: ${{ parameters.prefix }}
     osGroup: ${{ parameters.osGroup }}
     configuration: ${{ parameters.configuration }}
     architecture: ${{ parameters.architecture }}
+    disableComponentGovernance: ${{ parameters.disableComponentGovernance }}
+    disableSbom: ${{ parameters.disableSbom }}
+    variables:
+    - _CrossBuildArgs: ''
+    - _PublishProjectsArgs: ''
+    - ${{ each variable in parameters.variables }}:
+      - ${{ variable }}
 
-    ${{ if and(eq(parameters.targetRid, 'win-x64'), eq(parameters.configuration, 'Release')) }}:
-      buildArgs: '/p:PublishProjectsAfterBuild=true'
-    ${{ else }}:
-      buildArgs: '/p:PublishProjectsAfterBuild=true /p:SkipPlatformNeutralPublish=true'
+    # Cross build for all Linux builds and arm64 non-Windows builds
+    - ${{ if or(in(parameters.osGroup, 'Linux', 'Linux_Musl'), and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows'))) }}:
+      - _CrossBuildArgs: '-cross'
+
+    - ${{ if and(eq(parameters.targetRid, 'win-x64'), eq(parameters.configuration, 'Release')) }}:
+      - _PublishProjectsArgs: '/p:PublishProjectsAfterBuild=true'
+    - ${{ else }}:
+      - _PublishProjectsArgs: '/p:PublishProjectsAfterBuild=true /p:SkipPlatformNeutralPublish=true'
+
+    preBuildSteps:
+    - ${{ each step in parameters.preBuildSteps }}:
+      - ${{ step }}
+
+    buildArgs: >-
+      $(_CrossBuildArgs)
+      $(_PublishProjectsArgs)
+
+    # Set ROOTFS_DIR for Linux cross builds
+    ${{ if in(parameters.osGroup, 'Linux', 'Linux_Musl') }}:
+      buildEnv:
+        ROOTFS_DIR: '/crossrootfs/${{ parameters.architecture }}'
 
     postBuildSteps:
+    - ${{ each step in parameters.postBuildSteps }}:
+      - ${{ step }}
+
     - ${{ if eq(parameters.publishBinaries, 'true') }}:
       - task: CopyFiles@2
         displayName: Gather Artifacts (bin)

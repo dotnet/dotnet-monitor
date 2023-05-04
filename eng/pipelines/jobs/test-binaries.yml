@@ -32,6 +32,12 @@ jobs:
     disableComponentGovernance: true
     disableSbom: true
 
+    # Override containers for Linux to test on real clib and architecture variants
+    ${{ if eq(parameters.osGroup, 'Linux') }}:
+      container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04
+    ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
+      container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-WithNode
+
     variables:
     # If TestGroup == 'Default', choose the test group based on the type of pipeline run
     - ${{ if eq(parameters.testGroup, 'Default') }}:
