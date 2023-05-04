@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
     {
         public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-        public static bool IsNotAlpine => DistroInformation.IsAlpineLinux;
+        public static bool IsNotAlpine => !DistroInformation.IsAlpineLinux;
 
         public static bool IsNotWindows => !IsWindows;
     }
