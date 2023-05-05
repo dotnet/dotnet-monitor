@@ -47,11 +47,7 @@ There are 3 [locations](https://github.com/dotnet/dotnet-monitor/blob/2891052615
 1. UserConfigDirectory (`C:\\Users\\user-name\\.dotnet-monitor`)
 
 ### Manually Acquiring An Egress Provider 
-
-These are a few recommended workflows to manually acquire an officially supported egress provider - this is not an exhaustive list, and other mechanisms may be preferable depending on your use case.
-
-1. Multi-Stage Build-Your-Own .NET Monitor Image
-1.
+#### TODO
 
 The distribution/acquisition model for third-party egress providers is determined by the author of the extension.
 
@@ -79,6 +75,3 @@ In addition to the configuration provided specifically for your egress provider,
 [`dotnet monitor` will pass serialized configuration via `StdIn` to the extension](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressExtension.cs#L182); an example of how the `AzureBlobStorage` egress provider interprets the egress payload can be found [here](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Microsoft.Diagnostics.Monitoring.Extension.Common/EgressHelper.cs#L139). **It's important to validate the version number at the beginning of the stream; if an extension does not have the same version as `dotnet-monitor`, it should not attempt to continue reading from the stream, and users may need to update to a newer version of the extension.**
 
 All output from the extension will be passed back to `dotnet-monitor`; this is logged [here](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressExtension.OutputParser.cs#L62). `Dotnet-Monitor` will continue reading output until it receives a [result](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressArtifactResult.cs) from the extension, at which point the extension's process will be terminated and `dotnet-monitor` will display the appropriate log message depending on the success/failure of the operation.
-
-## Keeping Documentation Up-To-Date
-
