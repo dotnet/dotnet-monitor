@@ -46,8 +46,6 @@ There are 3 [locations](https://github.com/dotnet/dotnet-monitor/blob/2891052615
 1. SharedConfigDirectory (`C:\\ProgramData\\dotnet-monitor`)
 1. UserConfigDirectory (`C:\\Users\\user-name\\.dotnet-monitor`)
 
-
-
 ### Manually Acquiring An Egress Provider 
 
 These are a few recommended workflows to manually acquire an officially supported egress provider - this is not an exhaustive list, and other mechanisms may be preferable depending on your use case.
@@ -68,7 +66,7 @@ All extensions must include a manifest titled `extension.json` that provides `do
 | `Name` | true | string | The name of the extension (e.g. AzureBlobStorage) that users will use when writing configuration for the egress provider. |
 | `ExecutableFileName` | false | string | If specified, the executable file (without extension) to be launched when executing the extension; either `AssemblyFileName` or `ExecutableFileName` must be specified. |
 | `AssemblyFileName` | false | string | If specified, executes the extension using the shared .NET host (e.g. dotnet.exe) with the specified entry point assembly (without extension); either `AssemblyFileName` or `ExecutableFileName` must be specified. |
-| `Modes` | false | [[ExtensionMode](NEED THIS)] | Additional modes the extension can be configured to run in. |
+| `Modes` | false | [[ExtensionMode](../api/definitions.md#extensionmode)] | Additional modes the extension can be configured to run in. |
 
 ### Configuration
 
