@@ -39,6 +39,13 @@ graph LR
 
 ### Well Known Egress Provider Locations
 
+There are 3 [locations](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs#L260) that `dotnet-monitor` scans when looking for the extensions directory (the highest priority location is listed first):
+1. Next to the executing `dotnet-monitor` assembly
+1. SharedConfigDirectory (`C:\\ProgramData\\dotnet-monitor`)
+1. UserConfigDirectory (`C:\\Users\\user-name\\.dotnet-monitor`)
+
+
+
 ### Manually Acquiring An Egress Provider 
 
 These are a few recommended workflows to manually acquire an officially supported egress provider - this is not an exhaustive list, and other mechanisms may be preferable depending on your use case.
