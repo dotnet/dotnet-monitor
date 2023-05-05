@@ -37,6 +37,8 @@ graph LR
 
 ### Dotnet-Monitor Versions
 
+There are two versions of the `dotnet-monitor` tool being offered: `dotnet-monitor` and `need name`. The default version of `dotnet-monitor` includes every supported egress provider; the `need name` version only includes the `FileSystem` egress provider, allowing users to only include the egress providers they plan on using.
+
 ### Well Known Egress Provider Locations
 
 There are 3 [locations](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs#L260) that `dotnet-monitor` scans when looking for the extensions directory (the highest priority location is listed first):
