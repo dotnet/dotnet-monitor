@@ -69,5 +69,9 @@ In addition to the configuration provided specifically for your egress provider,
 
 ### Communicating With Dotnet-Monitor
 
+[`dotnet monitor` will pass serialized configuration via `StdIn` to the extension](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressExtension.cs#L182); an example of how the `AzureBlobStorage` egress provider interprets the egress payload can be found [here](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Microsoft.Diagnostics.Monitoring.Extension.Common/EgressHelper.cs#L139). **It's important to validate the version number at the beginning of the stream; if an extension does not have the same version as `dotnet-monitor`, it should not attempt to continue reading from the stream, and users may need to update to a newer version of the extension.**
+
+All output from the extension will be passed back to `dotnet-monitor`; this is logged [here](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressExtension.OutputParser.cs#L62). `Dotnet-Monitor` will continue reading output until it receives a [result](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressArtifactResult.cs) from the extension, at which point the extension's process will be terminated and `dotnet-monitor` will display the appropriate log message depending on the success/failure of the operation.
+
 ## Keeping Documentation Up-To-Date
 
