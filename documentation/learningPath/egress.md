@@ -29,7 +29,7 @@ graph LR
 1. [User initiates collection of artifact with a designated egress provider](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Microsoft.Diagnostics.Monitoring.WebApi/Operation/EgressOperation.cs#L49)
 1. [Locate extension's executable and manifest](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Extensibility/ExtensionDiscoverer.cs#L28)
 1. [Start extension and pass configuration/artifact via StdIn to the other process](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressExtension.cs#L102)
-1. [Connect to egress provider using configuration and send artifact](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Extensions/AzureBlobStorage/AzureBlobEgressProvider.cs#L36)
+1. [Connect to egress provider using configuration and send artifact](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Extensions/AzureBlobStorage/AzureBlobEgressProvider.cs#L35)
 1. [Provide success/failure information via StdOut to dotnet-monitor](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Microsoft.Diagnostics.Monitoring.Extension.Common/EgressHelper.cs#L77)
 
 
@@ -37,14 +37,14 @@ graph LR
 
 ### Dotnet-Monitor Versions
 
-There are two versions of the `dotnet-monitor` tool being offered: `dotnet-monitor` and `need name`. The default version of `dotnet-monitor` includes every supported egress provider; the `need name` version only includes the `FileSystem` egress provider, allowing users to only include the egress providers they plan on using.
+There are two versions of the `dotnet-monitor` tool being offered: `monitor` and `monitor-base`. The default version of `dotnet-monitor` includes every supported egress provider (to avoid breaking changes, this uses the existing `monitor` naming); the `monitor-base` version is a newly created image for .NET Monitor 8+ and only includes the `FileSystem` egress provider, allowing users to manually include their preferred egress providers.
 
 ### Well Known Egress Provider Locations
 
 There are 3 [locations](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs#L260) that `dotnet-monitor` scans when looking for the extensions directory (the highest priority location is listed first):
 1. Next to the executing `dotnet-monitor` assembly
-1. SharedConfigDirectory (`C:\\ProgramData\\dotnet-monitor`)
-1. UserConfigDirectory (`C:\\Users\\user-name\\.dotnet-monitor`)
+1. SharedConfigDirectory (e.g. `C:\\ProgramData\\dotnet-monitor`)
+1. UserConfigDirectory (e.g. `C:\\Users\\user-name\\.dotnet-monitor`)
 
 ### Manually Acquiring An Egress Provider 
 #### TODO
@@ -55,18 +55,18 @@ The distribution/acquisition model for third-party egress providers is determine
 
 ### Extension Manifest
 
-All extensions must include a manifest titled `extension.json` that provides `dotnet-monitor` with some basic information about the extension.
+All extensions must include a manifest titled [`extension.json`](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Extensions/AzureBlobStorage/extension.json) that provides `dotnet-monitor` with some basic information about the extension.
 
 | Name | Required | Type | Description |
 |---|---|---|---|
 | `Name` | true | string | The name of the extension (e.g. AzureBlobStorage) that users will use when writing configuration for the egress provider. |
 | `ExecutableFileName` | false | string | If specified, the executable file (without extension) to be launched when executing the extension; either `AssemblyFileName` or `ExecutableFileName` must be specified. |
 | `AssemblyFileName` | false | string | If specified, executes the extension using the shared .NET host (e.g. dotnet.exe) with the specified entry point assembly (without extension); either `AssemblyFileName` or `ExecutableFileName` must be specified. |
-| `Modes` | false | [[ExtensionMode](../api/definitions.md#extensionmode)] | Additional modes the extension can be configured to run in. |
+| `Modes` | false | [[ExtensionMode](../api/definitions.md#extensionmode)] | Additional modes the extension can be configured to run in (see an example of Validation [here](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Microsoft.Diagnostics.Monitoring.Extension.Common/EgressHelper.cs#L80)). |
 
 ### Configuration
 
-Extensions are designed to receive all user configuration through `dotnet monitor` - the extension itself should not rely on any additional configuration sources. [`dotnet monitor` will pass serialized configuration via `StdIn` to the extension](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressExtension.cs#L182); an example of how the `AzureBlobStorage` egress provider interprets the egress payload can be found [here](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Microsoft.Diagnostics.Monitoring.Extension.Common/EgressHelper.cs#L139).
+Extensions are designed to receive all user configuration through `dotnet monitor` - the extension itself should not rely on any additional configuration sources.
 
 In addition to the configuration provided specifically for your egress provider, `dotnet-monitor` also includes the values stored in [`Properties`](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Microsoft.Diagnostics.Monitoring.Options/EgressOptions.cs#L21). Note that `Properties` may include information that is not relevant to the current egress provider, since it is a shared bucket between all configured egress providers.
 
