@@ -4,27 +4,9 @@
 #pragma once
 
 #include <assert.h>
-#include <cstdio>
 #include "cor.h"
 #include "corprof.h"
 #include "corhlpr.h"
-
-#ifdef WIN32
-#define FASTCALL __fastcall
-#else // WIN32
-#define FASTCALL
-#endif // WIN32
-
-// ILRewriter::Export intentionally does a comparison by casting a variable (delta) down
-// to an INT8, with data loss being expected and handled. This pragma is required because
-// this is compiled with RTC on, and without the pragma, the above cast will generate a
-// run-time check on whether we lose data, and cause an unhandled exception (look up
-// RTC_Check_4_to_1).  In theory, I should be able to just bracket the Export function
-// with the #pragma, but that didn't work.  (Perhaps because all the functions are
-// defined inline in the class definition?)
-#if defined(WIN32) || defined(WIN64)
-#pragma runtime_checks("", off)
-#endif
 
 struct COR_ILMETHOD_SECT_EH;
 struct ILInstr
@@ -198,7 +180,6 @@ public:
     ILRewriter(ICorProfilerInfo * pICorProfilerInfo, ICorProfilerFunctionControl * pICorProfilerFunctionControl, ModuleID moduleID, mdToken tkMethod);
     ~ILRewriter();
     HRESULT Initialize();
-    void InitializeTiny();
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -224,25 +205,4 @@ public:
     HRESULT SetILFunctionBody(unsigned size, LPBYTE pBody);
     LPBYTE AllocateILMemory(unsigned size);
     void DeallocateILMemory(LPBYTE pBody);
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // R E W R I T E
-    //
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-#ifdef WIN32
-    // Probe_XXX are the callbacks to be called from the JITed code
-    static void FASTCALL Probe_LDSFLD(WCHAR * pFieldName)
-    {
-        printf("LDSFLD: %S\n", pFieldName);
-    }
-
-    static void FASTCALL Probe_SDSFLD(WCHAR * pFieldName)
-    {
-        printf("STSFLD: %S\n", pFieldName);
-    }
-#endif // WIN32
-    UINT AddNewInt32Local();
-    WCHAR* GetNameFromToken(mdToken tk);
-    ILInstr * NewLDC(LPVOID p);
 };

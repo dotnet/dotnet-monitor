@@ -1,17 +1,8 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#define _ASSERTE(e) ((void)0)
-
-#include <cstring>
-#include <corhlpr.cpp>
-#include "ilrewriter.h"
-#include "sigparse.h"
-
-void FASTCALL UnmanagedInspectObject(void* pv)
-{
-    void* pv2 = pv;
-}
+#include "ILRewriter.h"
+// Note: corhlpr.cpp is included in the "E X P O R T" section to simplify RTC handling.
 
 ILRewriter::ILRewriter(ICorProfilerInfo * pICorProfilerInfo, ICorProfilerFunctionControl * pICorProfilerFunctionControl, ModuleID moduleID, mdToken tkMethod)
     : m_pICorProfilerInfo(pICorProfilerInfo), m_pICorProfilerFunctionControl(pICorProfilerFunctionControl),
@@ -49,29 +40,13 @@ ILRewriter::~ILRewriter()
 HRESULT ILRewriter::Initialize()
 {
     HRESULT hr;
-    /*
-    IfFailRet(m_pICorProfilerInfo->GetFunctionInfo(
-        m_functionId, &m_classId, &m_moduleId, &m_tkMethod));
-        */
-
-        // Get metadata interfaces ready
-
+    // Get metadata interfaces ready
     IfFailRet(m_pICorProfilerInfo->GetModuleMetaData(
         m_moduleId, ofRead | ofWrite, IID_IMetaDataImport, (IUnknown**)&m_pMetaDataImport));
 
     IfFailRet(m_pMetaDataImport->QueryInterface(IID_IMetaDataEmit, (void **)&m_pMetaDataEmit));
 
     return S_OK;
-}
-
-void ILRewriter::InitializeTiny()
-{
-    m_tkLocalVarSig = 0;
-    m_maxStack = 8;
-    m_flags = CorILMethod_TinyFormat;
-    m_CodeSize = 0;
-    m_nEH = 0;
-    m_fGenerateTinyHeader = true;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -335,6 +310,21 @@ ILInstr * ILRewriter::GetILList()
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+
+// ILRewriter::Export intentionally does a comparison by casting a variable (delta) down
+// to an INT8, with data loss being expected and handled. This pragma is required because
+// this is compiled with RTC on, and without the pragma, the above cast will generate a
+// run-time check on whether we lose data, and cause an unhandled exception (look up
+// RTC_Check_4_to_1).
+#if TARGET_WINDOWS
+#pragma runtime_checks( "c", off )
+#pragma warning ( push )
+#pragma warning( disable: 4244 )
+#endif
+// SectEH_Emit (in corhlpr.cpp) also triggers the potential data loss warning, however this function is not used so we can safely ignore it.
+#include <corhlpr.cpp>
+
+#pragma runtime_checks("", off)
 HRESULT ILRewriter::Export()
 {
     HRESULT hr = S_OK;
@@ -555,6 +545,10 @@ again:
 
     return S_OK;
 }
+#if TARGET_WINDOWS
+#pragma warning( pop )
+#pragma runtime_checks( "", restore )
+#endif
 
 HRESULT ILRewriter::SetILFunctionBody(unsigned size, LPBYTE pBody)
 {
@@ -600,195 +594,4 @@ void ILRewriter::DeallocateILMemory(LPBYTE pBody)
     }
 
     delete[] pBody;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// R E W R I T E
-//
-////////////////////////////////////////////////////////////////////////////////////////////////
-
-UINT ILRewriter::AddNewInt32Local()
-{
-    HRESULT hr;
-
-    // Here's a buffer into which we will write out the modified signature.  This sample
-    // code just bails out if it hits signatures that are too big.  Just one of many reasons
-    // why you use this code AT YOUR OWN RISK!
-    COR_SIGNATURE rgbNewSig[4096];
-
-    // Use the signature token to look up the actual signature
-    PCCOR_SIGNATURE rgbOrigSig = NULL;
-    ULONG cbOrigSig;
-    if (m_tkLocalVarSig == mdTokenNil)
-    {
-        // Function has no locals to begin with
-        rgbOrigSig = NULL;
-        cbOrigSig = 0;
-    }
-    else
-    {
-        hr = m_pMetaDataImport->GetSigFromToken(m_tkLocalVarSig, &rgbOrigSig, &cbOrigSig);
-        if (FAILED(hr))
-        {
-            return 0;
-        }
-    }
-
-    // These are our running indices in the original and new signature, respectively
-    UINT iOrigSig = 0;
-    UINT iNewSig = 0;
-
-    if (cbOrigSig > 0)
-    {
-        // First byte of signature must identify that it's a locals signature!
-        _ASSERTE(rgbOrigSig[iOrigSig] == SIG_LOCAL_SIG);
-        iOrigSig++;
-    }
-
-    // Copy SIG_LOCAL_SIG
-    if (iNewSig + 1 > sizeof(rgbNewSig))
-    {
-        // We'll write one byte below but no room!
-        return 0;
-    }
-    rgbNewSig[iNewSig++] = SIG_LOCAL_SIG;
-
-    // Get original count of locals...
-    ULONG cOrigLocals;
-    if (cbOrigSig == 0)
-    {
-        // No locals to begin with
-        cOrigLocals = 0;
-    }
-    else
-    {
-        ULONG cbOrigLocals;
-        hr = CorSigUncompressData(&rgbOrigSig[iOrigSig],
-                                  4,                    // [IN] length of the signature
-                                  &cOrigLocals,         // [OUT] the expanded data
-                                  &cbOrigLocals);       // [OUT] length of the expanded data
-        if (FAILED(hr))
-        {
-            return 0;
-        }
-        iOrigSig += cbOrigLocals;
-    }
-
-    // ...and write new count of locals (cOrigLocals+1)
-    if (iNewSig + 4 > sizeof(rgbNewSig))
-    {
-        // CorSigCompressData will write up to 4 bytes but no room!
-        return 0;
-    }
-    ULONG cbNewLocals;
-    cbNewLocals = CorSigCompressData(cOrigLocals+1,         // [IN] given uncompressed data
-                                     &rgbNewSig[iNewSig]);  // [OUT] buffer where iLen will be compressed and stored.
-    iNewSig += cbNewLocals;
-
-    if (cbOrigSig > 0)
-    {
-        // Copy the rest
-        if (iNewSig + cbOrigSig - iOrigSig > sizeof(rgbNewSig))
-        {
-            // We'll copy cbOrigSig - iOrigSig bytes, but no room!
-            return 0;
-        }
-        memcpy(&rgbNewSig[iNewSig], &rgbOrigSig[iOrigSig], cbOrigSig-iOrigSig);
-        iNewSig += cbOrigSig-iOrigSig;
-    }
-
-    // Manually append final local
-
-    if (iNewSig + 1 > sizeof(rgbNewSig))
-    {
-        // We'll write one byte below but no room!
-        return 0;
-    }
-    rgbNewSig[iNewSig++] = ELEMENT_TYPE_I4;
-
-    /*
-    ULONG cbLocalType;
-    if (iNewSig + 4 > sizeof(rgbNewSig))
-    {
-        // CorSigCompressToken will write up to 4 bytes but no room!
-        return 0;
-    }
-    cbLocalType = CorSigCompressToken(mdLocalType,
-                                      &rgbNewSig[iNewSig]);
-
-    iNewSig += cbLocalType;
-    */
-
-    // We're done building up the new signature blob.  We now need to add it to
-    // the metadata for this module, so we can get a token back for it.
-    _ASSERTE(iNewSig <= sizeof(rgbNewSig));
-    hr = m_pMetaDataEmit->GetTokenFromSig(&rgbNewSig[0],      // [IN] Signature to define.
-                                          iNewSig,            // [IN] Size of signature data.
-                                          &m_tkLocalVarSig);  // [OUT] returned signature token.
-    if (FAILED(hr))
-    {
-        return 0;
-    }
-
-    // 0-based index of new local = 0-based index of original last local + 1
-    //                            = count of original locals
-    return cOrigLocals;
-}
-
-WCHAR* ILRewriter::GetNameFromToken(mdToken tk)
-{
-    mdTypeDef tkClass;
-
-    LPWSTR szField = NULL;
-    ULONG cchField = 0;
-
-again:
-    switch (TypeFromToken(tk))
-    {
-    case mdtFieldDef:
-        m_pMetaDataImport->GetFieldProps(tk, &tkClass,
-            szField, cchField, &cchField,
-            NULL,
-            NULL, NULL,
-            NULL, NULL, NULL);
-        break;
-
-    case mdtMemberRef:
-        m_pMetaDataImport->GetMemberRefProps(tk, &tkClass,
-            szField, cchField, &cchField,
-            NULL, NULL);
-        break;
-    default:
-        _ASSERTE(false);
-        break;
-    }
-
-    if (szField == NULL)
-    {
-        szField = new WCHAR[cchField];
-        goto again;
-    }
-
-    return szField;
-}
-
-ILInstr * ILRewriter::NewLDC(LPVOID p)
-{
-    ILInstr* pNewInstr = NewILInstr();
-    if (pNewInstr != NULL)
-    {
-        if (sizeof(void*) == 4)
-        {
-            pNewInstr->m_opcode = CEE_LDC_I4;
-            pNewInstr->m_Arg32 = (INT32)(size_t)p;
-        }
-        else
-        {
-            pNewInstr->m_opcode = CEE_LDC_I8;
-            pNewInstr->m_Arg64 = (INT64)(size_t)p;
-        }
-    }
-    return pNewInstr;
 }
