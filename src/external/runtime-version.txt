@@ -8,3 +8,4 @@ Following directories were copied from dotnet/runtime from the release/8.0-previ
   src/coreclr/pal/inc -> ./runtime/src/coreclr/pal/inc
   src/coreclr/pal/prebuilt/idl -> ./runtime/src/coreclr/pal/prebuilt/idl
   src/coreclr/pal/prebuilt/inc -> ./runtime/src/coreclr/pal/prebuilt/inc
+  src/tests/profiler/native/rejitprofiler/ilrewriter.{h,cpp} -> ../MonitorProfiler/Utilities/ILRewriter.{h,cpp}
