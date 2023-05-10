@@ -18,7 +18,7 @@ class StartupEnvironmentUtilities
 {
     private:
 #if !TARGET_WINDOWS
-        static std::mutex _getEnvMutex;
+        static std::mutex s_getEnvMutex;
 #endif
 
     public:
@@ -56,7 +56,7 @@ class StartupEnvironmentUtilities
             const char EnabledValue = '1';
 
             // Subsequent calls to getenv may invalidate the pointer returned by previous calls.
-            std::lock_guard<std::mutex> lock(_getEnvMutex);
+            std::lock_guard<std::mutex> lock(s_getEnvMutex);
 
             char *ret = std::getenv(name);
             isSet = (ret != nullptr && ret[0] == EnabledValue && ret[1] == '\0');

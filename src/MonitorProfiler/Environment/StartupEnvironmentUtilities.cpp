@@ -5,5 +5,5 @@
 #include "StartupEnvironmentUtilities.h"
 
 #if !TARGET_WINDOWS
-std::mutex StartupEnvironmentUtilities::_getEnvMutex;
+std::mutex StartupEnvironmentUtilities::s_getEnvMutex;
 #endif
