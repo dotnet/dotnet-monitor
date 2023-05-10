@@ -4,6 +4,7 @@
 #include "MainProfiler.h"
 #include "../Environment/EnvironmentHelper.h"
 #include "../Environment/ProfilerEnvironment.h"
+#include "../Environment/StartupEnvironmentUtilities.h"
 #include "../Logging/AggregateLogger.h"
 #include "../Logging/DebugLogger.h"
 #include "../Logging/StdErrLogger.h"
@@ -140,7 +141,17 @@ STDMETHODIMP MainProfiler::LoadAsNotificationOnly(BOOL *pbNotificationOnly)
 {
     ExpectedPtr(pbNotificationOnly);
 
-    *pbNotificationOnly = TRUE;
+    BOOL isSet;
+    if (StartupEnvironmentUtilities::IsStartupSwitchSet("DotnetMonitor_Profiler_IsMutatingProfiler", isSet) == S_OK)
+    {
+        m_isNotificationOnly = !isSet;
+    }
+    else
+    {
+        m_isNotificationOnly = TRUE;
+    }
+
+    *pbNotificationOnly = m_isNotificationOnly;
 
     return S_OK;
 }

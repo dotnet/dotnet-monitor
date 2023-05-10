@@ -24,6 +24,7 @@ private:
     std::shared_ptr<EnvironmentHelper> _environmentHelper;
     std::shared_ptr<ILogger> m_pLogger;
     std::shared_ptr<ThreadNameCache> _threadNameCache;
+    BOOL m_isNotificationOnly;
 #ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
     std::shared_ptr<ThreadDataManager> _threadDataManager;
     std::unique_ptr<ExceptionTracker> _exceptionTracker;
