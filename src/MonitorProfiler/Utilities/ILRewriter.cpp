@@ -324,7 +324,6 @@ ILInstr * ILRewriter::GetILList()
 // SectEH_Emit (in corhlpr.cpp) also triggers the potential data loss warning, however this function is not used so we can safely ignore it.
 #include <corhlpr.cpp>
 
-#pragma runtime_checks("", off)
 HRESULT ILRewriter::Export()
 {
     HRESULT hr = S_OK;
