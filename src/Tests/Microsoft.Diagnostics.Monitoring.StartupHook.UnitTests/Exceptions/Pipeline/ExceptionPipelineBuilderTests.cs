@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline
 
             Assert.NotNull(handler);
 
-            handler.Invoke(new Exception());
+            handler.Invoke(new Exception(), new ExceptionPipelineExceptionContext(DateTime.UtcNow));
         }
 
         [Fact]
@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline
 
             Assert.Empty(stepOrder);
 
-            handler.Invoke(new Exception());
+            handler.Invoke(new Exception(), new ExceptionPipelineExceptionContext(DateTime.UtcNow));
 
             Assert.Equal(new int[] { Step1Id, Step2Id, Step3Id }, stepOrder);
         }
@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline
 
             Assert.Empty(stepOrder);
 
-            handler.Invoke(new Exception());
+            handler.Invoke(new Exception(), new ExceptionPipelineExceptionContext(DateTime.UtcNow));
 
             Assert.Equal(new int[] { Step1Id, Step2Id }, stepOrder);
         }

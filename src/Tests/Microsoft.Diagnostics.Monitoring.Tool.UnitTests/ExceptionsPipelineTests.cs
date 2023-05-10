@@ -38,6 +38,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task EventExceptionsPipeline_SingleException()
         {
+            DateTime baselineTimestamp = DateTime.UtcNow;
+
             return Execute(
                 TestAppScenarios.Exceptions.SubScenarios.SingleException,
                 expectedInstanceCount: 1,
@@ -49,6 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(typeof(InvalidOperationException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
+                    Assert.True(instance.Timestamp > baselineTimestamp);
                 });
         }
 
@@ -60,6 +63,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public Task EventExceptionsPipeline_RepeatException()
         {
             const int ExpectedInstanceCount = 2;
+
+            DateTime baselineTimestamp = DateTime.UtcNow;
 
             return Execute(
                 TestAppScenarios.Exceptions.SubScenarios.RepeatException,
@@ -74,8 +79,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     TestExceptionsStore.ExceptionInstance instance2 = instances.Skip(1).Single();
                     Assert.NotNull(instance2);
 
-                    // Relying on record equality
-                    Assert.True(instance1 == instance2);
+                    Assert.Equal(instance1.ExceptionId, instance2.ExceptionId);
+                    Assert.Equal(instance1.TypeName, instance2.TypeName);
+                    Assert.Equal(instance1.Message, instance2.Message);
+                    Assert.Equal(instance1.ThrowingMethodName, instance2.ThrowingMethodName);
+                    Assert.True(instance1.Timestamp > baselineTimestamp);
+                    Assert.True(instance2.Timestamp > baselineTimestamp);
+                    Assert.NotEqual(instance1.Timestamp, instance2.Timestamp);
                 });
         }
 
@@ -275,7 +285,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 _instanceThreshold = instanceThreshold;
             }
 
-            public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message)
+            public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp)
             {
                 StringBuilder typeBuilder = new();
                 FunctionData throwingMethodData;
@@ -294,7 +304,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     throw;
                 }
 
-                _instances.Add(new ExceptionInstance(exceptionId, typeBuilder.ToString(), message, throwingMethodData.Name));
+                _instances.Add(new ExceptionInstance(exceptionId, typeBuilder.ToString(), message, throwingMethodData.Name, timestamp));
                 if (++_instanceCount >= _instanceThreshold)
                 {
                     _instanceThresholdSource.TrySetResult();
@@ -306,7 +316,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 throw new NotSupportedException();
             }
 
-            public sealed record class ExceptionInstance(ulong ExceptionId, string TypeName, string Message, string ThrowingMethodName)
+            public sealed record class ExceptionInstance(ulong ExceptionId, string TypeName, string Message, string ThrowingMethodName, DateTime Timestamp)
             {
             }
         }

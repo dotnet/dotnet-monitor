@@ -77,7 +77,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             listener.EnableEvents(source, EventLevel.Informational);
 
             ulong[] frameIds = frameIdsString.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(ulong.Parse).ToArray();
-            source.ExceptionInstance(id, message, frameIds);
+            DateTime timestamp = DateTime.UtcNow;
+
+            source.ExceptionInstance(id, message, frameIds, timestamp);
 
             ExceptionInstance instance = Assert.Single(listener.Exceptions);
             Assert.Equal(id, instance.ExceptionId);
@@ -85,6 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             // We would normally expect the following to return an array of the stack frame IDs
             // but in-process listener doesn't decode non-byte arrays correctly.
             Assert.Equal(Array.Empty<ulong>(), instance.StackFrameIds);
+            Assert.Equal(timestamp, instance.Timestamp);
         }
 
         [Fact]
@@ -95,7 +98,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Warning);
 
-            source.ExceptionInstance(7, ObjectDisposedExceptionMessage, Array.Empty<ulong>());
+            source.ExceptionInstance(7, ObjectDisposedExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow);
 
             Assert.Empty(listener.Exceptions);
         }
@@ -107,7 +110,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
             using ExceptionsEventListener listener = new();
 
-            source.ExceptionInstance(9, OperationCancelledExceptionMessage, Array.Empty<ulong>());
+            source.ExceptionInstance(9, OperationCancelledExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow);
 
             Assert.Empty(listener.Exceptions);
         }

@@ -76,11 +76,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 case "ExceptionInstance":
                     ulong exceptionId = traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionInstancePayloads.ExceptionId);
                     string message = traceEvent.GetPayload<string>(ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage);
+                    DateTime timestamp = traceEvent.GetPayload<DateTime>(ExceptionEvents.ExceptionInstancePayloads.Timestamp).ToUniversalTime();
                     // Add data to cache and write directly to store; this allows the pipeline to recreate the cache without
                     // affecting the store so long as the cache is not cleared. Example of this may be that the event source
                     // wants to reset the identifiers so as to not indefinitely grow the cache and have a large memory impact.
                     _cache.AddExceptionInstance(exceptionId, message);
-                    _store.AddExceptionInstance(_cache, exceptionId, message);
+                    _store.AddExceptionInstance(_cache, exceptionId, message, timestamp);
                     break;
                 case "FunctionDescription":
                     _cache.AddFunction(

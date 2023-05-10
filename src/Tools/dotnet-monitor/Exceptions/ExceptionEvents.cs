@@ -28,6 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             public const int ExceptionId = 0;
             public const int ExceptionMessage = 1;
             public const int StackFrameIds = 2;
+            public const int Timestamp = 3;
         }
 
         public static class ExceptionIdentifierPayloads
