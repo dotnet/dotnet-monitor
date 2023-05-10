@@ -12,7 +12,7 @@
 #endif
 
 //
-// Utilities class to be used by initializtion code before ProfilerEnvironment is able to be used.
+// Utilities class to be used by initialization code before ProfilerEnvironment is able to be used.
 //
 class StartupEnvironmentUtilities
 {
