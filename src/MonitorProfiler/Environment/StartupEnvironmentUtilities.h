@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "corhlpr.h"
+
 #if TARGET_WINDOWS
 #include <processenv.h>
 #include "tstring.h"

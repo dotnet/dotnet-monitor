@@ -141,10 +141,10 @@ STDMETHODIMP MainProfiler::LoadAsNotificationOnly(BOOL *pbNotificationOnly)
 {
     ExpectedPtr(pbNotificationOnly);
 
-    BOOL isSet;
-    if (StartupEnvironmentUtilities::IsStartupSwitchSet("DotnetMonitor_Profiler_IsMutatingProfiler", isSet) == S_OK)
+    BOOL isMutatingProfiler;
+    if (StartupEnvironmentUtilities::IsStartupSwitchSet("DotnetMonitor_Profiler_IsMutatingProfiler", isMutatingProfiler) == S_OK)
     {
-        m_isNotificationOnly = !isSet;
+        m_isNotificationOnly = !isMutatingProfiler;
     }
     else
     {
