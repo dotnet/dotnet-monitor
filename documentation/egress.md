@@ -15,6 +15,25 @@ Egress providers use [operations](./api/operations.md) to provide status.
 
 The `--no-http-egress` flag requires users to specify an egress provider by preventing the default HTTP response for logs, traces, dumps, gcdumps, and live metrics.
 
+## Egress Extensibility (8.0+)
+
+The `dotnet monitor` tool has transitioned to an extensible egress model. **This should not be a breaking change - by default, users migrating from `dotnet monitor` 6/7 should see no difference in `dotnet monitor`'s behavior**. 
+
+In addition to the current `dotnet monitor` offerings, a `monitor-base` image is now available; this image does not include egress providers (with the exception of `FileSystem` egress), allowing users to only include their preferred egress providers. For convenience, the `monitor` image and the nuget package will include all of `dotnet monitor`'s supported extensions.
+
+### Manually Installing Supported Extensions
+
+Users using the `monitor-base` image can manually install supported extensions via Multi-Stage Docker Builds, creating their own image that includes any desired egress providers. 
+
+
+> `dotnet monitor` may expand the acquisition model for extensions in the future; if you have a scenario that requires additional installation options, please let us know by creating a [discussion](https://github.com/dotnet/dotnet-monitor/discussions).
+
+### Third-Party Egress Extensions
+
+The extensibility model allows users to utilize third-party egress providers with `dotnet monitor`. **Note that `dotnet monitor` does not endorse or guarantee any third-party extensions - users should always exercise caution when providing sensitive authentication information (such as passwords) to untrusted extensions.** Third-party egress extensions are responsible for their own distribution, and are not included with `dotnet monitor`.
+
+For more information on how to create your own egress extension, see our [learning path](../documentation/learningPath/).
+
 ## Examples of Egressing a dump to blob storage
 
 ### Sample Request
