@@ -91,6 +91,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             await using (Utf8JsonWriter writer = new(stream, new JsonWriterOptions() { Indented = false }))
             {
                 writer.WriteStartObject();
+                // Writes the timestamp in ISO 8601 format
+                writer.WriteString("timestamp", instance.Timestamp);
                 writer.WriteString("typeName", instance.TypeName);
                 writer.WriteString("moduleName", instance.ModuleName);
                 writer.WriteString("message", instance.Message);

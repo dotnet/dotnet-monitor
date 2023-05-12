@@ -44,9 +44,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _disposalSource.Dispose();
         }
 
-        public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message)
+        public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp)
         {
-            ExceptionInstanceEntry entry = new(cache, exceptionId, message);
+            ExceptionInstanceEntry entry = new(cache, exceptionId, message, timestamp);
             // This should never fail to write because the behavior is to drop the oldest.
             _channel.Writer.TryWrite(entry);
         }
@@ -106,7 +106,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                     lock (_instances)
                     {
-                        _instances.Add(new ExceptionInstance(exceptionTypeName, moduleName, entry.Message));
+                        _instances.Add(new ExceptionInstance(exceptionTypeName, moduleName, entry.Message, entry.Timestamp));
                     }
                 }
 
@@ -116,11 +116,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private sealed class ExceptionInstanceEntry
         {
-            public ExceptionInstanceEntry(IExceptionsNameCache cache, ulong exceptionId, string message)
+            public ExceptionInstanceEntry(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp)
             {
                 Cache = cache;
                 ExceptionId = exceptionId;
                 Message = message;
+                Timestamp = timestamp;
             }
 
             public IExceptionsNameCache Cache { get; }
@@ -128,6 +129,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             public ulong ExceptionId { get; }
 
             public string Message { get; }
+
+            public DateTime Timestamp { get; }
         }
     }
 }

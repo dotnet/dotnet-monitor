@@ -10,14 +10,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
     /// </summary>
     internal abstract class ExceptionSourceBase
     {
-        protected void RaiseExceptionThrown(Exception ex)
+        protected void RaiseExceptionThrown(Exception ex, DateTime timestamp)
         {
-            ExceptionThrown?.Invoke(this, ex);
+            ExceptionThrown?.Invoke(this, new ExceptionEventArgs(ex, timestamp));
         }
 
         /// <summary>
         /// Event that is raised each time an exception is thrown.
         /// </summary>
-        public event EventHandler<Exception>? ExceptionThrown;
+        public event EventHandler<ExceptionEventArgs>? ExceptionThrown;
     }
 }
