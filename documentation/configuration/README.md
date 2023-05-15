@@ -48,7 +48,7 @@ Once you've added the `$schema` property, you should have support for completion
 
 ## **[Experimental]** In-Process Features Configuration (7.0+)
 
-Some features of `dotnet monitor` require loading libraries into target applications. These libraries ship with `dotnet monitor` and are provisioned to be available to target applications using the `DefaultSharedPath` option in the [storage configuration](#storage-configuration) section. The following features require these in-process libraries to be used:
+Some features of `dotnet monitor` require loading libraries into target applications. These libraries ship with `dotnet monitor` and are provisioned to be available to target applications using the `DefaultSharedPath` option in the [storage configuration](./storage-configuration.md) section. The following features require these in-process libraries to be used:
 
 - Call stack collection
 
