@@ -1,5 +1,7 @@
 Today we are releasing the next official preview version of the `dotnet monitor` tool. This release includes:
 
-- Represent System.Diagnostics.Metrics Counters as Gauges in Prometheus Exposition Format. ([#4098](https://github.com/dotnet/dotnet-monitor/pull/4098))
-- Fixes issue where trace operations with an egress provider and rundown on Linux would cause dotnet-monitor to lose connectivity with the target application. ([#3960](https://github.com/dotnet/dotnet-monitor/pull/3960))
-- Added EventMeter Trigger for Collection Rules. ([#3812](https://github.com/dotnet/dotnet-monitor/pull/3812))
+- Refactor AzureBlobStorage and S3Storage egress into extensions ([#4133](https://github.com/dotnet/dotnet-monitor/pull/4133))
+- ⚠️ Disable azure developer cli creds ([#4350](https://github.com/dotnet/dotnet-monitor/pull/4350))
+- Enable workflow identity ([#4348](https://github.com/dotnet/dotnet-monitor/pull/4348))
+
+\*⚠️ **_indicates a breaking change_**
