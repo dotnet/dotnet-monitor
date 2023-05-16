@@ -75,7 +75,7 @@
     <MicrosoftNETCoreAppRuntimewinx64Version>8.0.0-preview.5.23260.3</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6480Version>8.0.0-preview.5.23260.3</VSRedistCommonNetCoreSharedFrameworkx6480Version>
     <!-- dotnet/symstore references -->
-    <MicrosoftFileFormatsVersion>1.0.425801</MicrosoftFileFormatsVersion>
+    <MicrosoftFileFormatsVersion>1.0.426501</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
