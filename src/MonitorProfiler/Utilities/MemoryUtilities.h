@@ -21,8 +21,7 @@ class MemoryUtilities
 
 #if !TARGET_WINDOWS
     private:
-        // Derived from https://github.com/dotnet/runtime/blob/6dd808ff7ae62512330d2f111eb1f60f1ae40125/src/coreclr/pal/src/safecrt/strncpy_s.cpp
-        // The only functional difference is that in debug builds this modified version will not fill any remaining space in the dst buffer with 0xFE.
+        // Derived from https://github.com/dotnet/runtime/blob/8e472c8886c9a02326a5035fc4549717f70ab818/src/coreclr/pal/src/safecrt/memcpy_s.cpp
         static errno_t memcpy_s(void* dst, size_t sizeInBytes, const void* src, size_t count)
         {
             if (count == 0)
