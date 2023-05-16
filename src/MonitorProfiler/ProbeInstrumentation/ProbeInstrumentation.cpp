@@ -96,6 +96,11 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(ULONG64 functionI
 {
     m_pLogger->Log(LogLevel::Debug, _LS("Probe installation requested"));
 
+    if (!HasProbes())
+    {
+        return S_FALSE;
+    }
+
     vector<UNPROCESSED_INSTRUMENTATION_REQUEST> requests;
     requests.reserve(count);
 
@@ -167,6 +172,7 @@ HRESULT ProbeInstrumentation::Enable(vector<UNPROCESSED_INSTRUMENTATION_REQUEST>
     vector<ModuleID> requestedModuleIds;
     vector<mdMethodDef> requestedMethodDefs;
 
+    // JSFIX: Handle OOM scenarios.
     requestedModuleIds.reserve(requests.size());
     requestedMethodDefs.reserve(requests.size());
 

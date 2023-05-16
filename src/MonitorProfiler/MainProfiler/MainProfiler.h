@@ -8,9 +8,9 @@
 #include "../Environment/EnvironmentHelper.h"
 #include "../Logging/Logger.h"
 #include "../Communication/CommandServer.h"
+#include "../ProbeInstrumentation/ProbeInstrumentation.h"
 #include "../Utilities/ThreadNameCache.h"
 #include <memory>
-#include "../ProbeInstrumentation/ProbeInstrumentation.h"
 
 #ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
 #include "ThreadDataManager.h"
