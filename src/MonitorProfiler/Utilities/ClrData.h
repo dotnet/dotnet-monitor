@@ -69,14 +69,15 @@ private:
 class FunctionData
 {
 public:
-    FunctionData(ModuleID moduleId, ClassID containingClass, tstring&& name, mdTypeDef classToken) :
-        _moduleId(moduleId), _class(containingClass), _functionName(name), _classToken(classToken)
+    FunctionData(ModuleID moduleId, ClassID containingClass, tstring&& name, mdToken methodToken, mdTypeDef classToken) :
+        _moduleId(moduleId), _class(containingClass), _functionName(name), _methodToken(methodToken), _classToken(classToken)
     {
     }
 
     const ModuleID GetModuleId() const { return _moduleId; }
     const tstring& GetName() const { return _functionName; }
     const ClassID GetClass() const { return _class; }
+    const mdToken GetMethodToken() const { return _methodToken; }
     const mdTypeDef GetClassToken() const { return _classToken; }
     const std::vector<UINT64>& GetTypeArgs() const { return _typeArgs; }
     void AddTypeArg(ClassID classID) { _typeArgs.push_back(static_cast<UINT64>(classID)); }
@@ -85,6 +86,7 @@ private:
     ModuleID _moduleId;
     ClassID _class;
     tstring _functionName;
+    mdToken _methodToken;
     mdTypeDef _classToken;
     std::vector<UINT64> _typeArgs;
 };
