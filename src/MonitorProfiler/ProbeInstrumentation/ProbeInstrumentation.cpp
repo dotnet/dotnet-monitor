@@ -92,7 +92,11 @@ void ProbeInstrumentation::ShutdownBackgroundService()
     m_probeManagementThread.join();
 }
 
-HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(ULONG64 functionIds[], ULONG32 count, ULONG32 argumentBoxingTypes[], ULONG32 argumentCounts[])
+HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
+    ULONG64 functionIds[],
+    ULONG32 count,
+    ULONG32 argumentBoxingTypes[],
+    ULONG32 argumentCounts[])
 {
     m_pLogger->Log(LogLevel::Debug, _LS("Probe installation requested"));
 
@@ -104,12 +108,12 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(ULONG64 functionI
     vector<UNPROCESSED_INSTRUMENTATION_REQUEST> requests;
     requests.reserve(count);
 
-    ULONG offset = 0;
-    for (ULONG i = 0; i < count; i++)
+    ULONG32 offset = 0;
+    for (ULONG32 i = 0; i < count; i++)
     {
         vector<ULONG32> tokens;
         tokens.reserve(argumentCounts[i]);
-        ULONG j;
+        ULONG32 j;
 
         for (j = 0; j < argumentCounts[i]; j++)
         {

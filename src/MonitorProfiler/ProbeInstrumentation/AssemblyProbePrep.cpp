@@ -199,7 +199,10 @@ HRESULT AssemblyProbePrep::GetTokenForType(
     return S_OK;
 }
 
-HRESULT AssemblyProbePrep::GetOrEmitTokenForCorLibAssemblyRef(IMetaDataImport* pMetadataImport, IMetaDataEmit* pMetadataEmit, mdAssemblyRef& corlibAssemblyRef)
+HRESULT AssemblyProbePrep::GetOrEmitTokenForCorLibAssemblyRef(
+    IMetaDataImport* pMetadataImport,
+    IMetaDataEmit* pMetadataEmit,
+    mdAssemblyRef& corlibAssemblyRef)
 {
     IfNullRet(pMetadataImport);
     IfNullRet(pMetadataEmit);
@@ -328,7 +331,11 @@ HRESULT AssemblyProbePrep::HydrateResolvedCorLib()
         mdTypeDef objectTypeDef = mdTypeDefNil;
 
         ComPtr<IMetaDataImport> pMetadataImport;
-        hr = m_pCorProfilerInfo->GetModuleMetaData(curModuleId, ofRead, IID_IMetaDataImport, reinterpret_cast<IUnknown **>(&pMetadataImport));
+        hr = m_pCorProfilerInfo->GetModuleMetaData(
+            curModuleId,
+            ofRead,
+            IID_IMetaDataImport,
+            reinterpret_cast<IUnknown **>(&pMetadataImport));
         if (hr != S_OK)
         {
             continue;
@@ -341,7 +348,13 @@ HRESULT AssemblyProbePrep::HydrateResolvedCorLib()
 
         DWORD classAttributes = 0;
         mdToken extendsToken = mdTokenNil;
-        if (pMetadataImport->GetTypeDefProps(objectTypeDef, nullptr, 0, nullptr, &classAttributes, &extendsToken) != S_OK)
+        if (pMetadataImport->GetTypeDefProps(
+            objectTypeDef,
+            nullptr,
+            0,
+            nullptr,
+            &classAttributes,
+            &extendsToken) != S_OK)
         {
             continue;
         }
