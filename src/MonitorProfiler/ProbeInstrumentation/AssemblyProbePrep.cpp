@@ -301,7 +301,7 @@ HRESULT AssemblyProbePrep::HydrateResolvedCorLib()
     }
 
     HRESULT hr;
-    ModuleID corLibId;
+    ModuleID corLibId = 0;
     ComPtr<ICorProfilerModuleEnum> pEnum;
     ModuleID curModuleId;
     mdTypeDef sysObjectTypeDef = mdTypeDefNil;
@@ -348,7 +348,7 @@ HRESULT AssemblyProbePrep::HydrateResolvedCorLib()
         }
     }
 
-    if (sysObjectTypeDef == mdTypeDefNil)
+    if (corLibId == 0 || sysObjectTypeDef == mdTypeDefNil)
     {
         return E_FAIL;
     }

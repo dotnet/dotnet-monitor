@@ -349,6 +349,10 @@ HRESULT STDMETHODCALLTYPE MainProfiler::RequestFunctionProbeInstallation(UINT64 
     return m_pProbeInstrumentation->RequestFunctionProbeInstallation(functionIds, count, argumentBoxingTypes, argumentCounts);
 }
 
+#ifndef DLLEXPORT
+#define DLLEXPORT
+#endif
+
 STDAPI DLLEXPORT RegisterFunctionProbe(UINT64 enterProbeId)
 {
     return MainProfiler::s_profiler->RegisterFunctionProbe((FunctionID)enterProbeId);
