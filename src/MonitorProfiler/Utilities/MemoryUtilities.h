@@ -58,5 +58,5 @@ class MemoryUtilities
             memcpy(dst, src, count);
             return 0;
         }
-#endif /* _IMPLEMENT_STRNCPY_S */
+#endif
 };

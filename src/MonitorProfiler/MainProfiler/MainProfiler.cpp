@@ -164,8 +164,7 @@ HRESULT MainProfiler::InitializeCommon()
     IfFailRet(InitializeLogging());
     IfFailRet(InitializeEnvironmentHelper());
 
-    m_pProbeInstrumentation.reset(new (nothrow) ProbeInstrumentation(m_pLogger, m_pCorProfilerInfo));
-    IfNullRet(m_pProbeInstrumentation);
+    // Logging is initialized and can now be used
 
 #ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
     _threadDataManager = make_shared<ThreadDataManager>(m_pLogger);
@@ -173,6 +172,9 @@ HRESULT MainProfiler::InitializeCommon()
     _exceptionTracker.reset(new (nothrow) ExceptionTracker(m_pLogger, _threadDataManager, m_pCorProfilerInfo));
     IfNullRet(_exceptionTracker);
 #endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
+
+    m_pProbeInstrumentation.reset(new (nothrow) ProbeInstrumentation(m_pLogger, m_pCorProfilerInfo));
+    IfNullRet(m_pProbeInstrumentation);
 
     // Set product version environment variable to allow discovery of if the profiler
     // as been applied to a target process. Diagnostic tools must use the diagnostic
@@ -185,11 +187,12 @@ HRESULT MainProfiler::InitializeCommon()
     _exceptionTracker->AddProfilerEventMask(eventsLow);
 #endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
     StackSampler::AddProfilerEventMask(eventsLow);
+    
     m_pProbeInstrumentation->AddProfilerEventMask(eventsLow);
 
     _threadNameCache = make_shared<ThreadNameCache>();
 
-    IfFailLogRet(m_pCorProfilerInfo->SetEventMask2(
+    IfFailRet(m_pCorProfilerInfo->SetEventMask2(
         eventsLow,
         COR_PRF_HIGH_MONITOR::COR_PRF_HIGH_MONITOR_NONE));
 
