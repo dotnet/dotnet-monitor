@@ -143,7 +143,7 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeShutdown()
     return S_OK;
 }
 
-BOOL ProbeInstrumentation::HasProbes()
+bool ProbeInstrumentation::HasProbes()
 {
     return m_probeFunctionId != 0;
 }
@@ -246,7 +246,7 @@ HRESULT ProbeInstrumentation::Disable()
     return S_OK;
 }
 
-BOOL ProbeInstrumentation::IsEnabled()
+bool ProbeInstrumentation::IsEnabled()
 {
     return !m_activeInstrumentationRequests.empty();
 }

@@ -109,8 +109,12 @@ class AssemblyProbePrep
             ModuleID moduleId,
             COR_LIB_TYPE_TOKENS& pCorLibTypeTokens);
 
-        HRESULT GetTokenForCorLibAssemblyRef(
+        HRESULT GetOrEmitTokenForCorLibAssemblyRef(
             IMetaDataImport* pMetadataImport,
+            IMetaDataEmit* pMetadataEmit,
+            mdAssemblyRef& corlibAssemblyRef);
+
+        HRESULT EmitCorLibAssemblyRef(
             IMetaDataEmit* pMetadataEmit,
             mdAssemblyRef& corlibAssemblyRef);
 };

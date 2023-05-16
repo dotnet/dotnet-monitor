@@ -64,8 +64,8 @@ class ProbeInstrumentation
         HRESULT InitBackgroundService();
         void ShutdownBackgroundService();
 
-        BOOL HasProbes();
-        BOOL IsEnabled();
+        bool HasProbes();
+        bool IsEnabled();
 
         HRESULT RegisterFunctionProbe(FunctionID enterProbeId);
         HRESULT RequestFunctionProbeShutdown();

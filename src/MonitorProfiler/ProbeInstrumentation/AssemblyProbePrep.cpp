@@ -134,7 +134,7 @@ HRESULT AssemblyProbePrep::EmitNecessaryCorLibTypeTokens(
         reinterpret_cast<IUnknown **>(&pMetadataEmit)));
 
     mdAssemblyRef corlibAssemblyRef;
-    IfFailRet(GetTokenForCorLibAssemblyRef(
+    IfFailRet(GetOrEmitTokenForCorLibAssemblyRef(
         pMetadataImport,
         pMetadataEmit,
         corlibAssemblyRef));
@@ -199,7 +199,7 @@ HRESULT AssemblyProbePrep::GetTokenForType(
     return S_OK;
 }
 
-HRESULT AssemblyProbePrep::GetTokenForCorLibAssemblyRef(IMetaDataImport* pMetadataImport, IMetaDataEmit* pMetadataEmit, mdAssemblyRef& corlibAssemblyRef)
+HRESULT AssemblyProbePrep::GetOrEmitTokenForCorLibAssemblyRef(IMetaDataImport* pMetadataImport, IMetaDataEmit* pMetadataEmit, mdAssemblyRef& corlibAssemblyRef)
 {
     IfNullRet(pMetadataImport);
     IfNullRet(pMetadataEmit);
@@ -269,6 +269,18 @@ HRESULT AssemblyProbePrep::GetTokenForCorLibAssemblyRef(IMetaDataImport* pMetada
     {
         pMetadataAssemblyImport->CloseEnum(corEnum);
     }
+
+    IfFailRet(EmitCorLibAssemblyRef(pMetadataEmit, corlibAssemblyRef));
+
+    return S_OK;
+}
+
+HRESULT AssemblyProbePrep::EmitCorLibAssemblyRef(IMetaDataEmit* pMetadataEmit, mdAssemblyRef& corlibAssemblyRef)
+{
+    IfNullRet(pMetadataEmit);
+
+    HRESULT hr;
+    corlibAssemblyRef = mdAssemblyRefNil;
 
     ComPtr<IMetaDataAssemblyEmit> pMetadataAssemblyEmit;
     IfFailRet(pMetadataEmit->QueryInterface(IID_IMetaDataAssemblyEmit, reinterpret_cast<void **>(&pMetadataAssemblyEmit)));
