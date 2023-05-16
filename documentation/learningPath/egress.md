@@ -37,15 +37,19 @@ graph LR
 
 ### Dotnet-Monitor Versions
 
-There are two versions of the `dotnet-monitor` tool being offered: `monitor` and `monitor-base`. The default version of `dotnet-monitor` includes every supported egress provider (to avoid breaking changes, this uses the existing `monitor` naming); the `monitor-base` version is a newly created image for .NET Monitor 8+ and only includes the `FileSystem` egress provider, allowing users to manually include their preferred egress providers.
+There are two versions of the `dotnet-monitor` image being offered: `monitor` and `monitor-base`. The default version of `dotnet-monitor` includes every supported egress provider (to avoid breaking changes, this uses the existing `monitor` naming); the `monitor-base` version is a newly created image for .NET Monitor 8+ and only includes the `FileSystem` egress provider, allowing users to manually include their preferred egress providers. Note that there is currently only one version of the .NET Core global tool, which includes every supported egress provider for convenience.
 
 ### Well Known Egress Provider Locations
 
 There are 3 [locations](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs#L260) that `dotnet-monitor` scans when looking for the extensions directory (the highest priority location is listed first):
-1. Next to the executing `dotnet-monitor` assembly
-1. SharedConfigDirectory (e.g. `C:\\ProgramData\\dotnet-monitor`)
-1. UserConfigDirectory (e.g. `C:\\Users\\user-name\\.dotnet-monitor`)
-
+- Next to the executing `dotnet-monitor` assembly
+- SharedConfigDirectory
+  - On Windows, `%ProgramData%\dotnet-monitor`
+  - On *nix, `/etc/dotnet-monitor`
+- UserConfigDirectory
+  - On Windows, `%USERPROFILE%\.dotnet-monitor\settings.json`
+  - On *nix,`$XDG_CONFIG_HOME/dotnet-monitor/settings.json`
+  - If `$XDG_CONFIG_HOME` isn't defined, we fall back to `$HOME/.config/dotnet-monitor/settings.json`
 ### Manually Acquiring An Egress Provider 
 #### TODO
 
@@ -74,4 +78,4 @@ In addition to the configuration provided specifically for your egress provider,
 
 [`dotnet monitor` will pass serialized configuration via `StdIn` to the extension](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressExtension.cs#L182); an example of how the `AzureBlobStorage` egress provider interprets the egress payload can be found [here](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Microsoft.Diagnostics.Monitoring.Extension.Common/EgressHelper.cs#L139). **It's important to validate the version number at the beginning of the stream; if an extension does not have the same version as `dotnet-monitor`, it should not attempt to continue reading from the stream, and users may need to update to a newer version of the extension.**
 
-All output from the extension will be passed back to `dotnet-monitor`; this is logged [here](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressExtension.OutputParser.cs#L62). `Dotnet-Monitor` will continue reading output until it receives a [result](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressArtifactResult.cs) from the extension, at which point the extension's process will be terminated and `dotnet-monitor` will display the appropriate log message depending on the success/failure of the operation.
+All output from the extension will be passed back to `dotnet-monitor`; this is logged [here](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressExtension.OutputParser.cs#L62). The contents of the `StandardOutput` and `StandardError` streams are handled and logged as seen [here](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressExtension.OutputParser.cs#L32), with the `StandardOutput` stream being logged at the `Info` level and the `StandardError` stream being logged at the `Warning` level. `Dotnet-Monitor` will continue reading output until it receives a [result](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Tools/dotnet-monitor/Egress/Extension/EgressArtifactResult.cs) from the extension via the `StandardOutput` stream, at which point the extension's process will be terminated and `dotnet-monitor` will display the appropriate log message depending on the success/failure of the operation. Exceptions thrown during the egress operation are caught [here](https://github.com/dotnet/dotnet-monitor/blob/289105261537f3977f7d1886f936d19bb3639d46/src/Microsoft.Diagnostics.Monitoring.Extension.Common/EgressHelper.cs#L53); this allows the extension to report a failure message back to `dotnet-monitor` that will be displayed to the user.
