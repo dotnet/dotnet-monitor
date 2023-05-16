@@ -4,7 +4,6 @@
 #pragma once
 
 #include <assert.h>
-#include <cstdio>
 #include "cor.h"
 #include "corprof.h"
 #include "corhlpr.h"
