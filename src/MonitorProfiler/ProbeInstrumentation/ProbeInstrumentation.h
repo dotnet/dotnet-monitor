@@ -49,7 +49,8 @@ class ProbeInstrumentation
         std::thread m_probeManagementThread;
         BlockingQueue<PROBE_WORKER_PAYLOAD> m_probeManagementQueue;
         std::unordered_map<std::pair<ModuleID, mdMethodDef>, INSTRUMENTATION_REQUEST, PairHash<ModuleID, mdMethodDef>> m_activeInstrumentationRequests;
-        std::mutex m_requestProcessingMutex;
+        std::mutex m_instrumentationProcessingMutex;
+        std::mutex m_probePinningMutex;
 
     private:
         void WorkerThread();

@@ -18,6 +18,8 @@ ProbeInstrumentation::ProbeInstrumentation(const shared_ptr<ILogger>& logger, IC
 
 HRESULT ProbeInstrumentation::RegisterFunctionProbe(FunctionID enterProbeId)
 {
+    lock_guard<mutex> lock(m_probePinningMutex);
+
     if (HasProbes())
     {
         // Probes have already been pinned.
@@ -152,7 +154,7 @@ HRESULT ProbeInstrumentation::Enable(vector<UNPROCESSED_INSTRUMENTATION_REQUEST>
 {
     HRESULT hr;
 
-    lock_guard<mutex> lock(m_requestProcessingMutex);
+    lock_guard<mutex> lock(m_instrumentationProcessingMutex);
 
     if (!HasProbes() ||
         IsEnabled())
@@ -215,7 +217,7 @@ HRESULT ProbeInstrumentation::Disable()
 {
     HRESULT hr;
 
-    lock_guard<mutex> lock(m_requestProcessingMutex);
+    lock_guard<mutex> lock(m_instrumentationProcessingMutex);
 
     if (!IsEnabled())
     {
@@ -262,7 +264,7 @@ HRESULT STDMETHODCALLTYPE ProbeInstrumentation::GetReJITParameters(ModuleID modu
 
     INSTRUMENTATION_REQUEST request;
     {
-        lock_guard<mutex> lock(m_requestProcessingMutex);
+        lock_guard<mutex> lock(m_instrumentationProcessingMutex);
         auto const& it = m_activeInstrumentationRequests.find({moduleId, methodDef});
         if (it == m_activeInstrumentationRequests.end())
         {
