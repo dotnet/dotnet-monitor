@@ -54,8 +54,8 @@ class ProbeInstrumentation
 
     private:
         void WorkerThread();
-        HRESULT Enable(std::vector<UNPROCESSED_INSTRUMENTATION_REQUEST>& requests);
-        HRESULT Disable();
+        HRESULT InstallProbes(std::vector<UNPROCESSED_INSTRUMENTATION_REQUEST>& requests);
+        HRESULT UninstallProbes();
         bool HasProbes();
 
     public:
@@ -66,10 +66,10 @@ class ProbeInstrumentation
         HRESULT InitBackgroundService();
         void ShutdownBackgroundService();
 
-        bool IsEnabled();
+        bool AreProbesInstalled();
 
         HRESULT RegisterFunctionProbe(FunctionID enterProbeId);
-        HRESULT RequestFunctionProbeShutdown();
+        HRESULT RequestFunctionProbeUninstallation();
         HRESULT RequestFunctionProbeInstallation(ULONG64 functionIds[], ULONG32 count, ULONG32 argumentBoxingTypes[], ULONG32 argumentCounts[]);
 
         void AddProfilerEventMask(DWORD& eventsLow);

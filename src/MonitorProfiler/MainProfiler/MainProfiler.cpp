@@ -337,9 +337,9 @@ HRESULT STDMETHODCALLTYPE MainProfiler::GetReJITParameters(ModuleID moduleId, md
     return m_pProbeInstrumentation->GetReJITParameters(moduleId, methodId, pFunctionControl);
 }
 
-HRESULT STDMETHODCALLTYPE MainProfiler::RequestFunctionProbeShutdown()
+HRESULT STDMETHODCALLTYPE MainProfiler::RequestFunctionProbeUninstallation()
 {
-    return m_pProbeInstrumentation->RequestFunctionProbeShutdown();
+    return m_pProbeInstrumentation->RequestFunctionProbeUninstallation();
 }
 
 HRESULT STDMETHODCALLTYPE MainProfiler::RegisterFunctionProbe(FunctionID enterProbeId)
@@ -366,7 +366,7 @@ STDAPI DLLEXPORT RequestFunctionProbeInstallation(UINT64 functionIds[], ULONG32 
     return MainProfiler::s_profiler->RequestFunctionProbeInstallation(functionIds, count, argumentBoxingTypes, argumentCounts);
 }
 
-STDAPI DLLEXPORT RequestFunctionProbeShutdown()
+STDAPI DLLEXPORT RequestFunctionProbeUninstallation()
 {
-    return MainProfiler::s_profiler->RequestFunctionProbeShutdown();
+    return MainProfiler::s_profiler->RequestFunctionProbeUninstallation();
 }

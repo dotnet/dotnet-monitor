@@ -64,7 +64,7 @@ void ProbeInstrumentation::WorkerThread()
         switch (payload.instruction)
         {
         case ProbeWorkerInstruction::INSTALL_PROBES:
-            hr = Enable(payload.requests);
+            hr = InstallProbes(payload.requests);
             if (hr != S_OK)
             {
                 m_pLogger->Log(LogLevel::Error, _LS("Failed to install probes: 0x%08x"), hr);
@@ -72,7 +72,7 @@ void ProbeInstrumentation::WorkerThread()
             break;
 
         case ProbeWorkerInstruction::UNINSTALL_PROBES:
-            hr = Disable();
+            hr = UninstallProbes();
             if (hr != S_OK)
             {
                 m_pLogger->Log(LogLevel::Error, _LS("Failed to uninstall probes: 0x%08x"), hr);
@@ -138,7 +138,7 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
     return S_OK;
 }
 
-HRESULT ProbeInstrumentation::RequestFunctionProbeShutdown()
+HRESULT ProbeInstrumentation::RequestFunctionProbeUninstallation()
 {
     m_pLogger->Log(LogLevel::Debug, _LS("Probe shutdown requested"));
 
@@ -159,14 +159,14 @@ bool ProbeInstrumentation::HasProbes()
     return m_probeFunctionId != 0;
 }
 
-HRESULT ProbeInstrumentation::Enable(vector<UNPROCESSED_INSTRUMENTATION_REQUEST>& requests)
+HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_REQUEST>& requests)
 {
     HRESULT hr;
 
     lock_guard<mutex> lock(m_instrumentationProcessingMutex);
 
     if (!HasProbes() ||
-        IsEnabled())
+        AreProbesInstalled())
     {
         return E_FAIL;
     }
@@ -223,13 +223,13 @@ HRESULT ProbeInstrumentation::Enable(vector<UNPROCESSED_INSTRUMENTATION_REQUEST>
     return S_OK;
 }
 
-HRESULT ProbeInstrumentation::Disable()
+HRESULT ProbeInstrumentation::UninstallProbes()
 {
     HRESULT hr;
 
     lock_guard<mutex> lock(m_instrumentationProcessingMutex);
 
-    if (!IsEnabled())
+    if (!AreProbesInstalled())
     {
         return S_FALSE;
     }
@@ -258,7 +258,7 @@ HRESULT ProbeInstrumentation::Disable()
     return S_OK;
 }
 
-bool ProbeInstrumentation::IsEnabled()
+bool ProbeInstrumentation::AreProbesInstalled()
 {
     return !m_activeInstrumentationRequests.empty();
 }
@@ -291,7 +291,7 @@ HRESULT STDMETHODCALLTYPE ProbeInstrumentation::GetReJITParameters(ModuleID modu
     if (FAILED(hr))
     {
         m_pLogger->Log(LogLevel::Error, _LS("Failed to install probes, reverting: 0x%08x"), hr);
-        RequestFunctionProbeShutdown();
+        RequestFunctionProbeUninstallation();
         return hr;
     }
 

@@ -150,6 +150,11 @@ HRESULT ProbeInjector::GetBoxingToken(
 {
     boxedType = mdTokenNil;
 
+    //
+    // typeInfo is either:
+    // 1. A real metadata token that is what should be used for boxing.
+    // 2. A special case (one of the SpecialCaseBoxingTypes enum values)
+    //
     if (TypeFromToken(typeInfo) != SpecialCaseBoxingTypeFlag)
     {
         boxedType = static_cast<mdToken>(typeInfo);

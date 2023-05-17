@@ -457,7 +457,11 @@ HRESULT AssemblyProbePrep::HydrateProbeMetadata()
     m_probeCache.publicKeyLength = publicKeyLength;
     m_probeCache.publicKey.reset(new (nothrow) BYTE[publicKeyLength ]);
     IfNullRet(m_probeCache.publicKey);
-    MemoryUtilities::Copy(m_probeCache.publicKey.get(), publicKeyLength, pPublicKey, publicKeyLength);
+    IfFailRet(MemoryUtilities::Copy(
+        m_probeCache.publicKey.get(),
+        publicKeyLength,
+        pPublicKey,
+        publicKeyLength));
 
     PCCOR_SIGNATURE pProbeSignature;
     IfFailRet(pProbeMetadataImport->GetMethodProps(
@@ -474,7 +478,11 @@ HRESULT AssemblyProbePrep::HydrateProbeMetadata()
 
     m_probeCache.signature.reset(new (nothrow) BYTE[m_probeCache.signatureLength]);
     IfNullRet(m_probeCache.signature);
-    MemoryUtilities::Copy(m_probeCache.signature.get(), m_probeCache.signatureLength, pProbeSignature, m_probeCache.signatureLength);
+    IfFailRet(MemoryUtilities::Copy(
+        m_probeCache.signature.get(),
+        m_probeCache.signatureLength,
+        pProbeSignature,
+        m_probeCache.signatureLength));
 
     m_didHydrateProbeCache = true;
     return S_OK;

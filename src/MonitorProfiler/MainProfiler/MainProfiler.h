@@ -53,7 +53,7 @@ public:
 public:
     STDMETHOD(RegisterFunctionProbe)(FunctionID enterProbeId);
     STDMETHOD(RequestFunctionProbeInstallation)(UINT64 functionIds[], ULONG32 count, ULONG32 argumentBoxingTypes[], ULONG32 argumentCounts[]);
-    STDMETHOD(RequestFunctionProbeShutdown)();
+    STDMETHOD(RequestFunctionProbeUninstallation)();
 
 private:
     HRESULT InitializeCommon();

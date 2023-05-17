@@ -1,10 +1,10 @@
 LIBRARY MonitorProfiler
 
 EXPORTS
-    DllCanUnloadNow                  PRIVATE
-    DllGetClassObject                PRIVATE
-    DllMain                          PRIVATE
-    TestHook                         PRIVATE
-    RegisterFunctionProbe            PRIVATE
-    RequestFunctionProbeInstallation PRIVATE
-    RequestFunctionProbeShutdown     PRIVATE
+    DllCanUnloadNow                    PRIVATE
+    DllGetClassObject                  PRIVATE
+    DllMain                            PRIVATE
+    TestHook                           PRIVATE
+    RegisterFunctionProbe              PRIVATE
+    RequestFunctionProbeInstallation   PRIVATE
+    RequestFunctionProbeUninstallation PRIVATE
