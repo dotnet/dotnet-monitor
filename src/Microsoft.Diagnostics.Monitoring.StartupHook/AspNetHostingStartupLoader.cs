@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Loader;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook
 {
@@ -19,23 +20,23 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         public AspNetHostingStartupLoader(string filePath)
         {
             FilePath = filePath;
-            ShortAssemblyName = CalculateShortAssemblyName(filePath);
+            ShortAssemblyName = CalculateAssemblyName(filePath);
 
             AppendToEnvironmentVariable(HostingStartupEnvVariable, filePath);
-            AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolver!;
+            AssemblyLoadContext.Default.Resolving += AssemblyResolver;
         }
 
-        private Assembly? AssemblyResolver(object source, ResolveEventArgs e)
+        private Assembly? AssemblyResolver(AssemblyLoadContext context, AssemblyName assemblyName)
         {
-            if (!e.Name.StartsWith(ShortAssemblyName, StringComparison.Ordinal))
+            if (ShortAssemblyName.Equals(assemblyName.Name, StringComparison.OrdinalIgnoreCase))
             {
-                return null;
+                return AssemblyLoadContext.Default.LoadFromAssemblyPath(FilePath);
             }
 
-            return Assembly.LoadFile(FilePath);
+            return null;
         }
 
-        private static string CalculateShortAssemblyName(string filePath)
+        private static string CalculateAssemblyName(string filePath)
         {
             string fileName = Path.GetFileName(filePath);
             const string dllExtension = ".dll";
@@ -59,7 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             if (!DisposableHelper.CanDispose(ref _disposedState))
                 return;
 
-            AppDomain.CurrentDomain.AssemblyResolve -= AssemblyResolver!;
+            AssemblyLoadContext.Default.Resolving -= AssemblyResolver!;
         }
     }
 }

@@ -15,11 +15,6 @@ internal sealed class StartupHook
     {
         try
         {
-            //
-            // JSFIX: Consider providing an abstraction ontop of each in-proc feature with its own safe-init method
-            // and safe-cleanup method to enable best-effort initialization (and cleanup) across all in-proc features instead of
-            // bailing the entire initialization process on the first failure.
-            //
             string? hostingStartupPath = Environment.GetEnvironmentVariable(StartupHookIdentifiers.EnvironmentVariables.HostingStartupPath);
             if (!string.IsNullOrWhiteSpace(hostingStartupPath))
             {
