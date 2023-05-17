@@ -14,6 +14,8 @@
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\Stacks\NameIdentificationEvents.cs" Link="Exceptions\Eventing\NameIdentificationEvents.cs" />
     <Compile Include="..\Tools\dotnet-monitor\DisposableHelper.cs" Link="DisposableHelper.cs" />
     <Compile Include="..\Tools\dotnet-monitor\Exceptions\ExceptionEvents.cs" Link="Exceptions\Eventing\ExceptionEvents.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\StartupHook\StartupHookIdentifiers.cs" Link="StartupHookIdentifiers.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\ToolIdentifiers.cs" Link="ToolIdentifiers.cs" />
   </ItemGroup>
 
   <ItemGroup>
