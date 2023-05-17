@@ -8,6 +8,11 @@
 
 #include <vector>
 
+//
+// SpecialCaseBoxingTypes shares the same format as other mdTokens.
+// Instrumentation requests provide special boxing instructions by using SpecialCaseBoxingTypeFlag
+// as the "token type" and the SpecialCaseBoxingTypes enum as the RID.
+//
 constexpr ULONG32 SpecialCaseBoxingTypeFlag = 0xff000000;
 enum class SpecialCaseBoxingTypes : ULONG32
 {
