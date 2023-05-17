@@ -21,7 +21,6 @@ typedef struct _INSTRUMENTATION_REQUEST
     std::shared_ptr<AssemblyProbePrepData> pAssemblyData;
 } INSTRUMENTATION_REQUEST;
 
-
 class ProbeInjector
 {
     public:

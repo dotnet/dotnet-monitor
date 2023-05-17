@@ -57,6 +57,11 @@ HRESULT ProbeInjector::InstallProbe(
 
     UINT32 numArgs = static_cast<UINT32>(request.boxingTypes.size());
 
+    //
+    // The below IL is equivalent to: ProbeFunction(uniquifier, new object[] { arg1, arg2, ... })
+    // When an argument isn't supported, pass null in its place.
+    //
+
     /* uniquifier */
     pNewInstr = rewriter.NewILInstr();
     pNewInstr->m_opcode = CEE_LDC_I8;
@@ -105,7 +110,7 @@ HRESULT ProbeInjector::InstallProbe(
             pNewInstr->m_Arg32 = i;
             rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pNewInstr);
 
-            // Resolve the box type
+            // Resolve the boxing token.
             mdToken boxedTypeToken;
             IfFailRet(GetBoxingToken(typeInfo, corLibTypeTokens, boxedTypeToken));
             if (boxedTypeToken != mdTokenNil)
