@@ -56,7 +56,7 @@ class ProbeInstrumentation
         void WorkerThread();
         HRESULT InstallProbes(std::vector<UNPROCESSED_INSTRUMENTATION_REQUEST>& requests);
         HRESULT UninstallProbes();
-        bool HasProbes();
+        bool HasPinnedProbe();
 
     public:
         ProbeInstrumentation(
