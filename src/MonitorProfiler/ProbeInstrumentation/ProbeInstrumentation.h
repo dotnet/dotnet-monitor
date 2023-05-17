@@ -56,6 +56,7 @@ class ProbeInstrumentation
         void WorkerThread();
         HRESULT Enable(std::vector<UNPROCESSED_INSTRUMENTATION_REQUEST>& requests);
         HRESULT Disable();
+        bool HasProbes();
 
     public:
         ProbeInstrumentation(
@@ -65,7 +66,6 @@ class ProbeInstrumentation
         HRESULT InitBackgroundService();
         void ShutdownBackgroundService();
 
-        bool HasProbes();
         bool IsEnabled();
 
         HRESULT RegisterFunctionProbe(FunctionID enterProbeId);

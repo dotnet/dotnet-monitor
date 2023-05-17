@@ -120,7 +120,7 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
             tokens.push_back(argumentBoxingTypes[offset+j]);
         }
 
-        if (UINT32_MAX - offset < argumentCounts[i])
+        if (UINT32_MAX - offset < j)
         {
             return E_INVALIDARG;
         }
