@@ -18,8 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="dotnet-monitor-egress-azureblobstorage" />
-    <InternalsVisibleTo Include="dotnet-monitor-egress-s3storage" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp" />
