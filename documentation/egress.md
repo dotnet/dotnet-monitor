@@ -25,16 +25,16 @@ In addition to the current `dotnet monitor` offerings, a `monitor-base` image is
 
 Users using the `monitor-base` image can manually install supported extensions via Multi-Stage Docker Builds, creating their own image that includes any desired egress providers.
 
-For an example of using Multi-Stage Docker Builds, see the [Dockerfile](https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/8.0/ubuntu-chiseled/amd64/Dockerfile) that the `dotnet monitor` team used to construct the `monitor` image.
+For an example of using Multi-Stage Docker Builds, see the [Dockerfile](https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/8.0/ubuntu-chiseled/amd64/Dockerfile) that the `dotnet monitor` team uses to construct the `amd64` `monitor` image.
 
-To directly access archives for one of `dotnet monitor`'s supported extensions, these are available using the following link (this example is specifically for the `linux-x64` archive): `https://dotnetbuilds.azureedge.net/public/diagnostics/monitor/$dotnet_monitor_extension_version/dotnet-monitor-egress-azureblobstorage-$dotnet_monitor_extension_version-linux-x64.tar.gz`. Note: the versions in this link will change in response to new `dotnet monitor` releases; as a result, the link will need to be updated to reflect the most recent version when updating your extensions.
+To directly access archives for one of `dotnet monitor`'s supported extensions, these are available using the following link (this example is specifically for the `linux-x64` archive): `https://dotnetbuilds.azureedge.net/public/diagnostics/monitor/$dotnet_monitor_extension_version/dotnet-monitor-egress-azureblobstorage-$dotnet_monitor_extension_version-linux-x64.tar.gz`. Note: the versions in this link will change in response to new `dotnet monitor` releases; as a result, the link will need to be changed to reflect the most recent version when updating your extensions.
 
 #### Example Of Manually Installing AzureBlobStorage Extension Locally On Windows (Version Numbers May Vary)
 
 1. Download the archive: `curl -fSL --output dotnet-monitor-egress-azureblobstorage.tar.gz https://dotnetbuilds.azureedge.net/public/diagnostics/monitor/8.0.0-preview.4.23260.4/dotnet-monitor-egress-azureblobstorage-8.0.0-preview.4.23260.4-linux-x64.tar.gz`
 2. Extract the contents of `dotnet-monitor-egress-azureblobstorage.tar.gz`
 3. Place the `AzureBlobStorage` directory found inside the archive in one of `dotnet monitor`'s designated extension [locations](./learningPath/egress.md#well-known-egress-provider-locations).
-   * Example: Place `AzureBlobStorage` at `C:\\Users\\username\\.dotnet-monitor\\extensions\\`.
+   * Example (Windows): Place `AzureBlobStorage` at `C:\\Users\\username\\.dotnet-monitor\\extensions\\`.
 4. `dotnet monitor` will now automatically detect the extension - ensure you have added the necessary configuration for the extension (configuration for extensions is written alongside the rest of `dotnet monitor` configuration).
 
 > `dotnet monitor` may expand the acquisition model for extensions in the future; if you have a scenario that requires additional installation options, please let us know by creating a [discussion](https://github.com/dotnet/dotnet-monitor/discussions).
