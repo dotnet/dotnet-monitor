@@ -3,6 +3,7 @@
   <Import Project="$(RepoRoot)src\archives\dotnet-monitor-base\ProjectsToPublish.props" />
   <Import Project="$(RepoRoot)src\archives\AzureBlobStorage\ProjectsToPublish.props" />
   <Import Project="$(RepoRoot)src\archives\S3Storage\ProjectsToPublish.props" />
+  <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.HostingStartup\ProjectsToPublish.props" />
   <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.StartupHook\ProjectsToPublish.props" />
 
   <!-- Only publish projects after build if opt-in and not skipped -->

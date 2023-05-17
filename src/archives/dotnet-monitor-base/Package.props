@@ -1,6 +1,7 @@
 <Project>
   <!-- Create dotnet-monitor product archive (RID and TFM specific) -->
   <Import Project="$(MSBuildThisFileDirectory)ProjectsToPublish.props" />
+  <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.HostingStartup\ProjectsToPublish.props" />
   <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.StartupHook\ProjectsToPublish.props" />
   <PropertyGroup>
     <ExecutableName>dotnet-monitor</ExecutableName>
@@ -36,6 +37,10 @@
     <FileToArchive Include="$(StartupHookLibraryPath)">
       <PackagePath>shared\any\$(StartupHookTargetFramework)\</PackagePath>
     </FileToArchive>
+    <!-- Hosting startup assemblies -->
+    <FileToArchive Include="$(HostingStartupLibraryPath)">
+      <PackagePath>shared\any\$(HostingStartupTargetFramework)\</PackagePath>
+    </FileToArchive>
   </ItemGroup>
   <ItemGroup>
     <!-- Do not include symbols for the extra native assemblies since they have their own symbols package. -->
@@ -45,6 +50,10 @@
     <!-- Startup hook symbols -->
     <SymbolFileToArchive Include="$(StartupHookSymbolsPath)">
       <PackagePath>shared\any\$(StartupHookTargetFramework)\</PackagePath>
+    </SymbolFileToArchive>
+    <!-- Hosting startup symbols -->
+    <SymbolFileToArchive Include="$(HostingStartupSymbolsPath)">
+      <PackagePath>shared\any\$(HostingStartupTargetFramework)\</PackagePath>
     </SymbolFileToArchive>
   </ItemGroup>
 </Project>
