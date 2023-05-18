@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         private static void AppendToEnvironmentVariable(string key, string value, string delimiter = ";")
         {
             string? curValue = Environment.GetEnvironmentVariable(key);
-            string newValue = string.IsNullOrWhiteSpace(curValue) ? value : $"{curValue}{delimiter}{value}";
+            string newValue = string.IsNullOrWhiteSpace(curValue) ? value : string.Concat(curValue, delimiter, value);
             Environment.SetEnvironmentVariable(key, newValue);
         }
 
