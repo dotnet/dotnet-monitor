@@ -127,20 +127,18 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
     ULONG32 offset = 0;
     for (ULONG32 i = 0; i < count; i++)
     {
-        vector<ULONG32> tokens;
-        tokens.reserve(argumentCounts[i]);
-        ULONG32 j;
-
-        if (UINT32_MAX - offset <  argumentCounts[i])
+        if (UINT32_MAX - offset < argumentCounts[i])
         {
             return E_INVALIDARG;
         }
 
-        for (j = 0; j < argumentCounts[i]; j++)
+        vector<ULONG32> tokens;
+        tokens.reserve(argumentCounts[i]);
+        for (ULONG32 j = 0; j < argumentCounts[i]; j++)
         {
             tokens.push_back(argumentBoxingTypes[offset+j]);
         }
-        offset += j;
+        offset += argumentCounts[i];
 
         UNPROCESSED_INSTRUMENTATION_REQUEST request;
         request.functionId = static_cast<FunctionID>(functionIds[i]);
