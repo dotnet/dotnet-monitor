@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
         {
             private const string StartupHookPrefix = ToolIdentifiers.StandardPrefix + "StartupHook_";
 
-            // The full path of a HostingStartup assembly to try and load into a target process.
+            // The full path of a HostingStartup assembly to load into a target process.
             public const string HostingStartupPath = StartupHookPrefix + nameof(HostingStartupPath);
         }
     }

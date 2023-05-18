@@ -60,7 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             if (!DisposableHelper.CanDispose(ref _disposedState))
                 return;
 
-            AssemblyLoadContext.Default.Resolving -= AssemblyResolver!;
+            AssemblyLoadContext.Default.Resolving -= AssemblyResolver;
         }
     }
 }
