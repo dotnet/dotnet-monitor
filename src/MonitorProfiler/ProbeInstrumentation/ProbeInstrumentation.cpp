@@ -106,6 +106,21 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
         return S_FALSE;
     }
 
+    //
+    // This method receives N (where n is "count") function IDs that probes should be installed into.
+    //
+    // Along with this, boxing types are provided for every argument in all of the functions, and the number of 
+    // arguments for each function can be found using argumentCounts.
+    //
+    // The boxing types are passed in as a flattened multidimensional array (argumentBoxingTypes).
+    //
+    //
+
+    //
+    // This method un-flattens the passed in data, reconstructing it into an easier-to-understand format
+    // before passing off the request to the worker thread.
+    //
+
     vector<UNPROCESSED_INSTRUMENTATION_REQUEST> requests;
     requests.reserve(count);
 

@@ -54,7 +54,6 @@ class MemoryUtilities
                 return EINVAL;
             }
 
-            UINT_PTR x = (UINT_PTR)dst, y = (UINT_PTR)src;
             memcpy(dst, src, count);
             return 0;
         }
