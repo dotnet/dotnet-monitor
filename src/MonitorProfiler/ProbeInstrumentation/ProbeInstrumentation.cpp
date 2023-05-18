@@ -23,6 +23,7 @@ HRESULT ProbeInstrumentation::RegisterFunctionProbe(FunctionID enterProbeId)
     if (HasPinnedProbe())
     {
         // Probes have already been pinned.
+        m_pLogger->Log(LogLevel::Debug, _LS("Received probes but they have already been pinned"));
         return E_FAIL;
     }
 
@@ -115,14 +116,14 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
         tokens.reserve(argumentCounts[i]);
         ULONG32 j;
 
+        if (UINT32_MAX - offset <  argumentCounts[i])
+        {
+            return E_INVALIDARG;
+        }
+
         for (j = 0; j < argumentCounts[i]; j++)
         {
             tokens.push_back(argumentBoxingTypes[offset+j]);
-        }
-
-        if (UINT32_MAX - offset < j)
-        {
-            return E_INVALIDARG;
         }
         offset += j;
 
@@ -182,34 +183,34 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
 
     for (auto const& req : requests)
     {
-        INSTRUMENTATION_REQUEST request;
+        INSTRUMENTATION_REQUEST processedRequest;
 
         // For now just use the function id as the uniquifier.
-        // Consider allowing the calling to specificy one.
-        request.uniquifier = static_cast<ULONG64>(req.functionId);
-        request.boxingTypes = req.boxingTypes;
+        // Consider allowing the caller to specify one.
+        processedRequest.uniquifier = static_cast<ULONG64>(req.functionId);
+        processedRequest.boxingTypes = req.boxingTypes;
 
         IfFailLogRet(m_pCorProfilerInfo->GetFunctionInfo2(
             req.functionId,
             NULL,
             nullptr,
-            &request.moduleId,
-            &request.methodDef,
+            &processedRequest.moduleId,
+            &processedRequest.methodDef,
             0,
             nullptr,
             nullptr));
 
-        IfFailLogRet(m_pAssemblyProbePrep->PrepareAssemblyForProbes(request.moduleId));
+        IfFailLogRet(m_pAssemblyProbePrep->PrepareAssemblyForProbes(processedRequest.moduleId));
 
-        requestedModuleIds.push_back(request.moduleId);
-        requestedMethodDefs.push_back(request.methodDef);
+        requestedModuleIds.push_back(processedRequest.moduleId);
+        requestedMethodDefs.push_back(processedRequest.methodDef);
 
-        if (!m_pAssemblyProbePrep->TryGetAssemblyPrepData(request.moduleId, request.pAssemblyData))
+        if (!m_pAssemblyProbePrep->TryGetAssemblyPrepData(processedRequest.moduleId, processedRequest.pAssemblyData))
         {
             return E_UNEXPECTED;
         }
 
-        newRequests.insert({{request.moduleId, request.methodDef}, request});
+        newRequests.insert({{processedRequest.moduleId, processedRequest.methodDef}, processedRequest});
     }
 
     IfFailLogRet(m_pCorProfilerInfo->RequestReJITWithInliners(
