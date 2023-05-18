@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.StartupHook;
 using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using System;
+using System.IO;
 
 internal sealed class StartupHook
 {
@@ -16,7 +17,8 @@ internal sealed class StartupHook
         try
         {
             string? hostingStartupPath = Environment.GetEnvironmentVariable(StartupHookIdentifiers.EnvironmentVariables.HostingStartupPath);
-            if (!string.IsNullOrWhiteSpace(hostingStartupPath))
+            // TODO: Log if specified hosting startup assembly doesn't exist
+            if (File.Exists(hostingStartupPath))
             {
                 s_hostingStartupLoader = new AspNetHostingStartupLoader(hostingStartupPath);
             }

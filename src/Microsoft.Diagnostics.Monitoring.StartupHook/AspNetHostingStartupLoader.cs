@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             FilePath = filePath;
             ShortAssemblyName = CalculateAssemblyName(filePath);
 
-            AppendToEnvironmentVariable(HostingStartupEnvVariable, filePath);
+            AppendToEnvironmentVariable(HostingStartupEnvVariable, ShortAssemblyName);
             AssemblyLoadContext.Default.Resolving += AssemblyResolver;
         }
 
@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         {
             string fileName = Path.GetFileName(filePath);
             const string dllExtension = ".dll";
-            if (fileName.EndsWith(dllExtension, StringComparison.OrdinalIgnoreCase))
+            if (dllExtension.Equals(Path.GetExtension(fileName), StringComparison.OrdinalIgnoreCase))
             {
                 return fileName[..^dllExtension.Length];
             }
