@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -96,10 +98,73 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 writer.WriteString("typeName", instance.TypeName);
                 writer.WriteString("moduleName", instance.ModuleName);
                 writer.WriteString("message", instance.Message);
+
+                MemoryStream tempStream = new();
+                await FormatStack(tempStream, instance.CallStackResult, token);
+
+                tempStream.Position = 0;
+                StreamReader reader = new StreamReader(tempStream);
+                string callStackText = reader.ReadToEnd();
+
+                writer.WritePropertyName("callStack");
+                writer.WriteRawValue(callStackText);
+
                 writer.WriteEndObject();
             }
 
             await stream.WriteAsync(JsonRecordDelimiter, token);
+        }
+
+        // Copy pasted and modified from JsonStacksFormatter
+        public static async Task FormatStack(Stream outputStream, Monitoring.WebApi.Stacks.CallStackResult result, CancellationToken token)
+        {
+            // We know the result only has a single stack
+            Monitoring.WebApi.Stacks.CallStack stack = result.Stacks.First(); // is this safe?
+
+            var builder = new StringBuilder();
+
+            Monitoring.WebApi.Models.CallStack stackModel = new Monitoring.WebApi.Models.CallStack();
+            stackModel.ThreadId = stack.ThreadId;
+            stackModel.ThreadName = stack.ThreadName;
+
+            foreach (Monitoring.WebApi.Stacks.CallStackFrame frame in stack.Frames)
+            {
+                Monitoring.WebApi.Models.CallStackFrame frameModel = new Monitoring.WebApi.Models.CallStackFrame()
+                {
+                    ClassName = Monitoring.WebApi.Stacks.NameFormatter.UnknownClass,
+                    MethodName = Monitoring.WebApi.Stacks.StacksFormatter.UnknownFunction,
+                    //TODO Bring this back once we have a useful offset value
+                    //Offset = frame.Offset,
+                    ModuleName = Monitoring.WebApi.Stacks.NameFormatter.UnknownModule
+                };
+                if (frame.FunctionId == 0)
+                {
+                    frameModel.MethodName = Monitoring.WebApi.Stacks.StacksFormatter.NativeFrame;
+                    frameModel.ModuleName = Monitoring.WebApi.Stacks.StacksFormatter.NativeFrame;
+                    frameModel.ClassName = Monitoring.WebApi.Stacks.StacksFormatter.NativeFrame;
+                }
+                else if (result.NameCache.FunctionData.TryGetValue(frame.FunctionId, out Monitoring.WebApi.Stacks.FunctionData functionData))
+                {
+                    frameModel.ModuleName = Monitoring.WebApi.Stacks.NameFormatter.GetModuleName(result.NameCache, functionData.ModuleId);
+                    frameModel.MethodName = functionData.Name;
+
+                    builder.Clear();
+                    Monitoring.WebApi.Stacks.NameFormatter.BuildClassName(builder, result.NameCache, functionData);
+                    frameModel.ClassName = builder.ToString();
+
+                    if (functionData.TypeArgs.Length > 0)
+                    {
+                        builder.Clear();
+                        builder.Append(functionData.Name);
+                        Monitoring.WebApi.Stacks.NameFormatter.BuildGenericParameters(builder, result.NameCache, functionData.TypeArgs);
+                        frameModel.MethodName = builder.ToString();
+                    }
+                }
+
+                stackModel.Frames.Add(frameModel);
+            }
+
+            await JsonSerializer.SerializeAsync(outputStream, stackModel, cancellationToken: token);
         }
 
         private static async Task WriteText(Stream stream, IEnumerable<IExceptionInstance> instances, CancellationToken token)

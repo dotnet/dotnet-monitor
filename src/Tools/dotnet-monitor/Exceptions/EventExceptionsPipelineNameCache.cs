@@ -10,9 +10,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {
     internal sealed class EventExceptionsPipelineNameCache : IExceptionsNameCache
     {
-        private readonly List<ExceptionInstance> _exceptions = new();
         private readonly Dictionary<ulong, ExceptionIdentifier> _exceptionIds = new();
         private readonly NameCache _nameCache = new();
+        private readonly Dictionary<ulong, StackFrameInstance> _stackFrames = new();
 
         public NameCache NameCache => _nameCache;
 
@@ -26,14 +26,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _exceptionIds.Add(id, new ExceptionIdentifier(exceptionClassId, throwingMethodId, ilOffset));
         }
 
-        public void AddExceptionInstance(ulong exceptionId, string message)
-        {
-            _exceptions.Add(new ExceptionInstance(exceptionId, message));
-        }
-
         public void AddFunction(ulong id, ulong classId, uint classToken, ulong moduleId, string name, ulong[] typeArgs)
         {
             _nameCache.FunctionData.TryAdd(id, new FunctionData(name, classId, classToken, moduleId, typeArgs ?? Array.Empty<ulong>()));
+        }
+
+        public void AddStackFrame(ulong id, ulong functionId, int ilOffset)
+        {
+            _stackFrames.Add(id, new StackFrameInstance(functionId, ilOffset));
         }
 
         public void AddModule(ulong id, string moduleName)
@@ -63,8 +63,92 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             return true;
         }
 
+        public bool TryGetClassId(ulong classId, out ClassData data)
+        {
+            data = null;
+
+            if (!_nameCache.ClassData.TryGetValue(classId, out ClassData instance))
+                return false;
+
+            data = instance;
+
+            return true;
+        }
+
+        public bool TryGetToken(ModuleScopedToken moduleScopedToken, out TokenData data)
+        {
+            data = null;
+
+            if (!_nameCache.TokenData.TryGetValue(moduleScopedToken, out TokenData instance))
+                return false;
+
+            data = instance;
+
+            return true;
+        }
+
+
+        public bool TryGetModuleId(ulong moduleId, out ModuleData data)
+        {
+            data = null;
+
+            if (!_nameCache.ModuleData.TryGetValue(moduleId, out ModuleData instance))
+                return false;
+
+            data = instance;
+
+            return true;
+        }
+
+        // Also need to do this or similar for class/etc. -> used in ExceptionsOperation when we try to build class name
+        // also not clear why we unpack and then repack FunctionData - in this case maybe we don't need to?
+        public bool TryGetFunctionId(ulong functionId, out FunctionData data)
+        {
+            data = null;
+
+            if (!_nameCache.FunctionData.TryGetValue(functionId, out FunctionData instance))
+                return false;
+
+            data = instance;
+
+            return true;
+        }
+        /*public bool TryGetFunctionId(ulong functionId, out string name, out ulong classId, out uint classToken, out ulong moduleId, out ulong[] typeArgs)
+        {
+            name = string.Empty;
+            classId = 0;
+            classToken = 0;
+            moduleId = 0;
+            typeArgs = null; // not sure if we want this
+
+            if (!_nameCache.FunctionData.TryGetValue(functionId, out FunctionData instance))
+                return false;
+
+            name = instance.Name;
+            classId = instance.ParentClass;
+            classToken = instance.ParentToken;
+            moduleId = instance.ModuleId;
+            typeArgs = instance.TypeArgs;
+
+            return true;
+        }*/
+
+
+        public bool TryGetStackFrameIds(ulong stackFrameId, out ulong methodId, out int ilOffset)
+        {
+            methodId = 0;
+            ilOffset = 0;
+
+            if (!_stackFrames.TryGetValue(stackFrameId, out StackFrameInstance instance))
+                return false;
+
+            methodId = instance.MethodId;
+            ilOffset = instance.ILOffset;
+            return true;
+        }
+
         private sealed record class ExceptionIdentifier(ulong ClassId, ulong ThrowingMethodId, int ILOffset);
 
-        private sealed record class ExceptionInstance(ulong ExceptionId, string Message);
+        private sealed record class StackFrameInstance(ulong MethodId, int ILOffset);
     }
 }

@@ -44,9 +44,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _disposalSource.Dispose();
         }
 
-        public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp)
+        public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp, ulong[] stackFrameIds)
         {
-            ExceptionInstanceEntry entry = new(cache, exceptionId, message, timestamp);
+            ExceptionInstanceEntry entry = new(cache, exceptionId, message, timestamp, stackFrameIds);
             // This should never fail to write because the behavior is to drop the oldest.
             _channel.Writer.TryWrite(entry);
         }
@@ -106,7 +106,44 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                     lock (_instances)
                     {
-                        _instances.Add(new ExceptionInstance(exceptionTypeName, moduleName, entry.Message, entry.Timestamp));
+                        CallStackResult callStackResult = new();
+                        CallStack callStack = new();
+                        foreach (var stackFrameId in entry.StackFrameIds)
+                        {
+                            if (entry.Cache.TryGetStackFrameIds(stackFrameId, out ulong methodId, out int ilOffset))
+                            {
+                                if (entry.Cache.TryGetFunctionId(methodId, out FunctionData functionData))
+                                {
+                                    callStackResult.NameCache.FunctionData.TryAdd(methodId, functionData);
+
+                                    if (entry.Cache.TryGetClassId(functionData.ParentClass, out ClassData classData))
+                                    {
+                                        callStackResult.NameCache.ClassData.TryAdd(functionData.ParentClass, classData);
+
+                                        ModuleScopedToken moduleScopedToken = new(functionData.ModuleId, classData.Token);
+
+                                        if (entry.Cache.TryGetToken(moduleScopedToken, out TokenData tokenData))
+                                        {
+                                            callStackResult.NameCache.TokenData.TryAdd(moduleScopedToken, tokenData);
+                                        }
+                                    }
+                                    if (entry.Cache.TryGetModuleId(functionData.ModuleId, out ModuleData moduleData))
+                                    {
+                                        callStackResult.NameCache.ModuleData.TryAdd(functionData.ModuleId, moduleData);
+                                    }
+                                }
+
+                                CallStackFrame frame = new();
+                                frame.FunctionId = methodId;
+                                frame.Offset = (ulong)ilOffset; // not sure that's safe
+
+                                callStack.Frames.Add(frame);
+                            }
+                        }
+
+                        callStackResult.Stacks.Add(callStack);
+
+                        _instances.Add(new ExceptionInstance(exceptionTypeName, moduleName, entry.Message, entry.Timestamp, callStackResult));
                     }
                 }
 
@@ -116,12 +153,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private sealed class ExceptionInstanceEntry
         {
-            public ExceptionInstanceEntry(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp)
+            public ExceptionInstanceEntry(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp, ulong[] stackFrameIds)
             {
                 Cache = cache;
                 ExceptionId = exceptionId;
                 Message = message;
                 Timestamp = timestamp;
+                StackFrameIds = stackFrameIds;
             }
 
             public IExceptionsNameCache Cache { get; }
@@ -131,6 +169,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             public string Message { get; }
 
             public DateTime Timestamp { get; }
+
+            public ulong[] StackFrameIds { get; }
         }
     }
 }
