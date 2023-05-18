@@ -347,7 +347,7 @@ HRESULT STDMETHODCALLTYPE MainProfiler::RegisterFunctionProbe(FunctionID enterPr
     return m_pProbeInstrumentation->RegisterFunctionProbe(enterProbeId);
 }
 
-HRESULT STDMETHODCALLTYPE MainProfiler::RequestFunctionProbeInstallation(UINT64 functionIds[], ULONG32 count, ULONG32 argumentBoxingTypes[], ULONG32 argumentCounts[])
+HRESULT STDMETHODCALLTYPE MainProfiler::RequestFunctionProbeInstallation(ULONG64 functionIds[], ULONG32 count, ULONG32 argumentBoxingTypes[], ULONG32 argumentCounts[])
 {
     return m_pProbeInstrumentation->RequestFunctionProbeInstallation(functionIds, count, argumentBoxingTypes, argumentCounts);
 }
@@ -356,12 +356,12 @@ HRESULT STDMETHODCALLTYPE MainProfiler::RequestFunctionProbeInstallation(UINT64 
 #define DLLEXPORT
 #endif
 
-STDAPI DLLEXPORT RegisterFunctionProbe(UINT64 enterProbeId)
+STDAPI DLLEXPORT RegisterFunctionProbe(ULONG64 enterProbeId)
 {
     return MainProfiler::s_profiler->RegisterFunctionProbe((FunctionID)enterProbeId);
 }
 
-STDAPI DLLEXPORT RequestFunctionProbeInstallation(UINT64 functionIds[], ULONG32 count, ULONG32 argumentBoxingTypes[], ULONG32 argumentCounts[])
+STDAPI DLLEXPORT RequestFunctionProbeInstallation(ULONG64 functionIds[], ULONG32 count, ULONG32 argumentBoxingTypes[], ULONG32 argumentCounts[])
 {
     return MainProfiler::s_profiler->RequestFunctionProbeInstallation(functionIds, count, argumentBoxingTypes, argumentCounts);
 }
