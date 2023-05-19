@@ -362,7 +362,7 @@ HRESULT AssemblyProbePrep::HydrateResolvedCorLib()
         //
         bool doesExtend = pMetadataImport->IsValidToken(extendsToken);
         bool isClass = ((classAttributes & tdClassSemanticsMask) == tdClass);
-        if (isClass & !doesExtend)
+        if (isClass && !doesExtend)
         {
             corLibId = curModuleId;
             sysObjectTypeDef = objectTypeDef;
