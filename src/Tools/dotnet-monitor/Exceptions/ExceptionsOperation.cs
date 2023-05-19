@@ -124,11 +124,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     instance.TypeName,
                     instance.Message));
 
-#if NET8_0_OR_GREATER
-            await writer.FlushAsync(token);
-#else
             await writer.FlushAsync();
-#endif
         }
     }
 }
