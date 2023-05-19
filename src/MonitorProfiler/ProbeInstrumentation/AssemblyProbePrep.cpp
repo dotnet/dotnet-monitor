@@ -5,6 +5,8 @@
 #include "AssemblyProbePrep.h"
 #include "../Utilities/TypeNameUtilities.h"
 #include "../Utilities/MemoryUtilities.h"
+#include "../Utilities/StringUtilities.h"
+#include "../Utilities/MetadataEnumCloser.h"
 
 using namespace std;
 
@@ -212,16 +214,15 @@ HRESULT AssemblyProbePrep::GetOrEmitTokenForCorLibAssemblyRef(
     ComPtr<IMetaDataAssemblyImport> pMetadataAssemblyImport;
     IfFailRet(pMetadataImport->QueryInterface(IID_IMetaDataAssemblyImport, reinterpret_cast<void **>(&pMetadataAssemblyImport)));
 
-    // JSFIX: Consider RAII for scope guarding instead of closing this enum in all needed cases.
-    HCORENUM corEnum = 0;
     mdAssemblyRef mdRefs[ENUM_BUFFER_SIZE];
-    ULONG count = 0;
 
     const ULONG expectedLength = (ULONG)m_resolvedCorLibName.length();
     unique_ptr<WCHAR[]> assemblyName(new (nothrow) WCHAR[expectedLength]);
     IfNullRet(assemblyName);
 
-    while ((hr = pMetadataAssemblyImport->EnumAssemblyRefs(&corEnum, mdRefs, ENUM_BUFFER_SIZE, &count)) == S_OK)
+    MetadataEnumCloser<IMetaDataAssemblyImport> enumCloser(pMetadataAssemblyImport, NULL);
+    ULONG count = 0;
+    while ((hr = pMetadataAssemblyImport->EnumAssemblyRefs(enumCloser.GetEnumPtr(), mdRefs, ENUM_BUFFER_SIZE, &count)) == S_OK)
     {
         for (ULONG i = 0; i < count; i++)
         {
@@ -247,7 +248,6 @@ HRESULT AssemblyProbePrep::GetOrEmitTokenForCorLibAssemblyRef(
             }
             else if (hr != S_OK)
             {
-                pMetadataAssemblyImport->CloseEnum(corEnum);
                 return hr;
             }
 
@@ -257,17 +257,12 @@ HRESULT AssemblyProbePrep::GetOrEmitTokenForCorLibAssemblyRef(
             }
 
             tstring assemblyNameStr = tstring(assemblyName.get());
-            if (assemblyNameStr == m_resolvedCorLibName) {
-                pMetadataAssemblyImport->CloseEnum(corEnum);
+            if (assemblyNameStr == m_resolvedCorLibName)
+            {
                 corlibAssemblyRef = curRef;
                 return S_OK;
             }
         }
-    }
-
-    if (corEnum)
-    {
-        pMetadataAssemblyImport->CloseEnum(corEnum);
     }
 
     IfFailRet(EmitCorLibAssemblyRef(pMetadataEmit, corlibAssemblyRef));
@@ -390,7 +385,7 @@ HRESULT AssemblyProbePrep::HydrateResolvedCorLib()
     // Trim the .dll file extension
     const tstring dllExtension = _T(".dll");
     if (corLibName.length() > dllExtension.length() &&
-        corLibName.compare(corLibName.length() - dllExtension.length(), dllExtension.length(), dllExtension))
+        StringUtilities::CompareIgnoreCase(corLibName.substr(corLibName.length() - dllExtension.length()), dllExtension) == 0)
     {
         corLibName.erase(corLibName.length() - dllExtension.length());
     }

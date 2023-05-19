@@ -3,7 +3,12 @@
 
 #pragma once
 
+#include <tstring.h>
 #include <string.h>
+
+#if !TARGET_WINDOWS
+#include <strings.h>
+#endif
 
 #if !defined(_IMPLEMENT_STRNCPY_S)
 #if defined(TARGET_LINUX) && !defined(TARGET_ALPINE_LINUX) /* glibc */
@@ -20,6 +25,15 @@
 class StringUtilities
 {
     public:
+        static int CompareIgnoreCase(const tstring& left, const tstring& right)
+        {
+#if TARGET_WINDOWS
+            return _wcsicmp(left.c_str(), right.c_str());
+#else
+            return strcasecmp(left.c_str(), right.c_str());
+#endif
+        }
+
         template<size_t DestinationSize>
         static HRESULT Copy(char (&destination)[DestinationSize], const char* source)
         {
