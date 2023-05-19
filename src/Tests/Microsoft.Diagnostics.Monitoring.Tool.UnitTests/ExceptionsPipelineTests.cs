@@ -52,6 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
                     Assert.True(instance.Timestamp > baselineTimestamp);
+                    Assert.NotEmpty(instance.StackFrameIds); 
                 });
         }
 
@@ -267,6 +268,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             runner.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, startupHookPath);
         }
 
+        // check that we get the correct top frame
         private sealed class TestExceptionsStore : IExceptionsStore
         {
             private readonly List<ExceptionInstance> _instances = new();
@@ -285,7 +287,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 _instanceThreshold = instanceThreshold;
             }
 
-            public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp)
+            public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp, ulong[] stackFrameIds)
             {
                 StringBuilder typeBuilder = new();
                 FunctionData throwingMethodData;
@@ -304,7 +306,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     throw;
                 }
 
-                _instances.Add(new ExceptionInstance(exceptionId, typeBuilder.ToString(), message, throwingMethodData.Name, timestamp));
+                _instances.Add(new ExceptionInstance(exceptionId, typeBuilder.ToString(), message, throwingMethodData.Name, timestamp, stackFrameIds));
                 if (++_instanceCount >= _instanceThreshold)
                 {
                     _instanceThresholdSource.TrySetResult();
@@ -316,7 +318,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 throw new NotSupportedException();
             }
 
-            public sealed record class ExceptionInstance(ulong ExceptionId, string TypeName, string Message, string ThrowingMethodName, DateTime Timestamp)
+            public sealed record class ExceptionInstance(ulong ExceptionId, string TypeName, string Message, string ThrowingMethodName, DateTime Timestamp, ulong[] StackFrameIds)
             {
             }
         }

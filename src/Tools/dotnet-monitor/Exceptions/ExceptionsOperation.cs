@@ -180,7 +180,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             // This format is similar of that which is written to the console when an unhandled exception occurs. Each
             // exception will appear as:
 
-            // First chance exception. <TypeName>: <Message>
+            // xx:xxxxxxxxxxxxxxxxxxxxxxxx
+            // First chance exception.
+            // <TypeName>: <Message>
+            //    at TypeName.Method(Type) in class:line#
+            //    ...
 
             await using StreamWriter writer = new(stream, leaveOpen: true);
 
@@ -190,6 +194,50 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     Strings.OutputFormatString_FirstChanceException,
                     instance.TypeName,
                     instance.Message));
+
+            // We know the result only has a single stack
+            Monitoring.WebApi.Stacks.CallStack stack = instance.CallStackResult.Stacks.First(); // is this safe?
+
+            var builder = new StringBuilder();
+
+            foreach (Monitoring.WebApi.Stacks.CallStackFrame frame in stack.Frames)
+            {
+                Monitoring.WebApi.Models.CallStackFrame frameModel = new Monitoring.WebApi.Models.CallStackFrame()
+                {
+                    ClassName = Monitoring.WebApi.Stacks.NameFormatter.UnknownClass,
+                    MethodName = Monitoring.WebApi.Stacks.StacksFormatter.UnknownFunction,
+                    //TODO Bring this back once we have a useful offset value
+                    //Offset = frame.Offset,
+                    ModuleName = Monitoring.WebApi.Stacks.NameFormatter.UnknownModule
+                };
+                if (frame.FunctionId == 0)
+                {
+                    frameModel.MethodName = Monitoring.WebApi.Stacks.StacksFormatter.NativeFrame;
+                    frameModel.ModuleName = Monitoring.WebApi.Stacks.StacksFormatter.NativeFrame;
+                    frameModel.ClassName = Monitoring.WebApi.Stacks.StacksFormatter.NativeFrame;
+                }
+                else if (instance.CallStackResult.NameCache.FunctionData.TryGetValue(frame.FunctionId, out Monitoring.WebApi.Stacks.FunctionData functionData))
+                {
+                    frameModel.ModuleName = Monitoring.WebApi.Stacks.NameFormatter.GetModuleName(instance.CallStackResult.NameCache, functionData.ModuleId);
+                    frameModel.MethodName = functionData.Name;
+
+                    Monitoring.WebApi.Stacks.NameFormatter.BuildClassName(builder, instance.CallStackResult.NameCache, functionData);
+                    frameModel.ClassName = builder.ToString();
+
+                    if (functionData.TypeArgs.Length > 0)
+                    {
+                        Monitoring.WebApi.Stacks.NameFormatter.BuildGenericParameters(builder, instance.CallStackResult.NameCache, functionData.TypeArgs);
+                        frameModel.MethodName = builder.ToString();
+                    }
+                }
+
+                await writer.WriteLineAsync(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        Strings.OutputFormatString_FirstChanceExceptionStackFrame,
+                        frameModel.ClassName,
+                        frameModel.MethodName)); //this part isn't right
+            }
 
             await writer.FlushAsync();
         }
