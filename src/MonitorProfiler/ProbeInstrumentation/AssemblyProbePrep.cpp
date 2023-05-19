@@ -157,12 +157,9 @@ HRESULT AssemblyProbePrep::EmitNecessaryCorLibTypeTokens(
     GET_OR_DEFINE_TYPE_TOKEN(_T("System.Object"), corLibTypeTokens.systemObjectType);
     GET_OR_DEFINE_TYPE_TOKEN(_T("System.SByte"), corLibTypeTokens.systemSByteType);
     GET_OR_DEFINE_TYPE_TOKEN(_T("System.Single"), corLibTypeTokens.systemSingleType);
-    GET_OR_DEFINE_TYPE_TOKEN(_T("System.String"), corLibTypeTokens.systemStringType);
     GET_OR_DEFINE_TYPE_TOKEN(_T("System.UInt16"), corLibTypeTokens.systemUInt16Type);
     GET_OR_DEFINE_TYPE_TOKEN(_T("System.UInt32"), corLibTypeTokens.systemUInt32Type);
     GET_OR_DEFINE_TYPE_TOKEN(_T("System.UInt64"), corLibTypeTokens.systemUInt64Type);
-    GET_OR_DEFINE_TYPE_TOKEN(_T("System.IntPtr"), corLibTypeTokens.systemIntPtrType);
-    GET_OR_DEFINE_TYPE_TOKEN(_T("System.UIntPtr"), corLibTypeTokens.systemUIntPtrType);
 
     return S_OK;
 }
