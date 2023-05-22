@@ -26,6 +26,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
 
+        private const ulong ExpectedFunctionId = 2;
+
         public ExceptionsPipelineTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
@@ -39,11 +41,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public Task EventExceptionsPipeline_SingleException()
         {
             DateTime baselineTimestamp = DateTime.UtcNow;
+            const ulong ExpectedOffset = 7;
 
             return Execute(
                 TestAppScenarios.Exceptions.SubScenarios.SingleException,
                 expectedInstanceCount: 1,
-                validate: instances =>
+                validate: (instances) =>
                 {
                     TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
                     Assert.NotNull(instance);
@@ -52,7 +55,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
                     Assert.True(instance.Timestamp > baselineTimestamp);
-                    Assert.NotEmpty(instance.StackFrameIds); 
+
+                    ValidateStack(instance, ExpectedFunctionId, ExpectedOffset);
                 });
         }
 
@@ -64,6 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public Task EventExceptionsPipeline_RepeatException()
         {
             const int ExpectedInstanceCount = 2;
+            const ulong ExpectedOffset = 7;
 
             DateTime baselineTimestamp = DateTime.UtcNow;
 
@@ -87,6 +92,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.True(instance1.Timestamp > baselineTimestamp);
                     Assert.True(instance2.Timestamp > baselineTimestamp);
                     Assert.NotEqual(instance1.Timestamp, instance2.Timestamp);
+
+                    ValidateStack(instance1, ExpectedFunctionId, ExpectedOffset);
+                    ValidateStack(instance2, ExpectedFunctionId, ExpectedOffset);
                 });
         }
 
@@ -96,6 +104,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task EventExceptionsPipeline_AsyncException()
         {
+            const ulong ExpectedOffset = 38;
+
             return Execute(
                 TestAppScenarios.Exceptions.SubScenarios.AsyncException,
                 expectedInstanceCount: 1,
@@ -107,6 +117,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(typeof(TaskCanceledException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
+
+                    ValidateStack(instance, ExpectedFunctionId, ExpectedOffset);
                 });
         }
 
@@ -116,6 +128,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task EventExceptionsPipeline_FrameworkException()
         {
+            const ulong ExpectedOffset = 6;
+
             return Execute(
                 TestAppScenarios.Exceptions.SubScenarios.FrameworkException,
                 expectedInstanceCount: 1,
@@ -127,6 +141,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(typeof(ArgumentNullException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
+
+                    ValidateStack(instance, ExpectedFunctionId, ExpectedOffset);
                 });
         }
 
@@ -136,6 +152,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task EventExceptionsPipeline_CustomException()
         {
+            const ulong ExpectedOffset = 12;
+
             return Execute(
                 TestAppScenarios.Exceptions.SubScenarios.CustomException,
                 expectedInstanceCount: 1,
@@ -147,6 +165,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal("Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomGenericsException`2[System.Int32,System.String]", instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
+
+                    ValidateStack(instance, ExpectedFunctionId, ExpectedOffset);
                 });
         }
 
@@ -157,6 +177,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task EventExceptionsPipeline_ReversePInvokeException(Architecture architecture)
         {
+            const ulong ExpectedOffset = 7;
+
             return Execute(
                 TestAppScenarios.Exceptions.SubScenarios.ReversePInvokeException,
                 expectedInstanceCount: 1,
@@ -168,6 +190,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(typeof(InvalidOperationException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
+
+                    ValidateStack(instance, ExpectedFunctionId, ExpectedOffset);
                 },
                 architecture);
         }
@@ -178,6 +202,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task EventExceptionsPipeline_DynamicMethodException()
         {
+            const ulong ExpectedOffset = 18446744073709551615;
+
             return Execute(
                 TestAppScenarios.Exceptions.SubScenarios.DynamicMethodException,
                 expectedInstanceCount: 1,
@@ -189,6 +215,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal("Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomSimpleException", instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
+
+                    ValidateStack(instance, ExpectedFunctionId, ExpectedOffset);
                 });
         }
 
@@ -198,6 +226,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public Task EventExceptionsPipeline_ArrayException()
         {
+            const ulong ExpectedOffset = 5;
+
             return Execute(
                 TestAppScenarios.Exceptions.SubScenarios.ArrayException,
                 expectedInstanceCount: 1,
@@ -209,6 +239,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(typeof(IndexOutOfRangeException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
+
+                    ValidateStack(instance, ExpectedFunctionId, ExpectedOffset);
                 });
         }
 
@@ -257,6 +289,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
+        private static void ValidateStack(TestExceptionsStore.ExceptionInstance instance, ulong expectedFunctionId, ulong expectedOffset)
+        {
+            CallStack stack = Assert.Single(instance.CallStackResult.Stacks);
+            Assert.NotEmpty(stack.Frames);
+            Assert.Equal(expectedFunctionId, stack.Frames[0].FunctionId);
+            Assert.Equal(expectedOffset, stack.Frames[0].Offset);
+        }
+
         private static void AddStartupHookEnvironmentVariable(AppRunner runner)
         {
             // Startup hook assembly is only built for net6.0 and should be forward compatible
@@ -272,6 +312,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private sealed class TestExceptionsStore : IExceptionsStore
         {
             private readonly List<ExceptionInstance> _instances = new();
+            private readonly List<IExceptionsNameCache> _caches = new();
 
             private readonly int _instanceThreshold;
             private readonly TaskCompletionSource _instanceThresholdSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -281,6 +322,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             public Task InstanceThresholdTask => _instanceThresholdSource.Task;
 
             public IEnumerable<ExceptionInstance> Instances => _instances;
+            public IEnumerable<IExceptionsNameCache> Caches => _caches;
 
             public TestExceptionsStore(int instanceThreshold = 1)
             {
@@ -291,6 +333,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 StringBuilder typeBuilder = new();
                 FunctionData throwingMethodData;
+                CallStackResult result;
                 try
                 {
                     Assert.True(cache.TryGetExceptionId(exceptionId, out ulong exceptionClassId, out ulong throwingMethodId, out _));
@@ -298,6 +341,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId);
 
                     Assert.True(cache.NameCache.FunctionData.TryGetValue(throwingMethodId, out throwingMethodData));
+
+                    result = ExceptionsStore.GenerateCallStackResult(stackFrameIds, cache);
                 }
                 catch (Exception ex)
                 {
@@ -306,7 +351,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     throw;
                 }
 
-                _instances.Add(new ExceptionInstance(exceptionId, typeBuilder.ToString(), message, throwingMethodData.Name, timestamp, stackFrameIds));
+                _instances.Add(new ExceptionInstance(exceptionId, typeBuilder.ToString(), message, throwingMethodData.Name, timestamp, result));
+                _caches.Add(cache);
                 if (++_instanceCount >= _instanceThreshold)
                 {
                     _instanceThresholdSource.TrySetResult();
@@ -318,7 +364,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 throw new NotSupportedException();
             }
 
-            public sealed record class ExceptionInstance(ulong ExceptionId, string TypeName, string Message, string ThrowingMethodName, DateTime Timestamp, ulong[] StackFrameIds)
+            public sealed record class ExceptionInstance(ulong ExceptionId, string TypeName, string Message, string ThrowingMethodName, DateTime Timestamp, CallStackResult CallStackResult)
             {
             }
         }

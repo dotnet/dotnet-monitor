@@ -106,42 +106,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                     lock (_instances)
                     {
-                        CallStackResult callStackResult = new();
-                        CallStack callStack = new();
-                        foreach (var stackFrameId in entry.StackFrameIds)
-                        {
-                            if (entry.Cache.TryGetStackFrameIds(stackFrameId, out ulong methodId, out int ilOffset))
-                            {
-                                if (entry.Cache.TryGetFunctionId(methodId, out FunctionData functionData))
-                                {
-                                    callStackResult.NameCache.FunctionData.TryAdd(methodId, functionData);
-
-                                    if (entry.Cache.TryGetClassId(functionData.ParentClass, out ClassData classData))
-                                    {
-                                        callStackResult.NameCache.ClassData.TryAdd(functionData.ParentClass, classData);
-
-                                        ModuleScopedToken moduleScopedToken = new(functionData.ModuleId, classData.Token);
-
-                                        if (entry.Cache.TryGetToken(moduleScopedToken, out TokenData tokenData))
-                                        {
-                                            callStackResult.NameCache.TokenData.TryAdd(moduleScopedToken, tokenData);
-                                        }
-                                    }
-                                    if (entry.Cache.TryGetModuleId(functionData.ModuleId, out ModuleData moduleData))
-                                    {
-                                        callStackResult.NameCache.ModuleData.TryAdd(functionData.ModuleId, moduleData);
-                                    }
-                                }
-
-                                CallStackFrame frame = new();
-                                frame.FunctionId = methodId;
-                                frame.Offset = (ulong)ilOffset; // not sure that's safe
-
-                                callStack.Frames.Add(frame);
-                            }
-                        }
-
-                        callStackResult.Stacks.Add(callStack);
+                        CallStackResult callStackResult = GenerateCallStackResult(entry.StackFrameIds, entry.Cache);
 
                         _instances.Add(new ExceptionInstance(exceptionTypeName, moduleName, entry.Message, entry.Timestamp, callStackResult));
                     }
@@ -149,6 +114,49 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                 shouldReadEntry = await _channel.Reader.WaitToReadAsync(token);
             }
+        }
+
+        internal static CallStackResult GenerateCallStackResult(ulong[] stackFrameIds, IExceptionsNameCache cache)
+        {
+            CallStackResult callStackResult = new CallStackResult();
+            CallStack callStack = new();
+
+            foreach (var stackFrameId in stackFrameIds)
+            {
+                if (cache.TryGetStackFrameIds(stackFrameId, out ulong methodId, out int ilOffset))
+                {
+                    if (cache.TryGetFunctionId(methodId, out FunctionData functionData))
+                    {
+                        callStackResult.NameCache.FunctionData.TryAdd(methodId, functionData);
+
+                        if (cache.TryGetClassId(functionData.ParentClass, out ClassData classData))
+                        {
+                            callStackResult.NameCache.ClassData.TryAdd(functionData.ParentClass, classData);
+
+                            ModuleScopedToken moduleScopedToken = new(functionData.ModuleId, classData.Token);
+
+                            if (cache.TryGetToken(moduleScopedToken, out TokenData tokenData))
+                            {
+                                callStackResult.NameCache.TokenData.TryAdd(moduleScopedToken, tokenData);
+                            }
+                        }
+                        if (cache.TryGetModuleId(functionData.ModuleId, out ModuleData moduleData))
+                        {
+                            callStackResult.NameCache.ModuleData.TryAdd(functionData.ModuleId, moduleData);
+                        }
+                    }
+
+                    CallStackFrame frame = new();
+                    frame.FunctionId = methodId;
+                    frame.Offset = (ulong)ilOffset; // not sure that's safe
+
+                    callStack.Frames.Add(frame);
+                }
+            }
+
+            callStackResult.Stacks.Add(callStack);
+
+            return callStackResult;
         }
 
         private sealed class ExceptionInstanceEntry

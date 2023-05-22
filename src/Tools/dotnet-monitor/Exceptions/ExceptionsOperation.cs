@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
+using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -99,15 +100,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 writer.WriteString("moduleName", instance.ModuleName);
                 writer.WriteString("message", instance.Message);
 
-                MemoryStream tempStream = new();
-                await FormatStack(tempStream, instance.CallStackResult, token);
-
-                tempStream.Position = 0;
-                StreamReader reader = new StreamReader(tempStream);
-                string callStackText = reader.ReadToEnd();
+                MemoryStream outputStream = new();
+                StacksFormatter formatter = StackUtilities.CreateFormatter(StackFormat.Json, outputStream);
+                await formatter.FormatStack(instance.CallStackResult, token);
+                outputStream.Position = 0;
 
                 writer.WritePropertyName("callStack");
-                writer.WriteRawValue(callStackText);
+                writer.WriteRawValue(new StreamReader(outputStream).ReadToEnd());
 
                 writer.WriteEndObject();
             }
@@ -183,7 +182,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             // xx:xxxxxxxxxxxxxxxxxxxxxxxx
             // First chance exception.
             // <TypeName>: <Message>
-            //    at TypeName.Method(Type) in class:line#
+            //    at Class.Method(Type)
             //    ...
 
             await using StreamWriter writer = new(stream, leaveOpen: true);
@@ -236,7 +235,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         CultureInfo.InvariantCulture,
                         Strings.OutputFormatString_FirstChanceExceptionStackFrame,
                         frameModel.ClassName,
-                        frameModel.MethodName)); //this part isn't right
+                        frameModel.MethodName));
             }
 
             await writer.FlushAsync();

@@ -59,7 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             await formatter.FormatStack(result, token);
         }
 
-        private static StacksFormatter CreateFormatter(StackFormat format, Stream outputStream) =>
+        internal static StacksFormatter CreateFormatter(StackFormat format, Stream outputStream) =>
             format switch
             {
                 StackFormat.Json => new JsonStacksFormatter(outputStream),
