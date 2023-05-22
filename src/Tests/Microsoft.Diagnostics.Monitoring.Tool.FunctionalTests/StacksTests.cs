@@ -239,7 +239,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Verifies that the /stacks route returns 404 if the stacks feature is not enabled.
         /// </summary>
-        [Theory]
         [Theory(Skip = "Forces profiler to load")]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task TestFeatureNotEnabled(Architecture targetArchitecture)
@@ -272,7 +271,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Verifies that the /stacks route returns 404 if the in-process features are not enabled.
         /// </summary>
-        [Theory]
         [Theory(Skip = "Forces profiler to load")]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task TestInProcessFeaturesNotEnabled(Architecture targetArchitecture)
