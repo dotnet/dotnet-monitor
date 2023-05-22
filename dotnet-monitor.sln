@@ -68,7 +68,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monit
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{D3FEE1C0-E1E7-4796-A217-B46E3B6CCCCD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Diagnostics.Monitoring.HostingStartup", "src\Microsoft.Diagnostics.Monitoring.HostingStartup\Microsoft.Diagnostics.Monitoring.HostingStartup.csproj", "{86BDA5CD-6A18-4EC2-9F13-F1A2723DD864}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.HostingStartup", "src\Microsoft.Diagnostics.Monitoring.HostingStartup\Microsoft.Diagnostics.Monitoring.HostingStartup.csproj", "{86BDA5CD-6A18-4EC2-9F13-F1A2723DD864}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

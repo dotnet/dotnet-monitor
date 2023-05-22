@@ -10,8 +10,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 {
     internal sealed class AspNetHostingStartupLoader : IDisposable
     {
-        private const string HostingStartupEnvVariable = "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES";
-
         private readonly string _filePath;
         private readonly string _simpleAssemblyName;
 
@@ -22,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             _filePath = filePath;
             _simpleAssemblyName = CalculateSimpleAssemblyName(filePath);
 
-            AppendToEnvironmentVariable(HostingStartupEnvVariable, _simpleAssemblyName);
+            RegisterHostingStartupAssembly(_simpleAssemblyName);
             AssemblyLoadContext.Default.Resolving += AssemblyResolver;
         }
 
@@ -48,11 +46,16 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             return fileName;
         }
 
-        private static void AppendToEnvironmentVariable(string key, string value, string delimiter = ";")
+        private static void RegisterHostingStartupAssembly(string simpleAssemblyName)
         {
-            string? curValue = Environment.GetEnvironmentVariable(key);
-            string newValue = string.IsNullOrWhiteSpace(curValue) ? value : string.Concat(curValue, delimiter, value);
-            Environment.SetEnvironmentVariable(key, newValue);
+            const string HostingStartupEnvVariable = "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES";
+            // aspnetcore explicitly uses ; as the delimiter for the above environment variable.
+            // ref: https://github.com/dotnet/aspnetcore/blob/898c164a1f537a8210a26eaf388bdc92531f6b09/src/Hosting/Hosting/src/Internal/WebHostOptions.cs#L79
+            const char Delimiter = ';';
+
+            string? curValue = Environment.GetEnvironmentVariable(HostingStartupEnvVariable);
+            string newValue = string.IsNullOrWhiteSpace(curValue) ? simpleAssemblyName : string.Concat(curValue, Delimiter, simpleAssemblyName);
+            Environment.SetEnvironmentVariable(HostingStartupEnvVariable, newValue);
         }
 
         public void Dispose()
