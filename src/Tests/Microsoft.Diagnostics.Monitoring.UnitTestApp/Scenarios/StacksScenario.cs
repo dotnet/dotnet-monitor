@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
         static StacksScenario()
         {
-            NativeLibrary.SetDllImportResolver(typeof(StacksScenario).Assembly, ResolveDllImport);
+            // NativeLibrary.SetDllImportResolver(typeof(StacksScenario).Assembly, ResolveDllImport);
         }
 
         public static IntPtr ResolveDllImport(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
