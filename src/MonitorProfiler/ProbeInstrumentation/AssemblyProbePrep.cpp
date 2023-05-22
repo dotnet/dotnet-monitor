@@ -5,6 +5,7 @@
 #include "AssemblyProbePrep.h"
 #include "../Utilities/TypeNameUtilities.h"
 #include "../Utilities/MemoryUtilities.h"
+#include "../Utilities/StringUtilities.h"
 
 using namespace std;
 
@@ -389,8 +390,7 @@ HRESULT AssemblyProbePrep::HydrateResolvedCorLib()
 
     // Trim the .dll file extension
     const tstring dllExtension = _T(".dll");
-    if (corLibName.length() > dllExtension.length() &&
-        corLibName.compare(corLibName.length() - dllExtension.length(), dllExtension.length(), dllExtension))
+    if (StringUtilities::EndsWithCaseInsensitive(corLibName, dllExtension))
     {
         corLibName.erase(corLibName.length() - dllExtension.length());
     }
