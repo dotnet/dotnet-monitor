@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Tracing.StackSources;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -19,7 +20,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         {
             Models.CallStackResult stackResultModel = new Models.CallStackResult();
             NameCache cache = stackResult.NameCache;
-            var builder = new StringBuilder();
 
             foreach (CallStack stack in stackResult.Stacks)
             {
@@ -29,39 +29,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
                 foreach (CallStackFrame frame in stack.Frames)
                 {
-                    Models.CallStackFrame frameModel = new Models.CallStackFrame()
-                    {
-                        ClassName = NameFormatter.UnknownClass,
-                        MethodName = UnknownFunction,
-                        //TODO Bring this back once we have a useful offset value
-                        //Offset = frame.Offset,
-                        ModuleName = NameFormatter.UnknownModule
-                    };
-                    if (frame.FunctionId == 0)
-                    {
-                        frameModel.MethodName = NativeFrame;
-                        frameModel.ModuleName = NativeFrame;
-                        frameModel.ClassName = NativeFrame;
-                    }
-                    else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
-                    {
-                        frameModel.ModuleName = NameFormatter.GetModuleName(cache, functionData.ModuleId);
-                        frameModel.MethodName = functionData.Name;
-
-                        builder.Clear();
-                        NameFormatter.BuildClassName(builder, cache, functionData);
-                        frameModel.ClassName = builder.ToString();
-
-                        if (functionData.TypeArgs.Length > 0)
-                        {
-                            builder.Clear();
-                            builder.Append(functionData.Name);
-                            NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
-                            frameModel.MethodName = builder.ToString();
-                        }
-                    }
-
-                    stackModel.Frames.Add(frameModel);
+                    stackModel.Frames.Add(CreateFrameModel(frame, cache));
                 }
                 stackResultModel.Stacks.Add(stackModel);
             }

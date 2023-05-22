@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             return Execute(
                 TestAppScenarios.Exceptions.SubScenarios.SingleException,
                 expectedInstanceCount: 1,
-                validate: (instances) =>
+                validate: instances =>
                 {
                     TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
                     Assert.NotNull(instance);

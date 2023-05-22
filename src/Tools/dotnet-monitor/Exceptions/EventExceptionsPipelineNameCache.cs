@@ -100,8 +100,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             return true;
         }
 
-        // Also need to do this or similar for class/etc. -> used in ExceptionsOperation when we try to build class name
-        // also not clear why we unpack and then repack FunctionData - in this case maybe we don't need to?
         public bool TryGetFunctionId(ulong functionId, out FunctionData data)
         {
             data = null;
@@ -113,26 +111,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
             return true;
         }
-        /*public bool TryGetFunctionId(ulong functionId, out string name, out ulong classId, out uint classToken, out ulong moduleId, out ulong[] typeArgs)
-        {
-            name = string.Empty;
-            classId = 0;
-            classToken = 0;
-            moduleId = 0;
-            typeArgs = null; // not sure if we want this
-
-            if (!_nameCache.FunctionData.TryGetValue(functionId, out FunctionData instance))
-                return false;
-
-            name = instance.Name;
-            classId = instance.ParentClass;
-            classToken = instance.ParentToken;
-            moduleId = instance.ModuleId;
-            typeArgs = instance.TypeArgs;
-
-            return true;
-        }*/
-
 
         public bool TryGetStackFrameIds(ulong stackFrameId, out ulong methodId, out int ilOffset)
         {
@@ -144,6 +122,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
             methodId = instance.MethodId;
             ilOffset = instance.ILOffset;
+
             return true;
         }
 

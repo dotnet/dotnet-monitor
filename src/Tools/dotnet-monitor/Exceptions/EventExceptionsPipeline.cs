@@ -104,7 +104,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         traceEvent.GetPayload<ulong>(ExceptionEvents.StackFrameIdentifierPayloads.StackFrameId),
                         traceEvent.GetPayload<ulong>(ExceptionEvents.StackFrameIdentifierPayloads.FunctionId),
                         traceEvent.GetPayload<int>(ExceptionEvents.StackFrameIdentifierPayloads.ILOffset)
-                        ); break;
+                        );
+                    break;
                 case "TokenDescription":
                     _cache.AddToken(
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.TokenDescPayloads.ModuleId),

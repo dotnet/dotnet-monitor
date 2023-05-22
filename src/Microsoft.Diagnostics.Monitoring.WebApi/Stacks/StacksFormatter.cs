@@ -3,6 +3,7 @@
 
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -37,6 +38,45 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 return string.Concat(fullThreadName, Separator, threadName);
             }
             return fullThreadName;
+        }
+
+        internal static Models.CallStackFrame CreateFrameModel(CallStackFrame frame, NameCache cache)
+        {
+            var builder = new StringBuilder();
+
+            Models.CallStackFrame frameModel = new Models.CallStackFrame()
+            {
+                ClassName = NameFormatter.UnknownClass,
+                MethodName = UnknownFunction,
+                //TODO Bring this back once we have a useful offset value
+                //Offset = frame.Offset,
+                ModuleName = NameFormatter.UnknownModule
+            };
+            if (frame.FunctionId == 0)
+            {
+                frameModel.MethodName = NativeFrame;
+                frameModel.ModuleName = NativeFrame;
+                frameModel.ClassName = NativeFrame;
+            }
+            else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
+            {
+                frameModel.ModuleName = NameFormatter.GetModuleName(cache, functionData.ModuleId);
+                frameModel.MethodName = functionData.Name;
+
+                builder.Clear();
+                NameFormatter.BuildClassName(builder, cache, functionData);
+                frameModel.ClassName = builder.ToString();
+
+                if (functionData.TypeArgs.Length > 0)
+                {
+                    builder.Clear();
+                    builder.Append(functionData.Name);
+                    NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
+                    frameModel.MethodName = builder.ToString();
+                }
+            }
+
+            return frameModel;
         }
     }
 }
