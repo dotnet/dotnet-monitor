@@ -25,6 +25,6 @@
 
 | Version | Release Date | Latest Version | Runtime Frameworks |
 | --- | --- | --- | --- |
-| 8.0 | April 11, 2023 | [8.0.0 preview 3](https://github.com/dotnet/dotnet-monitor/releases/tag/v8.0.0-preview.3.23180.9) | net6.0<br/>net8.0 |
+| 8.0 | May 16, 2023 | [8.0.0 preview 4](https://github.com/dotnet/dotnet-monitor/releases/tag/v8.0.0-preview.4.23260.4) | net6.0<br/>net8.0 |
 
 
