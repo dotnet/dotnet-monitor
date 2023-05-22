@@ -87,7 +87,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             return true;
         }
 
-
         public bool TryGetModuleId(ulong moduleId, out ModuleData data)
         {
             data = null;

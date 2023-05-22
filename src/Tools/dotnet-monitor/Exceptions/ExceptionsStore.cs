@@ -104,10 +104,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         moduleName = NameFormatter.GetModuleName(entry.Cache.NameCache, exceptionClassData.ModuleId);
                     }
 
+                    CallStackResult callStackResult = GenerateCallStackResult(entry.StackFrameIds, entry.Cache, entry.ThreadId);
+
                     lock (_instances)
                     {
-                        CallStackResult callStackResult = GenerateCallStackResult(entry.StackFrameIds, entry.Cache, entry.ThreadId);
-
                         _instances.Add(new ExceptionInstance(exceptionTypeName, moduleName, entry.Message, entry.Timestamp, callStackResult));
                     }
                 }
@@ -120,7 +120,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         {
             CallStackResult callStackResult = new CallStackResult();
             CallStack callStack = new();
-            callStack.ThreadId = (uint)threadId; // Is this safe?
+            callStack.ThreadId = (uint)threadId;
 
             foreach (var stackFrameId in stackFrameIds)
             {
@@ -147,9 +147,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         }
                     }
 
-                    CallStackFrame frame = new();
-                    frame.FunctionId = methodId;
-                    frame.Offset = (ulong)ilOffset; // not sure that's safe
+                    CallStackFrame frame = new()
+                    {
+                        FunctionId = methodId,
+                        Offset = (ulong)ilOffset // is this safe?
+                    };
 
                     callStack.Frames.Add(frame);
                 }

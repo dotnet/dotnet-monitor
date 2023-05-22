@@ -309,11 +309,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             runner.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, startupHookPath);
         }
 
-        // check that we get the correct top frame
         private sealed class TestExceptionsStore : IExceptionsStore
         {
             private readonly List<ExceptionInstance> _instances = new();
-            private readonly List<IExceptionsNameCache> _caches = new();
 
             private readonly int _instanceThreshold;
             private readonly TaskCompletionSource _instanceThresholdSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -323,7 +321,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             public Task InstanceThresholdTask => _instanceThresholdSource.Task;
 
             public IEnumerable<ExceptionInstance> Instances => _instances;
-            public IEnumerable<IExceptionsNameCache> Caches => _caches;
 
             public TestExceptionsStore(int instanceThreshold = 1)
             {
@@ -353,7 +350,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 }
 
                 _instances.Add(new ExceptionInstance(exceptionId, typeBuilder.ToString(), message, throwingMethodData.Name, timestamp, result));
-                _caches.Add(cache);
                 if (++_instanceCount >= _instanceThreshold)
                 {
                     _instanceThresholdSource.TrySetResult();

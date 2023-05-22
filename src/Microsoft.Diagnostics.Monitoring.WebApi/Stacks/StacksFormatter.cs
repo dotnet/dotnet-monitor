@@ -11,9 +11,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 {
     internal abstract class StacksFormatter
     {
-        internal const string UnknownFunction = "UnknownFunction";
+        protected const string UnknownFunction = "UnknownFunction";
 
-        internal const string NativeFrame = "[NativeFrame]";
+        protected const string NativeFrame = "[NativeFrame]";
 
         protected const char ModuleSeparator = '!';
         protected const char ClassSeparator = '.';

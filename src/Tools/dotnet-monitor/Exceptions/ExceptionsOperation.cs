@@ -10,8 +10,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -129,8 +127,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             // exception will appear as:
 
             // First chance exception. <TypeName>: <Message>
-            //    at Class.Method(Type)
+            //    at Class.Method
             //    ...
+
+            if (!instance.CallStackResult.Stacks.Any())
+            {
+                return;
+            }
 
             await using StreamWriter writer = new(stream, leaveOpen: true);
 
@@ -142,9 +145,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     instance.Message));
 
             // We know the result only has a single stack
-            CallStack stack = instance.CallStackResult.Stacks.First(); // is this safe?
-
-            var builder = new StringBuilder();
+            CallStack stack = instance.CallStackResult.Stacks.First();
 
             foreach (CallStackFrame frame in stack.Frames)
             {
