@@ -5,6 +5,7 @@
 #include "AssemblyProbePrep.h"
 #include "../Utilities/TypeNameUtilities.h"
 #include "../Utilities/MemoryUtilities.h"
+#include "../Utilities/MetadataEnumCloser.h"
 #include "../Utilities/StringUtilities.h"
 
 using namespace std;
