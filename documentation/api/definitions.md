@@ -155,6 +155,14 @@ Object describing the list of event providers, keywords, event levels, and addit
 }
 ```
 
+## ExtensionMode
+
+Enumeration that describes additional execution modes supported by the extension; the ability to execute is assumed.
+
+| Name |
+|---|
+| `Validate` |
+
 ## LogEntry
 
 Object describing a log entry from a target process.
