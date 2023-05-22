@@ -49,7 +49,7 @@ HRESULT ProbeInjector::InstallProbe(
     ILRewriter rewriter(pICorProfilerInfo, pICorProfilerFunctionControl, request.moduleId, request.methodDef);
     IfFailRet(rewriter.Import());
 
-    const COR_LIB_TYPE_TOKENS corLibTypeTokens = request.pAssemblyData->GetCorLibTypeTokens();
+    const COR_LIB_TYPE_TOKENS& corLibTypeTokens = request.pAssemblyData->GetCorLibTypeTokens();
 
     //
     // JSFIX: Wrap the probe in a try/catch.

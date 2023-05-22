@@ -39,7 +39,7 @@ public:
     }
 
     const mdMemberRef GetProbeMemberRef() const { return m_probeMemberRef; }
-    const COR_LIB_TYPE_TOKENS GetCorLibTypeTokens() const { return m_corLibTypeTokens; }
+    const COR_LIB_TYPE_TOKENS& GetCorLibTypeTokens() const { return m_corLibTypeTokens; }
 
 private:
     mdMemberRef m_probeMemberRef;
