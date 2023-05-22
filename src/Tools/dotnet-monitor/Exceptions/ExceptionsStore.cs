@@ -44,9 +44,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _disposalSource.Dispose();
         }
 
-        public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp, ulong[] stackFrameIds)
+        public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp, ulong[] stackFrameIds, int threadId)
         {
-            ExceptionInstanceEntry entry = new(cache, exceptionId, message, timestamp, stackFrameIds);
+            ExceptionInstanceEntry entry = new(cache, exceptionId, message, timestamp, stackFrameIds, threadId);
             // This should never fail to write because the behavior is to drop the oldest.
             _channel.Writer.TryWrite(entry);
         }
@@ -106,7 +106,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                     lock (_instances)
                     {
-                        CallStackResult callStackResult = GenerateCallStackResult(entry.StackFrameIds, entry.Cache);
+                        CallStackResult callStackResult = GenerateCallStackResult(entry.StackFrameIds, entry.Cache, entry.ThreadId);
 
                         _instances.Add(new ExceptionInstance(exceptionTypeName, moduleName, entry.Message, entry.Timestamp, callStackResult));
                     }
@@ -116,10 +116,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             }
         }
 
-        internal static CallStackResult GenerateCallStackResult(ulong[] stackFrameIds, IExceptionsNameCache cache)
+        internal static CallStackResult GenerateCallStackResult(ulong[] stackFrameIds, IExceptionsNameCache cache, int threadId)
         {
             CallStackResult callStackResult = new CallStackResult();
             CallStack callStack = new();
+            callStack.ThreadId = (uint)threadId; // Is this safe?
 
             foreach (var stackFrameId in stackFrameIds)
             {
@@ -161,13 +162,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private sealed class ExceptionInstanceEntry
         {
-            public ExceptionInstanceEntry(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp, ulong[] stackFrameIds)
+            public ExceptionInstanceEntry(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp, ulong[] stackFrameIds, int threadId)
             {
                 Cache = cache;
                 ExceptionId = exceptionId;
                 Message = message;
                 Timestamp = timestamp;
                 StackFrameIds = stackFrameIds;
+                ThreadId = threadId;
             }
 
             public IExceptionsNameCache Cache { get; }
@@ -179,6 +181,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             public DateTime Timestamp { get; }
 
             public ulong[] StackFrameIds { get; }
+
+            public int ThreadId { get; }
         }
     }
 }

@@ -81,7 +81,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     // Add data to cache and write directly to store; this allows the pipeline to recreate the cache without
                     // affecting the store so long as the cache is not cleared. Example of this may be that the event source
                     // wants to reset the identifiers so as to not indefinitely grow the cache and have a large memory impact.
-                    _store.AddExceptionInstance(_cache, exceptionId, message, timestamp, stackFrameIds);
+                    _store.AddExceptionInstance(_cache, exceptionId, message, timestamp, stackFrameIds, traceEvent.ThreadID);
                     break;
                 case "FunctionDescription":
                     _cache.AddFunction(

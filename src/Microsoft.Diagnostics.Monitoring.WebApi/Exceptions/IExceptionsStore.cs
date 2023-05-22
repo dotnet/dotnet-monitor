@@ -8,7 +8,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 {
     internal interface IExceptionsStore
     {
-        void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp, ulong[] stackFrameIds);
+        void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp, ulong[] stackFrameIds, int threadId);
 
         IReadOnlyList<IExceptionInstance> GetSnapshot();
     }

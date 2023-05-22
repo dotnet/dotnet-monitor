@@ -293,6 +293,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             CallStack stack = Assert.Single(instance.CallStackResult.Stacks);
             Assert.NotEmpty(stack.Frames);
+            Assert.True(0 < stack.ThreadId);
             Assert.Equal(expectedFunctionId, stack.Frames[0].FunctionId);
             Assert.Equal(expectedOffset, stack.Frames[0].Offset);
         }
@@ -329,7 +330,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 _instanceThreshold = instanceThreshold;
             }
 
-            public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp, ulong[] stackFrameIds)
+            public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp, ulong[] stackFrameIds, int threadId)
             {
                 StringBuilder typeBuilder = new();
                 FunctionData throwingMethodData;
@@ -342,7 +343,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     Assert.True(cache.NameCache.FunctionData.TryGetValue(throwingMethodId, out throwingMethodData));
 
-                    result = ExceptionsStore.GenerateCallStackResult(stackFrameIds, cache);
+                    result = ExceptionsStore.GenerateCallStackResult(stackFrameIds, cache, threadId);
                 }
                 catch (Exception ex)
                 {
