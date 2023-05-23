@@ -804,7 +804,7 @@
 {1} = Exception message</comment>
   </data>
   <data name="OutputFormatString_FirstChanceExceptionStackFrame" xml:space="preserve">
-    <value>   at {0}.{1}</value>
+    <value>  at {0}.{1}</value>
     <comment>{0} = class name
 {1} = method name</comment>
   </data>

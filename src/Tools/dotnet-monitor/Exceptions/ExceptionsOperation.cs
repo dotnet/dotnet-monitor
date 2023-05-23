@@ -127,13 +127,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             // exception will appear as:
 
             // First chance exception. <TypeName>: <Message>
-            //    at Class.Method
-            //    ...
-
-            if (!instance.CallStackResult.Stacks.Any())
-            {
-                return;
-            }
+            //   at Class.Method
 
             await using StreamWriter writer = new(stream, leaveOpen: true);
 
@@ -144,19 +138,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     instance.TypeName,
                     instance.Message));
 
-            // We know the result only has a single stack
-            CallStack stack = instance.CallStackResult.Stacks.First();
-
-            foreach (CallStackFrame frame in stack.Frames)
+            if (instance.CallStackResult.Stacks.Any())
             {
-                Monitoring.WebApi.Models.CallStackFrame frameModel = StacksFormatter.CreateFrameModel(frame, instance.CallStackResult.NameCache);
+                CallStack stack = instance.CallStackResult.Stacks.First(); // We know the result only has a single stack
 
-                await writer.WriteLineAsync(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        Strings.OutputFormatString_FirstChanceExceptionStackFrame,
-                        frameModel.ClassName,
-                        frameModel.MethodName));
+                foreach (CallStackFrame frame in stack.Frames)
+                {
+                    Monitoring.WebApi.Models.CallStackFrame frameModel = StacksFormatter.CreateFrameModel(frame, instance.CallStackResult.NameCache);
+
+                    await writer.WriteLineAsync(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            Strings.OutputFormatString_FirstChanceExceptionStackFrame,
+                            frameModel.ClassName,
+                            frameModel.MethodName));
+                }
             }
 
             await writer.FlushAsync();

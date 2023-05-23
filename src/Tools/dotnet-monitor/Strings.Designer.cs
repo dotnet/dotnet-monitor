@@ -1439,7 +1439,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to    at {0}.{1}.
+        ///   Looks up a localized string similar to   at {0}.{1}.
         /// </summary>
         internal static string OutputFormatString_FirstChanceExceptionStackFrame {
             get {
