@@ -20,10 +20,9 @@ HRESULT ProbeInstrumentation::RegisterFunctionProbe(FunctionID enterProbeId)
 {
     lock_guard<mutex> lock(m_probePinningMutex);
 
-    if (HasPinnedProbe())
+    if (HasRegisteredProbe())
     {
-        // Probes have already been pinned.
-        m_pLogger->Log(LogLevel::Debug, _LS("Received probes but they have already been pinned"));
+        m_pLogger->Log(LogLevel::Debug, _LS("Received probes but they have already been registered"));
         return E_FAIL;
     }
 
@@ -101,7 +100,7 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
 {
     m_pLogger->Log(LogLevel::Debug, _LS("Probe installation requested"));
 
-    if (!HasPinnedProbe())
+    if (!HasRegisteredProbe())
     {
         return S_FALSE;
     }
@@ -156,7 +155,7 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeUninstallation()
 {
     m_pLogger->Log(LogLevel::Debug, _LS("Probe uninstallation requested"));
 
-    if (!HasPinnedProbe())
+    if (!HasRegisteredProbe())
     {
         return S_FALSE;
     }
@@ -168,7 +167,7 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeUninstallation()
     return S_OK;
 }
 
-bool ProbeInstrumentation::HasPinnedProbe()
+bool ProbeInstrumentation::HasRegisteredProbe()
 {
     return m_probeFunctionId != 0;
 }
@@ -179,7 +178,7 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
 
     lock_guard<mutex> lock(m_instrumentationProcessingMutex);
 
-    if (!HasPinnedProbe() ||
+    if (!HasRegisteredProbe() ||
         AreProbesInstalled())
     {
         return E_FAIL;
@@ -243,7 +242,7 @@ HRESULT ProbeInstrumentation::UninstallProbes()
 
     lock_guard<mutex> lock(m_instrumentationProcessingMutex);
 
-    if (!HasPinnedProbe() ||
+    if (!HasRegisteredProbe() ||
         !AreProbesInstalled())
     {
         return S_FALSE;
