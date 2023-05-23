@@ -380,6 +380,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Uses WorkloadIdentity for authentication. The environment variables AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_FEDERATED_TOKEN_FILE, and AZURE_AUTHORITY_HOST are used to authenticate..
+        /// </summary>
+        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_UseWorkloadIdentityFromEnvironment {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_UseWorkloadIdentityFro" +
+                        "mEnvironment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name of the egress provider to which the dump is egressed..
         /// </summary>
         public static string DisplayAttributeDescription_CollectDumpOptions_Egress {
@@ -1554,7 +1564,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} field, {1} field, or {2} field is required..
+        ///   Looks up a localized string similar to The {0} field, {1} field, {2} field, or {3} field is required..
         /// </summary>
         public static string ErrorMessage_CredentialsMissing {
             get {

@@ -252,7 +252,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
             Assert.Empty(messages);
         }
 
-        [ConditionalFact(Timeout = EgressUnitTestTimeoutMs)]
+        [ConditionalFact(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
         public void AzureBlobEgress_DefaultCredentials()
         {
             // These are auth methods we know about. If this test fails, it means a new auth method was added and we need to update the test.
