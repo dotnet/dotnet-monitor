@@ -153,14 +153,17 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             if (!DisposableHelper.CanDispose(ref _disposedState))
                 return;
 
-            try
+            if (_isAvailable)
             {
-                FunctionProbesStub.Instance = null;
-                StopCapturing();
-            }
-            catch
-            {
+                try
+                {
+                    FunctionProbesStub.Instance = null;
+                    StopCapturing();
+                }
+                catch
+                {
 
+                }
             }
 
             base.Dispose();
