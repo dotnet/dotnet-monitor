@@ -62,24 +62,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Starting parameter capturing for {0} methods.
-        /// </summary>
-        internal static string LogMessage_StartCapturing {
-            get {
-                return ResourceManager.GetString("LogMessage_StartCapturing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stopping parameter capturing.
-        /// </summary>
-        internal static string LogMessage_StopCapturing {
-            get {
-                return ResourceManager.GetString("LogMessage_StopCapturing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to null.
         /// </summary>
         internal static string NullArgumentValue {

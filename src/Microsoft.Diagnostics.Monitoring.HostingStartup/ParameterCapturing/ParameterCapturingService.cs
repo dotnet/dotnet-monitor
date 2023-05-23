@@ -61,9 +61,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
                 _isAvailable = true;
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.Log(LogLevel.Debug, ex.ToString());
+                // TODO: Log
             }
         }
 
@@ -92,8 +92,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 throw new InvalidOperationException();
             }
 
-            _logger?.LogDebug(ParameterCapturingStrings.LogMessage_StopCapturing);
-
             _instrumentedMethodCache.Clear();
             RequestFunctionProbeUninstallation();
         }
@@ -109,8 +107,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             {
                 throw new ArgumentException(nameof(methods));
             }
-
-            _logger?.LogDebug(ParameterCapturingStrings.LogMessage_StartCapturing, methods.Count);
 
             List<ulong> functionIds = new(methods.Count);
             List<uint> argumentCounts = new(methods.Count);
