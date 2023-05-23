@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Diagnostics.Monitoring.HostingStartup;
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
 
 [assembly: HostingStartup(typeof(HostingStartup))]
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup
@@ -11,6 +13,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup
     {
         public void Configure(IWebHostBuilder builder)
         {
+            builder.ConfigureServices(services =>
+            {
+                services.AddHostedService<ParameterCapturingService>();
+            });
         }
     }
 }

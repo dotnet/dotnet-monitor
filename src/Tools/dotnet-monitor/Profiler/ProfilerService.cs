@@ -98,6 +98,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                         endpointInfo.RuntimeInstanceCookie.ToString("D"),
                         cancellationToken);
 
+                    await client.SetEnvironmentVariableAsync(
+                        ProfilerIdentifiers.EnvironmentVariables.ModulePath,
+                        profilerFileInfo.PhysicalPath,
+                        cancellationToken);
+
                     await client.SetStartupProfilerAsync(
                         ProfilerIdentifiers.Clsid.Guid,
                         profilerFileInfo.PhysicalPath,
