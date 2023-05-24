@@ -55,10 +55,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         [InlineData("test", "'test'")]
         [InlineData(5, "5")]
         [InlineData(MyEnum.ValueA, nameof(MyEnum.ValueA))]
-        public void SerializeObject(object obj, string value)
+        public void FormatObject(object obj, string value)
         {
             // Act
-            string actualValue = PrettyPrinter.SerializeObject(obj);
+            string actualValue = PrettyPrinter.FormatObject(obj);
 
             // Assert
             Assert.Equal(value, actualValue);

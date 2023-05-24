@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     internal static class PrettyPrinter
     {
-        public static string SerializeObject(object value)
+        public static string FormatObject(object value)
         {
             if (value == null)
             {
