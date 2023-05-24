@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 string serializedValue;
 
                 //
-                // TODO: Consider pre-calculating (when possible) which serialization path should be taken
+                // TODO: Consider memoizing (when possible) which serialization path should be taken
                 // for each parameter and storing it in the method cache if this needs to be more performant
                 // as more options are added.
                 //
