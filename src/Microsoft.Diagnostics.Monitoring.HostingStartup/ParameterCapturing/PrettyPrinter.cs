@@ -48,8 +48,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             StringBuilder fmtStringBuilder = new();
 
-            // Class name
-            string className = method.DeclaringType?.FullName?.Split('`')?[0] ?? string.Empty;
+            // Declaring type name
+            // For a generic declaring type, trim the arity information and replace it with the known generic argument names.
+            const char arityDelimiter = '`';
+            string className = method.DeclaringType?.FullName?.Split(arityDelimiter)?[0] ?? string.Empty;
             fmtStringBuilder.Append(className);
             EmitGenericArguments(fmtStringBuilder, method.DeclaringType?.GetGenericArguments());
 

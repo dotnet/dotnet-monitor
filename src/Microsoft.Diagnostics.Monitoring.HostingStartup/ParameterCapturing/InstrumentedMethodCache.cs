@@ -61,11 +61,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 return false;
             }
 
-            _cache[method.GetFunctionId()] = new InstrumentedMethod(
-                formattableString,
-                supportedParameters);
-
-            return true;
+            return _cache.TryAdd(
+                method.GetFunctionId(),
+                new InstrumentedMethod(
+                    formattableString,
+                    supportedParameters));
         }
 
         public void Clear()

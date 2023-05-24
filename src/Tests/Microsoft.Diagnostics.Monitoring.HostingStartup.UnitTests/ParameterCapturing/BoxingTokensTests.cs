@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.ValueType_TypeSpec), false)]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.VarArgs), true, true)]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.Unicode_ΦΨ), true)]
-        public void GetBoxingTokens_HandlesUnsupportedArgs(Type containingClassType, string methodName, params bool[] supported)
+        public void GetBoxingTokens_HandlesUnsupportedParameters(Type containingClassType, string methodName, params bool[] supported)
         {
             // Arrange
             MethodInfo method = containingClassType.GetMethod(methodName);
@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Fact]
-        public void GetBoxingTokens_HandlesUnsupportedArgs_Generics()
+        public void GetBoxingTokens_HandlesUnsupportedParameters_Generics()
         {
             // Arrange
             MethodInfo method = Type.GetType($"{nameof(SampleMethods)}.GenericTestMethodSignatures`2").GetMethod("GenericParameters");
