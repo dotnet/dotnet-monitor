@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     thisType.IsValueType)
                 {
                     //
-                    // This pointers for value types can **sometimes** be passed as an address to the value.
+                    // Implicit this pointers for value types can **sometimes** be passed as an address to the value.
                     // For now don't support this scenario.
                     //
                     // To enable it in the future add a new special case token and when rewriting IL
