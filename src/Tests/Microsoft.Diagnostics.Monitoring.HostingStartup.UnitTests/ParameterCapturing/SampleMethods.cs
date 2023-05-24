@@ -7,7 +7,7 @@ using System.Collections.Generic;
 // Use a shorter namespace to keep the expected strings in tests a more manageable length.
 namespace SampleMethods
 {
-    internal struct MyTestStruct { }
+    internal record struct MyRecordStruct { }
     internal ref struct MyRefStruct { }
     internal enum MyEnum
     {
@@ -31,9 +31,11 @@ namespace SampleMethods
 
     internal static class StaticTestMethodSignatures
     {
-        internal struct SampleClassStruct
+        internal struct SampleNestedStruct
         {
-            public static void DoWork(int i) { }
+#pragma warning disable CA1822 // Mark members as static
+            public void DoWork(int i) { }
+#pragma warning restore CA1822 // Mark members as static
         }
 
         public delegate int MyDelegate(int i, int j);
@@ -45,6 +47,8 @@ namespace SampleMethods
         public static void ExplicitThis(this object thisObj) { }
 
         public static void RefStruct(ref MyRefStruct myRefStruct) { }
+
+        public static void RecordStruct(MyRecordStruct myRecordStruct) { }
 
         public static unsafe void Pointer(byte* test) { }
 
