@@ -1,6 +1,6 @@
 {
   "tools": {
-    "dotnet": "8.0.100-preview.3.23178.7",
+    "dotnet": "8.0.100-preview.4.23259.14",
     "runtimes": {
       "aspnetcore": [
         "$(MicrosoftAspNetCoreApp60Version)",
@@ -22,7 +22,8 @@
         "$(MicrosoftNETCoreApp70Version)",
         "$(VSRedistCommonNetCoreSharedFrameworkx6480Version)"
       ]
-    }
+    },
+    "xcopy-msbuild": "17.6.0-2"
   },
   "msbuild-sdks": {
     "Microsoft.Build.NoTargets": "3.7.0",
