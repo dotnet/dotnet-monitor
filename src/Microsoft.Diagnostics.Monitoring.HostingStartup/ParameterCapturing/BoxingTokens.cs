@@ -52,10 +52,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         public static uint[] GetBoxingTokens(MethodInfo method)
         {
             List<Type> methodParameterTypes = method.GetParameters().Select(p => p.ParameterType).ToList();
-            List<uint> boxingTokens = new List<uint>(methodParameterTypes.Count);
+            List<uint> boxingTokens = new List<uint>(methodParameterTypes.Count + (method.HasImplicitThis() ? 1 : 0));
 
             // Handle implicit this
-            if (method.CallingConvention.HasFlag(CallingConventions.HasThis))
+            if (method.HasImplicitThis())
             {
                 Debug.Assert(!method.IsStatic);
 

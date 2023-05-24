@@ -62,7 +62,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             EmitGenericArguments(fmtStringBuilder, method.DeclaringType?.GetGenericArguments());
 
             // Method name
-            fmtStringBuilder.Append('.');
+            if (fmtStringBuilder.Length != 0)
+            {
+                fmtStringBuilder.Append('.');
+            }
             fmtStringBuilder.Append(method.Name);
             EmitGenericArguments(fmtStringBuilder, method.GetGenericArguments());
 
@@ -73,14 +76,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             int parameterIndex = 0;
             ParameterInfo[] explicitParameters = method.GetParameters();
 
-            int numberOfParameters = explicitParameters.Length + (method.CallingConvention.HasFlag(CallingConventions.HasThis) ? 1 : 0);
+            int numberOfParameters = explicitParameters.Length + (method.HasImplicitThis() ? 1 : 0);
             if (numberOfParameters != supportedParameters.Length)
             {
                 return null;
             }
 
             // Implicit this
-            if (method.CallingConvention.HasFlag(CallingConventions.HasThis))
+            if (method.HasImplicitThis())
             {
                 if (EmitParameter(
                     fmtStringBuilder,

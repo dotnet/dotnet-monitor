@@ -11,5 +11,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             return (ulong)method.MethodHandle.Value.ToInt64();
         }
+
+        public static bool HasImplicitThis(this MethodInfo method)
+        {
+            return method.CallingConvention.HasFlag(CallingConventions.HasThis);
+        }
     }
 }
