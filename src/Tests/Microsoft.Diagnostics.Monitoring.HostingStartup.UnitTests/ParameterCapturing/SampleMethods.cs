@@ -7,10 +7,7 @@ using System.Collections.Generic;
 // Use a shorter namespace to keep the expected strings in tests a more manageable length.
 namespace SampleMethods
 {
-    internal struct MyTestStruct
-    {
-        public static void DoWork(int i) { }
-    }
+    internal struct MyTestStruct { }
     internal ref struct MyRefStruct { }
     internal enum MyEnum
     {

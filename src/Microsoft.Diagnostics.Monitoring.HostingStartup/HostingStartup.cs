@@ -15,6 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup
         {
             builder.ConfigureServices(services =>
             {
+                // TODO: Gate this behind an environment variable.
                 services.AddHostedService<ParameterCapturingService>();
             });
         }

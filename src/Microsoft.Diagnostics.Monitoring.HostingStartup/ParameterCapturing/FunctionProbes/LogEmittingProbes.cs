@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 argValues[fmtIndex++] = PrettyPrinter.SerializeObject(args[i]);
             }
 
-            _logger.LogInformation(instrumentedMethod.MethodWithParametersFormatString, argValues);
+            _logger.Log(LogLevel.Information, instrumentedMethod.MethodWithParametersFormatString, argValues);
             return;
         }
     }

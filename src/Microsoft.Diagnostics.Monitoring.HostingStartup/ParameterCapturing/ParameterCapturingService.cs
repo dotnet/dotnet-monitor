@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -51,9 +52,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             try
             {
                 _profilerModulePath = Environment.GetEnvironmentVariable(ProfilerIdentifiers.EnvironmentVariables.ModulePath);
-                if (string.IsNullOrWhiteSpace(_profilerModulePath))
+                if (!File.Exists(_profilerModulePath))
                 {
-                    // TODO: Log
                     return;
                 }
 
