@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
         [Theory]
         [InlineData(typeof(TestMethodSignatures), nameof(TestMethodSignatures.ImplicitThis), true)]
-        [InlineData(typeof(StaticTestMethodSignatures.SampleNestedStruct), nameof(StaticTestMethodSignatures.SampleNestedStruct.DoWork), true, true)]
+        [InlineData(typeof(StaticTestMethodSignatures.SampleNestedStruct), nameof(StaticTestMethodSignatures.SampleNestedStruct.DoWork), false, true)]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.NoArgs))]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.BasicTypes), true, true, true, true)]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.Delegate), true)]

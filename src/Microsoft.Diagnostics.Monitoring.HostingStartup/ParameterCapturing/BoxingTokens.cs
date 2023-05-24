@@ -60,13 +60,21 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 Debug.Assert(!method.IsStatic);
 
                 Type? thisType = method.DeclaringType;
-                if (thisType != null)
+                if (thisType == null ||
+                    thisType.IsValueType)
                 {
-                    methodParameterTypes.Insert(0, thisType);
+                    //
+                    // This pointers for value types can **sometimes** be passed as an address to the value.
+                    // For now don't support this scenario.
+                    //
+                    // To enable it in the future add a new special case token and when rewriting IL
+                    // emit a ldobj instruction for it.
+                    //
+                    boxingTokens.Add(UnsupportedParameterToken);
                 }
                 else
                 {
-                    boxingTokens.Add(UnsupportedParameterToken);
+                    methodParameterTypes.Insert(0, thisType);
                 }
             }
 

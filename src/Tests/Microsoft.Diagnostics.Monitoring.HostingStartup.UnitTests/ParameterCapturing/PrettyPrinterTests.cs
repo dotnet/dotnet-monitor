@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.GenericParameters), "SampleMethods.StaticTestMethodSignatures.GenericParameters<T, K>(t: {{unsupported}}, k: {{unsupported}})")]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.VarArgs), "SampleMethods.StaticTestMethodSignatures.VarArgs(b: {0}, myInts: {1})")]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.Unicode_ΦΨ), "SampleMethods.StaticTestMethodSignatures.Unicode_ΦΨ(δ: {0})")]
-        [InlineData(typeof(StaticTestMethodSignatures.SampleNestedStruct), nameof(StaticTestMethodSignatures.SampleNestedStruct.DoWork), "SampleMethods.StaticTestMethodSignatures+SampleNestedStruct.DoWork(this: {0}, i: {1})")]
+        [InlineData(typeof(StaticTestMethodSignatures.SampleNestedStruct), nameof(StaticTestMethodSignatures.SampleNestedStruct.DoWork), "SampleMethods.StaticTestMethodSignatures+SampleNestedStruct.DoWork(this: {{unsupported}}, i: {0})")]
         public void MethodFormattableString(Type containingClassType, string methodName, string formattableString)
         {
             // Arrange
