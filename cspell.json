@@ -17,6 +17,7 @@
         }
     ],
     "words": [
+        "arity",
         "Bldr",
         "Brotli",
         "Browsable",
@@ -85,9 +86,9 @@
         "trce",
         "tstr",
         "ukwn",
-        "Unlocalized",
-        "uniquifier",
         "Uninstallation",
+        "uniquifier",
+        "Unlocalized",
         "Unredacted",
         "upvoting",
         "VSAPPIDDIR",
