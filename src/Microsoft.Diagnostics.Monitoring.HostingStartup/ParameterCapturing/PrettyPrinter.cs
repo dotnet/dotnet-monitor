@@ -20,6 +20,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             {
                 bool doWrapValue = false;
                 string serializedValue;
+
+                //
+                // TODO: Consider pre-calculating (when possible) which serialization path should be taken
+                // for each parameter and storing it in the method cache if this needs to be more performant
+                // as more options are added.
+                //
                 if (value is IConvertible ic)
                 {
                     serializedValue = ic.ToString(provider: null);
