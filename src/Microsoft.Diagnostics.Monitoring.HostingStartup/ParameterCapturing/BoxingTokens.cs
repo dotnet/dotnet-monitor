@@ -11,11 +11,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     internal static class BoxingTokens
     {
-        private const uint SpecialCaseBoxingTypeFlag = 0xff000000;
-        private const uint UnsupportedParameterToken = SpecialCaseBoxingTypeFlag | (uint)SpecialCaseBoxingTypes.Unknown;
-        private const uint SkipBoxingToken = SpecialCaseBoxingTypeFlag | (uint)SpecialCaseBoxingTypes.Object;
+        private static readonly uint UnsupportedParameterToken = SpecialCaseBoxingTypes.Unknown.BoxingToken();
+        private static readonly uint SkipBoxingToken = SpecialCaseBoxingTypes.Object.BoxingToken();
 
-        private enum SpecialCaseBoxingTypes
+        public enum SpecialCaseBoxingTypes
         {
             Unknown = 0,
             Object,
@@ -32,6 +31,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             Single,
             Double,
         };
+
+        public static uint BoxingToken(this SpecialCaseBoxingTypes specialCase)
+        {
+            const uint SpecialCaseBoxingTypeFlag = 0xff000000;
+            return SpecialCaseBoxingTypeFlag | (uint)specialCase;
+        }
 
         public static bool IsParameterSupported(uint token)
         {
@@ -77,7 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     methodParameterTypes.Insert(0, thisType);
                 }
             }
-
+             
             foreach (Type paramType in methodParameterTypes)
             {
                 if (paramType.IsByRef ||
@@ -131,7 +136,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private static uint GetSpecialCaseBoxingToken(TypeCode typeCode)
         {
-            return SpecialCaseBoxingTypeFlag | (uint)GetSpecialCaseBoxingType(typeCode);
+            return GetSpecialCaseBoxingType(typeCode).BoxingToken();
         }
 
         private static SpecialCaseBoxingTypes GetSpecialCaseBoxingType(TypeCode typeCode)

@@ -40,7 +40,9 @@ namespace SampleMethods
 
         public delegate int MyDelegate(int i, int j);
 
-        public static void BasicTypes(string s, int[] intArray, bool[,] multidimensionalArray, uint uInt) { }
+        public static void Arrays(int[] intArray, bool[,] multidimensionalArray) { }
+
+        public static void BuiltInReferenceTypes(object arg1, string arg2, dynamic arg3) { }
 
         public static void NoArgs() { }
 
@@ -62,6 +64,20 @@ namespace SampleMethods
         {
             i = 0;
         }
+
+        public static void Primitives(
+            bool arg1,
+            char arg2,
+            sbyte arg3,
+            byte arg4,
+            short arg5,
+            ushort arg6,
+            int arg7,
+            uint arg8,
+            long arg9,
+            ulong arg10,
+            float arg11,
+            double arg12) { }
 
         public static void GenericParameters<T, K>(T t, K k) { }
 
