@@ -530,12 +530,13 @@
     <comment>The description provided for the DumpTempFolder parameter on StorageOptions.</comment>
   </data>
   <data name="ErrorMessage_CredentialsMissing" xml:space="preserve">
-    <value>The {0} field, {1} field, or {2} field is required.</value>
-    <comment>Gets the format string for rejecting validation due to 3 missing fields where at least one is required.
-3 Format Parameters:
+    <value>The {0} field, {1} field, {2} field, or {3} field is required.</value>
+    <comment>Gets the format string for rejecting validation due to 4 missing fields where at least one is required.
+4 Format Parameters:
 0. fieldNameOne: The name of the first field that is missing
 1. fieldNameTwo: The name of the second field that is missing
-2. fieldNameThree: The name of the third field that is missing</comment>
+2. fieldNameThree: The name of the third field that is missing
+3. fieldNameFour: The name of the fourth field that is missing</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectLogsOptions_Format" xml:space="preserve">
     <value>The format of the logs artifact.</value>
@@ -803,5 +804,8 @@
   </data>
   <data name="DisplayAttributeDescription_MetricsOptions_Meters" xml:space="preserve">
     <value>Names of meters to collect from the System.Diagnostics.Metrics provider.</value>
+  </data>
+  <data name="DisplayAttributeDescription_AzureBlobEgressProviderOptions_UseWorkloadIdentityFromEnvironment" xml:space="preserve">
+    <value>Uses WorkloadIdentity for authentication. The environment variables AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_FEDERATED_TOKEN_FILE, and AZURE_AUTHORITY_HOST are used to authenticate.</value>
   </data>
 </root>

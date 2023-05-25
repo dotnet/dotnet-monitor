@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Azure;
+using Azure.Core;
 using Azure.Identity;
 using Azure.Storage;
 using Azure.Storage.Blobs;
@@ -292,12 +293,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 serviceClient = new QueueServiceClient(accountUri, credential, clientOptions);
             }
-            else if (!string.IsNullOrEmpty(options.ManagedIdentityClientId))
+            else if (UseDefaultCredentials(options))
             {
                 // Remove Query in case SAS token was specified
                 Uri accountUri = GetQueueAccountUri(options, out _);
 
-                DefaultAzureCredential credential = CreateManagedIdentityCredentials(options.ManagedIdentityClientId);
+                TokenCredential credential = CreateDefaultCredential(options);
 
                 serviceClient = new QueueServiceClient(accountUri, credential, clientOptions);
             }
@@ -346,12 +347,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
 
                 serviceClient = new BlobServiceClient(accountUri, credential);
             }
-            else if (!string.IsNullOrEmpty(options.ManagedIdentityClientId))
+            else if (UseDefaultCredentials(options))
             {
                 // Remove Query in case SAS token was specified
                 Uri accountUri = GetBlobAccountUri(options, out _);
 
-                DefaultAzureCredential credential = CreateManagedIdentityCredentials(options.ManagedIdentityClientId);
+                TokenCredential credential = CreateDefaultCredential(options);
 
                 serviceClient = new BlobServiceClient(accountUri, credential);
             }
@@ -427,22 +428,39 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             }
         }
 
-        private static DefaultAzureCredential CreateManagedIdentityCredentials(string clientId)
-        {
-            var credential = new DefaultAzureCredential(
-                new DefaultAzureCredentialOptions
-                {
-                    ManagedIdentityClientId = clientId,
-                    ExcludeAzureCliCredential = true,
-                    ExcludeAzurePowerShellCredential = true,
-                    ExcludeEnvironmentCredential = true,
-                    ExcludeInteractiveBrowserCredential = true,
-                    ExcludeSharedTokenCacheCredential = true,
-                    ExcludeVisualStudioCodeCredential = true,
-                    ExcludeVisualStudioCredential = true
-                });
+        private static bool UseDefaultCredentials(AzureBlobEgressProviderOptions options) =>
+            !string.IsNullOrEmpty(options.ManagedIdentityClientId) || options.UseWorkloadIdentityFromEnvironment == true;
 
-            return credential;
+        private static TokenCredential CreateDefaultCredential(AzureBlobEgressProviderOptions options)
+        {
+            DefaultAzureCredentialOptions credOptions = GetDefaultCredentialOptions();
+
+            if (options.UseWorkloadIdentityFromEnvironment == true)
+            {
+                credOptions.ExcludeWorkloadIdentityCredential = false;
+            }
+
+            if (!string.IsNullOrEmpty(options.ManagedIdentityClientId))
+            {
+                credOptions.ExcludeManagedIdentityCredential = false;
+                credOptions.ManagedIdentityClientId = options.ManagedIdentityClientId;
+            }
+
+            return new DefaultAzureCredential(credOptions);
         }
+
+        private static DefaultAzureCredentialOptions GetDefaultCredentialOptions() =>
+            new DefaultAzureCredentialOptions
+            {
+                ExcludeAzureCliCredential = true,
+                ExcludeManagedIdentityCredential = true,
+                ExcludeWorkloadIdentityCredential= true,
+                ExcludeAzurePowerShellCredential = true,
+                ExcludeEnvironmentCredential = true,
+                ExcludeInteractiveBrowserCredential = true,
+                ExcludeSharedTokenCacheCredential = true,
+                ExcludeVisualStudioCodeCredential = true,
+                ExcludeVisualStudioCredential = true,
+            };
     }
 }
