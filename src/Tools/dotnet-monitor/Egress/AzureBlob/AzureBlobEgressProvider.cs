@@ -453,6 +453,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob
             new DefaultAzureCredentialOptions
             {
                 ExcludeAzureCliCredential = true,
+                ExcludeAzureDeveloperCliCredential = true,
                 ExcludeManagedIdentityCredential = true,
                 ExcludeWorkloadIdentityCredential= true,
                 ExcludeAzurePowerShellCredential = true,
