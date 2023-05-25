@@ -135,8 +135,8 @@
   <data name="UnknownArgumentValue" xml:space="preserve">
     <value>unknown</value>
   </data>
-  <data name="UnknownParameterName" xml:space="preserve">
-    <value>unknown</value>
+  <data name="UnknownParameterNameFormatString" xml:space="preserve">
+    <value>&lt;unknown_name_{position}&gt;</value>
   </data>
   <data name="UnsupportedParameter" xml:space="preserve">
     <value>unsupported</value>

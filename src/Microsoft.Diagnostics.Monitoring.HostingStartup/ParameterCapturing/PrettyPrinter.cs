@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 
@@ -50,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             }
         }
 
-        public static string? ConstructFormattableStringFromMethod(MethodInfo method, bool[] supportedParameters)
+        public static string? ConstructTemplateStringFromMethod(MethodInfo method, bool[] supportedParameters)
         {
             StringBuilder fmtStringBuilder = new();
 
@@ -72,7 +73,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             // Method parameters
             fmtStringBuilder.Append('(');
 
-            int fmtIndex = 0;
             int parameterIndex = 0;
             ParameterInfo[] explicitParameters = method.GetParameters();
 
@@ -85,35 +85,28 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             // Implicit this
             if (method.HasImplicitThis())
             {
-                if (EmitParameter(
+                EmitParameter(
                     fmtStringBuilder,
                     method.DeclaringType,
                     ParameterCapturingStrings.ThisParameterName,
-                    supportedParameters[parameterIndex],
-                    fmtIndex))
-                {
-                    fmtIndex++;
-                }
+                    supportedParameters[parameterIndex]);
                 parameterIndex++;
             }
 
             foreach (ParameterInfo paramInfo in explicitParameters)
             {
-                if (parameterIndex != 0 || fmtIndex != 0)
+                if (parameterIndex != 0)
                 {
                     fmtStringBuilder.Append(", ");
                 }
 
-                if (EmitParameter(
+                string name = paramInfo.Name ?? string.Format(CultureInfo.InvariantCulture, ParameterCapturingStrings.UnknownParameterNameFormatString, parameterIndex);
+                EmitParameter(
                     fmtStringBuilder,
                     paramInfo.ParameterType,
-                    paramInfo.Name,
+                    name,
                     supportedParameters[parameterIndex],
-                    fmtIndex,
-                    paramInfo))
-                {
-                    fmtIndex++;
-                }
+                    paramInfo);
 
                 parameterIndex++;
             }
@@ -123,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             return fmtStringBuilder.ToString();
         }
 
-        private static bool EmitParameter(StringBuilder stringBuilder, Type? type, string? name, bool isSupported, int formatIndex, ParameterInfo? paramInfo = null)
+        private static void EmitParameter(StringBuilder stringBuilder, Type? type, string name, bool isSupported, ParameterInfo? paramInfo = null)
         {
             stringBuilder.AppendLine();
             stringBuilder.Append('\t');
@@ -147,29 +140,19 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             }
 
             // Name
-            if (string.IsNullOrEmpty(name))
-            {
-                EmitReservedPlaceholder(stringBuilder, ParameterCapturingStrings.UnknownParameterName);
-            }
-            else
-            {
-                stringBuilder.Append(name);
-            }
-
+            stringBuilder.Append(name);
             stringBuilder.Append(": ");
 
             // Value (format item or unsupported)
             if (isSupported)
             {
                 stringBuilder.Append('{');
-                stringBuilder.Append(formatIndex);
+                stringBuilder.Append(name);
                 stringBuilder.Append('}');
-                return true;
             }
             else
             {
                 EmitReservedPlaceholder(stringBuilder, ParameterCapturingStrings.UnsupportedParameter);
-                return false;
             }
         }
 

@@ -9,10 +9,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
     public readonly struct InstrumentedMethod
     {
         public InstrumentedMethod(
-            string methodWithParametersFormatString,
+            string methodWithParametersTemplateString,
             bool[] supportedParameters)
         {
-            MethodWithParametersFormatString = methodWithParametersFormatString;
+            MethodWithParametersTemplateString = methodWithParametersTemplateString;
             SupportedParameters = supportedParameters;
 
             foreach (bool isParameterSupported in supportedParameters)
@@ -35,12 +35,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         public bool[] SupportedParameters { get; }
 
         /// <summary>
-        /// A format string that contains the full method name with parameter names and
+        /// A template string that contains the full method name with parameter names and
         /// format items for each supported parameter.
         /// 
         /// The number of format items equals NumberOfSupportedParameters.
         /// </summary>
-        public string MethodWithParametersFormatString { get; }
+        public string MethodWithParametersTemplateString { get; }
     }
 
     public sealed class InstrumentedMethodCache
@@ -55,8 +55,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         public bool TryAdd(MethodInfo method, uint[] boxingTokens)
         {
             bool[] supportedParameters = BoxingTokens.AreParametersSupported(boxingTokens);
-            string? formattableString = PrettyPrinter.ConstructFormattableStringFromMethod(method, supportedParameters);
-            if (formattableString == null)
+            string? templateString = PrettyPrinter.ConstructTemplateStringFromMethod(method, supportedParameters);
+            if (templateString == null)
             {
                 return false;
             }
@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             return _cache.TryAdd(
                 method.GetFunctionId(),
                 new InstrumentedMethod(
-                    formattableString,
+                    templateString,
                     supportedParameters));
         }
 

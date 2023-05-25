@@ -116,11 +116,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to unknown.
+        ///   Looks up a localized string similar to &lt;unknown_name_position_{position}&gt;.
         /// </summary>
-        internal static string UnknownParameterName {
+        internal static string UnknownParameterNameFormatString {
             get {
-                return ResourceManager.GetString("UnknownParameterName", resourceCulture);
+                return ResourceManager.GetString("UnknownParameterNameFormatString", resourceCulture);
             }
         }
         

@@ -45,10 +45,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.ValueType_TypeSpec), false)]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.VarArgs), true, true)]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.Unicode_ΦΨ), true)]
-        public void GetBoxingTokens_Detects_UnsupportedParameters(Type containingClassType, string methodName, params bool[] supported)
+        public void GetBoxingTokens_Detects_UnsupportedParameters(Type declaringType, string methodName, params bool[] supported)
         {
             // Arrange
-            MethodInfo method = containingClassType.GetMethod(methodName);
+            MethodInfo method = declaringType.GetMethod(methodName);
 
             // Act
             bool[] supportedParameters = BoxingTokens.AreParametersSupported(BoxingTokens.GetBoxingTokens(method));

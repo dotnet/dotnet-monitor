@@ -22,32 +22,32 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Theory]
-        [InlineData(typeof(TestMethodSignatures), nameof(TestMethodSignatures.ImplicitThis), "SampleMethods.TestMethodSignatures.ImplicitThis(this: {0})")]
-        [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.Arrays), "SampleMethods.StaticTestMethodSignatures.Arrays(intArray: {0}, multidimensionalArray: {1})")]
-        [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.Delegate), "SampleMethods.StaticTestMethodSignatures.Delegate(func: {0})")]
+        [InlineData(typeof(TestMethodSignatures), nameof(TestMethodSignatures.ImplicitThis), "SampleMethods.TestMethodSignatures.ImplicitThis(this: {this})")]
+        [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.Arrays), "SampleMethods.StaticTestMethodSignatures.Arrays(intArray: {intArray}, multidimensionalArray: {multidimensionalArray})")]
+        [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.Delegate), "SampleMethods.StaticTestMethodSignatures.Delegate(func: {func})")]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.InParam), "SampleMethods.StaticTestMethodSignatures.InParam(in i: {{unsupported}})")]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.OutParam), "SampleMethods.StaticTestMethodSignatures.OutParam(out i: {{unsupported}})")]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.RefParam), "SampleMethods.StaticTestMethodSignatures.RefParam(ref i: {{unsupported}})")]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.RefStruct), "SampleMethods.StaticTestMethodSignatures.RefStruct(ref myRefStruct: {{unsupported}})")]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.GenericParameters), "SampleMethods.StaticTestMethodSignatures.GenericParameters<T, K>(t: {{unsupported}}, k: {{unsupported}})")]
-        [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.VarArgs), "SampleMethods.StaticTestMethodSignatures.VarArgs(b: {0}, myInts: {1})")]
-        [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.Unicode_ΦΨ), "SampleMethods.StaticTestMethodSignatures.Unicode_ΦΨ(δ: {0})")]
-        [InlineData(typeof(StaticTestMethodSignatures.SampleNestedStruct), nameof(StaticTestMethodSignatures.SampleNestedStruct.DoWork), "SampleMethods.StaticTestMethodSignatures+SampleNestedStruct.DoWork(this: {{unsupported}}, i: {0})")]
-        public void MethodFormattableString(Type containingClassType, string methodName, string formattableString)
+        [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.VarArgs), "SampleMethods.StaticTestMethodSignatures.VarArgs(b: {b}, myInts: {myInts})")]
+        [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.Unicode_ΦΨ), "SampleMethods.StaticTestMethodSignatures.Unicode_ΦΨ(δ: {δ})")]
+        [InlineData(typeof(StaticTestMethodSignatures.SampleNestedStruct), nameof(StaticTestMethodSignatures.SampleNestedStruct.DoWork), "SampleMethods.StaticTestMethodSignatures+SampleNestedStruct.DoWork(this: {{unsupported}}, i: {i})")]
+        public void MethodTemplateString(Type declaringType, string methodName, string templateString)
         {
             // Arrange
-            MethodInfo method = containingClassType.GetMethod(methodName);
+            MethodInfo method = declaringType.GetMethod(methodName);
             Assert.NotNull(method);
 
             // Act
             bool[] supportedParameters = BoxingTokens.AreParametersSupported(BoxingTokens.GetBoxingTokens(method));
-            string actualFormattableString = PrettyPrinter.ConstructFormattableStringFromMethod(method, supportedParameters);
+            string actualTemplateString = PrettyPrinter.ConstructTemplateStringFromMethod(method, supportedParameters);
 
             // Assert
-            Assert.NotNull(actualFormattableString);
-            actualFormattableString = actualFormattableString.ReplaceLineEndings("").Replace("\t", "");
-            _outputHelper.WriteLine(actualFormattableString);
-            Assert.Equal(formattableString, actualFormattableString);
+            Assert.NotNull(actualTemplateString);
+            actualTemplateString = actualTemplateString.ReplaceLineEndings("").Replace("\t", "");
+            _outputHelper.WriteLine(actualTemplateString);
+            Assert.Equal(templateString, actualTemplateString);
         }
 
         [Theory]
