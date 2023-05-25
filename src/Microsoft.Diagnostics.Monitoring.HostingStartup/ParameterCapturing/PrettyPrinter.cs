@@ -57,8 +57,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             // Declaring type name
             // For a generic declaring type, trim the arity information and replace it with the known generic argument names.
             const char arityDelimiter = '`';
-            string className = method.DeclaringType?.FullName?.Split(arityDelimiter)?[0] ?? string.Empty;
-            fmtStringBuilder.Append(className);
+            string declaringTypeName = method.DeclaringType?.FullName?.Split(arityDelimiter)?[0] ?? string.Empty;
+            fmtStringBuilder.Append(declaringTypeName);
             EmitGenericArguments(fmtStringBuilder, method.DeclaringType?.GetGenericArguments());
 
             // Method name
