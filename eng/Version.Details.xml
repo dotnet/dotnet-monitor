@@ -18,9 +18,9 @@
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0-preview.23275.1">
+    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0-preview.23275.7">
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
-      <Sha>7203db96ede7e4184da20ea658f573bd9c2fe6f9</Sha>
+      <Sha>2b6ab8d727ce73a78bcbf026ac75ea8a7c804daf</Sha>
     </Dependency>
     <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="8.0.0-beta.23275.2">
       <Uri>https://github.com/dotnet/arcade</Uri>
