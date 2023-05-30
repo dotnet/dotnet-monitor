@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public static uint BoxingToken(this SpecialCaseBoxingTypes specialCase)
         {
-            const uint SpecialCaseBoxingTypeFlag = 0xff000000;
+            const uint SpecialCaseBoxingTypeFlag = 0x7f000000;
             return SpecialCaseBoxingTypeFlag | (uint)specialCase;
         }
 
