@@ -41,7 +41,7 @@ public:
     STDMETHOD(ExceptionSearchCatcherFound)(FunctionID functionId) override;
     STDMETHOD(ExceptionUnwindFunctionEnter)(FunctionID functionId) override;
     STDMETHOD(InitializeForAttach)(IUnknown* pCorProfilerInfoUnk, void* pvClientData, UINT cbClientData) override;
-    STDMETHOD(LoadAsNotficationOnly)(BOOL *pbNotificationOnly) override;
+    STDMETHOD(LoadAsNotificationOnly)(BOOL *pbNotificationOnly) override;
 
 private:
     HRESULT InitializeCommon();

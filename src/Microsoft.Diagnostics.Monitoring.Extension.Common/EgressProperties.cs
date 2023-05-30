@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 {
-    internal sealed class EgressProperties
+    public sealed class EgressProperties
     {
         private readonly Dictionary<string, string> _properties;
 

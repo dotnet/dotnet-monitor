@@ -18,13 +18,12 @@
 | --- | --- | --- | --- | --- | --- |
 | 6.2 | June 14, 2022 | [6.2.2](https://github.com/dotnet/dotnet-monitor/releases/tag/v6.2.2) | August 9, 2022 | January 11, 2023 | netcoreapp3.1 (with major roll forward)<br/>net6.0 |
 | 6.1 | February 17, 2022 | [6.1.4](https://github.com/dotnet/dotnet-monitor/releases/tag/v6.1.4) | August 9, 2022 | September 14, 2022 | netcoreapp3.1 (with major roll forward)<br/>net6.0 |
-| 6.0 | November 8, 2021 | [6.0.2](https://github.com/dotnet/dotnet-monitor/releases/tag/v6.0.2) | February 8, 2022 | May 17, 2022 | netcoreapp3.1 (with major roll forward)<br/>net6.0 |
 
 
 ## Preview versions
 
 | Version | Release Date | Latest Version | Runtime Frameworks |
 | --- | --- | --- | --- |
-| 8.0 | April 11, 2023 | [8.0.0 preview 3](https://github.com/dotnet/dotnet-monitor/releases/tag/v8.0.0-preview.3.23180.9) | net6.0<br/>net8.0 |
+| 8.0 | May 16, 2023 | [8.0.0 preview 4](https://github.com/dotnet/dotnet-monitor/releases/tag/v8.0.0-preview.4.23260.4) | net6.0<br/>net8.0 |
 
 

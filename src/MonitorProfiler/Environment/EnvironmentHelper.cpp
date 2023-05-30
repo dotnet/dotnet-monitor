@@ -3,7 +3,7 @@
 
 #include "EnvironmentHelper.h"
 #include "../Logging/LogLevelHelper.h"
-#include "productversion.h"
+#include "runtime_version.h"
 
 using namespace std;
 
@@ -36,7 +36,7 @@ HRESULT EnvironmentHelper::SetProductVersion()
 
     IfFailLogRet(_environment->SetEnvironmentVariable(
         ProfilerVersionEnvVar,
-        MonitorProductVersion_TSTR
+        QUOTE_MACRO_T(RuntimeProductVersion)
         ));
 
     return S_OK;

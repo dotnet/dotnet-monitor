@@ -11,7 +11,7 @@ parameters:
   enableTsa: false
 
 jobs:
-- template: /eng/pipelines/jobs/build.yml
+- template: /eng/pipelines/jobs/build-binaries.yml
   parameters:
     prefix: CodeQL
     osGroup: ${{ parameters.osGroup }}

@@ -8,7 +8,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
     /// <summary>
     /// Exception that egress providers can throw when an operational error occurs (e.g. failed to write the stream data).
     /// </summary>
-    internal sealed class EgressException : MonitoringException
+    public sealed class EgressException : MonitoringException
     {
         public EgressException(string message) : base(message) { }
 

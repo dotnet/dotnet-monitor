@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <!-- This target is invoked by:
-       - eng/native/build-common.sh on Linux and MacOS
+       - eng/build.sh on Linux and MacOS
        - eng/Build-Native.cmd on Windows
 
        It is used to generate native file versioning resources. Here, it is also
@@ -22,28 +22,35 @@
   -->
   <Target Name="GenerateRuntimeVersionFile"
           DependsOnTargets="GenerateNativeVersionFile">
-
-    <!-- Generate productversion.h into same directory as the native version file. -->
     <PropertyGroup>
-      <_ProductVersionFile>$([System.IO.Path]::GetDirectoryName($(NativeVersionFile)))/productversion.h</_ProductVersionFile>
+      <RuntimeVersionFile Condition="'$(RuntimeVersionFile)' == ''">$(ArtifactsObjDir)runtime_version.h</RuntimeVersionFile>
 
-      <_ProductVersionFileContents>
+      <_RuntimeVersionFileContents>
 <![CDATA[
-#ifndef MonitorProductVersion_TSTR
-#define MonitorProductVersion_TSTR _T("$(Version)")
-#endif
+#define RuntimeAssemblyMajorVersion $(MajorVersion)
+#define RuntimeAssemblyMinorVersion $(MinorVersion)
+
+#define RuntimeFileMajorVersion $(FileVersion.Split('.')[0])
+#define RuntimeFileMinorVersion $(FileVersion.Split('.')[1])
+#define RuntimeFileBuildVersion $(FileVersion.Split('.')[2])
+#define RuntimeFileRevisionVersion $(FileVersion.Split('.')[3])
+
+#define RuntimeProductMajorVersion $(Version.Split(".-")[0])
+#define RuntimeProductMinorVersion $(Version.Split(".-")[1])
+#define RuntimeProductPatchVersion $(Version.Split(".-")[2])
+
+#define RuntimeProductVersion $(Version)
  ]]>
-      </_ProductVersionFileContents>
+      </_RuntimeVersionFileContents>
     </PropertyGroup>
 
-    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName($(_ProductVersionFile)))" />
+    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName($(RuntimeVersionFile)))" />
 
     <WriteLinesToFile
-      File="$(_ProductVersionFile)"
-      Lines="$(_ProductVersionFileContents)"
+      File="$(RuntimeVersionFile)"
+      Lines="$(_RuntimeVersionFileContents)"
       Overwrite="true"
       WriteOnlyWhenDifferent="true" />
-
   </Target>
 
 </Project>

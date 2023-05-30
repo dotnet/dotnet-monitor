@@ -6,7 +6,6 @@
 __RepoRootDir="$(cd "$(dirname "$0")"/..; pwd -P)"
 
 __CreateArchives=0
-__BuildArch=x64
 __BuildType=Debug
 __CMakeArgs=
 __CommonMSBuildArgs=
@@ -42,7 +41,7 @@ handle_arguments() {
     lowerI="$(echo "$1" | tr "[:upper:]" "[:lower:]")"
     case "$lowerI" in
         architecture|-architecture|-a)
-            __BuildArch="$(echo "$2" | tr "[:upper:]" "[:lower:]")"
+            __TargetArch="$(echo "$2" | tr "[:upper:]" "[:lower:]")"
             __ShiftArgs=1
             ;;
 
@@ -112,7 +111,7 @@ source "$__RepoRootDir"/eng/native/build-commons.sh
 __LogsDir="$__RootBinDir/log/$__BuildType"
 __ArtifactsIntermediatesDir="$__RootBinDir/obj"
 
-if [[ "$__BuildArch" == "armel" ]]; then
+if [[ "$__TargetArch" == "armel" ]]; then
     # Armel cross build is Tizen specific and does not support Portable RID build
     __PortableBuild=0
 fi
@@ -123,11 +122,11 @@ fi
 
 initTargetDistroRid
 
-echo "RID: $__DistroRid"
+echo "RID: $__OutputRid"
 
-__BinDir="$__RootBinDir/bin/$__DistroRid.$__BuildType"
-__IntermediatesDir="$__ArtifactsIntermediatesDir/$__DistroRid.$__BuildType"
-__CommonMSBuildArgs="/p:PackageRid=$__DistroRid"
+__BinDir="$__RootBinDir/bin/$__OutputRid.$__BuildType"
+__IntermediatesDir="$__ArtifactsIntermediatesDir/$__OutputRid.$__BuildType"
+__CommonMSBuildArgs="/p:PackageRid=$__OutputRid"
 
 # Specify path to be set for CMAKE_INSTALL_PREFIX.
 # This is where all built libraries will copied to.
@@ -165,12 +164,12 @@ if [ "$__HostOS" == "OSX" ]; then
     which python
     python --version
 
-    if [[ "$__BuildArch" == x64 ]]; then
+    if [[ "$__TargetArch" == x64 ]]; then
         __ExtraCmakeArgs="-DCMAKE_OSX_ARCHITECTURES=\"x86_64\" $__ExtraCmakeArgs"
-    elif [[ "$__BuildArch" == arm64 ]]; then
+    elif [[ "$__TargetArch" == arm64 ]]; then
         __ExtraCmakeArgs="-DCMAKE_OSX_ARCHITECTURES=\"arm64\" $__ExtraCmakeArgs"
     else
-        echo "Error: Unknown OSX architecture $__BuildArch."
+        echo "Error: Unknown OSX architecture $__TargetArch."
         exit 1
     fi
 fi
@@ -179,8 +178,23 @@ fi
 # Build native components
 #
 if [[ "$__NativeBuild" == 1 ]]; then
+    echo Generating Version Header
+    "$__RepoRootDir/eng/common/msbuild.sh" \
+        "$__RepoRootDir"/eng/empty.csproj \
+        /restore \
+        /t:GenerateRuntimeVersionFile \
+        /p:NativeVersionFile="$__versionSourceFile" \
+        /p:RuntimeVersionFile="$runtimeVersionHeaderFile" \
+        /bl:"$__LogDir$"/GenNativeVersion.binlog \
+        /clp:nosummary
+
+    if [ "$?" != 0 ]; then
+        echo "Generate version header failed."
+        exit 1
+    fi
+
     set -o pipefail
-    build_native "$__TargetOS" "$__BuildArch" "$__RepoRootDir" "$__IntermediatesDir" "install" "$__ExtraCmakeArgs" "dotnet-monitor component" | tee "$__LogsDir"/make.log
+    build_native "$__TargetOS" "$__TargetArch" "$__RepoRootDir" "$__IntermediatesDir" "install" "$__ExtraCmakeArgs" "dotnet-monitor component" | tee "$__LogsDir"/make.log
     exit_code="$?"
     set +o pipefail
 
@@ -254,7 +268,7 @@ if [[ "$__Test" == 1 ]]; then
       "$__RepoRootDir/eng/common/build.sh" \
         --test \
         --configuration "$__BuildType" \
-        /p:BuildArch="$__BuildArch" \
+        /p:BuildArch="$__TargetArch" \
         -nobl \
         /bl:"$__LogsDir"/Test.binlog \
         /p:TestGroup="$__TestGroup" \

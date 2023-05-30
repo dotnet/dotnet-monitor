@@ -1,8 +1,8 @@
-6dd808ff7ae62512330d2f111eb1f60f1ae40125
+8e472c8886c9a02326a5035fc4549717f70ab818
 
-https://github.com/dotnet/runtime/commit/6dd808ff7ae62512330d2f111eb1f60f1ae40125
+https://github.com/dotnet/runtime/commit/8e472c8886c9a02326a5035fc4549717f70ab818
 
-Following directories were copied from dotnet/runtime from the release/6.0 branch:
+Following directories were copied from dotnet/runtime from the release/8.0-preview.4 branch:
   eng/native -> ./../../eng/native
   src/coreclr/inc ->./runtime/src/coreclr/inc
   src/coreclr/pal/inc -> ./runtime/src/coreclr/pal/inc
