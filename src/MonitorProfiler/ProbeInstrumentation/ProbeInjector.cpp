@@ -13,7 +13,7 @@
 // Instrumentation requests provide special boxing instructions by using SpecialCaseBoxingTypeFlag
 // as the "token type" and the SpecialCaseBoxingTypes enum as the RID.
 //
-constexpr ULONG32 SpecialCaseBoxingTypeFlag = 0xff000000;
+constexpr ULONG32 SpecialCaseBoxingTypeFlag = 0x7f000000;
 enum class SpecialCaseBoxingTypes : ULONG32
 {
     TYPE_UNKNOWN = 0,
