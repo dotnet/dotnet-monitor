@@ -78,7 +78,7 @@ HRESULT AssemblyProbePrep::EmitProbeReference(
         ofRead | ofWrite,
         IID_IMetaDataEmit,
         reinterpret_cast<IUnknown **>(&pMetadataEmit)));
-   
+
     ComPtr<IMetaDataAssemblyEmit> pMetadataAssemblyEmit;
     mdAssemblyRef probeAssemblyRefToken = mdAssemblyRefNil;
     IfFailRet(pMetadataEmit->QueryInterface(IID_IMetaDataAssemblyEmit, reinterpret_cast<void **>(&pMetadataAssemblyEmit)));
