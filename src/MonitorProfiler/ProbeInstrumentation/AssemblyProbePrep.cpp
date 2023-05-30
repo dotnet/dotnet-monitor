@@ -4,7 +4,6 @@
 #include "corhlpr.h"
 #include "AssemblyProbePrep.h"
 #include "../Utilities/TypeNameUtilities.h"
-#include "../Utilities/MemoryUtilities.h"
 #include "../Utilities/MetadataEnumCloser.h"
 #include "../Utilities/StringUtilities.h"
 
@@ -79,16 +78,16 @@ HRESULT AssemblyProbePrep::EmitProbeReference(
         ofRead | ofWrite,
         IID_IMetaDataEmit,
         reinterpret_cast<IUnknown **>(&pMetadataEmit)));
-
+   
     ComPtr<IMetaDataAssemblyEmit> pMetadataAssemblyEmit;
     mdAssemblyRef probeAssemblyRefToken = mdAssemblyRefNil;
     IfFailRet(pMetadataEmit->QueryInterface(IID_IMetaDataAssemblyEmit, reinterpret_cast<void **>(&pMetadataAssemblyEmit)));
     IfFailRet(pMetadataAssemblyEmit->DefineAssemblyRef(
-        reinterpret_cast<const void *>(m_probeCache.publicKey.get()),
-        m_probeCache.publicKeyLength,
+        reinterpret_cast<const void *>(m_probeCache.publicKey.data()),
+        static_cast<ULONG>(m_probeCache.publicKey.size()),
         m_probeCache.assemblyName.c_str(),
         &m_probeCache.assemblyMetadata,
-        NULL,
+        nullptr,
         0,
         m_probeCache.assemblyFlags,
         &probeAssemblyRefToken));
@@ -106,8 +105,8 @@ HRESULT AssemblyProbePrep::EmitProbeReference(
     IfFailRet(pMetadataEmit->DefineMemberRef(
         classTypeRef,
         probeFunctionData->GetName().c_str(),
-        m_probeCache.signature.get(),
-        m_probeCache.signatureLength,
+        m_probeCache.signature.data(),
+        static_cast<ULONG>(m_probeCache.signature.size()),
         &memberRef));
 
     probeMemberRef = memberRef;
@@ -143,7 +142,6 @@ HRESULT AssemblyProbePrep::EmitNecessaryCorLibTypeTokens(
 
 #define GET_OR_DEFINE_TYPE_TOKEN(name, token) \
     IfFailRet(GetTokenForType( \
-        pMetadataImport, \
         pMetadataEmit, \
         corlibAssemblyRef, \
         name, \
@@ -167,13 +165,11 @@ HRESULT AssemblyProbePrep::EmitNecessaryCorLibTypeTokens(
 }
 
 HRESULT AssemblyProbePrep::GetTokenForType(
-    IMetaDataImport* pMetadataImport,
     IMetaDataEmit* pMetadataEmit,
     mdToken resolutionScope,
     tstring name,
     mdToken& typeToken)
 {
-    IfNullRet(pMetadataImport);
     IfNullRet(pMetadataEmit);
 
     HRESULT hr;
@@ -181,18 +177,11 @@ HRESULT AssemblyProbePrep::GetTokenForType(
     typeToken = mdTokenNil;
 
     mdTypeRef typeRefToken;
-    hr = pMetadataImport->FindTypeRef(
+    // DefineTypeRefByName will return an existing token if available.
+    IfFailRet(pMetadataEmit->DefineTypeRefByName(
         resolutionScope,
         name.c_str(),
-        &typeRefToken);
-
-    if (FAILED(hr))
-    {
-        IfFailRet(pMetadataEmit->DefineTypeRefByName(
-            resolutionScope,
-            name.c_str(),
-            &typeRefToken));
-    }
+        &typeRefToken));
 
     typeToken = typeRefToken;
     return S_OK;
@@ -445,16 +434,10 @@ HRESULT AssemblyProbePrep::HydrateProbeMetadata()
     m_probeCache.assemblyFlags = assemblyFlags;
     m_probeCache.assemblyMetadata = metadata;
     m_probeCache.assemblyName = tstring(assemblyName);
-    m_probeCache.publicKeyLength = publicKeyLength;
-    m_probeCache.publicKey.reset(new (nothrow) BYTE[publicKeyLength ]);
-    IfNullRet(m_probeCache.publicKey);
-    IfFailRet(MemoryUtilities::Copy(
-        m_probeCache.publicKey.get(),
-        publicKeyLength,
-        pPublicKey,
-        publicKeyLength));
+    m_probeCache.publicKey = vector<BYTE>(pPublicKey, pPublicKey + publicKeyLength);
 
     PCCOR_SIGNATURE pProbeSignature;
+    ULONG signatureLength;
     IfFailRet(pProbeMetadataImport->GetMethodProps(
         probeFunctionData->GetMethodToken(),
         nullptr,
@@ -463,17 +446,11 @@ HRESULT AssemblyProbePrep::HydrateProbeMetadata()
         nullptr,
         nullptr,
         &pProbeSignature,
-        &m_probeCache.signatureLength,
+        &signatureLength,
         nullptr,
         nullptr));
 
-    m_probeCache.signature.reset(new (nothrow) BYTE[m_probeCache.signatureLength]);
-    IfNullRet(m_probeCache.signature);
-    IfFailRet(MemoryUtilities::Copy(
-        m_probeCache.signature.get(),
-        m_probeCache.signatureLength,
-        pProbeSignature,
-        m_probeCache.signatureLength));
+    m_probeCache.signature = vector<BYTE>(pProbeSignature, pProbeSignature + signatureLength);
 
     m_didHydrateProbeCache = true;
     return S_OK;

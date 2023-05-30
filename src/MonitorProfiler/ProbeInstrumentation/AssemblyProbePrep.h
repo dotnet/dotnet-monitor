@@ -10,6 +10,7 @@
 #include "../Utilities/NameCache.h"
 
 #include <unordered_map>
+#include <vector>
 #include <memory>
 
 typedef struct _COR_LIB_TYPE_TOKENS
@@ -49,12 +50,8 @@ private:
 typedef struct _PROBE_INFO_CACHE
 {
     tstring assemblyName;
-    std::unique_ptr<BYTE[]> signature;
-    ULONG signatureLength;
-
-    std::unique_ptr<BYTE[]> publicKey;
-    ULONG publicKeyLength;
-
+    std::vector<BYTE> signature;
+    std::vector<BYTE> publicKey;
     ASSEMBLYMETADATA assemblyMetadata;
     DWORD assemblyFlags;
 } PROBE_INFO_CACHE;
@@ -92,7 +89,6 @@ class AssemblyProbePrep
         HRESULT HydrateProbeMetadata();
 
         HRESULT GetTokenForType(
-            IMetaDataImport* pMetadataImport,
             IMetaDataEmit* pMetadataEmit,
             mdToken resolutionScope,
             tstring name,
