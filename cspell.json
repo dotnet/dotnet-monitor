@@ -41,6 +41,7 @@
         "gcdumps",
         "globbing",
         "globstar",
+        "HCORENUM",
         "hmac",
         "HMACSHA",
         "hresult",
@@ -63,7 +64,9 @@
         "NTLM",
         "nupkg",
         "openapi",
+        "PCCOR",
         "Pids",
+        "PINVOKE",
         "PKCS",
         "quantile",
         "rclsid",
@@ -85,6 +88,8 @@
         "trce",
         "tstr",
         "ukwn",
+        "Uninstallation",
+        "uniquifier",
         "Unlocalized",
         "Unredacted",
         "upvoting",
@@ -115,7 +120,11 @@
         },
         {
             "name": "error_codes",
-            "pattern": "/(_| )E_\\w+/gm"
+            "pattern": "/[A-Z_]+(E|S)_\\w+/gm"
+        },
+        {
+            "name": "il_opcodes",
+            "pattern": "/CEE_[A-Z_]+/gm"
         },
         {
             "name": "xml_comment_block",
@@ -150,6 +159,7 @@
             "allowCompoundWords": true,
             "ignoreRegExpList": [
                 "preprocessor_conditional",
+                "il_opcodes",
                 "error_codes"
             ]
         },

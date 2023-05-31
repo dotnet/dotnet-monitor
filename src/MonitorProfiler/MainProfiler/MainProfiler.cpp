@@ -9,6 +9,7 @@
 #include "../Logging/StdErrLogger.h"
 #include "../Stacks/StacksEventProvider.h"
 #include "../Stacks/StackSampler.h"
+#include "../ProbeInstrumentation/ProbeInstrumentation.h"
 #include "../Utilities/ThreadUtilities.h"
 #include "corhlpr.h"
 #include "macros.h"
@@ -17,6 +18,8 @@
 using namespace std;
 
 #define IfFailLogRet(EXPR) IfFailLogRet_(m_pLogger, EXPR)
+
+shared_ptr<MainProfiler> MainProfiler::s_profiler;
 
 GUID MainProfiler::GetClsid()
 {
@@ -33,6 +36,8 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
     // These should always be initialized first
     IfFailRet(ProfilerBase::Initialize(pICorProfilerInfoUnk));
 
+    MainProfiler::s_profiler = shared_ptr<MainProfiler>(this);
+
     IfFailRet(InitializeCommon());
 
     return S_OK;
@@ -42,6 +47,10 @@ STDMETHODIMP MainProfiler::Shutdown()
 {
     m_pLogger.reset();
     m_pEnvironment.reset();
+
+    m_pProbeInstrumentation->ShutdownBackgroundService();
+    m_pProbeInstrumentation.reset();
+
     _commandServer->Shutdown();
     _commandServer.reset();
 
@@ -140,7 +149,8 @@ STDMETHODIMP MainProfiler::LoadAsNotificationOnly(BOOL *pbNotificationOnly)
 {
     ExpectedPtr(pbNotificationOnly);
 
-    *pbNotificationOnly = TRUE;
+    // JSFIX: Split this into two profilers, one notification-only and one capable of mutating the target app.
+    *pbNotificationOnly = FALSE;
 
     return S_OK;
 }
@@ -163,6 +173,9 @@ HRESULT MainProfiler::InitializeCommon()
     IfNullRet(_exceptionTracker);
 #endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
 
+    m_pProbeInstrumentation.reset(new (nothrow) ProbeInstrumentation(m_pLogger, m_pCorProfilerInfo));
+    IfNullRet(m_pProbeInstrumentation);
+
     // Set product version environment variable to allow discovery of if the profiler
     // as been applied to a target process. Diagnostic tools must use the diagnostic
     // communication channel's GetProcessEnvironment command to get this value.
@@ -174,12 +187,16 @@ HRESULT MainProfiler::InitializeCommon()
     _exceptionTracker->AddProfilerEventMask(eventsLow);
 #endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
     StackSampler::AddProfilerEventMask(eventsLow);
+    
+    m_pProbeInstrumentation->AddProfilerEventMask(eventsLow);
 
     _threadNameCache = make_shared<ThreadNameCache>();
 
     IfFailRet(m_pCorProfilerInfo->SetEventMask2(
         eventsLow,
         COR_PRF_HIGH_MONITOR::COR_PRF_HIGH_MONITOR_NONE));
+
+    IfFailLogRet(m_pProbeInstrumentation->InitBackgroundService());
 
     //Initialize this last. The CommandServer creates secondary threads, which will be difficult to cleanup if profiler initialization fails.
     IfFailLogRet(InitializeCommandServer());
@@ -313,4 +330,43 @@ HRESULT MainProfiler::ProcessCallstackMessage()
     IfFailLogRet(eventProvider->WriteEndEvent());
 
     return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE MainProfiler::GetReJITParameters(ModuleID moduleId, mdMethodDef methodId, ICorProfilerFunctionControl* pFunctionControl)
+{
+    return m_pProbeInstrumentation->GetReJITParameters(moduleId, methodId, pFunctionControl);
+}
+
+HRESULT STDMETHODCALLTYPE MainProfiler::RequestFunctionProbeUninstallation()
+{
+    return m_pProbeInstrumentation->RequestFunctionProbeUninstallation();
+}
+
+HRESULT STDMETHODCALLTYPE MainProfiler::RegisterFunctionProbe(FunctionID enterProbeId)
+{
+    return m_pProbeInstrumentation->RegisterFunctionProbe(enterProbeId);
+}
+
+HRESULT STDMETHODCALLTYPE MainProfiler::RequestFunctionProbeInstallation(ULONG64 functionIds[], ULONG32 count, ULONG32 argumentBoxingTypes[], ULONG32 argumentCounts[])
+{
+    return m_pProbeInstrumentation->RequestFunctionProbeInstallation(functionIds, count, argumentBoxingTypes, argumentCounts);
+}
+
+#ifndef DLLEXPORT
+#define DLLEXPORT
+#endif
+
+STDAPI DLLEXPORT RegisterFunctionProbe(ULONG64 enterProbeId)
+{
+    return MainProfiler::s_profiler->RegisterFunctionProbe((FunctionID)enterProbeId);
+}
+
+STDAPI DLLEXPORT RequestFunctionProbeInstallation(ULONG64 functionIds[], ULONG32 count, ULONG32 argumentBoxingTypes[], ULONG32 argumentCounts[])
+{
+    return MainProfiler::s_profiler->RequestFunctionProbeInstallation(functionIds, count, argumentBoxingTypes, argumentCounts);
+}
+
+STDAPI DLLEXPORT RequestFunctionProbeUninstallation()
+{
+    return MainProfiler::s_profiler->RequestFunctionProbeUninstallation();
 }
