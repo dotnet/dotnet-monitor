@@ -29,12 +29,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 //
                 if (value is IConvertible ic)
                 {
-                    serializedValue = ic.ToString(provider: null);
+                    serializedValue = ic.ToString(CultureInfo.InvariantCulture);
                     doWrapValue = (value is string);
                 }
                 else if (value is IFormattable formattable)
                 {
-                    serializedValue = formattable.ToString(format: null, formatProvider: null);
+                    serializedValue = formattable.ToString(format: null, CultureInfo.InvariantCulture);
                     doWrapValue = true;
                 }
                 else
