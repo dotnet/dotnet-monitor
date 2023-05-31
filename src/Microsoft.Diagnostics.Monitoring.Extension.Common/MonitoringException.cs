@@ -5,7 +5,7 @@ using System;
 
 namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 {
-    internal class MonitoringException : Exception
+    public class MonitoringException : Exception
     {
         public MonitoringException(string message) : base(message) { }
 
