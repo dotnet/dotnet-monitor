@@ -8,6 +8,7 @@
 #include "../Environment/EnvironmentHelper.h"
 #include "../Logging/Logger.h"
 #include "../Communication/CommandServer.h"
+#include "../ProbeInstrumentation/ProbeInstrumentation.h"
 #include "../Utilities/ThreadNameCache.h"
 #include <memory>
 
@@ -19,6 +20,9 @@
 class MainProfiler final :
     public ProfilerBase
 {
+public:
+    static std::shared_ptr<MainProfiler> s_profiler;
+
 private:
     std::shared_ptr<IEnvironment> m_pEnvironment;
     std::shared_ptr<EnvironmentHelper> _environmentHelper;
@@ -28,6 +32,8 @@ private:
     std::shared_ptr<ThreadDataManager> _threadDataManager;
     std::unique_ptr<ExceptionTracker> _exceptionTracker;
 #endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
+    std::unique_ptr<ProbeInstrumentation> m_pProbeInstrumentation;
+
 
 public:
     static GUID GetClsid();
@@ -42,6 +48,12 @@ public:
     STDMETHOD(ExceptionUnwindFunctionEnter)(FunctionID functionId) override;
     STDMETHOD(InitializeForAttach)(IUnknown* pCorProfilerInfoUnk, void* pvClientData, UINT cbClientData) override;
     STDMETHOD(LoadAsNotificationOnly)(BOOL *pbNotificationOnly) override;
+    STDMETHOD(GetReJITParameters)(ModuleID moduleId, mdMethodDef methodId, ICorProfilerFunctionControl* pFunctionControl) override;
+
+public:
+    STDMETHOD(RegisterFunctionProbe)(FunctionID enterProbeId);
+    STDMETHOD(RequestFunctionProbeInstallation)(ULONG64 functionIds[], ULONG32 count, ULONG32 argumentBoxingTypes[], ULONG32 argumentCounts[]);
+    STDMETHOD(RequestFunctionProbeUninstallation)();
 
 private:
     HRESULT InitializeCommon();

@@ -8,6 +8,17 @@ TypeNameUtilities::TypeNameUtilities(ICorProfilerInfo12* profilerInfo) : _profil
 {
 }
 
+HRESULT TypeNameUtilities::CacheModuleNames(NameCache& nameCache, ModuleID moduleId)
+{
+    std::shared_ptr<ModuleData> moduleData;
+    if (!nameCache.TryGetModuleData(moduleId, moduleData))
+    {
+        return GetModuleInfo(nameCache, moduleId);
+    }
+
+    return S_OK;
+}
+
 HRESULT TypeNameUtilities::CacheNames(NameCache& nameCache, ClassID classId)
 {
     std::shared_ptr<ClassData> classData;
@@ -75,7 +86,7 @@ HRESULT TypeNameUtilities::GetFunctionInfo(NameCache& nameCache, FunctionID id, 
 
     IfFailRet(GetModuleInfo(nameCache, moduleId));
 
-    nameCache.AddFunctionData(moduleId, id, tstring(funcName), classId, classToken, typeArgs, typeArgsCount);
+    nameCache.AddFunctionData(moduleId, id, tstring(funcName), classId, token, classToken, typeArgs, typeArgsCount);
 
     // If the ClassID returned from GetFunctionInfo is 0, then the function is a shared generic function.
     if (classId != 0)

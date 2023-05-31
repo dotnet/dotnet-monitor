@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <cwctype>
+#include <tstring.h>
 #include <string.h>
 
 #if !defined(_IMPLEMENT_STRNCPY_S)
@@ -20,6 +22,26 @@
 class StringUtilities
 {
     public:
+        static bool EndsWithCaseInsensitive(const tstring& str, const tstring& postfix)
+        {
+            if (str.length() < postfix.length())
+            {
+                return false;
+            }
+
+            size_t offset = str.length() - postfix.length();
+            for (auto& postfixChar : postfix)
+            {
+                if (std::towlower(str[offset]) != std::towlower(postfixChar))
+                {
+                    return false;
+                }
+                offset++;
+            }
+
+            return true;
+        }
+
         template<size_t DestinationSize>
         static HRESULT Copy(char (&destination)[DestinationSize], const char* source)
         {

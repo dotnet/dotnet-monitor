@@ -192,9 +192,9 @@ const std::unordered_map<std::pair<ModuleID, mdTypeDef>, std::shared_ptr<TokenDa
     return _names;
 }
 
-void NameCache::AddFunctionData(ModuleID moduleId, FunctionID id, tstring&& name, ClassID parent, mdTypeDef parentToken, ClassID* typeArgs, int typeArgsCount)
+void NameCache::AddFunctionData(ModuleID moduleId, FunctionID id, tstring&& name, ClassID parent, mdToken methodToken, mdTypeDef parentToken, ClassID* typeArgs, int typeArgsCount)
 {
-    std::shared_ptr<FunctionData> functionData = std::make_shared<FunctionData>(moduleId, parent, std::move(name), parentToken);
+    std::shared_ptr<FunctionData> functionData = std::make_shared<FunctionData>(moduleId, parent, std::move(name), methodToken, parentToken);
     for (int i = 0; i < typeArgsCount; i++)
     {
         functionData->AddTypeArg(typeArgs[i]);

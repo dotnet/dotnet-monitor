@@ -25,7 +25,7 @@ public:
     bool TryGetTokenData(ModuleID modId, mdTypeDef token, std::shared_ptr<TokenData>& data);
 
     void AddModuleData(ModuleID moduleId, tstring&& name);
-    void AddFunctionData(ModuleID moduleId, FunctionID id, tstring&& name, ClassID parent, mdTypeDef parentToken, ClassID* typeArgs, int typeArgsCount);
+    void AddFunctionData(ModuleID moduleId, FunctionID id, tstring&& name, ClassID parent, mdToken methodToken, mdTypeDef parentToken, ClassID* typeArgs, int typeArgsCount);
     void AddClassData(ModuleID moduleId, ClassID id, mdTypeDef typeDef, ClassFlags flags, ClassID* typeArgs, int typeArgsCount);
     void AddTokenData(ModuleID moduleId, mdTypeDef typeDef, mdTypeDef outerToken, tstring&& name);
 
