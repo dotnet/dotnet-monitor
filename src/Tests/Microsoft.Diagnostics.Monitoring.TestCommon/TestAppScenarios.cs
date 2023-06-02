@@ -62,6 +62,32 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             }
         }
 
+        public static class FunctionProbes
+        {
+            public const string Name = nameof(FunctionProbes);
+
+            public static class Commands
+            {
+                public const string ProbeInstallation = nameof(ProbeInstallation);
+                public const string ProbeUninstallation = nameof(ProbeUninstallation);
+                public const string ProbeReinstallation = nameof(ProbeReinstallation);
+
+                public const string UnsupportedParameters = nameof(UnsupportedParameters);
+                public const string NoParameters = nameof(NoParameters);
+                public const string GenericFunctions = nameof(GenericFunctions);
+                public const string ExceptionRegionAtBeginningOfFunction = nameof(ExceptionRegionAtBeginningOfFunction);
+
+                public const string CapturePrimitives = nameof(CapturePrimitives);
+                public const string CaptureValueTypes = nameof(CaptureValueTypes);
+                public const string CaptureImplicitThis = nameof(CaptureImplicitThis);
+                public const string CaptureExplicitThis = nameof(CaptureExplicitThis);
+
+                /* Fault injection */
+                public const string ExceptionThrowingProbe = nameof(ExceptionThrowingProbe);
+
+            }
+        }
+
         public static class Stacks
         {
             public const string Name = nameof(Stacks);

@@ -46,6 +46,19 @@ namespace SampleMethods
 
         public static void NoArgs() { }
 
+        public static string ExceptionRegionAtBeginningOfFunction(object myObject)
+        {
+            try
+            {
+                return myObject.ToString();
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+
         public static void ExplicitThis(this object thisObj) { }
 
         public static void RefStruct(ref MyRefStruct myRefStruct) { }
