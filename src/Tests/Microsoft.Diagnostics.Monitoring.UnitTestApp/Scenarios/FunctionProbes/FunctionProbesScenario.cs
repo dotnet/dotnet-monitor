@@ -9,9 +9,11 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.ObjectiveC;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using static SampleMethods.StaticTestMethodSignatures;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 {
@@ -42,6 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 { TestAppScenarios.FunctionProbes.Commands.CaptureExplicitThis, Test_CaptureExplicitThisAsync},
                 { TestAppScenarios.FunctionProbes.Commands.NoParameters, Test_NoParametersAsync},
                 { TestAppScenarios.FunctionProbes.Commands.UnsupportedParameters, Test_UnsupportedParametersAsync},
+                { TestAppScenarios.FunctionProbes.Commands.ValueTypeImplicitThis, Test_ValueTypeImplicitThisAsync},
 
                 /* Interesting functions */
                 { TestAppScenarios.FunctionProbes.Commands.GenericFunctions, Test_GenericFunctionsAsync},
@@ -157,6 +160,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             Assert.Equal(3, probeProxy.GetProbeInvokeCount(method));
         }
 
+        public static async Task Test_ValueTypeImplicitThisAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy)
+        {
+            MethodInfo method = typeof(SampleNestedStruct).GetMethod(nameof(SampleNestedStruct.DoWork));
+            SampleNestedStruct nestedStruct = new();
+            await RunTestCaseAsync(probeManager, probeProxy, method, new object[]
+            {
+                5
+            }, nestedStruct, capturedThisObj: null);
+        }
+
         private static async Task Test_UnsupportedParametersAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy)
         {
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.RefParam));
@@ -176,7 +189,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             Assert.Equal(1, probeProxy.GetProbeInvokeCount(method));
         }
 
-        private static async Task RunTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj = null)
+        private static Task RunTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj)
+        {
+            return RunTestCaseAsync(probeManager, probeProxy, method, args, thisObj, thisObj);
+        }
+
+        private static async Task RunTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj = null, object capturedThisObj = null)
         {
             Assert.NotNull(method);
 
@@ -185,7 +203,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 if (thisObj != null)
                 {
                     Assert.NotEmpty(actualArgs);
-                    Assert.Equal(thisObj, actualArgs[0]);
+                    Assert.Equal(capturedThisObj, actualArgs[0]);
                     Assert.Equal(args, actualArgs.Skip(1));
                 }
                 else

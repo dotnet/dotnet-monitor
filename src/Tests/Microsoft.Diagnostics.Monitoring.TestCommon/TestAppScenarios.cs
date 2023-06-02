@@ -72,8 +72,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string ProbeUninstallation = nameof(ProbeUninstallation);
                 public const string ProbeReinstallation = nameof(ProbeReinstallation);
 
-                public const string UnsupportedParameters = nameof(UnsupportedParameters);
-                public const string NoParameters = nameof(NoParameters);
                 public const string GenericFunctions = nameof(GenericFunctions);
                 public const string ExceptionRegionAtBeginningOfFunction = nameof(ExceptionRegionAtBeginningOfFunction);
 
@@ -81,6 +79,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string CaptureValueTypes = nameof(CaptureValueTypes);
                 public const string CaptureImplicitThis = nameof(CaptureImplicitThis);
                 public const string CaptureExplicitThis = nameof(CaptureExplicitThis);
+                public const string NoParameters = nameof(NoParameters);
+                public const string UnsupportedParameters = nameof(UnsupportedParameters);
+                public const string ValueTypeImplicitThis = nameof(ValueTypeImplicitThis);
+
             }
         }
 
