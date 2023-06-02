@@ -9,7 +9,32 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Tools\dotnet-monitor\ToolIdentifiers.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\Profiler\ProfilerIdentifiers.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\DisposableHelper.cs" Link="DisposableHelper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ParameterCapturing\ParameterCapturingStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ParameterCapturingStrings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="ParameterCapturing\ParameterCapturingStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ParameterCapturingStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
