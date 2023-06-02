@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices.ObjectiveC;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
