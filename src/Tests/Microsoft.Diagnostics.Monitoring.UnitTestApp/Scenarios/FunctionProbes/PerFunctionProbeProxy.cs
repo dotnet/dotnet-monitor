@@ -29,16 +29,26 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             _probe(args);
         }
     }
-    internal sealed class FunctionProbeRedirector : IFunctionProbes
+    internal sealed class PerFunctionProbeProxy : IFunctionProbes
     {
         private ConcurrentDictionary<ulong, PerFunctionProbeWrapper> _perFunctionProbes = new();
-        public FunctionProbeRedirector()
+        public PerFunctionProbeProxy()
         {
         }
 
         public void RegisterPerFunctionProbe(MethodInfo method, Action<object[]> probe)
         {
             _perFunctionProbes[method.GetFunctionId()] = new PerFunctionProbeWrapper(probe);
+        }
+
+        public void ClearPerFunctionProbe(MethodInfo method)
+        {
+            _perFunctionProbes[method.GetFunctionId()] = null;
+        }
+
+        public void ClearAllProbes()
+        {
+            _perFunctionProbes.Clear();
         }
 
         public int GetProbeInvokeCount(MethodInfo method)
@@ -55,7 +65,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         {
             if (!_perFunctionProbes.TryGetValue(uniquifier, out PerFunctionProbeWrapper probe))
             {
-                // todo: Error
                 return;
             }
 

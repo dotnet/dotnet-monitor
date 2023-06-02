@@ -25,6 +25,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
 
+        public FunctionProbesTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
+        {
+            _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
+            _outputHelper = outputHelper;
+        }
+
+        /// <summary>
+        /// Retrieves all available function probes test scenarios for all available profiler
+        /// architectures.
+        /// </summary>
         public static IEnumerable<object[]> GetAllTestScenarios()
         {
             List<object[]> arguments = new();
@@ -45,12 +55,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
 
             return arguments;
-        }
-
-        public FunctionProbesTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
-        {
-            _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
-            _outputHelper = outputHelper;
         }
 
         [Theory]

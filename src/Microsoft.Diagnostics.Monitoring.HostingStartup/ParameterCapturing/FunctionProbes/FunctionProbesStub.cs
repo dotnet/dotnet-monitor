@@ -8,6 +8,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         private delegate void EnterProbeDelegate(ulong uniquifier, object[] args);
         private static readonly EnterProbeDelegate s_fixedEnterProbeDelegate = EnterProbeStub;
 
+        internal static InstrumentedMethodCache InstrumentedMethodCache { get; private set; } = new();
+
         internal static IFunctionProbes? Instance { get; set; }
 
         internal static ulong GetProbeFunctionId()

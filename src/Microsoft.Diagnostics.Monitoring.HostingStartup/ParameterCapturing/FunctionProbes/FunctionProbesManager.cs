@@ -25,15 +25,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             uint count,
             [MarshalAs(UnmanagedType.LPArray)] uint[] boxingTokens,
             [MarshalAs(UnmanagedType.LPArray)] uint[] boxingTokenCounts);
-
-
-        public readonly InstrumentedMethodCache InstrumentedMethodCache = new();
+       
         private readonly object _requestLocker = new();
         private long _disposedState;
 
         private readonly string? _profilerModulePath;
 
-        public FunctionProbesManager()
+        public FunctionProbesManager(IFunctionProbes probes)
         {
             _profilerModulePath = Environment.GetEnvironmentVariable(ProfilerIdentifiers.EnvironmentVariables.ModulePath);
             if (!File.Exists(_profilerModulePath))
@@ -44,10 +42,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             NativeLibrary.SetDllImportResolver(typeof(ParameterCapturingService).Assembly, ResolveDllImport);
 
             RegisterFunctionProbe(FunctionProbesStub.GetProbeFunctionId());
-        }
-
-        public static void SetFunctionProbes(IFunctionProbes probes)
-        {
             FunctionProbesStub.Instance = probes;
         }
 
@@ -73,7 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         {
             lock (_requestLocker)
             {
-                InstrumentedMethodCache.Clear();
+                FunctionProbesStub.InstrumentedMethodCache.Clear();
                 RequestFunctionProbeUninstallation();
             }
         }
@@ -87,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
             lock (_requestLocker)
             {
-                InstrumentedMethodCache.Clear();
+                FunctionProbesStub.InstrumentedMethodCache.Clear();
                 List<ulong> functionIds = new(methods.Count);
                 List<uint> argumentCounts = new(methods.Count);
                 List<uint> boxingTokens = new();
@@ -101,7 +95,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                     }
 
                     uint[] methodBoxingTokens = BoxingTokens.GetBoxingTokens(method);
-                    if (!InstrumentedMethodCache.TryAdd(method, methodBoxingTokens))
+                    if (!FunctionProbesStub.InstrumentedMethodCache.TryAdd(method, methodBoxingTokens))
                     {
                         return;
                     }
