@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace Microsoft.Diagnostics.Monitoring.HostingStartup.FunctionalTests
+namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     [Collection(DefaultCollectionFixture.Name)]

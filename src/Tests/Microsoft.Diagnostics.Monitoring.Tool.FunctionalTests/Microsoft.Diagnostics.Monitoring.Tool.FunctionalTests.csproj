@@ -97,7 +97,6 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.ConfigurationSchema" />
-    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.HostingStartup.FunctionalTests" />
   </ItemGroup>
 
   <ItemGroup>
