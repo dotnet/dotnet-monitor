@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
 
-        public static IEnumerable<object[]> GetTestScenarios()
+        public static IEnumerable<object[]> GetAllTestScenarios()
         {
             List<object[]> arguments = new();
 
@@ -54,8 +54,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         [Theory]
-        [MemberData(nameof(FunctionProbesTests.GetTestScenarios), MemberType = typeof(FunctionProbesTests))]
-        public async Task TestScenario(Architecture targetArchitecture, string command)
+        [MemberData(nameof(FunctionProbesTests.GetAllTestScenarios), MemberType = typeof(FunctionProbesTests))]
+        public async Task RunTestScenario(Architecture targetArchitecture, string command)
         {
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
