@@ -76,16 +76,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             if (!DisposableHelper.CanDispose(ref _disposedState))
                 return;
 
-            if (_isAvailable)
+            try
             {
-                try
-                {
-                    _probeManager?.Dispose();
-                }
-                catch
-                {
+                _probeManager?.Dispose();
+            }
+            catch
+            {
 
-                }
             }
 
             base.Dispose();

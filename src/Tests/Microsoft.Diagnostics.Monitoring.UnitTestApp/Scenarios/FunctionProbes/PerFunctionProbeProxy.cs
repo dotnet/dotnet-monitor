@@ -11,21 +11,21 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
     internal sealed class PerFunctionProbeWrapper
     {
         Action<object[]> _probe;
-        private int _callCount;
+        private int _invokeCount;
 
         public PerFunctionProbeWrapper(Action<object[]> probe)
         {
             _probe = probe;
         }
 
-        public int GetCallCount()
+        public int GetInvokeCount()
         {
-            return _callCount;
+            return _invokeCount;
         }
 
         public void Invoke(object[] args)
         {
-            Interlocked.Increment(ref _callCount);
+            Interlocked.Increment(ref _invokeCount);
             _probe(args);
         }
     }
@@ -55,7 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 return 0;
             }
 
-            return probe.GetCallCount();
+            return probe.GetInvokeCount();
         }
 
         public void EnterProbe(ulong uniquifier, object[] args)
