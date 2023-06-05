@@ -31,9 +31,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _exceptions.Add(new ExceptionInstance(exceptionId, message));
         }
 
-        public void AddFunction(ulong id, ulong classId, uint classToken, ulong moduleId, string name, ulong[] typeArgs)
+        public void AddFunction(ulong id, ulong classId, uint classToken, ulong moduleId, string name, ulong[] typeArgs, ulong[] parameters)
         {
-            _nameCache.FunctionData.TryAdd(id, new FunctionData(name, classId, classToken, moduleId, typeArgs ?? Array.Empty<ulong>()));
+            _nameCache.FunctionData.TryAdd(id, new FunctionData(name, classId, classToken, moduleId, typeArgs ?? Array.Empty<ulong>(), parameters ?? Array.Empty<ulong>()));
         }
 
         public void AddModule(ulong id, string moduleName)

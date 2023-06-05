@@ -91,6 +91,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             catch (Exception) { }
 
             // RTDynamicMethod does not implement GetGenericArguments.
+
+            ParameterInfo[] parameters = Array.Empty<ParameterInfo>();
+            try
+            {
+                parameters = method.GetParameters();
+            }
+            catch (Exception) { }
+
             Type[] genericArguments = Array.Empty<Type>();
             try
             {
@@ -103,7 +111,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                 AddOrDefault(method.DeclaringType),
                 metadataToken,
                 GetOrAdd(method.Module),
-                GetOrAdd(genericArguments)
+                GetOrAdd(genericArguments),
+                GetOrAdd(parameters)
                 );
 
             if (_nameCache.FunctionData.TryAdd(methodId, data))
@@ -249,6 +258,24 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                 for (int i = 0; i < types.Length; i++)
                 {
                     classIds[i] = GetOrAdd(types[i]);
+                }
+            }
+            else
+            {
+                classIds = Array.Empty<ulong>();
+            }
+            return classIds;
+        }
+
+        private ulong[] GetOrAdd(ParameterInfo[] parameters)
+        {
+            ulong[] classIds;
+            if (parameters.Length > 0)
+            {
+                classIds = new ulong[parameters.Length];
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    classIds[i] = GetOrAdd(parameters[i].ParameterType); // Not sure if this is okay
                 }
             }
             else
