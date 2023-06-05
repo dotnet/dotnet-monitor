@@ -194,7 +194,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             {
                 null
             },
-            null, null, token);
+            hasImplicitThis: false, capturedThisObj: null, token);
         }
 
         private static Task RunAsyncTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, CancellationToken token)
@@ -222,7 +222,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             return RunTestCaseCoreAsync(probeManager, probeProxy, method, () =>
             {
                 return (Task)method.Invoke(thisObj, args);
-            }, args, thisObj, capturedThisObj, token);
+            }, args, thisObj != null, capturedThisObj, token);
         }
 
         private static Task RunTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, object capturedThisObj, CancellationToken token)
@@ -231,16 +231,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             {
                 method.Invoke(thisObj, args);
                 return Task.CompletedTask;
-            }, args, thisObj, capturedThisObj, token);
+            }, args, thisObj != null, capturedThisObj, token);
         }
 
-        private static async Task RunTestCaseCoreAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, Func<Task> invoker, object[] args, object thisObj, object capturedThisObj, CancellationToken token)
+        private static async Task RunTestCaseCoreAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, Func<Task> invoker, object[] args, bool hasImplicitThis, object capturedThisObj, CancellationToken token)
         {
             Assert.NotNull(method);
 
             probeProxy.RegisterPerFunctionProbe(method, (object[] actualArgs) =>
             {
-                if (thisObj != null)
+                if (hasImplicitThis)
                 {
                     Assert.NotEmpty(actualArgs);
                     Assert.Equal(capturedThisObj, actualArgs[0]);
