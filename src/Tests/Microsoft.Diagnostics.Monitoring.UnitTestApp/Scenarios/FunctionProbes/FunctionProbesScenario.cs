@@ -18,6 +18,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 {
     internal static class FunctionProbesScenario
     {
+        private delegate Task TestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token);
+
         public static CliCommand Command()
         {
             CliCommand command = new(TestAppScenarios.FunctionProbes.Name);
@@ -25,11 +27,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             return command;
         }
 
-        private delegate Task TestCase(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy);
-
         public static Task<int> ExecuteAsync(ParseResult result, CancellationToken token)
         {
-            Dictionary<string, TestCase> testCases = new()
+            Dictionary<string, TestCaseAsync> testCases = new()
             {
                 /* Probe management */
                 { TestAppScenarios.FunctionProbes.Commands.ProbeInstallation, Test_ProbeInstallationAsync},
@@ -41,13 +41,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 { TestAppScenarios.FunctionProbes.Commands.CaptureValueTypes, Test_CaptureValueTypesAsync},
                 { TestAppScenarios.FunctionProbes.Commands.CaptureImplicitThis, Test_CaptureImplicitThisAsync},
                 { TestAppScenarios.FunctionProbes.Commands.CaptureExplicitThis, Test_CaptureExplicitThisAsync},
-                { TestAppScenarios.FunctionProbes.Commands.NoParameters, Test_NoParametersAsync},
-                { TestAppScenarios.FunctionProbes.Commands.UnsupportedParameters, Test_UnsupportedParametersAsync},
-                { TestAppScenarios.FunctionProbes.Commands.ValueTypeImplicitThis, Test_ValueTypeImplicitThisAsync},
+                { TestAppScenarios.FunctionProbes.Commands.CaptureNoParameters, Test_CaptureNoParametersAsync},
+                { TestAppScenarios.FunctionProbes.Commands.CaptureUnsupportedParameters, Test_CaptureUnsupportedParametersAsync},
+                { TestAppScenarios.FunctionProbes.Commands.CaptureValueTypeImplicitThis, Test_CaptureValueTypeImplicitThisAsync},
 
                 /* Interesting functions */
-                { TestAppScenarios.FunctionProbes.Commands.GenericFunctions, Test_GenericFunctionsAsync},
-                { TestAppScenarios.FunctionProbes.Commands.ExceptionRegionAtBeginningOfFunction, Test_ExceptionRegionAtBeginningOfFunctionAsync},
+                { TestAppScenarios.FunctionProbes.Commands.AsyncMethod, Test_AsyncMethodAsync},
+                { TestAppScenarios.FunctionProbes.Commands.GenericMethods, Test_GenericMethodsAsync},
+                { TestAppScenarios.FunctionProbes.Commands.ExceptionRegionAtBeginningOfMethod, Test_ExceptionRegionAtBeginningOfMethodAsync},
 
             };
 
@@ -57,32 +58,32 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 using FunctionProbesManager probeManager = new(probeProxy);
 
                 string command = await ScenarioHelpers.WaitForCommandAsync(testCases.Keys.ToArray(), logger);
-                await testCases[command](probeManager, probeProxy);
+                await testCases[command](probeManager, probeProxy, token);
                 probeProxy.ClearAllProbes();
 
                 return 0;
             }, token);
         }
 
-        private static async Task Test_ProbeInstallationAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy)
+        private static async Task Test_ProbeInstallationAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
-            await WaitForProbeInstallationAsync(probeManager, probeProxy, Array.Empty<MethodInfo>(), CancellationToken.None);
+            await WaitForProbeInstallationAsync(probeManager, probeProxy, Array.Empty<MethodInfo>(), token);
         }
 
-        private static async Task Test_ProbeUninstallationAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy)
+        private static async Task Test_ProbeUninstallationAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
-            await WaitForProbeInstallationAsync(probeManager, probeProxy, Array.Empty<MethodInfo>(), CancellationToken.None);
-            await WaitForProbeUninstallationAsync(probeManager, probeProxy, CancellationToken.None);
+            await WaitForProbeInstallationAsync(probeManager, probeProxy, Array.Empty<MethodInfo>(), token);
+            await WaitForProbeUninstallationAsync(probeManager, probeProxy, token);
         }
 
-        private static async Task Test_ProbeReinstallationAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy)
+        private static async Task Test_ProbeReinstallationAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
-            await WaitForProbeInstallationAsync(probeManager, probeProxy, Array.Empty<MethodInfo>(), CancellationToken.None);
-            await WaitForProbeUninstallationAsync(probeManager, probeProxy, CancellationToken.None);
-            await WaitForProbeInstallationAsync(probeManager, probeProxy, Array.Empty<MethodInfo>(), CancellationToken.None);
+            await WaitForProbeInstallationAsync(probeManager, probeProxy, Array.Empty<MethodInfo>(), token);
+            await WaitForProbeUninstallationAsync(probeManager, probeProxy, token);
+            await WaitForProbeInstallationAsync(probeManager, probeProxy, Array.Empty<MethodInfo>(), token);
         }
 
-        private static async Task Test_CapturePrimitivesAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy)
+        private static async Task Test_CapturePrimitivesAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.Primitives));
             await RunTestCaseAsync(probeManager, probeProxy, method, new object[]
@@ -99,58 +100,67 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 ulong.MaxValue,
                 float.MaxValue,
                 double.MaxValue
-            });
+            }, token);
         }
 
-        private static async Task Test_CaptureValueTypesAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy)
+        private static async Task Test_CaptureValueTypesAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.ValueType_TypeDef));
             await RunTestCaseAsync(probeManager, probeProxy, method, new object[]
             {
                 MyEnum.ValueA
-            });
+            }, token);
         }
 
-        private static async Task Test_CaptureImplicitThisAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy)
+        private static async Task Test_CaptureImplicitThisAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
             MethodInfo method = typeof(TestMethodSignatures).GetMethod(nameof(TestMethodSignatures.ImplicitThis));
             TestMethodSignatures testMethodSignatures = new();
-            await RunTestCaseAsync(probeManager, probeProxy, method, Array.Empty<object>(), testMethodSignatures);
+            await RunTestCaseAsync(probeManager, probeProxy, method, Array.Empty<object>(), testMethodSignatures, token);
         }
 
-        private static async Task Test_CaptureExplicitThisAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy)
+        private static async Task Test_CaptureExplicitThisAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.ExplicitThis));
             TestMethodSignatures testMethodSignatures = new();
             await RunTestCaseAsync(probeManager, probeProxy, method, new object[]
             {
                 testMethodSignatures
-            });
+            }, token);
         }
 
-        private static async Task Test_NoParametersAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy)
+        private static async Task Test_CaptureNoParametersAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.NoArgs));
-            await RunTestCaseAsync(probeManager, probeProxy, method, Array.Empty<object>());
+            await RunTestCaseAsync(probeManager, probeProxy, method, Array.Empty<object>(), token);
         }
 
-        private static async Task Test_ExceptionRegionAtBeginningOfFunctionAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy)
+        private static async Task Test_ExceptionRegionAtBeginningOfMethodAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
-            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.ExceptionRegionAtBeginningOfFunction));
+            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.ExceptionRegionAtBeginningOfMethod));
             await RunTestCaseAsync(probeManager, probeProxy, method, new object[]
             {
                 null
-            });
+            }, token);
         }
 
-        private static async Task Test_GenericFunctionsAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy)
+        private static async Task Test_AsyncMethodAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.AsyncMethod));
+            await RunAsyncTestCaseAsync(probeManager, probeProxy, method, new object[]
+            {
+                5
+            }, token);
+        }
+
+        private static async Task Test_GenericMethodsAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
             MethodInfo method = Type.GetType($"{nameof(SampleMethods)}.GenericTestMethodSignatures`2").GetMethod("GenericParameters");
             Assert.NotNull(method);
 
             probeProxy.RegisterPerFunctionProbe(method, (object[] actualArgs) => { });
 
-            await WaitForProbeInstallationAsync(probeManager, probeProxy, new[] { method }, CancellationToken.None);
+            await WaitForProbeInstallationAsync(probeManager, probeProxy, new[] { method }, token);
 
             new GenericTestMethodSignatures<bool, int>().GenericParameters(false, 10, "hello world");
             new GenericTestMethodSignatures<string, object>().GenericParameters("", new object(), 10);
@@ -159,41 +169,72 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             Assert.Equal(3, probeProxy.GetProbeInvokeCount(method));
         }
 
-        public static async Task Test_ValueTypeImplicitThisAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy)
+        public static async Task Test_CaptureValueTypeImplicitThisAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
             MethodInfo method = typeof(SampleNestedStruct).GetMethod(nameof(SampleNestedStruct.DoWork));
             SampleNestedStruct nestedStruct = new();
             await RunTestCaseAsync(probeManager, probeProxy, method, new object[]
             {
                 5
-            }, nestedStruct, capturedThisObj: null);
+            }, nestedStruct, capturedThisObj: null, token);
         }
 
-        private static async Task Test_UnsupportedParametersAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy)
+        private static async Task Test_CaptureUnsupportedParametersAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.RefParam));
-            Assert.NotNull(method);
 
-            probeProxy.RegisterPerFunctionProbe(method, (object[] actualArgs) =>
+            await RunTestCaseCoreAsync(probeManager, probeProxy, method, () =>
             {
-                object arg1 = Assert.Single(actualArgs);
-                Assert.Null(arg1);
-            });
+                int i = 10;
+                StaticTestMethodSignatures.RefParam(ref i);
 
-            await WaitForProbeInstallationAsync(probeManager, probeProxy, new[] { method }, CancellationToken.None);
-
-            int i = 10;
-            StaticTestMethodSignatures.RefParam(ref i);
-
-            Assert.Equal(1, probeProxy.GetProbeInvokeCount(method));
+                return Task.CompletedTask;
+            },
+            new object[]
+            {
+                null
+            },
+            null, null, token);
         }
 
-        private static Task RunTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj)
+        private static Task RunAsyncTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, CancellationToken token)
         {
-            return RunTestCaseAsync(probeManager, probeProxy, method, args, thisObj, thisObj);
+            return RunAsyncTestCaseAsync(probeManager, probeProxy, method, args, thisObj, thisObj, token);
         }
 
-        private static async Task RunTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj = null, object capturedThisObj = null)
+        private static Task RunAsyncTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, CancellationToken token)
+        {
+            return RunAsyncTestCaseAsync(probeManager, probeProxy, method, args, null, null, token);
+        }
+
+        private static Task RunTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, CancellationToken token)
+        {
+            return RunTestCaseAsync(probeManager, probeProxy, method, args, thisObj, thisObj, token);
+        }
+
+        private static Task RunTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, CancellationToken token)
+        {
+            return RunTestCaseAsync(probeManager, probeProxy, method, args, null, null, token);
+        }
+
+        private static Task RunAsyncTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, object capturedThisObj, CancellationToken token)
+        {
+            return RunTestCaseCoreAsync(probeManager, probeProxy, method, () =>
+            {
+                return (Task)method.Invoke(thisObj, args);
+            }, args, thisObj, capturedThisObj, token);
+        }
+
+        private static Task RunTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, object capturedThisObj, CancellationToken token)
+        {
+            return RunTestCaseCoreAsync(probeManager, probeProxy, method, () =>
+            {
+                method.Invoke(thisObj, args);
+                return Task.CompletedTask;
+            }, args, thisObj, capturedThisObj, token);
+        }
+
+        private static async Task RunTestCaseCoreAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, Func<Task> invoker, object[] args, object thisObj, object capturedThisObj, CancellationToken token)
         {
             Assert.NotNull(method);
 
@@ -211,9 +252,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 }
             });
 
-            await WaitForProbeInstallationAsync(probeManager, probeProxy, new[] { method }, CancellationToken.None);
+            await WaitForProbeInstallationAsync(probeManager, probeProxy, new[] { method }, token);
 
-            method.Invoke(thisObj, args);
+            await invoker().WaitAsync(token);
 
             Assert.Equal(1, probeProxy.GetProbeInvokeCount(method));
         }
@@ -236,7 +277,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                     return;
                 }
 
-                await Task.Delay(100, token).ConfigureAwait(false);
+                await Task.Delay(100, token);
             }
 
             token.ThrowIfCancellationRequested();
@@ -269,7 +310,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                     return;
                 }
 
-                await Task.Delay(100, token).ConfigureAwait(false);
+                await Task.Delay(100, token);
             }
 
             token.ThrowIfCancellationRequested();
