@@ -63,54 +63,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             return true;
         }
 
-        public bool TryGetClassId(ulong classId, out ClassData data)
-        {
-            data = null;
-
-            if (!_nameCache.ClassData.TryGetValue(classId, out ClassData instance))
-                return false;
-
-            data = instance;
-
-            return true;
-        }
-
-        public bool TryGetToken(ModuleScopedToken moduleScopedToken, out TokenData data)
-        {
-            data = null;
-
-            if (!_nameCache.TokenData.TryGetValue(moduleScopedToken, out TokenData instance))
-                return false;
-
-            data = instance;
-
-            return true;
-        }
-
-        public bool TryGetModuleId(ulong moduleId, out ModuleData data)
-        {
-            data = null;
-
-            if (!_nameCache.ModuleData.TryGetValue(moduleId, out ModuleData instance))
-                return false;
-
-            data = instance;
-
-            return true;
-        }
-
-        public bool TryGetFunctionId(ulong functionId, out FunctionData data)
-        {
-            data = null;
-
-            if (!_nameCache.FunctionData.TryGetValue(functionId, out FunctionData instance))
-                return false;
-
-            data = instance;
-
-            return true;
-        }
-
         public bool TryGetStackFrameIds(ulong stackFrameId, out ulong methodId, out int ilOffset)
         {
             methodId = 0;

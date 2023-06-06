@@ -153,9 +153,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                             frameModel.ClassName,
                             frameModel.MethodName));
                 }
-
-                writer.WriteLine();
             }
+
+            await writer.WriteLineAsync();
 
             await writer.FlushAsync();
         }

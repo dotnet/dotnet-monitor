@@ -126,22 +126,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             {
                 if (cache.TryGetStackFrameIds(stackFrameId, out ulong methodId, out int ilOffset))
                 {
-                    if (cache.TryGetFunctionId(methodId, out FunctionData functionData))
+                    if (cache.NameCache.FunctionData.TryGetValue(methodId, out FunctionData functionData))
                     {
                         callStackResult.NameCache.FunctionData.TryAdd(methodId, functionData);
 
-                        if (cache.TryGetClassId(functionData.ParentClass, out ClassData classData))
+                        if (cache.NameCache.ClassData.TryGetValue(functionData.ParentClass, out ClassData classData))
                         {
                             callStackResult.NameCache.ClassData.TryAdd(functionData.ParentClass, classData);
 
                             ModuleScopedToken moduleScopedToken = new(functionData.ModuleId, classData.Token);
 
-                            if (cache.TryGetToken(moduleScopedToken, out TokenData tokenData))
+                            if (cache.NameCache.TokenData.TryGetValue(moduleScopedToken, out TokenData tokenData))
                             {
                                 callStackResult.NameCache.TokenData.TryAdd(moduleScopedToken, tokenData);
                             }
                         }
-                        if (cache.TryGetModuleId(functionData.ModuleId, out ModuleData moduleData))
+
+                        if (cache.NameCache.ModuleData.TryGetValue(functionData.ModuleId, out ModuleData moduleData))
                         {
                             callStackResult.NameCache.ModuleData.TryAdd(functionData.ModuleId, moduleData);
                         }
@@ -150,7 +151,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     CallStackFrame frame = new()
                     {
                         FunctionId = methodId,
-                        Offset = (ulong)ilOffset // is this safe?
+                        Offset = (ulong)ilOffset
                     };
 
                     callStack.Frames.Add(frame);
