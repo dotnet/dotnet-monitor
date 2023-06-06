@@ -130,17 +130,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     {
                         callStackResult.NameCache.FunctionData.TryAdd(methodId, functionData);
 
-                        if (cache.NameCache.ClassData.TryGetValue(functionData.ParentClass, out ClassData classData))
+                        foreach (ulong typeArg in functionData.TypeArgs)
                         {
-                            callStackResult.NameCache.ClassData.TryAdd(functionData.ParentClass, classData);
-
-                            ModuleScopedToken moduleScopedToken = new(functionData.ModuleId, classData.Token);
-
-                            if (cache.NameCache.TokenData.TryGetValue(moduleScopedToken, out TokenData tokenData))
-                            {
-                                callStackResult.NameCache.TokenData.TryAdd(moduleScopedToken, tokenData);
-                            }
+                            GetClassData(typeArg, cache, callStackResult);
                         }
+
+                        GetClassData(functionData.ParentClass, cache, callStackResult, functionData.ModuleId);
 
                         if (cache.NameCache.ModuleData.TryGetValue(functionData.ModuleId, out ModuleData moduleData))
                         {
@@ -161,6 +156,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             callStackResult.Stacks.Add(callStack);
 
             return callStackResult;
+        }
+
+        private static void GetClassData(ulong key, IExceptionsNameCache cache, CallStackResult callStackResult, ulong? moduleId = null)
+        {
+            if (cache.NameCache.ClassData.TryGetValue(key, out ClassData classData))
+            {
+                callStackResult.NameCache.ClassData.TryAdd(key, classData);
+
+                ModuleScopedToken moduleScopedToken = new(moduleId ?? classData.ModuleId, classData.Token);
+
+                if (cache.NameCache.TokenData.TryGetValue(moduleScopedToken, out TokenData tokenData))
+                {
+                    callStackResult.NameCache.TokenData.TryAdd(moduleScopedToken, tokenData);
+                }
+            }
         }
 
         private sealed class ExceptionInstanceEntry
