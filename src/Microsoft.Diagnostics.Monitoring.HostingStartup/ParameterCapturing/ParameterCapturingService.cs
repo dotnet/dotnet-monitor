@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
     internal sealed class ParameterCapturingService : BackgroundService, IDisposable
     {
         [DllImport(ProfilerIdentifiers.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
-        private static extern void RegisterFunctionProbe(ulong enterProbeId);
+        private static extern void RequestFunctionProbeRegistration(ulong enterProbeId);
 
         [DllImport(ProfilerIdentifiers.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
         private static extern void RequestFunctionProbeUninstallation();
@@ -59,7 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
                 NativeLibrary.SetDllImportResolver(typeof(ParameterCapturingService).Assembly, ResolveDllImport);
 
-                RegisterFunctionProbe(FunctionProbesStub.GetProbeFunctionId());
+                RequestFunctionProbeRegistration(FunctionProbesStub.GetProbeFunctionId());
                 FunctionProbesStub.Instance = new LogEmittingProbes(_logger, _instrumentedMethodCache);
 
                 _isAvailable = true;

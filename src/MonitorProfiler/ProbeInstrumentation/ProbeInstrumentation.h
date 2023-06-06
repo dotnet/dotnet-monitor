@@ -26,6 +26,7 @@ typedef struct _UNPROCESSED_INSTRUMENTATION_REQUEST
 
 enum class ProbeWorkerInstruction
 {
+    REGISTER_PROBE,
     INSTALL_PROBES,
     UNINSTALL_PROBES
 };
@@ -33,11 +34,17 @@ enum class ProbeWorkerInstruction
 typedef struct _PROBE_WORKER_PAYLOAD
 {
     ProbeWorkerInstruction instruction;
+
+    // Optional instruction-specific fields
+    FunctionID functionId;
     std::vector<UNPROCESSED_INSTRUMENTATION_REQUEST> requests;
 } PROBE_WORKER_PAYLOAD;
 
 class ProbeInstrumentation
 {
+    public:
+        static BlockingQueue<PROBE_WORKER_PAYLOAD> s_probeManagementQueue;
+
     private:
         ICorProfilerInfo12* m_pCorProfilerInfo;
         std::shared_ptr<ILogger> m_pLogger;
@@ -47,13 +54,13 @@ class ProbeInstrumentation
 
         /* Probe management */
         std::thread m_probeManagementThread;
-        BlockingQueue<PROBE_WORKER_PAYLOAD> m_probeManagementQueue;
         std::unordered_map<std::pair<ModuleID, mdMethodDef>, INSTRUMENTATION_REQUEST, PairHash<ModuleID, mdMethodDef>> m_activeInstrumentationRequests;
         std::mutex m_instrumentationProcessingMutex;
         std::mutex m_probePinningMutex;
 
     private:
         void WorkerThread();
+        HRESULT RegisterFunctionProbe(FunctionID enterProbeId);
         HRESULT InstallProbes(std::vector<UNPROCESSED_INSTRUMENTATION_REQUEST>& requests);
         HRESULT UninstallProbes();
         bool HasRegisteredProbe();
@@ -67,10 +74,6 @@ class ProbeInstrumentation
         void ShutdownBackgroundService();
 
         bool AreProbesInstalled();
-
-        HRESULT RegisterFunctionProbe(FunctionID enterProbeId);
-        HRESULT RequestFunctionProbeUninstallation();
-        HRESULT RequestFunctionProbeInstallation(ULONG64 functionIds[], ULONG32 count, ULONG32 argumentBoxingTypes[], ULONG32 argumentCounts[]);
 
         void AddProfilerEventMask(DWORD& eventsLow);
 
