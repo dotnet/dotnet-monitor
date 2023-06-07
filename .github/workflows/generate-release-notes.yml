@@ -44,7 +44,7 @@ jobs:
           if [[ "$TEST_RUN" == "true" ]]; then
             qualified_release_version="test-$release_version"
           else
-            version_url="https://aka.ms/dotnet/diagnostics/monitor${major_minor_version}/release/dotnet-monitor-base-win-x64.zip.version"
+            version_url="https://aka.ms/dotnet/diagnostics/monitor${major_minor_version}/release/dotnet-monitor.version"
             qualified_release_version=$(curl -sL $version_url)
             # Check if the aka.ms url existed
             if [[ "$qualified_release_version" =~ "<html" || -z "$qualified_release_version" ]]; then
