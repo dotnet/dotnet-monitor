@@ -16,14 +16,14 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "ms-vscode.cpptools",
-                "ms-dotnettools.csharp",
-                "EditorConfig.EditorConfig",
-                "ms-vscode.powershell",
-                "tintoy.msbuild-project-tools",
-                "streetsidesoftware.code-spell-checker",
-                "rioj7.command-variable"
-            ]
+				"ms-vscode.cpptools",
+				"ms-dotnettools.csdevkit",
+				"EditorConfig.EditorConfig",
+				"ms-vscode.powershell",
+				"tintoy.msbuild-project-tools",
+				"streetsidesoftware.code-spell-checker",
+				"rioj7.command-variable"
+			]
         }
     },
     "postCreateCommand": "bash -i ${containerWorkspaceFolder}/.devcontainer/shared/scripts/container-creation.sh",
