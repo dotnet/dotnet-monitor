@@ -23,7 +23,7 @@
                 "tintoy.msbuild-project-tools",
                 "streetsidesoftware.code-spell-checker",
                 "rioj7.command-variable"
-			]
+            ]
         }
     },
     "postCreateCommand": "bash -i ${containerWorkspaceFolder}/.devcontainer/shared/scripts/container-creation.sh",
