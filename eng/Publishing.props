@@ -205,11 +205,13 @@
     <PropertyGroup>
       <VersionFileName>dotnet-monitor-$(_BuildVersion).version</VersionFileName>
       <VersionFilePath>$(ArtifactsTmpDir)$(VersionFileName)</VersionFilePath>
+      <VersionValue Condition="'$(DotnetFinalVersionKind)' == 'release'">$(_OriginalVersionPrefix)</VersionValue>
+      <VersionValue Condition="'$(DotnetFinalVersionKind)' != 'release'">$(_BuildVersion)</VersionValue>
     </PropertyGroup>
 
     <!-- Write three-part version number -->
     <WriteLinesToFile File="$(VersionFilePath)"
-                      Lines="$(_OriginalVersionPrefix)" />
+                      Lines="$(VersionValue)" />
 
     <!--
       Place product version files into versioned container; this will cause the auto aka.ms link generation
