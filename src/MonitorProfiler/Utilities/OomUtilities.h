@@ -3,6 +3,6 @@
 
 #pragma once
 
-#define START_NO_OOM_THROW_REGION try {;
+#define START_NO_OOM_THROW_REGION try {
 #define END_NO_OOM_THROW_REGION } catch (const std::bad_alloc&) { return E_OUTOFMEMORY; }
 #define ReturnHResultIfOom(exp) START_NO_OOM_THROW_REGION; exp; END_NO_OOM_THROW_REGION;
