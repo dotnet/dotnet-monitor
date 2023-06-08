@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 {
-    internal sealed class EgressArtifactSettings
+    public sealed class EgressArtifactSettings
     {
         /// <summary>
         /// The content type of the blob to be created.

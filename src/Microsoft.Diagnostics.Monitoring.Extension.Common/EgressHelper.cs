@@ -19,13 +19,13 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 {
-    internal sealed class EgressHelper
+    public sealed class EgressHelper
     {
         private static Stream StdInStream;
         private static CancellationTokenSource CancelSource = new CancellationTokenSource();
         private const int ExpectedPayloadProtocolVersion = 1;
 
-        internal static CliCommand CreateEgressCommand<TProvider, TOptions>(Action<IServiceCollection> configureServices = null)
+        public static CliCommand CreateEgressCommand<TProvider, TOptions>(Action<IServiceCollection> configureServices = null)
             where TProvider : EgressProvider<TOptions>
             where TOptions : class, new()
         {
@@ -214,7 +214,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             await StdInStream.CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
         }
 
-        internal static async Task ReadExactlyAsync(Memory<byte> buffer, CancellationToken token)
+        private static async Task ReadExactlyAsync(Memory<byte> buffer, CancellationToken token)
         {
 #if NET7_0_OR_GREATER
             await StdInStream.ReadExactlyAsync(buffer, token);

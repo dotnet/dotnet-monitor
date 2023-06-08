@@ -18,7 +18,7 @@ parameters:
   # Additional steps to execute after build
   postBuildSteps: []
   # Disable Component Governance injection and analysis
-  disableComponentGovernance: false
+  disableComponentGovernance: ''
   # Disable SBOM generation
   disableSbom: false
   # Enable/disable publishing build output as Azure Pipeline artifact

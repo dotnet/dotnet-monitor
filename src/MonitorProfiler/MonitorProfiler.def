@@ -5,6 +5,6 @@ EXPORTS
     DllGetClassObject                  PRIVATE
     DllMain                            PRIVATE
     TestHook                           PRIVATE
-    RegisterFunctionProbe              PRIVATE
+    RequestFunctionProbeRegistration   PRIVATE
     RequestFunctionProbeInstallation   PRIVATE
     RequestFunctionProbeUninstallation PRIVATE
