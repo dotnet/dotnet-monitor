@@ -53,8 +53,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 {
                     return ScenarioHelpers.RunScenarioAsync(async logger =>
                     {
-                        await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.FunctionProbes.Commands.RunTest, logger);
-
                         PerFunctionProbeProxy probeProxy = new PerFunctionProbeProxy();
                         using FunctionProbesManager probeManager = new(probeProxy);
 

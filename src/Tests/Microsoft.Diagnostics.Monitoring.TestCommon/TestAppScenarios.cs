@@ -88,11 +88,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string GenericMethods = nameof(GenericMethods);
                 public const string ExceptionRegionAtBeginningOfMethod = nameof(ExceptionRegionAtBeginningOfMethod);
             }
-
-            public static class Commands
-            {
-                public const string RunTest = nameof(RunTest);
-            }
         }
 
         public static class Stacks

@@ -66,10 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _httpClientFactory,
                 DiagnosticPortConnectionMode.Listen,
                 TestAppScenarios.FunctionProbes.Name,
-                appValidate: async (runner, client) =>
-                {
-                    await AppRunnerExtensions.SendCommandAsync(runner, TestAppScenarios.FunctionProbes.Commands.RunTest);
-                },
+                appValidate: (runner, client) => { return Task.CompletedTask; },
                 configureApp: runner =>
                 {
                     runner.Architecture = targetArchitecture;
