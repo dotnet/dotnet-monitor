@@ -6,6 +6,7 @@
 #include "../Utilities/TypeNameUtilities.h"
 #include "../Utilities/MetadataEnumCloser.h"
 #include "../Utilities/StringUtilities.h"
+#include "../Utilities/OomUtilities.h"
 
 using namespace std;
 
@@ -50,7 +51,7 @@ HRESULT AssemblyProbePrep::PrepareAssemblyForProbes(ModuleID moduleId)
 
     shared_ptr<AssemblyProbePrepData> data(new (nothrow) AssemblyProbePrepData(probeMemberRef, corLibTypeTokens));
     IfNullRet(data);
-    m_assemblyProbeCache.insert({moduleId, data});
+    ReturnHResultIfOom(m_assemblyProbeCache.insert({moduleId, data}));
 
     return S_OK;
 }

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #include "corhlpr.h"
+#include "../Utilities/OomUtilities.h"
 #include "ProbeInstrumentation.h"
 
 using namespace std;
@@ -121,6 +122,9 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
     //
 
     vector<UNPROCESSED_INSTRUMENTATION_REQUEST> requests;
+
+    START_NO_OOM_THROW_REGION;
+
     requests.reserve(count);
 
     ULONG32 offset = 0;
@@ -145,6 +149,8 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
 
         requests.push_back(request);
     }
+
+    END_NO_OOM_THROW_REGION;
 
     m_probeManagementQueue.Enqueue({ProbeWorkerInstruction::INSTALL_PROBES, requests});
 
@@ -189,7 +195,8 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
     vector<ModuleID> requestedModuleIds;
     vector<mdMethodDef> requestedMethodDefs;
 
-    // JSFIX: Handle OOM scenarios.
+    START_NO_OOM_THROW_REGION;
+
     requestedModuleIds.reserve(requests.size());
     requestedMethodDefs.reserve(requests.size());
 
@@ -225,6 +232,8 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
         newRequests.insert({{processedRequest.moduleId, processedRequest.methodDef}, processedRequest});
     }
 
+    END_NO_OOM_THROW_REGION;
+
     IfFailLogRet(m_pCorProfilerInfo->RequestReJITWithInliners(
         COR_PRF_REJIT_BLOCK_INLINING | COR_PRF_REJIT_INLINING_CALLBACKS,
         static_cast<ULONG>(requestedModuleIds.size()),
@@ -251,6 +260,8 @@ HRESULT ProbeInstrumentation::UninstallProbes()
     vector<ModuleID> moduleIds;
     vector<mdMethodDef> methodDefs;
 
+    START_NO_OOM_THROW_REGION;
+
     moduleIds.reserve(m_activeInstrumentationRequests.size());
     methodDefs.reserve(m_activeInstrumentationRequests.size());
 
@@ -260,6 +271,8 @@ HRESULT ProbeInstrumentation::UninstallProbes()
         moduleIds.push_back(methodInfo.first);
         methodDefs.push_back(methodInfo.second);
     }
+
+    END_NO_OOM_THROW_REGION;
 
     IfFailLogRet(m_pCorProfilerInfo->RequestRevert(
         static_cast<ULONG>(moduleIds.size()),

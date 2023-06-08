@@ -5,6 +5,7 @@
 #include "corprof.h"
 #include "ProbeInjector.h"
 #include "../Utilities/ILRewriter.h"
+#include "../Utilities/OomUtilities.h"
 
 #include <vector>
 
@@ -46,6 +47,9 @@ HRESULT ProbeInjector::InstallProbe(
     }
 
     HRESULT hr;
+
+    START_NO_OOM_THROW_REGION;
+
     ILRewriter rewriter(pICorProfilerInfo, pICorProfilerFunctionControl, request.moduleId, request.methodDef);
     IfFailRet(rewriter.Import());
 
@@ -139,6 +143,8 @@ HRESULT ProbeInjector::InstallProbe(
     rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pNewInstr);
 
     IfFailRet(rewriter.Export());
+
+    END_NO_OOM_THROW_REGION;
 
     return S_OK;
 }
