@@ -124,7 +124,6 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
     START_NO_OOM_THROW_REGION;
 
     vector<UNPROCESSED_INSTRUMENTATION_REQUEST> requests;
-
     requests.reserve(count);
 
     ULONG32 offset = 0;
