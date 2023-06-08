@@ -34,18 +34,18 @@ typedef struct _COR_LIB_TYPE_TOKENS
 class AssemblyProbePrepData
 {
 public:
-    AssemblyProbePrepData(mdMemberRef probeMemberRef, mdSignature faultingProbeCallback, COR_LIB_TYPE_TOKENS corLibTypeTokens) :
-        m_probeMemberRef(probeMemberRef), m_faultingProbeCallback(faultingProbeCallback), m_corLibTypeTokens(corLibTypeTokens)
+    AssemblyProbePrepData(mdMemberRef probeMemberRef, mdSignature faultingProbeCallbackSignature, COR_LIB_TYPE_TOKENS corLibTypeTokens) :
+        m_probeMemberRef(probeMemberRef), m_faultingProbeCallbackSignature(faultingProbeCallbackSignature), m_corLibTypeTokens(corLibTypeTokens)
     {
     }
 
     const mdMemberRef GetProbeMemberRef() const { return m_probeMemberRef; }
-    const mdSignature GetFaultingProbeCallbackSignature() const { return m_faultingProbeCallback; }
+    const mdSignature GetFaultingProbeCallbackSignature() const { return m_faultingProbeCallbackSignature; }
     const COR_LIB_TYPE_TOKENS& GetCorLibTypeTokens() const { return m_corLibTypeTokens; }
 
 private:
     mdMemberRef m_probeMemberRef;
-    mdSignature m_faultingProbeCallback;
+    mdSignature m_faultingProbeCallbackSignature;
     COR_LIB_TYPE_TOKENS m_corLibTypeTokens;
 };
 
