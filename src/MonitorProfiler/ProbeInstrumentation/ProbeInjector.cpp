@@ -3,9 +3,9 @@
 
 #include "cor.h"
 #include "corprof.h"
+#include "macros.h"
 #include "ProbeInjector.h"
 #include "../Utilities/ILRewriter.h"
-#include "../Utilities/OomUtilities.h"
 
 #include <vector>
 

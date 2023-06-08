@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #include "corhlpr.h"
-#include "../Utilities/OomUtilities.h"
+#include "macros.h"
 #include "ProbeInstrumentation.h"
 
 using namespace std;
@@ -121,9 +121,9 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
     // before passing off the request to the worker thread.
     //
 
-    vector<UNPROCESSED_INSTRUMENTATION_REQUEST> requests;
-
     START_NO_OOM_THROW_REGION;
+
+    vector<UNPROCESSED_INSTRUMENTATION_REQUEST> requests;
 
     requests.reserve(count);
 
@@ -150,9 +150,9 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
         requests.push_back(request);
     }
 
-    END_NO_OOM_THROW_REGION;
-
     m_probeManagementQueue.Enqueue({ProbeWorkerInstruction::INSTALL_PROBES, requests});
+
+    END_NO_OOM_THROW_REGION;
 
     return S_OK;
 }
@@ -190,12 +190,12 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
         return E_FAIL;
     }
 
+    START_NO_OOM_THROW_REGION;
+
     unordered_map<pair<ModuleID, mdMethodDef>, INSTRUMENTATION_REQUEST, PairHash<ModuleID, mdMethodDef>> newRequests;
 
     vector<ModuleID> requestedModuleIds;
     vector<mdMethodDef> requestedMethodDefs;
-
-    START_NO_OOM_THROW_REGION;
 
     requestedModuleIds.reserve(requests.size());
     requestedMethodDefs.reserve(requests.size());
@@ -232,8 +232,6 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
         newRequests.insert({{processedRequest.moduleId, processedRequest.methodDef}, processedRequest});
     }
 
-    END_NO_OOM_THROW_REGION;
-
     IfFailLogRet(m_pCorProfilerInfo->RequestReJITWithInliners(
         COR_PRF_REJIT_BLOCK_INLINING | COR_PRF_REJIT_INLINING_CALLBACKS,
         static_cast<ULONG>(requestedModuleIds.size()),
@@ -241,6 +239,8 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
         requestedMethodDefs.data()));
 
     m_activeInstrumentationRequests = newRequests;
+
+    END_NO_OOM_THROW_REGION;
 
     return S_OK;
 }
@@ -257,10 +257,10 @@ HRESULT ProbeInstrumentation::UninstallProbes()
         return S_FALSE;
     }
 
+    START_NO_OOM_THROW_REGION;
+
     vector<ModuleID> moduleIds;
     vector<mdMethodDef> methodDefs;
-
-    START_NO_OOM_THROW_REGION;
 
     moduleIds.reserve(m_activeInstrumentationRequests.size());
     methodDefs.reserve(m_activeInstrumentationRequests.size());
@@ -272,8 +272,6 @@ HRESULT ProbeInstrumentation::UninstallProbes()
         methodDefs.push_back(methodInfo.second);
     }
 
-    END_NO_OOM_THROW_REGION;
-
     IfFailLogRet(m_pCorProfilerInfo->RequestRevert(
         static_cast<ULONG>(moduleIds.size()),
         moduleIds.data(),
@@ -281,6 +279,8 @@ HRESULT ProbeInstrumentation::UninstallProbes()
         nullptr));
 
     m_activeInstrumentationRequests.clear();
+
+    END_NO_OOM_THROW_REGION;
 
     return S_OK;
 }

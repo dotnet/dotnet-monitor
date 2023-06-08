@@ -2,11 +2,11 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #include "corhlpr.h"
+#include "macros.h"
 #include "AssemblyProbePrep.h"
 #include "../Utilities/TypeNameUtilities.h"
 #include "../Utilities/MetadataEnumCloser.h"
 #include "../Utilities/StringUtilities.h"
-#include "../Utilities/OomUtilities.h"
 
 using namespace std;
 
@@ -51,7 +51,7 @@ HRESULT AssemblyProbePrep::PrepareAssemblyForProbes(ModuleID moduleId)
 
     shared_ptr<AssemblyProbePrepData> data(new (nothrow) AssemblyProbePrepData(probeMemberRef, corLibTypeTokens));
     IfNullRet(data);
-    ReturnHResultIfOom(m_assemblyProbeCache.insert({moduleId, data}));
+    IfOomRetMem(m_assemblyProbeCache.insert({moduleId, data}));
 
     return S_OK;
 }
