@@ -70,6 +70,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public string ScenarioName { get; set; }
 
+        /// <summary>
+        /// Optional name of the sub scenario to run in the application.
+        /// </summary>
+        public string SubScenarioName { get; set; }
+
         public int AppId { get; }
 
         public bool SetRuntimeIdentifier { get; set; } = true;
@@ -122,7 +127,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             }
 
             _runner.EntrypointAssemblyPath = _appPath;
-            _runner.Arguments = ScenarioName;
+
+            string fullScenarioName = string.IsNullOrEmpty(SubScenarioName) ? ScenarioName : string.Concat(ScenarioName, " ", SubScenarioName);
+            _runner.Arguments = fullScenarioName;
 
             // Enable diagnostics in case it is disabled via inheriting test environment.
             _adapter.Environment.Add("COMPlus_EnableDiagnostics", "1");

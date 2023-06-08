@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             public const string Name = nameof(FunctionProbes);
 
-            public static class Commands
+            public static class SubScenarios
             {
                 /* Probe management */
                 public const string ProbeInstallation = nameof(ProbeInstallation);
@@ -86,7 +86,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 /* Interesting methods */
                 public const string AsyncMethod = nameof(AsyncMethod);
                 public const string GenericMethods = nameof(GenericMethods);
-                public const string ExceptionRegionAtBeginningOfMethod= nameof(ExceptionRegionAtBeginningOfMethod);
+                public const string ExceptionRegionAtBeginningOfMethod = nameof(ExceptionRegionAtBeginningOfMethod);
+            }
+
+            public static class Commands
+            {
+                public const string RunTest = nameof(RunTest);
             }
         }
 

@@ -22,47 +22,52 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
         public static CliCommand Command()
         {
-            CliCommand command = new(TestAppScenarios.FunctionProbes.Name);
-            command.SetAction(ExecuteAsync);
-            return command;
-        }
-
-        public static Task<int> ExecuteAsync(ParseResult result, CancellationToken token)
-        {
             Dictionary<string, TestCaseAsync> testCases = new()
             {
                 /* Probe management */
-                { TestAppScenarios.FunctionProbes.Commands.ProbeInstallation, Test_ProbeInstallationAsync},
-                { TestAppScenarios.FunctionProbes.Commands.ProbeUninstallation, Test_ProbeUninstallationAsync},
-                { TestAppScenarios.FunctionProbes.Commands.ProbeReinstallation, Test_ProbeReinstallationAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.ProbeInstallation, Test_ProbeInstallationAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.ProbeUninstallation, Test_ProbeUninstallationAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.ProbeReinstallation, Test_ProbeReinstallationAsync},
 
                 /* Parameter capturing */
-                { TestAppScenarios.FunctionProbes.Commands.CapturePrimitives, Test_CapturePrimitivesAsync},
-                { TestAppScenarios.FunctionProbes.Commands.CaptureValueTypes, Test_CaptureValueTypesAsync},
-                { TestAppScenarios.FunctionProbes.Commands.CaptureImplicitThis, Test_CaptureImplicitThisAsync},
-                { TestAppScenarios.FunctionProbes.Commands.CaptureExplicitThis, Test_CaptureExplicitThisAsync},
-                { TestAppScenarios.FunctionProbes.Commands.CaptureNoParameters, Test_CaptureNoParametersAsync},
-                { TestAppScenarios.FunctionProbes.Commands.CaptureUnsupportedParameters, Test_CaptureUnsupportedParametersAsync},
-                { TestAppScenarios.FunctionProbes.Commands.CaptureValueTypeImplicitThis, Test_CaptureValueTypeImplicitThisAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.CapturePrimitives, Test_CapturePrimitivesAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.CaptureValueTypes, Test_CaptureValueTypesAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.CaptureImplicitThis, Test_CaptureImplicitThisAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.CaptureExplicitThis, Test_CaptureExplicitThisAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.CaptureNoParameters, Test_CaptureNoParametersAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.CaptureUnsupportedParameters, Test_CaptureUnsupportedParametersAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.CaptureValueTypeImplicitThis, Test_CaptureValueTypeImplicitThisAsync},
 
                 /* Interesting functions */
-                { TestAppScenarios.FunctionProbes.Commands.AsyncMethod, Test_AsyncMethodAsync},
-                { TestAppScenarios.FunctionProbes.Commands.GenericMethods, Test_GenericMethodsAsync},
-                { TestAppScenarios.FunctionProbes.Commands.ExceptionRegionAtBeginningOfMethod, Test_ExceptionRegionAtBeginningOfMethodAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.AsyncMethod, Test_AsyncMethodAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.GenericMethods, Test_GenericMethodsAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.ExceptionRegionAtBeginningOfMethod, Test_ExceptionRegionAtBeginningOfMethodAsync},
 
             };
 
-            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            CliCommand scenarioCommand = new(TestAppScenarios.FunctionProbes.Name);
+            foreach ((string subCommand, TestCaseAsync testCase) in testCases)
             {
-                PerFunctionProbeProxy probeProxy = new PerFunctionProbeProxy();
-                using FunctionProbesManager probeManager = new(probeProxy);
+                CliCommand testCaseCommand = new(subCommand);
+                testCaseCommand.SetAction((result, token) =>
+                {
+                    return ScenarioHelpers.RunScenarioAsync(async logger =>
+                    {
+                        await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.FunctionProbes.Commands.RunTest, logger);
 
-                string command = await ScenarioHelpers.WaitForCommandAsync(testCases.Keys.ToArray(), logger);
-                await testCases[command](probeManager, probeProxy, token);
-                probeProxy.ClearAllProbes();
+                        PerFunctionProbeProxy probeProxy = new PerFunctionProbeProxy();
+                        using FunctionProbesManager probeManager = new(probeProxy);
 
-                return 0;
-            }, token);
+                        await testCase(probeManager, probeProxy, token);
+
+                        return 0;
+                    }, token);
+                });
+
+                scenarioCommand.Subcommands.Add(testCaseCommand);
+            }
+
+            return scenarioCommand;
         }
 
         private static async Task Test_ProbeInstallationAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
@@ -116,7 +121,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
         {
             MethodInfo method = typeof(TestMethodSignatures).GetMethod(nameof(TestMethodSignatures.ImplicitThis));
             TestMethodSignatures testMethodSignatures = new();
-            await RunInstanceMethodTestCaseAsync(probeManager, probeProxy, method, Array.Empty<object>(), testMethodSignatures, token);
+            await RunInstanceMethodTestCaseAsync(probeManager, probeProxy, method, Array.Empty<object>(), testMethodSignatures, thisParameterSupported: true, token);
         }
 
         private static async Task Test_CaptureExplicitThisAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
@@ -173,17 +178,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
         {
             MethodInfo method = typeof(SampleNestedStruct).GetMethod(nameof(SampleNestedStruct.DoWork));
             SampleNestedStruct nestedStruct = new();
-            await RunTestCaseAsync(probeManager, probeProxy, method, new object[]
+            await RunInstanceMethodTestCaseAsync(probeManager, probeProxy, method, new object[]
             {
                 5
-            }, nestedStruct, capturedThisObj: null, token);
+            }, nestedStruct, thisParameterSupported: false, token);
         }
 
         private static async Task Test_CaptureUnsupportedParametersAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.RefParam));
 
-            await RunTestCaseCoreAsync(probeManager, probeProxy, method, () =>
+            // Use a custom invoker for the test since ref params can't be boxed.
+            await RunTestCaseWithCustomInvokerAsync(probeManager, probeProxy, method, () =>
             {
                 int i = 10;
                 StaticTestMethodSignatures.RefParam(ref i);
@@ -194,24 +200,24 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             {
                 null
             },
-            hasImplicitThis: false, capturedThisObj: null, token);
+            thisObj: null, thisParameterSupported: false, token);
         }
 
-        private static Task RunInstanceMethodTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, CancellationToken token)
+        private static Task RunInstanceMethodTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, bool thisParameterSupported, CancellationToken token)
         {
             Assert.False(method.IsStatic);
-            return RunTestCaseAsync(probeManager, probeProxy, method, args, thisObj, thisObj, token);
+            return RunTestCaseWithStandardInvokerAsync(probeManager, probeProxy, method, args, thisObj, thisParameterSupported, token);
         }
 
         private static Task RunStaticMethodTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, CancellationToken token)
         {
             Assert.True(method.IsStatic);
-            return RunTestCaseAsync(probeManager, probeProxy, method, args, null, null, token);
+            return RunTestCaseWithStandardInvokerAsync(probeManager, probeProxy, method, args, null, false, token);
         }
 
-        private static Task RunTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, object capturedThisObj, CancellationToken token)
+        private static Task RunTestCaseWithStandardInvokerAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, bool thisParameterSupported, CancellationToken token)
         {
-            return RunTestCaseCoreAsync(probeManager, probeProxy, method, async () =>
+            return RunTestCaseWithCustomInvokerAsync(probeManager, probeProxy, method, async () =>
             {
                 if (method.ReturnType.IsAssignableTo(typeof(Task)))
                 {
@@ -221,19 +227,19 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 {
                     method.Invoke(thisObj, args);
                 }
-            }, args, thisObj != null, capturedThisObj, token);
+            }, args, thisObj, thisParameterSupported, token);
         }
 
-        private static async Task RunTestCaseCoreAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, Func<Task> invoker, object[] args, bool hasImplicitThis, object capturedThisObj, CancellationToken token)
+        private static async Task RunTestCaseWithCustomInvokerAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, Func<Task> invoker, object[] args, object thisObj, bool thisParameterSupported, CancellationToken token)
         {
             Assert.NotNull(method);
 
             probeProxy.RegisterPerFunctionProbe(method, (object[] actualArgs) =>
             {
-                if (hasImplicitThis)
+                if (thisObj != null)
                 {
                     Assert.NotEmpty(actualArgs);
-                    Assert.Equal(capturedThisObj, actualArgs[0]);
+                    Assert.Equal(thisParameterSupported ? thisObj : null, actualArgs[0]);
                     Assert.Equal(args, actualArgs.Skip(1));
                 }
                 else

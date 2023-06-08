@@ -26,7 +26,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             Action<AppRunner> configureApp = null,
             Action<MonitorCollectRunner> configureTool = null,
             bool disableHttpEgress = false,
-            string profilerLogLevel = null)
+            string profilerLogLevel = null,
+            string subScenarioName = null)
         {
             DiagnosticPortHelper.Generate(
                 mode,
@@ -51,6 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
             appRunner.ScenarioName = scenarioName;
+            appRunner.SubScenarioName = subScenarioName;
 
             configureApp?.Invoke(appRunner);
 
