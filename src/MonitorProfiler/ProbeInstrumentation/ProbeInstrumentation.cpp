@@ -111,7 +111,7 @@ void ProbeInstrumentation::ShutdownBackgroundService()
     m_probeManagementThread.join();
 }
 
-static void STDMETHODCALLTYPE OnFunctionProbeFault(ULONG64 uniquifier)
+void STDMETHODCALLTYPE ProbeInstrumentation::OnFunctionProbeFault(ULONG64 uniquifier)
 {
     PROBE_WORKER_PAYLOAD payload = {};
     payload.instruction = ProbeWorkerInstruction::FAULTING_PROBE;

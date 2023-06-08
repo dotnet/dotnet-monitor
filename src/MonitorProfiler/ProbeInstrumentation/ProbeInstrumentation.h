@@ -63,6 +63,9 @@ class ProbeInstrumentation
         HRESULT UninstallProbes();
         bool HasRegisteredProbe();
 
+    private:
+        static void STDMETHODCALLTYPE OnFunctionProbeFault(ULONG64 uniquifier);
+
     public:
         ProbeInstrumentation(
             const std::shared_ptr<ILogger>& logger,
