@@ -10,7 +10,6 @@
 #include "ProbeInjector.h"
 #include "../Logging/Logger.h"
 #include "../Utilities/PairHash.h"
-#include "../Utilities/BlockingQueue.h"
 
 #include <unordered_map>
 #include <vector>
@@ -42,9 +41,6 @@ typedef struct _PROBE_WORKER_PAYLOAD
 
 class ProbeInstrumentation
 {
-    public:
-        static BlockingQueue<PROBE_WORKER_PAYLOAD> s_probeManagementQueue;
-
     private:
         ICorProfilerInfo12* m_pCorProfilerInfo;
         std::shared_ptr<ILogger> m_pLogger;
