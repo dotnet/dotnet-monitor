@@ -4,6 +4,7 @@
 #pragma once
 
 #include <assert.h>
+#include <vector>
 #include "cor.h"
 #include "corprof.h"
 #include "corhlpr.h"
@@ -177,8 +178,7 @@ private:
 
     ILInstr m_IL; // Double linked list of all il instructions
 
-    unsigned    m_nEH;
-    EHClause *  m_pEH;
+    std::vector<EHClause>  m_ehClauses;
 
     // Helper table for importing.  Sparse array that maps BYTE offset of beginning of an
     // instruction to that instruction's ILInstr*.  BYTE offsets that don't correspond
@@ -215,6 +215,7 @@ public:
     ILInstr* GetInstrFromOffset(unsigned offset);
     void InsertBefore(ILInstr * pWhere, ILInstr * pWhat);
     void InsertAfter(ILInstr * pWhere, ILInstr * pWhat);
+    void InsertTryCatch(ILInstr * pTryStart, ILInstr * pCatchStart, ILInstr * pCatchEnd, mdToken filterClassToken);
     void AdjustState(ILInstr * pNewInstr);
     ILInstr * GetILList();
 

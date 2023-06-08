@@ -21,7 +21,7 @@ void FASTCALL UnmanagedInspectObject(void* pv)
 ILRewriter::ILRewriter(ICorProfilerInfo * pICorProfilerInfo, ICorProfilerFunctionControl * pICorProfilerFunctionControl, ModuleID moduleID, mdToken tkMethod)
     : m_pICorProfilerInfo(pICorProfilerInfo), m_pICorProfilerFunctionControl(pICorProfilerFunctionControl),
     m_moduleId(moduleID), m_tkMethod(tkMethod), m_fGenerateTinyHeader(false),
-    m_pEH(NULL), m_pOffsetToInstr(NULL), m_pOutputBuffer(NULL), m_pIMethodMalloc(NULL),
+    m_pOffsetToInstr(NULL), m_pOutputBuffer(NULL), m_pIMethodMalloc(NULL),
     m_pMetaDataImport(NULL), m_pMetaDataEmit(NULL)
 {
     m_IL.m_pNext = &m_IL;
@@ -39,7 +39,6 @@ ILRewriter::~ILRewriter()
         delete p;
         p = t;
     }
-    delete[] m_pEH;
     delete[] m_pOffsetToInstr;
     delete[] m_pOutputBuffer;
 
@@ -252,15 +251,12 @@ HRESULT ILRewriter::ImportIL(LPCBYTE pIL)
 
 HRESULT ILRewriter::ImportEH(const COR_ILMETHOD_SECT_EH* pILEH, unsigned nEH)
 {
-    _ASSERTE(m_pEH == NULL);
-
-    m_nEH = nEH;
+    _ASSERTE(m_ehClauses.empty());
 
     if (nEH == 0)
         return S_OK;
 
-    IfNullRet(m_pEH = new EHClause[m_nEH]);
-    for (unsigned iEH = 0; iEH < m_nEH; iEH++)
+    for (unsigned iEH = 0; iEH < nEH; iEH++)
     {
         // If the EH clause is in tiny form, the call to pILEH->EHClause() below will
         // use this as a scratch buffer to expand the EH clause into its fat form.
@@ -269,7 +265,8 @@ HRESULT ILRewriter::ImportEH(const COR_ILMETHOD_SECT_EH* pILEH, unsigned nEH)
         const COR_ILMETHOD_SECT_EH_CLAUSE_FAT* ehInfo;
         ehInfo = (COR_ILMETHOD_SECT_EH_CLAUSE_FAT*)pILEH->EHClause(iEH, &scratch);
 
-        EHClause* clause = &(m_pEH[iEH]);
+        EHClause newEhClause;
+        EHClause* clause = &newEhClause;
         clause->m_Flags = ehInfo->GetFlags();
 
         clause->m_pTryBegin = GetInstrFromOffset(ehInfo->GetTryOffset());
@@ -280,6 +277,8 @@ HRESULT ILRewriter::ImportEH(const COR_ILMETHOD_SECT_EH* pILEH, unsigned nEH)
             clause->m_ClassToken = ehInfo->GetClassToken();
         else
             clause->m_pFilter = GetInstrFromOffset(ehInfo->GetFilterOffset());
+
+        m_ehClauses.push_back(newEhClause);
     }
 
     return S_OK;
@@ -300,6 +299,20 @@ ILInstr* ILRewriter::GetInstrFromOffset(unsigned offset)
 
     _ASSERTE(pInstr != NULL);
     return pInstr;
+}
+
+void ILRewriter::InsertTryCatch(ILInstr * pTryStart, ILInstr * pCatchStart, ILInstr * pCatchEnd, mdToken filterClassToken)
+{
+    EHClause clause = {};
+    clause.m_Flags = CorExceptionFlag::COR_ILEXCEPTION_CLAUSE_NONE;
+    clause.m_ClassToken = filterClassToken;
+
+    clause.m_pTryBegin = pTryStart;
+    clause.m_pTryEnd = pCatchStart;
+    clause.m_pHandlerBegin = pCatchStart;
+    clause.m_pHandlerEnd = pCatchEnd;
+
+    m_ehClauses.push_back(clause);
 }
 
 void ILRewriter::InsertBefore(ILInstr * pWhere, ILInstr * pWhat)
@@ -364,6 +377,12 @@ HRESULT ILRewriter::Export()
 
     m_pOutputBuffer = new BYTE[maxSize];
     IfNullRet(m_pOutputBuffer);
+
+    if (m_ehClauses.size() > UINT32_MAX)
+    {
+        return E_UNEXPECTED;
+    }
+    unsigned m_nEH = static_cast<unsigned>(m_ehClauses.size());
 
 again:
     // TODO [DAVBR]: Why separate pointer pIL?  Doesn't look like either pIL or
@@ -553,7 +572,7 @@ again:
 
             for (unsigned iEH = 0; iEH < m_nEH; iEH++)
             {
-                EHClause *pSrc = &(m_pEH[iEH]);
+                EHClause *pSrc = &(m_ehClauses.at(iEH));
                 IMAGE_COR_ILMETHOD_SECT_EH_CLAUSE_FAT * pDst = (IMAGE_COR_ILMETHOD_SECT_EH_CLAUSE_FAT *)pCurrent;
 
                 pDst->Flags = pSrc->m_Flags;

@@ -6,6 +6,7 @@
 #include "corprof.h"
 #include "corhdr.h"
 #include "AssemblyProbePrep.h"
+#include "CallbackDefinitions.h"
 
 #include <vector>
 #include <memory>
@@ -27,6 +28,7 @@ class ProbeInjector
         static HRESULT InstallProbe(
             ICorProfilerInfo* pICorProfilerInfo,
             ICorProfilerFunctionControl* pICorProfilerFunctionControl,
+            FaultingProbeCallback pFaultingProbeCallback,
             const INSTRUMENTATION_REQUEST& request);
 
     private:
