@@ -3,10 +3,17 @@
 
 #include "corhlpr.h"
 #include "ProbeInstrumentation.h"
+#include "../Utilities/BlockingQueue.h"
 
 using namespace std;
 
 #define IfFailLogRet(EXPR) IfFailLogRet_(m_pLogger, EXPR)
+
+#ifndef DLLEXPORT
+#define DLLEXPORT
+#endif
+
+BlockingQueue<PROBE_WORKER_PAYLOAD> g_probeManagementQueue;
 
 ProbeInstrumentation::ProbeInstrumentation(const shared_ptr<ILogger>& logger, ICorProfilerInfo12* profilerInfo) :
     m_pCorProfilerInfo(profilerInfo),
@@ -55,7 +62,7 @@ void ProbeInstrumentation::WorkerThread()
     while (true)
     {
         PROBE_WORKER_PAYLOAD payload;
-        hr = m_probeManagementQueue.BlockingDequeue(payload);
+        hr = g_probeManagementQueue.BlockingDequeue(payload);
         if (hr != S_OK)
         {
             break;
@@ -63,6 +70,14 @@ void ProbeInstrumentation::WorkerThread()
 
         switch (payload.instruction)
         {
+        case ProbeWorkerInstruction::REGISTER_PROBE:
+            hr = RegisterFunctionProbe(payload.functionId);
+            if (hr != S_OK)
+            {
+                m_pLogger->Log(LogLevel::Error, _LS("Failed to register function probe: 0x%08x"), hr);
+            }
+            break;
+
         case ProbeWorkerInstruction::INSTALL_PROBES:
             hr = InstallProbes(payload.requests);
             if (hr != S_OK)
@@ -88,22 +103,17 @@ void ProbeInstrumentation::WorkerThread()
 
 void ProbeInstrumentation::ShutdownBackgroundService()
 {
-    m_probeManagementQueue.Complete();
+    g_probeManagementQueue.Complete();
     m_probeManagementThread.join();
 }
 
-HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
+STDAPI DLLEXPORT RequestFunctionProbeInstallation(
     ULONG64 functionIds[],
     ULONG32 count,
     ULONG32 argumentBoxingTypes[],
     ULONG32 argumentCounts[])
 {
-    m_pLogger->Log(LogLevel::Debug, _LS("Probe installation requested"));
-
-    if (!HasRegisteredProbe())
-    {
-        return S_FALSE;
-    }
+    HRESULT hr;
 
     //
     // This method receives N (where n is "count") function IDs that probes should be installed into.
@@ -146,23 +156,33 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
         requests.push_back(request);
     }
 
-    m_probeManagementQueue.Enqueue({ProbeWorkerInstruction::INSTALL_PROBES, requests});
+    PROBE_WORKER_PAYLOAD payload = {};
+    payload.instruction = ProbeWorkerInstruction::INSTALL_PROBES;
+    payload.requests = requests;
+    IfFailRet(g_probeManagementQueue.Enqueue(payload));
 
     return S_OK;
 }
 
-HRESULT ProbeInstrumentation::RequestFunctionProbeUninstallation()
+STDAPI DLLEXPORT RequestFunctionProbeUninstallation()
 {
-    m_pLogger->Log(LogLevel::Debug, _LS("Probe uninstallation requested"));
-
-    if (!HasRegisteredProbe())
-    {
-        return S_FALSE;
-    }
+    HRESULT hr;
 
     PROBE_WORKER_PAYLOAD payload = {};
     payload.instruction = ProbeWorkerInstruction::UNINSTALL_PROBES;
-    m_probeManagementQueue.Enqueue(payload);
+    IfFailRet(g_probeManagementQueue.Enqueue(payload));
+
+    return S_OK;
+}
+
+STDAPI DLLEXPORT RequestFunctionProbeRegistration(ULONG64 enterProbeId)
+{
+    HRESULT hr;
+
+    PROBE_WORKER_PAYLOAD payload = {};
+    payload.instruction = ProbeWorkerInstruction::REGISTER_PROBE;
+    payload.functionId = static_cast<FunctionID>(enterProbeId);
+    IfFailRet(g_probeManagementQueue.Enqueue(payload));
 
     return S_OK;
 }
