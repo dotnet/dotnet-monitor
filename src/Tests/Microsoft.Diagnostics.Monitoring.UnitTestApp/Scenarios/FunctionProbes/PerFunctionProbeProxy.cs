@@ -29,6 +29,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             _probe(args);
         }
     }
+
     internal sealed class PerFunctionProbeProxy : IFunctionProbes
     {
         private ConcurrentDictionary<ulong, PerFunctionProbeWrapper> _perFunctionProbes = new();
