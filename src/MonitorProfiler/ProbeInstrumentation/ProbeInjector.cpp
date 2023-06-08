@@ -39,8 +39,6 @@ HRESULT ProbeInjector::InstallProbe(
     FaultingProbeCallback pFaultingProbeCallback,
     const INSTRUMENTATION_REQUEST& request)
 {
-    constexpr OPCODE CEE_LDC_NATIVE_I = sizeof(size_t) == 8 ? CEE_LDC_I8 : CEE_LDC_I4;
-
     ExpectedPtr(pICorProfilerInfo);
     ExpectedPtr(pICorProfilerFunctionControl);
     ExpectedPtr(pFaultingProbeCallback);
@@ -49,6 +47,8 @@ HRESULT ProbeInjector::InstallProbe(
     {
         return E_INVALIDARG;
     }
+    
+    constexpr OPCODE CEE_LDC_NATIVE_I = sizeof(size_t) == 8 ? CEE_LDC_I8 : CEE_LDC_I4;
 
     HRESULT hr;
     ILRewriter rewriter(pICorProfilerInfo, pICorProfilerFunctionControl, request.moduleId, request.methodDef);
@@ -208,7 +208,7 @@ HRESULT ProbeInjector::InstallProbe(
 
     pNestedTryLeave->m_pTarget = pNestedCatchEnd->m_pTarget = pCatchEnd;
 
-    // The nested protected region **must** be registered in the exception handler table first (ref: I.12.4.2.5)
+    // The nested protected region must be registered in the exception handler table first
     rewriter.InsertTryCatch(
         pNestedTryBegin,
         pNestedCatchBegin,
