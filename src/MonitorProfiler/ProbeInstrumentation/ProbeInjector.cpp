@@ -86,7 +86,7 @@ HRESULT ProbeInjector::InstallProbe(
 
     // START: Try block
 
-     /* uniquifier */
+    /* uniquifier */
     pTryBegin = rewriter.NewILInstr();
     pTryBegin->m_opcode = CEE_LDC_I8;
     pTryBegin->m_Arg64 = request.uniquifier;
@@ -201,10 +201,14 @@ HRESULT ProbeInjector::InstallProbe(
     pNestedCatchEnd->m_opcode = CEE_LEAVE;
     rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pNestedCatchEnd);
 
+    // END: Catch block (nested)
+
     pCatchEnd = rewriter.NewILInstr();
     pCatchEnd->m_opcode = CEE_LEAVE;
     pCatchEnd->m_pTarget = pInsertProbeBeforeThisInstr;
     rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pCatchEnd);
+
+    // END: Catch block
 
     pNestedTryLeave->m_pTarget = pNestedCatchEnd->m_pTarget = pCatchEnd;
 

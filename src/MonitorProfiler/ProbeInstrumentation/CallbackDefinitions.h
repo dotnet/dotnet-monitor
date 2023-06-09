@@ -6,4 +6,4 @@
 #include "cor.h"
 
 typedef void (STDMETHODCALLTYPE *FaultingProbeCallback)(ULONG64);
-constexpr COR_SIGNATURE FaultingProbeCallbackSignature [] = { IMAGE_CEE_CS_CALLCONV_STDCALL, 0x01, ELEMENT_TYPE_VOID, ELEMENT_TYPE_I8 };
+constexpr COR_SIGNATURE FaultingProbeCallbackCorSignature [] = { IMAGE_CEE_CS_CALLCONV_STDCALL, 0x01, ELEMENT_TYPE_VOID, ELEMENT_TYPE_I8 };

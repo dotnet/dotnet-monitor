@@ -113,6 +113,10 @@ void ProbeInstrumentation::ShutdownBackgroundService()
 
 void STDMETHODCALLTYPE ProbeInstrumentation::OnFunctionProbeFault(ULONG64 uniquifier)
 {
+    //
+    // Faulting behavior: When any function probe faults, uninstall all probes.
+    //
+
     PROBE_WORKER_PAYLOAD payload = {};
     payload.instruction = ProbeWorkerInstruction::FAULTING_PROBE;
 

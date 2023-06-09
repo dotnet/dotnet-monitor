@@ -76,8 +76,8 @@ HRESULT AssemblyProbePrep::EmitFaultingProbeCallbackSignature(
 
     mdSignature signature;
     IfFailRet(pMetadataEmit->GetTokenFromSig(
-        FaultingProbeCallbackSignature,
-        sizeof(FaultingProbeCallbackSignature),
+        FaultingProbeCallbackCorSignature,
+        sizeof(FaultingProbeCallbackCorSignature),
         &signature));
 
     faultingProbeCallbackSignature = signature;
