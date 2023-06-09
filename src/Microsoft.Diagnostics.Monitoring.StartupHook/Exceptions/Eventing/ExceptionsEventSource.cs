@@ -46,28 +46,28 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             base.Dispose(disposing);
         }
 
-        [Event(ExceptionEvents.EventIds.ExceptionIdentifier)]
-        public void ExceptionIdentifier(
-            ulong ExceptionId,
+        [Event(ExceptionEvents.EventIds.ExceptionGroup)]
+        public void ExceptionGroup(
+            ulong ExceptionGroupId,
             ulong ExceptionClassId,
             ulong ThrowingMethodId,
             int ILOffset)
         {
             Span<EventData> data = stackalloc EventData[4];
 
-            SetValue(ref data[ExceptionEvents.ExceptionIdentifierPayloads.ExceptionId], ExceptionId);
-            SetValue(ref data[ExceptionEvents.ExceptionIdentifierPayloads.ExceptionClassId], ExceptionClassId);
-            SetValue(ref data[ExceptionEvents.ExceptionIdentifierPayloads.ThrowingMethodId], ThrowingMethodId);
-            SetValue(ref data[ExceptionEvents.ExceptionIdentifierPayloads.ILOffset], ILOffset);
+            SetValue(ref data[ExceptionEvents.ExceptionGroupPayloads.ExceptionGroupId], ExceptionGroupId);
+            SetValue(ref data[ExceptionEvents.ExceptionGroupPayloads.ExceptionClassId], ExceptionClassId);
+            SetValue(ref data[ExceptionEvents.ExceptionGroupPayloads.ThrowingMethodId], ThrowingMethodId);
+            SetValue(ref data[ExceptionEvents.ExceptionGroupPayloads.ILOffset], ILOffset);
 
-            WriteEventCore(ExceptionEvents.EventIds.ExceptionIdentifier, data);
+            WriteEventCore(ExceptionEvents.EventIds.ExceptionGroup, data);
 
             RestartFlushingEventTimer();
         }
 
         [Event(ExceptionEvents.EventIds.ExceptionInstance)]
         public void ExceptionInstance(
-            ulong ExceptionId,
+            ulong ExceptionGroupId,
             string? ExceptionMessage,
             ulong[] StackFrameIds,
             DateTime Timestamp)
@@ -77,7 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             Span<byte> stackFrameIdsSpan = stackalloc byte[GetArrayDataSize(StackFrameIds)];
             FillArrayData(stackFrameIdsSpan, StackFrameIds);
 
-            SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionId], ExceptionId);
+            SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionGroupId], ExceptionGroupId);
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage], namePinned);
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.StackFrameIds], stackFrameIdsSpan);
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.Timestamp], Timestamp.ToFileTimeUtc());

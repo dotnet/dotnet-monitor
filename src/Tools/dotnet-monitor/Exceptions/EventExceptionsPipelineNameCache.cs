@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
     internal sealed class EventExceptionsPipelineNameCache : IExceptionsNameCache
     {
         private readonly List<ExceptionInstance> _exceptions = new();
-        private readonly Dictionary<ulong, ExceptionIdentifier> _exceptionIds = new();
+        private readonly Dictionary<ulong, ExceptionGroup> _exceptionGroupMap = new();
         private readonly NameCache _nameCache = new();
 
         public NameCache NameCache => _nameCache;
@@ -21,14 +21,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _nameCache.ClassData.TryAdd(id, new ClassData(token, moduleId, flags, typeArgs ?? Array.Empty<ulong>()));
         }
 
-        public void AddExceptionIdentifier(ulong id, ulong exceptionClassId, ulong throwingMethodId, int ilOffset)
+        public void AddExceptionGroup(ulong id, ulong exceptionClassId, ulong throwingMethodId, int ilOffset)
         {
-            _exceptionIds.Add(id, new ExceptionIdentifier(exceptionClassId, throwingMethodId, ilOffset));
+            _exceptionGroupMap.Add(id, new ExceptionGroup(exceptionClassId, throwingMethodId, ilOffset));
         }
 
-        public void AddExceptionInstance(ulong exceptionId, string message)
+        public void AddExceptionInstance(ulong groupId, string message)
         {
-            _exceptions.Add(new ExceptionInstance(exceptionId, message));
+            _exceptions.Add(new ExceptionInstance(groupId, message));
         }
 
         public void AddFunction(ulong id, ulong classId, uint classToken, ulong moduleId, string name, ulong[] typeArgs)
@@ -48,13 +48,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 new TokenData(name, outerToken));
         }
 
-        public bool TryGetExceptionId(ulong exceptionId, out ulong exceptionClassId, out ulong throwingMethodId, out int ilOffset)
+        public bool TryGetExceptionGroup(ulong groupId, out ulong exceptionClassId, out ulong throwingMethodId, out int ilOffset)
         {
             exceptionClassId = 0;
             throwingMethodId = 0;
             ilOffset = 0;
 
-            if (!_exceptionIds.TryGetValue(exceptionId, out ExceptionIdentifier identifier))
+            if (!_exceptionGroupMap.TryGetValue(groupId, out ExceptionGroup identifier))
                 return false;
 
             exceptionClassId = identifier.ClassId;
@@ -63,8 +63,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             return true;
         }
 
-        private sealed record class ExceptionIdentifier(ulong ClassId, ulong ThrowingMethodId, int ILOffset);
+        private sealed record class ExceptionGroup(ulong ClassId, ulong ThrowingMethodId, int ILOffset);
 
-        private sealed record class ExceptionInstance(ulong ExceptionId, string Message);
+        private sealed record class ExceptionInstance(ulong GroupId, string Message);
     }
 }

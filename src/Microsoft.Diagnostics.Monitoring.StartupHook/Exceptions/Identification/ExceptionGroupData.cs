@@ -3,7 +3,7 @@
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 {
-    internal sealed class ExceptionIdentifierData
+    internal sealed class ExceptionGroupData
     {
         public ulong ExceptionClassId { get; set; }
         public ulong ThrowingMethodId { get; set; }

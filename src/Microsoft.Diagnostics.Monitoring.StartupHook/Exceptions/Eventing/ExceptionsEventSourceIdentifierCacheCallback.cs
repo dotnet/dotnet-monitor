@@ -6,7 +6,7 @@ using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification;
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 {
     internal sealed class ExceptionsEventSourceIdentifierCacheCallback :
-        ExceptionIdentifierCacheCallback
+        ExceptionGroupIdentifierCacheCallback
     {
         private readonly ExceptionsEventSource _source;
 
@@ -25,10 +25,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                 data.TypeArgs);
         }
 
-        public override void OnExceptionIdentifier(ulong registrationId, ExceptionIdentifierData data)
+        public override void OnExceptionGroupData(ulong groupId, ExceptionGroupData data)
         {
-            _source.ExceptionIdentifier(
-                registrationId,
+            _source.ExceptionGroup(
+                groupId,
                 data.ExceptionClassId,
                 data.ThrowingMethodId,
                 data.ILOffset);
