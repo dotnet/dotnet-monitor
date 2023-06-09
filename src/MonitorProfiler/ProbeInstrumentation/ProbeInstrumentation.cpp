@@ -246,7 +246,7 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
     }
 
     IfFailLogRet(m_pCorProfilerInfo->RequestReJITWithInliners(
-        COR_PRF_REJIT_BLOCK_INLINING | COR_PRF_REJIT_INLINING_CALLBACKS,
+        COR_PRF_REJIT_BLOCK_INLINING,
         static_cast<ULONG>(requestedModuleIds.size()),
         requestedModuleIds.data(),
         requestedMethodDefs.data()));
