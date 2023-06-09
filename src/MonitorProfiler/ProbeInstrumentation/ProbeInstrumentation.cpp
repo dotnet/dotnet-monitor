@@ -309,7 +309,10 @@ HRESULT STDMETHODCALLTYPE ProbeInstrumentation::GetReJITParameters(ModuleID modu
 {
     HRESULT hr;
 
-    m_pLogger->Log(LogLevel::Trace, _LS("ReJIT - moduleId: 0x%08x, methodDef: 0x%04x"), moduleId, methodDef);
+    if (m_pLogger->IsEnabled(LogLevel::Trace))
+    {
+        m_pLogger->Log(LogLevel::Trace, _LS("ReJIT - moduleId: 0x%08x, methodDef: 0x%04x"), moduleId, methodDef);
+    }
 
     INSTRUMENTATION_REQUEST request;
     {
