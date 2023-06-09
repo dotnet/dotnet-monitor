@@ -80,7 +80,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             DateTime timestamp = DateTime.UtcNow;
             ulong[] innerExceptionIds = innerExceptionIdsString.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(ulong.Parse).ToArray();
 
-            source.ExceptionInstance(id, groupId, message, frameIds, timestamp, innerExceptionId, Array.Empty<ulong>());
+            source.ExceptionInstance(id, groupId, message, frameIds, timestamp, innerExceptionId, innerExceptionIds);
 
             ExceptionInstance instance = Assert.Single(listener.Exceptions);
             Assert.Equal(id, instance.Id);
