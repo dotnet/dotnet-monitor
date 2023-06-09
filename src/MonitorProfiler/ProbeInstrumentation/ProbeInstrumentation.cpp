@@ -301,7 +301,7 @@ void ProbeInstrumentation::AddProfilerEventMask(DWORD& eventsLow)
 {
     //
     // Workaround:
-    // Subscribe to COR_PRF_MONITOR_JIT_COMPILATION even though we don't need the callbacks.
+    // Enable COR_PRF_MONITOR_JIT_COMPILATION even though we don't need the callbacks.
     // It appears that without this flag set our RequestReJITWithInliners calls will sometimes
     // not actually trigger a rejit despite returning succesfully.
     //
