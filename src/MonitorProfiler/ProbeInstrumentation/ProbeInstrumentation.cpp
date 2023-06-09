@@ -27,13 +27,12 @@ HRESULT ProbeInstrumentation::RegisterFunctionProbe(FunctionID enterProbeId)
 {
     lock_guard<mutex> lock(m_probePinningMutex);
 
+    m_pLogger->Log(LogLevel::Debug, _LS("Registerring function probe: 0x%08x"), enterProbeId);
+
     if (HasRegisteredProbe())
     {
-        m_pLogger->Log(LogLevel::Debug, _LS("Received probes but they have already been registered"));
         return E_FAIL;
     }
-
-    m_pLogger->Log(LogLevel::Debug, _LS("Received probes"));
 
     m_pAssemblyProbePrep.reset(new (nothrow) AssemblyProbePrep(m_pCorProfilerInfo, enterProbeId));
     IfNullRet(m_pAssemblyProbePrep);
@@ -196,6 +195,8 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
 {
     HRESULT hr;
 
+    m_pLogger->Log(LogLevel::Debug, _LS("Installing function probes"));
+
     lock_guard<mutex> lock(m_instrumentationProcessingMutex);
 
     if (!HasRegisteredProbe() ||
@@ -260,6 +261,8 @@ HRESULT ProbeInstrumentation::UninstallProbes()
 {
     HRESULT hr;
 
+    m_pLogger->Log(LogLevel::Debug, _LS("Uninstalling function probes"));
+
     lock_guard<mutex> lock(m_instrumentationProcessingMutex);
 
     if (!HasRegisteredProbe() ||
@@ -306,12 +309,15 @@ HRESULT STDMETHODCALLTYPE ProbeInstrumentation::GetReJITParameters(ModuleID modu
 {
     HRESULT hr;
 
+    m_pLogger->Log(LogLevel::Trace, _LS("ReJIT - moduleId: 0x%08x, methodDef: 0x%04x"), moduleId, methodDef);
+
     INSTRUMENTATION_REQUEST request;
     {
         lock_guard<mutex> lock(m_instrumentationProcessingMutex);
         auto const& it = m_activeInstrumentationRequests.find({moduleId, methodDef});
         if (it == m_activeInstrumentationRequests.end())
         {
+            m_pLogger->Log(LogLevel::Debug, _LS("ReJIT cache miss - moduleId: 0x%08x, methodDef: 0x%04x"));
             return E_FAIL;
         }
         request = it->second;
