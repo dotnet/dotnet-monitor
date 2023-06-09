@@ -9,13 +9,13 @@ using Xunit;
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
-    public sealed class ExceptionIdentifierTests
+    public sealed class ExceptionGroupIdentifierTests
     {
         [Fact]
-        public void ExceptionIdentifier_NotThrownException()
+        public void ExceptionGroupIdentifier_NotThrownException()
         {
             Exception ex = new();
-            ExceptionIdentifier id = new(ex);
+            ExceptionGroupIdentifier id = new(ex);
 
             Assert.Equal(ex.GetType(), id.ExceptionType);
             Assert.Null(id.ThrowingMethod);
@@ -23,30 +23,30 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         }
 
         [Fact]
-        public void ExceptionIdentifier_ThrownException()
+        public void ExceptionGroupIdentifier_ThrownException()
         {
             Exception ex = new();
-            ExceptionIdentifier id = ThrowAndCreate(ex);
+            ExceptionGroupIdentifier id = ThrowAndCreate(ex);
 
             Assert.Equal(ex.GetType(), id.ExceptionType);
             Assert.NotNull(id.ThrowingMethod);
         }
 
         [Fact]
-        public void ExceptionIdentifier_SameOrigination_Equal()
+        public void ExceptionGroupIdentifier_SameOrigination_Equal()
         {
-            ExceptionIdentifier id1 = ThrowAndCreate();
-            ExceptionIdentifier id2 = ThrowAndCreate();
+            ExceptionGroupIdentifier id1 = ThrowAndCreate();
+            ExceptionGroupIdentifier id2 = ThrowAndCreate();
 
             Assert.Equal(id1, id2);
             Assert.True(id1 == id2);
         }
 
         [Fact]
-        public void ExceptionIdentifier_SameOrigination_EqualProperties()
+        public void ExceptionGroupIdentifier_SameOrigination_EqualProperties()
         {
-            ExceptionIdentifier id1 = ThrowAndCreate();
-            ExceptionIdentifier id2 = ThrowAndCreate();
+            ExceptionGroupIdentifier id1 = ThrowAndCreate();
+            ExceptionGroupIdentifier id2 = ThrowAndCreate();
 
             Assert.Equal(id1.ExceptionType, id2.ExceptionType);
             Assert.NotNull(id1.ThrowingMethod);
@@ -56,18 +56,18 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         }
 
         [Fact]
-        public void ExceptionIdentifier_DifferentType_NotEqual()
+        public void ExceptionGroupIdentifier_DifferentType_NotEqual()
         {
-            (ExceptionIdentifier id1, ExceptionIdentifier id2) = ThrowAndCreatePair(differentTypes: true);
+            (ExceptionGroupIdentifier id1, ExceptionGroupIdentifier id2) = ThrowAndCreatePair(differentTypes: true);
 
             Assert.NotEqual(id1, id2);
             Assert.True(id1 != id2);
         }
 
         [Fact]
-        public void ExceptionIdentifier_DifferentType_NotEqualProperties()
+        public void ExceptionGroupIdentifier_DifferentType_NotEqualProperties()
         {
-            (ExceptionIdentifier id1, ExceptionIdentifier id2) = ThrowAndCreatePair(differentTypes: true);
+            (ExceptionGroupIdentifier id1, ExceptionGroupIdentifier id2) = ThrowAndCreatePair(differentTypes: true);
 
             Assert.NotEqual(id1.ExceptionType, id2.ExceptionType);
             Assert.NotNull(id1.ThrowingMethod);
@@ -77,18 +77,18 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         }
 
         [Fact]
-        public void ExceptionIdentifier_DifferentMethod_NotEqual()
+        public void ExceptionGroupIdentifier_DifferentMethod_NotEqual()
         {
-            (ExceptionIdentifier id1, ExceptionIdentifier id2) = ThrowAndCreatePair(differentMethods: true);
+            (ExceptionGroupIdentifier id1, ExceptionGroupIdentifier id2) = ThrowAndCreatePair(differentMethods: true);
 
             Assert.NotEqual(id1, id2);
             Assert.True(id1 != id2);
         }
 
         [Fact]
-        public void ExceptionIdentifier_DifferentMethod_NotEqualProperties()
+        public void ExceptionGroupIdentifier_DifferentMethod_NotEqualProperties()
         {
-            (ExceptionIdentifier id1, ExceptionIdentifier id2) = ThrowAndCreatePair(differentMethods: true);
+            (ExceptionGroupIdentifier id1, ExceptionGroupIdentifier id2) = ThrowAndCreatePair(differentMethods: true);
 
             Assert.Equal(id1.ExceptionType, id2.ExceptionType);
             Assert.NotNull(id1.ThrowingMethod);
@@ -97,18 +97,18 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         }
 
         [Fact]
-        public void ExceptionIdentifier_DifferentOffset_NotEqual()
+        public void ExceptionGroupIdentifier_DifferentOffset_NotEqual()
         {
-            (ExceptionIdentifier id1, ExceptionIdentifier id2) = ThrowAndCreatePair();
+            (ExceptionGroupIdentifier id1, ExceptionGroupIdentifier id2) = ThrowAndCreatePair();
 
             Assert.NotEqual(id1, id2);
             Assert.True(id1 != id2);
         }
 
         [Fact]
-        public void ExceptionIdentifier_DifferentOffset_NotEqualProperties()
+        public void ExceptionGroupIdentifier_DifferentOffset_NotEqualProperties()
         {
-            (ExceptionIdentifier id1, ExceptionIdentifier id2) = ThrowAndCreatePair();
+            (ExceptionGroupIdentifier id1, ExceptionGroupIdentifier id2) = ThrowAndCreatePair();
 
             Assert.Equal(id1.ExceptionType, id2.ExceptionType);
             Assert.NotNull(id1.ThrowingMethod);
@@ -117,13 +117,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             Assert.NotEqual(id1.ILOffset, id2.ILOffset);
         }
 
-        private static ExceptionIdentifier ThrowAndCreate()
+        private static ExceptionGroupIdentifier ThrowAndCreate()
         {
             return ThrowAndCreate(new InvalidOperationException());
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static ExceptionIdentifier ThrowAndCreate(Exception ex)
+        private static ExceptionGroupIdentifier ThrowAndCreate(Exception ex)
         {
             try
             {
@@ -131,26 +131,26 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             }
             catch (Exception caughtEx)
             {
-                return new ExceptionIdentifier(caughtEx);
+                return new ExceptionGroupIdentifier(caughtEx);
             }
         }
 
         [MethodImpl(MethodImplOptions.NoOptimization)]
-        private static (ExceptionIdentifier, ExceptionIdentifier) ThrowAndCreatePair(bool differentTypes = false, bool differentMethods = false)
+        private static (ExceptionGroupIdentifier, ExceptionGroupIdentifier) ThrowAndCreatePair(bool differentTypes = false, bool differentMethods = false)
         {
-            ExceptionIdentifier id1;
+            ExceptionGroupIdentifier id1;
             try
             {
                 throw new InvalidOperationException();
             }
             catch (Exception ex)
             {
-                id1 = new ExceptionIdentifier(ex);
+                id1 = new ExceptionGroupIdentifier(ex);
             }
 
             Exception ex2 = differentTypes ? new OperationCanceledException() : new InvalidOperationException();
 
-            ExceptionIdentifier id2;
+            ExceptionGroupIdentifier id2;
             if (differentMethods)
             {
                 id2 = ThrowAndCreate(ex2);
@@ -163,7 +163,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                 }
                 catch (Exception ex)
                 {
-                    id2 = new ExceptionIdentifier(ex);
+                    id2 = new ExceptionGroupIdentifier(ex);
                 }
             }
 

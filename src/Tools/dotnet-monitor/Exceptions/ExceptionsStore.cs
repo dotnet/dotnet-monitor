@@ -89,7 +89,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 // at the same time; one will return sooner and report the correct IDs potentially before those IDs are
                 // produced by the EventSource. May need to cache this incompletion information and attempt to reconstruct
                 // it in the future, with either periodic retry OR registering a callback system for the missing IDs.
-                if (entry.Cache.TryGetExceptionId(entry.ExceptionId, out ulong exceptionClassId, out _, out _))
+                if (entry.Cache.TryGetExceptionGroup(entry.ExceptionId, out ulong exceptionClassId, out _, out _))
                 {
                     string exceptionTypeName;
                     if (!_exceptionTypeNameMap.TryGetValue(exceptionClassId, out exceptionTypeName))

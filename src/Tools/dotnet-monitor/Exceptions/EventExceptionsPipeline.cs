@@ -65,20 +65,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.ClassDescPayloads.TypeArgs)
                         );
                     break;
-                case "ExceptionIdentifier":
-                    _cache.AddExceptionIdentifier(
-                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionIdentifierPayloads.ExceptionId),
-                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionIdentifierPayloads.ExceptionClassId),
-                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionIdentifierPayloads.ThrowingMethodId),
-                        traceEvent.GetPayload<int>(ExceptionEvents.ExceptionIdentifierPayloads.ILOffset)
+                case "ExceptionGroup":
+                    _cache.AddExceptionGroup(
+                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionGroupPayloads.ExceptionGroupId),
+                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionGroupPayloads.ExceptionClassId),
+                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionGroupPayloads.ThrowingMethodId),
+                        traceEvent.GetPayload<int>(ExceptionEvents.ExceptionGroupPayloads.ILOffset)
                         );
                     break;
                 case "ExceptionInstance":
-                    ulong exceptionId = traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionInstancePayloads.ExceptionId);
+                    ulong groupId = traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionInstancePayloads.ExceptionGroupId);
                     string message = traceEvent.GetPayload<string>(ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage);
                     DateTime timestamp = traceEvent.GetPayload<DateTime>(ExceptionEvents.ExceptionInstancePayloads.Timestamp).ToUniversalTime();
                     ulong[] stackFrameIds = traceEvent.GetPayload<ulong[]>(ExceptionEvents.ExceptionInstancePayloads.StackFrameIds);
-                    _store.AddExceptionInstance(_cache, exceptionId, message, timestamp, stackFrameIds, traceEvent.ThreadID);
+                    _store.AddExceptionInstance(_cache, groupId, message, timestamp, stackFrameIds, traceEvent.ThreadID);
                     break;
                 case "FunctionDescription":
                     _cache.AddFunction(

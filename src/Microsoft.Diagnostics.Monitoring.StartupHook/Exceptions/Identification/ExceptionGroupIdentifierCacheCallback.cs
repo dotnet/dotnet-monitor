@@ -3,11 +3,11 @@
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 {
-    internal abstract class ExceptionIdentifierCacheCallback
+    internal abstract class ExceptionGroupIdentifierCacheCallback
     {
-        public virtual void OnExceptionIdentifier(
+        public virtual void OnExceptionGroupData(
             ulong registrationId,
-            ExceptionIdentifierData data)
+            ExceptionGroupData data)
         {
         }
 

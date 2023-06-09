@@ -12,19 +12,19 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
     internal sealed class ExceptionEventsPipelineStep
     {
         private readonly ExceptionsEventSource _eventSource = new();
-        private readonly ExceptionIdentifierCache _identifierCache;
+        private readonly ExceptionGroupIdentifierCache _identifierCache;
         private readonly ExceptionPipelineDelegate _next;
 
         public ExceptionEventsPipelineStep(ExceptionPipelineDelegate next)
         {
             ArgumentNullException.ThrowIfNull(next);
 
-            List<ExceptionIdentifierCacheCallback> callbacks = new(1)
+            List<ExceptionGroupIdentifierCacheCallback> callbacks = new(1)
             {
                 new ExceptionsEventSourceIdentifierCacheCallback(_eventSource)
             };
 
-            _identifierCache = new ExceptionIdentifierCache(callbacks);
+            _identifierCache = new ExceptionGroupIdentifierCache(callbacks);
             _next = next;
         }
 
@@ -43,12 +43,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             {
                 ReadOnlySpan<StackFrame> stackFrames = ComputeEffectiveCallStack(exception);
 
-                ulong identifier = _identifierCache.GetOrAdd(new ExceptionIdentifier(exception, stackFrames));
+                ulong groupId = _identifierCache.GetOrAdd(new ExceptionGroupIdentifier(exception));
 
                 ulong[] frameIds = _identifierCache.GetOrAdd(stackFrames);
 
                 _eventSource.ExceptionInstance(
-                    identifier,
+                    groupId,
                     exception.Message,
                     frameIds,
                     context.Timestamp);

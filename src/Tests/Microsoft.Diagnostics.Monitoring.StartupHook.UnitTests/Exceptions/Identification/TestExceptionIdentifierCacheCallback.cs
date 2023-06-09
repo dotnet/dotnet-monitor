@@ -6,12 +6,12 @@ using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 {
-    internal sealed class TestExceptionIdentifierCacheCallback :
-        ExceptionIdentifierCacheCallback
+    internal sealed class TestExceptionGroupIdentifierCacheCallback :
+        ExceptionGroupIdentifierCacheCallback
     {
         public readonly NameCache NameCache = new();
 
-        public readonly Dictionary<ulong, ExceptionIdentifierData> ExceptionIdentifierData = new();
+        public readonly Dictionary<ulong, ExceptionGroupData> ExceptionGroupMap = new();
 
         public readonly Dictionary<ulong, StackFrameData> StackFrameData = new();
 
@@ -20,9 +20,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             Assert.True(NameCache.ClassData.TryAdd(classId, data));
         }
 
-        public override void OnExceptionIdentifier(ulong registrationId, ExceptionIdentifierData data)
+        public override void OnExceptionGroupData(ulong registrationId, ExceptionGroupData data)
         {
-            Assert.True(ExceptionIdentifierData.TryAdd(registrationId, data));
+            Assert.True(ExceptionGroupMap.TryAdd(registrationId, data));
         }
 
         public override void OnFunctionData(ulong functionId, FunctionData data)

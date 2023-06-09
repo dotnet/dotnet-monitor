@@ -22,16 +22,16 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         [InlineData(1, 0, ulong.MaxValue, 19)]
         [InlineData(7, ulong.MaxValue, 0, 17)]
         [InlineData(ulong.MaxValue, 29, 41, 0)]
-        public void ExceptionsEventSource_WriteExceptionId_Event(ulong id, ulong classId, ulong methodId, int ilOffset)
+        public void ExceptionsEventSource_WriteExceptionGroup_Event(ulong id, ulong classId, ulong methodId, int ilOffset)
         {
             using ExceptionsEventSource source = new();
 
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Informational);
 
-            source.ExceptionIdentifier(id, classId, methodId, ilOffset);
+            source.ExceptionGroup(id, classId, methodId, ilOffset);
 
-            (ulong exceptionId, ExceptionIdentifierData data) = Assert.Single(listener.ExceptionIdentifiers);
+            (ulong exceptionId, ExceptionGroupData data) = Assert.Single(listener.ExceptionGroups);
             Assert.Equal(id, exceptionId);
             Assert.Equal(classId, data.ExceptionClassId);
             Assert.Equal(methodId, data.ThrowingMethodId);
@@ -39,28 +39,28 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         }
 
         [Fact]
-        public void ExceptionsEventSource_WriteExceptionId_LevelTooHigh()
+        public void ExceptionsEventSource_WriteExceptionGroup_LevelTooHigh()
         {
             using ExceptionsEventSource source = new();
 
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Warning);
 
-            source.ExceptionIdentifier(1, 2, 3, 4);
+            source.ExceptionGroup(1, 2, 3, 4);
 
-            Assert.Empty(listener.ExceptionIdentifiers);
+            Assert.Empty(listener.ExceptionGroups);
         }
 
         [Fact]
-        public void ExceptionsEventSource_WriteExceptionId_NotEnabled()
+        public void ExceptionsEventSource_WriteExceptionGroup_NotEnabled()
         {
             using ExceptionsEventSource source = new();
 
             using ExceptionsEventListener listener = new();
 
-            source.ExceptionIdentifier(4, 3, 2, 1);
+            source.ExceptionGroup(4, 3, 2, 1);
 
-            Assert.Empty(listener.ExceptionIdentifiers);
+            Assert.Empty(listener.ExceptionGroups);
         }
 
         [Theory]
@@ -82,7 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             source.ExceptionInstance(id, message, frameIds, timestamp);
 
             ExceptionInstance instance = Assert.Single(listener.Exceptions);
-            Assert.Equal(id, instance.ExceptionId);
+            Assert.Equal(id, instance.GroupId);
             Assert.Equal(CoalesceNull(message), instance.ExceptionMessage);
             // We would normally expect the following to return an array of the stack frame IDs
             // but in-process listener doesn't decode non-byte arrays correctly.
