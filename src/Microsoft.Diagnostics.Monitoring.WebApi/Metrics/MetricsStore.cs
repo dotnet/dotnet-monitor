@@ -202,6 +202,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 // In Prometheus, rates are treated as gauges due to their non-monotonic nature
                 case EventType.Rate:
+                case EventType.UpDownCounter:
                 case EventType.Gauge:
                     return "gauge";
                 case EventType.Histogram:
