@@ -4,7 +4,7 @@
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
-using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -100,8 +100,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 writer.WriteString("message", instance.Message);
 
                 MemoryStream outputStream = new();
-                StacksFormatter formatter = StackUtilities.CreateFormatter(StackFormat.Json, outputStream);
-                await formatter.FormatStack(instance.CallStackResult, token);
+                await JsonSerializer.SerializeAsync(outputStream, instance.CallStackResult, cancellationToken: token);
                 outputStream.Position = 0;
 
                 writer.WritePropertyName("callStack");
@@ -144,14 +143,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                 foreach (CallStackFrame frame in stack.Frames)
                 {
-                    Monitoring.WebApi.Models.CallStackFrame frameModel = StacksFormatter.CreateFrameModel(frame, instance.CallStackResult.NameCache);
-
                     await writer.WriteLineAsync(
                         string.Format(
                             CultureInfo.InvariantCulture,
                             Strings.OutputFormatString_FirstChanceExceptionStackFrame,
-                            frameModel.ClassName,
-                            frameModel.MethodName));
+                            frame.ClassName,
+                            frame.MethodName));
                 }
             }
 

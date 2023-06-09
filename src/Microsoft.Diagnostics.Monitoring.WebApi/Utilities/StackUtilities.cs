@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
 using Microsoft.Diagnostics.NETCore.Client;
 using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,6 +20,66 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
     internal static class StackUtilities
     {
+        public static Models.CallStackResult TranslateCallStackResultToModel(CallStackResult result)
+        {
+            Models.CallStackResult resultModel = new Models.CallStackResult();
+            NameCache cache = result.NameCache;
+
+            foreach (CallStack stack in result.Stacks)
+            {
+                Models.CallStack stackModel = new Models.CallStack();
+                stackModel.ThreadId = stack.ThreadId;
+                stackModel.ThreadName = stack.ThreadName;
+
+                foreach (CallStackFrame frame in stack.Frames)
+                {
+                    stackModel.Frames.Add(CreateFrameModel(frame, cache));
+                }
+                resultModel.Stacks.Add(stackModel);
+            }
+
+            return resultModel;
+        }
+
+        internal static Models.CallStackFrame CreateFrameModel(CallStackFrame frame, NameCache cache)
+        {
+            var builder = new StringBuilder();
+
+            Models.CallStackFrame frameModel = new Models.CallStackFrame()
+            {
+                ClassName = NameFormatter.UnknownClass,
+                MethodName = StacksFormatter.UnknownFunction,
+                //TODO Bring this back once we have a useful offset value
+                //Offset = frame.Offset,
+                ModuleName = NameFormatter.UnknownModule
+            };
+            if (frame.FunctionId == 0)
+            {
+                frameModel.MethodName = StacksFormatter.NativeFrame;
+                frameModel.ModuleName = StacksFormatter.NativeFrame;
+                frameModel.ClassName = StacksFormatter.NativeFrame;
+            }
+            else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
+            {
+                frameModel.ModuleName = NameFormatter.GetModuleName(cache, functionData.ModuleId);
+                frameModel.MethodName = functionData.Name;
+
+                builder.Clear();
+                NameFormatter.BuildClassName(builder, cache, functionData);
+                frameModel.ClassName = builder.ToString();
+
+                if (functionData.TypeArgs.Length > 0)
+                {
+                    builder.Clear();
+                    builder.Append(functionData.Name);
+                    NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
+                    frameModel.MethodName = builder.ToString();
+                }
+            }
+
+            return frameModel;
+        }
+
         public static string GenerateStacksFilename(IEndpointInfo endpointInfo, bool plainText)
         {
             string extension = plainText ? "txt" : "json";

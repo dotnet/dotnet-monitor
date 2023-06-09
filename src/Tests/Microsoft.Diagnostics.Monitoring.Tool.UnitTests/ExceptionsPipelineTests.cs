@@ -5,7 +5,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
-using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -25,8 +25,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
-
-        private const ulong ExpectedFunctionId = 2;
 
         public ExceptionsPipelineTests(ITestOutputHelper outputHelper)
         {
@@ -55,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
                     Assert.True(instance.Timestamp > baselineTimestamp);
 
-                    ValidateStack(instance, ExpectedFunctionId);
+                    ValidateStack(instance, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
                 });
         }
 
@@ -91,8 +89,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.True(instance2.Timestamp > baselineTimestamp);
                     Assert.NotEqual(instance1.Timestamp, instance2.Timestamp);
 
-                    ValidateStack(instance1, ExpectedFunctionId);
-                    ValidateStack(instance2, ExpectedFunctionId);
+                    ValidateStack(instance1, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
+                    ValidateStack(instance2, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
                 });
         }
 
@@ -114,7 +112,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
 
-                    ValidateStack(instance, ExpectedFunctionId);
+                    ValidateStack(instance, "ThrowForNonSuccess", "System.Private.CoreLib.dll", "System.Runtime.CompilerServices.TaskAwaiter");
                 });
         }
 
@@ -136,7 +134,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
 
-                    ValidateStack(instance, ExpectedFunctionId);
+                    ValidateStack(instance, "Throw", "System.Private.CoreLib.dll", "System.ArgumentNullException");
                 });
         }
 
@@ -158,7 +156,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
 
-                    ValidateStack(instance, ExpectedFunctionId);
+                    ValidateStack(instance, "ThrowAndCatchCustomException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
                 });
         }
 
@@ -181,7 +179,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
 
-                    ValidateStack(instance, ExpectedFunctionId);
+                    ValidateStack(instance, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
                 },
                 architecture);
         }
@@ -204,7 +202,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
 
-                    ValidateStack(instance, ExpectedFunctionId);
+                    ValidateStack(instance, "ThrowAndCatchFromDynamicMethod", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "UnknownClass");
                 });
         }
 
@@ -226,7 +224,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.False(string.IsNullOrEmpty(instance.ThrowingMethodName));
 
-                    ValidateStack(instance, ExpectedFunctionId);
+                    ValidateStack(instance, "ThrowIndexOutOfRangeException", "System.Private.CoreLib.dll", "System.ThrowHelper");
                 });
         }
 
@@ -275,13 +273,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
-        private static void ValidateStack(TestExceptionsStore.ExceptionInstance instance, ulong expectedFunctionId)
+        private static void ValidateStack(TestExceptionsStore.ExceptionInstance instance, string expectedMethodName, string expectedModuleName, string expectedClassName)
         {
             CallStack stack = Assert.Single(instance.CallStackResult.Stacks);
             Assert.NotEmpty(stack.Frames);
             Assert.True(0 < stack.ThreadId);
-            Assert.Equal(expectedFunctionId, stack.Frames[0].FunctionId);
-            Assert.NotEqual<ulong>(0, stack.Frames[0].Offset); // Offsets are inconsistent, so just test for non-zero offsets
+            Assert.Equal(expectedMethodName, stack.Frames[0].MethodName);
+            Assert.Equal(expectedModuleName, stack.Frames[0].ModuleName);
+            Assert.Equal(expectedClassName, stack.Frames[0].ClassName);
         }
 
         private static void AddStartupHookEnvironmentVariable(AppRunner runner)
@@ -316,13 +315,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp, ulong[] stackFrameIds, int threadId)
             {
                 StringBuilder typeBuilder = new();
-                FunctionData throwingMethodData;
+                WebApi.Stacks.FunctionData throwingMethodData;
                 CallStackResult result;
                 try
                 {
                     Assert.True(cache.TryGetExceptionId(exceptionId, out ulong exceptionClassId, out ulong throwingMethodId, out _));
 
-                    NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId);
+                    WebApi.Stacks.NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId);
 
                     Assert.True(cache.NameCache.FunctionData.TryGetValue(throwingMethodId, out throwingMethodData));
 

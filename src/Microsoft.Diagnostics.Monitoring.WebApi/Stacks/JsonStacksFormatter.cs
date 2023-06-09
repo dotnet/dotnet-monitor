@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
                 foreach (CallStackFrame frame in stack.Frames)
                 {
-                    stackModel.Frames.Add(CreateFrameModel(frame, cache));
+                    stackModel.Frames.Add(StackUtilities.CreateFrameModel(frame, cache));
                 }
                 stackResultModel.Stacks.Add(stackModel);
             }

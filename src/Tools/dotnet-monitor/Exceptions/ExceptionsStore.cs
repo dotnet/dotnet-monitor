@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using CallStackResultModel = Microsoft.Diagnostics.Monitoring.WebApi.Models.CallStackResult;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {
@@ -104,7 +105,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         moduleName = NameFormatter.GetModuleName(entry.Cache.NameCache, exceptionClassData.ModuleId);
                     }
 
-                    CallStackResult callStackResult = GenerateCallStackResult(entry.StackFrameIds, entry.Cache, entry.ThreadId);
+                    CallStackResultModel callStackResult = GenerateCallStackResult(entry.StackFrameIds, entry.Cache, entry.ThreadId);
 
                     lock (_instances)
                     {
@@ -116,7 +117,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             }
         }
 
-        internal static CallStackResult GenerateCallStackResult(ulong[] stackFrameIds, IExceptionsNameCache cache, int threadId)
+        internal static CallStackResultModel GenerateCallStackResult(ulong[] stackFrameIds, IExceptionsNameCache cache, int threadId)
         {
             CallStackResult callStackResult = new CallStackResult();
             CallStack callStack = new();
@@ -155,7 +156,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
             callStackResult.Stacks.Add(callStack);
 
-            return callStackResult;
+            return StackUtilities.TranslateCallStackResultToModel(callStackResult);
         }
 
         private static void GetClassData(ulong key, IExceptionsNameCache cache, CallStackResult callStackResult, ulong? moduleId = null)
