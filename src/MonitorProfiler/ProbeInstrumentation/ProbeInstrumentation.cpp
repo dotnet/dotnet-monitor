@@ -299,7 +299,7 @@ bool ProbeInstrumentation::AreProbesInstalled()
 
 void ProbeInstrumentation::AddProfilerEventMask(DWORD& eventsLow)
 {
-    eventsLow |= COR_PRF_MONITOR::COR_PRF_ENABLE_REJIT;
+    eventsLow |= COR_PRF_MONITOR::COR_PRF_ENABLE_REJIT | COR_PRF_MONITOR::COR_PRF_MONITOR_JIT_COMPILATION;
 }
 
 HRESULT STDMETHODCALLTYPE ProbeInstrumentation::GetReJITParameters(ModuleID moduleId, mdMethodDef methodDef, ICorProfilerFunctionControl* pFunctionControl)
