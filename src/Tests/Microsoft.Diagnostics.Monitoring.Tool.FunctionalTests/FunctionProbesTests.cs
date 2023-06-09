@@ -15,6 +15,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
@@ -76,7 +77,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
                     runner.EnableCallStacksFeature = true;
                 },
-                subScenarioName: subScenario);
+                subScenarioName: subScenario,
+                profilerLogLevel: LogLevel.Trace);
         }
     }
 }
