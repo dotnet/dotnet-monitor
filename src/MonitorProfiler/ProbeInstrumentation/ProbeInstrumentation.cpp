@@ -27,7 +27,7 @@ HRESULT ProbeInstrumentation::RegisterFunctionProbe(FunctionID enterProbeId)
 {
     lock_guard<mutex> lock(m_probePinningMutex);
 
-    m_pLogger->Log(LogLevel::Debug, _LS("Registerring function probe: 0x%08x"), enterProbeId);
+    m_pLogger->Log(LogLevel::Debug, _LS("Registering function probe: 0x%08x"), enterProbeId);
 
     if (HasRegisteredProbe())
     {
