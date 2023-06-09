@@ -263,7 +263,7 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
     }
 
     IfFailLogRet(m_pCorProfilerInfo->RequestReJITWithInliners(
-        COR_PRF_REJIT_BLOCK_INLINING | COR_PRF_REJIT_INLINING_CALLBACKS,
+        COR_PRF_REJIT_BLOCK_INLINING,
         static_cast<ULONG>(requestedModuleIds.size()),
         requestedModuleIds.data(),
         requestedMethodDefs.data()));
@@ -316,7 +316,15 @@ bool ProbeInstrumentation::AreProbesInstalled()
 
 void ProbeInstrumentation::AddProfilerEventMask(DWORD& eventsLow)
 {
-    eventsLow |= COR_PRF_MONITOR::COR_PRF_ENABLE_REJIT;
+    //
+    // Workaround:
+    // Enable COR_PRF_MONITOR_JIT_COMPILATION even though we don't need the callbacks.
+    // It appears that without this flag set our RequestReJITWithInliners calls will sometimes
+    // not actually trigger a rejit despite returning successfully.
+    //
+    // This issue most commonly occurs on MacOS.
+    //
+    eventsLow |= COR_PRF_MONITOR::COR_PRF_ENABLE_REJIT | COR_PRF_MONITOR::COR_PRF_MONITOR_JIT_COMPILATION;
 }
 
 HRESULT STDMETHODCALLTYPE ProbeInstrumentation::GetReJITParameters(ModuleID moduleId, mdMethodDef methodDef, ICorProfilerFunctionControl* pFunctionControl)
