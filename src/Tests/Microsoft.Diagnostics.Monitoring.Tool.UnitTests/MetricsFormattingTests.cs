@@ -146,3 +146,4 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
     }
 }
+
