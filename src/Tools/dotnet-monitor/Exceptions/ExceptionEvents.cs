@@ -25,10 +25,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         public static class ExceptionInstancePayloads
         {
-            public const int ExceptionGroupId = 0;
-            public const int ExceptionMessage = 1;
-            public const int StackFrameIds = 2;
-            public const int Timestamp = 3;
+            public const int ExceptionId = 0;
+            public const int ExceptionGroupId = 1;
+            public const int ExceptionMessage = 2;
+            public const int StackFrameIds = 3;
+            public const int Timestamp = 4;
+            public const int InnerExceptionId = 5;
+            public const int InnerExceptionIds = 6;
         }
 
         public static class ExceptionGroupPayloads
