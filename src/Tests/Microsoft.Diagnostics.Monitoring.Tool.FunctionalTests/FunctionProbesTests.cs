@@ -77,8 +77,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
                     runner.EnableCallStacksFeature = true;
                 },
-                subScenarioName: subScenario,
-                profilerLogLevel: LogLevel.Trace);
+                profilerLogLevel: LogLevel.Trace,
+                subScenarioName: subScenario);
         }
     }
 }
