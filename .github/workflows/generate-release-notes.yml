@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout release branch
-        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
         with:
           persist-credentials: false
           fetch-depth: 0 # Fetch the entire repo for the below git commit graph operations
@@ -44,7 +44,7 @@ jobs:
           if [[ "$TEST_RUN" == "true" ]]; then
             qualified_release_version="test-$release_version"
           else
-            version_url="https://aka.ms/dotnet/diagnostics/monitor${major_minor_version}/release/dotnet-monitor-win-x64.zip.version"
+            version_url="https://aka.ms/dotnet/diagnostics/monitor${major_minor_version}/release/dotnet-monitor.version"
             qualified_release_version=$(curl -sL $version_url)
             # Check if the aka.ms url existed
             if [[ "$qualified_release_version" =~ "<html" || -z "$qualified_release_version" ]]; then
@@ -74,7 +74,7 @@ jobs:
           TEST_RUN: ${{ inputs.test_run }}
 
       - name: Checkout main
-        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
         with:
           persist-credentials: true # We need to persist credentials to push the resulting changes upstream.
           ref: main
