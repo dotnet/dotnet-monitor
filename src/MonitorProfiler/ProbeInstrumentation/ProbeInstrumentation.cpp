@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #include "corhlpr.h"
+#include "macros.h"
 #include "ProbeInstrumentation.h"
 #include "../Utilities/BlockingQueue.h"
 
@@ -129,6 +130,8 @@ STDAPI DLLEXPORT RequestFunctionProbeInstallation(
     // before passing off the request to the worker thread.
     //
 
+    START_NO_OOM_THROW_REGION;
+
     vector<UNPROCESSED_INSTRUMENTATION_REQUEST> requests;
     requests.reserve(count);
 
@@ -159,6 +162,8 @@ STDAPI DLLEXPORT RequestFunctionProbeInstallation(
     payload.instruction = ProbeWorkerInstruction::INSTALL_PROBES;
     payload.requests = requests;
     IfFailRet(g_probeManagementQueue.Enqueue(payload));
+
+    END_NO_OOM_THROW_REGION;
 
     return S_OK;
 }
@@ -205,12 +210,13 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
         return E_FAIL;
     }
 
+    START_NO_OOM_THROW_REGION;
+
     unordered_map<pair<ModuleID, mdMethodDef>, INSTRUMENTATION_REQUEST, PairHash<ModuleID, mdMethodDef>> newRequests;
 
     vector<ModuleID> requestedModuleIds;
     vector<mdMethodDef> requestedMethodDefs;
 
-    // JSFIX: Handle OOM scenarios.
     requestedModuleIds.reserve(requests.size());
     requestedMethodDefs.reserve(requests.size());
 
@@ -254,6 +260,8 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
 
     m_activeInstrumentationRequests = newRequests;
 
+    END_NO_OOM_THROW_REGION;
+
     return S_OK;
 }
 
@@ -270,6 +278,8 @@ HRESULT ProbeInstrumentation::UninstallProbes()
     {
         return S_FALSE;
     }
+
+    START_NO_OOM_THROW_REGION;
 
     vector<ModuleID> moduleIds;
     vector<mdMethodDef> methodDefs;
@@ -291,6 +301,8 @@ HRESULT ProbeInstrumentation::UninstallProbes()
         nullptr));
 
     m_activeInstrumentationRequests.clear();
+
+    END_NO_OOM_THROW_REGION;
 
     return S_OK;
 }
