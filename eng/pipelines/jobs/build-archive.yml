@@ -36,6 +36,7 @@ jobs:
       -skipmanaged
       -skipnative
       /p:PublishProjectsAfterBuild=true
+      /p:CreateSingleFileBundles=true
       /p:ThirdPartyNoticesFilePath='$(Build.SourcesDirectory)/$(_TPNFile)'
 
     postBuildSteps:
@@ -44,6 +45,12 @@ jobs:
       inputs:
         SourceFolder: '$(Build.SourcesDirectory)/artifacts/packages'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/packages'
+    
+    - task: CopyFiles@2
+      displayName: Gather Artifacts (bundles)
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)/artifacts/bundles'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/bundles'
 
     - task: PublishBuildArtifacts@1
       displayName: Publish Artifacts (Unified)

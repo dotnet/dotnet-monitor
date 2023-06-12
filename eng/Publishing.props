@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PublishDependsOnTargets>$(PublishDependsOnTargets);CollectPackageArtifactFiles;CollectVersionArtifactFiles</PublishDependsOnTargets>
+    <PublishDependsOnTargets>$(PublishDependsOnTargets);CollectPackageArtifactFiles;CollectBundleArtifactFiles;CollectVersionArtifactFiles</PublishDependsOnTargets>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +16,18 @@
     <PackageFile Include="$(ArtifactsShippingPackagesDir)**/*.zip" IsShipping="true" />
     <PackageFile Include="$(ArtifactsNonShippingPackagesDir)**/*.tar.gz" IsShipping="false" />
     <PackageFile Include="$(ArtifactsNonShippingPackagesDir)**/*.zip" IsShipping="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <BundleFile Include="$(ArtifactsNonShippingBundlesDir)/linux-arm64/*" Rid="linux-arm64" IsShipping="false" />
+    <BundleFile Include="$(ArtifactsNonShippingBundlesDir)/linux-x64/*" Rid="linux-x64" IsShipping="false" />
+    <BundleFile Include="$(ArtifactsNonShippingBundlesDir)/linux-musl-arm64/*" Rid="linux-musl-arm64" IsShipping="false" />
+    <BundleFile Include="$(ArtifactsNonShippingBundlesDir)/linux-musl-x64/*" Rid="linux-musl-x64" IsShipping="false" />
+    <BundleFile Include="$(ArtifactsNonShippingBundlesDir)/osx-arm64/*" Rid="osx-arm64" IsShipping="false" />
+    <BundleFile Include="$(ArtifactsNonShippingBundlesDir)/osx-x64/*" Rid="osx-x64" IsShipping="false" />
+    <BundleFile Include="$(ArtifactsNonShippingBundlesDir)/win-arm64/*" Rid="win-arm64" IsShipping="false" />
+    <BundleFile Include="$(ArtifactsNonShippingBundlesDir)/win-x64/*" Rid="win-x64" IsShipping="false" />
+    <BundleFile Include="$(ArtifactsNonShippingBundlesDir)/win-x86/*" Rid="win-x86" IsShipping="false" />
   </ItemGroup>
 
   <Target Name="CalculateBlobGroupAndBuildVersion">
@@ -195,6 +207,20 @@
       <ItemsToPushToBlobFeed Include="@(_VersionContainerBlobItem)" Condition="'$(_BuildVersion)' != ''">
         <!-- Place blobs into versioned container so that stable package versions do not collide. -->
         <RelativeBlobPath>diagnostics/monitor/$(_BuildVersion)/%(_VersionContainerBlobItem.Filename)%(_VersionContainerBlobItem.Extension)</RelativeBlobPath>
+        <PublishFlatContainer>true</PublishFlatContainer>
+      </ItemsToPushToBlobFeed>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="CollectBundleArtifactFiles"
+          DependsOnTargets="CalculateBlobGroupAndBuildVersion">
+    <ItemGroup>
+      <ItemsToPushToBlobFeed Include="@(BundleFile)"
+                             RemoveMetadata="IsShipping;Rid"
+                             Condition="'$(_BuildVersion)' != ''">
+        <!-- Place blobs into versioned container so that stable versions (or lack of version) do not collide. -->
+        <RelativeBlobPath>diagnostics/monitor/$(_BuildVersion)/%(BundleFile.Rid)/%(BundleFile.Filename)%(BundleFile.Extension)</RelativeBlobPath>
+        <ManifestArtifactData Condition="'%(BundleFile.IsShipping)' != 'true'">NonShipping=true</ManifestArtifactData>
         <PublishFlatContainer>true</PublishFlatContainer>
       </ItemsToPushToBlobFeed>
     </ItemGroup>

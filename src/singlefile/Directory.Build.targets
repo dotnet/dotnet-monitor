@@ -1,0 +1,23 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.targets" />
+
+  <PropertyGroup>
+    <BuildDependsOn>$(BuildDependsOn);PublishProjectsBeforeBundle;CopyBundle</BuildDependsOn>
+  </PropertyGroup>
+
+  <Import Project="$(RepositoryEngineeringDir)PublishProjects.targets" />
+
+  <!-- Publish projects if they were not published after build -->
+  <Target Name="PublishProjectsBeforeBundle"
+          Condition="'$(PublishProjectsAfterBuild)' != 'true'">
+    <CallTarget Targets="PublishProjects" />
+  </Target>
+
+  <Target Name="CopyBundle">
+    <MakeDir Directories="$(ArtifactsNonShippingBundlesDir)$(PackageRid)" />
+    <Copy SourceFiles="$(DotnetMonitorPublishSfbPath)$(BundleName)$(BundleSuffix)"
+          DestinationFolder="$(ArtifactsNonShippingBundlesDir)$(PackageRid)" />
+    <Message Text="$(BundleName)$(BundleSuffix) -> $(ArtifactsNonShippingBundlesDir)$(PackageRid)"
+             Importance="High" />
+  </Target>
+</Project>
