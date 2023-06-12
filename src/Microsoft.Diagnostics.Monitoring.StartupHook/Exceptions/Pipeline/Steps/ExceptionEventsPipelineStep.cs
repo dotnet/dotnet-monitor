@@ -48,10 +48,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
                 ulong[] frameIds = _identifierCache.GetOrAdd(stackFrames);
 
                 _eventSource.ExceptionInstance(
+                    0, // TODO: Generate ID
                     groupId,
                     exception.Message,
                     frameIds,
-                    context.Timestamp);
+                    context.Timestamp,
+                    0, // TODO: Get ID for InnerException
+                    Array.Empty<ulong>() // TODO: Get IDs for AggregateException.InnerExceptions
+                    );
             }
 
             _next(exception, context);
