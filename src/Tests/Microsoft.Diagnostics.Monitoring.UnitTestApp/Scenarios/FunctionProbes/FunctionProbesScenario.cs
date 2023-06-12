@@ -43,6 +43,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 { TestAppScenarios.FunctionProbes.SubScenarios.GenericMethods, Test_GenericMethodsAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.ExceptionRegionAtBeginningOfMethod, Test_ExceptionRegionAtBeginningOfMethodAsync},
 
+                /* Fault injection */
+                { TestAppScenarios.FunctionProbes.SubScenarios.ExceptionThrownByProbe, Test_ExceptionThrownByProbeAsync},
             };
 
             CliCommand scenarioCommand = new(TestAppScenarios.FunctionProbes.Name);
@@ -201,6 +203,24 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             thisObj: null, thisParameterSupported: false, token);
         }
 
+        private static async Task Test_ExceptionThrownByProbeAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.ExceptionRegionAtBeginningOfMethod));
+            probeProxy.RegisterPerFunctionProbe(method, (object[] actualArgs) =>
+            {
+                throw new InvalidOperationException();
+            });
+
+            await WaitForProbeInstallationAsync(probeManager, probeProxy, new[] { method }, token);
+
+            StaticTestMethodSignatures.ExceptionRegionAtBeginningOfMethod(null);
+
+            Assert.Equal(1, probeProxy.GetProbeInvokeCount(method));
+
+            // Probes should be uninstalled now.
+            await WaitForProbeUninstallationAsync(probeManager, probeProxy, token, explicitStopCaptureCall: false);
+        }
+
         private static Task RunInstanceMethodTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, bool thisParameterSupported, CancellationToken token)
         {
             Assert.False(method.IsStatic);
@@ -253,9 +273,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             Assert.Equal(1, probeProxy.GetProbeInvokeCount(method));
         }
 
-        private static async Task WaitForProbeUninstallationAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        private static async Task WaitForProbeUninstallationAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token, bool explicitStopCaptureCall = true)
         {
-            probeManager.StopCapturing();
+            if (explicitStopCaptureCall)
+            {
+                probeManager.StopCapturing();
+            }
 
             MethodInfo uninstallationTestMethod = typeof(FunctionProbesScenario).GetMethod(nameof(FunctionProbesScenario.UninstallationTestStub));
             Assert.NotNull(uninstallationTestMethod);

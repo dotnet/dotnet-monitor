@@ -4,6 +4,7 @@
 #include "corhlpr.h"
 #include "macros.h"
 #include "AssemblyProbePrep.h"
+#include "CallbackDefinitions.h"
 #include "../Utilities/TypeNameUtilities.h"
 #include "../Utilities/MetadataEnumCloser.h"
 #include "../Utilities/StringUtilities.h"
@@ -49,9 +50,38 @@ HRESULT AssemblyProbePrep::PrepareAssemblyForProbes(ModuleID moduleId)
     mdMemberRef probeMemberRef;
     IfFailRet(EmitProbeReference(moduleId, probeMemberRef));
 
-    shared_ptr<AssemblyProbePrepData> data(new (nothrow) AssemblyProbePrepData(probeMemberRef, corLibTypeTokens));
+
+    mdSignature faultingProbeCallbackSignature;
+    IfFailRet(EmitFaultingProbeCallbackSignature(moduleId, faultingProbeCallbackSignature));
+
+    shared_ptr<AssemblyProbePrepData> data(new (nothrow) AssemblyProbePrepData(probeMemberRef, faultingProbeCallbackSignature, corLibTypeTokens));
     IfNullRet(data);
     IfOomRetMem(m_assemblyProbeCache.insert({moduleId, data}));
+
+    return S_OK;
+}
+
+HRESULT AssemblyProbePrep::EmitFaultingProbeCallbackSignature(
+    ModuleID moduleId,
+    mdSignature& faultingProbeCallbackSignature)
+{
+    HRESULT hr;
+    faultingProbeCallbackSignature = mdSignatureNil;
+
+    ComPtr<IMetaDataEmit> pMetadataEmit;
+    IfFailRet(m_pCorProfilerInfo->GetModuleMetaData(
+        moduleId,
+        ofRead | ofWrite,
+        IID_IMetaDataEmit,
+        reinterpret_cast<IUnknown **>(&pMetadataEmit)));
+
+    mdSignature signature;
+    IfFailRet(pMetadataEmit->GetTokenFromSig(
+        FaultingProbeCallbackCorSignature,
+        sizeof(FaultingProbeCallbackCorSignature),
+        &signature));
+
+    faultingProbeCallbackSignature = signature;
 
     return S_OK;
 }

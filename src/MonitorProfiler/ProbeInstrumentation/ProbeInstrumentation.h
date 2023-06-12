@@ -8,6 +8,7 @@
 #include "com.h"
 #include "AssemblyProbePrep.h"
 #include "ProbeInjector.h"
+#include "CallbackDefinitions.h"
 #include "../Logging/Logger.h"
 #include "../Utilities/PairHash.h"
 
@@ -27,7 +28,8 @@ enum class ProbeWorkerInstruction
 {
     REGISTER_PROBE,
     INSTALL_PROBES,
-    UNINSTALL_PROBES
+    UNINSTALL_PROBES,
+    FAULTING_PROBE
 };
 
 typedef struct _PROBE_WORKER_PAYLOAD
@@ -60,6 +62,9 @@ class ProbeInstrumentation
         HRESULT InstallProbes(std::vector<UNPROCESSED_INSTRUMENTATION_REQUEST>& requests);
         HRESULT UninstallProbes();
         bool HasRegisteredProbe();
+
+    private:
+        static void STDMETHODCALLTYPE OnFunctionProbeFault(ULONG64 uniquifier);
 
     public:
         ProbeInstrumentation(

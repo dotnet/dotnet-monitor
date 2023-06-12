@@ -86,6 +86,10 @@ void ProbeInstrumentation::WorkerThread()
             }
             break;
 
+        case ProbeWorkerInstruction::FAULTING_PROBE:
+            m_pLogger->Log(LogLevel::Error, _LS("Function probe faulting in function: 0x%08x"), payload.functionId);
+            __fallthrough;
+
         case ProbeWorkerInstruction::UNINSTALL_PROBES:
             hr = UninstallProbes();
             if (hr != S_OK)
@@ -105,6 +109,23 @@ void ProbeInstrumentation::ShutdownBackgroundService()
 {
     g_probeManagementQueue.Complete();
     m_probeManagementThread.join();
+}
+
+void STDMETHODCALLTYPE ProbeInstrumentation::OnFunctionProbeFault(ULONG64 uniquifier)
+{
+    //
+    // Faulting behavior: When any function probe faults, uninstall all probes.
+    //
+
+    PROBE_WORKER_PAYLOAD payload = {};
+    payload.instruction = ProbeWorkerInstruction::FAULTING_PROBE;
+
+    //
+    // For now the uniquifier can only ever be the function's id.
+    // If this changes in the future, add a new payload field.
+    //
+    payload.functionId = static_cast<FunctionID>(uniquifier);
+    g_probeManagementQueue.Enqueue(payload);
 }
 
 STDAPI DLLEXPORT RequestFunctionProbeInstallation(
@@ -349,6 +370,7 @@ HRESULT STDMETHODCALLTYPE ProbeInstrumentation::GetReJITParameters(ModuleID modu
     hr = ProbeInjector::InstallProbe(
         m_pCorProfilerInfo,
         pFunctionControl,
+        &OnFunctionProbeFault,
         request);
 
     if (FAILED(hr))

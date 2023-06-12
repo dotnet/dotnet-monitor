@@ -87,6 +87,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string AsyncMethod = nameof(AsyncMethod);
                 public const string GenericMethods = nameof(GenericMethods);
                 public const string ExceptionRegionAtBeginningOfMethod = nameof(ExceptionRegionAtBeginningOfMethod);
+
+                /* Fault injection */
+                public const string ExceptionThrownByProbe = nameof(ExceptionThrownByProbe);
             }
         }
 

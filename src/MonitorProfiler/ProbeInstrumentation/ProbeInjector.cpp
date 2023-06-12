@@ -36,15 +36,19 @@ enum class SpecialCaseBoxingTypes : ULONG32
 HRESULT ProbeInjector::InstallProbe(
     ICorProfilerInfo* pICorProfilerInfo,
     ICorProfilerFunctionControl* pICorProfilerFunctionControl,
+    FaultingProbeCallback pFaultingProbeCallback,
     const INSTRUMENTATION_REQUEST& request)
 {
-    IfNullRet(pICorProfilerInfo);
-    IfNullRet(pICorProfilerFunctionControl);
+    ExpectedPtr(pICorProfilerInfo);
+    ExpectedPtr(pICorProfilerFunctionControl);
+    ExpectedPtr(pFaultingProbeCallback);
 
     if (request.boxingTypes.size() > UINT32_MAX)
     {
         return E_INVALIDARG;
     }
+    
+    constexpr OPCODE CEE_LDC_NATIVE_I = sizeof(size_t) == 8 ? CEE_LDC_I8 : CEE_LDC_I4;
 
     HRESULT hr;
 
@@ -55,27 +59,41 @@ HRESULT ProbeInjector::InstallProbe(
 
     const COR_LIB_TYPE_TOKENS& corLibTypeTokens = request.pAssemblyData->GetCorLibTypeTokens();
 
-    //
-    // JSFIX: Wrap the probe in a try/catch.
-    // Consider: In the catch, try/catch a PINVOKE into the profiler,
-    // notifying that a probe exception occurred and the probes need to be uninstalled.
-    //
-
     ILInstr* pInsertProbeBeforeThisInstr = rewriter.GetILList()->m_pNext;
     ILInstr* pNewInstr = nullptr;
+
+    ILInstr* pTryBegin = nullptr;
+    ILInstr* pCatchBegin = nullptr;
+    ILInstr* pCatchEnd = nullptr;
+
+    ILInstr* pNestedTryBegin = nullptr;
+    ILInstr* pNestedTryLeave = nullptr;
+    ILInstr* pNestedCatchBegin = nullptr;
+    ILInstr* pNestedCatchEnd = nullptr;
 
     UINT32 numArgs = static_cast<UINT32>(request.boxingTypes.size());
 
     //
-    // The below IL is equivalent to: ProbeFunction(uniquifier, new object[] { arg1, arg2, ... })
+    // The below IL is equivalent to:
+    // try {
+    //   ProbeFunction(uniquifier, new object[] { arg1, arg2, ... });
+    // } catch {
+    //   try {
+    //     (*pFaultingProbeCallback)(uniquifier);
+    //   } catch {
+    //   }
+    // }
+    //
     // When an argument isn't supported, pass null in its place.
     //
 
+    // START: Try block
+
     /* uniquifier */
-    pNewInstr = rewriter.NewILInstr();
-    pNewInstr->m_opcode = CEE_LDC_I8;
-    pNewInstr->m_Arg64 = request.uniquifier;
-    rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pNewInstr);
+    pTryBegin = rewriter.NewILInstr();
+    pTryBegin->m_opcode = CEE_LDC_I8;
+    pTryBegin->m_Arg64 = request.uniquifier;
+    rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pTryBegin);
 
     /* Args */
 
@@ -141,6 +159,74 @@ HRESULT ProbeInjector::InstallProbe(
     pNewInstr->m_opcode = CEE_CALL;
     pNewInstr->m_Arg32 = request.pAssemblyData->GetProbeMemberRef();
     rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pNewInstr);
+
+    pNewInstr = pNewInstr = rewriter.NewILInstr();
+    pNewInstr->m_opcode = CEE_LEAVE;
+    pNewInstr->m_pTarget = pInsertProbeBeforeThisInstr;
+    rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pNewInstr);
+
+    // END: Try block
+    // START: Catch block
+
+    pCatchBegin = rewriter.NewILInstr();
+    pCatchBegin->m_opcode = CEE_POP;
+    rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pCatchBegin);
+
+    // START: Try block (nested)
+
+    pNestedTryBegin = rewriter.NewILInstr();
+    pNestedTryBegin->m_opcode = CEE_LDC_I8;
+    pNestedTryBegin->m_Arg64 = request.uniquifier;
+    rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pNestedTryBegin);
+
+    pNewInstr = rewriter.NewILInstr();
+    pNewInstr->m_opcode = CEE_LDC_NATIVE_I;
+    pNewInstr->m_Arg64 = reinterpret_cast<INT64>(pFaultingProbeCallback);
+    rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pNewInstr);
+
+    pNewInstr = rewriter.NewILInstr();
+    pNewInstr->m_opcode = CEE_CALLI;
+    pNewInstr->m_Arg32 = request.pAssemblyData->GetFaultingProbeCallbackSignature();
+    rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pNewInstr);
+
+    pNestedTryLeave = rewriter.NewILInstr();
+    pNestedTryLeave->m_opcode = CEE_LEAVE;
+    rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pNestedTryLeave);
+
+    // END: Try block (nested)
+    // START: Catch block (nested)
+
+    pNestedCatchBegin = rewriter.NewILInstr();
+    pNestedCatchBegin->m_opcode = CEE_POP;
+    rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pNestedCatchBegin);
+
+    pNestedCatchEnd = rewriter.NewILInstr();
+    pNestedCatchEnd->m_opcode = CEE_LEAVE;
+    rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pNestedCatchEnd);
+
+    // END: Catch block (nested)
+
+    pCatchEnd = rewriter.NewILInstr();
+    pCatchEnd->m_opcode = CEE_LEAVE;
+    pCatchEnd->m_pTarget = pInsertProbeBeforeThisInstr;
+    rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pCatchEnd);
+
+    // END: Catch block
+
+    pNestedTryLeave->m_pTarget = pNestedCatchEnd->m_pTarget = pCatchEnd;
+
+    // The nested protected region must be registered in the exception handler table first
+    rewriter.InsertTryCatch(
+        pNestedTryBegin,
+        pNestedCatchBegin,
+        pNestedCatchEnd,
+        corLibTypeTokens.systemObjectType);
+
+    rewriter.InsertTryCatch(
+        pTryBegin,
+        pCatchBegin,
+        pCatchEnd,
+        corLibTypeTokens.systemObjectType);
 
     IfFailRet(rewriter.Export());
 
