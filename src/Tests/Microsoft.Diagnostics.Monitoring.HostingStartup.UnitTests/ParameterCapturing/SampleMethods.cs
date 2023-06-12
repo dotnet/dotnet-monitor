@@ -3,6 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
+#pragma warning disable CA1822 // Mark members as static
 
 // Use a shorter namespace to keep the expected strings in tests a more manageable length.
 namespace SampleMethods
@@ -14,37 +17,44 @@ namespace SampleMethods
         ValueA = 1
     }
 
-#pragma warning disable CA1822 // Mark members as static
     internal sealed class GenericTestMethodSignatures<T1, T2>
     {
         public void GenericParameters<T3>(T1 t1, T2 t2, T3 t3) { }
     }
-#pragma warning restore CA1822 // Mark members as static
 
-
-#pragma warning disable CA1822 // Mark members as static
     internal sealed class TestMethodSignatures
     {
         public void ImplicitThis() { }
     }
-#pragma warning restore CA1822 // Mark members as static
 
     internal static class StaticTestMethodSignatures
     {
         internal struct SampleNestedStruct
         {
-#pragma warning disable CA1822 // Mark members as static
             public void DoWork(int i) { }
-#pragma warning restore CA1822 // Mark members as static
         }
 
         public delegate int MyDelegate(int i, int j);
 
         public static void Arrays(int[] intArray, bool[,] multidimensionalArray) { }
 
+        public static async Task AsyncMethod(int delay) { await Task.Delay(delay);  }
+
         public static void BuiltInReferenceTypes(object arg1, string arg2, dynamic arg3) { }
 
         public static void NoArgs() { }
+
+        public static string ExceptionRegionAtBeginningOfMethod(object myObject)
+        {
+            try
+            {
+                return myObject.ToString();
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
 
         public static void ExplicitThis(this object thisObj) { }
 
@@ -100,3 +110,4 @@ namespace SampleMethods
 
     }
 }
+#pragma warning restore CA1822 // Mark members as static

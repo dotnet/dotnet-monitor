@@ -4,10 +4,17 @@
 #include "corhlpr.h"
 #include "macros.h"
 #include "ProbeInstrumentation.h"
+#include "../Utilities/BlockingQueue.h"
 
 using namespace std;
 
 #define IfFailLogRet(EXPR) IfFailLogRet_(m_pLogger, EXPR)
+
+#ifndef DLLEXPORT
+#define DLLEXPORT
+#endif
+
+BlockingQueue<PROBE_WORKER_PAYLOAD> g_probeManagementQueue;
 
 ProbeInstrumentation::ProbeInstrumentation(const shared_ptr<ILogger>& logger, ICorProfilerInfo12* profilerInfo) :
     m_pCorProfilerInfo(profilerInfo),
@@ -56,7 +63,7 @@ void ProbeInstrumentation::WorkerThread()
     while (true)
     {
         PROBE_WORKER_PAYLOAD payload;
-        hr = m_probeManagementQueue.BlockingDequeue(payload);
+        hr = g_probeManagementQueue.BlockingDequeue(payload);
         if (hr != S_OK)
         {
             break;
@@ -64,6 +71,14 @@ void ProbeInstrumentation::WorkerThread()
 
         switch (payload.instruction)
         {
+        case ProbeWorkerInstruction::REGISTER_PROBE:
+            hr = RegisterFunctionProbe(payload.functionId);
+            if (hr != S_OK)
+            {
+                m_pLogger->Log(LogLevel::Error, _LS("Failed to register function probe: 0x%08x"), hr);
+            }
+            break;
+
         case ProbeWorkerInstruction::INSTALL_PROBES:
             hr = InstallProbes(payload.requests);
             if (hr != S_OK)
@@ -89,22 +104,17 @@ void ProbeInstrumentation::WorkerThread()
 
 void ProbeInstrumentation::ShutdownBackgroundService()
 {
-    m_probeManagementQueue.Complete();
+    g_probeManagementQueue.Complete();
     m_probeManagementThread.join();
 }
 
-HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
+STDAPI DLLEXPORT RequestFunctionProbeInstallation(
     ULONG64 functionIds[],
     ULONG32 count,
     ULONG32 argumentBoxingTypes[],
     ULONG32 argumentCounts[])
 {
-    m_pLogger->Log(LogLevel::Debug, _LS("Probe installation requested"));
-
-    if (!HasRegisteredProbe())
-    {
-        return S_FALSE;
-    }
+    HRESULT hr;
 
     //
     // This method receives N (where n is "count") function IDs that probes should be installed into.
@@ -149,25 +159,35 @@ HRESULT ProbeInstrumentation::RequestFunctionProbeInstallation(
         requests.push_back(request);
     }
 
-    m_probeManagementQueue.Enqueue({ProbeWorkerInstruction::INSTALL_PROBES, requests});
+    PROBE_WORKER_PAYLOAD payload = {};
+    payload.instruction = ProbeWorkerInstruction::INSTALL_PROBES;
+    payload.requests = requests;
+    IfFailRet(g_probeManagementQueue.Enqueue(payload));
 
     END_NO_OOM_THROW_REGION;
 
     return S_OK;
 }
 
-HRESULT ProbeInstrumentation::RequestFunctionProbeUninstallation()
+STDAPI DLLEXPORT RequestFunctionProbeUninstallation()
 {
-    m_pLogger->Log(LogLevel::Debug, _LS("Probe uninstallation requested"));
-
-    if (!HasRegisteredProbe())
-    {
-        return S_FALSE;
-    }
+    HRESULT hr;
 
     PROBE_WORKER_PAYLOAD payload = {};
     payload.instruction = ProbeWorkerInstruction::UNINSTALL_PROBES;
-    m_probeManagementQueue.Enqueue(payload);
+    IfFailRet(g_probeManagementQueue.Enqueue(payload));
+
+    return S_OK;
+}
+
+STDAPI DLLEXPORT RequestFunctionProbeRegistration(ULONG64 enterProbeId)
+{
+    HRESULT hr;
+
+    PROBE_WORKER_PAYLOAD payload = {};
+    payload.instruction = ProbeWorkerInstruction::REGISTER_PROBE;
+    payload.functionId = static_cast<FunctionID>(enterProbeId);
+    IfFailRet(g_probeManagementQueue.Enqueue(payload));
 
     return S_OK;
 }
@@ -232,7 +252,7 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
     }
 
     IfFailLogRet(m_pCorProfilerInfo->RequestReJITWithInliners(
-        COR_PRF_REJIT_BLOCK_INLINING | COR_PRF_REJIT_INLINING_CALLBACKS,
+        COR_PRF_REJIT_BLOCK_INLINING,
         static_cast<ULONG>(requestedModuleIds.size()),
         requestedModuleIds.data(),
         requestedMethodDefs.data()));
@@ -291,7 +311,15 @@ bool ProbeInstrumentation::AreProbesInstalled()
 
 void ProbeInstrumentation::AddProfilerEventMask(DWORD& eventsLow)
 {
-    eventsLow |= COR_PRF_MONITOR::COR_PRF_ENABLE_REJIT;
+    //
+    // Workaround:
+    // Enable COR_PRF_MONITOR_JIT_COMPILATION even though we don't need the callbacks.
+    // It appears that without this flag set our RequestReJITWithInliners calls will sometimes
+    // not actually trigger a rejit despite returning successfully.
+    //
+    // This issue most commonly occurs on MacOS.
+    //
+    eventsLow |= COR_PRF_MONITOR::COR_PRF_ENABLE_REJIT | COR_PRF_MONITOR::COR_PRF_MONITOR_JIT_COMPILATION;
 }
 
 HRESULT STDMETHODCALLTYPE ProbeInstrumentation::GetReJITParameters(ModuleID moduleId, mdMethodDef methodDef, ICorProfilerFunctionControl* pFunctionControl)

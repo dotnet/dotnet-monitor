@@ -150,7 +150,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assembly.GetExecutingAssembly(),
                 sourceHolder.TransportName,
                 TargetFrameworkMoniker.Current);
-            runner.ScenarioName = TestAppScenarios.Exceptions.Name + " " + subScenarioName;
+            runner.ScenarioName = TestAppScenarios.Exceptions.Name;
+            runner.SubScenarioName = subScenarioName;
 
             AddStartupHookEnvironmentVariable(runner);
 

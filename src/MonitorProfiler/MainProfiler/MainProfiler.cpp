@@ -19,8 +19,6 @@ using namespace std;
 
 #define IfFailLogRet(EXPR) IfFailLogRet_(m_pLogger, EXPR)
 
-shared_ptr<MainProfiler> MainProfiler::s_profiler;
-
 GUID MainProfiler::GetClsid()
 {
     // {6A494330-5848-4A23-9D87-0E57BBF6DE79}
@@ -35,8 +33,6 @@ STDMETHODIMP MainProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
 
     // These should always be initialized first
     IfFailRet(ProfilerBase::Initialize(pICorProfilerInfoUnk));
-
-    MainProfiler::s_profiler = shared_ptr<MainProfiler>(this);
 
     IfFailRet(InitializeCommon());
 
@@ -335,38 +331,4 @@ HRESULT MainProfiler::ProcessCallstackMessage()
 HRESULT STDMETHODCALLTYPE MainProfiler::GetReJITParameters(ModuleID moduleId, mdMethodDef methodId, ICorProfilerFunctionControl* pFunctionControl)
 {
     return m_pProbeInstrumentation->GetReJITParameters(moduleId, methodId, pFunctionControl);
-}
-
-HRESULT STDMETHODCALLTYPE MainProfiler::RequestFunctionProbeUninstallation()
-{
-    return m_pProbeInstrumentation->RequestFunctionProbeUninstallation();
-}
-
-HRESULT STDMETHODCALLTYPE MainProfiler::RegisterFunctionProbe(FunctionID enterProbeId)
-{
-    return m_pProbeInstrumentation->RegisterFunctionProbe(enterProbeId);
-}
-
-HRESULT STDMETHODCALLTYPE MainProfiler::RequestFunctionProbeInstallation(ULONG64 functionIds[], ULONG32 count, ULONG32 argumentBoxingTypes[], ULONG32 argumentCounts[])
-{
-    return m_pProbeInstrumentation->RequestFunctionProbeInstallation(functionIds, count, argumentBoxingTypes, argumentCounts);
-}
-
-#ifndef DLLEXPORT
-#define DLLEXPORT
-#endif
-
-STDAPI DLLEXPORT RegisterFunctionProbe(ULONG64 enterProbeId)
-{
-    return MainProfiler::s_profiler->RegisterFunctionProbe((FunctionID)enterProbeId);
-}
-
-STDAPI DLLEXPORT RequestFunctionProbeInstallation(ULONG64 functionIds[], ULONG32 count, ULONG32 argumentBoxingTypes[], ULONG32 argumentCounts[])
-{
-    return MainProfiler::s_profiler->RequestFunctionProbeInstallation(functionIds, count, argumentBoxingTypes, argumentCounts);
-}
-
-STDAPI DLLEXPORT RequestFunctionProbeUninstallation()
-{
-    return MainProfiler::s_profiler->RequestFunctionProbeUninstallation();
 }

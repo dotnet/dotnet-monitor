@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.UnitTestApp" />
   </ItemGroup>
 
   <ItemGroup>
