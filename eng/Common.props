@@ -2,5 +2,6 @@
   <!-- These properties are shared among the Arcade build infrastructure as well as individual project build. -->
   <PropertyGroup>
     <LatestTargetFramework>net7.0</LatestTargetFramework>
+    <ArtifactsNonShippingBundlesDir>$(ArtifactsDir)bundles\$(Configuration)\NonShipping\</ArtifactsNonShippingBundlesDir>
   </PropertyGroup>
 </Project>

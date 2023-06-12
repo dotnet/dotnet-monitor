@@ -1,0 +1,9 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />
+
+  <PropertyGroup>
+    <BundleSuffix Condition="$(PackageRid.Contains(win))">.exe</BundleSuffix>
+    <BundleSuffix Condition="!$(PackageRid.Contains(win))"></BundleSuffix>
+    <RuntimeIdentifiers>$(DefaultRuntimeIdentifiers)</RuntimeIdentifiers>
+  </PropertyGroup>
+</Project>
