@@ -15,9 +15,22 @@ Egress providers use [operations](./api/operations.md) to provide status.
 
 The `--no-http-egress` flag requires users to specify an egress provider by preventing the default HTTP response for logs, traces, dumps, gcdumps, and live metrics.
 
+## Examples of Egressing a dump to blob storage
+
+### Sample Request
+```http
+GET /dump?egressProvider=monitorBlob HTTP/1.1
+```
+
+### Sample Response
+```http
+HTTP/1.1 202 Accepted
+Location: https://localhost:52323/operations/26e74e52-0a16-4e84-84bb-27f904bfaf85
+```
+
 ## Egress Extensibility (8.0+)
 
-The `dotnet monitor` tool has transitioned to an extensible egress model. **This should not be a breaking change - by default, users migrating from `dotnet monitor` 6/7 should see no difference in `dotnet monitor`'s behavior**. 
+Starting with `dotnet monitor` 8, the tool includes an egress extensibility model that allows additional egress providers to be discovered and usable by a `dotnet monitor` installation. The existing `AzureBlobStorage` egress provider has been moved to this model and remains as an available egress provider in the .NET Tool and `mcr.microsoft.com/dotnet/monitor` image offerings. **This should not be a breaking change - by default, users migrating from `dotnet monitor` 6/7 should see no difference in `dotnet monitor`'s behavior**. 
 
 In addition to the current `dotnet monitor` offerings, a `monitor-base` image is now available; this image does not include egress providers (with the exception of `FileSystem` egress), allowing users to only include their preferred egress providers. For convenience, the `monitor` image and the nuget package will include all of `dotnet monitor`'s supported extensions.
 
@@ -45,15 +58,3 @@ To directly access archives for one of `dotnet monitor`'s supported extensions, 
 The extensibility model allows users to utilize third-party egress providers with `dotnet monitor`. **Note that `dotnet monitor` does not endorse or guarantee any third-party extensions - users should always exercise caution when providing sensitive authentication information (such as passwords) to untrusted extensions.** Third-party egress extensions are responsible for their own distribution, and are not included with `dotnet monitor`.
 
 For more information on how to create your own egress extension, see our [learning path](../documentation/learningPath/).
-
-## Examples of Egressing a dump to blob storage
-
-### Sample Request
-```http
-GET /dump?egressProvider=monitorBlob HTTP/1.1
-```
-
-### Sample Response
-```http
-HTTP/1.1 202 Accepted
-Location: https://localhost:52323/operations/26e74e52-0a16-4e84-84bb-27f904bfaf85
