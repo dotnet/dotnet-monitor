@@ -67,20 +67,28 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
         [Event(ExceptionEvents.EventIds.ExceptionInstance)]
         public void ExceptionInstance(
+            ulong ExceptionId,
             ulong ExceptionGroupId,
             string? ExceptionMessage,
             ulong[] StackFrameIds,
-            DateTime Timestamp)
+            DateTime Timestamp,
+            ulong InnerExceptionId,
+            ulong[] InnerExceptionIds)
         {
-            Span<EventData> data = stackalloc EventData[4];
+            Span<EventData> data = stackalloc EventData[7];
             using PinnedData namePinned = PinnedData.Create(ExceptionMessage);
             Span<byte> stackFrameIdsSpan = stackalloc byte[GetArrayDataSize(StackFrameIds)];
             FillArrayData(stackFrameIdsSpan, StackFrameIds);
+            Span<byte> innerExceptionIdsSpan = stackalloc byte[GetArrayDataSize(InnerExceptionIds)];
+            FillArrayData(innerExceptionIdsSpan, InnerExceptionIds);
 
+            SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionId], ExceptionId);
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionGroupId], ExceptionGroupId);
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage], namePinned);
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.StackFrameIds], stackFrameIdsSpan);
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.Timestamp], Timestamp.ToFileTimeUtc());
+            SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionId], InnerExceptionId);
+            SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds], innerExceptionIdsSpan);
 
             WriteEventCore(ExceptionEvents.EventIds.ExceptionInstance, data);
 

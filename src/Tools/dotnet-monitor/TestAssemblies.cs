@@ -69,14 +69,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             Assembly thisAssembly = Assembly.GetExecutingAssembly();
             string thisAssemblyName = thisAssembly.GetName().Name;
             string separator = Path.DirectorySeparatorChar + ArtifactsDirectoryName + Path.DirectorySeparatorChar;
-            int artifactsIndex = thisAssembly.Location.IndexOf(separator);
+            int artifactsIndex = AppContext.BaseDirectory.IndexOf(separator);
             if (artifactsIndex != -1)
             {
                 // This avoids accidentally renaming the "dotnet-monitor" folder that is the repository directory on disk.
                 path = Path.Combine(
-                    thisAssembly.Location.Substring(0, artifactsIndex),
+                    AppContext.BaseDirectory.Substring(0, artifactsIndex),
                     ArtifactsDirectoryName,
-                    thisAssembly.Location.Substring(artifactsIndex + separator.Length).Replace(thisAssembly.GetName().Name, TestStartupHookAssemblyName));
+                    AppContext.BaseDirectory.Substring(artifactsIndex + separator.Length).Replace(thisAssembly.GetName().Name, TestStartupHookAssemblyName),
+                    $"{assemblyName}.dll");
 
                 return File.Exists(path);
             }
