@@ -33,10 +33,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                     case ExceptionEvents.EventIds.ExceptionInstance:
                         Exceptions.Add(
                             new ExceptionInstance(
+                                ToUInt64(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionId]),
                                 ToUInt64(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionGroupId]),
                                 ToString(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage]),
                                 ToArray<ulong>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.StackFrameIds]),
-                                ToType<DateTime>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.Timestamp])
+                                ToType<DateTime>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.Timestamp]),
+                                ToUInt64(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionId]),
+                                ToArray<ulong>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds])
                             ));
                         break;
                     case ExceptionEvents.EventIds.ExceptionGroup:
@@ -141,20 +144,29 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
     internal sealed class ExceptionInstance
     {
-        public ExceptionInstance(ulong groupId, string? message, ulong[] frameIds, DateTime timestamp)
+        public ExceptionInstance(ulong id, ulong groupId, string? message, ulong[] frameIds, DateTime timestamp, ulong innerExceptionId, ulong[] innerExceptionIds)
         {
+            Id = id;
             GroupId = groupId;
             ExceptionMessage = message;
             StackFrameIds = frameIds;
             Timestamp = timestamp;
+            InnerExceptionId = innerExceptionId;
+            InnerExceptionIds = innerExceptionIds;
         }
+
+        public ulong Id { get; }
 
         public ulong GroupId { get; }
 
         public string? ExceptionMessage { get; }
 
-        public ulong[]? StackFrameIds { get; }
+        public ulong[] StackFrameIds { get; }
 
         public DateTime Timestamp { get; }
+
+        public ulong InnerExceptionId { get; }
+
+        public ulong[] InnerExceptionIds { get; }
     }
 }
