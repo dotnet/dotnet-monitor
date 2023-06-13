@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -99,14 +98,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 writer.WriteString("moduleName", instance.ModuleName);
                 writer.WriteString("message", instance.Message);
 
-                MemoryStream outputStream = new();
-                await JsonSerializer.SerializeAsync(outputStream, instance.CallStackResult, cancellationToken: token);
-                outputStream.Position = 0;
+                writer.WriteStartObject("callStack");
+                writer.WriteNumber("threadId", instance.CallStack.ThreadId);
+                writer.WriteString("threadName", instance.CallStack.ThreadName);
 
-                writer.WritePropertyName("callStack");
-                writer.WriteRawValue(new StreamReader(outputStream).ReadToEnd());
+                writer.WriteStartArray("frames");
 
-                writer.WriteEndObject();
+                foreach (var frame in  instance.CallStack.Frames)
+                {
+                    writer.WriteStartObject();
+
+                    writer.WriteString("methodName", frame.MethodName);
+                    writer.WriteString("className", frame.ClassName);
+                    writer.WriteString("moduleName", frame.ModuleName);
+
+                    writer.WriteEndObject();
+                }
+
+                writer.WriteEndArray(); // end frames
+                writer.WriteEndObject(); // end callStack
+                writer.WriteEndObject(); // end.
             }
 
             await stream.WriteAsync(JsonRecordDelimiter, token);
@@ -137,11 +148,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     instance.TypeName,
                     instance.Message));
 
-            if (instance.CallStackResult.Stacks.Any())
+            if (instance.CallStack != null)
             {
-                CallStack stack = instance.CallStackResult.Stacks.First(); // We know the result only has a single stack
-
-                foreach (CallStackFrame frame in stack.Frames)
+                foreach (CallStackFrame frame in instance.CallStack.Frames)
                 {
                     await writer.WriteLineAsync(
                         string.Format(

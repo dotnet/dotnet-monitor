@@ -16,6 +16,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 
         DateTime Timestamp { get; }
 
-        CallStackResult CallStackResult { get; }
+        CallStack CallStack { get; }
     }
 }

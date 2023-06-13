@@ -6,7 +6,7 @@ using System;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 {
-    internal record class ExceptionInstance(string TypeName, string ModuleName, string Message, DateTime Timestamp, CallStackResult CallStackResult)
+    internal record class ExceptionInstance(string TypeName, string ModuleName, string Message, DateTime Timestamp, CallStack CallStack)
         : IExceptionInstance
     {
     }

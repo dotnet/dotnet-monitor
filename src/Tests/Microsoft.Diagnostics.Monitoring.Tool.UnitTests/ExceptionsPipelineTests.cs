@@ -275,7 +275,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private static void ValidateStack(TestExceptionsStore.ExceptionInstance instance, string expectedMethodName, string expectedModuleName, string expectedClassName)
         {
-            CallStack stack = Assert.Single(instance.CallStackResult.Stacks);
+            CallStack stack = instance.CallStack;
             Assert.NotEmpty(stack.Frames);
             Assert.True(0 < stack.ThreadId);
             Assert.Equal(expectedMethodName, stack.Frames[0].MethodName);
@@ -316,7 +316,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 StringBuilder typeBuilder = new();
                 WebApi.Stacks.FunctionData throwingMethodData;
-                CallStackResult result;
+                CallStack callStack;
                 try
                 {
                     Assert.True(cache.TryGetExceptionGroup(groupId, out ulong exceptionClassId, out ulong throwingMethodId, out _));
@@ -325,7 +325,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     Assert.True(cache.NameCache.FunctionData.TryGetValue(throwingMethodId, out throwingMethodData));
 
-                    result = ExceptionsStore.GenerateCallStackResult(stackFrameIds, cache, threadId);
+                    callStack = ExceptionsStore.GenerateCallStack(stackFrameIds, cache, threadId);
                 }
                 catch (Exception ex)
                 {
@@ -334,7 +334,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     throw;
                 }
 
-                _instances.Add(new ExceptionInstance(groupId, typeBuilder.ToString(), message, throwingMethodData.Name, timestamp, result));
+                _instances.Add(new ExceptionInstance(groupId, typeBuilder.ToString(), message, throwingMethodData.Name, timestamp, callStack));
                 if (++_instanceCount >= _instanceThreshold)
                 {
                     _instanceThresholdSource.TrySetResult();
@@ -346,7 +346,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 throw new NotSupportedException();
             }
 
-            public sealed record class ExceptionInstance(ulong GroupId, string TypeName, string Message, string ThrowingMethodName, DateTime Timestamp, CallStackResult CallStackResult)
+            public sealed record class ExceptionInstance(ulong GroupId, string TypeName, string Message, string ThrowingMethodName, DateTime Timestamp, CallStack CallStack)
             {
             }
         }

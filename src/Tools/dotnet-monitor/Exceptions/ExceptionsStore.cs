@@ -6,11 +6,12 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using CallStackResultModel = Microsoft.Diagnostics.Monitoring.WebApi.Models.CallStackResult;
+using CallStackModel = Microsoft.Diagnostics.Monitoring.WebApi.Models.CallStack;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {
@@ -105,11 +106,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         moduleName = NameFormatter.GetModuleName(entry.Cache.NameCache, exceptionClassData.ModuleId);
                     }
 
-                    CallStackResultModel callStackResult = GenerateCallStackResult(entry.StackFrameIds, entry.Cache, entry.ThreadId);
+                    CallStackModel callStack = GenerateCallStack(entry.StackFrameIds, entry.Cache, entry.ThreadId);
 
                     lock (_instances)
                     {
-                        _instances.Add(new ExceptionInstance(exceptionTypeName, moduleName, entry.Message, entry.Timestamp, callStackResult));
+                        _instances.Add(new ExceptionInstance(exceptionTypeName, moduleName, entry.Message, entry.Timestamp, callStack));
                     }
                 }
 
@@ -117,9 +118,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             }
         }
 
-        internal static CallStackResultModel GenerateCallStackResult(ulong[] stackFrameIds, IExceptionsNameCache cache, int threadId)
+        internal static CallStackModel GenerateCallStack(ulong[] stackFrameIds, IExceptionsNameCache cache, int threadId)
         {
-            CallStackResult callStackResult = new CallStackResult();
+            CallStackResult result = new(cache.NameCache);
             CallStack callStack = new();
             callStack.ThreadId = (uint)threadId;
 
@@ -127,23 +128,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             {
                 if (cache.TryGetStackFrameIds(stackFrameId, out ulong methodId, out int ilOffset))
                 {
-                    if (cache.NameCache.FunctionData.TryGetValue(methodId, out FunctionData functionData))
-                    {
-                        callStackResult.NameCache.FunctionData.TryAdd(methodId, functionData);
-
-                        foreach (ulong typeArg in functionData.TypeArgs)
-                        {
-                            GetClassData(typeArg, cache, callStackResult);
-                        }
-
-                        GetClassData(functionData.ParentClass, cache, callStackResult, functionData.ModuleId);
-
-                        if (cache.NameCache.ModuleData.TryGetValue(functionData.ModuleId, out ModuleData moduleData))
-                        {
-                            callStackResult.NameCache.ModuleData.TryAdd(functionData.ModuleId, moduleData);
-                        }
-                    }
-
                     CallStackFrame frame = new()
                     {
                         FunctionId = methodId,
@@ -154,24 +138,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 }
             }
 
-            callStackResult.Stacks.Add(callStack);
+            result.Stacks.Add(callStack);
 
-            return StackUtilities.TranslateCallStackResultToModel(callStackResult);
-        }
+            var resultModel = StackUtilities.TranslateCallStackResultToModel(result);
 
-        private static void GetClassData(ulong key, IExceptionsNameCache cache, CallStackResult callStackResult, ulong? moduleId = null)
-        {
-            if (cache.NameCache.ClassData.TryGetValue(key, out ClassData classData))
-            {
-                callStackResult.NameCache.ClassData.TryAdd(key, classData);
-
-                ModuleScopedToken moduleScopedToken = new(moduleId ?? classData.ModuleId, classData.Token);
-
-                if (cache.NameCache.TokenData.TryGetValue(moduleScopedToken, out TokenData tokenData))
-                {
-                    callStackResult.NameCache.TokenData.TryAdd(moduleScopedToken, tokenData);
-                }
-            }
+            return resultModel.Stacks.FirstOrDefault();
         }
 
         private sealed class ExceptionInstanceEntry
