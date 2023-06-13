@@ -30,7 +30,7 @@ Location: https://localhost:52323/operations/26e74e52-0a16-4e84-84bb-27f904bfaf8
 
 ## Egress Extensibility (8.0+)
 
-Starting with `dotnet monitor` 8, the tool includes an egress extensibility model that allows additional egress providers to be discovered and usable by a `dotnet monitor` installation. The existing `AzureBlobStorage` egress provider has been moved to this model and remains as an available egress provider in the .NET Tool and `mcr.microsoft.com/dotnet/monitor` image offerings. **This should not be a breaking change - by default, users migrating from `dotnet monitor` 6/7 should see no difference in `dotnet monitor`'s behavior**. 
+Starting with `dotnet monitor` 8, the tool includes an egress extensibility model that allows additional egress providers to be discovered and usable by a `dotnet monitor` installation. The existing `AzureBlobStorage` egress provider has been moved to this model and remains as an available egress provider in the .NET Tool and `mcr.microsoft.com/dotnet/monitor` image offerings.
 
 In addition to the current `dotnet monitor` offerings, a `monitor-base` image is now available; this image does not include egress providers (with the exception of `FileSystem` egress), allowing users to only include their preferred egress providers. For convenience, the `monitor` image and the nuget package will include all of `dotnet monitor`'s supported extensions.
 
