@@ -58,7 +58,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
                     exception.Message,
                     frameIds,
                     context.Timestamp,
-                    GetExceptionId(exception.InnerException),
                     GetInnerExceptionsIds(exception)
                     );
             }
@@ -156,6 +155,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
 
         private ulong[] GetInnerExceptionsIds(Exception exception)
         {
+            // AggregateException will always pull the first exception out of the list of inner exceptions
+            // and use that as its InnerException property. No need to report the InnerException property value.
             if (exception is AggregateException aggregateException)
             {
                 ulong[] exceptionIds = new ulong[aggregateException.InnerExceptions.Count];
@@ -164,6 +165,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
                     exceptionIds[i] = GetExceptionId(aggregateException.InnerExceptions[i]);
                 }
                 return exceptionIds;
+            }
+            else if (null != exception.InnerException)
+            {
+                return new ulong[] { GetExceptionId(exception.InnerException) };
             }
             return Array.Empty<ulong>();
         }

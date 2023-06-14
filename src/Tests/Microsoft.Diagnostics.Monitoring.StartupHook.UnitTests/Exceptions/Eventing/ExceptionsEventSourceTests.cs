@@ -64,12 +64,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         }
 
         [Theory]
-        [InlineData(0, 0, null, "0,0,0", 0, "")]
-        [InlineData(1, 5, "", "1,2", 3, "1")]
-        [InlineData(7, 13, InvalidOperationExceptionMessage, "", 2, "3,5")]
-        [InlineData(ulong.MaxValue - 1, ulong.MaxValue - 1, OperationCancelledExceptionMessage, "3,5,7", ulong.MaxValue - 2, "2")]
-        [InlineData(ulong.MaxValue, ulong.MaxValue, ObjectDisposedExceptionMessage, "2,7,11", ulong.MaxValue - 1, "9,8,4")]
-        public void ExceptionsEventSource_WriteException_Event(ulong id, ulong groupId, string message, string frameIdsString, ulong innerExceptionId, string innerExceptionIdsString)
+        [InlineData(0, 0, null, "0,0,0", "")]
+        [InlineData(1, 5, "", "1,2", "1")]
+        [InlineData(7, 13, InvalidOperationExceptionMessage, "", "3,5")]
+        [InlineData(ulong.MaxValue - 1, ulong.MaxValue - 1, OperationCancelledExceptionMessage, "3,5,7", "2")]
+        [InlineData(ulong.MaxValue, ulong.MaxValue, ObjectDisposedExceptionMessage, "2,7,11", "9,8,4")]
+        public void ExceptionsEventSource_WriteException_Event(ulong id, ulong groupId, string message, string frameIdsString, string innerExceptionIdsString)
         {
             using ExceptionsEventSource source = new();
 
@@ -80,7 +80,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             DateTime timestamp = DateTime.UtcNow;
             ulong[] innerExceptionIds = innerExceptionIdsString.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(ulong.Parse).ToArray();
 
-            source.ExceptionInstance(id, groupId, message, frameIds, timestamp, innerExceptionId, innerExceptionIds);
+            source.ExceptionInstance(id, groupId, message, frameIds, timestamp, innerExceptionIds);
 
             ExceptionInstance instance = Assert.Single(listener.Exceptions);
             Assert.Equal(id, instance.Id);
@@ -90,7 +90,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             // but in-process listener doesn't decode non-byte arrays correctly.
             Assert.Equal(Array.Empty<ulong>(), instance.StackFrameIds);
             Assert.Equal(timestamp, instance.Timestamp);
-            Assert.Equal(innerExceptionId, instance.InnerExceptionId);
             // We would normally expect the following to return an array of the inner exception IDs
             // but in-process listener doesn't decode non-byte arrays correctly.
             Assert.Equal(Array.Empty<ulong>(), instance.InnerExceptionIds);
@@ -104,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Warning);
 
-            source.ExceptionInstance(5, 7, ObjectDisposedExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow, 2, Array.Empty<ulong>());
+            source.ExceptionInstance(5, 7, ObjectDisposedExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow, Array.Empty<ulong>());
 
             Assert.Empty(listener.Exceptions);
         }
@@ -116,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
             using ExceptionsEventListener listener = new();
 
-            source.ExceptionInstance(7, 9, OperationCancelledExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow, 4, Array.Empty<ulong>());
+            source.ExceptionInstance(7, 9, OperationCancelledExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow, Array.Empty<ulong>());
 
             Assert.Empty(listener.Exceptions);
         }

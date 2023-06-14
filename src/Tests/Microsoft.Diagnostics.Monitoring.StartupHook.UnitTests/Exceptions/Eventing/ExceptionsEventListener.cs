@@ -38,7 +38,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                                 ToString(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage]),
                                 ToArray<ulong>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.StackFrameIds]),
                                 ToType<DateTime>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.Timestamp]),
-                                ToUInt64(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionId]),
                                 ToArray<ulong>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds])
                             ));
                         break;
@@ -144,14 +143,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
     internal sealed class ExceptionInstance
     {
-        public ExceptionInstance(ulong id, ulong groupId, string? message, ulong[] frameIds, DateTime timestamp, ulong innerExceptionId, ulong[] innerExceptionIds)
+        public ExceptionInstance(ulong id, ulong groupId, string? message, ulong[] frameIds, DateTime timestamp, ulong[] innerExceptionIds)
         {
             Id = id;
             GroupId = groupId;
             ExceptionMessage = message;
             StackFrameIds = frameIds;
             Timestamp = timestamp;
-            InnerExceptionId = innerExceptionId;
             InnerExceptionIds = innerExceptionIds;
         }
 
@@ -164,8 +162,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         public ulong[] StackFrameIds { get; }
 
         public DateTime Timestamp { get; }
-
-        public ulong InnerExceptionId { get; }
 
         public ulong[] InnerExceptionIds { get; }
     }
