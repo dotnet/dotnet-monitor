@@ -139,7 +139,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
                     if (exception.Data[ExceptionIdKey] is ulong exceptionIdCandidate)
                     {
                         exceptionId = exceptionIdCandidate;
-                        return false;
+                        return true;
                     }
                 }
 
