@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 path = Path.Combine(
                     AppContext.BaseDirectory.Substring(0, artifactsIndex),
                     ArtifactsDirectoryName,
-                    AppContext.BaseDirectory.Substring(artifactsIndex + separator.Length).Replace(thisAssembly.GetName().Name, TestStartupHookAssemblyName),
+                    AppContext.BaseDirectory.Substring(artifactsIndex + separator.Length).Replace(thisAssemblyName, assemblyName),
                     $"{assemblyName}.dll");
 
                 return File.Exists(path);
