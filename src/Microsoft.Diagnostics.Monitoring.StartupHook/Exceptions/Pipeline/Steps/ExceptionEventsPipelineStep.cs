@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             // the events once the listener is registered to effectively "catch up".
             if (_eventSource.IsEnabled())
             {
-                ReadOnlySpan<StackFrame> stackFrames = ComputeEffectiveCallStack(exception);
+                ReadOnlySpan<StackFrame> stackFrames = ComputeEffectiveCallStack(exception, context.IsInnerException);
 
                 ulong groupId = _identifierCache.GetOrAdd(new ExceptionGroupIdentifier(exception));
 
@@ -61,15 +61,21 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             _next(exception, context);
         }
 
-        private static ReadOnlySpan<StackFrame> ComputeEffectiveCallStack(Exception exception)
+        private static ReadOnlySpan<StackFrame> ComputeEffectiveCallStack(Exception exception, bool isInnerException)
         {
+            StackTrace exceptionStackTrace = new(exception, fNeedFileInfo: false);
+
+            // Inner exceptions have complete call stacks because they were caught or do not
+            // have an call stacks because they were never thrown. Report the stack frames as-is.
+            if (isInnerException)
+                return exceptionStackTrace.GetFrames();
+
             // The stack trace of thrown exceptions is populated as the exception unwinds the
             // stack. In the case of observing the exception from the FirstChanceException event,
             // there is only one frame on the stack (the throwing frame). In order to get the
             // full call stack of the exception, get the current call stack of the thread and
             // filter out the call frames that are "above" the exceptions's throwing frame.
             StackFrame? throwingFrame = null;
-            StackTrace exceptionStackTrace = new(exception, fNeedFileInfo: false);
             foreach (StackFrame stackFrame in exceptionStackTrace.GetFrames())
             {
                 if (null != stackFrame.GetMethod())
