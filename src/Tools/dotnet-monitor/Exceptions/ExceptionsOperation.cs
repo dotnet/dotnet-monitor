@@ -104,7 +104,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                 writer.WriteStartArray("frames");
 
-                foreach (var frame in  instance.CallStack.Frames)
+                foreach (var frame in instance.CallStack.Frames)
                 {
                     writer.WriteStartObject();
 

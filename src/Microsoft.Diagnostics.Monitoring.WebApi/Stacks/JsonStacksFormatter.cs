@@ -21,15 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
             foreach (CallStack stack in stackResult.Stacks)
             {
-                Models.CallStack stackModel = new Models.CallStack();
-                stackModel.ThreadId = stack.ThreadId;
-                stackModel.ThreadName = stack.ThreadName;
-
-                foreach (CallStackFrame frame in stack.Frames)
-                {
-                    stackModel.Frames.Add(StackUtilities.CreateFrameModel(frame, cache));
-                }
-                stackResultModel.Stacks.Add(stackModel);
+                stackResultModel.Stacks.Add(StackUtilities.TranslateCallStackToModel(stack, cache));
             }
 
             await JsonSerializer.SerializeAsync(OutputStream, stackResultModel, cancellationToken: token);

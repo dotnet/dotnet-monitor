@@ -11,13 +11,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
     /// </summary>
     internal sealed class CallStackResult
     {
-        public CallStackResult(NameCache nameCache)
-        {
-            NameCache = nameCache;
-        }
-
-        public CallStackResult() { }
-
         public List<CallStack> Stacks { get; } = new();
 
         public NameCache NameCache { get; } = new NameCache();

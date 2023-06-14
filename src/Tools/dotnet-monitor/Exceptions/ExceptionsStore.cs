@@ -6,7 +6,6 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Channels;
@@ -120,7 +119,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         internal static CallStackModel GenerateCallStack(ulong[] stackFrameIds, IExceptionsNameCache cache, int threadId)
         {
-            CallStackResult result = new(cache.NameCache);
             CallStack callStack = new();
             callStack.ThreadId = (uint)threadId;
 
@@ -138,11 +136,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 }
             }
 
-            result.Stacks.Add(callStack);
-
-            var resultModel = StackUtilities.TranslateCallStackResultToModel(result);
-
-            return resultModel.Stacks.FirstOrDefault();
+            return StackUtilities.TranslateCallStackToModel(callStack, cache.NameCache);
         }
 
         private sealed class ExceptionInstanceEntry

@@ -20,25 +20,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
     internal static class StackUtilities
     {
-        public static Models.CallStackResult TranslateCallStackResultToModel(CallStackResult result)
+        public static Models.CallStack TranslateCallStackToModel(CallStack stack, NameCache cache)
         {
-            Models.CallStackResult resultModel = new Models.CallStackResult();
-            NameCache cache = result.NameCache;
+            Models.CallStack stackModel = new Models.CallStack();
+            stackModel.ThreadId = stack.ThreadId;
+            stackModel.ThreadName = stack.ThreadName;
 
-            foreach (CallStack stack in result.Stacks)
+            foreach (CallStackFrame frame in stack.Frames)
             {
-                Models.CallStack stackModel = new Models.CallStack();
-                stackModel.ThreadId = stack.ThreadId;
-                stackModel.ThreadName = stack.ThreadName;
-
-                foreach (CallStackFrame frame in stack.Frames)
-                {
-                    stackModel.Frames.Add(CreateFrameModel(frame, cache));
-                }
-                resultModel.Stacks.Add(stackModel);
+                stackModel.Frames.Add(CreateFrameModel(frame, cache));
             }
 
-            return resultModel;
+            return stackModel;
         }
 
         internal static Models.CallStackFrame CreateFrameModel(CallStackFrame frame, NameCache cache)

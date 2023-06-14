@@ -5,7 +5,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
-using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -17,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using CallStack = Microsoft.Diagnostics.Monitoring.WebApi.Models.CallStack;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -315,13 +316,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             public void AddExceptionInstance(IExceptionsNameCache cache, ulong groupId, string message, DateTime timestamp, ulong[] stackFrameIds, int threadId)
             {
                 StringBuilder typeBuilder = new();
-                WebApi.Stacks.FunctionData throwingMethodData;
+                FunctionData throwingMethodData;
                 CallStack callStack;
                 try
                 {
                     Assert.True(cache.TryGetExceptionGroup(groupId, out ulong exceptionClassId, out ulong throwingMethodId, out _));
 
-                    WebApi.Stacks.NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId);
+                    NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId);
 
                     Assert.True(cache.NameCache.FunctionData.TryGetValue(throwingMethodId, out throwingMethodData));
 
