@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             StackTrace exceptionStackTrace = new(exception, fNeedFileInfo: false);
 
             // Inner exceptions have complete call stacks because they were caught or do not
-            // have an call stacks because they were never thrown. Report the stack frames as-is.
+            // have any call stacks because they were never thrown. Report the stack frames as-is.
             if (isInnerException)
                 return exceptionStackTrace.GetFrames();
 
