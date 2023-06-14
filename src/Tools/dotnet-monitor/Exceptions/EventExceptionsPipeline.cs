@@ -74,13 +74,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         );
                     break;
                 case "ExceptionInstance":
-                    ulong exceptionId = traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionInstancePayloads.ExceptionId);
-                    ulong groupId = traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionInstancePayloads.ExceptionGroupId);
-                    string message = traceEvent.GetPayload<string>(ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage);
-                    DateTime timestamp = traceEvent.GetPayload<DateTime>(ExceptionEvents.ExceptionInstancePayloads.Timestamp).ToUniversalTime();
-                    ulong[] innerExceptionIds = traceEvent.GetPayload<ulong[]>(ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds);
-                    ulong[] stackFrameIds = traceEvent.GetPayload<ulong[]>(ExceptionEvents.ExceptionInstancePayloads.StackFrameIds);
-                    _store.AddExceptionInstance(_cache, groupId, message, timestamp, stackFrameIds, traceEvent.ThreadID);
+                    _store.AddExceptionInstance(
+                        _cache,
+                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionInstancePayloads.ExceptionId),
+                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionInstancePayloads.ExceptionGroupId),
+                        traceEvent.GetPayload<string>(ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage),
+                        traceEvent.GetPayload<DateTime>(ExceptionEvents.ExceptionInstancePayloads.Timestamp).ToUniversalTime(),
+                        traceEvent.GetPayload<ulong[]>(ExceptionEvents.ExceptionInstancePayloads.StackFrameIds),
+                        traceEvent.ThreadID,
+                        traceEvent.GetPayload<ulong[]>(ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds));
                     break;
                 case "FunctionDescription":
                     _cache.AddFunction(

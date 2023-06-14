@@ -56,6 +56,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string ReversePInvokeException = nameof(ReversePInvokeException);
                 public const string DynamicMethodException = nameof(DynamicMethodException);
                 public const string ArrayException = nameof(ArrayException);
+                public const string InnerUnthrownException = nameof(InnerUnthrownException);
+                public const string InnerThrownException = nameof(InnerThrownException);
+                public const string AggregateException = nameof(AggregateException);
             }
 
             public static class Commands
