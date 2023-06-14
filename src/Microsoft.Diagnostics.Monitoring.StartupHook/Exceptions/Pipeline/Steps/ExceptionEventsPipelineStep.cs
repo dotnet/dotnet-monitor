@@ -116,26 +116,36 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             if (null == exception)
                 return 0;
 
-            ulong? exceptionId = null;
-            if (exception.Data.Contains(ExceptionIdKey))
+            if (TryGetExceptionId(exception, out ulong exceptionId))
+                return exceptionId;
+
+            lock (exception.Data)
             {
-                exceptionId = (ulong?)exception.Data[ExceptionIdKey];
+                if (TryGetExceptionId(exception, out exceptionId))
+                    return exceptionId;
+
+                exceptionId = Interlocked.Increment(ref _nextExceptionId);
+
+                exception.Data[ExceptionIdKey] = exceptionId;
             }
 
-            if (!exceptionId.HasValue)
-            {
-                lock (exception.Data)
-                {
-                    if (!exceptionId.HasValue)
-                    {
-                        exceptionId = Interlocked.Increment(ref _nextExceptionId);
+            return exceptionId;
 
-                        exception.Data[ExceptionIdKey] = exceptionId;
+            static bool TryGetExceptionId(Exception exception, out ulong exceptionId)
+            {
+                if (exception.Data.Contains(ExceptionIdKey))
+                {
+                    // The ExceptionIdKey data should only ever have a ulong
+                    if (exception.Data[ExceptionIdKey] is ulong exceptionIdCandidate)
+                    {
+                        exceptionId = exceptionIdCandidate;
+                        return false;
                     }
                 }
-            }
 
-            return exceptionId.Value;
+                exceptionId = default;
+                return false;
+            }
         }
 
         private ulong[] GetInnerExceptionsIds(Exception exception)
