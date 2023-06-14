@@ -6,14 +6,19 @@ using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
 {
     internal sealed class ExceptionEventsPipelineStep
     {
+        private static readonly object ExceptionIdKey = new object();
+
         private readonly ExceptionsEventSource _eventSource = new();
         private readonly ExceptionGroupIdentifierCache _identifierCache;
         private readonly ExceptionPipelineDelegate _next;
+
+        private ulong _nextExceptionId = 1;
 
         public ExceptionEventsPipelineStep(ExceptionPipelineDelegate next)
         {
@@ -48,13 +53,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
                 ulong[] frameIds = _identifierCache.GetOrAdd(stackFrames);
 
                 _eventSource.ExceptionInstance(
-                    0, // TODO: Generate ID
+                    GetExceptionId(exception),
                     groupId,
                     exception.Message,
                     frameIds,
                     context.Timestamp,
-                    0, // TODO: Get ID for InnerException
-                    Array.Empty<ulong>() // TODO: Get IDs for AggregateException.InnerExceptions
+                    GetExceptionId(exception.InnerException),
+                    GetInnerExceptionsIds(exception)
                     );
             }
 
@@ -104,6 +109,57 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
                 return threadStackFrames.Slice(index);
             }
             return ReadOnlySpan<StackFrame>.Empty;
+        }
+
+        private ulong GetExceptionId(Exception? exception)
+        {
+            if (null == exception)
+                return 0;
+
+            if (TryGetExceptionId(exception, out ulong exceptionId))
+                return exceptionId;
+
+            lock (exception.Data)
+            {
+                if (TryGetExceptionId(exception, out exceptionId))
+                    return exceptionId;
+
+                exceptionId = Interlocked.Increment(ref _nextExceptionId);
+
+                exception.Data[ExceptionIdKey] = exceptionId;
+            }
+
+            return exceptionId;
+
+            static bool TryGetExceptionId(Exception exception, out ulong exceptionId)
+            {
+                if (exception.Data.Contains(ExceptionIdKey))
+                {
+                    // The ExceptionIdKey data should only ever have a ulong
+                    if (exception.Data[ExceptionIdKey] is ulong exceptionIdCandidate)
+                    {
+                        exceptionId = exceptionIdCandidate;
+                        return true;
+                    }
+                }
+
+                exceptionId = default;
+                return false;
+            }
+        }
+
+        private ulong[] GetInnerExceptionsIds(Exception exception)
+        {
+            if (exception is AggregateException aggregateException)
+            {
+                ulong[] exceptionIds = new ulong[aggregateException.InnerExceptions.Count];
+                for (int i = 0; i < aggregateException.InnerExceptions.Count; i++)
+                {
+                    exceptionIds[i] = GetExceptionId(aggregateException.InnerExceptions[i]);
+                }
+                return exceptionIds;
+            }
+            return Array.Empty<ulong>();
         }
     }
 }
