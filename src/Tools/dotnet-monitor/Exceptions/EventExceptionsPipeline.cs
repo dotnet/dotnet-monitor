@@ -80,11 +80,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     DateTime timestamp = traceEvent.GetPayload<DateTime>(ExceptionEvents.ExceptionInstancePayloads.Timestamp).ToUniversalTime();
                     ulong innerExceptionId = traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionInstancePayloads.InnerExceptionId);
                     ulong[] innerExceptionIds = traceEvent.GetPayload<ulong[]>(ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds);
-                    // Add data to cache and write directly to store; this allows the pipeline to recreate the cache without
-                    // affecting the store so long as the cache is not cleared. Example of this may be that the event source
-                    // wants to reset the identifiers so as to not indefinitely grow the cache and have a large memory impact.
-                    _cache.AddExceptionInstance(groupId, message);
-                    _store.AddExceptionInstance(_cache, groupId, message, timestamp);
+                    ulong[] stackFrameIds = traceEvent.GetPayload<ulong[]>(ExceptionEvents.ExceptionInstancePayloads.StackFrameIds);
+                    _store.AddExceptionInstance(_cache, groupId, message, timestamp, stackFrameIds, traceEvent.ThreadID);
                     break;
                 case "FunctionDescription":
                     _cache.AddFunction(
@@ -103,7 +100,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         );
                     break;
                 case "StackFrameDescription":
-                    // Not Yet Implemented
+                    _cache.AddStackFrame(
+                        traceEvent.GetPayload<ulong>(ExceptionEvents.StackFrameIdentifierPayloads.StackFrameId),
+                        traceEvent.GetPayload<ulong>(ExceptionEvents.StackFrameIdentifierPayloads.FunctionId),
+                        traceEvent.GetPayload<int>(ExceptionEvents.StackFrameIdentifierPayloads.ILOffset)
+                        );
                     break;
                 case "TokenDescription":
                     _cache.AddToken(

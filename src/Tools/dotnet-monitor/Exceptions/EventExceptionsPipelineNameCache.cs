@@ -10,9 +10,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {
     internal sealed class EventExceptionsPipelineNameCache : IExceptionsNameCache
     {
-        private readonly List<ExceptionInstance> _exceptions = new();
         private readonly Dictionary<ulong, ExceptionGroup> _exceptionGroupMap = new();
         private readonly NameCache _nameCache = new();
+        private readonly Dictionary<ulong, StackFrameInstance> _stackFrames = new();
 
         public NameCache NameCache => _nameCache;
 
@@ -26,14 +26,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _exceptionGroupMap.Add(id, new ExceptionGroup(exceptionClassId, throwingMethodId, ilOffset));
         }
 
-        public void AddExceptionInstance(ulong groupId, string message)
-        {
-            _exceptions.Add(new ExceptionInstance(groupId, message));
-        }
-
         public void AddFunction(ulong id, ulong classId, uint classToken, ulong moduleId, string name, ulong[] typeArgs)
         {
             _nameCache.FunctionData.TryAdd(id, new FunctionData(name, classId, classToken, moduleId, typeArgs ?? Array.Empty<ulong>()));
+        }
+
+        public void AddStackFrame(ulong id, ulong functionId, int ilOffset)
+        {
+            _stackFrames.Add(id, new StackFrameInstance(functionId, ilOffset));
         }
 
         public void AddModule(ulong id, string moduleName)
@@ -63,8 +63,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             return true;
         }
 
+        public bool TryGetStackFrameIds(ulong stackFrameId, out ulong methodId, out int ilOffset)
+        {
+            methodId = 0;
+            ilOffset = 0;
+
+            if (!_stackFrames.TryGetValue(stackFrameId, out StackFrameInstance instance))
+                return false;
+
+            methodId = instance.MethodId;
+            ilOffset = instance.ILOffset;
+
+            return true;
+        }
+
         private sealed record class ExceptionGroup(ulong ClassId, ulong ThrowingMethodId, int ILOffset);
 
-        private sealed record class ExceptionInstance(ulong GroupId, string Message);
+        private sealed record class StackFrameInstance(ulong MethodId, int ILOffset);
     }
 }

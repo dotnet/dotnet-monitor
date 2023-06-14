@@ -802,6 +802,11 @@
     <comment>{0} = Exception type name
 {1} = Exception message</comment>
   </data>
+  <data name="OutputFormatString_FirstChanceExceptionStackFrame" xml:space="preserve">
+    <value>  at {0}.{1}</value>
+    <comment>{0} = class name
+{1} = method name</comment>
+  </data>
   <data name="Placeholder_NotPresent" xml:space="preserve">
     <value>:NOT PRESENT:</value>
     <comment>Gets a string similar to ":NOT PRESENT:".</comment>
