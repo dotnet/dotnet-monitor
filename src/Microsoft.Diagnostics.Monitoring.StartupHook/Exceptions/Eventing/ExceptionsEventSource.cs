@@ -72,10 +72,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             string? ExceptionMessage,
             ulong[] StackFrameIds,
             DateTime Timestamp,
-            ulong InnerExceptionId,
             ulong[] InnerExceptionIds)
         {
-            Span<EventData> data = stackalloc EventData[7];
+            Span<EventData> data = stackalloc EventData[6];
             using PinnedData namePinned = PinnedData.Create(ExceptionMessage);
             Span<byte> stackFrameIdsSpan = stackalloc byte[GetArrayDataSize(StackFrameIds)];
             FillArrayData(stackFrameIdsSpan, StackFrameIds);
@@ -87,7 +86,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage], namePinned);
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.StackFrameIds], stackFrameIdsSpan);
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.Timestamp], Timestamp.ToFileTimeUtc());
-            SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionId], InnerExceptionId);
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds], innerExceptionIdsSpan);
 
             WriteEventCore(ExceptionEvents.EventIds.ExceptionInstance, data);
