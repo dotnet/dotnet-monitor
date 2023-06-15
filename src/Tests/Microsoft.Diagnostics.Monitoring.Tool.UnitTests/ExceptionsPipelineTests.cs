@@ -297,7 +297,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
-        /// Tests that exceptions with inner exceptions that haven't been thrown are detectable.
+        /// Tests that inner exceptions from AggregateException are detectable.
         /// </summary>
         [Fact]
         public Task EventExceptionsPipeline_AggregateException()
@@ -350,6 +350,55 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(instance1.Id, instance4.InnerExceptionIds[0]);
                     Assert.Equal(instance2.Id, instance4.InnerExceptionIds[1]);
                     Assert.Equal(instance3.Id, instance4.InnerExceptionIds[2]);
+                });
+        }
+
+        /// <summary>
+        /// Tests that loader exceptions from ReflectionTypeLoadException are detectable.
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_ReflectionTypeLoadException()
+        {
+            const int ExpectedInstanceCount = 3;
+
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.ReflectionTypeLoadException,
+                ExpectedInstanceCount,
+                validate: instances =>
+                {
+                    List<TestExceptionsStore.ExceptionInstance> instanceList = new(instances);
+
+                    Assert.Equal(ExpectedInstanceCount, instances.Count());
+
+                    TestExceptionsStore.ExceptionInstance instance1 = instanceList[0];
+                    Assert.NotNull(instance1);
+
+                    Assert.NotEqual(0UL, instance1.Id);
+                    Assert.Equal(typeof(MissingMethodException).FullName, instance1.TypeName);
+                    Assert.Empty(instance1.InnerExceptionIds);
+                    Assert.Empty(instance1.CallStack.Frames); // Indicates this exception was not thrown
+
+                    TestExceptionsStore.ExceptionInstance instance2 = instanceList[1];
+                    Assert.NotNull(instance2);
+
+                    Assert.NotEqual(0UL, instance2.Id);
+                    Assert.Equal(typeof(MissingFieldException).FullName, instance2.TypeName);
+                    Assert.Empty(instance2.InnerExceptionIds);
+                    Assert.Empty(instance2.CallStack.Frames); // Indicates this exception was not thrown
+
+                    TestExceptionsStore.ExceptionInstance instance3 = instanceList[2];
+                    Assert.NotNull(instance3);
+
+                    Assert.NotEqual(0UL, instance3.Id);
+                    Assert.Equal(typeof(ReflectionTypeLoadException).FullName, instance3.TypeName);
+                    Assert.NotEmpty(instance3.InnerExceptionIds);
+                    Assert.NotEmpty(instance3.CallStack.Frames); // Indicates this exception was thrown
+
+                    // Verify inner exceptions of ReflectionTypeLoadException instance
+                    Assert.Equal(3, instance3.InnerExceptionIds.Length);
+                    Assert.Equal(instance1.Id, instance3.InnerExceptionIds[0]);
+                    Assert.Equal(0UL, instance3.InnerExceptionIds[1]); // Second loaded exception is null
+                    Assert.Equal(instance2.Id, instance3.InnerExceptionIds[2]);
                 });
         }
 

@@ -50,6 +50,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             CliCommand aggregateExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.AggregateException);
             aggregateExceptionCommand.SetAction(AggregateExceptionAsync);
 
+            CliCommand reflectionTypeLoadExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ReflectionTypeLoadException);
+            reflectionTypeLoadExceptionCommand.SetAction(ReflectionTypeLoadExceptionAsync);
+
             CliCommand scenarioCommand = new(TestAppScenarios.Exceptions.Name);
             scenarioCommand.Subcommands.Add(singleExceptionCommand);
             scenarioCommand.Subcommands.Add(repeatExceptionCommand);
@@ -62,6 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             scenarioCommand.Subcommands.Add(innerUnthrownExceptionCommand);
             scenarioCommand.Subcommands.Add(innerThrownExceptionCommand);
             scenarioCommand.Subcommands.Add(aggregateExceptionCommand);
+            scenarioCommand.Subcommands.Add(reflectionTypeLoadExceptionCommand);
             return scenarioCommand;
         }
 
@@ -266,6 +270,33 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                         new InvalidOperationException(),
                         new FormatException(),
                         new TaskCanceledException());
+                }
+                catch (Exception)
+                {
+                }
+
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
+
+                return 0;
+            }, token);
+        }
+
+        public static Task<int> ReflectionTypeLoadExceptionAsync(ParseResult result, CancellationToken token)
+        {
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
+
+                try
+                {
+                    throw new ReflectionTypeLoadException(
+                        classes: null,
+                        exceptions: new Exception[]
+                        {
+                            new MissingMethodException(),
+                            null,
+                            new MissingFieldException()
+                        });
                 }
                 catch (Exception)
                 {

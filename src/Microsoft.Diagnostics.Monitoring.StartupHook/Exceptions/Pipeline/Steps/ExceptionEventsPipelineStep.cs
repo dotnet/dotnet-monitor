@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
@@ -155,14 +156,28 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
 
         private ulong[] GetInnerExceptionsIds(Exception exception)
         {
-            // AggregateException will always pull the first exception out of the list of inner exceptions
-            // and use that as its InnerException property. No need to report the InnerException property value.
             if (exception is AggregateException aggregateException)
             {
+                // AggregateException will always pull the first exception out of the list of inner exceptions
+                // and use that as its InnerException property. No need to report the InnerException property value.
                 ulong[] exceptionIds = new ulong[aggregateException.InnerExceptions.Count];
                 for (int i = 0; i < aggregateException.InnerExceptions.Count; i++)
                 {
                     exceptionIds[i] = GetExceptionId(aggregateException.InnerExceptions[i]);
+                }
+                return exceptionIds;
+            }
+            else if (exception is ReflectionTypeLoadException reflectionTypeLoadException)
+            {
+                // ReflectionTypeLoadException does not set InnerException. No need to report the InnerException property value.
+                ulong[] exceptionIds = new ulong[reflectionTypeLoadException.LoaderExceptions.Length];
+                for (int i = 0; i < reflectionTypeLoadException.LoaderExceptions.Length; i++)
+                {
+                    Exception? loaderException = reflectionTypeLoadException.LoaderExceptions[i];
+                    if (null != loaderException)
+                    {
+                        exceptionIds[i] = GetExceptionId(loaderException);
+                    }
                 }
                 return exceptionIds;
             }
