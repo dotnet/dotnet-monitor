@@ -285,6 +285,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             return classIds;
         }
 
+
         private ulong AddOrDefault(MethodBase? method)
         {
             if (null == method)

@@ -55,7 +55,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
             {
                 frameModel.ModuleName = NameFormatter.GetModuleName(cache, functionData.ModuleId);
-                frameModel.MethodName = functionData.Name;
+
+                builder.Clear();
+                builder.Append(frameModel.MethodName);
+
+                if (functionData.Parameters.Length > 0)
+                {
+                    NameFormatter.BuildMethodParameters(builder, cache, functionData.Parameters);
+                    frameModel.MethodName = builder.ToString();
+                }
 
                 builder.Clear();
                 NameFormatter.BuildClassName(builder, cache, functionData);
@@ -64,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 if (functionData.TypeArgs.Length > 0)
                 {
                     builder.Clear();
-                    builder.Append(functionData.Name);
+                    builder.Append(frameModel.MethodName);
                     NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
                     frameModel.MethodName = builder.ToString();
                 }
