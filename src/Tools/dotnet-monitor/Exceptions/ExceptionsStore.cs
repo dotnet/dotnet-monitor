@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using CallStackModel = Microsoft.Diagnostics.Monitoring.WebApi.Models.CallStack;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {
@@ -44,9 +45,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _disposalSource.Dispose();
         }
 
-        public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp)
+        public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp, ulong[] stackFrameIds, int threadId)
         {
-            ExceptionInstanceEntry entry = new(cache, exceptionId, message, timestamp);
+            ExceptionInstanceEntry entry = new(cache, exceptionId, message, timestamp, stackFrameIds, threadId);
             // This should never fail to write because the behavior is to drop the oldest.
             _channel.Writer.TryWrite(entry);
         }
@@ -88,7 +89,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 // at the same time; one will return sooner and report the correct IDs potentially before those IDs are
                 // produced by the EventSource. May need to cache this incompletion information and attempt to reconstruct
                 // it in the future, with either periodic retry OR registering a callback system for the missing IDs.
-                if (entry.Cache.TryGetExceptionId(entry.ExceptionId, out ulong exceptionClassId, out _, out _))
+                if (entry.Cache.TryGetExceptionGroup(entry.ExceptionId, out ulong exceptionClassId, out _, out _))
                 {
                     string exceptionTypeName;
                     if (!_exceptionTypeNameMap.TryGetValue(exceptionClassId, out exceptionTypeName))
@@ -104,9 +105,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         moduleName = NameFormatter.GetModuleName(entry.Cache.NameCache, exceptionClassData.ModuleId);
                     }
 
+                    CallStackModel callStack = GenerateCallStack(entry.StackFrameIds, entry.Cache, entry.ThreadId);
+
                     lock (_instances)
                     {
-                        _instances.Add(new ExceptionInstance(exceptionTypeName, moduleName, entry.Message, entry.Timestamp));
+                        _instances.Add(new ExceptionInstance(exceptionTypeName, moduleName, entry.Message, entry.Timestamp, callStack));
                     }
                 }
 
@@ -114,14 +117,38 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             }
         }
 
+        internal static CallStackModel GenerateCallStack(ulong[] stackFrameIds, IExceptionsNameCache cache, int threadId)
+        {
+            CallStack callStack = new();
+            callStack.ThreadId = (uint)threadId;
+
+            foreach (var stackFrameId in stackFrameIds)
+            {
+                if (cache.TryGetStackFrameIds(stackFrameId, out ulong methodId, out int ilOffset))
+                {
+                    CallStackFrame frame = new()
+                    {
+                        FunctionId = methodId,
+                        Offset = (ulong)ilOffset
+                    };
+
+                    callStack.Frames.Add(frame);
+                }
+            }
+
+            return StackUtilities.TranslateCallStackToModel(callStack, cache.NameCache);
+        }
+
         private sealed class ExceptionInstanceEntry
         {
-            public ExceptionInstanceEntry(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp)
+            public ExceptionInstanceEntry(IExceptionsNameCache cache, ulong exceptionId, string message, DateTime timestamp, ulong[] stackFrameIds, int threadId)
             {
                 Cache = cache;
                 ExceptionId = exceptionId;
                 Message = message;
                 Timestamp = timestamp;
+                StackFrameIds = stackFrameIds;
+                ThreadId = threadId;
             }
 
             public IExceptionsNameCache Cache { get; }
@@ -131,6 +158,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             public string Message { get; }
 
             public DateTime Timestamp { get; }
+
+            public ulong[] StackFrameIds { get; }
+
+            public int ThreadId { get; }
         }
     }
 }

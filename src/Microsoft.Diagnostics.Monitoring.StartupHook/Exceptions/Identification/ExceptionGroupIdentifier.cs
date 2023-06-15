@@ -12,9 +12,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
     /// in code. This class may be used as an identifier for determining whether
     /// exception usages are equivalent (same exception type thrown from the same location).
     /// </summary>
-    internal sealed record class ExceptionIdentifier
+    internal sealed record class ExceptionGroupIdentifier
     {
-        public ExceptionIdentifier(Exception ex)
+        public ExceptionGroupIdentifier(Exception ex)
         {
             ArgumentNullException.ThrowIfNull(ex);
 
@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             SetThrowingFrame(stackTrace.GetFrames());
         }
 
-        public ExceptionIdentifier(Exception ex, ReadOnlySpan<StackFrame> stackFrames)
+        public ExceptionGroupIdentifier(Exception ex, ReadOnlySpan<StackFrame> stackFrames)
         {
             ArgumentNullException.ThrowIfNull(ex);
 

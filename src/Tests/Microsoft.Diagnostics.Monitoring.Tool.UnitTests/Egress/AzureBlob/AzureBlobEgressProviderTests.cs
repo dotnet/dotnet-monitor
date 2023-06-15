@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Azure;
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Queues;
@@ -249,6 +250,36 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Egress.AzureBlob
 
             Assert.Single(blobs);
             Assert.Empty(messages);
+        }
+
+        [ConditionalFact(Timeout = TestTimeouts.EgressUnitTestTimeoutMs)]
+        public void AzureBlobEgress_DefaultCredentials()
+        {
+            // These are auth methods we know about. If this test fails, it means a new auth method was added and we need to update the test.
+
+            var expectedAuthExclusions = new HashSet<string>
+            {
+                nameof(DefaultAzureCredentialOptions.ExcludeEnvironmentCredential),
+                nameof(DefaultAzureCredentialOptions.ExcludeWorkloadIdentityCredential),
+                nameof(DefaultAzureCredentialOptions.ExcludeManagedIdentityCredential),
+                nameof(DefaultAzureCredentialOptions.ExcludeAzureDeveloperCliCredential),
+                nameof(DefaultAzureCredentialOptions.ExcludeSharedTokenCacheCredential),
+                nameof(DefaultAzureCredentialOptions.ExcludeInteractiveBrowserCredential),
+                nameof(DefaultAzureCredentialOptions.ExcludeAzureCliCredential),
+                nameof(DefaultAzureCredentialOptions.ExcludeVisualStudioCredential),
+                nameof(DefaultAzureCredentialOptions.ExcludeVisualStudioCodeCredential),
+                nameof(DefaultAzureCredentialOptions.ExcludeAzurePowerShellCredential),
+            };
+
+            var actualAuthExclusions = typeof(DefaultAzureCredentialOptions).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+                .Select(p => p.Name)
+                .Where(p => p.StartsWith("Exclude")).ToHashSet();
+
+            IEnumerable<string> unexpectedExclusions = actualAuthExclusions.Except(expectedAuthExclusions);
+            Assert.True(!unexpectedExclusions.Any(), $"New authentication mechanism was added to {nameof(DefaultAzureCredentialOptions)}. " +
+                $"Ensure that {nameof(AzureBlobEgressProvider)} initializes its {nameof(DefaultAzureCredentialOptions)} to exclude unexpected authentication types. " +
+                $"Possible new exclusions: {string.Join(',', unexpectedExclusions)}");
+
         }
 
         private Task<Stream> ProvideUploadStreamAsync(CancellationToken token)

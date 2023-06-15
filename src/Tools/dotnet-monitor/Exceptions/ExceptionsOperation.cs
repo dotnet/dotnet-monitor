@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -96,7 +97,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 writer.WriteString("typeName", instance.TypeName);
                 writer.WriteString("moduleName", instance.ModuleName);
                 writer.WriteString("message", instance.Message);
-                writer.WriteEndObject();
+
+                writer.WriteStartObject("callStack");
+                writer.WriteNumber("threadId", instance.CallStack.ThreadId);
+                writer.WriteString("threadName", instance.CallStack.ThreadName);
+
+                writer.WriteStartArray("frames");
+
+                foreach (var frame in instance.CallStack.Frames)
+                {
+                    writer.WriteStartObject();
+
+                    writer.WriteString("methodName", frame.MethodName);
+                    writer.WriteString("className", frame.ClassName);
+                    writer.WriteString("moduleName", frame.ModuleName);
+
+                    writer.WriteEndObject();
+                }
+
+                writer.WriteEndArray(); // end frames
+                writer.WriteEndObject(); // end callStack
+                writer.WriteEndObject(); // end.
             }
 
             await stream.WriteAsync(JsonRecordDelimiter, token);
@@ -116,6 +137,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             // exception will appear as:
 
             // First chance exception. <TypeName>: <Message>
+            //   at Class.Method
 
             await using StreamWriter writer = new(stream, leaveOpen: true);
 
@@ -125,6 +147,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     Strings.OutputFormatString_FirstChanceException,
                     instance.TypeName,
                     instance.Message));
+
+            if (instance.CallStack != null)
+            {
+                foreach (CallStackFrame frame in instance.CallStack.Frames)
+                {
+                    await writer.WriteLineAsync(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            Strings.OutputFormatString_FirstChanceExceptionStackFrame,
+                            frame.ClassName,
+                            frame.MethodName));
+                }
+            }
+
+            await writer.WriteLineAsync();
 
             await writer.FlushAsync();
         }

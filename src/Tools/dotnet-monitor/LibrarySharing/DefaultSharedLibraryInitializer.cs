@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -14,7 +15,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
     internal sealed class DefaultSharedLibraryInitializer :
         ISharedLibraryInitializer
     {
-        private static readonly string SharedLibrarySourcePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "shared");
+        private static readonly string SharedLibrarySourcePath = Path.Combine(AppContext.BaseDirectory, "shared");
 
         private readonly ILogger<DefaultSharedLibraryInitializer> _logger;
         private readonly string _sharedLibraryTargetPath;

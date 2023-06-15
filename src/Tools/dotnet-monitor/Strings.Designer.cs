@@ -160,7 +160,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SharedAccessSignature, AccountKey, or ManagedIdentityClientId must be specified..
+        ///   Looks up a localized string similar to SharedAccessSignature, AccountKey, ManagedIdentityClientId, or UseWorkloadIdentityFromEnvironment must be specified..
         /// </summary>
         internal static string ErrorMessage_EgressMissingCredentials {
             get {
@@ -1435,6 +1435,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string OutputFormatString_FirstChanceException {
             get {
                 return ResourceManager.GetString("OutputFormatString_FirstChanceException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   at {0}.{1}.
+        /// </summary>
+        internal static string OutputFormatString_FirstChanceExceptionStackFrame {
+            get {
+                return ResourceManager.GetString("OutputFormatString_FirstChanceExceptionStackFrame", resourceCulture);
             }
         }
         

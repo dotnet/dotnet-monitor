@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
         public List<ExceptionInstance> Exceptions { get; } = new();
 
-        public Dictionary<ulong, ExceptionIdentifierData> ExceptionIdentifiers { get; } = new();
+        public Dictionary<ulong, ExceptionGroupData> ExceptionGroups { get; } = new();
 
         public Dictionary<ulong, StackFrameIdentifier> StackFrameIdentifiers { get; } = new();
 
@@ -34,19 +34,21 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                         Exceptions.Add(
                             new ExceptionInstance(
                                 ToUInt64(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionId]),
+                                ToUInt64(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionGroupId]),
                                 ToString(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage]),
                                 ToArray<ulong>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.StackFrameIds]),
-                                ToType<DateTime>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.Timestamp])
+                                ToType<DateTime>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.Timestamp]),
+                                ToArray<ulong>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds])
                             ));
                         break;
-                    case ExceptionEvents.EventIds.ExceptionIdentifier:
-                        ExceptionIdentifiers.Add(
-                            ToUInt64(eventData.Payload[ExceptionEvents.ExceptionIdentifierPayloads.ExceptionId]),
-                            new ExceptionIdentifierData()
+                    case ExceptionEvents.EventIds.ExceptionGroup:
+                        ExceptionGroups.Add(
+                            ToUInt64(eventData.Payload[ExceptionEvents.ExceptionGroupPayloads.ExceptionGroupId]),
+                            new ExceptionGroupData()
                             {
-                                ExceptionClassId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionIdentifierPayloads.ExceptionClassId]),
-                                ThrowingMethodId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionIdentifierPayloads.ThrowingMethodId]),
-                                ILOffset = ToInt32(eventData.Payload[ExceptionEvents.ExceptionIdentifierPayloads.ILOffset])
+                                ExceptionClassId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionGroupPayloads.ExceptionClassId]),
+                                ThrowingMethodId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionGroupPayloads.ThrowingMethodId]),
+                                ILOffset = ToInt32(eventData.Payload[ExceptionEvents.ExceptionGroupPayloads.ILOffset])
                             });
                         break;
                     case ExceptionEvents.EventIds.ClassDescription:
@@ -141,20 +143,26 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
     internal sealed class ExceptionInstance
     {
-        public ExceptionInstance(ulong exceptionId, string? message, ulong[] frameIds, DateTime timestamp)
+        public ExceptionInstance(ulong id, ulong groupId, string? message, ulong[] frameIds, DateTime timestamp, ulong[] innerExceptionIds)
         {
-            ExceptionId = exceptionId;
+            Id = id;
+            GroupId = groupId;
             ExceptionMessage = message;
             StackFrameIds = frameIds;
             Timestamp = timestamp;
+            InnerExceptionIds = innerExceptionIds;
         }
 
-        public ulong ExceptionId { get; }
+        public ulong Id { get; }
+
+        public ulong GroupId { get; }
 
         public string? ExceptionMessage { get; }
 
-        public ulong[]? StackFrameIds { get; }
+        public ulong[] StackFrameIds { get; }
 
         public DateTime Timestamp { get; }
+
+        public ulong[] InnerExceptionIds { get; }
     }
 }

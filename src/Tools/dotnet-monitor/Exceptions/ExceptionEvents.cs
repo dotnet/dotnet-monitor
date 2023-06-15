@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         public static class EventIds
         {
-            public const int ExceptionIdentifier = 1;
+            public const int ExceptionGroup = 1;
             public const int ExceptionInstance = 2;
             public const int ClassDescription = 3;
             public const int FunctionDescription = 4;
@@ -26,14 +26,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         public static class ExceptionInstancePayloads
         {
             public const int ExceptionId = 0;
-            public const int ExceptionMessage = 1;
-            public const int StackFrameIds = 2;
-            public const int Timestamp = 3;
+            public const int ExceptionGroupId = 1;
+            public const int ExceptionMessage = 2;
+            public const int StackFrameIds = 3;
+            public const int Timestamp = 4;
+            public const int InnerExceptionIds = 5;
         }
 
-        public static class ExceptionIdentifierPayloads
+        public static class ExceptionGroupPayloads
         {
-            public const int ExceptionId = 0;
+            public const int ExceptionGroupId = 0;
             public const int ExceptionClassId = 1;
             public const int ThrowingMethodId = 2;
             public const int ILOffset = 3;
