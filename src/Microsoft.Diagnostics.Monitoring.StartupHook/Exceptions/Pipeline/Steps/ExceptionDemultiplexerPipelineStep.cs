@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
                     Invoke(aggregateException.InnerExceptions[i], innerContext);
                 }
             }
-            if (exception is ReflectionTypeLoadException reflectionTypeLoadException)
+            else if (exception is ReflectionTypeLoadException reflectionTypeLoadException)
             {
                 // ReflectionTypeLoadException does not set InnerException. No need to report the InnerException property value.
                 for (int i = 0; i < reflectionTypeLoadException.LoaderExceptions.Length; i++)
