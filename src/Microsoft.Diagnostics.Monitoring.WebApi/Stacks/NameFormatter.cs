@@ -122,22 +122,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
         public static void BuildMethodParameters(StringBuilder builder, NameCache cache, ulong[] parameters)
         {
+            builder.Append(OpenParentheses);
+
             for (int i = 0; i < parameters?.Length; i++)
             {
-                if (i == 0)
-                {
-                    builder.Append(OpenParentheses);
-                }
                 BuildClassName(builder, cache, parameters[i]);
                 if (i < parameters.Length - 1)
                 {
                     builder.Append(GenericSeparator);
                 }
-                else if (i == parameters.Length - 1)
-                {
-                    builder.Append(ClosedParentheses);
-                }
             }
+
+            builder.Append(ClosedParentheses);
         }
 
 

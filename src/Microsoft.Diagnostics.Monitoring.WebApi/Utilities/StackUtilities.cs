@@ -57,13 +57,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 frameModel.ModuleName = NameFormatter.GetModuleName(cache, functionData.ModuleId);
 
                 builder.Clear();
-                builder.Append(frameModel.MethodName);
+                builder.Append(functionData.Name);
 
-                if (functionData.Parameters.Length > 0)
-                {
-                    NameFormatter.BuildMethodParameters(builder, cache, functionData.Parameters);
-                    frameModel.MethodName = builder.ToString();
-                }
+                NameFormatter.BuildMethodParameters(builder, cache, functionData.Parameters);
+                frameModel.MethodName = builder.ToString();
 
                 builder.Clear();
                 NameFormatter.BuildClassName(builder, cache, functionData);
