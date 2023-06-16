@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using CallStack = Microsoft.Diagnostics.Monitoring.WebApi.Models.CallStack;
-using CallStackFrame = Microsoft.Diagnostics.Monitoring.WebApi.Models.CallStackFrame;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -47,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 expectedInstanceCount: 1,
                 validate: instances =>
                 {
-                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
+                    IExceptionInstance instance = Assert.Single(instances);
                     Assert.NotNull(instance);
                     Assert.NotEqual(0UL, instance.Id);
                     Assert.Equal(typeof(InvalidOperationException).FullName, instance.TypeName);
@@ -76,10 +75,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     Assert.Equal(ExpectedInstanceCount, instances.Count());
 
-                    TestExceptionsStore.ExceptionInstance instance1 = instances.First();
+                    IExceptionInstance instance1 = instances.First();
                     Assert.NotNull(instance1);
 
-                    TestExceptionsStore.ExceptionInstance instance2 = instances.Skip(1).Single();
+                    IExceptionInstance instance2 = instances.Skip(1).Single();
                     Assert.NotNull(instance2);
 
                     Assert.NotEqual(instance1.Id, instance2.Id);
@@ -105,7 +104,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 expectedInstanceCount: 1,
                 validate: instances =>
                 {
-                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
+                    IExceptionInstance instance = Assert.Single(instances);
                     Assert.NotNull(instance);
                     Assert.NotEqual(0UL, instance.Id);
                     Assert.Equal(typeof(TaskCanceledException).FullName, instance.TypeName);
@@ -126,7 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 expectedInstanceCount: 1,
                 validate: instances =>
                 {
-                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
+                    IExceptionInstance instance = Assert.Single(instances);
                     Assert.NotNull(instance);
                     Assert.NotEqual(0UL, instance.Id);
                     Assert.Equal(typeof(ArgumentNullException).FullName, instance.TypeName);
@@ -147,7 +146,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 expectedInstanceCount: 1,
                 validate: instances =>
                 {
-                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
+                    IExceptionInstance instance = Assert.Single(instances);
                     Assert.NotNull(instance);
                     Assert.NotEqual(0UL, instance.Id);
                     Assert.Equal("Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomGenericsException`2[System.Int32,System.String]", instance.TypeName);
@@ -169,7 +168,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 expectedInstanceCount: 1,
                 validate: instances =>
                 {
-                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
+                    IExceptionInstance instance = Assert.Single(instances);
                     Assert.NotNull(instance);
                     Assert.NotEqual(0UL, instance.Id);
                     Assert.Equal(typeof(InvalidOperationException).FullName, instance.TypeName);
@@ -191,7 +190,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 expectedInstanceCount: 1,
                 validate: instances =>
                 {
-                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
+                    IExceptionInstance instance = Assert.Single(instances);
                     Assert.NotNull(instance);
                     Assert.NotEqual(0UL, instance.Id);
                     Assert.Equal("Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomSimpleException", instance.TypeName);
@@ -212,7 +211,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 expectedInstanceCount: 1,
                 validate: instances =>
                 {
-                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
+                    IExceptionInstance instance = Assert.Single(instances);
                     Assert.NotNull(instance);
                     Assert.NotEqual(0UL, instance.Id);
                     Assert.Equal(typeof(IndexOutOfRangeException).FullName, instance.TypeName);
@@ -237,7 +236,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     Assert.Equal(ExpectedInstanceCount, instances.Count());
 
-                    TestExceptionsStore.ExceptionInstance innerInstance = instances.First();
+                    IExceptionInstance innerInstance = instances.First();
                     Assert.NotNull(innerInstance);
 
                     Assert.NotEqual(0UL, innerInstance.Id);
@@ -245,7 +244,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Empty(innerInstance.InnerExceptionIds);
                     Assert.Empty(innerInstance.CallStack.Frames); // Indicates this exception was not thrown
 
-                    TestExceptionsStore.ExceptionInstance outerInstance = instances.Skip(1).Single();
+                    IExceptionInstance outerInstance = instances.Skip(1).Single();
                     Assert.NotNull(outerInstance);
                     
                     Assert.NotEqual(0UL, outerInstance.Id);
@@ -270,7 +269,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     Assert.Equal(ExpectedInstanceCount, instances.Count());
 
-                    TestExceptionsStore.ExceptionInstance innerInstance = instances.First();
+                    IExceptionInstance innerInstance = instances.First();
                     Assert.NotNull(innerInstance);
 
                     Assert.NotEqual(0UL, innerInstance.Id);
@@ -278,7 +277,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Empty(innerInstance.InnerExceptionIds);
                     Assert.NotEmpty(innerInstance.CallStack.Frames); // Indicates this exception was thrown
 
-                    TestExceptionsStore.ExceptionInstance outerInstance = instances.Skip(1).Single();
+                    IExceptionInstance outerInstance = instances.Skip(1).Single();
                     Assert.NotNull(outerInstance);
 
                     Assert.NotEqual(0UL, outerInstance.Id);
@@ -301,11 +300,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ExpectedInstanceCount,
                 validate: instances =>
                 {
-                    List<TestExceptionsStore.ExceptionInstance> instanceList = new(instances);
+                    List<IExceptionInstance> instanceList = new(instances);
 
                     Assert.Equal(ExpectedInstanceCount, instances.Count());
 
-                    TestExceptionsStore.ExceptionInstance inner1Instance = instanceList[0];
+                    IExceptionInstance inner1Instance = instanceList[0];
                     Assert.NotNull(inner1Instance);
 
                     Assert.NotEqual(0UL, inner1Instance.Id);
@@ -313,7 +312,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Empty(inner1Instance.InnerExceptionIds);
                     Assert.Empty(inner1Instance.CallStack.Frames); // Indicates this exception was not thrown
 
-                    TestExceptionsStore.ExceptionInstance inner2Instance = instanceList[1];
+                    IExceptionInstance inner2Instance = instanceList[1];
                     Assert.NotNull(inner2Instance);
 
                     Assert.NotEqual(0UL, inner2Instance.Id);
@@ -321,7 +320,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Empty(inner2Instance.InnerExceptionIds);
                     Assert.Empty(inner2Instance.CallStack.Frames); // Indicates this exception was not thrown
 
-                    TestExceptionsStore.ExceptionInstance inner3Instance = instanceList[2];
+                    IExceptionInstance inner3Instance = instanceList[2];
                     Assert.NotNull(inner3Instance);
 
                     Assert.NotEqual(0UL, inner3Instance.Id);
@@ -329,7 +328,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Empty(inner3Instance.InnerExceptionIds);
                     Assert.Empty(inner3Instance.CallStack.Frames); // Indicates this exception was not thrown
 
-                    TestExceptionsStore.ExceptionInstance outerInstance = instanceList[3];
+                    IExceptionInstance outerInstance = instanceList[3];
                     Assert.NotNull(outerInstance);
 
                     Assert.NotEqual(0UL, outerInstance.Id);
@@ -358,11 +357,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ExpectedInstanceCount,
                 validate: instances =>
                 {
-                    List<TestExceptionsStore.ExceptionInstance> instanceList = new(instances);
+                    List<IExceptionInstance> instanceList = new(instances);
 
                     Assert.Equal(ExpectedInstanceCount, instanceList.Count);
 
-                    TestExceptionsStore.ExceptionInstance inner1Instance = instanceList[0];
+                    IExceptionInstance inner1Instance = instanceList[0];
                     Assert.NotNull(inner1Instance);
 
                     Assert.NotEqual(0UL, inner1Instance.Id);
@@ -370,7 +369,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Empty(inner1Instance.InnerExceptionIds);
                     Assert.Empty(inner1Instance.CallStack.Frames); // Indicates this exception was not thrown
 
-                    TestExceptionsStore.ExceptionInstance inner2Instance = instanceList[1];
+                    IExceptionInstance inner2Instance = instanceList[1];
                     Assert.NotNull(inner2Instance);
 
                     Assert.NotEqual(0UL, inner2Instance.Id);
@@ -378,7 +377,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Empty(inner2Instance.InnerExceptionIds);
                     Assert.Empty(inner2Instance.CallStack.Frames); // Indicates this exception was not thrown
 
-                    TestExceptionsStore.ExceptionInstance outerInstance = instanceList[2];
+                    IExceptionInstance outerInstance = instanceList[2];
                     Assert.NotNull(outerInstance);
 
                     Assert.NotEqual(0UL, outerInstance.Id);
@@ -397,7 +396,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private async Task Execute(
             string subScenarioName,
             int expectedInstanceCount,
-            Action<IEnumerable<TestExceptionsStore.ExceptionInstance>> validate,
+            Action<IEnumerable<IExceptionInstance>> validate,
             Architecture? architecture = null)
         {
             EndpointInfoSourceCallback callback = new(_outputHelper);
@@ -435,11 +434,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 // Wait for the expected number of exceptions to have been reported
                 await store.InstanceThresholdTask.WaitAsync(timeoutSource.Token);
 
-                validate(store.Instances);
+                validate(store.GetSnapshot());
             });
         }
 
-        private static void ValidateStack(TestExceptionsStore.ExceptionInstance instance, string expectedMethodName, string expectedModuleName, string expectedClassName)
+        private static void ValidateStack(IExceptionInstance instance, string expectedMethodName, string expectedModuleName, string expectedClassName)
         {
             CallStack stack = instance.CallStack;
             Assert.NotEmpty(stack.Frames);
@@ -471,8 +470,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             public Task InstanceThresholdTask => _instanceThresholdSource.Task;
 
-            public IEnumerable<ExceptionInstance> Instances => _instances;
-
             public TestExceptionsStore(int instanceThreshold = 1)
             {
                 _instanceThreshold = instanceThreshold;
@@ -480,6 +477,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, ulong groupId, string message, DateTime timestamp, ulong[] stackFrameIds, int threadId, ulong[] innerExceptionIds)
             {
+                string moduleName = string.Empty;
                 StringBuilder typeBuilder = new();
                 CallStack callStack;
                 try
@@ -487,6 +485,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.True(cache.TryGetExceptionGroup(groupId, out ulong exceptionClassId, out _, out _));
 
                     NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId);
+
+                    if (cache.NameCache.ClassData.TryGetValue(exceptionClassId, out ClassData exceptionClassData))
+                    {
+                        moduleName = NameFormatter.GetModuleName(cache.NameCache, exceptionClassData.ModuleId);
+                    }
 
                     callStack = ExceptionsStore.GenerateCallStack(stackFrameIds, cache, threadId);
                 }
@@ -499,6 +502,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 _instances.Add(new ExceptionInstance(
                     exceptionId,
+                    moduleName,
                     typeBuilder.ToString(),
                     message,
                     timestamp,
@@ -513,10 +517,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             public IReadOnlyList<IExceptionInstance> GetSnapshot()
             {
-                throw new NotSupportedException();
+                return _instances;
             }
 
-            public sealed record class ExceptionInstance(ulong Id, string TypeName, string Message, DateTime Timestamp, CallStack CallStack, ulong[] InnerExceptionIds)
+            public sealed record class ExceptionInstance(ulong Id, string ModuleName, string TypeName, string Message, DateTime Timestamp, CallStack CallStack, ulong[] InnerExceptionIds)
+                : IExceptionInstance
             {
             }
         }
