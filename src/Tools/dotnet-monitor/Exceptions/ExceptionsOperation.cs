@@ -137,7 +137,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             // exception will appear as:
 
             // First chance exception. <TypeName>: <Message>
-            //   at Class.Method
+            //   at Class.Method(Parameter1, Parameters2, ...)
 
             await using StreamWriter writer = new(stream, leaveOpen: true);
 

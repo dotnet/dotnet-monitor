@@ -275,7 +275,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                 classIds = new ulong[parameters.Length];
                 for (int i = 0; i < parameters.Length; i++)
                 {
-                    classIds[i] = GetOrAdd(parameters[i].ParameterType); // Not sure if this is okay
+                    classIds[i] = GetOrAdd(parameters[i].ParameterType);
                 }
             }
             else
@@ -284,7 +284,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             }
             return classIds;
         }
-
 
         private ulong AddOrDefault(MethodBase? method)
         {

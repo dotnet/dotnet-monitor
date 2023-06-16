@@ -136,7 +136,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             builder.Append(ClosedParentheses);
         }
 
-
         public static string GetModuleName(NameCache cache, ulong moduleId)
         {
             string moduleName = UnknownModule;
