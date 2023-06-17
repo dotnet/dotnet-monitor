@@ -8,6 +8,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 {
     internal interface IExceptionInstance
     {
+        ulong Id { get; }
+
         string Message { get; }
 
         string ModuleName { get; }
@@ -17,5 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
         DateTime Timestamp { get; }
 
         CallStack CallStack { get; }
+
+        ulong[] InnerExceptionIds { get; }
     }
 }

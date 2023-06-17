@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
 {
@@ -25,13 +26,25 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
         {
             ExceptionPipelineExceptionContext innerContext = new(context.Timestamp, isInnerException: true);
 
-            // AggregateException will always pull the first exception out of the list of inner exceptions
-            // and use that as its InnerException property. No need to report the InnerException property value.
             if (exception is AggregateException aggregateException)
             {
+                // AggregateException will always pull the first exception out of the list of inner exceptions
+                // and use that as its InnerException property. No need to report the InnerException property value.
                 for (int i = 0; i < aggregateException.InnerExceptions.Count; i++)
                 {
                     Invoke(aggregateException.InnerExceptions[i], innerContext);
+                }
+            }
+            else if (exception is ReflectionTypeLoadException reflectionTypeLoadException)
+            {
+                // ReflectionTypeLoadException does not set InnerException. No need to report the InnerException property value.
+                for (int i = 0; i < reflectionTypeLoadException.LoaderExceptions.Length; i++)
+                {
+                    Exception? loaderException = reflectionTypeLoadException.LoaderExceptions[i];
+                    if (null != loaderException)
+                    {
+                        Invoke(loaderException, innerContext);
+                    }
                 }
             }
             else if (null != exception.InnerException)

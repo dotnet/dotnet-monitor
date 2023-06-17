@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System.Collections.Generic;
 using System;
 using Xunit;
+using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
 {
@@ -106,6 +107,37 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
 
             Assert.True(_reportedExceptionCounts.TryGetValue(innerException3, out int inner3Count));
             Assert.Equal(1, inner3Count);
+
+            Assert.True(_reportedExceptionCounts.TryGetValue(outerException, out int outerCount));
+            Assert.Equal(1, outerCount);
+        }
+
+        [Fact]
+        public void ExceptionDemultiplexerPipelineStep_ReflectionTypeLoadException()
+        {
+            ExceptionDemultiplexerPipelineStep action = new(_finalHandler);
+
+            Exception innerException1 = new();
+            Exception innerException2 = new();
+            Exception outerException = new ReflectionTypeLoadException(
+                classes: null,
+                exceptions: new Exception?[]
+                {
+                    innerException1,
+                    innerException2,
+                    null
+                });
+            ExceptionPipelineExceptionContext context = new(DateTime.UtcNow);
+
+            action.Invoke(outerException, context);
+
+            Assert.Equal(3, _reportedExceptionCounts.Count);
+
+            Assert.True(_reportedExceptionCounts.TryGetValue(innerException1, out int inner1Count));
+            Assert.Equal(1, inner1Count);
+
+            Assert.True(_reportedExceptionCounts.TryGetValue(innerException2, out int inner2Count));
+            Assert.Equal(1, inner2Count);
 
             Assert.True(_reportedExceptionCounts.TryGetValue(outerException, out int outerCount));
             Assert.Equal(1, outerCount);
