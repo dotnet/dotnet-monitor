@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Triggers;
@@ -62,8 +61,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                             host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>();
                         ILogger<CollectionRuleService> logger =
                             host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
-                        ISystemClock clock =
-                            host.Services.GetRequiredService<ISystemClock>();
+                        TimeProvider timeProvider =
+                            host.Services.GetRequiredService<TimeProvider>();
 
                         PipelineCallbacks callbacks = new();
 
@@ -72,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                             optionsMonitor.Get(collectionRuleName),
                             endpointInfo,
                             logger,
-                            clock,
+                            timeProvider,
                             callbacks.NotifyActionsThrottled);
 
                         await using CollectionRulePipeline pipeline = new(
@@ -100,7 +99,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             PipelineCallbacks callbacks,
             int iterationCount,
             int expectedCount,
-            MockSystemClock clock,
+            MockTimeProvider timeProvider,
             TimeSpan clockIncrementDuration,
             bool completesOnLastExpectedIteration,
             CancellationToken token)
@@ -143,7 +142,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 triggerService.NotifyStarted -= startedHandler;
 
                 // Advance the clock source.
-                clock.Increment(clockIncrementDuration);
+                timeProvider.Increment(clockIncrementDuration);
             }
 
             // Check that actions were not throttled.
@@ -175,7 +174,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 triggerService.NotifyStarted -= startedHandler;
 
                 // Advance the clock source.
-                clock.Increment(clockIncrementDuration);
+                timeProvider.Increment(clockIncrementDuration);
             }
 
             // Check that no actions have been executed.
