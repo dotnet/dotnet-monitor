@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // Alternative enabled value
             const string EnabledTrueValue = "true";
 
-            // Avoid having value be possibily null here as this file is included in a mixture of projects
+            // Avoid having value be possibly null here as this file is included in a mixture of projects
             // with nullable enabled and disabled.
             string value = (Environment.GetEnvironmentVariable(environmentVariable) ?? string.Empty);
             return string.Equals(EnvVarEnabledValue, value, StringComparison.OrdinalIgnoreCase) ||
