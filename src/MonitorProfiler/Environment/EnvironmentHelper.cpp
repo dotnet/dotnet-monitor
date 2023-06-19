@@ -106,3 +106,33 @@ HRESULT EnvironmentHelper::GetTempFolder(tstring& tempFolder)
 
     return S_OK;
 }
+
+HRESULT EnvironmentHelper::GetParameterCapturingEnabled(bool& isEnabled)
+{
+    return GetIsFeatureEnabled(EnableParameterCapturingEnvVar, isEnabled);
+}
+
+HRESULT EnvironmentHelper::GetIsFeatureEnabled(const LPCWSTR featureName, bool& isEnabled)
+{
+    HRESULT hr;
+
+    isEnabled = false;
+
+    tstring envValue;
+    hr = _environment->GetEnvironmentVariable(featureName, envValue);
+    if (FAILED(hr))
+    {
+        if (hr != HRESULT_FROM_WIN32(ERROR_ENVVAR_NOT_FOUND))
+        {
+            return hr;
+        }
+    }
+    else
+    {
+        // Case sensitive comparision
+        isEnabled = (envValue == EnableEnvVarValue);
+    }
+
+
+    return S_OK;
+}

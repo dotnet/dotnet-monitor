@@ -81,6 +81,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public string ProfilerLogLevel { get; set; }
 
+        public bool EnableMonitorStartupHook { get; set; }
+
         public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current)
         {
             AppId = appId;
@@ -150,10 +152,21 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                     ToolIdentifiers.EnvironmentVariables.RuntimeIdentifier,
                     NativeLibraryHelper.GetTargetRuntimeIdentifier(Architecture));
             }
+
             if (ProfilerLogLevel != null)
             {
                 _adapter.Environment.Add(
                     ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, ProfilerLogLevel);
+            }
+
+            if (EnableMonitorStartupHook)
+            {
+                string startupHookPath = AssemblyHelper.GetAssemblyArtifactBinPath(
+                    Assembly.GetExecutingAssembly(),
+                    "Microsoft.Diagnostics.Monitoring.StartupHook",
+                    TargetFrameworkMoniker.Net60);
+
+                _adapter.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, startupHookPath);
             }
 
             await _adapter.StartAsync(token).ConfigureAwait(false);

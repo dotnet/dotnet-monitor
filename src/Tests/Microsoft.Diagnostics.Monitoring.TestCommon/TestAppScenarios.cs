@@ -29,6 +29,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             public static class Commands
             {
                 public const string Continue = nameof(Continue);
+                public const string VerifyHostingStartup = nameof(Continue);
             }
         }
 
@@ -90,6 +91,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
                 /* Fault injection */
                 public const string ExceptionThrownByProbe = nameof(ExceptionThrownByProbe);
+            }
+        }
+
+        public static class HostingStartup
+        {
+            public const string Name = nameof(HostingStartup);
+
+            public static class SubScenarios
+            {
+                public const string VerifyAspNetAppWithoutHostingStartup = nameof(VerifyAspNetAppWithoutHostingStartup);
+                public const string VerifyAspNetApp = nameof(VerifyAspNetApp);
+                public const string VerifyNonAspNetAppNotImpacted = nameof(VerifyNonAspNetAppNotImpacted);
             }
         }
 

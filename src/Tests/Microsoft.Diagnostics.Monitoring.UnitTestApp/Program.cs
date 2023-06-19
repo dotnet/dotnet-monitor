@@ -21,6 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                 ExecuteScenario.Command(),
                 FunctionProbesScenario.Command(),
                 LoggerScenario.Command(),
+                HostingStartupScenario.Command(),
                 SpinWaitScenario.Command(),
                 EnvironmentVariablesScenario.Command(),
                 StacksScenario.Command(),

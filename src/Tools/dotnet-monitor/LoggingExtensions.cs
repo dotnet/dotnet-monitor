@@ -494,6 +494,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EgressProviderTypeNotExist);
 
+        private static readonly Action<ILogger, Exception> _unableToApplyHostingStartup =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.UnableToApplyHostingStartup.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_UnableToApplyHostingStartup);
+
+        private static readonly Action<ILogger, Exception> _unableToApplyInProcessFeatureFlags =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.UnableToApplyInProcessFeatureFlags.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_UnableToApplyInProcessFeatureFlags);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -907,6 +919,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void EgressProviderTypeNotExist(this ILogger logger, string providerType)
         {
             _egressProviderTypeNotExist(logger, providerType, null);
+        }
+
+        public static void UnableToApplyHostingStartup(this ILogger logger, Exception ex)
+        {
+            _unableToApplyHostingStartup(logger, ex);
+        }
+
+        public static void UnableToApplyInProcessFeatureFlags(this ILogger logger, Exception ex)
+        {
+            _unableToApplyInProcessFeatureFlags(logger, ex);
         }
     }
 }

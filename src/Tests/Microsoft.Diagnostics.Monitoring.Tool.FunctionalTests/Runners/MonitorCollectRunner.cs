@@ -105,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public override async ValueTask DisposeAsync()
         {
-            if (!DisposableHelper.CanDispose(ref _disposedState))
+            if (!TestCommon.DisposableHelper.CanDispose(ref _disposedState))
             {
                 return;
             }

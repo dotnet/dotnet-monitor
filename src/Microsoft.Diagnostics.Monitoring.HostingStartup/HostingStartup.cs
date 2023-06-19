@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Diagnostics.Monitoring.HostingStartup;
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
+using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
+using Microsoft.Diagnostics.Tools.Monitor;
+using System;
 
 [assembly: HostingStartup(typeof(HostingStartup))]
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup
@@ -15,8 +18,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup
         {
             builder.ConfigureServices(services =>
             {
-                // TODO: Gate this behind an environment variable.
-                services.AddHostedService<ParameterCapturingService>();
+                // Add a no-op singleton for easy identification that this hosting startup is active.
+                services.AddSingleton<InProcMonitoringSentinelService>();
+
+                if (ToolIdentifiers.IsEnvVarEnabled(InProcessFeaturesIdentifiers.EnvironmentVariables.EnableParameterCapturing))
+                {
+                    services.AddHostedService<ParameterCapturingService>();
+                }
             });
         }
     }

@@ -49,6 +49,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public bool EnableCallStacksFeature { get; set; }
 
         /// <summary>
+        /// Determines whether the parameter capturing feature is enabled.
+        /// </summary>
+        public bool EnableParameterCapturingFeature { get; set; }
+
+        /// <summary>
         /// Gets the task for the underlying <see cref="DotNetRunner"/>'s
         /// <see cref="DotNetRunner.ExitedTask"/> which is used to wait for process exit.
         /// </summary>
@@ -108,7 +113,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public virtual async ValueTask DisposeAsync()
         {
-            if (!DisposableHelper.CanDispose(ref _disposedState))
+            if (!TestCommon.DisposableHelper.CanDispose(ref _disposedState))
             {
                 return;
             }
@@ -162,7 +167,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             // Enable experimental stacks feature
             if (EnableCallStacksFeature)
             {
-                _adapter.Environment.Add(ExperimentalFlags.Feature_CallStacks, "true");
+                _adapter.Environment.Add(ExperimentalFlags.Feature_CallStacks, ToolIdentifiers.EnvVarEnabledValue);
+            }
+
+            // Enable experimental parameter capturing feature
+            if (EnableParameterCapturingFeature)
+            {
+                _adapter.Environment.Add(ExperimentalFlags.Feature_ParameterCapturing, ToolIdentifiers.EnvVarEnabledValue);
             }
 
             // Ensures that the TestStartupHook is loaded early so it helps resolve other test assemblies

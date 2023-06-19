@@ -18,25 +18,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         // Feature flags
         public const string Feature_CallStacks = ExperimentalPrefix + nameof(Feature_CallStacks);
         public const string Feature_Exceptions = ExperimentalPrefix + nameof(Feature_Exceptions);
+        public const string Feature_ParameterCapturing = ExperimentalPrefix + nameof(Feature_ParameterCapturing);
 
         // Behaviors
-        private const string EnabledTrueValue = "True";
-        private const string EnabledOneValue = "1";
+        private readonly Lazy<bool> _isCallStacksEnabledLazy = new Lazy<bool>(() => ToolIdentifiers.IsEnvVarEnabled(Feature_CallStacks));
 
-        private readonly Lazy<bool> _isCallStacksEnabledLazy = new Lazy<bool>(() => IsFeatureEnabled(Feature_CallStacks));
+        private readonly Lazy<bool> _isExceptionsEnabledLazy = new Lazy<bool>(() => ToolIdentifiers.IsEnvVarEnabled(Feature_Exceptions));
 
-        private readonly Lazy<bool> _isExceptionsEnabledLazy = new Lazy<bool>(() => IsFeatureEnabled(Feature_Exceptions));
+        private readonly Lazy<bool> _isParameterCapturingEnabledLazy = new Lazy<bool>(() => ToolIdentifiers.IsEnvVarEnabled(Feature_ParameterCapturing));
 
-        private static bool IsFeatureEnabled(string environmentVariable)
-        {
-            string value = Environment.GetEnvironmentVariable(environmentVariable);
-
-            return string.Equals(EnabledTrueValue, value, StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(EnabledOneValue, value, StringComparison.OrdinalIgnoreCase);
-        }
 
         public bool IsCallStacksEnabled => _isCallStacksEnabledLazy.Value;
 
         public bool IsExceptionsEnabled => _isExceptionsEnabledLazy.Value;
+
+        public bool IsParameterCapturingEnabled => _isParameterCapturingEnabledLazy.Value;
     }
 }

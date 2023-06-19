@@ -10,72 +10,49 @@ using Xunit;
 using Xunit.Abstractions;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     [Collection(DefaultCollectionFixture.Name)]
-    public class FunctionProbesTests
+    public class HostingStartupTests
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
 
-        public FunctionProbesTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
+        public HostingStartupTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
             _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
         }
 
-        /// <summary>
-        /// Retrieves all available function probes test scenarios for all available profiler
-        /// architectures.
-        /// </summary>
-        public static IEnumerable<object[]> GetAllTestScenarios()
-        {
-            List<object[]> arguments = new();
-
-            IEnumerable<object[]> testArchitectures = ProfilerHelper.GetArchitecture();
-            List<string> commands = typeof(TestAppScenarios.FunctionProbes.SubScenarios).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
-                .Select(p => p.Name)
-                .ToList();
-
-            Assert.NotEmpty(commands);
-
-            foreach (object[] archArgs in testArchitectures)
-            {
-                foreach (string command in commands)
-                {
-                    arguments.Add(archArgs.Concat(new object[] { command }).ToArray());
-                }
-            }
-
-            return arguments;
-        }
 
         [Theory]
-        [MemberData(nameof(FunctionProbesTests.GetAllTestScenarios), MemberType = typeof(FunctionProbesTests))]
-        public async Task RunTestScenario(Architecture targetArchitecture, string subScenario)
+        [InlineData(TestAppScenarios.HostingStartup.SubScenarios.VerifyAspNetApp, true)]
+        [InlineData(TestAppScenarios.HostingStartup.SubScenarios.VerifyAspNetAppWithoutHostingStartup, false)]
+        [InlineData(TestAppScenarios.HostingStartup.SubScenarios.VerifyNonAspNetAppNotImpacted, true)]
+
+        public async Task HostingStartupLoadTests(string subScenario, bool tryLoadHostingStartup)
         {
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
                 DiagnosticPortConnectionMode.Listen,
-                TestAppScenarios.FunctionProbes.Name,
+                TestAppScenarios.HostingStartup.Name,
                 appValidate: (runner, client) => { return Task.CompletedTask; },
                 configureApp: runner =>
                 {
-                    runner.Architecture = targetArchitecture;
+                    runner.EnableMonitorStartupHook = true;
                 },
                 configureTool: runner =>
                 {
                     runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
-                    runner.EnableParameterCapturingFeature = true;
+                    // Enable a feature that requires the hosting startup assembly.
+                    runner.EnableParameterCapturingFeature = tryLoadHostingStartup;
                 },
                 profilerLogLevel: LogLevel.Trace,
                 subScenarioName: subScenario);

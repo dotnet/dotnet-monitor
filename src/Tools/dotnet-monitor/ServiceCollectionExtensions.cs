@@ -26,6 +26,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.Extension;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
+using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
@@ -68,8 +69,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureInProcessFeatures(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<InProcessFeaturesOptions>(services, configuration, ConfigurationKeys.InProcessFeatures)
-                .AddSingleton<IPostConfigureOptions<InProcessFeaturesOptions>, InProcessFeaturesPostConfigureOptions>();
+            ConfigureOptions<InProcessFeaturesOptions>(services, configuration, ConfigurationKeys.InProcessFeatures);
+            services.AddSingleton<IPostConfigureOptions<InProcessFeaturesOptions>, InProcessFeaturesPostConfigureOptions>();
+            services.AddSingleton<InProcessFeaturesService>();
+            services.AddSingleton<IEndpointInfoSourceCallbacks, InProcessFeaturesEndpointInfoSourceCallbacks>();
+
+            return services;
         }
 
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
@@ -336,7 +341,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // that wants to participate in exception collection.
             services.AddSingleton<IExceptionsStore, ExceptionsStore>();
             services.AddHostedService<ExceptionsService>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureHostingStartup(this IServiceCollection services)
+        {
+            services.AddSingleton<HostingStartupService>();
+            services.AddSingleton<IEndpointInfoSourceCallbacks, HostingStartupEndpointInfoSourceCallbacks>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureStartupHook(this IServiceCollection services)
+        {
             services.AddSingleton<StartupHookValidator>();
+            services.AddSingleton<IEndpointInfoSourceCallbacks, StartupHookEndpointInfoSourceCallbacks>();
             return services;
         }
 

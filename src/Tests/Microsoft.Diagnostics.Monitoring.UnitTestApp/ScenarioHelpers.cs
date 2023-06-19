@@ -70,14 +70,14 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             return result;
         }
 
-        public static async Task<int> RunWebScenarioAsync<TStartup>(Func<ILogger, Task<int>> func, CancellationToken token)
+        public static async Task<int> RunWebScenarioAsync<TStartup>(Func<ILogger, IWebHost, Task<int>> func, CancellationToken token)
             where TStartup : class
         {
             // Create a minimal ASP.NET host that:
             // - Doesn't write logs to stdout (since the unit test app uses this for execution control)
             // - Allows ASP.NET events via DiagnosticsSourceEventSource (enabled via adding a logger
             //   and the ASP.NET hosting category).
-            IHost host = new HostBuilder()
+            IWebHost host = new WebHostBuilder()
                 .ConfigureServices(services =>
                 {
                     services.AddLogging(builder =>
@@ -86,10 +86,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                         builder.AddFilter("Microsoft.AspNetCore.Hosting", LogLevel.Information);
                     });
                 })
-                .ConfigureWebHostDefaults(builder =>
-                {
-                    builder.UseStartup<TStartup>();
-                })
+                .UseKestrel()
+                .UseStartup<TStartup>()
                 .Build();
 
             int exitCode;
@@ -99,7 +97,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                 await host.StartAsync(token);
 
                 exitCode = await RunScenarioAsync(
-                    func,
+                    (logger) => { return func(logger, host); },
                     token,
                     beforeReadyCallback: logger =>
                     {

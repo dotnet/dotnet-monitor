@@ -911,4 +911,16 @@
 0. providerName: The name of the provider that failed validation.
 1. errorMessage: The validation failure message</comment>
   </data>
+  <data name="FeatureName_ParameterCapturing" xml:space="preserve">
+    <value>Parameter Capturing</value>
+  </data>
+  <data name="ErrorMessage_UnableToFindHostingStartupAssembly" xml:space="preserve">
+    <value>Unable to find hosting startup assembly at determined path.</value>
+  </data>
+  <data name="LogFormatString_UnableToApplyHostingStartup" xml:space="preserve">
+    <value>Unable to apply hosting startup.</value>
+  </data>
+  <data name="LogFormatString_UnableToApplyInProcessFeatureFlags" xml:space="preserve">
+    <value>Unable to apply in process feature flags.</value>
+  </data>
 </root>

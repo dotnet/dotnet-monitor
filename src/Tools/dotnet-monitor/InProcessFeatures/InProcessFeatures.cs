@@ -22,8 +22,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public bool IsExceptionsEnabled => _options.GetEnabled() && _experimentalFlags.IsExceptionsEnabled;
 
-        public bool IsProfilerRequired => IsCallStacksEnabled;
+        public bool IsParameterCapturingEnabled => _options.GetEnabled() && _experimentalFlags.IsParameterCapturingEnabled;
 
-        public bool IsLibrarySharingRequired => IsCallStacksEnabled || IsExceptionsEnabled;
+        public bool IsProfilerRequired => IsCallStacksEnabled || IsParameterCapturingEnabled;
+
+        public bool IsHostingStartupRequired => IsParameterCapturingEnabled;
+
+        public bool IsLibrarySharingRequired => IsCallStacksEnabled || IsExceptionsEnabled || IsParameterCapturingEnabled;
     }
 }

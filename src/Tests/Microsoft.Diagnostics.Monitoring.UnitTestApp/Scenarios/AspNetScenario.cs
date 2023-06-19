@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
         public static Task<int> ExecuteAsync(ParseResult result, CancellationToken token)
         {
-            return ScenarioHelpers.RunWebScenarioAsync<Startup>(async logger =>
+            return ScenarioHelpers.RunWebScenarioAsync<Startup>(async (logger, host) =>
             {
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.AspNet.Commands.Continue, logger);
 

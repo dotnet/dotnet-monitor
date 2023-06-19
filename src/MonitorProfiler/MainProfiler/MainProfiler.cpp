@@ -44,8 +44,11 @@ STDMETHODIMP MainProfiler::Shutdown()
     m_pLogger.reset();
     m_pEnvironment.reset();
 
-    m_pProbeInstrumentation->ShutdownBackgroundService();
-    m_pProbeInstrumentation.reset();
+    if (m_pProbeInstrumentation)
+    {
+        m_pProbeInstrumentation->ShutdownBackgroundService();
+        m_pProbeInstrumentation.reset();
+    }
 
     _commandServer->Shutdown();
     _commandServer.reset();
@@ -169,9 +172,6 @@ HRESULT MainProfiler::InitializeCommon()
     IfNullRet(_exceptionTracker);
 #endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
 
-    m_pProbeInstrumentation.reset(new (nothrow) ProbeInstrumentation(m_pLogger, m_pCorProfilerInfo));
-    IfNullRet(m_pProbeInstrumentation);
-
     // Set product version environment variable to allow discovery of if the profiler
     // as been applied to a target process. Diagnostic tools must use the diagnostic
     // communication channel's GetProcessEnvironment command to get this value.
@@ -184,15 +184,25 @@ HRESULT MainProfiler::InitializeCommon()
 #endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
     StackSampler::AddProfilerEventMask(eventsLow);
     
-    m_pProbeInstrumentation->AddProfilerEventMask(eventsLow);
-
     _threadNameCache = make_shared<ThreadNameCache>();
+
+    bool enableParameterCapturing;
+    IfFailLogRet(_environmentHelper->GetParameterCapturingEnabled(enableParameterCapturing));
+    if (enableParameterCapturing)
+    {
+        m_pProbeInstrumentation.reset(new (nothrow) ProbeInstrumentation(m_pLogger, m_pCorProfilerInfo));
+        IfNullRet(m_pProbeInstrumentation);
+        m_pProbeInstrumentation->AddProfilerEventMask(eventsLow);
+    }
 
     IfFailRet(m_pCorProfilerInfo->SetEventMask2(
         eventsLow,
         COR_PRF_HIGH_MONITOR::COR_PRF_HIGH_MONITOR_NONE));
 
-    IfFailLogRet(m_pProbeInstrumentation->InitBackgroundService());
+    if (enableParameterCapturing)
+    {
+        IfFailLogRet(m_pProbeInstrumentation->InitBackgroundService());
+    }
 
     //Initialize this last. The CommandServer creates secondary threads, which will be difficult to cleanup if profiler initialization fails.
     IfFailLogRet(InitializeCommandServer());
@@ -330,5 +340,10 @@ HRESULT MainProfiler::ProcessCallstackMessage()
 
 HRESULT STDMETHODCALLTYPE MainProfiler::GetReJITParameters(ModuleID moduleId, mdMethodDef methodId, ICorProfilerFunctionControl* pFunctionControl)
 {
-    return m_pProbeInstrumentation->GetReJITParameters(moduleId, methodId, pFunctionControl);
+    if (m_pProbeInstrumentation)
+    {
+        return m_pProbeInstrumentation->GetReJITParameters(moduleId, methodId, pFunctionControl);
+    }
+    
+    return S_OK;
 }
