@@ -13,6 +13,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         bool IsProfilerRequired { get; }
 
+        bool IsStartupHookRequired { get; }
+
         bool IsHostingStartupRequired { get; }
 
         bool IsLibrarySharingRequired { get; }

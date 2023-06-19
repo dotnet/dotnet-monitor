@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
                         ToolIdentifiers.EnvVarEnabledValue,
                         cancellationToken);
                 }
-
+                Console.WriteLine("JS: APPLIED IN-PROC");
             }
             catch (Exception ex)
             {

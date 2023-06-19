@@ -24,18 +24,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
 
 
         private readonly ILogger _logger;
+        private readonly IInProcessFeatures _inProcessFeatures;
         private readonly ISharedLibraryService _sharedLibraryService;
 
         public StartupHookValidator(
             ISharedLibraryService sharedLibraryService,
+            IInProcessFeatures inProcessFeatures,
             ILogger<StartupHookValidator> logger)
         {
             _logger = logger;
+            _inProcessFeatures = inProcessFeatures;
             _sharedLibraryService = sharedLibraryService;
         }
 
         public async Task<bool> CheckAsync(IEndpointInfo endpointInfo, CancellationToken token, bool logInstructions = false)
         {
+            if (!_inProcessFeatures.IsStartupHookRequired)
+            {
+                return false;
+            }
+
             IFileProviderFactory fileProviderFactory = await _sharedLibraryService.GetFactoryAsync(token);
 
             IFileProvider managedFileProvider = fileProviderFactory.CreateManaged(StartupHookTargetFramework);
