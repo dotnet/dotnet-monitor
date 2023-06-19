@@ -129,7 +129,10 @@ HRESULT EnvironmentHelper::GetIsFeatureEnabled(const LPCWSTR featureName, bool& 
     }
     else
     {
-        // Case sensitive comparision
+        //
+        // Case sensitive comparision is okay here as this value is "1"
+        // and managed by dotnet-monitor.
+        //
         isEnabled = (envValue == EnableEnvVarValue);
     }
 

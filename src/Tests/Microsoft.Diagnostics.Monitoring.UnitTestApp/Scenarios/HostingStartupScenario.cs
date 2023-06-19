@@ -22,14 +22,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             CliCommand aspnetAppNoHostingStartupCommand = new(TestAppScenarios.HostingStartup.SubScenarios.VerifyAspNetAppWithoutHostingStartup);
             aspnetAppNoHostingStartupCommand.SetAction(VerifyAspNetAppWithoutHostingStartupAsync);
 
-
             CliCommand aspnetAppCommand = new(TestAppScenarios.HostingStartup.SubScenarios.VerifyAspNetApp);
             aspnetAppCommand.SetAction(VerifyAspNetAppAsync);
 
-
             CliCommand nonAspNetAppCommand = new(TestAppScenarios.HostingStartup.SubScenarios.VerifyNonAspNetAppNotImpacted);
             nonAspNetAppCommand.SetAction(VerifyNonAspNetAppNotImpactedAsync);
-
 
             CliCommand scenarioCommand = new(TestAppScenarios.HostingStartup.Name);
             scenarioCommand.Subcommands.Add(aspnetAppNoHostingStartupCommand);

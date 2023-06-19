@@ -194,6 +194,10 @@ HRESULT MainProfiler::InitializeCommon()
         IfNullRet(m_pProbeInstrumentation);
         m_pProbeInstrumentation->AddProfilerEventMask(eventsLow);
     }
+    else
+    {
+        ProbeInstrumentation::DisableIncomingRequests();
+    }
 
     IfFailRet(m_pCorProfilerInfo->SetEventMask2(
         eventsLow,
