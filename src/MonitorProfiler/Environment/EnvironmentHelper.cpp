@@ -107,7 +107,7 @@ HRESULT EnvironmentHelper::GetTempFolder(tstring& tempFolder)
     return S_OK;
 }
 
-HRESULT EnvironmentHelper::GetParameterCapturingEnabled(bool& isEnabled)
+HRESULT EnvironmentHelper::GetIsParameterCapturingEnabled(bool& isEnabled)
 {
     return GetIsFeatureEnabled(EnableParameterCapturingEnvVar, isEnabled);
 }

@@ -67,7 +67,7 @@ public:
 
     HRESULT GetTempFolder(tstring& tempFolder);
 
-    HRESULT GetParameterCapturingEnabled(bool& isEnabled);
+    HRESULT GetIsParameterCapturingEnabled(bool& isEnabled);
 
 private:
     HRESULT GetIsFeatureEnabled(const LPCWSTR featureName, bool& isEnabled);

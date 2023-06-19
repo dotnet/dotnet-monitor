@@ -187,7 +187,7 @@ HRESULT MainProfiler::InitializeCommon()
     _threadNameCache = make_shared<ThreadNameCache>();
 
     bool enableParameterCapturing;
-    IfFailLogRet(_environmentHelper->GetParameterCapturingEnabled(enableParameterCapturing));
+    IfFailLogRet(_environmentHelper->GetIsParameterCapturingEnabled(enableParameterCapturing));
     if (enableParameterCapturing)
     {
         m_pProbeInstrumentation.reset(new (nothrow) ProbeInstrumentation(m_pLogger, m_pCorProfilerInfo));
