@@ -29,7 +29,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             public static class Commands
             {
                 public const string Continue = nameof(Continue);
-                public const string VerifyHostingStartup = nameof(Continue);
             }
         }
 
