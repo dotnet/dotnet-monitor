@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                                 ToUInt32(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ClassToken]),
                                 ToUInt64(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ModuleId]),
                                 ToArray<ulong>(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.TypeArgs]),
-                                ToArray<ulong>(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.Parameters])));
+                                ToArray<ulong>(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ParameterTypes])));
                         break;
                     case ExceptionEvents.EventIds.ModuleDescription:
                         NameCache.ModuleData.TryAdd(

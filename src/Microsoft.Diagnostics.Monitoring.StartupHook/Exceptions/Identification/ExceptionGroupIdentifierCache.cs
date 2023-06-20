@@ -91,20 +91,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             catch (Exception) { }
 
             // RTDynamicMethod does not implement GetGenericArguments.
-
-            ParameterInfo[] parameters = Array.Empty<ParameterInfo>();
-            try
-            {
-                parameters = method.GetParameters();
-            }
-            catch (Exception) { }
-
             Type[] genericArguments = Array.Empty<Type>();
             try
             {
                 genericArguments = method.GetGenericArguments();
             }
             catch (Exception) { }
+
+            ParameterInfo[] parameters = method.GetParameters();
 
             FunctionData data = new(
                 method.Name,

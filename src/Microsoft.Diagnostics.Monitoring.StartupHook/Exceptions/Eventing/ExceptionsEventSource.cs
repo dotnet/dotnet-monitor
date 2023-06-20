@@ -139,7 +139,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ModuleId], ModuleId);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.Name], namePinned);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.TypeArgs], typeArgsSpan);
-            SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.Parameters], parametersSpan);
+            SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ParameterTypes], parametersSpan);
 
             WriteEventCore(ExceptionEvents.EventIds.FunctionDescription, data);
 

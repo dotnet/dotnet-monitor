@@ -122,7 +122,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     WebApi.Models.CallStackFrame[] expectedFrames = ExpectedFrames();
                     (WebApi.Models.CallStack stack, IList<WebApi.Models.CallStackFrame> actualFrames) = GetActualFrames(result, expectedFrames.First(), expectedFrames.Length);
 
-                    Assert.NotNull(stack);
+                    Assert.NotNull(stack); // -> this is because of parentheses, need to figure out if we want this behavior change
                     Assert.Equal(ExpectedThreadName, stack.ThreadName);
                     Assert.Equal(expectedFrames.Length, actualFrames.Count);
                     for (int i = 0; i < expectedFrames.Length; i++)

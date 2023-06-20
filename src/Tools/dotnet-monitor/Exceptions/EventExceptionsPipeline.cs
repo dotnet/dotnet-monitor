@@ -90,7 +90,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ModuleId),
                         traceEvent.GetPayload<string>(NameIdentificationEvents.FunctionDescPayloads.Name),
                         traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.TypeArgs),
-                        traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.Parameters)
+                        traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.ParameterTypes)
                         );
                     break;
                 case "ModuleDescription":
