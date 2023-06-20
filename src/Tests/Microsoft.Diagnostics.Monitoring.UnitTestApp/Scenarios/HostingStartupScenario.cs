@@ -39,24 +39,25 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         {
             return ScenarioHelpers.RunScenarioAsync(logger =>
             {
+                Assert.Equal(0, HostingStartup.HostingStartup.InvocationCount);
                 return Task.FromResult(0);
             }, token);
         }
 
         public static Task<int> VerifyAspNetAppWithoutHostingStartupAsync(ParseResult result, CancellationToken token)
         {
-            return ScenarioHelpers.RunWebScenarioAsync<Startup>((logger, host) =>
+            return ScenarioHelpers.RunWebScenarioAsync<Startup>(logger =>
             {
-                Assert.Null(host.Services.GetService<InProcMonitoringSentinelService>());
+                Assert.Equal(0, HostingStartup.HostingStartup.InvocationCount);
                 return Task.FromResult(0);
             }, token);
         }
 
         public static Task<int> VerifyAspNetAppAsync(ParseResult result, CancellationToken token)
         {
-            return ScenarioHelpers.RunWebScenarioAsync<Startup>((logger, host) =>
+            return ScenarioHelpers.RunWebScenarioAsync<Startup>(logger =>
             {
-                Assert.NotNull(host.Services.GetService<InProcMonitoringSentinelService>());
+                Assert.Equal(1, HostingStartup.HostingStartup.InvocationCount);
                 return Task.FromResult(0);
             }, token);
         }

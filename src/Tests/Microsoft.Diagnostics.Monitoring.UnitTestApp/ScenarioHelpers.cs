@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -70,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             return result;
         }
 
-        public static async Task<int> RunWebScenarioAsync<TStartup>(Func<ILogger, IWebHost, Task<int>> func, CancellationToken token)
+        public static async Task<int> RunWebScenarioAsync<TStartup>(Func<ILogger, Task<int>> func, CancellationToken token)
             where TStartup : class
         {
             // Create a minimal ASP.NET host that:
@@ -98,7 +97,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                 await host.StartAsync(token);
 
                 exitCode = await RunScenarioAsync(
-                    (logger) => { return func(logger, host); },
+                    func,
                     token,
                     beforeReadyCallback: logger =>
                     {

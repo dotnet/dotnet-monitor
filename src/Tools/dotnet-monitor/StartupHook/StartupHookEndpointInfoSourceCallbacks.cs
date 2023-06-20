@@ -9,11 +9,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
 {
     internal sealed class StartupHookEndpointInfoSourceCallbacks : IEndpointInfoSourceCallbacks
     {
+        private readonly IInProcessFeatures _inProcessFeatures;
         private readonly StartupHookValidator _startupHookValidator;
 
 
-        public StartupHookEndpointInfoSourceCallbacks(StartupHookValidator startupHookValidator)
+        public StartupHookEndpointInfoSourceCallbacks(
+            IInProcessFeatures inProcessFeatures,
+            StartupHookValidator startupHookValidator)
         {
+            _inProcessFeatures = inProcessFeatures;
             _startupHookValidator = startupHookValidator;
         }
 
@@ -24,7 +28,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
 
         Task IEndpointInfoSourceCallbacks.OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            return _startupHookValidator.CheckAsync(endpointInfo, cancellationToken, logInstructions: true);
+            if (_inProcessFeatures.IsStartupHookRequired)
+            {
+                return _startupHookValidator.CheckAsync(endpointInfo, cancellationToken, logInstructions: true);
+            }
+
+            return Task.CompletedTask;
         }
 
         Task IEndpointInfoSourceCallbacks.OnRemovedEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)

@@ -7,19 +7,22 @@ using Microsoft.Diagnostics.Monitoring.HostingStartup;
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Diagnostics.Tools.Monitor;
-using System;
+using System.Threading;
 
 [assembly: HostingStartup(typeof(HostingStartup))]
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup
 {
     internal sealed class HostingStartup : IHostingStartup
     {
+        public static int InvocationCount;
+
         public void Configure(IWebHostBuilder builder)
         {
             builder.ConfigureServices(services =>
             {
-                // Add a no-op singleton for easy identification that this hosting startup is active.
-                services.AddSingleton<InProcMonitoringSentinelService>();
+                // Keep track of how many times this hosting startup has been invoked for easy
+                // validation in tests.
+                Interlocked.Increment(ref InvocationCount);
 
                 if (ToolIdentifiers.IsEnvVarEnabled(InProcessFeaturesIdentifiers.EnvironmentVariables.EnableParameterCapturing))
                 {
