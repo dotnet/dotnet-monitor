@@ -26,9 +26,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _exceptionGroupMap.Add(id, new ExceptionGroup(exceptionClassId, throwingMethodId, ilOffset));
         }
 
-        public void AddFunction(ulong id, ulong classId, uint classToken, ulong moduleId, string name, ulong[] typeArgs, ulong[] parameters)
+        public void AddFunction(ulong id, ulong classId, uint classToken, ulong moduleId, string name, ulong[] typeArgs, ulong[] parameterTypes)
         {
-            _nameCache.FunctionData.TryAdd(id, new FunctionData(name, classId, classToken, moduleId, typeArgs ?? Array.Empty<ulong>(), parameters ?? Array.Empty<ulong>()));
+            _nameCache.FunctionData.TryAdd(id, new FunctionData(name, classId, classToken, moduleId, typeArgs ?? Array.Empty<ulong>(), parameterTypes ?? Array.Empty<ulong>()));
         }
 
         public void AddStackFrame(ulong id, ulong functionId, int ilOffset)
