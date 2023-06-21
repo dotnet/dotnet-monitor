@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.True(instance.Timestamp > baselineTimestamp);
 
-                    ValidateStack(instance, "ThrowAndCatchInvalidOperationException()", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
+                    ValidateStack(instance, "ThrowAndCatchInvalidOperationException(System.Boolean,System.Boolean)", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
                 });
         }
 
@@ -88,8 +88,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.True(instance2.Timestamp > baselineTimestamp);
                     Assert.NotEqual(instance1.Timestamp, instance2.Timestamp);
 
-                    ValidateStack(instance1, "ThrowAndCatchInvalidOperationException()", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
-                    ValidateStack(instance2, "ThrowAndCatchInvalidOperationException()", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
+                    ValidateStack(instance1, "ThrowAndCatchInvalidOperationException(System.Boolean,System.Boolean)", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
+                    ValidateStack(instance2, "ThrowAndCatchInvalidOperationException(System.Boolean,System.Boolean)", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
                 });
         }
 
@@ -167,9 +167,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 expectedInstanceCount: 1,
                 validate: instances =>
                 {
-                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
+                    IExceptionInstance instance = Assert.Single(instances);
                     Assert.NotNull(instance);
-                    Assert.NotEqual(0UL, instance.GroupId);
+                    Assert.NotEqual(0UL, instance.Id);
                     Assert.Equal("Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomGenericsException`2[System.Int32,System.String]", instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
 
@@ -195,7 +195,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(typeof(InvalidOperationException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
 
-                    ValidateStack(instance, "ThrowAndCatchInvalidOperationException()", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
+                    ValidateStack(instance, "ThrowAndCatchInvalidOperationException(System.Boolean,System.Boolean)", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
                 },
                 architecture);
         }
