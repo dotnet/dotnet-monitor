@@ -584,6 +584,36 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             Utilities.GetProcessKey(pid, uid, name));
         }
 
+        [HttpGet("parameters", Name = nameof(CaptureParameters))]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationJson, ContentTypes.TextPlain, ContentTypes.ApplicationSpeedscopeJson)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
+        [EgressValidation]
+        public async Task<ActionResult> CaptureParameters(
+            [FromQuery]
+            int? pid = null,
+            [FromQuery]
+            Guid? uid = null,
+            [FromQuery]
+            string name = null,
+            [FromQuery]
+            string tags = null)
+        {
+            if (!_inProcessFeatures.IsParameterCapturingEnabled)
+            {
+                return NotFound();
+            }
+
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
+
+            return await InvokeForProcess(processInfo =>
+            {
+                // Register a psuedo operation, provider name: $null OR $psuedo:logs
+                //string operationUrl = await RegisterOperation(egressOperation, Utilities.ArtifactType_Parameters);
+                return Accepted("");
+            }, processKey);
+        }
+
         [HttpGet("stacks", Name = nameof(CaptureStacks))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson, ContentTypes.TextPlain, ContentTypes.ApplicationSpeedscopeJson)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]

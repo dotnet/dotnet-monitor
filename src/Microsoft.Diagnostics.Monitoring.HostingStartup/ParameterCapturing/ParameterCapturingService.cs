@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
-using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Monitoring.StartupHook;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -32,6 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             try
             {
+                SharedInternals.MessageLoop.RegisterCommandDispatch<ParameterCapturingPayload>(ProfilerCommand.CaptureParameter, OnCommand);
                 _probeManager = new FunctionProbesManager(new LogEmittingProbes(_logger, FunctionProbesStub.InstrumentedMethodCache));
                 _isAvailable = true;
             }
@@ -39,6 +40,76 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             {
                 // TODO: Log
             }
+        }
+
+        private void OnCommand(ParameterCapturingPayload request)
+        {
+            if (request.FqMethodNames.Length == 0)
+            {
+                return;
+            }
+
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            List<MethodInfo> methods = new(request.FqMethodNames.Length);
+            foreach (string methodName in request.FqMethodNames)
+            {
+                MethodInfo? methodInfo = ResolveMethod(assemblies, methodName);
+                if (methodInfo == null)
+                {
+                    return;
+                }
+
+                methods.Add(methodInfo);
+            }
+
+            StartCapturing(methods, request.Duration);
+        }
+
+        private static MethodInfo? ResolveMethod(Assembly[] assemblies, string fqMethodName)
+        {
+            int dllSplitIndex = fqMethodName.IndexOf('!');
+            string dll = fqMethodName[..dllSplitIndex];
+            string classAndMethod = fqMethodName[(dllSplitIndex + 1)..];
+            int lastIndex = classAndMethod.LastIndexOf('.');
+
+            string className = classAndMethod[..lastIndex];
+            string methodName = classAndMethod[(lastIndex + 1)..];
+
+
+            Module? userMod = null;
+            Assembly? userAssembly = null;
+            foreach (var assembly in assemblies)
+            {
+                foreach (var mod in assembly.Modules)
+                {
+                    if (mod.Name == dll)
+                    {
+                        userAssembly = assembly;
+                        userMod = mod;
+                        break;
+                    }
+                }
+            }
+
+            if (userMod == null || userAssembly == null)
+            {
+                return null;
+            }
+
+            Type? remoteClass = userAssembly.GetType(className);
+            if (remoteClass == null)
+            {
+                return null;
+            }
+
+            MethodInfo? methodInfo = remoteClass.GetMethod(methodName);
+            if (methodInfo == null)
+            {
+                return null;
+            }
+
+            return methodInfo;
         }
 
         public void StopCapturing()
@@ -51,7 +122,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             _probeManager?.StopCapturing();
         }
 
-        public void StartCapturing(IList<MethodInfo> methods)
+        public void StartCapturing(IList<MethodInfo> methods, TimeSpan duratation)
         {
             if (!_isAvailable)
             {
@@ -61,14 +132,22 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             _probeManager?.StartCapturing(methods);
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             if (!_isAvailable)
             {
-                return Task.CompletedTask;
+                return;
             }
 
-            return Task.Delay(Timeout.Infinite, stoppingToken);
+            TimeSpan delay = Timeout.InfiniteTimeSpan;
+            while(!stoppingToken.IsCancellationRequested)
+            {
+                // Wait for a new request
+                await Task.Delay(delay, stoppingToken).ConfigureAwait(false);
+                StopCapturing();
+            }
+
+            return;
         }
 
         public override void Dispose()
@@ -78,6 +157,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             try
             {
+                SharedInternals.MessageLoop.UnregisterCommandDispatch(ProfilerCommand.CaptureParameter);
                 _probeManager?.Dispose();
             }
             catch

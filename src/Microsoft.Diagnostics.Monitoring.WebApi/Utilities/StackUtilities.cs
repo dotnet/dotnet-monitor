@@ -42,12 +42,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             //CONSIDER Should we set this before or after the profiler message has been sent.
             startCompletionSource?.TrySetResult(null);
 
-            ProfilerMessage response = await profilerChannel.SendMessage(
+            SimpleProfilerMessage response = await profilerChannel.SendMessage(
                 endpointInfo,
-                new ProfilerMessage { MessageType = ProfilerMessageType.Callstack, Parameter = 0 },
+                new SimpleProfilerMessage { Command = ProfilerCommand.Callstack, Parameter = 0 },
                 token);
 
-            if (response.MessageType == ProfilerMessageType.Error)
+            if (response.Command == ProfilerCommand.Error)
             {
                 throw new InvalidOperationException($"Profiler request failed: 0x{response.Parameter:X8}");
             }

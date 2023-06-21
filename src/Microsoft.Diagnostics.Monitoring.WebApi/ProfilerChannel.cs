@@ -10,23 +10,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal enum ProfilerMessageType : short
-    {
-        OK,
-        Error,
-        Callstack
-    };
-
-    internal struct ProfilerMessage
-    {
-        public ProfilerMessageType MessageType { get; set; }
-
-        // This is currently unsupported, but some possible future additions:
-        // Parameter Metadata. (I.e. IMetadataImport.GetMethodProps + signature resolution)
-        // Resolve frame offsets (Resolving absolute native address to relative offset then convert to IL using IL-to-native maps.
-        public int Parameter { get; set; }
-    }
-
     /// <summary>
     /// Communicates with the profiler, using a Unix Domain Socket.
     /// </summary>
@@ -39,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _storageOptions = storageOptions;
         }
 
-        public async Task<ProfilerMessage> SendMessage(IEndpointInfo endpointInfo, ProfilerMessage message, CancellationToken token)
+        public async Task<SimpleProfilerMessage> SendMessage(IEndpointInfo endpointInfo, IProfilerMessage message, CancellationToken token)
         {
             string channelPath = ComputeChannelPath(endpointInfo);
             var endpoint = new UnixDomainSocketEndPoint(channelPath);
@@ -49,11 +32,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             await socket.ConnectAsync(endpoint);
 
-            byte[] buffer = new byte[sizeof(short) + sizeof(int)];
+            byte[] messagePayload = message.SerializePayload();
+
+            byte[] buffer = new byte[sizeof(short) + sizeof(int) + messagePayload.Length];
             var memoryStream = new MemoryStream(buffer);
             using BinaryWriter writer = new BinaryWriter(memoryStream);
             writer.Write((short)message.MessageType);
-            writer.Write(message.Parameter);
+            writer.Write(messagePayload.Length);
+            writer.Write(messagePayload);
             writer.Dispose();
 
             await socket.SendAsync(new ReadOnlyMemory<byte>(buffer), SocketFlags.None, token);
@@ -64,10 +50,23 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new InvalidOperationException("Could not receive message from server.");
             }
 
-            return new ProfilerMessage
+            ProfilerMessageType messageType = (ProfilerMessageType)BitConverter.ToInt16(buffer, startIndex: 0);
+            ProfilerCommand command = (ProfilerCommand)BitConverter.ToInt16(buffer, startIndex: 2);
+
+            if (messageType != ProfilerMessageType.SimpleCommand)
             {
-                MessageType = (ProfilerMessageType)BitConverter.ToInt16(buffer, startIndex: 0),
-                Parameter = BitConverter.ToInt32(buffer, startIndex: 2)
+                throw new InvalidOperationException("Received unexpected status message from server.");
+            }
+
+            if (command != ProfilerCommand.Ok || command != ProfilerCommand.Error)
+            {
+                throw new InvalidOperationException("Received unexpected command from server.");
+            }
+
+            return new SimpleProfilerMessage
+            {
+                MessageType = messageType,
+                Parameter = BitConverter.ToInt32(buffer, startIndex: 4)
             };
         }
 

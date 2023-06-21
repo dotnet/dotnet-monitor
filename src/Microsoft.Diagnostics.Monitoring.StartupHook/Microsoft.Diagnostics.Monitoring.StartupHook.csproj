@@ -16,10 +16,13 @@
     <Compile Include="..\Tools\dotnet-monitor\Exceptions\ExceptionEvents.cs" Link="Exceptions\Eventing\ExceptionEvents.cs" />
     <Compile Include="..\Tools\dotnet-monitor\StartupHook\StartupHookIdentifiers.cs" Link="StartupHookIdentifiers.cs" />
     <Compile Include="..\Tools\dotnet-monitor\ToolIdentifiers.cs" Link="ToolIdentifiers.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\Profiler\ProfilerIdentifiers.cs" />
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\ProfilerMessage.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.HostingStartup" />
   </ItemGroup>
   
 </Project>

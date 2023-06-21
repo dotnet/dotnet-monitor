@@ -13,16 +13,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\Tools\dotnet-monitor\ToolIdentifiers.cs" />
     <Compile Include="..\Tools\dotnet-monitor\InProcessFeatures\InProcessFeaturesIdentifiers.cs" Link="InProcessFeaturesIdentifiers.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\Profiler\ProfilerIdentifiers.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\DisposableHelper.cs" Link="DisposableHelper.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.UnitTestApp" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.StartupHook\Microsoft.Diagnostics.Monitoring.StartupHook.csproj" />
   </ItemGroup>
 
   <ItemGroup>

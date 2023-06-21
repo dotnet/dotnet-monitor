@@ -15,6 +15,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 
         private long _disposedState;
 
+        public Assembly? HostingStartupAssembly { get; private set; }
+
         public AspNetHostingStartupLoader(string filePath)
         {
             _filePath = filePath;
@@ -26,9 +28,15 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 
         private Assembly? AssemblyResolver(AssemblyLoadContext context, AssemblyName assemblyName)
         {
+            if (HostingStartupAssembly != null)
+            {
+                return HostingStartupAssembly;
+            }
+
             if (_simpleAssemblyName.Equals(assemblyName.Name, StringComparison.OrdinalIgnoreCase))
             {
-                return AssemblyLoadContext.Default.LoadFromAssemblyPath(_filePath);
+                Assembly hostingStartupAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(_filePath);
+                HostingStartupAssembly = hostingStartupAssembly;
             }
 
             return null;

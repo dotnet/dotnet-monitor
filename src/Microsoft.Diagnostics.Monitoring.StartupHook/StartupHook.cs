@@ -9,6 +9,7 @@ using System.IO;
 
 internal sealed class StartupHook
 {
+
     private static CurrentAppDomainExceptionProcessor s_exceptionProcessor = new();
     private static AspNetHostingStartupLoader? s_hostingStartupLoader;
 
@@ -24,6 +25,7 @@ internal sealed class StartupHook
             }
 
             s_exceptionProcessor.Start();
+            SharedInternals.MessageLoop.Start();
         }
         catch
         {
