@@ -19,7 +19,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public void PostConfigure(string name, InProcessFeaturesOptions options)
         {
-            if (!_experimentalFlags.IsCallStacksEnabled && !_experimentalFlags.IsExceptionsEnabled)
+            if (!_experimentalFlags.IsCallStacksEnabled &&
+                !_experimentalFlags.IsExceptionsEnabled &&
+                !_experimentalFlags.IsParameterCapturingEnabled)
             {
                 options.Enabled = false;
             }

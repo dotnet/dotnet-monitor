@@ -105,9 +105,14 @@ void ProbeInstrumentation::WorkerThread()
     }
 }
 
-void ProbeInstrumentation::ShutdownBackgroundService()
+void ProbeInstrumentation::DisableIncomingRequests()
 {
     g_probeManagementQueue.Complete();
+}
+
+void ProbeInstrumentation::ShutdownBackgroundService()
+{
+    DisableIncomingRequests();
     m_probeManagementThread.join();
 }
 

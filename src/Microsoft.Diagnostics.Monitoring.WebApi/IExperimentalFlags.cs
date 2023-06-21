@@ -12,5 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         bool IsCallStacksEnabled { get; }
 
         bool IsExceptionsEnabled { get; }
+
+        bool IsParameterCapturingEnabled { get; }
     }
 }

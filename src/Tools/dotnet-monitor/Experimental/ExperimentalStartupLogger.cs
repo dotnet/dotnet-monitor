@@ -28,6 +28,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 _logger.ExperimentalFeatureEnabled(Strings.FeatureName_Exceptions);
             }
+            if (_experimentalFlags.IsParameterCapturingEnabled)
+            {
+                _logger.ExperimentalFeatureEnabled(Strings.FeatureName_ParameterCapturing);
+            }
         }
     }
 }

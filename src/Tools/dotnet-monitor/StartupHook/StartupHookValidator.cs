@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             _sharedLibraryService = sharedLibraryService;
         }
 
-        public async Task<bool> CheckAsync(IEndpointInfo endpointInfo, CancellationToken token)
+        public async Task<bool> CheckAsync(IEndpointInfo endpointInfo, CancellationToken token, bool logInstructions = false)
         {
             IFileProviderFactory fileProviderFactory = await _sharedLibraryService.GetFactoryAsync(token);
 
@@ -52,18 +52,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
 
             if (!env.TryGetValue(ToolIdentifiers.EnvironmentVariables.StartupHooks, out string startupHookPaths))
             {
-                _logger.StartupHookEnvironmentMissing(endpointInfo.ProcessId);
-
-                LogInstructions(startupHookLibraryFileInfo);
+                if (logInstructions)
+                {
+                    _logger.StartupHookEnvironmentMissing(endpointInfo.ProcessId);
+                    LogInstructions(startupHookLibraryFileInfo);
+                }
 
                 return false;
             }
 
             if (string.IsNullOrEmpty(startupHookPaths) || !startupHookPaths.Contains(StartupHookFileName, StringComparison.OrdinalIgnoreCase))
             {
-                _logger.StartupHookMissing(endpointInfo.ProcessId, startupHookLibraryFileInfo.Name);
-
-                LogInstructions(startupHookLibraryFileInfo);
+                if (logInstructions)
+                {
+                    _logger.StartupHookMissing(endpointInfo.ProcessId, startupHookLibraryFileInfo.Name);
+                    LogInstructions(startupHookLibraryFileInfo);
+                }
 
                 return false;
             }

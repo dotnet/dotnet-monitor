@@ -79,4 +79,7 @@ class ProbeInstrumentation
         void AddProfilerEventMask(DWORD& eventsLow);
 
         HRESULT STDMETHODCALLTYPE GetReJITParameters(ModuleID moduleId, mdMethodDef methodId, ICorProfilerFunctionControl* pFunctionControl);
+
+    public:
+        static void DisableIncomingRequests();
 };
