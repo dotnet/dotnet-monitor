@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                 data.ModuleId,
                 data.Name,
                 data.TypeArgs,
-                data.Parameters);
+                data.ParameterTypes);
         }
 
         public override void OnModuleData(ulong moduleId, ModuleData data)

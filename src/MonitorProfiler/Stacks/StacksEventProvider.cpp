@@ -58,7 +58,7 @@ HRESULT StacksEventProvider::WriteFunctionData(FunctionID functionId, const Func
         static_cast<UINT64>(functionData.GetModuleId()),
         functionData.GetName(),
         functionData.GetTypeArgs(),
-        functionData.GetParameters());
+        functionData.GetParameterTypes());
 }
 
 HRESULT StacksEventProvider::WriteModuleData(ModuleID moduleId, const ModuleData& moduleData)

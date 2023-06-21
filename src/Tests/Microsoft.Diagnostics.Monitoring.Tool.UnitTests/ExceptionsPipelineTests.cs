@@ -157,6 +157,27 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
+        /// Tests that custom exceptions with ref parameters are handled correctly.
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_CustomExceptionRefParameter()
+        {
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.CustomExceptionRefParameter,
+                expectedInstanceCount: 1,
+                validate: instances =>
+                {
+                    TestExceptionsStore.ExceptionInstance instance = Assert.Single(instances);
+                    Assert.NotNull(instance);
+                    Assert.NotEqual(0UL, instance.GroupId);
+                    Assert.Equal("Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomGenericsException`2[System.Int32,System.String]", instance.TypeName);
+                    Assert.False(string.IsNullOrEmpty(instance.Message));
+
+                    ValidateStack(instance, "ThrowAndCatchCustomExceptionRefParameter(System.Int32&)", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
+                });
+        }
+
+        /// <summary>
         /// Tests that exceptions from reverse p/invoke are detectable.
         /// </summary>
         [Theory]

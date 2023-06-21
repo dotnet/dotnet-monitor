@@ -79,7 +79,7 @@ public:
     const ClassID GetClass() const { return _class; }
     const mdTypeDef GetClassToken() const { return _classToken; }
     const std::vector<UINT64>& GetTypeArgs() const { return _typeArgs; }
-    const std::vector<UINT64>& GetParameters() const { return _parameters; }
+    const std::vector<UINT64>& GetParameterTypes() const { return _parameterTypes; }
     void AddTypeArg(ClassID classID) { _typeArgs.push_back(static_cast<UINT64>(classID)); }
 
 private:
@@ -88,5 +88,5 @@ private:
     tstring _functionName;
     mdTypeDef _classToken;
     std::vector<UINT64> _typeArgs;
-    std::vector<UINT64> _parameters;
+    std::vector<UINT64> _parameterTypes;
 };

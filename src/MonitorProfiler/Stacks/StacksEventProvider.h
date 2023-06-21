@@ -42,7 +42,7 @@ class StacksEventProvider
         std::unique_ptr<ProfilerEvent<UINT32, tstring, std::vector<UINT64>, std::vector<UINT64>>> _callstackEvent;
 
         //Note we will either send a ClassId or a ClassToken. For Shared generic functions, there is no ClassID.
-        const WCHAR* FunctionPayloads[7] = { _T("FunctionId"), _T("ClassId"), _T("ClassToken"), _T("ModuleId"), _T("Name"), _T("TypeArgs"), _T("Parameters") };
+        const WCHAR* FunctionPayloads[7] = { _T("FunctionId"), _T("ClassId"), _T("ClassToken"), _T("ModuleId"), _T("Name"), _T("TypeArgs"), _T("ParameterTypes") };
         std::unique_ptr<ProfilerEvent<UINT64, UINT64, UINT32, UINT64, tstring, std::vector<UINT64>, std::vector<UINT64>>> _functionEvent;
 
         //We cannot retrieve detailed information for some ClassIds. Flags is used to indicate these conditions.

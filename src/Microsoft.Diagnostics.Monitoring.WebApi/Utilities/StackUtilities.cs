@@ -59,7 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 builder.Clear();
                 builder.Append(functionData.Name);
 
-                NameFormatter.BuildMethodParameters(builder, cache, functionData.Parameters);
+                NameFormatter.BuildMethodParameterTypes(builder, cache, functionData.ParameterTypes);
                 frameModel.MethodName = builder.ToString();
 
                 builder.Clear();

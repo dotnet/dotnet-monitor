@@ -32,6 +32,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             CliCommand customExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.CustomException);
             customExceptionCommand.SetAction(CustomExceptionAsync);
 
+            CliCommand customExceptionRefParameterCommand = new(TestAppScenarios.Exceptions.SubScenarios.CustomExceptionRefParameter);
+            customExceptionRefParameterCommand.SetAction(CustomExceptionRefParameterAsync);
+
             CliCommand reversePInvokeExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ReversePInvokeException);
             reversePInvokeExceptionCommand.SetAction(ReversePInvokeExceptionAsync);
 
@@ -47,6 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             scenarioCommand.Subcommands.Add(asyncExceptionCommand);
             scenarioCommand.Subcommands.Add(frameworkExceptionCommand);
             scenarioCommand.Subcommands.Add(customExceptionCommand);
+            scenarioCommand.Subcommands.Add(customExceptionRefParameterCommand);
             scenarioCommand.Subcommands.Add(reversePInvokeExceptionCommand);
             scenarioCommand.Subcommands.Add(dynamicMethodExceptionCommand);
             scenarioCommand.Subcommands.Add(arrayExceptionCommand);
@@ -118,6 +122,21 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
 
                 ThrowAndCatchCustomException();
+
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
+
+                return 0;
+            }, token);
+        }
+
+        public static Task<int> CustomExceptionRefParameterAsync(ParseResult result, CancellationToken token)
+        {
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
+
+                int i = 1;
+                ThrowAndCatchCustomExceptionRefParameter(ref i);
 
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
 
@@ -265,6 +284,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             try
             {
                 throw new CustomGenericsException<int, string>("This is a custom exception message.");
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowAndCatchCustomExceptionRefParameter(ref int i)
+        {
+            try
+            {
+                throw new CustomGenericsException<int, string>($"This is a custom exception message with ref parameter {i}.");
             }
             catch (Exception)
             {

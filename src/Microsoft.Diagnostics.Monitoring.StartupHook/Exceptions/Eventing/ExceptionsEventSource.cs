@@ -124,14 +124,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             ulong ModuleId,
             string Name,
             ulong[] TypeArgs,
-            ulong[] Parameters)
+            ulong[] ParameterTypes)
         {
             Span<EventData> data = stackalloc EventData[7];
             using PinnedData namePinned = PinnedData.Create(Name);
             Span<byte> typeArgsSpan = stackalloc byte[GetArrayDataSize(TypeArgs)];
             FillArrayData(typeArgsSpan, TypeArgs);
-            Span<byte> parametersSpan = stackalloc byte[GetArrayDataSize(Parameters)];
-            FillArrayData(parametersSpan, Parameters);
+            Span<byte> parameterTypesSpan = stackalloc byte[GetArrayDataSize(ParameterTypes)];
+            FillArrayData(parameterTypesSpan, ParameterTypes);
 
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.FunctionId], FunctionId);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ClassId], ClassId);
@@ -139,7 +139,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ModuleId], ModuleId);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.Name], namePinned);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.TypeArgs], typeArgsSpan);
-            SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ParameterTypes], parametersSpan);
+            SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ParameterTypes], parameterTypesSpan);
 
             WriteEventCore(ExceptionEvents.EventIds.FunctionDescription, data);
 

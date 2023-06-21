@@ -98,15 +98,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             }
             catch (Exception) { }
 
-            ParameterInfo[] parameters = method.GetParameters();
-
             FunctionData data = new(
                 method.Name,
                 AddOrDefault(method.DeclaringType),
                 metadataToken,
                 GetOrAdd(method.Module),
                 GetOrAdd(genericArguments),
-                GetOrAdd(parameters)
+                GetOrAdd(method.GetParameters())
                 );
 
             if (_nameCache.FunctionData.TryAdd(methodId, data))
