@@ -1430,24 +1430,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to First chance exception. {0}: {1}.
-        /// </summary>
-        internal static string OutputFormatString_FirstChanceException {
-            get {
-                return ResourceManager.GetString("OutputFormatString_FirstChanceException", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to   at {0}.{1}.
-        /// </summary>
-        internal static string OutputFormatString_FirstChanceExceptionStackFrame {
-            get {
-                return ResourceManager.GetString("OutputFormatString_FirstChanceExceptionStackFrame", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to :NOT PRESENT:.
         /// </summary>
         internal static string Placeholder_NotPresent {
