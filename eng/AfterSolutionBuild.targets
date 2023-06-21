@@ -7,7 +7,7 @@
   <!-- Only publish projects after build if opt-in -->
   <Target Name="PublishProjectsAfterBuild"
           AfterTargets="Build"
-          Condition="'$(PublishProjectsAfterBuild)' == 'true' and '$(CreateArchives)' != 'true'">
+          Condition="'$(PublishProjectsAfterBuild)' == 'true' and '$(CreateArchives)' != 'true' and '$(CreateSingleFileBundles)' != 'true'">
     <CallTarget Targets="PublishProjects" />
   </Target>
 

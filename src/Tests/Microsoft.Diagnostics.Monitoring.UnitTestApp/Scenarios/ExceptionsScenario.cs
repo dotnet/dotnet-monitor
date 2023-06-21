@@ -44,6 +44,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             CliCommand arrayExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ArrayException);
             arrayExceptionCommand.SetAction(ArrayExceptionAsync);
 
+            CliCommand innerUnthrownExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.InnerUnthrownException);
+            innerUnthrownExceptionCommand.SetAction(InnerUnthrownExceptionAsync);
+
+            CliCommand innerThrownExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.InnerThrownException);
+            innerThrownExceptionCommand.SetAction(InnerThrownExceptionAsync);
+
+            CliCommand aggregateExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.AggregateException);
+            aggregateExceptionCommand.SetAction(AggregateExceptionAsync);
+
+            CliCommand reflectionTypeLoadExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ReflectionTypeLoadException);
+            reflectionTypeLoadExceptionCommand.SetAction(ReflectionTypeLoadExceptionAsync);
+
             CliCommand scenarioCommand = new(TestAppScenarios.Exceptions.Name);
             scenarioCommand.Subcommands.Add(singleExceptionCommand);
             scenarioCommand.Subcommands.Add(repeatExceptionCommand);
@@ -54,6 +66,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             scenarioCommand.Subcommands.Add(reversePInvokeExceptionCommand);
             scenarioCommand.Subcommands.Add(dynamicMethodExceptionCommand);
             scenarioCommand.Subcommands.Add(arrayExceptionCommand);
+            scenarioCommand.Subcommands.Add(innerUnthrownExceptionCommand);
+            scenarioCommand.Subcommands.Add(innerThrownExceptionCommand);
+            scenarioCommand.Subcommands.Add(aggregateExceptionCommand);
+            scenarioCommand.Subcommands.Add(reflectionTypeLoadExceptionCommand);
             return scenarioCommand;
         }
 
@@ -233,12 +249,116 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             }, token);
         }
 
+        public static Task<int> InnerUnthrownExceptionAsync(ParseResult result, CancellationToken token)
+        {
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
+
+                ThrowAndCatchInvalidOperationException(includeInnerException: true, throwInnerException: false);
+
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
+
+                return 0;
+            }, token);
+        }
+
+        public static Task<int> InnerThrownExceptionAsync(ParseResult result, CancellationToken token)
+        {
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
+
+                ThrowAndCatchInvalidOperationException(includeInnerException: true);
+
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
+
+                return 0;
+            }, token);
+        }
+
+        public static Task<int> AggregateExceptionAsync(ParseResult result, CancellationToken token)
+        {
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
+
+                try
+                {
+                    throw new AggregateException(
+                        new InvalidOperationException(),
+                        new FormatException(),
+                        new TaskCanceledException());
+                }
+                catch (Exception)
+                {
+                }
+
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
+
+                return 0;
+            }, token);
+        }
+
+        public static Task<int> ReflectionTypeLoadExceptionAsync(ParseResult result, CancellationToken token)
+        {
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
+
+                try
+                {
+                    throw new ReflectionTypeLoadException(
+                        classes: null,
+                        exceptions: new Exception[]
+                        {
+                            new MissingMethodException(),
+                            null,
+                            new MissingFieldException()
+                        });
+                }
+                catch (Exception)
+                {
+                }
+
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
+
+                return 0;
+            }, token);
+        }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void ThrowAndCatchInvalidOperationException()
         {
+            ThrowAndCatchInvalidOperationException(includeInnerException: false, throwInnerException: false);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowAndCatchInvalidOperationException(bool includeInnerException = false, bool throwInnerException = true)
+        {
             try
             {
-                throw new InvalidOperationException();
+                Exception innerException = null;
+                if (includeInnerException)
+                {
+                    if (throwInnerException)
+                    {
+                        try
+                        {
+                            throw new FormatException();
+                        }
+                        catch (Exception ex)
+                        {
+                            innerException = ex;
+                        }
+                    }
+                    else
+                    {
+                        innerException = new FormatException();
+                    }
+                }
+
+                throw new InvalidOperationException(null, innerException);
             }
             catch (Exception)
             {

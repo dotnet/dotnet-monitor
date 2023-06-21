@@ -14,7 +14,7 @@ jobs:
     if: github.repository == 'dotnet/dotnet-monitor'
     strategy:
       matrix:
-        branch: ["release/6.x", "release/7.x", "release/7.2", "release/7.1", "release/7.0"]
+        branch: ["release/6.x", "release/7.x", "release/7.2", "release/7.1"]
     name: 'Sync ${{ matrix.branch }}'
     runs-on: ubuntu-latest
     permissions:

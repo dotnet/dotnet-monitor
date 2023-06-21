@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PublishDependsOnTargets>$(PublishDependsOnTargets);CollectPackageArtifactFiles;CollectVersionArtifactFiles</PublishDependsOnTargets>
+    <PublishDependsOnTargets>$(PublishDependsOnTargets);CollectPackageArtifactFiles;CollectBundleArtifactFiles;CollectVersionArtifactFiles</PublishDependsOnTargets>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +16,10 @@
     <PackageFile Include="$(ArtifactsShippingPackagesDir)**/*.zip" IsShipping="true" />
     <PackageFile Include="$(ArtifactsNonShippingPackagesDir)**/*.tar.gz" IsShipping="false" />
     <PackageFile Include="$(ArtifactsNonShippingPackagesDir)**/*.zip" IsShipping="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <BundleFile Include="$(ArtifactsNonShippingBundlesDir)*" IsShipping="false" />
   </ItemGroup>
 
   <Target Name="CalculateBlobGroupAndBuildVersion">
@@ -195,6 +199,20 @@
       <ItemsToPushToBlobFeed Include="@(_VersionContainerBlobItem)" Condition="'$(_BuildVersion)' != ''">
         <!-- Place blobs into versioned container so that stable package versions do not collide. -->
         <RelativeBlobPath>diagnostics/monitor/$(_BuildVersion)/%(_VersionContainerBlobItem.Filename)%(_VersionContainerBlobItem.Extension)</RelativeBlobPath>
+        <PublishFlatContainer>true</PublishFlatContainer>
+      </ItemsToPushToBlobFeed>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="CollectBundleArtifactFiles"
+          DependsOnTargets="CalculateBlobGroupAndBuildVersion">
+    <ItemGroup>
+      <ItemsToPushToBlobFeed Include="@(BundleFile)"
+                             RemoveMetadata="IsShipping"
+                             Condition="'$(_BuildVersion)' != ''">
+        <!-- Place blobs into versioned container so that stable versions (or lack of version) do not collide. -->
+        <RelativeBlobPath>diagnostics/monitor/$(_BuildVersion)/%(BundleFile.Filename)%(BundleFile.Extension)</RelativeBlobPath>
+        <ManifestArtifactData Condition="'%(BundleFile.IsShipping)' != 'true'">NonShipping=true</ManifestArtifactData>
         <PublishFlatContainer>true</PublishFlatContainer>
       </ItemsToPushToBlobFeed>
     </ItemGroup>
