@@ -1,14 +1,16 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 {
-    public sealed class ExceptionIdentifierCacheTests
+    public sealed class ExceptionGroupIdentifierCacheTests
     {
         private const ulong InvalidId = 0;
         private const uint InvalidToken = 0;
@@ -17,33 +19,33 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             Assembly.GetExecutingAssembly().ManifestModule.Name;
 
         [Fact]
-        public void ExceptionIdentifierCache_CallbacksNotRequired()
+        public void ExceptionGroupIdentifierCache_CallbacksNotRequired()
         {
             Exception ex = new Exception();
-            ExceptionIdentifier exceptionId = new(ex);
+            ExceptionGroupIdentifier exceptionGroupId = new(ex);
 
-            List<ExceptionIdentifierCacheCallback> callbacks = new();
-            ExceptionIdentifierCache cache = new(callbacks);
-            ulong registrationId = cache.GetOrAdd(exceptionId);
+            List<ExceptionGroupIdentifierCacheCallback> callbacks = new();
+            ExceptionGroupIdentifierCache cache = new(callbacks);
+            ulong groupId = cache.GetOrAdd(exceptionGroupId);
 
-            Assert.NotEqual(InvalidId, registrationId);
+            Assert.NotEqual(InvalidId, groupId);
         }
 
         [Fact]
-        public void ExceptionIdentifierCache_NotThrownException()
+        public void ExceptionGroupIdentifierCache_NotThrownException()
         {
             Exception ex = new Exception();
-            ExceptionIdentifier exceptionId = new(ex);
+            ExceptionGroupIdentifier exceptionGroupId = new(ex);
 
-            TestExceptionIdentifierCacheCallback callback = new();
+            TestExceptionGroupIdentifierCacheCallback callback = new();
 
-            List<ExceptionIdentifierCacheCallback> callbacks = new()
+            List<ExceptionGroupIdentifierCacheCallback> callbacks = new()
             {
                 callback
             };
-            ExceptionIdentifierCache cache = new(callbacks);
-            ulong registrationId = cache.GetOrAdd(exceptionId);
-            Assert.NotEqual(InvalidId, registrationId);
+            ExceptionGroupIdentifierCache cache = new(callbacks);
+            ulong groupId = cache.GetOrAdd(exceptionGroupId);
+            Assert.NotEqual(InvalidId, groupId);
 
             // Validate exception type in cache
             (ulong classId, ClassData classData) = Assert.Single(callback.NameCache.ClassData);
@@ -73,36 +75,41 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             Assert.Equal(InvalidId, data.OuterToken);
 
             // Validate exception ID registration
-            (ulong registrationIdFromCallback, ExceptionIdentifierData exceptionIdData) = Assert.Single(callback.ExceptionIdentifierData);
-            Assert.Equal(registrationId, registrationIdFromCallback);
-            Assert.NotNull(exceptionIdData);
-            Assert.Equal(classId, exceptionIdData.ExceptionClassId);
-            Assert.Equal(InvalidId, exceptionIdData.ThrowingMethodId);
+            (ulong groupIdFromCallback, ExceptionGroupData exceptionGroupData) = Assert.Single(callback.ExceptionGroupMap);
+            Assert.Equal(groupId, groupIdFromCallback);
+            Assert.NotNull(exceptionGroupData);
+            Assert.Equal(classId, exceptionGroupData.ExceptionClassId);
+            Assert.Equal(InvalidId, exceptionGroupData.ThrowingMethodId);
+
+            // Validate stack frame data (expect none since exception was not thrown)
+            StackTrace stackTrace = new(ex, fNeedFileInfo: false);
+            ulong[] frameIds = cache.GetOrAdd(stackTrace.GetFrames());
+            Assert.Empty(frameIds);
         }
 
         [Fact]
-        public void ExceptionIdentifierCache_ThrownException()
+        public void ExceptionGroupIdentifierCache_ThrownException()
         {
             Exception ex = new ExceptionWithGenericArgs<int>();
-            ExceptionIdentifier exceptionId;
+            ExceptionGroupIdentifier exceptionGroupId;
             try
             {
                 throw ex;
             }
             catch (Exception caught)
             {
-                exceptionId = new(caught);
+                exceptionGroupId = new(caught);
             }
 
-            TestExceptionIdentifierCacheCallback callback = new();
+            TestExceptionGroupIdentifierCacheCallback callback = new();
 
-            List<ExceptionIdentifierCacheCallback> callbacks = new()
+            List<ExceptionGroupIdentifierCacheCallback> callbacks = new()
             {
                 callback
             };
-            ExceptionIdentifierCache cache = new(callbacks);
-            ulong registrationId = cache.GetOrAdd(exceptionId);
-            Assert.NotEqual(InvalidId, registrationId);
+            ExceptionGroupIdentifierCache cache = new(callbacks);
+            ulong groupId = cache.GetOrAdd(exceptionGroupId);
+            Assert.NotEqual(InvalidId, groupId);
 
             // Validate cache counts
             Assert.Equal(3, callback.NameCache.ClassData.Count);
@@ -111,13 +118,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             Assert.Equal(3, callback.NameCache.TokenData.Count);
 
             // Validate exception ID registration
-            (ulong registrationIdFromCallback, ExceptionIdentifierData exceptionIdData) = Assert.Single(callback.ExceptionIdentifierData);
-            Assert.Equal(registrationId, registrationIdFromCallback);
-            Assert.NotNull(exceptionIdData);
+            (ulong groupIdFromCallback, ExceptionGroupData exceptionGroupData) = Assert.Single(callback.ExceptionGroupMap);
+            Assert.Equal(groupId, groupIdFromCallback);
+            Assert.NotNull(exceptionGroupData);
 
             // Validate exception type in cache
-            Assert.NotEqual(InvalidId, exceptionIdData.ExceptionClassId);
-            Assert.True(callback.NameCache.ClassData.TryGetValue(exceptionIdData.ExceptionClassId, out ClassData? exceptionClassData));
+            Assert.NotEqual(InvalidId, exceptionGroupData.ExceptionClassId);
+            Assert.True(callback.NameCache.ClassData.TryGetValue(exceptionGroupData.ExceptionClassId, out ClassData? exceptionClassData));
             Assert.NotNull(exceptionClassData);
 
             // Validate exception type module in cache
@@ -158,8 +165,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             Assert.Equal(InvalidId, parentClassToken);
 
             // Validate throwing method in cache
-            Assert.NotEqual(InvalidId, exceptionIdData.ThrowingMethodId);
-            Assert.True(callback.NameCache.FunctionData.TryGetValue(exceptionIdData.ThrowingMethodId, out FunctionData? throwingMethodData));
+            Assert.NotEqual(InvalidId, exceptionGroupData.ThrowingMethodId);
+            Assert.True(callback.NameCache.FunctionData.TryGetValue(exceptionGroupData.ThrowingMethodId, out FunctionData? throwingMethodData));
             Assert.NotNull(throwingMethodData);
 
             // Validate throwing method module in cache
@@ -169,10 +176,31 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             Assert.Equal(ThisModuleName, throwingMethodModuleData.Name);
 
             // Validate throwing method remaining properties
-            Assert.Equal(nameof(ExceptionIdentifierCache_ThrownException), throwingMethodData.Name);
+            Assert.Equal(nameof(ExceptionGroupIdentifierCache_ThrownException), throwingMethodData.Name);
             Assert.NotEqual(InvalidId, throwingMethodData.ParentClass);
             Assert.NotEqual(InvalidToken, throwingMethodData.ParentToken);
             Assert.Empty(throwingMethodData.TypeArgs);
+
+            // Validate stack frame data
+            StackTrace stackTrace = new(ex, fNeedFileInfo: false);
+            ulong[] frameIds = cache.GetOrAdd(stackTrace.GetFrames());
+            Assert.Equal(stackTrace.FrameCount, frameIds.Length);
+            for (int i = 0; i < frameIds.Length; i++)
+            {
+                ulong frameId = frameIds[i];
+
+                Assert.True(callback.StackFrameData.TryGetValue(frameId, out StackFrameData? frameData));
+                Assert.NotEqual(InvalidId, frameData.MethodId);
+
+                Assert.True(callback.NameCache.FunctionData.TryGetValue(frameData.MethodId, out FunctionData? frameMethodData));
+
+                StackFrame? frame = stackTrace.GetFrame(i);
+                Assert.NotNull(frame);
+                MethodBase? method = frame.GetMethod();
+                Assert.NotNull(method);
+
+                Assert.Equal(method.Name, frameMethodData.Name);
+            }
         }
 
         private static uint ValidateTokenAndGetOuterToken(NameCache cache, ulong moduleId, uint token, Type expectedType)

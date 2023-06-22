@@ -4,5 +4,6 @@
     <LatestTargetFramework>net8.0</LatestTargetFramework>
     <LatestToolTargetFramework>$(LatestTargetFramework)</LatestToolTargetFramework>
     <OlderToolTargetFramework>net6.0</OlderToolTargetFramework>
+    <ArtifactsNonShippingBundlesDir>$(ArtifactsDir)bundles\$(Configuration)\NonShipping\</ArtifactsNonShippingBundlesDir>
   </PropertyGroup>
 </Project>
