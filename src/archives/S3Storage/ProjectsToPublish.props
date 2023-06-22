@@ -9,15 +9,15 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectToPublish Include="$(S3StorageProjectPath)">
-      <AdditionalProperties>TargetFramework=$(S3StoragePublishTargetFramework);RuntimeIdentifier=$(PackageRid);PublishDir=$(S3StoragePlatformSpecificPublishPath)</AdditionalProperties>
+      <AdditionalProperties>TargetFramework=$(S3StoragePublishTargetFramework);RuntimeIdentifier=$(PackageRid);PublishDir=$(S3StoragePlatformSpecificPublishPath);SelfContained=false</AdditionalProperties>
     </ProjectToPublish>
   </ItemGroup>
   <ItemGroup Condition="'$(SkipPlatformNeutralPublish)' != 'true'">
     <ProjectToPublish Include="$(S3StorageProjectPath)">
-      <AdditionalProperties>TargetFramework=$(LatestToolTargetFramework);RuntimeIdentifier=;PublishDir=$(S3StoragePublishRootPath)$(LatestToolTargetFramework)\any\</AdditionalProperties>
+      <AdditionalProperties>TargetFramework=$(LatestToolTargetFramework);RuntimeIdentifier=;PublishDir=$(S3StoragePublishRootPath)$(LatestToolTargetFramework)\any\;SelfContained=false</AdditionalProperties>
     </ProjectToPublish>
     <ProjectToPublish Include="$(S3StorageProjectPath)">
-      <AdditionalProperties>TargetFramework=$(OlderToolTargetFramework);RuntimeIdentifier=;PublishDir=$(S3StoragePublishRootPath)$(OlderToolTargetFramework)\any\</AdditionalProperties>
+      <AdditionalProperties>TargetFramework=$(OlderToolTargetFramework);RuntimeIdentifier=;PublishDir=$(S3StoragePublishRootPath)$(OlderToolTargetFramework)\any\;SelfContained=false</AdditionalProperties>
     </ProjectToPublish>
   </ItemGroup>
 </Project>
