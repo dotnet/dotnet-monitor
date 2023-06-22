@@ -24,8 +24,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         private const char GenericStart = '[';
         private const char GenericSeparator = ',';
         private const char GenericEnd = ']';
-        private const char MethodParameterTypesStart = '(';
-        private const char MethodParameterTypesEnd = ')';
 
         public static void BuildClassName(StringBuilder builder, NameCache cache, FunctionData functionData)
         {
@@ -120,20 +118,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        public static void BuildMethodParameterTypes(StringBuilder builder, NameCache cache, ulong[] parameterTypes)
+        public static IList<string> GetMethodParameterTypes(StringBuilder builder, NameCache cache, ulong[] parameterTypes)
         {
-            builder.Append(MethodParameterTypesStart);
-
+            List<string> parameterTypesList = new();
             for (int i = 0; i < parameterTypes?.Length; i++)
             {
+                builder.Clear();
                 BuildClassName(builder, cache, parameterTypes[i]);
-                if (i < parameterTypes.Length - 1)
-                {
-                    builder.Append(GenericSeparator);
-                }
+                parameterTypesList.Add(builder.ToString());
             }
 
-            builder.Append(MethodParameterTypesEnd);
+            return parameterTypesList;
         }
 
         public static string GetModuleName(NameCache cache, ulong moduleId)

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.IO;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,20 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
             foreach (CallStack stack in stackResult.Stacks)
             {
-                var stackModel = StackUtilities.TranslateCallStackToModel(stack, cache);
-
-                var builder = new StringBuilder();
-
-                foreach (var frameModel in stackModel.Frames)
-                {
-                    builder.Clear();
-                    builder.Append(frameModel.MethodName);
-                    builder.Append(frameModel.TypeArgs);
-
-                    frameModel.MethodName = builder.ToString();
-                }
-
-                stackResultModel.Stacks.Add(stackModel);
+                stackResultModel.Stacks.Add(StackUtilities.TranslateCallStackToModel(stack, cache));
             }
 
             await JsonSerializer.SerializeAsync(OutputStream, stackResultModel, cancellationToken: token);

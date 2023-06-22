@@ -22,6 +22,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private static byte[] JsonSequenceRecordSeparator = new byte[] { 0x1E };
 
+        private const char GenericSeparator = ',';
+        private const char MethodParameterTypesStart = '(';
+        private const char MethodParameterTypesEnd = ')';
+
         private readonly ExceptionsFormat _format;
         private readonly IExceptionsStore _store;
 
@@ -46,7 +50,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             startCompletionSource?.TrySetResult(null);
 
 
-            IEnumerable<IExceptionInstance> exceptions = _store.GetSnapshot();
+            IReadOnlyList<IExceptionInstance> exceptions = _store.GetSnapshot();
 
             switch (_format)
             {
@@ -72,7 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             throw new MonitoringException(Strings.ErrorMessage_OperationIsNotStoppable);
         }
 
-        private async Task WriteJson(Stream stream, IEnumerable<IExceptionInstance> instances, CancellationToken token)
+        private async Task WriteJson(Stream stream, IReadOnlyList<IExceptionInstance> instances, CancellationToken token)
         {
             foreach (IExceptionInstance instance in instances)
             {
@@ -93,6 +97,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             await using (Utf8JsonWriter writer = new(stream, new JsonWriterOptions() { Indented = false }))
             {
                 writer.WriteStartObject();
+                writer.WriteNumber("id", instance.Id);
                 // Writes the timestamp in ISO 8601 format
                 writer.WriteString("timestamp", instance.Timestamp);
                 writer.WriteString("typeName", instance.TypeName);
@@ -103,15 +108,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 writer.WriteNumber("threadId", instance.CallStack.ThreadId);
                 writer.WriteString("threadName", instance.CallStack.ThreadName);
 
+                writer.WriteStartArray("innerExceptions");
+                foreach (ulong innerExceptionId in instance.InnerExceptionIds)
+                {
+                    writer.WriteStartObject();
+                    writer.WriteNumber("id", innerExceptionId);
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+
                 writer.WriteStartArray("frames");
 
-                StringBuilder builder = new();
                 foreach (var frame in instance.CallStack.Frames)
                 {
                     writer.WriteStartObject();
 
-                    AssembleMethodName(builder, frame.MethodName, frame.ParameterTypes, frame.TypeArgs);
-                    writer.WriteString("methodName", builder.ToString());
+                    writer.WriteString("methodName", frame.MethodName);
+                    writer.WriteStartArray("parameterTypes");
+                    foreach (string parameterType in frame.ParameterTypes)
+                    {
+                        writer.WriteStringValue(parameterType);
+                    }
+                    writer.WriteEndArray(); // end parameterTypes
                     writer.WriteString("className", frame.ClassName);
                     writer.WriteString("moduleName", frame.ModuleName);
 
@@ -126,57 +144,155 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             await stream.WriteAsync(JsonRecordDelimiter, token);
         }
 
-        private static async Task WriteText(Stream stream, IEnumerable<IExceptionInstance> instances, CancellationToken token)
+        private static async Task WriteText(Stream stream, IReadOnlyList<IExceptionInstance> instances, CancellationToken token)
         {
-            foreach (IExceptionInstance instance in instances)
+            Dictionary<ulong, IExceptionInstance> priorInstances = new(instances.Count);
+            foreach (IExceptionInstance currentInstance in instances)
             {
-                await WriteTextInstance(stream, instance, token);
+                // Skip writing the exception if it does not have a call stack, which
+                // indicates that the exception was not thrown. It is likely to be referenced
+                // as an inner exception of a thrown exception.
+                if (currentInstance.CallStack?.Frames.Count != 0)
+                {
+                    await WriteTextInstance(stream, currentInstance, priorInstances, token);
+                }
+                priorInstances.Add(currentInstance.Id, currentInstance);
             }
         }
 
-        private static async Task WriteTextInstance(Stream stream, IExceptionInstance instance, CancellationToken token)
+        private static async Task WriteTextInstance(
+            Stream stream,
+            IExceptionInstance currentInstance,
+            IDictionary<ulong, IExceptionInstance> priorInstances,
+            CancellationToken token)
         {
             // This format is similar of that which is written to the console when an unhandled exception occurs. Each
             // exception will appear as:
 
-            // First chance exception. <TypeName>: <Message>
-            //   at Class.Method(ParameterType1, ParameterType2, ...)
+            // First chance exception at <TimeStamp>
+            // <TypeName>: <Message>
+            //  ---> <InnerExceptionTypeName>: <InnerExceptionMessage>
+            //   at <StackFrameClass>.<StackFrameMethod>(<ParameterType1>, <ParameterType2>, ...)
+            //   --- End of inner exception stack trace ---
+            //   at <StackFrameClass>.<StackFrameMethod>(<ParameterType1>, <ParameterType2>, ...)
 
             await using StreamWriter writer = new(stream, leaveOpen: true);
 
-            await writer.WriteLineAsync(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    Strings.OutputFormatString_FirstChanceException,
-                    instance.TypeName,
-                    instance.Message));
+            await writer.WriteAsync("First chance exception at ");
+            await writer.WriteAsync(currentInstance.Timestamp.ToString("O", CultureInfo.InvariantCulture));
 
-            if (instance.CallStack != null)
-            {
-                StringBuilder builder = new();
-                foreach (CallStackFrame frame in instance.CallStack.Frames)
-                {
-                    AssembleMethodName(builder, frame.MethodName, frame.ParameterTypes, frame.TypeArgs);
-                    await writer.WriteLineAsync(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            Strings.OutputFormatString_FirstChanceExceptionStackFrame,
-                            frame.ClassName,
-                            builder.ToString()));
-                }
-            }
+            await writer.WriteLineAsync();
+            await WriteTextExceptionFormat(writer, currentInstance);
+            await WriteTextInnerExceptionsAndStackFrames(writer, currentInstance, priorInstances);
 
+            await writer.WriteLineAsync();
             await writer.WriteLineAsync();
 
             await writer.FlushAsync();
         }
 
-        private static void AssembleMethodName(StringBuilder builder, string methodName, string parameterTypes, string typeArgs)
+        // Writes the inner exceptions and stack frames of the current exception:
+        // - The primary inner exception is written with a separator message.
+        // - The call stack frames are written for the current exception
+        // - The remaining inner exceptions are written with their inner exception index
+        // The above fits the format of inner exception and call stack information reported
+        // by AggregateException instances.
+        private static async Task WriteTextInnerExceptionsAndStackFrames(TextWriter writer, IExceptionInstance currentInstance, IDictionary<ulong, IExceptionInstance> priorInstances)
         {
-            builder.Clear();
+            if (currentInstance.InnerExceptionIds?.Length > 0)
+            {
+                if (priorInstances.TryGetValue(
+                        currentInstance.InnerExceptionIds[0],
+                        out IExceptionInstance primaryInnerInstance))
+                {
+                    await WriteTextInnerException(writer, primaryInnerInstance, 0, priorInstances);
+
+                    await writer.WriteLineAsync();
+                    await writer.WriteAsync("   --- End of inner exception stack trace ---");
+                }
+            }
+
+            if (null != currentInstance.CallStack)
+            {
+                StringBuilder builder = new();
+
+                foreach (CallStackFrame frame in currentInstance.CallStack.Frames)
+                {
+                    await writer.WriteLineAsync();
+
+                    builder.Clear();
+                    builder.Append("   at ");
+                    builder.Append(frame.ClassName);
+                    builder.Append('.');
+                    AssembleMethodName(builder, frame.MethodName, frame.ParameterTypes);
+
+                    await writer.WriteAsync(builder.ToString());
+                }
+            }
+
+            if (currentInstance.InnerExceptionIds?.Length > 1)
+            {
+                for (int index = 1; index < currentInstance.InnerExceptionIds.Length; index++)
+                {
+                    if (priorInstances.TryGetValue(
+                        currentInstance.InnerExceptionIds[index],
+                        out IExceptionInstance secondaryInnerInstance))
+                    {
+                        await WriteTextInnerException(writer, secondaryInnerInstance, index, priorInstances);
+                    }
+                }
+            }
+        }
+
+        // Writes the specified exception as an inner exception with the appropriate delimiters.
+        private static async Task WriteTextInnerException(TextWriter writer, IExceptionInstance currentInstance, int currentIndex, IDictionary<ulong, IExceptionInstance> priorInstances)
+        {
+            await writer.WriteLineAsync();
+            await writer.WriteAsync(" ---> ");
+
+            if (0 < currentIndex)
+            {
+                await writer.WriteAsync("(Inner Exception #");
+                await writer.WriteAsync(currentIndex.ToString("D", CultureInfo.InvariantCulture));
+                await writer.WriteAsync(") ");
+            }
+
+            await WriteTextExceptionFormat(writer, currentInstance);
+
+            await WriteTextInnerExceptionsAndStackFrames(writer, currentInstance, priorInstances);
+
+            if (0 < currentIndex)
+            {
+                await writer.WriteAsync("<---");
+            }
+        }
+
+        // Writes the basic exception information, namely the type and message
+        private static async Task WriteTextExceptionFormat(TextWriter writer, IExceptionInstance instance)
+        {
+            await writer.WriteAsync(instance.TypeName);
+            if (!string.IsNullOrEmpty(instance.Message))
+            {
+                await writer.WriteAsync(": ");
+                await writer.WriteAsync(instance.Message);
+            }
+        }
+
+        public static void AssembleMethodName(StringBuilder builder, string methodName, IList<string> parameterTypes)
+        {
             builder.Append(methodName);
-            builder.Append(parameterTypes);
-            builder.Append(typeArgs);
+            builder.Append(MethodParameterTypesStart);
+
+            for (int i = 0; i < parameterTypes.Count; i++)
+            {
+                builder.Append(parameterTypes[i]);
+
+                if (i < parameterTypes.Count - 1)
+                {
+                    builder.Append(GenericSeparator);
+                }
+            }
+            builder.Append(MethodParameterTypesEnd);
         }
     }
 }

@@ -56,22 +56,25 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 frameModel.ModuleName = NameFormatter.GetModuleName(cache, functionData.ModuleId);
 
-                frameModel.MethodName = functionData.Name;
-
                 builder.Clear();
-                NameFormatter.BuildMethodParameterTypes(builder, cache, functionData.ParameterTypes);
-                frameModel.ParameterTypes = builder.ToString();
+                builder.Append(functionData.Name);
+
+                if (functionData.TypeArgs.Length > 0)
+                {
+                    NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
+                }
+
+                frameModel.MethodName = builder.ToString();
+
+                if (functionData.ParameterTypes.Length > 0)
+                {
+                    builder.Clear();
+                    frameModel.ParameterTypes = NameFormatter.GetMethodParameterTypes(builder, cache, functionData.ParameterTypes);
+                }
 
                 builder.Clear();
                 NameFormatter.BuildClassName(builder, cache, functionData);
                 frameModel.ClassName = builder.ToString();
-
-                if (functionData.TypeArgs.Length > 0)
-                {
-                    builder.Clear();
-                    NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
-                    frameModel.TypeArgs = builder.ToString();
-                }
             }
 
             return frameModel;
