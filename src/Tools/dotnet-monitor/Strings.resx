@@ -164,8 +164,9 @@
     <comment>Gets a string similar to "File system egress failed.".</comment>
   </data>
   <data name="ErrorMessage_EgressMissingCredentials" xml:space="preserve">
-      <value>SharedAccessSignature, AccountKey, ManagedIdentityClientId, or UseWorkloadIdentityFromEnvironment must be specified.</value>
-      <comment>Gets a string similar to "SharedAccessSignature, AccountKey, ManagedIdentityClientId, or UseWorkflowIdentity must be specified.".</comment>  </data>
+    <value>SharedAccessSignature, AccountKey, ManagedIdentityClientId, or UseWorkloadIdentityFromEnvironment must be specified.</value>
+    <comment>Gets a string similar to "SharedAccessSignature, AccountKey, ManagedIdentityClientId, or UseWorkflowIdentity must be specified.".</comment>
+  </data>
   <data name="ErrorMessage_EgressProviderDoesNotExist" xml:space="preserve">
     <value>Egress provider '{0}' does not exist.</value>
     <comment>Gets the format string for egress provider failure due to missing provider.
@@ -796,16 +797,6 @@
   <data name="Message_ShowSources" xml:space="preserve">
     <value>Configuration Providers (High to Low Priority):</value>
     <comment>Gets the string for displaying the configuration providers with the --show-sources flag.</comment>
-  </data>
-  <data name="OutputFormatString_FirstChanceException" xml:space="preserve">
-    <value>First chance exception. {0}: {1}</value>
-    <comment>{0} = Exception type name
-{1} = Exception message</comment>
-  </data>
-  <data name="OutputFormatString_FirstChanceExceptionStackFrame" xml:space="preserve">
-    <value>  at {0}.{1}</value>
-    <comment>{0} = class name
-{1} = method name</comment>
   </data>
   <data name="Placeholder_NotPresent" xml:space="preserve">
     <value>:NOT PRESENT:</value>
