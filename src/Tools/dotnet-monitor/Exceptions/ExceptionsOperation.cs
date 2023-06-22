@@ -214,19 +214,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
             if (null != currentInstance.CallStack)
             {
-                StringBuilder builder = new();
-
                 foreach (CallStackFrame frame in currentInstance.CallStack.Frames)
                 {
                     await writer.WriteLineAsync();
-
-                    builder.Clear();
-                    builder.Append("   at ");
-                    builder.Append(frame.ClassName);
-                    builder.Append('.');
-                    AssembleMethodName(builder, frame.MethodName, frame.ParameterTypes);
-
-                    await writer.WriteAsync(builder.ToString());
+                    await writer.WriteAsync("   at ");
+                    await writer.WriteAsync(frame.ClassName);
+                    await writer.WriteAsync(".");
+                    await writer.WriteAsync(AssembleMethodName(frame.MethodName, frame.ParameterTypes));
                 }
             }
 
@@ -278,8 +272,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             }
         }
 
-        public static void AssembleMethodName(StringBuilder builder, string methodName, IList<string> parameterTypes)
+        public static string AssembleMethodName(string methodName, IList<string> parameterTypes)
         {
+            StringBuilder builder = new();
+
             builder.Append(methodName);
             builder.Append(MethodParameterTypesStart);
 
@@ -293,6 +289,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 }
             }
             builder.Append(MethodParameterTypesEnd);
+
+            return builder.ToString();
         }
     }
 }
