@@ -129,7 +129,9 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             // dependency injection.
             services.TryAddSingleton<EgressProvider<TOptions>, TProvider>();
 
+#if NET7_0_OR_GREATER
             services.MakeReadOnly();
+#endif
 
             ServiceProvider serviceProvider = services.BuildServiceProvider();
 
