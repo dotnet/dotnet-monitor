@@ -42,7 +42,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                 data.ParentToken,
                 data.ModuleId,
                 data.Name,
-                data.TypeArgs);
+                data.TypeArgs,
+                data.ParameterTypes);
         }
 
         public override void OnModuleData(ulong moduleId, ModuleData data)

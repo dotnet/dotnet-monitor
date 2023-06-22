@@ -21,6 +21,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private static byte[] JsonSequenceRecordSeparator = new byte[] { 0x1E };
 
+        private const char GenericSeparator = ',';
+        private const char MethodParameterTypesStart = '(';
+        private const char MethodParameterTypesEnd = ')';
+
         private readonly ExceptionsFormat _format;
         private readonly IExceptionsStore _store;
 
@@ -119,6 +123,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     writer.WriteStartObject();
 
                     writer.WriteString("methodName", frame.MethodName);
+                    writer.WriteStartArray("parameterTypes");
+                    foreach (string parameterType in frame.ParameterTypes)
+                    {
+                        writer.WriteStringValue(parameterType);
+                    }
+                    writer.WriteEndArray(); // end parameterTypes
                     writer.WriteString("className", frame.ClassName);
                     writer.WriteString("moduleName", frame.ModuleName);
 
@@ -172,7 +182,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
             await writer.WriteLineAsync();
             await WriteTextExceptionFormat(writer, currentInstance);
-
             await WriteTextInnerExceptionsAndStackFrames(writer, currentInstance, priorInstances);
 
             await writer.WriteLineAsync();
@@ -211,6 +220,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     await writer.WriteAsync(frame.ClassName);
                     await writer.WriteAsync(".");
                     await writer.WriteAsync(frame.MethodName);
+                    await writer.WriteAsync(MethodParameterTypesStart);
+
+                    for (int i = 0; i < frame.ParameterTypes.Count; i++)
+                    {
+                        await writer.WriteAsync(frame.ParameterTypes[i]);
+
+                        if (i < frame.ParameterTypes.Count - 1)
+                        {
+                            await writer.WriteAsync(GenericSeparator);
+                        }
+                    }
+                    await writer.WriteAsync(MethodParameterTypesEnd);
                 }
             }
 

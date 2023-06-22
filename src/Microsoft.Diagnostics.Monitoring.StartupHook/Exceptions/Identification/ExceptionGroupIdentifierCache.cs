@@ -103,7 +103,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                 AddOrDefault(method.DeclaringType),
                 metadataToken,
                 GetOrAdd(method.Module),
-                GetOrAdd(genericArguments)
+                GetOrAdd(genericArguments),
+                GetOrAdd(method.GetParameters())
                 );
 
             if (_nameCache.FunctionData.TryAdd(methodId, data))
@@ -249,6 +250,24 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                 for (int i = 0; i < types.Length; i++)
                 {
                     classIds[i] = GetOrAdd(types[i]);
+                }
+            }
+            else
+            {
+                classIds = Array.Empty<ulong>();
+            }
+            return classIds;
+        }
+
+        private ulong[] GetOrAdd(ParameterInfo[] parameters)
+        {
+            ulong[] classIds;
+            if (parameters.Length > 0)
+            {
+                classIds = new ulong[parameters.Length];
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    classIds[i] = GetOrAdd(parameters[i].ParameterType);
                 }
             }
             else

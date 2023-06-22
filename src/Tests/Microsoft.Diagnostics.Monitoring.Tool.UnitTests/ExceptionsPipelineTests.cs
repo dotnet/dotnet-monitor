@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.True(instance.Timestamp > baselineTimestamp);
 
-                    ValidateStack(instance, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
+                    ValidateStack(instance, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario", new List<string>() { "System.Boolean", "System.Boolean" });
                 });
         }
 
@@ -88,8 +88,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.True(instance2.Timestamp > baselineTimestamp);
                     Assert.NotEqual(instance1.Timestamp, instance2.Timestamp);
 
-                    ValidateStack(instance1, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
-                    ValidateStack(instance2, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
+                    ValidateStack(instance1, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario", new List<string>() { "System.Boolean", "System.Boolean" });
+                    ValidateStack(instance2, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario", new List<string>() { "System.Boolean", "System.Boolean" });
                 });
         }
 
@@ -110,7 +110,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(typeof(TaskCanceledException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
 
-                    ValidateStack(instance, "ThrowForNonSuccess", "System.Private.CoreLib.dll", "System.Runtime.CompilerServices.TaskAwaiter");
+                    ValidateStack(instance, "ThrowForNonSuccess", "System.Private.CoreLib.dll", "System.Runtime.CompilerServices.TaskAwaiter", new List<string>() { "System.Threading.Tasks.Task" });
                 });
         }
 
@@ -131,7 +131,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(typeof(ArgumentNullException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
 
-                    ValidateStack(instance, "Throw", "System.Private.CoreLib.dll", "System.ArgumentNullException");
+                    ValidateStack(instance, "Throw", "System.Private.CoreLib.dll", "System.ArgumentNullException", new List<string>() { "System.String" });
                 });
         }
 
@@ -157,6 +157,27 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
+        /// Tests that exceptions with ref parameters and void* parameters are handled correctly.
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_EsotericStackFrameTypes()
+        {
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.EsotericStackFrameTypes,
+                expectedInstanceCount: 1,
+                validate: instances =>
+                {
+                    IExceptionInstance instance = Assert.Single(instances);
+                    Assert.NotNull(instance);
+                    Assert.NotEqual(0UL, instance.Id);
+                    Assert.Equal(typeof(FormatException).FullName, instance.TypeName);
+                    Assert.False(string.IsNullOrEmpty(instance.Message));
+
+                    ValidateStack(instance, "ThrowAndCatchEsotericStackFrameTypes", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario", new List<string>() { "System.Int32&", "System.Int32&" });
+                });
+        }
+
+        /// <summary>
         /// Tests that exceptions from reverse p/invoke are detectable.
         /// </summary>
         [Theory]
@@ -174,7 +195,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(typeof(InvalidOperationException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
 
-                    ValidateStack(instance, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario");
+                    ValidateStack(instance, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario", new List<string>() { "System.Boolean", "System.Boolean" });
                 },
                 architecture);
         }
@@ -438,7 +459,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
-        private static void ValidateStack(IExceptionInstance instance, string expectedMethodName, string expectedModuleName, string expectedClassName)
+        private static void ValidateStack(IExceptionInstance instance, string expectedMethodName, string expectedModuleName, string expectedClassName, IList<string> expectedParameterTypes = null)
         {
             CallStack stack = instance.CallStack;
             Assert.NotEmpty(stack.Frames);
@@ -446,6 +467,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(expectedMethodName, stack.Frames[0].MethodName);
             Assert.Equal(expectedModuleName, stack.Frames[0].ModuleName);
             Assert.Equal(expectedClassName, stack.Frames[0].ClassName);
+            Assert.Equal(expectedParameterTypes ?? new List<string>(), stack.Frames[0].ParameterTypes);
         }
 
         private static void AddStartupHookEnvironmentVariable(AppRunner runner)
