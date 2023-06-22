@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -104,11 +105,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                 writer.WriteStartArray("frames");
 
+                StringBuilder builder = new();
                 foreach (var frame in instance.CallStack.Frames)
                 {
                     writer.WriteStartObject();
 
-                    writer.WriteString("methodName", frame.MethodName);
+                    AssembleMethodName(builder, frame.MethodName, frame.ParameterTypes, frame.TypeArgs);
+                    writer.WriteString("methodName", builder.ToString());
                     writer.WriteString("className", frame.ClassName);
                     writer.WriteString("moduleName", frame.ModuleName);
 
@@ -150,20 +153,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
             if (instance.CallStack != null)
             {
+                StringBuilder builder = new();
                 foreach (CallStackFrame frame in instance.CallStack.Frames)
                 {
+                    AssembleMethodName(builder, frame.MethodName, frame.ParameterTypes, frame.TypeArgs);
                     await writer.WriteLineAsync(
                         string.Format(
                             CultureInfo.InvariantCulture,
                             Strings.OutputFormatString_FirstChanceExceptionStackFrame,
                             frame.ClassName,
-                            frame.MethodName));
+                            builder.ToString()));
                 }
             }
 
             await writer.WriteLineAsync();
 
             await writer.FlushAsync();
+        }
+
+        private static void AssembleMethodName(StringBuilder builder, string methodName, string parameterTypes, string typeArgs)
+        {
+            builder.Clear();
+            builder.Append(methodName);
+            builder.Append(parameterTypes);
+            builder.Append(typeArgs);
         }
     }
 }

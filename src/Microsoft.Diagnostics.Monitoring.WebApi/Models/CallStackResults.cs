@@ -17,6 +17,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [JsonPropertyName("moduleName")]
         public string ModuleName { get; set; }
 
+        internal string ParameterTypes { get; set; }
+
+        internal string TypeArgs { get; set; }
+
         //TODO Bring this back once we have a relative il offset value.
         //[JsonPropertyName("offset")]
         //public ulong Offset { get; set; }

@@ -56,11 +56,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 frameModel.ModuleName = NameFormatter.GetModuleName(cache, functionData.ModuleId);
 
-                builder.Clear();
-                builder.Append(functionData.Name);
+                frameModel.MethodName = functionData.Name;
 
+                builder.Clear();
                 NameFormatter.BuildMethodParameterTypes(builder, cache, functionData.ParameterTypes);
-                frameModel.MethodName = builder.ToString();
+                frameModel.ParameterTypes = builder.ToString();
 
                 builder.Clear();
                 NameFormatter.BuildClassName(builder, cache, functionData);
@@ -69,9 +69,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 if (functionData.TypeArgs.Length > 0)
                 {
                     builder.Clear();
-                    builder.Append(frameModel.MethodName);
                     NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
-                    frameModel.MethodName = builder.ToString();
+                    frameModel.TypeArgs = builder.ToString();
                 }
             }
 

@@ -32,8 +32,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             CliCommand customExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.CustomException);
             customExceptionCommand.SetAction(CustomExceptionAsync);
 
-            CliCommand customExceptionRefParameterCommand = new(TestAppScenarios.Exceptions.SubScenarios.CustomExceptionRefParameter);
-            customExceptionRefParameterCommand.SetAction(CustomExceptionRefParameterAsync);
+            CliCommand esotericStackFrameTypesCommand = new(TestAppScenarios.Exceptions.SubScenarios.EsotericStackFrameTypes);
+            esotericStackFrameTypesCommand.SetAction(EsotericStackFrameTypesAsync);
 
             CliCommand reversePInvokeExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ReversePInvokeException);
             reversePInvokeExceptionCommand.SetAction(ReversePInvokeExceptionAsync);
@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             scenarioCommand.Subcommands.Add(asyncExceptionCommand);
             scenarioCommand.Subcommands.Add(frameworkExceptionCommand);
             scenarioCommand.Subcommands.Add(customExceptionCommand);
-            scenarioCommand.Subcommands.Add(customExceptionRefParameterCommand);
+            scenarioCommand.Subcommands.Add(esotericStackFrameTypesCommand);
             scenarioCommand.Subcommands.Add(reversePInvokeExceptionCommand);
             scenarioCommand.Subcommands.Add(dynamicMethodExceptionCommand);
             scenarioCommand.Subcommands.Add(arrayExceptionCommand);
@@ -145,14 +145,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             }, token);
         }
 
-        public static Task<int> CustomExceptionRefParameterAsync(ParseResult result, CancellationToken token)
+        public static Task<int> EsotericStackFrameTypesAsync(ParseResult result, CancellationToken token)
         {
             return ScenarioHelpers.RunScenarioAsync(async logger =>
             {
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
 
-                int i = 1;
-                ThrowAndCatchCustomExceptionRefParameter(ref i);
+                ThrowAndCatchEsotericStackFrameTypes();
 
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
 
@@ -411,11 +410,19 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void ThrowAndCatchCustomExceptionRefParameter(ref int i)
+        private static unsafe void ThrowAndCatchEsotericStackFrameTypes()
+        {
+            int i = 1;
+            void* p = (void*)i;
+            ThrowAndCatchEsotericStackFrameTypes(ref i, p);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static unsafe void ThrowAndCatchEsotericStackFrameTypes(ref int i, void* p)
         {
             try
             {
-                throw new CustomGenericsException<int, string>($"This is a custom exception message with ref parameter {i}.");
+                throw new FormatException();
             }
             catch (Exception)
             {
