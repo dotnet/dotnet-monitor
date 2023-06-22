@@ -157,7 +157,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
-        /// Tests that custom exceptions with ref parameters are handled correctly.
+        /// Tests that exceptions with ref parameters and void* parameters are handled correctly.
         /// </summary>
         [Fact]
         public Task EventExceptionsPipeline_EsotericStackFrameTypes()
