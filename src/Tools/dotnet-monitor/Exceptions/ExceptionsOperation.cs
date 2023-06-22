@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -220,7 +219,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     await writer.WriteAsync("   at ");
                     await writer.WriteAsync(frame.ClassName);
                     await writer.WriteAsync(".");
-                    await writer.WriteAsync(AssembleMethodName(frame.MethodName, frame.ParameterTypes));
+                    await writer.WriteAsync(frame.MethodName);
+                    await writer.WriteAsync(MethodParameterTypesStart);
+
+                    for (int i = 0; i < frame.ParameterTypes.Count; i++)
+                    {
+                        await writer.WriteAsync(frame.ParameterTypes[i]);
+
+                        if (i < frame.ParameterTypes.Count - 1)
+                        {
+                            await writer.WriteAsync(GenericSeparator);
+                        }
+                    }
+                    await writer.WriteAsync(MethodParameterTypesEnd);
                 }
             }
 
@@ -270,27 +281,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 await writer.WriteAsync(": ");
                 await writer.WriteAsync(instance.Message);
             }
-        }
-
-        public static string AssembleMethodName(string methodName, IList<string> parameterTypes)
-        {
-            StringBuilder builder = new();
-
-            builder.Append(methodName);
-            builder.Append(MethodParameterTypesStart);
-
-            for (int i = 0; i < parameterTypes.Count; i++)
-            {
-                builder.Append(parameterTypes[i]);
-
-                if (i < parameterTypes.Count - 1)
-                {
-                    builder.Append(GenericSeparator);
-                }
-            }
-            builder.Append(MethodParameterTypesEnd);
-
-            return builder.ToString();
         }
     }
 }
