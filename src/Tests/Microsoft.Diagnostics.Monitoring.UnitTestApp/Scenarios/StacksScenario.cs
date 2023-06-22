@@ -3,8 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System.CommandLine;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,6 +20,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
         public static Task<int> ExecuteAsync(ParseResult result, CancellationToken token)
         {
+            MonitorLibrary.InitializeResolver();
+
             using StacksWorker worker = new StacksWorker();
 
             //Background thread will create an expected callstack and pause.
