@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             try
             {
-                SharedInternals.MessageLoop.RegisterCommandDispatch<ParameterCapturingPayload>(ProfilerCommand.CaptureParameter, OnCommand);
+                SharedInternals.MessageLoop.RegisterCallback<ParameterCapturingPayload>(ProfilerCommand.CaptureParameter, OnCommand);
                 _probeManager = new FunctionProbesManager(new LogEmittingProbes(_logger, FunctionProbesStub.InstrumentedMethodCache));
                 _isAvailable = true;
             }
@@ -157,7 +157,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             try
             {
-                SharedInternals.MessageLoop.UnregisterCommandDispatch(ProfilerCommand.CaptureParameter);
+                SharedInternals.MessageLoop.UnregisterCallback(ProfilerCommand.CaptureParameter);
                 _probeManager?.Dispose();
             }
             catch

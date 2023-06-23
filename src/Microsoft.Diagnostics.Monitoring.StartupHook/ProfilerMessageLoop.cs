@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             _messagePumpThread = new Thread(MessageLoop);
         }
 
-        public void RegisterCommandDispatch<T>(ProfilerCommand command, Action<T> callback) where T : class
+        public void RegisterCallback<T>(ProfilerCommand command, Action<T> callback) where T : class
         {
             DispatchRecord dispatch = new()
             {
@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             _dispatchTable[command] = dispatch;
         }
 
-        public void UnregisterCommandDispatch(ProfilerCommand command)
+        public void UnregisterCallback(ProfilerCommand command)
         {
             _dispatchTable.TryRemove(command, out _);
         }
@@ -113,7 +113,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
                 var payload = JsonSerializer.Deserialize(message.Payload, dispatcher.PayloadType);
                 if (payload != null && dispatcher.Callback != null)
                 {
-                    dispatcher.Callback(payload);
+                    try
+                    {
+                        dispatcher.Callback(payload);
+                    }
+                    catch
+                    {
+
+                    }
                 }
             }
 
