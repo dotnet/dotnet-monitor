@@ -22,10 +22,6 @@
     <SwashbuckleAspNetCoreVersion>6.5.0</SwashbuckleAspNetCoreVersion>
     <AwsSdkS3Version>3.5.8.1</AwsSdkS3Version>
 
-    <!-- Release-branch specific reference -->
-    <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringShippedVersion>7.0.430602</MicrosoftDiagnosticsMonitoringShippedVersion>
-
     <!--
       Moq version & constants derived from Moq.
       The MoqInternalsVisibleTo* properties are not managed by Dependabot and may need to be updated incase a new version of Moq ever changes them.
