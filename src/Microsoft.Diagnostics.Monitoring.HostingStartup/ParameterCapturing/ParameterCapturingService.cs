@@ -74,11 +74,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             string methodName = classAndMethod[(lastIndex + 1)..];
 
             List<MethodInfo> methods = new();
+
+            // JSFIX: Consider lookup table
             foreach (Assembly assembly in assemblies)
             {
                 foreach (Module module in assembly.Modules)
                 {
-                    // JSFIX: Name may not be unique, do we need to worry about fq names or mvids?
                     if (string.Equals(module.Name, dll, StringComparison.OrdinalIgnoreCase))
                     {
                         // JSFIX: What if there are multiple matches ... select all or none?
