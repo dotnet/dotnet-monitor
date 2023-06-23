@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     {
                         // JSFIX: What if there are multiple matches ... select all or none?
                         // Pick all for now.
-                        MethodInfo? method = module?.GetType(className)?.GetMethod(methodName);
+                        MethodInfo? method = module.GetType(className)?.GetMethod(methodName);
                         if (method != null)
                         {
                             methods.Add(method);
