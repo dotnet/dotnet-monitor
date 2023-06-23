@@ -55,19 +55,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             List<MethodInfo> methods = new(request.FqMethodNames.Length);
             foreach (string methodName in request.FqMethodNames)
             {
-                MethodInfo? methodInfo = ResolveMethod(assemblies, methodName);
-                if (methodInfo == null)
-                {
-                    return;
-                }
-
-                methods.Add(methodInfo);
+                List<MethodInfo> resolvedMethods = ResolveMethod(assemblies, methodName);
+                methods.AddRange(resolvedMethods);
             }
 
             StartCapturing(methods, request.Duration);
         }
 
-        private static MethodInfo? ResolveMethod(Assembly[] assemblies, string fqMethodName)
+        private static List<MethodInfo> ResolveMethod(Assembly[] assemblies, string fqMethodName)
         {
             // JSFIX: proof-of-concept code
             int dllSplitIndex = fqMethodName.IndexOf('!');
@@ -78,40 +73,26 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             string className = classAndMethod[..lastIndex];
             string methodName = classAndMethod[(lastIndex + 1)..];
 
-
-            Module? userMod = null;
-            Assembly? userAssembly = null;
-            foreach (var assembly in assemblies)
+            List<MethodInfo> methods = new();
+            foreach (Assembly assembly in assemblies)
             {
-                foreach (var mod in assembly.Modules)
+                foreach (Module module in assembly.Modules)
                 {
-                    if (mod.Name == dll)
+                    // JSFIX: Name may not be unique, do we need to worry about fq names or mvids?
+                    if (string.Equals(module.Name, dll, StringComparison.OrdinalIgnoreCase))
                     {
-                        userAssembly = assembly;
-                        userMod = mod;
-                        break;
+                        // JSFIX: What if there are multiple matches ... select all or none?
+                        // Pick all for now.
+                        MethodInfo? method = module?.GetType(className)?.GetMethod(methodName);
+                        if (method != null)
+                        {
+                            methods.Add(method);
+                        }
                     }
                 }
             }
 
-            if (userMod == null || userAssembly == null)
-            {
-                return null;
-            }
-
-            Type? remoteClass = userAssembly.GetType(className);
-            if (remoteClass == null)
-            {
-                return null;
-            }
-
-            MethodInfo? methodInfo = remoteClass.GetMethod(methodName);
-            if (methodInfo == null)
-            {
-                return null;
-            }
-
-            return methodInfo;
+            return methods;
         }
 
         public void StopCapturing()
