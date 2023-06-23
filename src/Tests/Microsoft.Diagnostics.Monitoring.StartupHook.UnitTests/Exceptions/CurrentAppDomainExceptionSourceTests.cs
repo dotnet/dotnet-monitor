@@ -9,18 +9,18 @@ using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 {
-    [TargetFrameworkMonikerTrait(TargetFrameworkMoniker.Current)]
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public sealed class CurrentAppDomainExceptionSourceTests
     {
         private readonly Thread _thisThread = Thread.CurrentThread;
 
-        private EventHandler<Exception> CreateHandler(List<Exception> reportedExceptions)
+        private EventHandler<ExceptionEventArgs> CreateHandler(List<Exception> reportedExceptions)
         {
-            return (sender, exception) =>
+            return (sender, args) =>
             {
                 if (Thread.CurrentThread == _thisThread)
                 {
-                    reportedExceptions.Add(exception);
+                    reportedExceptions.Add(args.Exception);
                 }
             };
         }
@@ -72,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
         public void CurrentAppDomainExceptionSource_ReentrancyPrevented()
         {
             bool handled = false;
-            EventHandler<Exception> handler = (sender, exception) =>
+            EventHandler<ExceptionEventArgs> handler = (sender, args) =>
             {
                 if (Thread.CurrentThread == _thisThread)
                 {

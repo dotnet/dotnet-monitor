@@ -19,15 +19,15 @@
     // ms-dotnettools.csharp settings
     "csharp.format.enable": true,
     "csharp.semanticHighlighting.enabled": true,
+    "dotnet.defaultSolution": "dotnet-monitor.sln",
+    "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
 
     // ms-dotnettools.csharp settings
     "omnisharp.path": "latest",
-    "omnisharp.defaultLaunchSolution": "dotnet-monitor.sln",
     "omnisharp.disableMSBuildDiagnosticWarning": true,
     "omnisharp.useModernNet": true,
     "omnisharp.enableAsyncCompletion": true,
     "omnisharp.enableEditorConfigSupport": true,
-    "omnisharp.enableImportCompletion": true,
     "omnisharp.enableRoslynAnalyzers": true,
     "omnisharp.organizeImportsOnFormat": true,
     "omnisharp.autoStart": true,

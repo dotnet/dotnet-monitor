@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
@@ -28,7 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly IProcessInfo _processInfo;
         private readonly IOptionsMonitor<CollectionRuleOptions> _optionsMonitor;
         private readonly List<Task> _runTasks = new();
-        private readonly ISystemClock _systemClock;
+        private readonly TimeProvider _timeProvider;
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
         public List<CollectionRulePipeline> Pipelines { get; set; } = new();
@@ -51,7 +50,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
             _actionListExecutor = serviceProvider.GetRequiredService<ActionListExecutor>();
             _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>();
-            _systemClock = serviceProvider.GetRequiredService<ISystemClock>();
+            _timeProvider = serviceProvider.GetRequiredService<TimeProvider>();
             _triggerOperations = serviceProvider.GetRequiredService<ICollectionRuleTriggerOperations>();
         }
 
@@ -200,7 +199,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 _logger.CollectionRuleStarted(ruleName);
 
-                CollectionRuleContext context = new(ruleName, options, _processInfo.EndpointInfo, _logger, _systemClock);
+                CollectionRuleContext context = new(ruleName, options, _processInfo.EndpointInfo, _logger, _timeProvider);
 
                 await using CollectionRulePipeline pipeline = new(
                     _actionListExecutor,

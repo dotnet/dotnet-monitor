@@ -83,7 +83,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<IAuthenticationConfigurator>(authConfigurator);
 
                 //TODO Many of these service additions should be done through extension methods
-                services.AddSingleton(RealSystemClock.Instance);
+                services.AddSingleton(TimeProvider.System);
 
                 services.AddSingleton<IEgressOutputConfiguration>(new EgressOutputConfiguration(httpEgressEnabled: !noHttpEgress));
 

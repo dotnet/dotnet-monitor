@@ -46,21 +46,21 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             base.Dispose(disposing);
         }
 
-        [Event(ExceptionEvents.EventIds.ExceptionIdentifier)]
-        public void ExceptionIdentifier(
-            ulong ExceptionId,
+        [Event(ExceptionEvents.EventIds.ExceptionGroup)]
+        public void ExceptionGroup(
+            ulong ExceptionGroupId,
             ulong ExceptionClassId,
             ulong ThrowingMethodId,
             int ILOffset)
         {
             Span<EventData> data = stackalloc EventData[4];
 
-            SetValue(ref data[ExceptionEvents.ExceptionIdentifierPayloads.ExceptionId], ExceptionId);
-            SetValue(ref data[ExceptionEvents.ExceptionIdentifierPayloads.ExceptionClassId], ExceptionClassId);
-            SetValue(ref data[ExceptionEvents.ExceptionIdentifierPayloads.ThrowingMethodId], ThrowingMethodId);
-            SetValue(ref data[ExceptionEvents.ExceptionIdentifierPayloads.ILOffset], ILOffset);
+            SetValue(ref data[ExceptionEvents.ExceptionGroupPayloads.ExceptionGroupId], ExceptionGroupId);
+            SetValue(ref data[ExceptionEvents.ExceptionGroupPayloads.ExceptionClassId], ExceptionClassId);
+            SetValue(ref data[ExceptionEvents.ExceptionGroupPayloads.ThrowingMethodId], ThrowingMethodId);
+            SetValue(ref data[ExceptionEvents.ExceptionGroupPayloads.ILOffset], ILOffset);
 
-            WriteEventCore(ExceptionEvents.EventIds.ExceptionIdentifier, data);
+            WriteEventCore(ExceptionEvents.EventIds.ExceptionGroup, data);
 
             RestartFlushingEventTimer();
         }
@@ -68,13 +68,25 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         [Event(ExceptionEvents.EventIds.ExceptionInstance)]
         public void ExceptionInstance(
             ulong ExceptionId,
-            string? ExceptionMessage)
+            ulong ExceptionGroupId,
+            string? ExceptionMessage,
+            ulong[] StackFrameIds,
+            DateTime Timestamp,
+            ulong[] InnerExceptionIds)
         {
-            Span<EventData> data = stackalloc EventData[2];
+            Span<EventData> data = stackalloc EventData[6];
             using PinnedData namePinned = PinnedData.Create(ExceptionMessage);
+            Span<byte> stackFrameIdsSpan = stackalloc byte[GetArrayDataSize(StackFrameIds)];
+            FillArrayData(stackFrameIdsSpan, StackFrameIds);
+            Span<byte> innerExceptionIdsSpan = stackalloc byte[GetArrayDataSize(InnerExceptionIds)];
+            FillArrayData(innerExceptionIdsSpan, InnerExceptionIds);
 
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionId], ExceptionId);
+            SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionGroupId], ExceptionGroupId);
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage], namePinned);
+            SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.StackFrameIds], stackFrameIdsSpan);
+            SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.Timestamp], Timestamp.ToFileTimeUtc());
+            SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds], innerExceptionIdsSpan);
 
             WriteEventCore(ExceptionEvents.EventIds.ExceptionInstance, data);
 
@@ -111,12 +123,15 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             uint ClassToken,
             ulong ModuleId,
             string Name,
-            ulong[] TypeArgs)
+            ulong[] TypeArgs,
+            ulong[] ParameterTypes)
         {
-            Span<EventData> data = stackalloc EventData[6];
+            Span<EventData> data = stackalloc EventData[7];
             using PinnedData namePinned = PinnedData.Create(Name);
             Span<byte> typeArgsSpan = stackalloc byte[GetArrayDataSize(TypeArgs)];
             FillArrayData(typeArgsSpan, TypeArgs);
+            Span<byte> parameterTypesSpan = stackalloc byte[GetArrayDataSize(ParameterTypes)];
+            FillArrayData(parameterTypesSpan, ParameterTypes);
 
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.FunctionId], FunctionId);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ClassId], ClassId);
@@ -124,6 +139,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ModuleId], ModuleId);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.Name], namePinned);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.TypeArgs], typeArgsSpan);
+            SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ParameterTypes], parameterTypesSpan);
 
             WriteEventCore(ExceptionEvents.EventIds.FunctionDescription, data);
 
@@ -142,6 +158,23 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.ModuleDescPayloads.Name], namePinned);
 
             WriteEventCore(ExceptionEvents.EventIds.ModuleDescription, data);
+
+            RestartFlushingEventTimer();
+        }
+
+        [Event(ExceptionEvents.EventIds.StackFrameDescription)]
+        public void StackFrameDescription(
+            ulong StackFrameId,
+            ulong FunctionId,
+            int ILOffset)
+        {
+            Span<EventData> data = stackalloc EventData[3];
+
+            SetValue(ref data[ExceptionEvents.StackFrameIdentifierPayloads.StackFrameId], StackFrameId);
+            SetValue(ref data[ExceptionEvents.StackFrameIdentifierPayloads.FunctionId], FunctionId);
+            SetValue(ref data[ExceptionEvents.StackFrameIdentifierPayloads.ILOffset], ILOffset);
+
+            WriteEventCore(ExceptionEvents.EventIds.StackFrameDescription, data);
 
             RestartFlushingEventTimer();
         }
