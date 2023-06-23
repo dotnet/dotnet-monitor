@@ -68,6 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private static MethodInfo? ResolveMethod(Assembly[] assemblies, string fqMethodName)
         {
+            // JSFIX: Not production quality or ready
             int dllSplitIndex = fqMethodName.IndexOf('!');
             string dll = fqMethodName[..dllSplitIndex];
             string classAndMethod = fqMethodName[(dllSplitIndex + 1)..];
