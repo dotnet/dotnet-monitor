@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             StartCapturing(methods, request.Duration);
         }
 
-        private static List<MethodInfo> ResolveMethod(Assembly[] assemblies, string fqMethodName)
+        private List<MethodInfo> ResolveMethod(Assembly[] assemblies, string fqMethodName)
         {
             // JSFIX: proof-of-concept code
             int dllSplitIndex = fqMethodName.IndexOf('!');
@@ -84,11 +84,24 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     {
                         // JSFIX: What if there are multiple matches ... select all or none?
                         // Pick all for now.
-                        MethodInfo? method = module.GetType(className)?.GetMethod(methodName);
-                        if (method != null)
+                        try
                         {
-                            methods.Add(method);
+                            MethodInfo? method = module.GetType(className)?.GetMethod(methodName);
+                            if (method != null)
+                            {
+                                methods.Add(method);
+                            }
                         }
+                        catch (Exception ex)
+                        {
+                            // Log warning to user, they requested it.... Can we signal back to the profiler that this request failed somehow?
+                            // Either a callback into the profiler, or have the profiler reverse pinvoke to dispatch the message so it can observe
+                            // the result.
+                            // if so, do we register a callback?
+                            // JSFIX: Resx and better format string
+                            _logger?.LogWarning($"Unable resolve method {fqMethodName}, exception: {ex}");
+                        }
+
                     }
                 }
             }
