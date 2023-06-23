@@ -12,16 +12,30 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
     /// in code. This class may be used as an identifier for determining whether
     /// exception usages are equivalent (same exception type thrown from the same location).
     /// </summary>
-    internal sealed record class ExceptionIdentifier
+    internal sealed record class ExceptionGroupIdentifier
     {
-        public ExceptionIdentifier(Exception ex)
+        public ExceptionGroupIdentifier(Exception ex)
         {
             ArgumentNullException.ThrowIfNull(ex);
 
             ExceptionType = ex.GetType();
 
             StackTrace stackTrace = new(ex, fNeedFileInfo: false);
-            foreach (StackFrame stackFrame in stackTrace.GetFrames())
+            SetThrowingFrame(stackTrace.GetFrames());
+        }
+
+        public ExceptionGroupIdentifier(Exception ex, ReadOnlySpan<StackFrame> stackFrames)
+        {
+            ArgumentNullException.ThrowIfNull(ex);
+
+            ExceptionType = ex.GetType();
+
+            SetThrowingFrame(stackFrames);
+        }
+
+        private void SetThrowingFrame(ReadOnlySpan<StackFrame> stackFrames)
+        {
+            foreach (StackFrame stackFrame in stackFrames)
             {
                 ThrowingMethod = stackFrame.GetMethod();
                 if (null != ThrowingMethod)
@@ -34,8 +48,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 
         public Type ExceptionType { get; }
 
-        public MethodBase? ThrowingMethod { get; }
+        public MethodBase? ThrowingMethod { get; private set; }
 
-        public int ILOffset { get; }
+        public int ILOffset { get; private set; }
     }
 }

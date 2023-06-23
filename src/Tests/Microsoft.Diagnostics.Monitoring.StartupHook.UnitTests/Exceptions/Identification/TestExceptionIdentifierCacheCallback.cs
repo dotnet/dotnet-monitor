@@ -6,21 +6,23 @@ using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 {
-    internal sealed class TestExceptionIdentifierCacheCallback :
-        ExceptionIdentifierCacheCallback
+    internal sealed class TestExceptionGroupIdentifierCacheCallback :
+        ExceptionGroupIdentifierCacheCallback
     {
         public readonly NameCache NameCache = new();
 
-        public readonly Dictionary<ulong, ExceptionIdentifierData> ExceptionIdentifierData = new();
+        public readonly Dictionary<ulong, ExceptionGroupData> ExceptionGroupMap = new();
+
+        public readonly Dictionary<ulong, StackFrameData> StackFrameData = new();
 
         public override void OnClassData(ulong classId, ClassData data)
         {
             Assert.True(NameCache.ClassData.TryAdd(classId, data));
         }
 
-        public override void OnExceptionIdentifier(ulong registrationId, ExceptionIdentifierData data)
+        public override void OnExceptionGroupData(ulong registrationId, ExceptionGroupData data)
         {
-            Assert.True(ExceptionIdentifierData.TryAdd(registrationId, data));
+            Assert.True(ExceptionGroupMap.TryAdd(registrationId, data));
         }
 
         public override void OnFunctionData(ulong functionId, FunctionData data)
@@ -31,6 +33,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         public override void OnModuleData(ulong moduleId, ModuleData data)
         {
             Assert.True(NameCache.ModuleData.TryAdd(moduleId, data));
+        }
+
+        public override void OnStackFrameData(ulong frameId, StackFrameData data)
+        {
+            Assert.True(StackFrameData.TryAdd(frameId, data));
         }
 
         public override void OnTokenData(ulong moduleId, uint typeToken, TokenData data)

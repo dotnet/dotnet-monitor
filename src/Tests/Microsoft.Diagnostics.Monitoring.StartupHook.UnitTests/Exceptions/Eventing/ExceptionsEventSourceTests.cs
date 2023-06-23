@@ -2,11 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification;
+using Microsoft.Diagnostics.Monitoring.TestCommon;
+using System;
 using System.Diagnostics.Tracing;
+using System.Linq;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMoniker.Current)]
     public sealed class ExceptionsEventSourceTests
     {
         private const string InvalidOperationExceptionMessage = "Operation is not valid due to the current state of the object.";
@@ -18,16 +22,16 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         [InlineData(1, 0, ulong.MaxValue, 19)]
         [InlineData(7, ulong.MaxValue, 0, 17)]
         [InlineData(ulong.MaxValue, 29, 41, 0)]
-        public void ExceptionsEventSource_WriteExceptionId_Event(ulong id, ulong classId, ulong methodId, int ilOffset)
+        public void ExceptionsEventSource_WriteExceptionGroup_Event(ulong id, ulong classId, ulong methodId, int ilOffset)
         {
             using ExceptionsEventSource source = new();
 
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Informational);
 
-            source.ExceptionIdentifier(id, classId, methodId, ilOffset);
+            source.ExceptionGroup(id, classId, methodId, ilOffset);
 
-            (ulong exceptionId, ExceptionIdentifierData data) = Assert.Single(listener.ExceptionIdentifiers);
+            (ulong exceptionId, ExceptionGroupData data) = Assert.Single(listener.ExceptionGroups);
             Assert.Equal(id, exceptionId);
             Assert.Equal(classId, data.ExceptionClassId);
             Assert.Equal(methodId, data.ThrowingMethodId);
@@ -35,48 +39,60 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         }
 
         [Fact]
-        public void ExceptionsEventSource_WriteExceptionId_LevelTooHigh()
+        public void ExceptionsEventSource_WriteExceptionGroup_LevelTooHigh()
         {
             using ExceptionsEventSource source = new();
 
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Warning);
 
-            source.ExceptionIdentifier(1, 2, 3, 4);
+            source.ExceptionGroup(1, 2, 3, 4);
 
-            Assert.Empty(listener.ExceptionIdentifiers);
+            Assert.Empty(listener.ExceptionGroups);
         }
 
         [Fact]
-        public void ExceptionsEventSource_WriteExceptionId_NotEnabled()
+        public void ExceptionsEventSource_WriteExceptionGroup_NotEnabled()
         {
             using ExceptionsEventSource source = new();
 
             using ExceptionsEventListener listener = new();
 
-            source.ExceptionIdentifier(4, 3, 2, 1);
+            source.ExceptionGroup(4, 3, 2, 1);
 
-            Assert.Empty(listener.ExceptionIdentifiers);
+            Assert.Empty(listener.ExceptionGroups);
         }
 
         [Theory]
-        [InlineData(0, null)]
-        [InlineData(1, "")]
-        [InlineData(7, InvalidOperationExceptionMessage)]
-        [InlineData(ulong.MaxValue - 1, OperationCancelledExceptionMessage)]
-        [InlineData(ulong.MaxValue, ObjectDisposedExceptionMessage)]
-        public void ExceptionsEventSource_WriteException_Event(ulong id, string message)
+        [InlineData(0, 0, null, "0,0,0", "")]
+        [InlineData(1, 5, "", "1,2", "1")]
+        [InlineData(7, 13, InvalidOperationExceptionMessage, "", "3,5")]
+        [InlineData(ulong.MaxValue - 1, ulong.MaxValue - 1, OperationCancelledExceptionMessage, "3,5,7", "2")]
+        [InlineData(ulong.MaxValue, ulong.MaxValue, ObjectDisposedExceptionMessage, "2,7,11", "9,8,4")]
+        public void ExceptionsEventSource_WriteException_Event(ulong id, ulong groupId, string message, string frameIdsString, string innerExceptionIdsString)
         {
             using ExceptionsEventSource source = new();
 
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Informational);
 
-            source.ExceptionInstance(id, message);
+            ulong[] frameIds = frameIdsString.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(ulong.Parse).ToArray();
+            DateTime timestamp = DateTime.UtcNow;
+            ulong[] innerExceptionIds = innerExceptionIdsString.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(ulong.Parse).ToArray();
+
+            source.ExceptionInstance(id, groupId, message, frameIds, timestamp, innerExceptionIds);
 
             ExceptionInstance instance = Assert.Single(listener.Exceptions);
-            Assert.Equal(id, instance.ExceptionId);
+            Assert.Equal(id, instance.Id);
+            Assert.Equal(groupId, instance.GroupId);
             Assert.Equal(CoalesceNull(message), instance.ExceptionMessage);
+            // We would normally expect the following to return an array of the stack frame IDs
+            // but in-process listener doesn't decode non-byte arrays correctly.
+            Assert.Equal(Array.Empty<ulong>(), instance.StackFrameIds);
+            Assert.Equal(timestamp, instance.Timestamp);
+            // We would normally expect the following to return an array of the inner exception IDs
+            // but in-process listener doesn't decode non-byte arrays correctly.
+            Assert.Equal(Array.Empty<ulong>(), instance.InnerExceptionIds);
         }
 
         [Fact]
@@ -87,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Warning);
 
-            source.ExceptionInstance(7, ObjectDisposedExceptionMessage);
+            source.ExceptionInstance(5, 7, ObjectDisposedExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow, Array.Empty<ulong>());
 
             Assert.Empty(listener.Exceptions);
         }
@@ -99,9 +115,26 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
             using ExceptionsEventListener listener = new();
 
-            source.ExceptionInstance(9, OperationCancelledExceptionMessage);
+            source.ExceptionInstance(7, 9, OperationCancelledExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow, Array.Empty<ulong>());
 
             Assert.Empty(listener.Exceptions);
+        }
+
+        [Theory]
+        [InlineData(0, 0, 0)]
+        [InlineData(1, 42, 7)]
+        public void ExceptionsEventSource_WriteStackFrame_Event(ulong id, ulong methodId, int ilOffset)
+        {
+            using ExceptionsEventSource source = new();
+
+            using ExceptionsEventListener listener = new();
+            listener.EnableEvents(source, EventLevel.Informational);
+
+            source.StackFrameDescription(id, methodId, ilOffset);
+
+            Assert.True(listener.StackFrameIdentifiers.TryGetValue(id, out StackFrameIdentifier? frameIdentifier));
+            Assert.Equal(methodId, frameIdentifier.MethodId);
+            Assert.Equal(ilOffset, frameIdentifier.ILOffset);
         }
 
         private static string CoalesceNull(string? value)
