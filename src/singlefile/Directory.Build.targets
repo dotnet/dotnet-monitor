@@ -9,7 +9,7 @@
 
   <!-- Publish projects if they were not published after build -->
   <Target Name="PublishProjectsBeforeBundle"
-          Condition="'$(PublishProjectsAfterBuild)' != 'true'">
+          Condition="'$(SkipPublishProjects)' != 'true'">
     <CallTarget Targets="PublishProjects" />
   </Target>
 
