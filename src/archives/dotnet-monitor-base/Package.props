@@ -6,7 +6,7 @@
   <PropertyGroup>
     <ExecutableName>dotnet-monitor</ExecutableName>
     <ArchiveName>dotnet-monitor-base</ArchiveName>
-    <ArchiveContentRootPath>$(DotnetMonitorPublishPath)</ArchiveContentRootPath>
+    <ArchiveContentRootPath>$(DotnetMonitorPublishFddPath)</ArchiveContentRootPath>
   </PropertyGroup>
   <!-- These items are included in addition to those from publishing the dotnet-monitor project. -->
   <ItemGroup>

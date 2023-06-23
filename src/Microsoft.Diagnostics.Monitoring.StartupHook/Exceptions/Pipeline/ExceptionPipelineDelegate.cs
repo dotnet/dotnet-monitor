@@ -8,5 +8,5 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline
     /// <summary>
     /// Delegate representing an exception handler in the exception processing pipeline.
     /// </summary>
-    internal delegate void ExceptionPipelineDelegate(Exception exception);
+    internal delegate void ExceptionPipelineDelegate(Exception exception, ExceptionPipelineExceptionContext context);
 }

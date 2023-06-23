@@ -118,6 +118,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
+        public static IList<string> GetMethodParameterTypes(StringBuilder builder, NameCache cache, ulong[] parameterTypes)
+        {
+            List<string> parameterTypesList = new();
+            for (int i = 0; i < parameterTypes?.Length; i++)
+            {
+                builder.Clear();
+                BuildClassName(builder, cache, parameterTypes[i]);
+                parameterTypesList.Add(builder.ToString());
+            }
+
+            return parameterTypesList;
+        }
+
         public static string GetModuleName(NameCache cache, ulong moduleId)
         {
             string moduleName = UnknownModule;

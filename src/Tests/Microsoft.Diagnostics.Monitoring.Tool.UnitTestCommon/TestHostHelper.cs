@@ -95,7 +95,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
                 {
                     services.AddSingleton<ITestOutputHelper>(outputHelper);
-                    services.AddSingleton(RealSystemClock.Instance);
+                    services.AddSingleton(TimeProvider.System);
                     services.ConfigureGlobalCounter(context.Configuration);
                     services.ConfigureCollectionRuleDefaults(context.Configuration);
                     services.ConfigureTemplates(context.Configuration);

@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 
         public void ProvideException(Exception exception)
         {
-            RaiseExceptionThrown(exception);
+            RaiseExceptionThrown(exception, DateTime.UtcNow);
         }
     }
 }

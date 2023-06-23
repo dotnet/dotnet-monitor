@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline
     /// </summary>
     internal sealed class ExceptionPipelineBuilder
     {
-        private static readonly ExceptionPipelineDelegate Empty = _ => { };
+        private static readonly ExceptionPipelineDelegate Empty = (_, _) => { };
 
         private List<Func<ExceptionPipelineDelegate, ExceptionPipelineDelegate>> _steps = new();
 

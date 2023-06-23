@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 (Context.Options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount),
                 Context.Options.Limits?.ActionCountSlidingWindowDuration,
                 Context.Options.Limits?.RuleDuration,
-                Context.Clock.UtcNow.UtcDateTime);
+                Context.TimeProvider.GetUtcNow().UtcDateTime);
 
             // Start cancellation timer for graceful stop of the collection rule
             // when the rule duration has been specified. Conditionally enable this
@@ -137,7 +137,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                         }
                     }
 
-                    DateTime currentTimestamp = Context.Clock.UtcNow.UtcDateTime;
+                    DateTime currentTimestamp = Context.TimeProvider.GetUtcNow().UtcDateTime;
 
                     if (_stateHolder.BeginActionExecution(currentTimestamp))
                     {
@@ -233,7 +233,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             CollectionRulePipelineState pipelineStateCopy = new CollectionRulePipelineState(_stateHolder);
 
-            _ = pipelineStateCopy.CheckForThrottling(Context.Clock.UtcNow.UtcDateTime);
+            _ = pipelineStateCopy.CheckForThrottling(Context.TimeProvider.GetUtcNow().UtcDateTime);
 
             return pipelineStateCopy;
         }
