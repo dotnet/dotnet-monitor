@@ -12,6 +12,6 @@
     <!-- Microsoft.Extensions.Logging.EventSource -->
     <MicrosoftExtensionsLoggingEventSource60Version>6.0.0</MicrosoftExtensionsLoggingEventSource60Version>
     <!-- Microsoft.NETCore.App -->
-    <MicrosoftNETCoreApp60Version>6.0.18</MicrosoftNETCoreApp60Version>
+    <MicrosoftNETCoreApp60Version>6.0.19</MicrosoftNETCoreApp60Version>
   </PropertyGroup>
 </Project>
