@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -49,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 return;
             }
 
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => !assembly.ReflectionOnly && !assembly.IsDynamic).ToArray();
 
             List<MethodInfo> methods = new(request.FqMethodNames.Length);
             foreach (string methodName in request.FqMethodNames)
@@ -68,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private static MethodInfo? ResolveMethod(Assembly[] assemblies, string fqMethodName)
         {
-            // JSFIX: Not production quality or ready
+            // JSFIX: proof-of-concept code
             int dllSplitIndex = fqMethodName.IndexOf('!');
             string dll = fqMethodName[..dllSplitIndex];
             string classAndMethod = fqMethodName[(dllSplitIndex + 1)..];
