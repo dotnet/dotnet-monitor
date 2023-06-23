@@ -6,6 +6,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 {
     internal static class SharedInternals
     {
-        public static ProfilerMessageLoop MessageLoop { get; private set; } = new();
+        public static ProfilerMessageLoop MonitorMessageDispatcher { get; private set; } = new();
     }
 }

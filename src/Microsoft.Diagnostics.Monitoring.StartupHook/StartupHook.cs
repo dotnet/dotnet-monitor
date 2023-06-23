@@ -24,7 +24,7 @@ internal sealed class StartupHook
             }
 
             s_exceptionProcessor.Start();
-            SharedInternals.MessageLoop.Start();
+            SharedInternals.MonitorMessageDispatcher.Start();
         }
         catch
         {
