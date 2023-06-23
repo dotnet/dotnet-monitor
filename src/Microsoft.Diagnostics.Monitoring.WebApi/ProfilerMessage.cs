@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring
         Ok,
         Error,
         Callstack,
-        CaptureParameter,
+        CaptureParameters,
     };
 
     internal interface IProfilerMessage

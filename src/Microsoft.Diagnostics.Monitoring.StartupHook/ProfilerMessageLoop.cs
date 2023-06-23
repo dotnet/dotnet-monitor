@@ -127,7 +127,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 
             switch (message.Command)
             {
-                case ProfilerCommand.CaptureParameter:
+                case ProfilerCommand.CaptureParameters:
 
                     // 
                     break;
