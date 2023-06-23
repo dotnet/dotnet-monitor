@@ -57,6 +57,23 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <Target Name="EmbedWebApiXmlDocumentation"
+          DependsOnTargets="ResolveAssemblyReferences"
+          BeforeTargets="AssignTargetPaths">
+    <MSBuild Projects="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj"
+             Properties="TargetFramework=$(TargetFramework)"
+             RemoveProperties="RuntimeIdentifier"
+             Targets="GetDocumentationFile">
+      <Output ItemName="_WebApiDocumentationFiles" TaskParameter="TargetOutputs" />
+    </MSBuild>
+    <!-- Add the WebApi documentation file as an embedded resource. -->
+    <ItemGroup>
+      <EmbeddedResource Include="@(_WebApiDocumentationFiles)">
+        <LogicalName>%(Filename)%(Extension)</LogicalName>
+      </EmbeddedResource>
+    </ItemGroup>
+  </Target>
+
   <!-- Targets and properties for ensuring publish before pack. -->
   <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.StartupHook\ProjectsToPublish.props" />
   <Import Project="$(RepositoryEngineeringDir)PublishProjects.targets" />
