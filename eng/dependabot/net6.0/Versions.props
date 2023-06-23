@@ -1,6 +1,17 @@
 <Project>
   <!-- Import references updated by Dependabot. -->
   <PropertyGroup>
+    <!-- Microsoft.Extensions.Configuration.Abstractions -->
+    <MicrosoftExtensionsConfigurationAbstractions60Version>6.0.0</MicrosoftExtensionsConfigurationAbstractions60Version>
+    <!-- Microsoft.Extensions.Logging -->
+    <MicrosoftExtensionsLogging60Version>6.0.0</MicrosoftExtensionsLogging60Version>
+    <!-- Microsoft.Extensions.Logging.Abstractions -->
+    <MicrosoftExtensionsLoggingAbstractions60Version>6.0.4</MicrosoftExtensionsLoggingAbstractions60Version>
+    <!-- Microsoft.Extensions.Logging.Console -->
+    <MicrosoftExtensionsLoggingConsole60Version>6.0.0</MicrosoftExtensionsLoggingConsole60Version>
+    <!-- Microsoft.Extensions.Logging.EventSource -->
+    <MicrosoftExtensionsLoggingEventSource60Version>6.0.0</MicrosoftExtensionsLoggingEventSource60Version>
+    <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp60Version>6.0.18</MicrosoftNETCoreApp60Version>
   </PropertyGroup>
 </Project>
