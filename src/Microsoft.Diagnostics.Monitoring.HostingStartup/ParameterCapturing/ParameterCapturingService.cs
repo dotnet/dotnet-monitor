@@ -122,7 +122,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             _probeManager?.StopCapturing();
         }
 
-        public void StartCapturing(IList<MethodInfo> methods, TimeSpan duratation)
+        public void StartCapturing(IList<MethodInfo> methods, TimeSpan duration)
         {
             if (!_isAvailable)
             {
