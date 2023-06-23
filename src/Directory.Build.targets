@@ -11,6 +11,9 @@
     <EmbeddedFiles Include="$(GeneratedAssemblyInfoFile)"/>
   </ItemGroup>
 
+  <Target Name="GetDocumentationFile"
+          Returns="@(DocFileItem)" />
+
   <!-- Creates artifact files related to the package that will be uploaded to blob storage during publish. -->
   <Target Name="GenerateArchivePackageProjectFiles"
           AfterTargets="_CreateArchive"
