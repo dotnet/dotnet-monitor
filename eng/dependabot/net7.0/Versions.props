@@ -7,8 +7,6 @@
     <MicrosoftExtensionsLogging70Version>7.0.0</MicrosoftExtensionsLogging70Version>
     <!-- Microsoft.Extensions.Logging.Console -->
     <MicrosoftExtensionsLoggingConsole70Version>7.0.0</MicrosoftExtensionsLoggingConsole70Version>
-    <!-- Microsoft.Extensions.Logging.EventSource -->
-    <MicrosoftExtensionsLoggingEventSource70Version>7.0.0</MicrosoftExtensionsLoggingEventSource70Version>
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp70Version>7.0.7</MicrosoftNETCoreApp70Version>
   </PropertyGroup>
