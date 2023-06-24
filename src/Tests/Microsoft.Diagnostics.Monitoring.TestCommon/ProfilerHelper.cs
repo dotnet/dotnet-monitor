@@ -2,10 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -74,6 +76,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             string productVersion = await runner.GetEnvironmentVariable(ProfilerIdentifiers.EnvironmentVariables.ProductVersion, CommonTestTimeouts.EnvVarsTimeout);
             Assert.False(string.IsNullOrEmpty(productVersion), "Expected product version to not be null or empty.");
             outputHelper.WriteLine("{0} = {1}", ProfilerIdentifiers.EnvironmentVariables.ProductVersion, productVersion);
+        }
+
+        public static async Task WaitForProfilerCommunicationChannelAsync(ProcessInfo processInfo)
+        {
+            string channelPath = Path.Combine(Path.GetTempPath(), FormattableString.Invariant($"{processInfo.Uid:D}.sock"));
+
+            using CancellationTokenSource cancellationSource = new CancellationTokenSource(CommonTestTimeouts.GeneralTimeout);
+
+            while (!File.Exists(channelPath))
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(50), cancellationSource.Token);
+            }
         }
     }
 }
