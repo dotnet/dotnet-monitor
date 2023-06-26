@@ -45,8 +45,9 @@ namespace Microsoft.Diagnostics.Monitoring
 
         public object Payload { get; set; }
 
-        public JsonProfilerMessage(object t)
+        public JsonProfilerMessage(ProfilerMessageType messageType, object t)
         {
+            MessageType = messageType;
             Payload = t;
         }
 

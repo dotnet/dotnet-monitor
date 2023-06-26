@@ -611,16 +611,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 // Send a sample payload....
                 await _profilerChannel.SendMessage(
                     processInfo.EndpointInfo,
-                    new JsonProfilerMessage
+                    new JsonProfilerMessage(ProfilerMessageType.CaptureParameters, new ParameterCapturingPayload
                     {
-                        PayloadType = ProfilerPayloadType.Utf8Json,
-                        MessageType = ProfilerMessageType.CaptureParameters,
-                        Payload = new ParameterCapturingPayload
-                        {
-                            Duration = TimeSpan.FromMinutes(10),
-                            FqMethodNames = new string[] { "BuggyDemoWeb.dll!BuggyDemoWeb.Controllers.HomeController.SelectDiagnsticType" }
-                        }
-                    },
+                        Duration = TimeSpan.FromMinutes(10),
+                        FqMethodNames = new string[] { "BuggyDemoWeb.dll!BuggyDemoWeb.Controllers.HomeController.SelectDiagnsticType" }
+                    }),
                     CancellationToken.None);
 
 

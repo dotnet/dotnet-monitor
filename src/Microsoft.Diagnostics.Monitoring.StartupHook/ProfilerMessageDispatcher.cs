@@ -12,26 +12,25 @@ using System.Collections.Concurrent;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook
 {
-
-    internal struct DispatchRecord
+    internal sealed class ProfilerMessageDispatcher : IDisposable
     {
-        public Type PayloadType { get; set; }
-        public Action<object> Callback { get; set; }
-    }
+        internal struct MessageDispatchEntry
+        {
+            public Type DeserializeType { get; set; }
+            public Action<object> Callback { get; set; }
+        }
 
-    internal sealed class ProfilerMessageLoop : IDisposable
-    {
+        private static ConcurrentDictionary<ProfilerMessageType, MessageDispatchEntry> s_dispatchTable = new();
+
         private string? _profilerModulePath;
 
-        public delegate void ProfilerMessageCallback(ProfilerPayloadType payloadType, ProfilerMessageType messageType, long bufferSize, IntPtr buffer);
+        public delegate int ProfilerMessageCallback(ProfilerPayloadType payloadType, ProfilerMessageType messageType, IntPtr nativeBuffer, long bufferSize);
 
         [DllImport(ProfilerIdentifiers.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
         private static extern void RegisterProfilerMessageCallback(ProfilerMessageCallback callback);
 
 
-        private static ConcurrentDictionary<ProfilerMessageType, DispatchRecord> s_dispatchTable = new();
-
-        public ProfilerMessageLoop()
+        public ProfilerMessageDispatcher()
         {
             _profilerModulePath = Environment.GetEnvironmentVariable(ProfilerIdentifiers.EnvironmentVariables.ModulePath);
             if (!File.Exists(_profilerModulePath))
@@ -39,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
                 throw new FileNotFoundException(_profilerModulePath);
             }
 
-            NativeLibrary.SetDllImportResolver(typeof(ProfilerMessageLoop).Assembly, ResolveDllImport);
+            NativeLibrary.SetDllImportResolver(typeof(ProfilerMessageDispatcher).Assembly, ResolveDllImport);
 
         }
 
@@ -61,19 +60,20 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         public void RegisterCallback<T>(ProfilerMessageType messageType, Action<T> callback) where T : class
 #pragma warning restore CA1822 // Mark members as static
         {
-            DispatchRecord dispatch = new()
+            MessageDispatchEntry dispatchEntry = new()
             {
-                PayloadType = typeof(T),
-                Callback = (o) => 
+                DeserializeType = typeof(T),
+                Callback = (obj) => 
                 {
-                    T converted = (T)o;
-                    if (converted != null)
-                    {
-                        callback(converted);
-                    }
+                    T tObj = (T)obj ?? throw new InvalidOperationException();
+                    callback(tObj);
                 }
             };
-            s_dispatchTable[messageType] = dispatch;
+
+            if (!s_dispatchTable.TryAdd(messageType, dispatchEntry))
+            {
+                throw new InvalidOperationException($"Callback for message {messageType} already registered");
+            }
         }
 
 
@@ -102,42 +102,51 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             return IntPtr.Zero;
         }
 
-        private static void OnProfilerMessage(ProfilerPayloadType payloadType, ProfilerMessageType messageType, long bufferSize, IntPtr nativeBuffer)
+        private static int OnProfilerMessage(ProfilerPayloadType payloadType, ProfilerMessageType messageType, IntPtr nativeBuffer, long bufferSize)
         {
             try
             {
+                if (bufferSize == 0)
+                {
+                    throw new ArgumentException(nameof(bufferSize));
+                }
+
+                if (nativeBuffer == IntPtr.Zero)
+                {
+                    throw new ArgumentException(nameof(nativeBuffer));
+                }
+
                 if (payloadType != ProfilerPayloadType.Utf8Json)
                 {
-                    throw new NotImplementedException($"Payload type {payloadType} is not supported");
+                    throw new NotSupportedException("Unsupported payload type");
                 }
 
                 object? payload = null;
-                if (!s_dispatchTable.TryGetValue(messageType, out DispatchRecord dispatcher))
+                if (!s_dispatchTable.TryGetValue(messageType, out MessageDispatchEntry dispatchEntry))
                 {
-                    throw new NotImplementedException($"Message command {messageType} is not supported");
+                    throw new NotSupportedException("Unsupported message type");
                 }
 
                 unsafe
                 {
                     using UnmanagedMemoryStream memoryStream = new((byte*)nativeBuffer.ToPointer(), bufferSize);
-                    payload = JsonSerializer.Deserialize(memoryStream, dispatcher.PayloadType);
+                    payload = JsonSerializer.Deserialize(memoryStream, dispatchEntry.DeserializeType);
                 }
 
-                if (payload != null && dispatcher.Callback != null)
+                if (payload == null)
                 {
-                    dispatcher.Callback(payload);
+                    throw new ArgumentException("Invalid ");
                 }
-                else
-                {
-                    throw new NotImplementedException("Failed to deserialized");
-                }
+
+                dispatchEntry.Callback(payload);
+
             }
             catch (Exception ex)
             {
-                // JSFIX: Return hresult
-                Console.WriteLine(ex.ToString());
+                return Marshal.GetHRForException(ex);
             }
 
+            return 0;
         }
 
         public void Dispose()

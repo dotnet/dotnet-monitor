@@ -23,7 +23,7 @@ using namespace std;
 #define DLLEXPORT
 #endif
 
-typedef void (STDMETHODCALLTYPE *ManagedMessageCallback)(INT32, INT32, UINT64, BYTE*);
+typedef int (STDMETHODCALLTYPE *ManagedMessageCallback)(INT32, INT32, BYTE*, UINT64);
 std::mutex g_messageCallbackMutex;
 ManagedMessageCallback g_pManagedMessageCallback = nullptr;
 
@@ -295,6 +295,7 @@ HRESULT MainProfiler::InitializeCommandServer()
 
 HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 {
+    HRESULT hr;
     m_pLogger->Log(LogLevel::Information, _LS("Message received from client: %d %d"), message.PayloadType, message.MessageType);
 
     if (message.PayloadType == PayloadType::Int32)
@@ -314,11 +315,11 @@ HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
             return E_UNEXPECTED;
         }
 
-        g_pManagedMessageCallback(
+        IfFailRet(g_pManagedMessageCallback(
             static_cast<INT32>(message.PayloadType),
             static_cast<INT32>(message.MessageType),
-            message.Payload.size(),
-            (BYTE*)message.Payload.data());
+            (BYTE*)message.Payload.data(),
+            message.Payload.size()));
 
         return S_OK;
     }
