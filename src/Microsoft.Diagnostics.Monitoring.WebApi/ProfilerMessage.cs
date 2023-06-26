@@ -7,13 +7,6 @@ using System.Text.Json;
 
 namespace Microsoft.Diagnostics.Monitoring
 {
-    internal class ParameterCapturingPayload
-    {
-        public TimeSpan Duration { get; set; }
-
-        public string[] FqMethodNames { get; set; } = Array.Empty<string>();
-    }
-
     internal enum ProfilerPayloadType : short
     {
         Unknown,
@@ -26,8 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring
     {
         Unknown,
         Status,
-        Callstack,
-        CaptureParameters,
+        Callstack
     };
 
     internal interface IProfilerMessage
@@ -60,8 +52,10 @@ namespace Microsoft.Diagnostics.Monitoring
 
     internal struct SimpleProfilerMessage : IProfilerMessage
     {
-        public SimpleProfilerMessage()
+        public SimpleProfilerMessage(ProfilerMessageType messageType, int parameter = 0)
         {
+            MessageType = messageType;
+            Parameter = parameter;
         }
 
         public ProfilerPayloadType PayloadType { get; set; } = ProfilerPayloadType.Int32;

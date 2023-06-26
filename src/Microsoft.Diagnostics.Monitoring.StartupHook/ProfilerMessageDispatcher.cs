@@ -139,7 +139,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
                 }
 
                 dispatchEntry.Callback(payload);
-
             }
             catch (Exception ex)
             {
