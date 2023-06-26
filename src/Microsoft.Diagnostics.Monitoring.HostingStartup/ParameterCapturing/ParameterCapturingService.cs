@@ -2,13 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
-using Microsoft.Diagnostics.Monitoring.StartupHook;
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,95 +30,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 return;
             }
 
-
             try
             {
-                SharedInternals.MonitorMessageDispatcher.RegisterCallback<ParameterCapturingPayload>(ProfilerMessageType.CaptureParameters, OnCommand);
                 _probeManager = new FunctionProbesManager(new LogEmittingProbes(_logger, FunctionProbesStub.InstrumentedMethodCache));
                 _isAvailable = true;
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogCritical(ex, "Failed to init");
                 // TODO: Log
             }
-        }
-
-        private void OnCommand(ParameterCapturingPayload request)
-        {
-            if (request.FqMethodNames.Length == 0)
-            {
-                throw new ArgumentException("At least one method must be provided");
-            }
-
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => !assembly.ReflectionOnly && !assembly.IsDynamic).ToArray();
-
-            List<MethodInfo> methods = new(request.FqMethodNames.Length);
-            foreach (string methodName in request.FqMethodNames)
-            {
-                List<MethodInfo> resolvedMethods = ResolveMethod(assemblies, methodName);
-                if (resolvedMethods.Count == 0)
-                {
-                    throw new ArgumentException($"Failed to resolve method: {methodName}");
-                }
-                methods.AddRange(resolvedMethods);
-            }
-
-            _logger?.LogWarning($"Capturing parameters for the following methods (duration: {request.Duration})\n\t{string.Join("\n\t--> ", request.FqMethodNames)}");
-
-            StartCapturing(methods, request.Duration);
-        }
-
-        private List<MethodInfo> ResolveMethod(Assembly[] assemblies, string fqMethodName)
-        {
-            // JSFIX: proof-of-concept code
-            int dllSplitIndex = fqMethodName.IndexOf('!');
-            string dll = fqMethodName[..dllSplitIndex];
-            string classAndMethod = fqMethodName[(dllSplitIndex + 1)..];
-
-            int lastIndex = classAndMethod.LastIndexOf('.');
-
-            string className = classAndMethod[..lastIndex];
-            string methodName = classAndMethod[(lastIndex + 1)..];
-
-            List<MethodInfo> methods = new();
-
-            // JSFIX: Consider lookup table
-            foreach (Assembly assembly in assemblies)
-            {
-                foreach (Module module in assembly.Modules)
-                {
-                    if (string.Equals(module.Name, dll, StringComparison.OrdinalIgnoreCase))
-                    {
-                        try
-                        {
-                            MethodInfo? method = assembly.GetType(className)?.GetMethod(methodName,
-                                BindingFlags.Public |
-                                BindingFlags.NonPublic |
-                                BindingFlags.Instance |
-                                BindingFlags.Static |
-                                BindingFlags.FlattenHierarchy);
-                            if (method != null)
-                            {
-                                methods.Add(method);
-                                continue;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            // Log warning to user, they requested it.... Can we signal back to the profiler that this request failed somehow?
-                            // Either a callback into the profiler, or have the profiler reverse pinvoke to dispatch the message so it can observe
-                            // the result.
-                            // if so, do we register a callback?
-                            // JSFIX: Resx and better format string
-                            _logger?.LogWarning($"Unable resolve method {fqMethodName}, exception: {ex}");
-                        }
-
-                    }
-                }
-            }
-
-            return methods;
         }
 
         public void StopCapturing()
@@ -132,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             _probeManager?.StopCapturing();
         }
 
-        public void StartCapturing(IList<MethodInfo> methods, TimeSpan duration)
+        public void StartCapturing(IList<MethodInfo> methods)
         {
             if (!_isAvailable)
             {
@@ -142,22 +61,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             _probeManager?.StartCapturing(methods);
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             if (!_isAvailable)
             {
-                return;
+                return Task.CompletedTask;
             }
 
-            TimeSpan delay = Timeout.InfiniteTimeSpan;
-            while(!stoppingToken.IsCancellationRequested)
-            {
-                // Wait for a new request
-                await Task.Delay(delay, stoppingToken).ConfigureAwait(false);
-                StopCapturing();
-            }
-
-            return;
+            return Task.Delay(Timeout.Infinite, stoppingToken);
         }
 
         public override void Dispose()
@@ -167,7 +78,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             try
             {
-                SharedInternals.MonitorMessageDispatcher.UnregisterCallback(ProfilerMessageType.CaptureParameters);
                 _probeManager?.Dispose();
             }
             catch
