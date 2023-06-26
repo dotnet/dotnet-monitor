@@ -5,6 +5,7 @@
 #include <memory>
 #include "corhlpr.h"
 #include "macros.h"
+#include "assert.h"
 
 using namespace std;
 
@@ -84,10 +85,22 @@ HRESULT IpcCommClient::Send(const SimpleIpcMessage& message)
         return E_UNEXPECTED;
     }
 
-    char buffer[sizeof(MessageType) + sizeof(ProfilerCommand) + sizeof(int)];
-    *reinterpret_cast<MessageType*>(buffer) = message.MessageType;
-    *reinterpret_cast<ProfilerCommand*>(&buffer[sizeof(MessageType)]) = message.ProfilerCommand;
-    *reinterpret_cast<int*>(&buffer[sizeof(MessageType)+sizeof(MessageType)]) = message.Parameters;
+    char buffer[sizeof(MessageType) + sizeof(ProfilerCommand) + sizeof(int) + sizeof(int)];
+
+    int bufferOffset = 0; 
+    *reinterpret_cast<MessageType*>(&buffer[bufferOffset]) = message.MessageType;
+    bufferOffset += sizeof(MessageType);
+
+    *reinterpret_cast<ProfilerCommand*>(&buffer[bufferOffset]) = message.ProfilerCommand;
+    bufferOffset += sizeof(ProfilerCommand);
+
+    *reinterpret_cast<int*>(&buffer[bufferOffset]) = sizeof(int);
+    bufferOffset += sizeof(int);
+
+    *reinterpret_cast<int*>(&buffer[bufferOffset]) = message.Parameters;
+    bufferOffset += sizeof(int);
+
+    assert(bufferOffset == sizeof(buffer));
 
     int sent = 0;
     int offset = 0;

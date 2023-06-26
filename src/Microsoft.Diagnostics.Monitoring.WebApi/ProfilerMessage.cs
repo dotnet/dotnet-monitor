@@ -17,7 +17,6 @@ namespace Microsoft.Diagnostics.Monitoring
     internal enum ProfilerMessageType : short
     {
         Unknown,
-        Status,
         SimpleMessage,
         JsonMessage
     };
