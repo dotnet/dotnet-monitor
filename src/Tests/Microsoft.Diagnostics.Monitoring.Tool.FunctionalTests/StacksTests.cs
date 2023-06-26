@@ -14,11 +14,13 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using ProcessInfo = Microsoft.Diagnostics.Monitoring.WebApi.Models.ProcessInfo;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
@@ -46,194 +48,187 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
-        public Task TestPlainTextStacks(Architecture targetArchitecture)
+        public Task TestPlainTextStacksListenSuspend(Architecture targetArchitecture)
         {
-            return ScenarioRunner.SingleTarget(
-                _outputHelper,
-                _httpClientFactory,
-                WebApi.DiagnosticPortConnectionMode.Listen,
-                TestAppScenarios.Stacks.Name,
-                appValidate: async (runner, client) =>
-                {
-                    int processId = await runner.ProcessIdTask;
-
-                    using ResponseStreamHolder holder = await client.CaptureStacksAsync(processId, WebApi.StackFormat.PlainText);
-                    Assert.NotNull(holder);
-
-                    using StreamReader reader = new StreamReader(holder.Stream);
-                    string line = null;
-
-                    string[] expectedFrames =
-                    {
-                        FormatFrame(ExpectedModule, ExpectedClass, ExpectedCallbackFunction),
-                        NativeFrame,
-                        FormatFrame(ExpectedModule, ExpectedClass, ExpectedFunction),
-                    };
-
-                    var actualFrames = new List<string>();
-
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        line = line.TrimStart();
-                        if (actualFrames.Count == expectedFrames.Length)
-                        {
-                            break;
-                        }
-                        if ((line == expectedFrames.First()) || (actualFrames.Count > 0))
-                        {
-                            actualFrames.Add(line);
-                        }
-                    }
-
-                    Assert.Equal(expectedFrames, actualFrames);
-
-                    await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
-                },
-                configureApp: runner =>
-                {
-                    runner.Architecture = targetArchitecture;
-                },
-                configureTool: runner =>
-                {
-                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
-                    runner.EnableCallStacksFeature = true;
-                });
+            return TestStacksListenSuspend(targetArchitecture, PlainTextValidation);
         }
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
-        public Task TestJsonStacks(Architecture targetArchitecture)
+        public Task TestPlainTextStacksListenNoSuspend(Architecture targetArchitecture)
         {
-            return ScenarioRunner.SingleTarget(
-                _outputHelper,
-                _httpClientFactory,
-                WebApi.DiagnosticPortConnectionMode.Listen,
-                TestAppScenarios.Stacks.Name,
-                appValidate: async (runner, client) =>
+            return TestStacksListenNoSuspend(targetArchitecture, PlainTextValidation);
+        }
+
+        private static async Task PlainTextValidation(AppRunner runner, ApiClient client)
+        {
+            int processId = await runner.ProcessIdTask;
+
+            using ResponseStreamHolder holder = await client.CaptureStacksAsync(processId, WebApi.StackFormat.PlainText);
+            Assert.NotNull(holder);
+
+            using StreamReader reader = new StreamReader(holder.Stream);
+            string line = null;
+
+            string[] expectedFrames =
+            {
+                FormatFrame(ExpectedModule, ExpectedClass, ExpectedCallbackFunction),
+                NativeFrame,
+                FormatFrame(ExpectedModule, ExpectedClass, ExpectedFunction),
+            };
+
+            var actualFrames = new List<string>();
+
+            while ((line = reader.ReadLine()) != null)
+            {
+                line = line.TrimStart();
+                if (actualFrames.Count == expectedFrames.Length)
                 {
-                    int processId = await runner.ProcessIdTask;
-
-                    using ResponseStreamHolder holder = await client.CaptureStacksAsync(processId, WebApi.StackFormat.Json);
-                    Assert.NotNull(holder);
-
-                    WebApi.Models.CallStackResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder.Stream);
-                    WebApi.Models.CallStackFrame[] expectedFrames = ExpectedFrames();
-                    (WebApi.Models.CallStack stack, IList<WebApi.Models.CallStackFrame> actualFrames) = GetActualFrames(result, expectedFrames.First(), expectedFrames.Length);
-
-                    Assert.NotNull(stack);
-                    Assert.Equal(ExpectedThreadName, stack.ThreadName);
-                    Assert.Equal(expectedFrames.Length, actualFrames.Count);
-                    for (int i = 0; i < expectedFrames.Length; i++)
-                    {
-                        Assert.True(AreFramesEqual(expectedFrames[i], actualFrames[i]));
-                    }
-
-                    await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
-                },
-                configureApp: runner =>
+                    break;
+                }
+                if ((line == expectedFrames.First()) || (actualFrames.Count > 0))
                 {
-                    runner.Architecture = targetArchitecture;
-                },
-                configureTool: runner =>
-                {
-                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
-                    runner.EnableCallStacksFeature = true;
-                });
+                    actualFrames.Add(line);
+                }
+            }
+
+            Assert.Equal(expectedFrames, actualFrames);
         }
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
-        public Task TestSpeedscopeStacks(Architecture targetArchitecture)
+        public Task TestJsonStacksListenSuspend(Architecture targetArchitecture)
         {
-            return ScenarioRunner.SingleTarget(
-                _outputHelper,
-                _httpClientFactory,
-                WebApi.DiagnosticPortConnectionMode.Listen,
-                TestAppScenarios.Stacks.Name,
-                appValidate: async (runner, client) =>
-                {
-                    int processId = await runner.ProcessIdTask;
-
-                    using ResponseStreamHolder holder = await client.CaptureStacksAsync(processId, WebApi.StackFormat.Speedscope);
-                    Assert.NotNull(holder);
-
-                    WebApi.Models.SpeedscopeResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.SpeedscopeResult>(holder.Stream);
-
-                    int bottomIndex = result.Shared.Frames.FindIndex(f => f.Name == FormatFrame(ExpectedModule, ExpectedClass, ExpectedFunction));
-                    Assert.NotEqual(-1, bottomIndex);
-                    string topFrameName = FormatFrame(ExpectedModule, ExpectedClass, ExpectedCallbackFunction);
-                    int topIndex = result.Shared.Frames.FindIndex(f => f.Name == topFrameName);
-                    Assert.NotEqual(-1, topIndex);
-
-                    WebApi.Models.ProfileEvent[] expectedFrames = ExpectedSpeedscopeFrames(topIndex, bottomIndex);
-                    (WebApi.Models.Profile stack, IList<WebApi.Models.ProfileEvent> actualFrames) = GetActualFrames(result, topFrameName, 3);
-
-                    Assert.NotNull(stack);
-                    Assert.EndsWith(ExpectedThreadName, stack.Name);
-                    Assert.Equal(expectedFrames.Length, actualFrames.Count);
-                    for (int i = 0; i < expectedFrames.Length; i++)
-                    {
-                        Assert.True(AreFramesEqual(expectedFrames[i], actualFrames[i]));
-                    }
-
-                    await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
-                },
-                configureApp: runner =>
-                {
-                    runner.Architecture = targetArchitecture;
-                },
-                configureTool: runner =>
-                {
-                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
-                    runner.EnableCallStacksFeature = true;
-                });
+            return TestStacksListenSuspend(
+                targetArchitecture,
+                validate: (runner, client) => JsonValidation(runner, client, isSuspendedAtStartup: true));
         }
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
-        public Task TestRepeatStackCalls(Architecture targetArchitecture)
+        public Task TestJsonStacksListenNoSuspend(Architecture targetArchitecture)
         {
-            return ScenarioRunner.SingleTarget(
-                _outputHelper,
-                _httpClientFactory,
-                WebApi.DiagnosticPortConnectionMode.Listen,
-                TestAppScenarios.Stacks.Name,
-                appValidate: async (runner, client) =>
-                {
-                    int processId = await runner.ProcessIdTask;
+            return TestStacksListenNoSuspend(
+                targetArchitecture,
+                validate: (runner, client) => JsonValidation(runner, client, isSuspendedAtStartup: false));
+        }
 
-                    using ResponseStreamHolder holder1 = await client.CaptureStacksAsync(processId, WebApi.StackFormat.Json);
-                    Assert.NotNull(holder1);
+        private static async Task JsonValidation(AppRunner runner, ApiClient client, bool isSuspendedAtStartup)
+        {
+            int processId = await runner.ProcessIdTask;
 
-                    WebApi.Models.CallStackResult result1 = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder1.Stream);
+            using ResponseStreamHolder holder = await client.CaptureStacksAsync(processId, WebApi.StackFormat.Json);
+            Assert.NotNull(holder);
 
-                    // Wait for the operations to synchronize, this happens asynchronously from the http request returning
-                    // and may not be fast enough for this test on systems with limited resources.
-                    _ = await client.PollOperationToCompletion(holder1.Response.Headers.Location);
+            WebApi.Models.CallStackResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder.Stream);
+            WebApi.Models.CallStackFrame[] expectedFrames = ExpectedFrames();
+            (WebApi.Models.CallStack stack, IList<WebApi.Models.CallStackFrame> actualFrames) = GetActualFrames(result, expectedFrames.First(), expectedFrames.Length);
 
-                    using ResponseStreamHolder holder2 = await client.CaptureStacksAsync(processId, WebApi.StackFormat.Json);
-                    Assert.NotNull(holder2);
+            Assert.NotNull(stack);
 
-                    WebApi.Models.CallStackResult result2 = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder2.Stream);
+            if (isSuspendedAtStartup)
+            {
+                // If process connects to .NET Monitor with suspend (the default),
+                // then the profiler is loaded at startup and thread names are tracked.
+                Assert.Equal(ExpectedThreadName, stack.ThreadName);
+            }
 
-                    Assert.NotEmpty(result1.Stacks);
-                    Assert.NotEmpty(result2.Stacks);
+            Assert.Equal(expectedFrames.Length, actualFrames.Count);
+            for (int i = 0; i < expectedFrames.Length; i++)
+            {
+                Assert.True(AreFramesEqual(expectedFrames[i], actualFrames[i]));
+            }
+        }
 
-                    Assert.NotEmpty(result1.Stacks.SelectMany(s => s.Frames));
-                    Assert.NotEmpty(result2.Stacks.SelectMany(s => s.Frames));
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public Task TestSpeedscopeStacksListenSuspend(Architecture targetArchitecture)
+        {
+            return TestStacksListenSuspend(
+                targetArchitecture,
+                (runner, client) => SpeedscopeStacksValidation(runner, client, isSuspendedAtStartup: true));
+        }
 
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public Task TestSpeedscopeStacksListenNoSuspend(Architecture targetArchitecture)
+        {
+            return TestStacksListenNoSuspend(
+                targetArchitecture,
+                (runner, client) => SpeedscopeStacksValidation(runner, client, isSuspendedAtStartup: false));
+        }
 
-                    await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
-                },
-                configureApp: runner =>
-                {
-                    runner.Architecture = targetArchitecture;
-                },
-                configureTool: runner =>
-                {
-                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
-                    runner.EnableCallStacksFeature = true;
-                });
+        private static async Task SpeedscopeStacksValidation(AppRunner runner, ApiClient client, bool isSuspendedAtStartup)
+        {
+            int processId = await runner.ProcessIdTask;
+
+            using ResponseStreamHolder holder = await client.CaptureStacksAsync(processId, WebApi.StackFormat.Speedscope);
+            Assert.NotNull(holder);
+
+            WebApi.Models.SpeedscopeResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.SpeedscopeResult>(holder.Stream);
+
+            int bottomIndex = result.Shared.Frames.FindIndex(f => f.Name == FormatFrame(ExpectedModule, ExpectedClass, ExpectedFunction));
+            Assert.NotEqual(-1, bottomIndex);
+            string topFrameName = FormatFrame(ExpectedModule, ExpectedClass, ExpectedCallbackFunction);
+            int topIndex = result.Shared.Frames.FindIndex(f => f.Name == topFrameName);
+            Assert.NotEqual(-1, topIndex);
+
+            WebApi.Models.ProfileEvent[] expectedFrames = ExpectedSpeedscopeFrames(topIndex, bottomIndex);
+            (WebApi.Models.Profile stack, IList<WebApi.Models.ProfileEvent> actualFrames) = GetActualFrames(result, topFrameName, 3);
+
+            Assert.NotNull(stack);
+
+            if (isSuspendedAtStartup)
+            {
+                // If process connects to .NET Monitor with suspend (the default),
+                // then the profiler is loaded at startup and thread names are tracked.
+                Assert.EndsWith(ExpectedThreadName, stack.Name);
+            }
+
+            Assert.Equal(expectedFrames.Length, actualFrames.Count);
+            for (int i = 0; i < expectedFrames.Length; i++)
+            {
+                Assert.True(AreFramesEqual(expectedFrames[i], actualFrames[i]));
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public Task TestRepeatStackCallsListenSuspend(Architecture targetArchitecture)
+        {
+            return TestStacksListenSuspend(targetArchitecture, RepeatStackCallsValidation);
+        }
+
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public Task TestRepeatStackCallsListenNoSuspend(Architecture targetArchitecture)
+        {
+            return TestStacksListenNoSuspend(targetArchitecture, RepeatStackCallsValidation);
+        }
+
+        private static async Task RepeatStackCallsValidation(AppRunner runner, ApiClient client)
+        {
+            int processId = await runner.ProcessIdTask;
+
+            using ResponseStreamHolder holder1 = await client.CaptureStacksAsync(processId, WebApi.StackFormat.Json);
+            Assert.NotNull(holder1);
+
+            WebApi.Models.CallStackResult result1 = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder1.Stream);
+
+            // Wait for the operations to synchronize, this happens asynchronously from the http request returning
+            // and may not be fast enough for this test on systems with limited resources.
+            _ = await client.PollOperationToCompletion(holder1.Response.Headers.Location);
+
+            using ResponseStreamHolder holder2 = await client.CaptureStacksAsync(processId, WebApi.StackFormat.Json);
+            Assert.NotNull(holder2);
+
+            WebApi.Models.CallStackResult result2 = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder2.Stream);
+
+            Assert.NotEmpty(result1.Stacks);
+            Assert.NotEmpty(result2.Stacks);
+
+            Assert.NotEmpty(result1.Stacks.SelectMany(s => s.Frames));
+            Assert.NotEmpty(result2.Stacks.SelectMany(s => s.Frames));
         }
 
         /// <summary>
@@ -302,10 +297,81 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         [Theory(Skip = "Disable unstable tests.")]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
-        public Task TestCollectStacksAction(Architecture targetArchitecture)
+        public Task TestCollectStacksActionListenSuspend(Architecture targetArchitecture)
         {
             Task ruleCompletedTask = null;
 
+            return TestStacksListenSuspend(
+                targetArchitecture,
+                (runner, client) => CollectStacksActionValidation(runner, client, ruleCompletedTask, isSuspendedAtStartup: true),
+                runner => CollectStacksActionConfigureTool(runner, out ruleCompletedTask));
+        }
+
+        [Theory(Skip = "Disable unstable tests.")]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public Task TestCollectStacksActionListenNoSuspend(Architecture targetArchitecture)
+        {
+            Task ruleCompletedTask = null;
+
+            return TestStacksListenNoSuspend(
+                targetArchitecture,
+                (runner, client) => CollectStacksActionValidation(runner, client, ruleCompletedTask, isSuspendedAtStartup: false),
+                runner => CollectStacksActionConfigureTool(runner, out ruleCompletedTask));
+        }
+
+        private async Task CollectStacksActionValidation(AppRunner runner, ApiClient client, Task ruleCompletedTask, bool isSuspendedAtStartup)
+        {
+            await ruleCompletedTask;
+
+            string[] files = Directory.GetFiles(_tempDirectory.FullName, "*");
+            Assert.Single(files);
+            using FileStream stream = File.OpenRead(files.First());
+
+            WebApi.Models.CallStackResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(stream);
+            WebApi.Models.CallStackFrame[] expectedFrames = ExpectedFrames();
+            (WebApi.Models.CallStack callstack, IList<WebApi.Models.CallStackFrame> actualFrames) = GetActualFrames(result, expectedFrames.First(), expectedFrames.Length);
+
+            Assert.NotNull(callstack);
+
+            if (isSuspendedAtStartup)
+            {
+                // If process connects to .NET Monitor with suspend (the default),
+                // then the profiler is loaded at startup and thread names are tracked.
+                Assert.Equal(ExpectedThreadName, callstack.ThreadName);
+            }
+
+            Assert.Equal(expectedFrames.Length, actualFrames.Count);
+            for (int i = 0; i < expectedFrames.Length; i++)
+            {
+                Assert.True(AreFramesEqual(expectedFrames[i], actualFrames[i]));
+            }
+        }
+
+        private void CollectStacksActionConfigureTool(MonitorCollectRunner runner, out Task ruleCompletedTask)
+        {
+            const string fileEgress = nameof(fileEgress);
+            runner.EnableCallStacksFeature = true;
+            runner.ConfigurationFromEnvironment
+                .EnableInProcessFeatures()
+                .AddFileSystemEgress(fileEgress, _tempDirectory.FullName)
+                .CreateCollectionRule("StacksCounterRule")
+                .SetEventCounterTrigger(options =>
+                {
+                    options.ProviderName = "StackScenario";
+                    options.CounterName = "Ready";
+                    options.GreaterThan = 0.0;
+                    options.SlidingWindowDuration = TimeSpan.FromSeconds(5);
+                })
+                .AddCollectStacksAction(fileEgress, Tools.Monitor.CollectionRules.Options.Actions.CallStackFormat.Json);
+
+            ruleCompletedTask = runner.WaitForCollectionRuleActionsCompletedAsync("StacksCounterRule");
+        }
+
+        private Task TestStacksListenSuspend(
+            Architecture targetArchitecture,
+            Func<AppRunner, ApiClient, Task> validate,
+            Action<MonitorCollectRunner> configureTool = null)
+        {
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -313,23 +379,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.Stacks.Name,
                 appValidate: async (runner, client) =>
                 {
-                    await ruleCompletedTask;
+                    int processId = await runner.ProcessIdTask;
+                    ProcessInfo processInfo = await client.GetProcessWithRetryAsync(_outputHelper, pid: processId);
 
-                    string[] files = Directory.GetFiles(_tempDirectory.FullName, "*");
-                    Assert.Single(files);
-                    using FileStream stream = File.OpenRead(files.First());
+                    await ProfilerHelper.WaitForProfilerCommunicationChannelAsync(processInfo);
 
-                    WebApi.Models.CallStackResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(stream);
-                    WebApi.Models.CallStackFrame[] expectedFrames = ExpectedFrames();
-                    (WebApi.Models.CallStack callstack, IList<WebApi.Models.CallStackFrame> actualFrames) = GetActualFrames(result, expectedFrames.First(), expectedFrames.Length);
-
-                    Assert.NotNull(callstack);
-                    Assert.Equal(ExpectedThreadName, callstack.ThreadName);
-                    Assert.Equal(expectedFrames.Length, actualFrames.Count);
-                    for (int i = 0; i < expectedFrames.Length; i++)
-                    {
-                        Assert.True(AreFramesEqual(expectedFrames[i], actualFrames[i]));
-                    }
+                    await validate.Invoke(runner, client);
 
                     await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
                 },
@@ -339,23 +394,60 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 },
                 configureTool: runner =>
                 {
-                    const string fileEgress = nameof(fileEgress);
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
                     runner.EnableCallStacksFeature = true;
-                    runner.ConfigurationFromEnvironment
-                        .EnableInProcessFeatures()
-                        .AddFileSystemEgress(fileEgress, _tempDirectory.FullName)
-                        .CreateCollectionRule("StacksCounterRule")
-                        .SetEventCounterTrigger(options =>
-                        {
-                            options.ProviderName = "StackScenario";
-                            options.CounterName = "Ready";
-                            options.GreaterThan = 0.0;
-                            options.SlidingWindowDuration = TimeSpan.FromSeconds(5);
-                        })
-                        .AddCollectStacksAction(fileEgress, Tools.Monitor.CollectionRules.Options.Actions.CallStackFormat.Json);
 
-                    ruleCompletedTask = runner.WaitForCollectionRuleActionsCompletedAsync("StacksCounterRule");
+                    configureTool?.Invoke(runner);
                 });
+        }
+
+        private async Task TestStacksListenNoSuspend(
+            Architecture targetArchitecture,
+            Func<AppRunner, ApiClient, Task> validate,
+            Action<MonitorCollectRunner> configureTool = null)
+        {
+            DiagnosticPortHelper.Generate(
+                WebApi.DiagnosticPortConnectionMode.Listen,
+                out _,
+                out string diagnosticPortPath);
+
+            // Startup app before .NET Monitor
+            await using AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
+            appRunner.ConnectionMode = WebApi.DiagnosticPortConnectionMode.Connect;
+            appRunner.DiagnosticPortPath = diagnosticPortPath;
+            appRunner.DiagnosticPortSuspend = false; // nosuspend
+            appRunner.ScenarioName = TestAppScenarios.Stacks.Name;
+            appRunner.Architecture = targetArchitecture;
+
+            await appRunner.ExecuteAsync(async () =>
+            {
+                // App is executing managed code at this point
+
+                // Start .NET Monitor
+                await using MonitorCollectRunner toolRunner = new(_outputHelper);
+                toolRunner.ConnectionModeViaCommandLine = WebApi.DiagnosticPortConnectionMode.Listen;
+                toolRunner.DiagnosticPortPath = diagnosticPortPath;
+                toolRunner.DisableAuthentication = true;
+                toolRunner.ConfigurationFromEnvironment.EnableInProcessFeatures();
+                toolRunner.EnableCallStacksFeature = true;
+
+                configureTool?.Invoke(toolRunner);
+
+                await toolRunner.StartAsync();
+
+                using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+                ApiClient apiClient = new(_outputHelper, httpClient);
+
+                // Wait for the process to be discovered.
+                int processId = await appRunner.ProcessIdTask;
+                ProcessInfo processInfo = await apiClient.GetProcessWithRetryAsync(_outputHelper, pid: processId);
+
+                await ProfilerHelper.WaitForProfilerCommunicationChannelAsync(processInfo);
+
+                await validate.Invoke(appRunner, apiClient);
+
+                await appRunner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
+            });
         }
 
         private static string FormatFrame(string module, string @class, string function) =>
