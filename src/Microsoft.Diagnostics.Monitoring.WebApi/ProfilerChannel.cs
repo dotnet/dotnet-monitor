@@ -56,16 +56,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ProfilerMessageType messageType = (ProfilerMessageType)BitConverter.ToInt16(headersBuffer, startIndex: 0);
             ProfilerCommand command = (ProfilerCommand)BitConverter.ToInt16(headersBuffer, startIndex: 2);
 
-            if (messageType != ProfilerMessageType.Status)
+            if (messageType != ProfilerMessageType.SimpleMessage)
             {
                 throw new InvalidOperationException($"Received unexpected status message from server. {messageType}");
             }
 
-            if (command == ProfilerCommand.Error)
+            if (command != ProfilerCommand.Status)
             {
-                int hresult = BitConverter.ToInt32(headersBuffer, startIndex: 4);
-                Marshal.ThrowExceptionForHR(hresult);
+                throw new InvalidOperationException($"Received unexpected status message from server. {command}");
             }
+
+            int hresult = BitConverter.ToInt32(headersBuffer, startIndex: 4);
+            Marshal.ThrowExceptionForHR(hresult);
         }
 
         private string ComputeChannelPath(IEndpointInfo endpointInfo)

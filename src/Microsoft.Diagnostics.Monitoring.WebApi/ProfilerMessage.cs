@@ -25,8 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring
     internal enum ProfilerCommand : short
     {
         Unknown,
-        OK,
-        Error,
+        Status,
         Callstack,
         CaptureParameters,
     };
