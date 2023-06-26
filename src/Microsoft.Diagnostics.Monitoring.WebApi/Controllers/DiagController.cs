@@ -609,11 +609,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return await InvokeForProcess(async processInfo =>
             {
                 // Send a sample payload....
-                SimpleProfilerMessage response = await _profilerChannel.SendMessage(
+                await _profilerChannel.SendMessage(
                     processInfo.EndpointInfo,
                     new JsonProfilerMessage
                     {
-                        MessageType = ProfilerMessageType.JsonCommand,
+                        MessageType = ProfilerMessageType.JsonMessage,
                         Command = ProfilerCommand.CaptureParameters,
                         Payload = new ParameterCapturingPayload
                         {
@@ -623,10 +623,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     },
                     CancellationToken.None);
 
-                if (response.Command == ProfilerCommand.Error)
-                {
-                    throw new InvalidOperationException($"Profiler request failed: 0x{response.Parameter:X8}");
-                }
 
                 // Register a psuedo operation, provider name: $null OR $psuedo:logs
                 //string operationUrl = await RegisterOperation(egressOperation, Utilities.ArtifactType_Parameters);

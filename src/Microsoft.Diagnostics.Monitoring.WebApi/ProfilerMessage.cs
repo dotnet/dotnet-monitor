@@ -17,14 +17,15 @@ namespace Microsoft.Diagnostics.Monitoring
     internal enum ProfilerMessageType : short
     {
         Unknown,
-        SimpleCommand,
-        JsonCommand
+        Status,
+        SimpleMessage,
+        JsonMessage
     };
 
     internal enum ProfilerCommand : short
     {
         Unknown,
-        Ok, // JSFIX: OK
+        OK,
         Error,
         Callstack,
         CaptureParameters,
@@ -38,22 +39,9 @@ namespace Microsoft.Diagnostics.Monitoring
         public byte[] SerializePayload();
     }
 
-    internal ref struct RawProfilerMessage
-    {
-        public RawProfilerMessage()
-        {
-        }
-
-        public ProfilerMessageType MessageType { get; set; } = ProfilerMessageType.Unknown;
-        public ProfilerCommand Command { get; set; } = ProfilerCommand.Unknown;
-
-        public byte[] Payload { get; set; } = Array.Empty<byte>();
-
-    }
-
     internal struct JsonProfilerMessage : IProfilerMessage
     {
-        public ProfilerMessageType MessageType { get; set; } = ProfilerMessageType.JsonCommand;
+        public ProfilerMessageType MessageType { get; set; } = ProfilerMessageType.JsonMessage;
         public ProfilerCommand Command { get; set; } = ProfilerCommand.Unknown;
 
         public object Payload { get; set; }
@@ -76,12 +64,9 @@ namespace Microsoft.Diagnostics.Monitoring
         {
         }
 
-        public ProfilerMessageType MessageType { get; set; } = ProfilerMessageType.SimpleCommand;
+        public ProfilerMessageType MessageType { get; set; } = ProfilerMessageType.SimpleMessage;
         public ProfilerCommand Command { get; set; } = ProfilerCommand.Unknown;
 
-        // This is currently unsupported, but some possible future additions:
-        // Parameter Metadata. (I.e. IMetadataImport.GetMethodProps + signature resolution)
-        // Resolve frame offsets (Resolving absolute native address to relative offset then convert to IL using IL-to-native maps.
         public int Parameter { get; set; }
 
         public byte[] SerializePayload()

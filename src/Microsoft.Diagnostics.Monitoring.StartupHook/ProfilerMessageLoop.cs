@@ -50,7 +50,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             try
             {
                 RegisterProfilerMessageCallback(OnProfilerMessage);
-                Console.WriteLine("[startup-hook] REGISTERED CALLBACK");
             }
             catch (Exception ex)
             {
@@ -107,7 +106,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         {
             try
             {
-                if (messageType != ProfilerMessageType.JsonCommand)
+                if (messageType != ProfilerMessageType.JsonMessage)
                 {
                     throw new NotImplementedException($"Message type {messageType} is not supported");
                 }
