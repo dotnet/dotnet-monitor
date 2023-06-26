@@ -4,7 +4,9 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
@@ -22,19 +24,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(5);
 
         private readonly List<UniqueProcessKey> _unconfiguredProcesses = new();
+        private readonly ISharedLibraryService _sharedLibraryService;
         private readonly IExceptionsStore _exceptionsStore;
         private readonly IDiagnosticServices _diagnosticServices;
         private readonly IInProcessFeatures _inProcessFeatures;
         private readonly StartupHookValidator _startupHookValidator;
 
+        private const string StartupHookFileName = "Microsoft.Diagnostics.Monitoring.StartupHook.dll";
+        private const string StartupHookTargetFramework = "net6.0";
+
         private EventExceptionsPipeline _pipeline;
 
         public ExceptionsService(
+            ISharedLibraryService sharedLibraryService,
             StartupHookValidator startupHookValidator,
             IDiagnosticServices diagnosticServices,
             IInProcessFeatures inProcessFeatures,
             IExceptionsStore exceptionsStore)
         {
+            _sharedLibraryService = sharedLibraryService;
             _diagnosticServices = diagnosticServices;
             _exceptionsStore = exceptionsStore;
             _inProcessFeatures = inProcessFeatures;
@@ -64,6 +72,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         throw new NotSupportedException();
                     }
 
+                    DiagnosticsClient client = new(pi.EndpointInfo.Endpoint);
+
+                    // NEW - testing only
+                    IFileProviderFactory fileProviderFactory = await _sharedLibraryService.GetFactoryAsync(stoppingToken);
+                    IFileProvider managedFileProvider = fileProviderFactory.CreateManaged(StartupHookTargetFramework);
+                    IFileInfo startupHookLibraryFileInfo = managedFileProvider.GetFileInfo(StartupHookFileName);
+                    await client.ApplyStartupHookAsync(startupHookLibraryFileInfo.PhysicalPath, stoppingToken);
+
                     // Validate that the process is configured correctly for collecting exceptions.
                     if (!await _startupHookValidator.CheckAsync(pi.EndpointInfo, stoppingToken))
                     {
@@ -72,8 +88,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         // This exception is not user visible.
                         throw new NotSupportedException();
                     }
-
-                    DiagnosticsClient client = new(pi.EndpointInfo.Endpoint);
 
                     EventExceptionsPipelineSettings settings = new();
                     _pipeline = new EventExceptionsPipeline(client, settings, _exceptionsStore);

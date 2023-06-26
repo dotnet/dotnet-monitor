@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
+using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -430,13 +431,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             runner.Architecture = architecture;
             runner.ScenarioName = TestAppScenarios.Exceptions.Name + " " + subScenarioName;
 
-            AddStartupHookEnvironmentVariable(runner);
+            //AddStartupHookEnvironmentVariable(runner);
 
             Task<IEndpointInfo> newEndpointInfoTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
             await runner.ExecuteAsync(async () =>
             {
                 await newEndpointInfoTask;
+
+                DiagnosticsClient client = new(newEndpointInfoTask.Result.ProcessId);
+
+                // NEW - testing only
+                //IFileProviderFactory fileProviderFactory = await _sharedLibraryService.GetFactoryAsync(stoppingToken);
+                //IFileProvider managedFileProvider = fileProviderFactory.CreateManaged(StartupHookTargetFramework);
+                //IFileInfo startupHookLibraryFileInfo = managedFileProvider.GetFileInfo(StartupHookFileName);
+                var tempPath = "C:\\Users\\kkeirstead\\dotnet-monitor\\artifacts\\bin\\Microsoft.Diagnostics.Monitoring.StartupHook\\Debug\\net6.0\\Microsoft.Diagnostics.Monitoring.StartupHook.dll";
+                await client.ApplyStartupHookAsync(tempPath, CancellationToken.None);
 
                 TestExceptionsStore store = new(expectedInstanceCount);
 

@@ -41,6 +41,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             IFileProvider managedFileProvider = fileProviderFactory.CreateManaged(StartupHookTargetFramework);
 
             IFileInfo startupHookLibraryFileInfo = managedFileProvider.GetFileInfo(StartupHookFileName);
+
             if (!startupHookLibraryFileInfo.Exists)
             {
                 // This would be a bug in dotnet-monitor; throw appropriate non-MonitoringException instance.
