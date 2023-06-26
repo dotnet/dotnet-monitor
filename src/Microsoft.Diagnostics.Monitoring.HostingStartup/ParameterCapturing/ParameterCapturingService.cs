@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
+using Microsoft.Diagnostics.Monitoring.StartupHook;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
