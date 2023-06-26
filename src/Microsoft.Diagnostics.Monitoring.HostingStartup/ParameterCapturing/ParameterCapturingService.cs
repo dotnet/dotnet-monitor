@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             try
             {
-                SharedInternals.MonitorMessageDispatcher.RegisterCallback<ParameterCapturingPayload>(ProfilerCommand.CaptureParameters, OnCommand);
+                SharedInternals.MonitorMessageDispatcher.RegisterCallback<ParameterCapturingPayload>(ProfilerMessageType.CaptureParameters, OnCommand);
                 _probeManager = new FunctionProbesManager(new LogEmittingProbes(_logger, FunctionProbesStub.InstrumentedMethodCache));
                 _isAvailable = true;
             }
@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             if (request.FqMethodNames.Length == 0)
             {
-                return;
+                throw new ArgumentException("At least one method must be provided");
             }
 
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => !assembly.ReflectionOnly && !assembly.IsDynamic).ToArray();
@@ -58,13 +58,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             foreach (string methodName in request.FqMethodNames)
             {
                 List<MethodInfo> resolvedMethods = ResolveMethod(assemblies, methodName);
+                if (resolvedMethods.Count == 0)
+                {
+                    throw new ArgumentException($"Failed to resolve method: {methodName}");
+                }
                 methods.AddRange(resolvedMethods);
-            }
-
-            if (methods.Count == 0)
-            {
-                Console.WriteLine("Did not resolve any methods :(");
-                return;
             }
 
             _logger?.LogWarning($"Capturing parameters for the following methods (duration: {request.Duration})\n\t{string.Join("\n\t--> ", request.FqMethodNames)}");
@@ -169,7 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             try
             {
-                SharedInternals.MonitorMessageDispatcher.UnregisterCallback(ProfilerCommand.CaptureParameters);
+                SharedInternals.MonitorMessageDispatcher.UnregisterCallback(ProfilerMessageType.CaptureParameters);
                 _probeManager?.Dispose();
             }
             catch

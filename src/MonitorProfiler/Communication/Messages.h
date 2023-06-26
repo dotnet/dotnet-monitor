@@ -5,32 +5,31 @@
 
 #include <vector>
 
+enum class PayloadType : short
+{
+    Unknown,
+    Int32,
+    Utf8Json
+};
+
 enum class MessageType : short
 {
     Unknown,
-    SimpleCommand,
-    JsonCommand
-};
-
-enum class ProfilerCommand : short
-{
-    Unknown,
-    OK,
-    Error,
+    Status,
     Callstack,
     CaptureParameters
 };
 
 struct IpcMessage
 {
+    PayloadType PayloadType = PayloadType::Unknown;
     MessageType MessageType = MessageType::Unknown;
-    ProfilerCommand ProfilerCommand = ProfilerCommand::Unknown;
     std::vector<BYTE> Payload;
 };
 
 struct SimpleIpcMessage
 {
-    MessageType MessageType = MessageType::SimpleCommand;
-    ProfilerCommand ProfilerCommand = ProfilerCommand::Unknown;
+    PayloadType PayloadType = PayloadType::Int32;
+    MessageType MessageType = MessageType::Unknown;
     int Parameters;
 };

@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             await profilerChannel.SendMessage(
                 endpointInfo,
-                new SimpleProfilerMessage { Command = ProfilerCommand.Callstack, Parameter = 0 },
+                new SimpleProfilerMessage { MessageType = ProfilerMessageType.Callstack, Parameter = 0 },
                 token);
 
             await runPipelineTask;

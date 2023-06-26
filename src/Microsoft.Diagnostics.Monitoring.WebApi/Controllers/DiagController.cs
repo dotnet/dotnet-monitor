@@ -613,8 +613,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     processInfo.EndpointInfo,
                     new JsonProfilerMessage
                     {
-                        MessageType = ProfilerMessageType.JsonMessage,
-                        Command = ProfilerCommand.CaptureParameters,
+                        PayloadType = ProfilerPayloadType.Utf8Json,
+                        MessageType = ProfilerMessageType.CaptureParameters,
                         Payload = new ParameterCapturingPayload
                         {
                             Duration = TimeSpan.FromMinutes(10),

@@ -14,14 +14,15 @@ namespace Microsoft.Diagnostics.Monitoring
         public string[] FqMethodNames { get; set; } = Array.Empty<string>();
     }
 
-    internal enum ProfilerMessageType : short
+    internal enum ProfilerPayloadType : short
     {
         Unknown,
-        SimpleMessage,
-        JsonMessage
+        Int32, // Payload only contains an INT32
+        Utf8Json // Payload contains a UTF8-encoded JSON string
     };
 
-    internal enum ProfilerCommand : short
+
+    internal enum ProfilerMessageType : short
     {
         Unknown,
         Status,
@@ -31,16 +32,16 @@ namespace Microsoft.Diagnostics.Monitoring
 
     internal interface IProfilerMessage
     {
+        public ProfilerPayloadType PayloadType { get; set; }
         public ProfilerMessageType MessageType { get; set; }
-        public ProfilerCommand Command { get; set; }
 
         public byte[] SerializePayload();
     }
 
     internal struct JsonProfilerMessage : IProfilerMessage
     {
-        public ProfilerMessageType MessageType { get; set; } = ProfilerMessageType.JsonMessage;
-        public ProfilerCommand Command { get; set; } = ProfilerCommand.Unknown;
+        public ProfilerPayloadType PayloadType { get; set; } = ProfilerPayloadType.Utf8Json;
+        public ProfilerMessageType MessageType { get; set; } = ProfilerMessageType.Unknown;
 
         public object Payload { get; set; }
 
@@ -62,8 +63,8 @@ namespace Microsoft.Diagnostics.Monitoring
         {
         }
 
-        public ProfilerMessageType MessageType { get; set; } = ProfilerMessageType.SimpleMessage;
-        public ProfilerCommand Command { get; set; } = ProfilerCommand.Unknown;
+        public ProfilerPayloadType PayloadType { get; set; } = ProfilerPayloadType.Int32;
+        public ProfilerMessageType MessageType { get; set; } = ProfilerMessageType.Unknown;
 
         public int Parameter { get; set; }
 

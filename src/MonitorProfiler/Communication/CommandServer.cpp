@@ -73,8 +73,8 @@ void CommandServer::ListeningThread()
         }
 
         SimpleIpcMessage response;
-        response.MessageType = MessageType::SimpleCommand;
-        response.ProfilerCommand = SUCCEEDED(hr) ? ProfilerCommand::OK : ProfilerCommand::Error;
+        response.PayloadType = PayloadType::Int32;
+        response.MessageType = MessageType::Status;
         response.Parameters = hr;
 
         hr = client->Send(response);

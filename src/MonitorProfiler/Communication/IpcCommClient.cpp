@@ -23,15 +23,15 @@ HRESULT IpcCommClient::Receive(IpcMessage& message)
     }
 
     //CONSIDER It is generally more performant to read and buffer larger chunks, in this case we are not expecting very frequent communication.
-    char headersBuffer[sizeof(MessageType) + sizeof(ProfilerCommand) + sizeof(int)];
+    char headersBuffer[sizeof(PayloadType) + sizeof(MessageType) + sizeof(int)];
     IfFailRet(ReadFixedBuffer(
         sizeof(headersBuffer),
         headersBuffer
     ));
 
-    message.MessageType = *reinterpret_cast<MessageType*>(headersBuffer);
-    message.ProfilerCommand = *reinterpret_cast<ProfilerCommand*>(&headersBuffer[sizeof(MessageType)]);
-    int payloadSize = *reinterpret_cast<int*>(&headersBuffer[sizeof(MessageType) + sizeof(ProfilerCommand)]);
+    message.PayloadType = *reinterpret_cast<PayloadType*>(headersBuffer);
+    message.MessageType = *reinterpret_cast<MessageType*>(&headersBuffer[sizeof(PayloadType)]);
+    int payloadSize = *reinterpret_cast<int*>(&headersBuffer[sizeof(PayloadType) + sizeof(MessageType)]);
 
     IfOomRetMem(message.Payload.resize(payloadSize));
 
@@ -85,14 +85,14 @@ HRESULT IpcCommClient::Send(const SimpleIpcMessage& message)
         return E_UNEXPECTED;
     }
 
-    char buffer[sizeof(MessageType) + sizeof(ProfilerCommand) + sizeof(int) + sizeof(int)];
+    char buffer[sizeof(PayloadType) + sizeof(MessageType) + sizeof(int) + sizeof(int)];
 
     int bufferOffset = 0; 
+    *reinterpret_cast<PayloadType*>(&buffer[bufferOffset]) = message.PayloadType;
+    bufferOffset += sizeof(PayloadType);
+
     *reinterpret_cast<MessageType*>(&buffer[bufferOffset]) = message.MessageType;
     bufferOffset += sizeof(MessageType);
-
-    *reinterpret_cast<ProfilerCommand*>(&buffer[bufferOffset]) = message.ProfilerCommand;
-    bufferOffset += sizeof(ProfilerCommand);
 
     *reinterpret_cast<int*>(&buffer[bufferOffset]) = sizeof(int);
     bufferOffset += sizeof(int);

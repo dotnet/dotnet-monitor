@@ -295,17 +295,17 @@ HRESULT MainProfiler::InitializeCommandServer()
 
 HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 {
-    m_pLogger->Log(LogLevel::Information, _LS("Message received from client: %d %d"), message.MessageType, message.ProfilerCommand);
+    m_pLogger->Log(LogLevel::Information, _LS("Message received from client: %d %d"), message.PayloadType, message.MessageType);
 
-    if (message.MessageType == MessageType::SimpleCommand)
+    if (message.PayloadType == PayloadType::Int32)
     {
-        if (message.ProfilerCommand == ProfilerCommand::Callstack)
+        if (message.MessageType == MessageType::Callstack)
         {
             //Currently we do not have any options for this message
             return ProcessCallstackMessage();
         }
     }
-    else if (message.MessageType == MessageType::JsonCommand)
+    else if (message.PayloadType == PayloadType::Utf8Json)
     {
         // Pass the message to managed land
         lock_guard<mutex> lock(g_messageCallbackMutex);
@@ -315,13 +315,15 @@ HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
         }
 
         g_pManagedMessageCallback(
+            static_cast<INT32>(message.PayloadType),
             static_cast<INT32>(message.MessageType),
-            static_cast<INT32>(message.ProfilerCommand),
             message.Payload.size(),
             (BYTE*)message.Payload.data());
+
+        return S_OK;
     }
 
-    return S_OK;
+    return E_FAIL;
 }
 
 HRESULT MainProfiler::ProcessCallstackMessage()

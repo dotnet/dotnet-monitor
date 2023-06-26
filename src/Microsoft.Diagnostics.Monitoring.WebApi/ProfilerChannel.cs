@@ -1,10 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Options;
 using System;
-using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
@@ -41,8 +39,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             byte[] headersBuffer = new byte[sizeof(short) + sizeof(short) + sizeof(int)];
             var memoryStream = new MemoryStream(headersBuffer);
             using BinaryWriter writer = new BinaryWriter(memoryStream);
+            writer.Write((short)message.PayloadType);
             writer.Write((short)message.MessageType);
-            writer.Write((short)message.Command);
             writer.Write(payloadBuffer.Length);
             writer.Dispose();
             await socket.SendAsync(new ReadOnlyMemory<byte>(headersBuffer), SocketFlags.None, token);
@@ -62,24 +60,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             int readIndex = 0;
-            ProfilerMessageType messageType = (ProfilerMessageType)BitConverter.ToInt16(recvBuffer, startIndex: readIndex);
-            if (messageType != ProfilerMessageType.SimpleMessage)
+            ProfilerPayloadType payloadType = (ProfilerPayloadType)BitConverter.ToInt16(recvBuffer, startIndex: readIndex);
+            if (payloadType != ProfilerPayloadType.Int32)
             {
-                throw new InvalidOperationException($"Received unexpected status message from server. {messageType}");
+                throw new InvalidOperationException($"Received unexpected status message from server.");
             }
             readIndex += sizeof(short);
 
-            ProfilerCommand command = (ProfilerCommand)BitConverter.ToInt16(recvBuffer, startIndex: readIndex);
-            if (command != ProfilerCommand.Status)
+            ProfilerMessageType messageType = (ProfilerMessageType)BitConverter.ToInt16(recvBuffer, startIndex: readIndex);
+            if (messageType != ProfilerMessageType.Status)
             {
-                throw new InvalidOperationException($"Received unexpected status message from server. {command}");
+                throw new InvalidOperationException($"Received unexpected status message from server.");
             }
             readIndex += sizeof(short);
 
             int payloadLength = BitConverter.ToInt32(recvBuffer, startIndex: readIndex);
             if (payloadLength != sizeof(int))
             {
-                throw new InvalidOperationException($"Received unexpected status message payload size from server. {command}");
+                throw new InvalidOperationException($"Received unexpected status message payload size from server.");
             }
             readIndex += sizeof(int);
 

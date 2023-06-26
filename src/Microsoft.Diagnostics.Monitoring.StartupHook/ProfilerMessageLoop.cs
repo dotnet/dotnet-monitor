@@ -23,13 +23,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
     {
         private string? _profilerModulePath;
 
-        public delegate void ProfilerMessageCallback(ProfilerMessageType messageType, ProfilerCommand command, long bufferSize, IntPtr buffer);
+        public delegate void ProfilerMessageCallback(ProfilerPayloadType payloadType, ProfilerMessageType messageType, long bufferSize, IntPtr buffer);
 
         [DllImport(ProfilerIdentifiers.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
         private static extern void RegisterProfilerMessageCallback(ProfilerMessageCallback callback);
 
 
-        private static ConcurrentDictionary<ProfilerCommand, DispatchRecord> s_dispatchTable = new();
+        private static ConcurrentDictionary<ProfilerMessageType, DispatchRecord> s_dispatchTable = new();
 
         public ProfilerMessageLoop()
         {
@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         }
 
 #pragma warning disable CA1822 // Mark members as static
-        public void RegisterCallback<T>(ProfilerCommand command, Action<T> callback) where T : class
+        public void RegisterCallback<T>(ProfilerMessageType messageType, Action<T> callback) where T : class
 #pragma warning restore CA1822 // Mark members as static
         {
             DispatchRecord dispatch = new()
@@ -73,15 +73,15 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
                     }
                 }
             };
-            s_dispatchTable[command] = dispatch;
+            s_dispatchTable[messageType] = dispatch;
         }
 
 
 #pragma warning disable CA1822 // Mark members as static
-        public void UnregisterCallback(ProfilerCommand command)
+        public void UnregisterCallback(ProfilerMessageType messageType)
         {
 #pragma warning restore CA1822 // Mark members as static
-            s_dispatchTable.TryRemove(command, out _);
+            s_dispatchTable.TryRemove(messageType, out _);
         }
 
         private IntPtr ResolveDllImport(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
@@ -102,19 +102,19 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             return IntPtr.Zero;
         }
 
-        private static void OnProfilerMessage(ProfilerMessageType messageType, ProfilerCommand command, long bufferSize, IntPtr nativeBuffer)
+        private static void OnProfilerMessage(ProfilerPayloadType payloadType, ProfilerMessageType messageType, long bufferSize, IntPtr nativeBuffer)
         {
             try
             {
-                if (messageType != ProfilerMessageType.JsonMessage)
+                if (payloadType != ProfilerPayloadType.Utf8Json)
                 {
-                    throw new NotImplementedException($"Message type {messageType} is not supported");
+                    throw new NotImplementedException($"Payload type {payloadType} is not supported");
                 }
 
                 object? payload = null;
-                if (!s_dispatchTable.TryGetValue(command, out DispatchRecord dispatcher))
+                if (!s_dispatchTable.TryGetValue(messageType, out DispatchRecord dispatcher))
                 {
-                    throw new NotImplementedException($"Message command {command} is not supported");
+                    throw new NotImplementedException($"Message command {messageType} is not supported");
                 }
 
                 unsafe
