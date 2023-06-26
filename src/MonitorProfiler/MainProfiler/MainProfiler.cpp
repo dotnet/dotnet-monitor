@@ -23,7 +23,7 @@ using namespace std;
 #define DLLEXPORT
 #endif
 
-typedef int (STDMETHODCALLTYPE *ManagedMessageCallback)(INT32, INT32, BYTE*, UINT64);
+typedef INT32 (STDMETHODCALLTYPE *ManagedMessageCallback)(INT32, INT32, const BYTE*, UINT64);
 std::mutex g_messageCallbackMutex;
 ManagedMessageCallback g_pManagedMessageCallback = nullptr;
 
@@ -318,7 +318,7 @@ HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
         IfFailRet(g_pManagedMessageCallback(
             static_cast<INT32>(message.PayloadType),
             static_cast<INT32>(message.MessageType),
-            (BYTE*)message.Payload.data(),
+            message.Payload.data(),
             message.Payload.size()));
 
         return S_OK;
