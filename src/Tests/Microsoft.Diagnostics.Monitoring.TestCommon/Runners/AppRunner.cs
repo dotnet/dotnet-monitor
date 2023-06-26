@@ -59,6 +59,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public string DiagnosticPortPath { get; set; }
 
+        /// <summary>
+        /// Indicates whether the process should be suspended at startup via the diagnostic port.
+        /// </summary>
+        /// <remarks>
+        /// By default, the diagnostic port will suspend the target process.
+        /// </remarks>
+        public bool DiagnosticPortSuspend { get; set; } = true;
+
         public Dictionary<string, string> Environment => _adapter.Environment;
 
         public int ExitCode => _adapter.ExitCode;
@@ -143,7 +151,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                     throw new InvalidOperationException($"'{nameof(DiagnosticPortPath)}' is required.");
                 }
 
-                _adapter.Environment.Add("DOTNET_DiagnosticPorts", DiagnosticPortPath);
+                string diagnosticPortsValue = DiagnosticPortPath;
+                if (!DiagnosticPortSuspend)
+                {
+                    diagnosticPortsValue += ",nosuspend";
+                }
+
+                _adapter.Environment.Add("DOTNET_DiagnosticPorts", diagnosticPortsValue);
             }
 
             if (SetRuntimeIdentifier)
