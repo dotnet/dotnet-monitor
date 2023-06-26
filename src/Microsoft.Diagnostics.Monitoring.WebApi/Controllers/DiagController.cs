@@ -606,12 +606,32 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
-            return await InvokeForProcess(processInfo =>
+            return await InvokeForProcess(async processInfo =>
             {
+                // Send a sample payload....
+                SimpleProfilerMessage response = await _profilerChannel.SendMessage(
+                    processInfo.EndpointInfo,
+                    new JsonProfilerMessage
+                    {
+                        MessageType = ProfilerMessageType.JsonCommand,
+                        Command = ProfilerCommand.CaptureParameters,
+                        Payload = new ParameterCapturingPayload
+                        {
+                            Duration = TimeSpan.FromMinutes(10),
+                            FqMethodNames = new string[] { "BuggyDemoWeb.dll!BuggyDemoWeb.Controllers.HomeController.SelectDiagnsticType" }
+                        }
+                    },
+                    CancellationToken.None);
+
+                if (response.Command == ProfilerCommand.Error)
+                {
+                    throw new InvalidOperationException($"Profiler request failed: 0x{response.Parameter:X8}");
+                }
+
                 // Register a psuedo operation, provider name: $null OR $psuedo:logs
                 //string operationUrl = await RegisterOperation(egressOperation, Utilities.ArtifactType_Parameters);
                 return Accepted("");
-            }, processKey);
+            }, processKey, null);
         }
 
         [HttpGet("stacks", Name = nameof(CaptureStacks))]

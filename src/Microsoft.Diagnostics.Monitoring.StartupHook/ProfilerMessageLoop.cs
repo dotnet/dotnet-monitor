@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 
-using System.Threading;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Reflection;
@@ -22,14 +21,15 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 
     internal sealed class ProfilerMessageLoop : IDisposable
     {
-        private ManualResetEvent _stopEvent = new(initialState: false);
-        Thread? _messagePumpThread;
         private string? _profilerModulePath;
 
-        [DllImport(ProfilerIdentifiers.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
-        private static extern void GetProfilerMessage(ref RawProfilerMessage message);
+        public delegate void ProfilerMessageCallback(ProfilerMessageType messageType, ProfilerCommand command, long bufferSize, IntPtr buffer);
 
-        private ConcurrentDictionary<ProfilerCommand, DispatchRecord> _dispatchTable = new();
+        [DllImport(ProfilerIdentifiers.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
+        private static extern void RegisterProfilerMessageCallback(ProfilerMessageCallback callback);
+
+
+        private static ConcurrentDictionary<ProfilerCommand, DispatchRecord> s_dispatchTable = new();
 
         public ProfilerMessageLoop()
         {
@@ -43,24 +43,46 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 
         }
 
-        public void Start()
+#pragma warning disable CA1822 // Mark members as static
+        public void Register()
+#pragma warning restore CA1822 // Mark members as static
         {
-            _messagePumpThread = new Thread(MessageLoop);
+            try
+            {
+                RegisterProfilerMessageCallback(OnProfilerMessage);
+                Console.WriteLine("[startup-hook] REGISTERED CALLBACK");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
 
+#pragma warning disable CA1822 // Mark members as static
         public void RegisterCallback<T>(ProfilerCommand command, Action<T> callback) where T : class
+#pragma warning restore CA1822 // Mark members as static
         {
             DispatchRecord dispatch = new()
             {
                 PayloadType = typeof(T),
-                Callback = (Action<object>)callback
+                Callback = (o) => 
+                {
+                    T converted = (T)o;
+                    if (converted != null)
+                    {
+                        callback(converted);
+                    }
+                }
             };
-            _dispatchTable[command] = dispatch;
+            s_dispatchTable[command] = dispatch;
         }
 
+
+#pragma warning disable CA1822 // Mark members as static
         public void UnregisterCallback(ProfilerCommand command)
         {
-            _dispatchTable.TryRemove(command, out _);
+#pragma warning restore CA1822 // Mark members as static
+            s_dispatchTable.TryRemove(command, out _);
         }
 
         private IntPtr ResolveDllImport(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
@@ -81,67 +103,47 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             return IntPtr.Zero;
         }
 
-        private void MessageLoop()
+        private static void OnProfilerMessage(ProfilerMessageType messageType, ProfilerCommand command, long bufferSize, IntPtr nativeBuffer)
         {
-            while (true)
+            try
             {
-                try
+                if (messageType != ProfilerMessageType.JsonCommand)
                 {
-                    RawProfilerMessage message = new();
-                    GetProfilerMessage(ref message);
-                    DispatchMessage(ref message);
+                    throw new NotImplementedException($"Message type {messageType} is not supported");
                 }
-                catch (Exception)
+
+                object? payload = null;
+                if (!s_dispatchTable.TryGetValue(command, out DispatchRecord dispatcher))
                 {
-                    return;
+                    throw new NotImplementedException($"Message command {command} is not supported");
                 }
-            }
-        }
 
-        private void DispatchMessage(ref RawProfilerMessage message)
-        {
-            if (message.MessageType != ProfilerMessageType.JsonCommand)
-            {
-                throw new NotImplementedException($"Message type {message.MessageType} is not supported");
-            }
+                unsafe
+                {
+                    using UnmanagedMemoryStream memoryStream = new((byte*)nativeBuffer.ToPointer(), bufferSize);
+                    payload = JsonSerializer.Deserialize(memoryStream, dispatcher.PayloadType);
+                }
 
-            // For understood command, deserialize the payload into a well-known type
-            // and dispatch it for processing on a seperate thread.
-
-            if (_dispatchTable.TryGetValue(message.Command, out DispatchRecord dispatcher))
-            {
-                var payload = JsonSerializer.Deserialize(message.Payload, dispatcher.PayloadType);
                 if (payload != null && dispatcher.Callback != null)
                 {
-                    try
-                    {
-                        dispatcher.Callback(payload);
-                    }
-                    catch
-                    {
-
-                    }
+                    dispatcher.Callback(payload);
+                }
+                else
+                {
+                    throw new NotImplementedException("Failed to deserialized");
                 }
             }
-
-
-            switch (message.Command)
+            catch (Exception ex)
             {
-                case ProfilerCommand.CaptureParameters:
-
-                    // 
-                    break;
-
-                default:
-                    throw new NotImplementedException($"Command {message.Command} is not supported");
+                // JSFIX: Return hresult
+                Console.WriteLine(ex.ToString());
             }
+
         }
 
         public void Dispose()
         {
-            _stopEvent.Set();
-            _messagePumpThread?.Join();
-            _stopEvent.Dispose();
+            s_dispatchTable.Clear();
         }
     }
 }

@@ -34,39 +34,41 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             byte[] messagePayload = message.SerializePayload();
 
-            byte[] buffer = new byte[sizeof(short) + sizeof(int) + messagePayload.Length];
+            byte[] buffer = new byte[sizeof(short) + sizeof(short) + sizeof(int) + messagePayload.Length];
             var memoryStream = new MemoryStream(buffer);
             using BinaryWriter writer = new BinaryWriter(memoryStream);
             writer.Write((short)message.MessageType);
+            writer.Write((short)message.Command);
             writer.Write(messagePayload.Length);
             writer.Write(messagePayload);
             writer.Dispose();
-
             await socket.SendAsync(new ReadOnlyMemory<byte>(buffer), SocketFlags.None, token);
-            int received = await socket.ReceiveAsync(new Memory<byte>(buffer), SocketFlags.None, token);
-            if (received < buffer.Length)
+
+            byte[] recvBuffer = new byte[sizeof(short) + sizeof(short) + sizeof(int)];
+            int received = await socket.ReceiveAsync(new Memory<byte>(recvBuffer), SocketFlags.None, token);
+            if (received < recvBuffer.Length)
             {
                 //TODO Figure out if fragmentation is possible over UDS.
-                throw new InvalidOperationException("Could not receive message from server.");
+                throw new InvalidOperationException($"Could not receive message from server. {received} - {recvBuffer.Length}");
             }
 
-            ProfilerMessageType messageType = (ProfilerMessageType)BitConverter.ToInt16(buffer, startIndex: 0);
-            ProfilerCommand command = (ProfilerCommand)BitConverter.ToInt16(buffer, startIndex: 2);
+            ProfilerMessageType messageType = (ProfilerMessageType)BitConverter.ToInt16(recvBuffer, startIndex: 0);
+            ProfilerCommand command = (ProfilerCommand)BitConverter.ToInt16(recvBuffer, startIndex: 2);
 
             if (messageType != ProfilerMessageType.SimpleCommand)
             {
-                throw new InvalidOperationException("Received unexpected status message from server.");
+                throw new InvalidOperationException($"Received unexpected status message from server. {messageType}");
             }
 
-            if (command != ProfilerCommand.Ok || command != ProfilerCommand.Error)
+            if (command != ProfilerCommand.Ok && command != ProfilerCommand.Error)
             {
-                throw new InvalidOperationException("Received unexpected command from server.");
+                throw new InvalidOperationException($"Received unexpected command from server. {command}");
             }
 
             return new SimpleProfilerMessage
             {
                 MessageType = messageType,
-                Parameter = BitConverter.ToInt32(buffer, startIndex: 4)
+                Parameter = BitConverter.ToInt32(recvBuffer, startIndex: 4)
             };
         }
 

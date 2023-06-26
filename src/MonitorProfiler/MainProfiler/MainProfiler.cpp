@@ -19,6 +19,14 @@ using namespace std;
 
 #define IfFailLogRet(EXPR) IfFailLogRet_(m_pLogger, EXPR)
 
+#ifndef DLLEXPORT
+#define DLLEXPORT
+#endif
+
+typedef void (STDMETHODCALLTYPE *ManagedMessageCallback)(INT32, INT32, UINT64, BYTE*);
+std::mutex g_messageCallbackMutex;
+ManagedMessageCallback g_pManagedMessageCallback = nullptr;
+
 GUID MainProfiler::GetClsid()
 {
     // {6A494330-5848-4A23-9D87-0E57BBF6DE79}
@@ -158,6 +166,8 @@ HRESULT MainProfiler::InitializeCommon()
 {
     HRESULT hr = S_OK;
 
+    g_pManagedMessageCallback = nullptr;
+
     // These are created in dependency order!
     IfFailRet(InitializeEnvironment());
     IfFailRet(InitializeLogging());
@@ -285,12 +295,30 @@ HRESULT MainProfiler::InitializeCommandServer()
 
 HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 {
-    m_pLogger->Log(LogLevel::Information, _LS("Message received from client: %d %d"), message.MessageType, message.Parameters);
+    m_pLogger->Log(LogLevel::Information, _LS("Message received from client: %d %d"), message.MessageType, message.ProfilerCommand);
 
-    if (message.MessageType == MessageType::Callstack)
+    if (message.MessageType == MessageType::SimpleCommand)
     {
-        //Currently we do not have any options for this message
-        return ProcessCallstackMessage();
+        if (message.ProfilerCommand == ProfilerCommand::Callstack)
+        {
+            //Currently we do not have any options for this message
+            return ProcessCallstackMessage();
+        }
+    }
+    else if (message.MessageType == MessageType::JsonCommand)
+    {
+        // Pass the message to managed land
+        lock_guard<mutex> lock(g_messageCallbackMutex);
+        if (g_pManagedMessageCallback == nullptr)
+        {
+            return E_UNEXPECTED;
+        }
+
+        g_pManagedMessageCallback(
+            static_cast<INT32>(message.MessageType),
+            static_cast<INT32>(message.ProfilerCommand),
+            message.Payload.size(),
+            (BYTE*)message.Payload.data());
     }
 
     return S_OK;
@@ -349,5 +377,19 @@ HRESULT STDMETHODCALLTYPE MainProfiler::GetReJITParameters(ModuleID moduleId, md
         return m_pProbeInstrumentation->GetReJITParameters(moduleId, methodId, pFunctionControl);
     }
     
+    return S_OK;
+}
+
+STDAPI DLLEXPORT RegisterProfilerMessageCallback(
+    ManagedMessageCallback pCallback
+    )
+{
+    lock_guard<mutex> lock(g_messageCallbackMutex);
+    if (g_pManagedMessageCallback != nullptr)
+    {
+        return E_UNEXPECTED;
+    }
+
+    g_pManagedMessageCallback = pCallback;
     return S_OK;
 }

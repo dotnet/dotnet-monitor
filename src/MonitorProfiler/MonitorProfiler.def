@@ -8,3 +8,4 @@ EXPORTS
     RequestFunctionProbeRegistration   PRIVATE
     RequestFunctionProbeInstallation   PRIVATE
     RequestFunctionProbeUninstallation PRIVATE
+    RegisterProfilerMessageCallback    PRIVATE

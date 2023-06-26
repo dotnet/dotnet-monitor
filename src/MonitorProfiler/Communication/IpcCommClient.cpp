@@ -3,9 +3,15 @@
 
 #include "IpcCommClient.h"
 #include <memory>
+#include "corhlpr.h"
+#include "macros.h"
+
+using namespace std;
 
 HRESULT IpcCommClient::Receive(IpcMessage& message)
 {
+    HRESULT hr;
+
     if (_shutdown.load())
     {
         return E_UNEXPECTED;
@@ -16,13 +22,34 @@ HRESULT IpcCommClient::Receive(IpcMessage& message)
     }
 
     //CONSIDER It is generally more performant to read and buffer larger chunks, in this case we are not expecting very frequent communication.
-    char buffer[sizeof(MessageType) + sizeof(int)];
+    char headersBuffer[sizeof(MessageType) + sizeof(ProfilerCommand) + sizeof(int)];
+    IfFailRet(ReadFixedBuffer(
+        sizeof(headersBuffer),
+        headersBuffer
+    ));
+
+    message.MessageType = *reinterpret_cast<MessageType*>(headersBuffer);
+    message.ProfilerCommand = *reinterpret_cast<ProfilerCommand*>(&headersBuffer[sizeof(MessageType)]);
+    int payloadSize = *reinterpret_cast<int*>(&headersBuffer[sizeof(MessageType) + sizeof(ProfilerCommand)]);
+
+    IfOomRetMem(message.Payload.resize(payloadSize));
+
+    IfFailRet(ReadFixedBuffer(
+        payloadSize,
+        (char*)message.Payload.data()
+    ));
+
+    return S_OK;
+}
+
+HRESULT IpcCommClient::ReadFixedBuffer(int bufferSize, char* pBuffer)
+{
     int read = 0;
     int offset = 0;
 
     do
     {
-        int read = recv(_socket, &buffer[offset], sizeof(buffer) - offset, 0);
+        int read = recv(_socket, &pBuffer[offset], bufferSize - offset, 0);
         if (read == 0)
         {
             return E_ABORT;
@@ -40,15 +67,13 @@ HRESULT IpcCommClient::Receive(IpcMessage& message)
         }
         offset += read;
 
-    } while (offset < sizeof(buffer));
-
-    message.MessageType = *reinterpret_cast<MessageType*>(buffer);
-    message.Parameters = *reinterpret_cast<int*>(&buffer[sizeof(MessageType)]);
+    } while (offset < bufferSize);
 
     return S_OK;
 }
 
-HRESULT IpcCommClient::Send(const IpcMessage& message)
+
+HRESULT IpcCommClient::Send(const SimpleIpcMessage& message)
 {
     if (_shutdown.load())
     {
@@ -59,9 +84,10 @@ HRESULT IpcCommClient::Send(const IpcMessage& message)
         return E_UNEXPECTED;
     }
 
-    char buffer[sizeof(MessageType) + sizeof(int)];
+    char buffer[sizeof(MessageType) + sizeof(ProfilerCommand) + sizeof(int)];
     *reinterpret_cast<MessageType*>(buffer) = message.MessageType;
-    *reinterpret_cast<int*>(&buffer[sizeof(MessageType)]) = message.Parameters;
+    *reinterpret_cast<ProfilerCommand*>(&buffer[sizeof(MessageType)]) = message.ProfilerCommand;
+    *reinterpret_cast<int*>(&buffer[sizeof(MessageType)+sizeof(MessageType)]) = message.Parameters;
 
     int sent = 0;
     int offset = 0;

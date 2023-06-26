@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring
     internal enum ProfilerCommand : short
     {
         Unknown,
-        Ok,
+        Ok, // JSFIX: OK
         Error,
         Callstack,
         CaptureParameters,

@@ -31,14 +31,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 return;
             }
 
+
             try
             {
                 SharedInternals.MonitorMessageDispatcher.RegisterCallback<ParameterCapturingPayload>(ProfilerCommand.CaptureParameters, OnCommand);
                 _probeManager = new FunctionProbesManager(new LogEmittingProbes(_logger, FunctionProbesStub.InstrumentedMethodCache));
                 _isAvailable = true;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogCritical(ex, "Failed to init");
                 // TODO: Log
             }
         }
@@ -59,6 +61,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 methods.AddRange(resolvedMethods);
             }
 
+            if (methods.Count == 0)
+            {
+                Console.WriteLine("Did not resolve any methods :(");
+                return;
+            }
+
+            _logger?.LogWarning($"Capturing parameters for the following methods (duration: {request.Duration})\n\t{string.Join("\n\t--> ", request.FqMethodNames)}");
+
             StartCapturing(methods, request.Duration);
         }
 
@@ -68,6 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             int dllSplitIndex = fqMethodName.IndexOf('!');
             string dll = fqMethodName[..dllSplitIndex];
             string classAndMethod = fqMethodName[(dllSplitIndex + 1)..];
+
             int lastIndex = classAndMethod.LastIndexOf('.');
 
             string className = classAndMethod[..lastIndex];
@@ -82,14 +93,18 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 {
                     if (string.Equals(module.Name, dll, StringComparison.OrdinalIgnoreCase))
                     {
-                        // JSFIX: What if there are multiple matches ... select all or none?
-                        // Pick all for now.
                         try
                         {
-                            MethodInfo? method = module.GetType(className)?.GetMethod(methodName);
+                            MethodInfo? method = assembly.GetType(className)?.GetMethod(methodName,
+                                BindingFlags.Public |
+                                BindingFlags.NonPublic |
+                                BindingFlags.Instance |
+                                BindingFlags.Static |
+                                BindingFlags.FlattenHierarchy);
                             if (method != null)
                             {
                                 methods.Add(method);
+                                continue;
                             }
                         }
                         catch (Exception ex)

@@ -3,15 +3,34 @@
 
 #pragma once
 
+#include <vector>
+
 enum class MessageType : short
 {
+    Unknown,
+    SimpleCommand,
+    JsonCommand
+};
+
+enum class ProfilerCommand : short
+{
+    Unknown,
     OK,
     Error,
-    Callstack
+    Callstack,
+    CaptureParameters
 };
 
 struct IpcMessage
 {
-    MessageType MessageType = MessageType::OK;
-    int Parameters = 0;
+    MessageType MessageType = MessageType::Unknown;
+    ProfilerCommand ProfilerCommand = ProfilerCommand::Unknown;
+    std::vector<BYTE> Payload;
+};
+
+struct SimpleIpcMessage
+{
+    MessageType MessageType = MessageType::SimpleCommand;
+    ProfilerCommand ProfilerCommand = ProfilerCommand::Unknown;
+    int Parameters;
 };
