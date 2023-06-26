@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         }
 
 #pragma warning disable CA1822 // Mark members as static
-        public void RegisterCallback<T>(ProfilerMessageType messageType, Action<T> callback) where T : class
+        public void RegisterCallback<T>(ProfilerMessageType messageType, Action<T> callback)
 #pragma warning restore CA1822 // Mark members as static
         {
             MessageDispatchEntry dispatchEntry = new()
