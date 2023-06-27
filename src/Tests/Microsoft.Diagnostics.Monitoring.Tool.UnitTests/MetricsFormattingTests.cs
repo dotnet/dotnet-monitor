@@ -49,8 +49,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             using MemoryStream stream = await GetMetrics(payload);
             List<string> lines = ReadStream(stream);
 
-            // Question - this is manually recreating what PrometheusDataModel.GetPrometheusNormalizedName does to get the metric name;
-            // should we call this method, or should this also be implicitly testing its behavior by having this hard-coded?
             string metricName = $"{MeterName.ToLowerInvariant()}_{payload[0].Name}";
 
             const string quantile_50 = "{quantile=\"0.5\"}";
@@ -74,8 +72,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             List<string> lines = ReadStream(stream);
 
-            // Question - this is manually recreating what PrometheusDataModel.GetPrometheusNormalizedName does to get the metric name;
-            // should we call this method, or should this also be implicitly testing its behavior by having this hard-coded?
             string metricName = $"{MeterName.ToLowerInvariant()}_{payload.Name}";
 
             Assert.Equal(3, lines.Count);
@@ -93,14 +89,29 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             List<string> lines = ReadStream(stream);
 
-            // Question - this is manually recreating what PrometheusDataModel.GetPrometheusNormalizedName does to get the metric name;
-            // should we call this method, or should this also be implicitly testing its behavior by having this hard-coded?
             string metricName = $"{MeterName.ToLowerInvariant()}_{payload.Name}";
 
             Assert.Equal(3, lines.Count);
             Assert.Equal($"# HELP {metricName}{payload.Unit} {payload.DisplayName}", lines[0]);
             Assert.Equal($"# TYPE {metricName} gauge", lines[1]);
             Assert.Equal($"{metricName} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}", lines[2]);
+        }
+
+        [Fact]
+        public async Task UpDownCounterFormat_Test()
+        {
+            ICounterPayload payload = new UpDownCounterPayload(MeterName, InstrumentName, "DisplayName", "", null, Value1, Timestamp);
+
+            MemoryStream stream = await GetMetrics(new() { payload });
+
+            List<string> lines = ReadStream(stream);
+
+            string metricName = $"{MeterName.ToLowerInvariant()}_{payload.Name}";
+
+            Assert.Equal(3, lines.Count);
+            Assert.Equal(FormattableString.Invariant($"# HELP {metricName}{payload.Unit} {payload.DisplayName}"), lines[0]);
+            Assert.Equal(FormattableString.Invariant($"# TYPE {metricName} gauge"), lines[1]);
+            Assert.Equal(FormattableString.Invariant($"{metricName} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}"), lines[2]);
         }
 
         private async Task<MemoryStream> GetMetrics(List<ICounterPayload> payloads)

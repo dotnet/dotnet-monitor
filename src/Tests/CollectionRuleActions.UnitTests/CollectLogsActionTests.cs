@@ -51,7 +51,7 @@ namespace CollectionRuleActions.UnitTests
         /// at the log level specified in the request body.
         /// </summary>
         /// 
-        [Theory]
+        [Theory(Skip = "https://github.com/dotnet/dotnet-monitor/issues/4741")]
         [MemberData(nameof(ActionTestsHelper.GetTfmsAndLogFormat), MemberType = typeof(ActionTestsHelper))]
         public Task LogsDefaultLevelFallbackActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {
@@ -87,7 +87,7 @@ namespace CollectionRuleActions.UnitTests
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
-        [Theory]
+        [Theory(Skip = "https://github.com/dotnet/dotnet-monitor/issues/4741")]
         [MemberData(nameof(ActionTestsHelper.GetTfmsAndLogFormat), MemberType = typeof(ActionTestsHelper))]
         public Task LogsUseAppFiltersViaBodyActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {
@@ -121,7 +121,7 @@ namespace CollectionRuleActions.UnitTests
         /// Test that log events are collected for the categories and levels specified by the application
         /// and for the categories and levels specified in the filter specs.
         /// </summary>
-        [Theory]
+        [Theory(Skip = "https://github.com/dotnet/dotnet-monitor/issues/4741")]
         [MemberData(nameof(ActionTestsHelper.GetTfmsAndLogFormat), MemberType = typeof(ActionTestsHelper))]
         public Task LogsUseAppFiltersAndFilterSpecsActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {
@@ -160,7 +160,7 @@ namespace CollectionRuleActions.UnitTests
         /// <summary>
         /// Test that log events are collected for wildcard categories.
         /// </summary>
-        [Theory]
+        [Theory(Skip = "https://github.com/dotnet/dotnet-monitor/issues/4741")]
         [MemberData(nameof(ActionTestsHelper.GetTfmsAndLogFormat), MemberType = typeof(ActionTestsHelper))]
         public Task LogsWildcardActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {

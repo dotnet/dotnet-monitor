@@ -7,11 +7,12 @@
     "8.0"
   ],
   "supported": [
+    "7.2",
     "7.1",
-    "7.0",
     "6.3"
   ],
   "unsupported": [
+    "7.0",
     "6.2",
     "6.1"
   ],
@@ -62,15 +63,25 @@
       "supportedFrameworks": [
         "net6.0",
         "net7.0"
-      ]
+      ],
+      "outOfSupportDate": "2023-09-13T00:00:00.000Z"
     },
     "8.0": {
-      "tag": "v8.0.0-preview.4.23260.4",
-      "minorReleaseDate": "2023-05-16T00:00:00.000Z",
-      "patchReleaseDate": "2023-05-16T00:00:00.000Z",
+      "tag": "v8.0.0-preview.5.23307.11",
+      "minorReleaseDate": "2023-06-13T00:00:00.000Z",
+      "patchReleaseDate": "2023-06-13T00:00:00.000Z",
       "supportedFrameworks": [
         "net6.0",
         "net8.0"
+      ]
+    },
+    "7.2": {
+      "tag": "v7.2.0",
+      "minorReleaseDate": "2023-06-13T00:00:00.000Z",
+      "patchReleaseDate": "2023-06-13T00:00:00.000Z",
+      "supportedFrameworks": [
+        "net6.0",
+        "net7.0"
       ]
     }
   }

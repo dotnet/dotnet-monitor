@@ -10,6 +10,8 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
+using System.Reflection;
+using System.Xml.XPath;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
 {
@@ -27,8 +29,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
             options.OperationFilter<UnauthorizedResponseOperationFilter>();
 
             string documentationFile = $"{typeof(DiagController).Assembly.GetName().Name}.xml";
-            string documentationPath = Path.Combine(AppContext.BaseDirectory, documentationFile);
-            options.IncludeXmlComments(documentationPath);
+            options.IncludeXmlComments(() => new XPathDocument(Assembly.GetExecutingAssembly().GetManifestResourceStream(documentationFile)));
         }
 
         public static void AddBearerTokenAuthOption(this SwaggerGenOptions options, string securityDefinitionName)

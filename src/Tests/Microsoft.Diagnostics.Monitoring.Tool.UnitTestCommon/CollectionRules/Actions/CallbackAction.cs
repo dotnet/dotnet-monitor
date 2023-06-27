@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
@@ -94,8 +93,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         public Task<CollectionRuleActionResult> WaitForCompletionAsync(CancellationToken token)
         {
-            var currentTime = _service.Clock.UtcNow;
-            while (_service.Clock.UtcNow == currentTime)
+            var currentTime = _service.TimeProvider.GetUtcNow();
+            while (_service.TimeProvider.GetUtcNow() == currentTime)
             {
                 // waiting for clock to be ticked (simulated time)
                 token.ThrowIfCancellationRequested();
@@ -107,7 +106,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
     internal sealed class CallbackActionService
     {
-        public ISystemClock Clock { get; }
+        public TimeProvider TimeProvider { get; }
         private readonly List<CompletionEntry> _entries = new();
         private readonly SemaphoreSlim _entriesSemaphore = new(1);
         private readonly List<DateTime> _executionTimestamps = new();
@@ -115,10 +114,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         private int _nextId = 1;
 
-        public CallbackActionService(ITestOutputHelper outputHelper, ISystemClock clock = null)
+        public CallbackActionService(ITestOutputHelper outputHelper, TimeProvider timeProvider = null)
         {
             _outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
-            Clock = clock ?? RealSystemClock.Instance;
+            TimeProvider = timeProvider ?? TimeProvider.System;
         }
 
         public async Task NotifyListeners(CancellationToken token)
@@ -128,7 +127,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             {
                 lock (_executionTimestamps)
                 {
-                    _executionTimestamps.Add(Clock.UtcNow.UtcDateTime);
+                    _executionTimestamps.Add(TimeProvider.GetUtcNow().UtcDateTime);
                 }
 
                 _outputHelper.WriteLine("[Callback] Completing {0} source(s).", _entries.Count);

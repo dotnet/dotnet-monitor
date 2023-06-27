@@ -9,15 +9,15 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectToPublish Include="$(AzureBlobStorageProjectPath)">
-      <AdditionalProperties>TargetFramework=$(AzureBlobStoragePublishTargetFramework);RuntimeIdentifier=$(PackageRid);PublishDir=$(AzureBlobStoragePlatformSpecificPublishPath)</AdditionalProperties>
+      <AdditionalProperties>TargetFramework=$(AzureBlobStoragePublishTargetFramework);RuntimeIdentifier=$(PackageRid);PublishDir=$(AzureBlobStoragePlatformSpecificPublishPath);SelfContained=false</AdditionalProperties>
     </ProjectToPublish>
   </ItemGroup>
   <ItemGroup Condition="'$(SkipPlatformNeutralPublish)' != 'true'">
     <ProjectToPublish Include="$(AzureBlobStorageProjectPath)">
-      <AdditionalProperties>TargetFramework=$(LatestToolTargetFramework);RuntimeIdentifier=;PublishDir=$(AzureBlobStoragePublishRootPath)$(LatestToolTargetFramework)\any\</AdditionalProperties>
+      <AdditionalProperties>TargetFramework=$(LatestToolTargetFramework);RuntimeIdentifier=;PublishDir=$(AzureBlobStoragePublishRootPath)$(LatestToolTargetFramework)\any\;SelfContained=false</AdditionalProperties>
     </ProjectToPublish>
     <ProjectToPublish Include="$(AzureBlobStorageProjectPath)">
-      <AdditionalProperties>TargetFramework=$(OlderToolTargetFramework);RuntimeIdentifier=;PublishDir=$(AzureBlobStoragePublishRootPath)$(OlderToolTargetFramework)\any\</AdditionalProperties>
+      <AdditionalProperties>TargetFramework=$(OlderToolTargetFramework);RuntimeIdentifier=;PublishDir=$(AzureBlobStoragePublishRootPath)$(OlderToolTargetFramework)\any\;SelfContained=false</AdditionalProperties>
     </ProjectToPublish>
   </ItemGroup>
 </Project>
