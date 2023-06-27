@@ -16,14 +16,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const string ExperimentalPrefix = ToolIdentifiers.StandardPrefix + "Experimental_";
 
         // Feature flags
-        public const string Feature_CallStacks = ExperimentalPrefix + nameof(Feature_CallStacks);
         public const string Feature_Exceptions = ExperimentalPrefix + nameof(Feature_Exceptions);
 
         // Behaviors
         private const string EnabledTrueValue = "True";
         private const string EnabledOneValue = "1";
-
-        private readonly Lazy<bool> _isCallStacksEnabledLazy = new Lazy<bool>(() => IsFeatureEnabled(Feature_CallStacks));
 
         private readonly Lazy<bool> _isExceptionsEnabledLazy = new Lazy<bool>(() => IsFeatureEnabled(Feature_Exceptions));
 
@@ -34,8 +31,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return string.Equals(EnabledTrueValue, value, StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(EnabledOneValue, value, StringComparison.OrdinalIgnoreCase);
         }
-
-        public bool IsCallStacksEnabled => _isCallStacksEnabledLazy.Value;
 
         public bool IsExceptionsEnabled => _isExceptionsEnabledLazy.Value;
     }

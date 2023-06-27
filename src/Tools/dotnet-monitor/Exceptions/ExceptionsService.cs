@@ -1,11 +1,13 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -24,7 +26,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private readonly List<UniqueProcessKey> _unconfiguredProcesses = new();
         private readonly IExceptionsStore _exceptionsStore;
         private readonly IDiagnosticServices _diagnosticServices;
-        private readonly IInProcessFeatures _inProcessFeatures;
+        private readonly IOptions<ExceptionsOptions> _exceptionsOptions;
         private readonly StartupHookValidator _startupHookValidator;
 
         private EventExceptionsPipeline _pipeline;
@@ -32,18 +34,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         public ExceptionsService(
             StartupHookValidator startupHookValidator,
             IDiagnosticServices diagnosticServices,
-            IInProcessFeatures inProcessFeatures,
+            IOptions<ExceptionsOptions> exceptionsOptions,
             IExceptionsStore exceptionsStore)
         {
             _diagnosticServices = diagnosticServices;
             _exceptionsStore = exceptionsStore;
-            _inProcessFeatures = inProcessFeatures;
+            _exceptionsOptions = exceptionsOptions;
             _startupHookValidator = startupHookValidator;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (!_inProcessFeatures.IsExceptionsEnabled)
+            if (!_exceptionsOptions.Value.GetEnabled())
             {
                 return;
             }
