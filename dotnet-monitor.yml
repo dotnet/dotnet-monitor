@@ -137,4 +137,8 @@ stages:
 # This sets up the bits to do a Release.
 - template: /eng/pipelines/stages/preparerelease.yml
   parameters:
-    updateDocker: ${{ parameters.updateDocker }}
+    ${{ if eq(parameters.updateDocker, 'true') }}:
+      updateDockerCondition: true
+    ${{ else }}:
+      # If scheduled build from main and nightly update from main enabled
+      updateDockerCondition: and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['NightlyUpdateDockerFromMain'], 'true'))
