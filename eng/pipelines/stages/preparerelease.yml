@@ -1,3 +1,8 @@
+parameters:
+- name: updateDockerCondition
+  type: string
+  default: false
+
 stages:
 - stage: StageBuildAssetsStage
   displayName: Stage Build Assets
