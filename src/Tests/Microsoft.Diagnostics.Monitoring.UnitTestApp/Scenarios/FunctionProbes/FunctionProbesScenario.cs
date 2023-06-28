@@ -46,6 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 /* Fault injection */
                 { TestAppScenarios.FunctionProbes.SubScenarios.ExceptionThrownByProbe, Test_ExceptionThrownByProbeAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.RecursingProbe, Test_RecursingProbeAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.RequestInstallationOnProbeFunction, Test_RequestInstallationOnProbeFunctionAsync},
             };
 
             CliCommand scenarioCommand = new(TestAppScenarios.FunctionProbes.Name);
@@ -236,7 +237,29 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
             Assert.Equal(1, probeProxy.GetProbeInvokeCount(method));
         }
-        
+
+        private static async Task Test_RequestInstallationOnProbeFunctionAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = typeof(FunctionProbesStub).GetMethod(nameof(FunctionProbesStub.EnterProbeStub));
+            probeProxy.RegisterPerFunctionProbe(method, (object[] actualArgs) =>
+            {
+            });
+
+            using CancellationTokenSource timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            timeoutSource.CancelAfter(TimeSpan.FromSeconds(5));
+            // There's currently no notification mechanism for determining probe installation success, wait for timeout instead.
+            try
+            {
+                await WaitForProbeInstallationAsync(probeManager, probeProxy, new[] { method }, timeoutSource.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+
+            Assert.Fail("Probe installation on probe function succeeded");
+        }
+
         private static Task RunInstanceMethodTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, bool thisParameterSupported, CancellationToken token)
         {
             Assert.False(method.IsStatic);

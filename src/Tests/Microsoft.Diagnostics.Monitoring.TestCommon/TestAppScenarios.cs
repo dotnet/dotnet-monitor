@@ -99,6 +99,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 /* Fault injection */
                 public const string ExceptionThrownByProbe = nameof(ExceptionThrownByProbe);
                 public const string RecursingProbe = nameof(RecursingProbe);
+                public const string RequestInstallationOnProbeFunction = nameof(RequestInstallationOnProbeFunction);
             }
         }
 
