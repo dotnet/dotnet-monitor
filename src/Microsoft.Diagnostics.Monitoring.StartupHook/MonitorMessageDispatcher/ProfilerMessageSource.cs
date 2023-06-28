@@ -22,16 +22,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
         public ProfilerMessageSource()
         {
             ProfilerResolver.InitializeResolver<ProfilerMessageSource>();
-
+            RegisterMonitorMessageCallback(OnProfilerMessage);
             s_instance = this;
-            try
-            {
-                RegisterMonitorMessageCallback(OnProfilerMessage);
-            }
-            catch
-            {
-                s_instance = null;
-            }
         }
 
         private void RaiseMonitorMessage(MonitorMessageArgs e)
