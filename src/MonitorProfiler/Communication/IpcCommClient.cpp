@@ -114,7 +114,9 @@ HRESULT IpcCommClient::Send(const IpcMessage& message)
     }
 
     if (message.PayloadType != PayloadType::None &&
-        message.Parameter != message.Payload.size())
+        (message.Payload.size() > UINT32_MAX ||
+        static_cast<int>(message.Payload.size()) != message.Parameter
+        ))
     {
         return E_UNEXPECTED;
     }
