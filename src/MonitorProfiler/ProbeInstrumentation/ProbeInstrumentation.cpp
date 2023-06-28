@@ -250,6 +250,11 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
     {
         INSTRUMENTATION_REQUEST processedRequest;
 
+        if (req.functionId == m_probeFunctionId)
+        {
+            return E_FAIL;
+        }
+
         // For now just use the function id as the uniquifier.
         // Consider allowing the caller to specify one.
         processedRequest.uniquifier = static_cast<ULONG64>(req.functionId);
