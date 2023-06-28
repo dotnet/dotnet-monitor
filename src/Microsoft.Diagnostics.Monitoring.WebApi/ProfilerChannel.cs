@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             if (received < recvBuffer.Length)
             {
                 //TODO Figure out if fragmentation is possible over UDS.
-                throw new InvalidOperationException($"Could not receive message from server.");
+                throw new InvalidOperationException("Could not receive message from server.");
             }
 
             int readIndex = 0;
