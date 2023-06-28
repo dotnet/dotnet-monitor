@@ -4,7 +4,7 @@
 using System.Runtime.InteropServices;
 using System;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using System.Reflection;
+using Microsoft.Diagnostics.Monitoring.StartupHook;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
@@ -15,21 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
         public static void InitializeResolver()
         {
-            NativeLibrary.SetDllImportResolver(typeof(MonitorLibrary).Assembly, ResolveDllImport);
-        }
-
-        public static IntPtr ResolveDllImport(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
-        {
-            //DllImport for Windows automatically loads in-memory modules (such as the profiler). This is not the case for Linux/MacOS.
-            //If we fail resolving the DllImport, we have to load the profiler ourselves.
-
-            string profilerName = ProfilerHelper.GetPath(RuntimeInformation.ProcessArchitecture);
-            if (NativeLibrary.TryLoad(profilerName, out IntPtr handle))
-            {
-                return handle;
-            }
-
-            return IntPtr.Zero;
+            ProfilerResolver.InitializeResolver(typeof(MonitorLibrary));
         }
     }
 }

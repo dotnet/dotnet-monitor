@@ -3,15 +3,25 @@
 
 #pragma once
 
+#include <vector>
+
+enum class PayloadType : short
+{
+    None,
+    Utf8Json
+};
+
 enum class MessageType : short
 {
-    OK,
-    Error,
+    Unknown,
+    Status,
     Callstack
 };
 
 struct IpcMessage
 {
-    MessageType MessageType = MessageType::OK;
-    int Parameters = 0;
+    PayloadType PayloadType = PayloadType::None;
+    MessageType MessageType = MessageType::Unknown;
+    int Parameter; // Optional data when PayloadType::None, or the payload size for other types.
+    std::vector<BYTE> Payload;
 };

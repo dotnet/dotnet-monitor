@@ -103,15 +103,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             //CONSIDER Should we set this before or after the profiler message has been sent.
             startCompletionSource?.TrySetResult(null);
 
-            ProfilerMessage response = await profilerChannel.SendMessage(
+            await profilerChannel.SendMessage(
                 endpointInfo,
-                new ProfilerMessage { MessageType = ProfilerMessageType.Callstack, Parameter = 0 },
+                new BasicProfilerMessage(ProfilerMessageType.Callstack),
                 token);
 
-            if (response.MessageType == ProfilerMessageType.Error)
-            {
-                throw new InvalidOperationException($"Profiler request failed: 0x{response.Parameter:X8}");
-            }
             await runPipelineTask;
             Stacks.CallStackResult result = await eventTracePipeline.Result;
 

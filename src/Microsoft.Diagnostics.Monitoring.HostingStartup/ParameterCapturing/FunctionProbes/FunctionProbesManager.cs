@@ -1,11 +1,11 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Monitoring.StartupHook;
+using Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -29,38 +29,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         private readonly object _requestLocker = new();
         private long _disposedState;
 
-        private readonly string? _profilerModulePath;
-
         public FunctionProbesManager(IFunctionProbes probes)
         {
-            _profilerModulePath = Environment.GetEnvironmentVariable(ProfilerIdentifiers.EnvironmentVariables.ModulePath);
-            if (!File.Exists(_profilerModulePath))
-            {
-                throw new FileNotFoundException(_profilerModulePath);
-            }
-
-            NativeLibrary.SetDllImportResolver(typeof(ParameterCapturingService).Assembly, ResolveDllImport);
+            ProfilerResolver.InitializeResolver<FunctionProbesManager>();
 
             RequestFunctionProbeRegistration(FunctionProbesStub.GetProbeFunctionId());
             FunctionProbesStub.Instance = probes;
-        }
-
-        private IntPtr ResolveDllImport(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
-        {
-            // DllImport for Windows automatically loads in-memory modules (such as the profiler). This is not the case for Linux/MacOS.
-            // If we fail resolving the DllImport, we have to load the profiler ourselves.
-            if (_profilerModulePath == null ||
-                libraryName != ProfilerIdentifiers.LibraryRootFileName)
-            {
-                return IntPtr.Zero;
-            }
-
-            if (NativeLibrary.TryLoad(_profilerModulePath, out IntPtr handle))
-            {
-                return handle;
-            }
-
-            return IntPtr.Zero;
         }
 
         public void StopCapturing()

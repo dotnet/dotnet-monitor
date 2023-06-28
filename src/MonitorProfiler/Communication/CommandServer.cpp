@@ -73,8 +73,9 @@ void CommandServer::ListeningThread()
         }
 
         IpcMessage response;
-        response.MessageType = SUCCEEDED(hr) ? MessageType::OK : MessageType::Error;
-        response.Parameters = hr;
+        response.MessageType = MessageType::Status;
+        response.PayloadType = PayloadType::None;
+        response.Parameter = hr;
 
         hr = client->Send(response);
         if (FAILED(hr))
