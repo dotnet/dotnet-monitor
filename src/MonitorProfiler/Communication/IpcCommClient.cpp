@@ -7,8 +7,6 @@
 #include "macros.h"
 #include "assert.h"
 
-using namespace std;
-
 HRESULT IpcCommClient::Receive(IpcMessage& message)
 {
     HRESULT hr;
