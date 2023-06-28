@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             }
             catch
             {
-
+                s_instance = null;
             }
         }
 
