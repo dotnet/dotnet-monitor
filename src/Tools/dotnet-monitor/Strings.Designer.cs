@@ -448,6 +448,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The shared file &apos;{0}&apos; is different from source file &apos;{1}&apos;..
+        /// </summary>
+        internal static string ErrorMessage_SharedFileDiffersFromSource {
+            get {
+                return ResourceManager.GetString("ErrorMessage_SharedFileDiffersFromSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The following unrecoverable validation issues were found with the &apos;{0}&apos; configuration:
         ///{1}.
         /// </summary>
@@ -1286,7 +1295,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to initialize shared library storage..
+        ///   Looks up a localized string similar to Failed to initialize shared library storage. Some monitoring features may be unavailable..
         /// </summary>
         internal static string LogFormatString_FailedInitializeSharedLibraryStorage {
             get {
