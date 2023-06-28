@@ -18,12 +18,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
         {
             unsafe
             {
-                fixed (byte* ptr = message.Payload)
+                fixed (byte* payloadPtr = message.Payload)
                 {
                     RaiseMessage(new MonitorMessageArgs(
                         message.PayloadType,
                         message.MessageType,
-                        new IntPtr(ptr),
+                        new IntPtr(payloadPtr),
                         message.Parameter));
                 }
             }
