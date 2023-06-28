@@ -24,9 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring
     {
         public ProfilerPayloadType PayloadType { get; set; }
         public ProfilerMessageType MessageType { get; set; }
-
         public int Parameter { get; set; }
-
         public byte[] Payload { get; set; }
     }
 
@@ -34,11 +32,8 @@ namespace Microsoft.Diagnostics.Monitoring
     {
         public ProfilerPayloadType PayloadType { get; set; } = ProfilerPayloadType.Utf8Json;
         public ProfilerMessageType MessageType { get; set; } = ProfilerMessageType.Unknown;
-
         public int Parameter { get; set; }
-
         public byte[] Payload { get; set; }
-
 
         public JsonProfilerMessage(ProfilerMessageType messageType, object payloadObject)
         {
@@ -58,9 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring
     {
         public ProfilerPayloadType PayloadType { get; set; } = ProfilerPayloadType.None;
         public ProfilerMessageType MessageType { get; set; } = ProfilerMessageType.Unknown;
-
         public int Parameter { get; set; } = 0;
-
         public byte[] Payload { get; set; } = Array.Empty<byte>();
 
         public BasicProfilerMessage(ProfilerMessageType messageType, int parameter = 0)
@@ -69,5 +62,4 @@ namespace Microsoft.Diagnostics.Monitoring
             Parameter = parameter;
         }
     }
-
 }

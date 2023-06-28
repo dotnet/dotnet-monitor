@@ -102,7 +102,6 @@ HRESULT IpcCommClient::ReceiveFixedBuffer(char* pBuffer, int bufferSize)
     return S_OK;
 }
 
-
 HRESULT IpcCommClient::Send(const IpcMessage& message)
 {
     HRESULT hr;
