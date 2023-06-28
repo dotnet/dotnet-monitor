@@ -65,22 +65,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.ClassDescPayloads.TypeArgs)
                         );
                     break;
-                case "ExceptionIdentifier":
-                    _cache.AddExceptionIdentifier(
-                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionIdentifierPayloads.ExceptionId),
-                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionIdentifierPayloads.ExceptionClassId),
-                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionIdentifierPayloads.ThrowingMethodId),
-                        traceEvent.GetPayload<int>(ExceptionEvents.ExceptionIdentifierPayloads.ILOffset)
+                case "ExceptionGroup":
+                    _cache.AddExceptionGroup(
+                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionGroupPayloads.ExceptionGroupId),
+                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionGroupPayloads.ExceptionClassId),
+                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionGroupPayloads.ThrowingMethodId),
+                        traceEvent.GetPayload<int>(ExceptionEvents.ExceptionGroupPayloads.ILOffset)
                         );
                     break;
                 case "ExceptionInstance":
-                    ulong exceptionId = traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionInstancePayloads.ExceptionId);
-                    string message = traceEvent.GetPayload<string>(ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage);
-                    // Add data to cache and write directly to store; this allows the pipeline to recreate the cache without
-                    // affecting the store so long as the cache is not cleared. Example of this may be that the event source
-                    // wants to reset the identifiers so as to not indefinitely grow the cache and have a large memory impact.
-                    _cache.AddExceptionInstance(exceptionId, message);
-                    _store.AddExceptionInstance(_cache, exceptionId, message);
+                    _store.AddExceptionInstance(
+                        _cache,
+                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionInstancePayloads.ExceptionId),
+                        traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionInstancePayloads.ExceptionGroupId),
+                        traceEvent.GetPayload<string>(ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage),
+                        traceEvent.GetPayload<DateTime>(ExceptionEvents.ExceptionInstancePayloads.Timestamp).ToUniversalTime(),
+                        traceEvent.GetPayload<ulong[]>(ExceptionEvents.ExceptionInstancePayloads.StackFrameIds),
+                        traceEvent.ThreadID,
+                        traceEvent.GetPayload<ulong[]>(ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds));
                     break;
                 case "FunctionDescription":
                     _cache.AddFunction(
@@ -89,13 +91,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         traceEvent.GetPayload<uint>(NameIdentificationEvents.FunctionDescPayloads.ClassToken),
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ModuleId),
                         traceEvent.GetPayload<string>(NameIdentificationEvents.FunctionDescPayloads.Name),
-                        traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.TypeArgs)
+                        traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.TypeArgs),
+                        traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.ParameterTypes)
                         );
                     break;
                 case "ModuleDescription":
                     _cache.AddModule(
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.ModuleDescPayloads.ModuleId),
                         traceEvent.GetPayload<string>(NameIdentificationEvents.ModuleDescPayloads.Name)
+                        );
+                    break;
+                case "StackFrameDescription":
+                    _cache.AddStackFrame(
+                        traceEvent.GetPayload<ulong>(ExceptionEvents.StackFrameIdentifierPayloads.StackFrameId),
+                        traceEvent.GetPayload<ulong>(ExceptionEvents.StackFrameIdentifierPayloads.FunctionId),
+                        traceEvent.GetPayload<int>(ExceptionEvents.StackFrameIdentifierPayloads.ILOffset)
                         );
                     break;
                 case "TokenDescription":

@@ -98,10 +98,35 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                         endpointInfo.RuntimeInstanceCookie.ToString("D"),
                         cancellationToken);
 
-                    await client.SetStartupProfilerAsync(
-                        ProfilerIdentifiers.Clsid.Guid,
-                        profilerFileInfo.PhysicalPath,
-                        cancellationToken);
+                    // There's no way to ask the target process if it is suspended at startup.
+                    // Just attempt to attach the profiler; if the process is already running,
+                    // this will succeed. If failed (hopefully due to suspension) fallback to
+                    // setting the startup profiler.
+                    // Can't check that assumption because ServerErrorException and related
+                    // exceptions do not report what the issue is beyond the human readable
+                    // Exception.Message property value.
+                    // Calling SetStartupProfiler on a process that is using nosuspend will
+                    // (unexpectedly) succeed, thus cannot call SetStartupProfiler first and
+                    // then fallback to AttachProfiler.
+                    try
+                    {
+                        // This will wait until the profiler's ICorProfilerCallback3::InitializeForAttach
+                        // implementation completes. This will throw if the target process is not running
+                        // managed code yet.
+                        await client.AttachProfilerAsync(
+                            TimeSpan.FromSeconds(10),
+                            ProfilerIdentifiers.Clsid.Guid,
+                            profilerFileInfo.PhysicalPath,
+                            Array.Empty<byte>(),
+                            cancellationToken);
+                    }
+                    catch (ServerErrorException)
+                    {
+                        await client.SetStartupProfilerAsync(
+                            ProfilerIdentifiers.Clsid.Guid,
+                            profilerFileInfo.PhysicalPath,
+                            cancellationToken);
+                    }
                 }
             }
             catch (Exception ex)

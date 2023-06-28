@@ -17,6 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             public const int ModuleId = 3;
             public const int Name = 4;
             public const int TypeArgs = 5;
+            public const int ParameterTypes = 6;
         }
 
         public static class ClassDescPayloads

@@ -25,6 +25,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 
         private void CurrentDomain_FirstChanceException(object? sender, FirstChanceExceptionEventArgs e)
         {
+            DateTime timestamp = DateTime.UtcNow;
+
             if (_handlingException.Value)
             {
                 // Exception handling is already in progress on this thread. The current exception is likely
@@ -38,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             {
                 _handlingException.Value = true;
 
-                RaiseExceptionThrown(e.Exception);
+                RaiseExceptionThrown(e.Exception, timestamp);
             }
             catch
             {

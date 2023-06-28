@@ -111,104 +111,104 @@ updates:
   directory: /eng/dependabot
   schedule:
     interval: daily
-  target-branch: release/7.1
+  target-branch: release/7.2
   ignore:
   - dependency-name: Microsoft.Extensions.*
     update-types:
     - version-update:semver-major
   commit-message:
-    prefix: '[release/7.1] '
+    prefix: '[release/7.2] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
     interval: daily
-  target-branch: release/7.1
+  target-branch: release/7.2
   commit-message:
-    prefix: '[release/7.1] '
+    prefix: '[release/7.2] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/net7.0
   schedule:
     interval: daily
-  target-branch: release/7.1
+  target-branch: release/7.2
   ignore:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
   commit-message:
-    prefix: '[release/7.1] '
+    prefix: '[release/7.2] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
   schedule:
     interval: daily
-  target-branch: release/7.1
+  target-branch: release/7.2
   ignore:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
   commit-message:
-    prefix: '[release/7.1] '
+    prefix: '[release/7.2] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/netcoreapp3.1
   schedule:
     interval: daily
-  target-branch: release/7.1
+  target-branch: release/7.2
   ignore:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
   commit-message:
-    prefix: '[release/7.1] '
+    prefix: '[release/7.2] '
 - package-ecosystem: nuget
   directory: /eng/dependabot
   schedule:
     interval: daily
-  target-branch: release/7.0
+  target-branch: release/7.1
   ignore:
   - dependency-name: Microsoft.Extensions.*
     update-types:
     - version-update:semver-major
   commit-message:
-    prefix: '[release/7.0] '
+    prefix: '[release/7.1] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
     interval: daily
-  target-branch: release/7.0
+  target-branch: release/7.1
   commit-message:
-    prefix: '[release/7.0] '
+    prefix: '[release/7.1] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/net7.0
   schedule:
     interval: daily
-  target-branch: release/7.0
+  target-branch: release/7.1
   ignore:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
   commit-message:
-    prefix: '[release/7.0] '
+    prefix: '[release/7.1] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
   schedule:
     interval: daily
-  target-branch: release/7.0
+  target-branch: release/7.1
   ignore:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
   commit-message:
-    prefix: '[release/7.0] '
+    prefix: '[release/7.1] '
 - package-ecosystem: nuget
   directory: /eng/dependabot/netcoreapp3.1
   schedule:
     interval: daily
-  target-branch: release/7.0
+  target-branch: release/7.1
   ignore:
   - dependency-name: '*'
     update-types:
     - version-update:semver-major
   commit-message:
-    prefix: '[release/7.0] '
+    prefix: '[release/7.1] '
 - package-ecosystem: nuget
   directory: /eng/dependabot
   schedule:

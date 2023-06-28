@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             _next = next;
         }
 
-        public void Invoke(Exception exception)
+        public void Invoke(Exception exception, ExceptionPipelineExceptionContext context)
         {
             ArgumentNullException.ThrowIfNull(exception);
 
@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             {
                 MarkObservance(exception);
 
-                _next(exception);
+                _next(exception, context);
             }
         }
 

@@ -24,8 +24,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 
         private static void ConfigurePipeline(ExceptionPipelineBuilder builder)
         {
+            // Process current exception and its inner exceptions
+            builder.Add(next => new ExceptionDemultiplexerPipelineStep(next).Invoke);
             // Prevent rethrows from being evaluated; only care about origination of exceptions.
             builder.Add(next => new FilterRepeatExceptionPipelineStep(next).Invoke);
+            // Report exception through event source
             builder.Add(next => new ExceptionEventsPipelineStep(next).Invoke);
         }
     }
