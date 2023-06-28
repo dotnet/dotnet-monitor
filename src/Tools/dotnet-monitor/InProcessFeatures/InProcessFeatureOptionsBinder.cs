@@ -28,10 +28,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 return;
 
             // Check if the feature is enabled or disabled from the section e.g. InProcessFeatures:CallStacks = true
-            IConfigurationSection callStacksSection = configuration.GetSection(configurationKey);
-            if (!string.IsNullOrEmpty(callStacksSection.Value))
+            IConfigurationSection featureSection = configuration.GetSection(configurationKey);
+            if (!string.IsNullOrEmpty(featureSection.Value))
             {
-                options.Enabled = callStacksSection.Get<bool>();
+                options.Enabled = featureSection.Get<bool>();
                 return;
             }
 
