@@ -118,7 +118,7 @@ HRESULT IpcCommClient::Send(const IpcMessage& message)
         static_cast<int>(message.Payload.size()) != message.Parameter
         ))
     {
-        return E_UNEXPECTED;
+        return E_FAIL;
     }
 
     char headersBuffer[sizeof(MessageType) + sizeof(PayloadType) + sizeof(int)];
