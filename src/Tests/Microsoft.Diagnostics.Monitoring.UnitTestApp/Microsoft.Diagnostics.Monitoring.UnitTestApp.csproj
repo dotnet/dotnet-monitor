@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests\ParameterCapturing\SampleMethods.cs" Link="Scenarios\FunctionProbes\SampleMethods.cs"/>
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.StartupHook\ProfilerResolver.cs" Link="ProfilerResolver.cs"/>
   </ItemGroup>
 
 </Project>
