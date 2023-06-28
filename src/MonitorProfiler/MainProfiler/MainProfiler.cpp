@@ -166,8 +166,6 @@ HRESULT MainProfiler::InitializeCommon()
 {
     HRESULT hr = S_OK;
 
-    g_pManagedMessageCallback = nullptr;
-
     // These are created in dependency order!
     IfFailRet(InitializeEnvironment());
     IfFailRet(InitializeLogging());
