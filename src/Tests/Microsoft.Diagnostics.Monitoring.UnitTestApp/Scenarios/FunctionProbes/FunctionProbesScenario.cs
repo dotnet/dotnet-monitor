@@ -45,6 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
                 /* Fault injection */
                 { TestAppScenarios.FunctionProbes.SubScenarios.ExceptionThrownByProbe, Test_ExceptionThrownByProbeAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.RecursingProbe, Test_RecursingProbeAsync},
             };
 
             CliCommand scenarioCommand = new(TestAppScenarios.FunctionProbes.Name);
@@ -220,7 +221,21 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             // Probes should be uninstalled now.
             await WaitForProbeUninstallationAsync(probeManager, probeProxy, token, explicitStopCaptureCall: false);
         }
+        private static async Task Test_RecursingProbeAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.NoArgs));
+            probeProxy.RegisterPerFunctionProbe(method, (object[] actualArgs) =>
+            {
+                StaticTestMethodSignatures.NoArgs();
+            });
 
+            await WaitForProbeInstallationAsync(probeManager, probeProxy, new[] { method }, token);
+
+            StaticTestMethodSignatures.NoArgs();
+
+            Assert.Equal(1, probeProxy.GetProbeInvokeCount(method));
+        }
+        
         private static Task RunInstanceMethodTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, bool thisParameterSupported, CancellationToken token)
         {
             Assert.False(method.IsStatic);
