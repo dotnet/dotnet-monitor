@@ -125,11 +125,11 @@ HRESULT IpcCommClient::Send(const IpcMessage& message)
     char headersBuffer[sizeof(MessageType) + sizeof(PayloadType) + sizeof(int)];
 
     int bufferOffset = 0; 
-    *reinterpret_cast<PayloadType*>(&headersBuffer[bufferOffset]) = message.PayloadType;
-    bufferOffset += sizeof(PayloadType);
-
     *reinterpret_cast<MessageType*>(&headersBuffer[bufferOffset]) = message.MessageType;
     bufferOffset += sizeof(MessageType);
+
+    *reinterpret_cast<PayloadType*>(&headersBuffer[bufferOffset]) = message.PayloadType;
+    bufferOffset += sizeof(PayloadType);
 
     *reinterpret_cast<int*>(&headersBuffer[bufferOffset]) = message.Parameter;
     bufferOffset += sizeof(int);
