@@ -221,6 +221,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             // Probes should be uninstalled now.
             await WaitForProbeUninstallationAsync(probeManager, probeProxy, token, explicitStopCaptureCall: false);
         }
+
         private static async Task Test_RecursingProbeAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.NoArgs));
