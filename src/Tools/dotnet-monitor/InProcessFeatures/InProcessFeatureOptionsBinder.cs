@@ -10,40 +10,49 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public static void BindEnabled(IInProcessFeatureOptions options, string configurationKey, IConfiguration configuration, bool enabledByDefault)
         {
-            bool? inProcessFeaturesEnabled = null;
-            IConfigurationSection inProcessFeaturesSection = configuration.GetSection(ConfigurationKeys.InProcessFeatures_Enabled);
-            if (!string.IsNullOrEmpty(inProcessFeaturesSection.Value))
-            {
-                inProcessFeaturesEnabled = inProcessFeaturesSection.Get<bool>();
-            }
+            // Tristate value for InProcessFeatures:Enabled
+            // - null -> Defer enablement to each individual in-process feature
+            // - true -> Enable all in-process features that support default enablement
+            // - false -> Unconditionally disable all in-process features
+            bool? inProcessFeaturesEnabled = configuration
+                .GetSection(ConfigurationKeys.InProcessFeatures_Enabled)
+                .Get<bool?>();
 
-            // If in-process features are disabled, then disable the individual feature
+            // Check if in-process features should be unconditionally disabled
             if (!inProcessFeaturesEnabled.GetValueOrDefault(true))
             {
                 options.Enabled = false;
             }
 
-            // If feature has explicit enablement value, then preserve it.
+            // If InProcessFeatures:<Feature>:Enabled is not explicitly set, check if the feature
+            // section has the value set e.g. InProcessFeatures:<Feature> = true/false.
+            if (!options.Enabled.HasValue)
+            {
+                options.Enabled = configuration
+                    .GetSection(configurationKey)
+                    .Get<bool?>();
+            }
+
+            // Tristate value for InProcessFeatures:<Feature>:Enabled
+            // - null -> Defer enablement to InProcessFeatures:Enabled and the default enablement for the individual feature
+            // - true -> Enable the individual feature (because it was not opted out by InProcessFeatures:Enabled)
+            // - false -> Unconditionally disable the individual feature
             if (options.Enabled.HasValue)
                 return;
 
-            // Check if the feature is enabled or disabled from the section e.g. InProcessFeatures:CallStacks = true
-            IConfigurationSection featureSection = configuration.GetSection(configurationKey);
-            if (!string.IsNullOrEmpty(featureSection.Value))
-            {
-                options.Enabled = featureSection.Get<bool>();
-                return;
-            }
+            // At this point, the feature does not have an explicit enablement value
+            // nor was it unconditionally opted out via InProcessFeatures:Enabled.
 
-            // If in-process features are enabled, fallback to the default enablement.
+            // If in-process features are enabled, fallback to the default enablement for the feature.
             if (inProcessFeaturesEnabled.GetValueOrDefault(false))
             {
                 options.Enabled = enabledByDefault;
-                return;
             }
-
-            // This feature and in-process features are not enabled; thus feature is disabled.
-            options.Enabled = false;
+            else
+            {
+                // This feature and in-process features are not enabled; thus feature is disabled.
+                options.Enabled = false;
+            }
         }
     }
 }
