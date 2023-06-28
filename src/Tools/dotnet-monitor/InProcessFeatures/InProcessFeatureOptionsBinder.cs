@@ -10,6 +10,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public static void BindEnabled(IInProcessFeatureOptions options, string configurationKey, IConfiguration configuration, bool enabledByDefault)
         {
+            // Get the value of InProcessFeatures:<Feature>:Enabled. This may have already
+            // been bound by the default options binding, but this makes it consistent for
+            // anything that passes in an unbound options instance and fulfills the complete
+            // expected behavior of binding the Enabled property.
+            options.Enabled = configuration
+                .GetSection(ConfigurationPath.Combine(configurationKey, "Enabled"))
+                .Get<bool?>();
+
             // Tristate value for InProcessFeatures:Enabled
             // - null -> Defer enablement to each individual in-process feature
             // - true -> Enable all in-process features that support default enablement
