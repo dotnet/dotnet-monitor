@@ -20,9 +20,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Stacks
         {
             InProcessFeatureOptionsBinder.BindEnabled(
                 options,
-                ConfigurationKeys.InProcessFeatures_CallStacks,
+                ConfigurationKeys.InProcessFeatures_Exceptions,
                 _configuration,
-                CallStacksOptionsDefaults.Enabled);
+                ExceptionsOptionsDefaults.Enabled);
         }
     }
 }
