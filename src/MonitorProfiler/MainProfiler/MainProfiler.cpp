@@ -310,7 +310,7 @@ HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
         lock_guard<mutex> lock(g_messageCallbackMutex);
         if (g_pManagedMessageCallback == nullptr)
         {
-            return E_UNEXPECTED;
+            return E_FAIL;
         }
 
         IfFailRet(g_pManagedMessageCallback(
