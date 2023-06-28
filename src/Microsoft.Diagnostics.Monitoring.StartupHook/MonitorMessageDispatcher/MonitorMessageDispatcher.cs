@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             unsafe
             {
                 using UnmanagedMemoryStream memoryStream = new((byte*)args.NativeBuffer.ToPointer(), args.BufferSize);
-                payload = JsonSerializer.Deserialize(memoryStream, dispatchEntry.DeserializeType, new JsonSerializerOptions());
+                payload = JsonSerializer.Deserialize(memoryStream, dispatchEntry.DeserializeType);
             }
 
             if (payload == null)
