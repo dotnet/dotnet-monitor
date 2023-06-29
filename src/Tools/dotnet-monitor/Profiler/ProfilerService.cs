@@ -9,7 +9,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -52,11 +54,54 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 DiagnosticsClient client = new DiagnosticsClient(endpointInfo.Endpoint);
                 Dictionary<string, string> env = await client.GetProcessEnvironmentAsync(cancellationToken);
 
-                // CONSIDER: Allow alternate means of specifying or heuristically determining the runtime identifier
-                // - For Windows and OSX, build identifier from platform + architecture of target process.
-                // - Lookup same environment variable on dotnet-monitor itself.
-                // - Check libc type of dotnet-monitor.
-                env.TryGetValue(ToolIdentifiers.EnvironmentVariables.RuntimeIdentifier, out string runtimeIdentifier);
+                if (!env.TryGetValue(ToolIdentifiers.EnvironmentVariables.RuntimeIdentifier, out string runtimeIdentifier))
+                {
+                    ProcessInfo processInfo = await client.GetProcessInfoAsync(cancellationToken);
+
+                    // This is mostly correct, except that "arm" and "armv6" are both reported as "arm32".
+                    string ridArchitecture = processInfo.ProcessArchitecture;
+                    Debug.Assert(!"arm32".Equals(ridArchitecture, StringComparison.Ordinal), "Unable to distinguish arm from armv6");
+
+                    if (!string.IsNullOrEmpty(ridArchitecture) && !ridArchitecture.Equals("Unknown", StringComparison.Ordinal))
+                    {
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        {
+                            runtimeIdentifier = FormattableString.Invariant($"win-{ridArchitecture}");
+                        }
+                        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                        {
+                            runtimeIdentifier = FormattableString.Invariant($"osx-{ridArchitecture}");
+                        }
+                        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                        {
+                            // Make best effort to determine which type of C library is used
+                            // in order to pick the correct Linux RID.
+                            try
+                            {
+                                Process process = Process.GetProcessById((int)processInfo.ProcessId);
+
+                                for (int i = 0; i < process.Modules.Count; i++)
+                                {
+                                    ProcessModule module = process.Modules[i];
+                                    if (module.ModuleName.StartsWith("libc.", StringComparison.Ordinal) ||
+                                        module.ModuleName.StartsWith("libc-", StringComparison.Ordinal))
+                                    {
+                                        runtimeIdentifier = FormattableString.Invariant($"linux-{ridArchitecture}");
+                                        break;
+                                    }
+                                    else if (module.ModuleName.StartsWith("ld-musl-", StringComparison.Ordinal))
+                                    {
+                                        runtimeIdentifier = FormattableString.Invariant($"linux-musl-{ridArchitecture}");
+                                        break;
+                                    }
+                                }
+                            }
+                            catch
+                            {
+                            }
+                        }
+                    }
+                }
 
                 if (string.IsNullOrEmpty(runtimeIdentifier))
                 {
@@ -64,6 +109,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 }
                 else
                 {
+                    _logger.ProfilerRuntimeIdentifier(runtimeIdentifier);
+
                     IFileProviderFactory fileProviderFactory = await _sharedLibraryService.GetFactoryAsync(cancellationToken);
 
                     IFileProvider nativeFileProvider = fileProviderFactory.CreateNative(runtimeIdentifier);

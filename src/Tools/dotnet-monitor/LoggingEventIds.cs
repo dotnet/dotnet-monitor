@@ -106,7 +106,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ExtensionManifestNotParsable = 94,
         ExtensionMalformedOutput = 95,
         EgressProviderTypeNotExist = 96,
-        StartupHookApplyFailed = 97
+        ProfilerRuntimeIdentifier = 97,
+        StartupHookApplyFailed = 98
     }
 
     internal static class LoggingEventIdsExtensions

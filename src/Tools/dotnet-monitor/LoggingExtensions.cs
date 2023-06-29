@@ -494,6 +494,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EgressProviderTypeNotExist);
 
+        private static readonly Action<ILogger, string, Exception> _profilerRuntimeIdentifier =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ProfilerRuntimeIdentifier.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_ProfilerRuntimeIdentifier);
+
         private static readonly Action<ILogger, Exception> _startupHookApplyFailed =
             LoggerMessage.Define(
                 eventId: LoggingEventIds.StartupHookApplyFailed.EventId(),
@@ -913,6 +919,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void EgressProviderTypeNotExist(this ILogger logger, string providerType)
         {
             _egressProviderTypeNotExist(logger, providerType, null);
+        }
+
+        public static void ProfilerRuntimeIdentifier(this ILogger logger, string runtimeIdentifier)
+        {
+            _profilerRuntimeIdentifier(logger, runtimeIdentifier, null);
         }
 
         public static void StartupHookApplyFailed(this ILogger logger, Exception ex)
