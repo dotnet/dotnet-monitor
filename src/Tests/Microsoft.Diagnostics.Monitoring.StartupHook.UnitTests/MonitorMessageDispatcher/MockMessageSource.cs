@@ -21,10 +21,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
                 fixed (byte* payloadPtr = message.Payload)
                 {
                     RaiseMessage(new MonitorMessageArgs(
-                        message.PayloadType,
-                        message.MessageType,
+                        message.Command,
                         new IntPtr(payloadPtr),
-                        message.Parameter));
+                        message.Payload.Length));
                 }
             }
 

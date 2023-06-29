@@ -7,13 +7,7 @@ using System.Text.Json;
 
 namespace Microsoft.Diagnostics.Monitoring
 {
-    internal enum ProfilerPayloadType : short
-    {
-        None,
-        Utf8Json
-    };
-
-    internal enum ProfilerMessageType : short
+    internal enum IpcCommand : short
     {
         Unknown,
         Status,
@@ -22,24 +16,19 @@ namespace Microsoft.Diagnostics.Monitoring
 
     internal interface IProfilerMessage
     {
-        public ProfilerPayloadType PayloadType { get; set; }
-        public ProfilerMessageType MessageType { get; set; }
-        public int Parameter { get; set; }
+        public IpcCommand Command { get; set; }
         public byte[] Payload { get; set; }
     }
 
     internal struct JsonProfilerMessage : IProfilerMessage
     {
-        public ProfilerPayloadType PayloadType { get; set; } = ProfilerPayloadType.Utf8Json;
-        public ProfilerMessageType MessageType { get; set; } = ProfilerMessageType.Unknown;
-        public int Parameter { get; set; }
+        public IpcCommand Command { get; set; } = IpcCommand.Unknown;
         public byte[] Payload { get; set; }
 
-        public JsonProfilerMessage(ProfilerMessageType messageType, object payloadObject)
+        public JsonProfilerMessage(IpcCommand command, object payloadObject)
         {
-            MessageType = messageType;
+            Command = command;
             Payload = SerializePayload(payloadObject);
-            Parameter = Payload.Length;
         }
 
         private static byte[] SerializePayload(object payloadObject)
@@ -49,17 +38,14 @@ namespace Microsoft.Diagnostics.Monitoring
         }
     }
 
-    internal struct BasicProfilerMessage : IProfilerMessage
+    internal struct CommandOnlyProfilerMessage : IProfilerMessage
     {
-        public ProfilerPayloadType PayloadType { get; set; } = ProfilerPayloadType.None;
-        public ProfilerMessageType MessageType { get; set; } = ProfilerMessageType.Unknown;
-        public int Parameter { get; set; } = 0;
+        public IpcCommand Command { get; set; } = IpcCommand.Unknown;
         public byte[] Payload { get; set; } = Array.Empty<byte>();
 
-        public BasicProfilerMessage(ProfilerMessageType messageType, int parameter = 0)
+        public CommandOnlyProfilerMessage(IpcCommand command)
         {
-            MessageType = messageType;
-            Parameter = parameter;
+            Command = command;
         }
     }
 }

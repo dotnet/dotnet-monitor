@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             public Action<object> Callback { get; set; }
         }
 
-        private ConcurrentDictionary<ProfilerMessageType, MessageDispatchEntry> _dispatchTable = new();
+        private ConcurrentDictionary<IpcCommand, MessageDispatchEntry> _dispatchTable = new();
 
         private IMonitorMessageSource _messageSource;
 
@@ -29,7 +29,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             _messageSource.MonitorMessageEvent += OnMessage;
         }
 
-        public void RegisterCallback<T>(ProfilerMessageType messageType, Action<T> callback)
+        public void RegisterCallback<T>(IpcCommand command, Action<T> callback)
         {
             MessageDispatchEntry dispatchEntry = new()
             {
@@ -40,26 +40,21 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
                 }
             };
 
-            if (!_dispatchTable.TryAdd(messageType, dispatchEntry))
+            if (!_dispatchTable.TryAdd(command, dispatchEntry))
             {
-                throw new InvalidOperationException("Callback already registered for the requested message type.");
+                throw new InvalidOperationException("Callback already registered for the requested command.");
             }
         }
 
-        public void UnregisterCallback(ProfilerMessageType messageType)
+        public void UnregisterCallback(IpcCommand command)
         {
-            _dispatchTable.TryRemove(messageType, out _);
+            _dispatchTable.TryRemove(command, out _);
         }
 
         private void OnMessage(object sender, MonitorMessageArgs args)
         {
-            if (args.PayloadType != ProfilerPayloadType.Utf8Json)
-            {
-                throw new NotSupportedException("Unsupported payload type.");
-            }
-
             object? payload = null;
-            if (!_dispatchTable.TryGetValue(args.MessageType, out MessageDispatchEntry dispatchEntry))
+            if (!_dispatchTable.TryGetValue(args.Command, out MessageDispatchEntry dispatchEntry))
             {
                 throw new NotSupportedException("Unsupported message type.");
             }

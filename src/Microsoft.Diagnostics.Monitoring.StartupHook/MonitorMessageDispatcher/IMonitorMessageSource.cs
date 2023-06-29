@@ -7,16 +7,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 {
     internal sealed class MonitorMessageArgs : EventArgs
     {
-        public MonitorMessageArgs(ProfilerPayloadType payloadType, ProfilerMessageType messageType, IntPtr nativeBuffer, long bufferSize)
+        public MonitorMessageArgs(IpcCommand command, IntPtr nativeBuffer, long bufferSize)
         {
-            PayloadType = payloadType;
-            MessageType = messageType;
+            Command = command;
             NativeBuffer = nativeBuffer;
             BufferSize = bufferSize;
         }
 
-        public ProfilerPayloadType PayloadType { get; private set; }
-        public ProfilerMessageType MessageType { get; private set; }
+        public IpcCommand Command { get; private set; }
         public IntPtr NativeBuffer { get; private set; }
         public long BufferSize { get; private set; }
     }

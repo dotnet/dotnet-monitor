@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
     {
         public event IMonitorMessageSource.MonitorMessageHandler? MonitorMessageEvent;
 
-        public delegate int ProfilerMessageCallback(ProfilerPayloadType payloadType, ProfilerMessageType messageType, IntPtr nativeBuffer, long bufferSize);
+        public delegate int ProfilerMessageCallback(IpcCommand command, IntPtr nativeBuffer, long bufferSize);
 
         [DllImport(ProfilerIdentifiers.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
         private static extern void RegisterMonitorMessageCallback(ProfilerMessageCallback callback);
@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             MonitorMessageEvent?.Invoke(this, e);
         }
 
-        private static int OnProfilerMessage(ProfilerPayloadType payloadType, ProfilerMessageType messageType, IntPtr nativeBuffer, long bufferSize)
+        private static int OnProfilerMessage(IpcCommand command, IntPtr nativeBuffer, long bufferSize)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
                 }
 
                 ProfilerMessageSource instance = s_instance ?? throw new NotSupportedException();
-                instance.RaiseMonitorMessage(new MonitorMessageArgs(payloadType, messageType, nativeBuffer, bufferSize));
+                instance.RaiseMonitorMessage(new MonitorMessageArgs(command, nativeBuffer, bufferSize));
             }
             catch (Exception ex)
             {

@@ -23,7 +23,7 @@ using namespace std;
 #define DLLEXPORT
 #endif
 
-typedef INT32 (STDMETHODCALLTYPE *ManagedMessageCallback)(INT32, INT32, const BYTE*, UINT64);
+typedef INT32 (STDMETHODCALLTYPE *ManagedMessageCallback)(INT16, const BYTE*, UINT64);
 std::mutex g_messageCallbackMutex;
 ManagedMessageCallback g_pManagedMessageCallback = nullptr;
 
@@ -293,33 +293,25 @@ HRESULT MainProfiler::InitializeCommandServer()
 
 HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 {
-    HRESULT hr;
-    m_pLogger->Log(LogLevel::Debug, _LS("Message received from client (MessageType: %d, PayloadType: %d)"), message.MessageType, message.PayloadType);
+    m_pLogger->Log(LogLevel::Debug, _LS("Message received from client %d"), message.Command);
 
-    if (message.PayloadType == PayloadType::None)
+    switch (message.Command)
     {
-        if (message.MessageType == MessageType::Callstack)
-        {
-            //Currently we do not have any options for this message
-            return ProcessCallstackMessage();
-        }
-    }
-    else if (message.PayloadType == PayloadType::Utf8Json)
-    {
-        // Utf8 json payloads are handled exclusively by managed code.
-        lock_guard<mutex> lock(g_messageCallbackMutex);
-        if (g_pManagedMessageCallback == nullptr)
-        {
+        case IpcCommand::Unknown:
             return E_FAIL;
-        }
+        case IpcCommand::Callstack:
+            return ProcessCallstackMessage();
+        default:
+            lock_guard<mutex> lock(g_messageCallbackMutex);
+            if (g_pManagedMessageCallback == nullptr)
+            {
+                return E_FAIL;
+            }
 
-        IfFailRet(g_pManagedMessageCallback(
-            static_cast<INT32>(message.PayloadType),
-            static_cast<INT32>(message.MessageType),
-            message.Payload.data(),
-            message.Payload.size()));
-
-        return S_OK;
+            return g_pManagedMessageCallback(
+                static_cast<INT16>(message.Command),
+                message.Payload.data(),
+                message.Payload.size());
     }
 
     return E_FAIL;
