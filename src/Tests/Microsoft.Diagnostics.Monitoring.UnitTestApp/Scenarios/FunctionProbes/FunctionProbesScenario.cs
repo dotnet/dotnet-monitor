@@ -249,7 +249,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             timeoutSource.CancelAfter(TimeSpan.FromSeconds(5));
 
             // There's currently no notification mechanism for determining probe installation success, wait for timeout instead.
-            await Assert.ThrowsAsync<OperationCanceledException>(async () => await WaitForProbeInstallationAsync(probeManager, probeProxy, new[] { method }, timeoutSource.Token));
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await WaitForProbeInstallationAsync(probeManager, probeProxy, new[] { method }, timeoutSource.Token));
         }
 
         private static Task RunInstanceMethodTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, bool thisParameterSupported, CancellationToken token)
