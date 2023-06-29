@@ -247,17 +247,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
             using CancellationTokenSource timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
             timeoutSource.CancelAfter(TimeSpan.FromSeconds(5));
-            // There's currently no notification mechanism for determining probe installation success, wait for timeout instead.
-            try
-            {
-                await WaitForProbeInstallationAsync(probeManager, probeProxy, new[] { method }, timeoutSource.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
 
-            Assert.Fail("Probe installation on probe function succeeded");
+            // There's currently no notification mechanism for determining probe installation success, wait for timeout instead.
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await WaitForProbeInstallationAsync(probeManager, probeProxy, new[] { method }, timeoutSource.Token));
         }
 
         private static Task RunInstanceMethodTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, bool thisParameterSupported, CancellationToken token)
