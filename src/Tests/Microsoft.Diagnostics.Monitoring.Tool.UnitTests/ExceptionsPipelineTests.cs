@@ -6,7 +6,6 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
-using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -27,6 +26,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private ITestOutputHelper _outputHelper;
         private readonly EndpointUtilities _endpointUtilities;
+
+        // Startup hook assembly is only built for net6.0 and should be forward compatible
+        private static string StartupHookPath => AssemblyHelper.GetAssemblyArtifactBinPath(
+            Assembly.GetExecutingAssembly(),
+            "Microsoft.Diagnostics.Monitoring.StartupHook",
+            TargetFrameworkMoniker.Net60);
 
         public ExceptionsPipelineTests(ITestOutputHelper outputHelper)
         {
@@ -268,7 +273,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     IExceptionInstance outerInstance = instances.Skip(1).Single();
                     Assert.NotNull(outerInstance);
-                    
+
                     Assert.NotEqual(0UL, outerInstance.Id);
                     Assert.Equal(typeof(InvalidOperationException).FullName, outerInstance.TypeName);
                     Assert.Equal(innerInstance.Id, Assert.Single(outerInstance.InnerExceptionIds));
@@ -421,7 +426,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Action<IEnumerable<IExceptionInstance>> validate,
             Architecture? architecture = null)
         {
-            EndpointInfoSourceCallback callback = new(_outputHelper);
+            string startupHookPathForCallback = null;
+#if NET8_0_OR_GREATER
+            // Starting in .NET 8, the startup hook can be applied dynamically via DiagnosticsClient.
+            startupHookPathForCallback = StartupHookPath;
+#endif
+            EndpointInfoSourceCallback callback = new(_outputHelper, startupHookPathForCallback);
             await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
 
             await using AppRunner runner = _endpointUtilities.CreateAppRunner(
@@ -431,22 +441,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             runner.Architecture = architecture;
             runner.ScenarioName = TestAppScenarios.Exceptions.Name + " " + subScenarioName;
 
-            //AddStartupHookEnvironmentVariable(runner);
+#if !NET8_0_OR_GREATER
+            // Runtimes lower than .NET 8 will require setting the startup hook environment variable explicitly.
+            runner.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, StartupHookPath);
+#endif
 
             Task<IEndpointInfo> newEndpointInfoTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
             await runner.ExecuteAsync(async () =>
             {
                 await newEndpointInfoTask;
-
-                DiagnosticsClient client = new(newEndpointInfoTask.Result.ProcessId);
-
-                // NEW - testing only
-                //IFileProviderFactory fileProviderFactory = await _sharedLibraryService.GetFactoryAsync(stoppingToken);
-                //IFileProvider managedFileProvider = fileProviderFactory.CreateManaged(StartupHookTargetFramework);
-                //IFileInfo startupHookLibraryFileInfo = managedFileProvider.GetFileInfo(StartupHookFileName);
-                var tempPath = "C:\\Users\\kkeirstead\\dotnet-monitor\\artifacts\\bin\\Microsoft.Diagnostics.Monitoring.StartupHook\\Debug\\net6.0\\Microsoft.Diagnostics.Monitoring.StartupHook.dll";
-                await client.ApplyStartupHookAsync(tempPath, CancellationToken.None);
 
                 TestExceptionsStore store = new(expectedInstanceCount);
 
@@ -478,17 +482,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(expectedModuleName, stack.Frames[0].ModuleName);
             Assert.Equal(expectedClassName, stack.Frames[0].ClassName);
             Assert.Equal(expectedParameterTypes ?? new List<string>(), stack.Frames[0].ParameterTypes);
-        }
-
-        private static void AddStartupHookEnvironmentVariable(AppRunner runner)
-        {
-            // Startup hook assembly is only built for net6.0 and should be forward compatible
-            string startupHookPath = AssemblyHelper.GetAssemblyArtifactBinPath(
-                Assembly.GetExecutingAssembly(),
-                "Microsoft.Diagnostics.Monitoring.StartupHook",
-                TargetFrameworkMoniker.Net60);
-
-            runner.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, startupHookPath);
         }
 
         private sealed class TestExceptionsStore : IExceptionsStore

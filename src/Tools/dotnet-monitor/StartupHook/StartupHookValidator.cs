@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
         }
 
         public async Task<bool> CheckAsync(IEndpointInfo endpointInfo, CancellationToken token)
-        {
+        {           
             IFileProviderFactory fileProviderFactory = await _sharedLibraryService.GetFactoryAsync(token);
 
             IFileProvider managedFileProvider = fileProviderFactory.CreateManaged(StartupHookTargetFramework);
@@ -49,6 +49,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             }
 
             DiagnosticsClient client = new(endpointInfo.Endpoint);
+
+            if (endpointInfo.RuntimeVersion.Major >= 8 && await client.ApplyStartupHookAsync(startupHookLibraryFileInfo.PhysicalPath, token))
+            {
+                return true;
+            }
+
             IDictionary<string, string> env = await client.GetProcessEnvironmentAsync(token);
 
             if (!env.TryGetValue(ToolIdentifiers.EnvironmentVariables.StartupHooks, out string startupHookPaths))
