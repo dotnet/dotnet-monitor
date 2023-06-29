@@ -53,6 +53,7 @@ void CommandServer::Shutdown()
 
 void CommandServer::ListeningThread()
 {
+    // TODO: Handle oom scenarios
     IpcMessage response;
     response.Command = IpcCommand::Status;
     response.Payload.resize(sizeof(HRESULT));
