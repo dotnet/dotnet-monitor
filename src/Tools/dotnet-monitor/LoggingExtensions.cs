@@ -494,6 +494,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EgressProviderTypeNotExist);
 
+        private static readonly Action<ILogger, string, Exception> _profilerRuntimeIdentifier =
+            LoggerMessage.Define<string>(
+                eventId: LoggingEventIds.ProfilerRuntimeIdentifier.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_ProfilerRuntimeIdentifier);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -907,6 +913,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void EgressProviderTypeNotExist(this ILogger logger, string providerType)
         {
             _egressProviderTypeNotExist(logger, providerType, null);
+        }
+
+        public static void ProfilerRuntimeIdentifier(this ILogger logger, string runtimeIdentifier)
+        {
+            _profilerRuntimeIdentifier(logger, runtimeIdentifier, null);
         }
     }
 }

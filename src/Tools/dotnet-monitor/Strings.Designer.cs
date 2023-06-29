@@ -1385,6 +1385,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Using &apos;{runtimeIdentifier}&apos; runtime identifier for profiler enablement..
+        /// </summary>
+        internal static string LogFormatString_ProfilerRuntimeIdentifier {
+            get {
+                return ResourceManager.GetString("LogFormatString_ProfilerRuntimeIdentifier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly..
         /// </summary>
         internal static string LogFormatString_QueueDoesNotExist {

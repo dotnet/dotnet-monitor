@@ -80,7 +80,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public int AppId { get; }
 
-        public bool SetRuntimeIdentifier { get; set; } = true;
+        public bool SetRuntimeIdentifier { get; set; }
 
         public string ProfilerLogLevel { get; set; }
 

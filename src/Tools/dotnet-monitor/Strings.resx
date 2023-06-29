@@ -906,4 +906,7 @@
 0. providerName: The name of the provider that failed validation.
 1. errorMessage: The validation failure message</comment>
   </data>
+  <data name="LogFormatString_ProfilerRuntimeIdentifier" xml:space="preserve">
+    <value>Using '{runtimeIdentifier}' runtime identifier for profiler enablement.</value>
+  </data>
 </root>
