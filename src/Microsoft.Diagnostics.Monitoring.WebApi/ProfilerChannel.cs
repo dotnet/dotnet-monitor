@@ -72,7 +72,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             int payloadSize = BitConverter.ToInt32(recvBuffer, startIndex: readIndex);
             readIndex += sizeof(int);
-            Debug.Assert(readIndex == recvBuffer.Length);
 
             if (payloadSize != sizeof(int))
             {
