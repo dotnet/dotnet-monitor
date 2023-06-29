@@ -20,6 +20,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public void Log()
         {
+            // Experimental features should log a warning when they are activated e.g.
+            // _logger.ExperimentalFeatureEnabled("CallStacks");
         }
     }
 }
