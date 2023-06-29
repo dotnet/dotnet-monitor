@@ -53,36 +53,37 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static async Task<int> ReceiveStatusMessageAsync(Socket socket, CancellationToken token)
         {
-            byte[] recvBuffer = new byte[sizeof(short) + sizeof(int) + sizeof(int)];
-            int received = await socket.ReceiveAsync(new Memory<byte>(recvBuffer), SocketFlags.None, token);
-            if (received < recvBuffer.Length)
+            byte[] headersBuffer = new byte[sizeof(short) + sizeof(int)];
+            int received = await socket.ReceiveAsync(new Memory<byte>(headersBuffer), SocketFlags.None, token);
+            if (received < headersBuffer.Length)
             {
                 //TODO Figure out if fragmentation is possible over UDS.
                 throw new InvalidOperationException("Could not receive message from server.");
             }
 
-            int readIndex = 0;
-            IpcCommand command = (IpcCommand)BitConverter.ToInt16(recvBuffer, startIndex: readIndex);
-            readIndex += sizeof(short);
+            IpcCommand command = (IpcCommand)BitConverter.ToInt16(headersBuffer, startIndex: 0);
 
             if (command != IpcCommand.Status)
             {
                 throw new InvalidOperationException("Received unexpected command from server.");
             }
 
-            int payloadSize = BitConverter.ToInt32(recvBuffer, startIndex: readIndex);
-            readIndex += sizeof(int);
+            int payloadSize = BitConverter.ToInt32(headersBuffer, startIndex: sizeof(short));
 
-            if (payloadSize != sizeof(int))
+            byte[] payloadBuffer = new byte[sizeof(int)];
+            if (payloadSize != payloadBuffer.Length)
             {
                 throw new InvalidOperationException("Received unexpected payload size from server.");
             }
 
-            int hresult = BitConverter.ToInt32(recvBuffer, startIndex: readIndex);
-            readIndex += sizeof(int);
-            Debug.Assert(readIndex == recvBuffer.Length);
+            received = await socket.ReceiveAsync(new Memory<byte>(headersBuffer), SocketFlags.None, token);
+            if (received < payloadBuffer.Length)
+            {
+                //TODO Figure out if fragmentation is possible over UDS.
+                throw new InvalidOperationException("Could not receive message payload from server.");
+            }
 
-            return hresult;
+            return BitConverter.ToInt32(payloadBuffer);
         }
 
         private string ComputeChannelPath(IEndpointInfo endpointInfo)
