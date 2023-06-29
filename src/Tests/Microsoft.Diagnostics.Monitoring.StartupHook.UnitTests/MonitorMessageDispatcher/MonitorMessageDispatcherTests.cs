@@ -63,7 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
         }
 
         [Fact]
-        public void Throws_OnUnhandledMessageType()
+        public void Throws_OnUnhandledCommand()
         {
             // Arrange
             using MockMessageSource messageSource = new();
