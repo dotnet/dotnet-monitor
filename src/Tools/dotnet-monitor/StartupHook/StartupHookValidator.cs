@@ -35,13 +35,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
         }
 
         public async Task<bool> CheckAsync(IEndpointInfo endpointInfo, CancellationToken token)
-        {           
+        {
             IFileProviderFactory fileProviderFactory = await _sharedLibraryService.GetFactoryAsync(token);
 
             IFileProvider managedFileProvider = fileProviderFactory.CreateManaged(StartupHookTargetFramework);
 
             IFileInfo startupHookLibraryFileInfo = managedFileProvider.GetFileInfo(StartupHookFileName);
-
             if (!startupHookLibraryFileInfo.Exists)
             {
                 // This would be a bug in dotnet-monitor; throw appropriate non-MonitoringException instance.
@@ -50,9 +49,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
 
             DiagnosticsClient client = new(endpointInfo.Endpoint);
 
-            if (endpointInfo.RuntimeVersion.Major >= 8 && await client.ApplyStartupHookAsync(startupHookLibraryFileInfo.PhysicalPath, token))
+            if (endpointInfo.RuntimeVersion.Major >= 8)
             {
-                return true;
+                try
+                {
+                    await client.ApplyStartupHookAsync(startupHookLibraryFileInfo.PhysicalPath, token);
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _logger.StartupHookApplyFailed(ex);
+                }
             }
 
             IDictionary<string, string> env = await client.GetProcessEnvironmentAsync(token);

@@ -906,4 +906,9 @@
 0. providerName: The name of the provider that failed validation.
 1. errorMessage: The validation failure message</comment>
   </data>
+  <data name="LogFormatString_StartupHookApplyFailed" xml:space="preserve">
+    <value>The startup hook failed to automatically apply.</value>
+    <comment>Gets a string similar to "The startup hook failed to automatically apply."
+</comment>
+  </data>
 </root>

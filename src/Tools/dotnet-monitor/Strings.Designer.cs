@@ -1448,6 +1448,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The startup hook failed to automatically apply..
+        /// </summary>
+        internal static string LogFormatString_StartupHookApplyFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_StartupHookApplyFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The DOTNET_STARTUP_HOOKS environment variable is missing from target process {processId}..
         /// </summary>
         internal static string LogFormatString_StartupHookEnvironmentMissing {

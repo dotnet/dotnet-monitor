@@ -64,8 +64,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         throw new NotSupportedException();
                     }
 
-                    DiagnosticsClient client = new(pi.EndpointInfo.Endpoint);
-
                     // Validate that the process is configured correctly for collecting exceptions.
                     if (!await _startupHookValidator.CheckAsync(pi.EndpointInfo, stoppingToken))
                     {
@@ -74,6 +72,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         // This exception is not user visible.
                         throw new NotSupportedException();
                     }
+
+                    DiagnosticsClient client = new(pi.EndpointInfo.Endpoint);
 
                     EventExceptionsPipelineSettings settings = new();
                     _pipeline = new EventExceptionsPipeline(client, settings, _exceptionsStore);
