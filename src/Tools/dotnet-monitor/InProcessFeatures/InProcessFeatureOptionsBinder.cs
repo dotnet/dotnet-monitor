@@ -32,15 +32,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 options.Enabled = false;
             }
 
-            // If InProcessFeatures:<Feature>:Enabled is not explicitly set, check if the feature
-            // section has the value set e.g. InProcessFeatures:<Feature> = true/false.
-            if (!options.Enabled.HasValue)
-            {
-                options.Enabled = configuration
-                    .GetSection(configurationKey)
-                    .Get<bool?>();
-            }
-
             // Tristate value for InProcessFeatures:<Feature>:Enabled
             // - null -> Defer enablement to InProcessFeatures:Enabled and the default enablement for the individual feature
             // - true -> Enable the individual feature (because it was not opted out by InProcessFeatures:Enabled)
