@@ -76,10 +76,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new InvalidOperationException("Received unexpected payload size from server.");
             }
 
-            received = await socket.ReceiveAsync(new Memory<byte>(headersBuffer), SocketFlags.None, token);
+            received = await socket.ReceiveAsync(new Memory<byte>(payloadBuffer), SocketFlags.None, token);
             if (received < payloadBuffer.Length)
             {
-                //TODO Figure out if fragmentation is possible over UDS.
                 throw new InvalidOperationException("Could not receive message payload from server.");
             }
 
