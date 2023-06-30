@@ -25,7 +25,7 @@ using namespace std;
 #endif
 
 typedef INT32 (STDMETHODCALLTYPE *ManagedMessageCallback)(INT16, const BYTE*, UINT64);
-std::atomic<ManagedMessageCallback> g_pManagedMessageCallback;
+std::atomic<ManagedMessageCallback> g_pManagedMessageCallback = nullptr;
 
 GUID MainProfiler::GetClsid()
 {
