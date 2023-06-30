@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.Options;
+using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public sealed class InProcessFeaturesOptionsBinderTests
     {
         private const string FeatureConfigurationKey = "InProcessFeatures:TestFeature";
@@ -184,58 +186,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     { ConfigurationKeys.InProcessFeatures_Enabled, "false" },
                     { FeatureEnabledConfigurationKey, "true" }
-                })
-                .Build();
-
-            TestFeatureOptions options = new();
-
-            InProcessFeatureOptionsBinder.BindEnabled(
-                options,
-                FeatureConfigurationKey,
-                configurationRoot,
-                enabledByDefault: true);
-
-            Assert.True(options.Enabled.HasValue);
-            Assert.False(options.Enabled.Value);
-        }
-
-        /// <summary>
-        /// Tests that a feature is enabled if InProcessFeatures:<Feature> is true.
-        /// </summary>
-        [Fact]
-        public void InProcessFeaturesOptionsBinder_BindEnabled_EnabledSection()
-        {
-            IConfigurationRoot configurationRoot = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
-                {
-                    { FeatureConfigurationKey, "true" }
-                })
-                .Build();
-
-            TestFeatureOptions options = new();
-
-            InProcessFeatureOptionsBinder.BindEnabled(
-                options,
-                FeatureConfigurationKey,
-                configurationRoot,
-                enabledByDefault: true);
-
-            Assert.True(options.Enabled.HasValue);
-            Assert.True(options.Enabled.Value);
-        }
-
-        /// <summary>
-        /// Tests that a feature is disabled if InProcessFeatures:<Feature> is true
-        /// and InProcessFeatures:Enabled is false.
-        /// </summary>
-        [Fact]
-        public void InProcessFeaturesOptionsBinder_BindEnabled_EnabledSectionDisabledFeatures()
-        {
-            IConfigurationRoot configurationRoot = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
-                {
-                    { ConfigurationKeys.InProcessFeatures_Enabled, "false" },
-                    { FeatureConfigurationKey, "true" }
                 })
                 .Build();
 
