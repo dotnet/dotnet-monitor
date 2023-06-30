@@ -9,18 +9,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class InProcessFeatures : IInProcessFeatures
     {
-        private readonly InProcessFeaturesOptions _options;
-        private readonly IExperimentalFlags _experimentalFlags;
+        private readonly CallStacksOptions _callStacksOptions;
+        private readonly ExceptionsOptions _exceptionsOptions;
 
-        public InProcessFeatures(IOptions<InProcessFeaturesOptions> options, IExperimentalFlags experimentalFlags)
+        public InProcessFeatures(IOptions<CallStacksOptions> callStacksOptions, IOptions<ExceptionsOptions> exceptionsOptions)
         {
-            _options = options.Value;
-            _experimentalFlags = experimentalFlags;
+            _callStacksOptions = callStacksOptions.Value;
+            _exceptionsOptions = exceptionsOptions.Value;
         }
 
-        public bool IsCallStacksEnabled => _options.GetEnabled() && _experimentalFlags.IsCallStacksEnabled;
+        private bool IsCallStacksEnabled => _callStacksOptions.GetEnabled();
 
-        public bool IsExceptionsEnabled => _options.GetEnabled() && _experimentalFlags.IsExceptionsEnabled;
+        private bool IsExceptionsEnabled => _exceptionsOptions.GetEnabled();
 
         public bool IsProfilerRequired => IsCallStacksEnabled;
 

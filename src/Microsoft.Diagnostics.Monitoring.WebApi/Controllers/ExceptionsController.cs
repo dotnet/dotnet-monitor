@@ -4,8 +4,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
@@ -22,14 +24,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     public sealed class ExceptionsController : ControllerBase
     {
         private readonly IExceptionsStore _exceptionsStore;
-        private readonly IInProcessFeatures _inProcessFeatures;
+        private readonly IOptions<ExceptionsOptions> _exceptionsOptions;
         private readonly IExceptionsOperationFactory _operationFactory;
 
         public ExceptionsController(IServiceProvider serviceProvider)
         {
             // The exceptions store for the default process
             _exceptionsStore = serviceProvider.GetRequiredService<IExceptionsStore>();
-            _inProcessFeatures = serviceProvider.GetRequiredService<IInProcessFeatures>();
+            _exceptionsOptions = serviceProvider.GetRequiredService<IOptions<ExceptionsOptions>>();
             _operationFactory = serviceProvider.GetRequiredService<IExceptionsOperationFactory>();
         }
 
@@ -42,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [EgressValidation]
         public ActionResult GetExceptions()
         {
-            if (!_inProcessFeatures.IsExceptionsEnabled)
+            if (!_exceptionsOptions.Value.GetEnabled())
             {
                 return NotFound();
             }

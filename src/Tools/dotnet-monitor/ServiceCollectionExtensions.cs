@@ -28,6 +28,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
+using Microsoft.Diagnostics.Tools.Monitor.Stacks;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -67,8 +68,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureInProcessFeatures(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<InProcessFeaturesOptions>(services, configuration, ConfigurationKeys.InProcessFeatures)
-                .AddSingleton<IPostConfigureOptions<InProcessFeaturesOptions>, InProcessFeaturesPostConfigureOptions>();
+            ConfigureOptions<CallStacksOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_CallStacks)
+                .AddSingleton<IPostConfigureOptions<CallStacksOptions>, CallStacksPostConfigureOptions>();
+
+            ConfigureOptions<ExceptionsOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_Exceptions)
+                .AddSingleton<IPostConfigureOptions<ExceptionsOptions>, ExceptionsPostConfigureOptions>();
+
+            return services;
         }
 
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
