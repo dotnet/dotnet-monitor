@@ -21,10 +21,5 @@
     <NJsonSchemaVersion>10.9.0</NJsonSchemaVersion>
     <SwashbuckleAspNetCoreVersion>6.5.0</SwashbuckleAspNetCoreVersion>
     <XunitAssertVersion>2.4.2</XunitAssertVersion>
-
-    <!-- Release-branch specific reference -->
-    <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringShippedVersion>7.0.430602</MicrosoftDiagnosticsMonitoringShippedVersion>
-
   </PropertyGroup>
 </Project>
