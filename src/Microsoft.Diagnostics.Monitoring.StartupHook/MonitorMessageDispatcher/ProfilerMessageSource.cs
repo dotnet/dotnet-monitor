@@ -17,13 +17,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
         [DllImport(ProfilerIdentifiers.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
         private static extern void RegisterMonitorMessageCallback(ProfilerMessageCallback callback);
 
-        private static ProfilerMessageSource? s_instance;
+        [DllImport(ProfilerIdentifiers.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
+        private static extern void UnregisterMonitorMessageCallback();
+        
 
         public ProfilerMessageSource()
         {
             ProfilerResolver.InitializeResolver<ProfilerMessageSource>();
             RegisterMonitorMessageCallback(OnProfilerMessage);
-            s_instance = this;
         }
 
         private void RaiseMonitorMessage(MonitorMessageArgs e)
@@ -31,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             MonitorMessageEvent?.Invoke(this, e);
         }
 
-        private static int OnProfilerMessage(IpcCommand command, IntPtr nativeBuffer, long bufferSize)
+        private int OnProfilerMessage(IpcCommand command, IntPtr nativeBuffer, long bufferSize)
         {
             try
             {
@@ -45,8 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
                     throw new ArgumentException(nameof(nativeBuffer));
                 }
 
-                ProfilerMessageSource instance = s_instance ?? throw new NotSupportedException();
-                instance.RaiseMonitorMessage(new MonitorMessageArgs(command, nativeBuffer, bufferSize));
+                RaiseMonitorMessage(new MonitorMessageArgs(command, nativeBuffer, bufferSize));
             }
             catch (Exception ex)
             {
@@ -58,7 +58,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 
         public void Dispose()
         {
-            s_instance = null;
+            try
+            {
+                UnregisterMonitorMessageCallback();
+            }
+            catch
+            {
+
+            }
         }
     }
 }

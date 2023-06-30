@@ -191,7 +191,7 @@ HRESULT MainProfiler::InitializeCommon()
     _exceptionTracker->AddProfilerEventMask(eventsLow);
 #endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
     StackSampler::AddProfilerEventMask(eventsLow);
-    
+
     _threadNameCache = make_shared<ThreadNameCache>();
 
     bool enableParameterCapturing;
@@ -297,21 +297,21 @@ HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 
     switch (message.Command)
     {
-        case IpcCommand::Unknown:
+    case IpcCommand::Unknown:
+        return E_FAIL;
+    case IpcCommand::Callstack:
+        return ProcessCallstackMessage();
+    default:
+        ManagedMessageCallback pCallback = g_pManagedMessageCallback.load();
+        if (pCallback == nullptr)
+        {
             return E_FAIL;
-        case IpcCommand::Callstack:
-            return ProcessCallstackMessage();
-        default:
-            ManagedMessageCallback pCallback = g_pManagedMessageCallback.load();
-            if (pCallback == nullptr)
-            {
-                return E_FAIL;
-            }
+        }
 
-            return pCallback(
-                static_cast<INT16>(message.Command),
-                message.Payload.data(),
-                message.Payload.size());
+        return pCallback(
+            static_cast<INT16>(message.Command),
+            message.Payload.data(),
+            message.Payload.size());
     }
 
     return E_FAIL;
@@ -369,7 +369,7 @@ HRESULT STDMETHODCALLTYPE MainProfiler::GetReJITParameters(ModuleID moduleId, md
     {
         return m_pProbeInstrumentation->GetReJITParameters(moduleId, methodId, pFunctionControl);
     }
-    
+
     return S_OK;
 }
 
@@ -381,6 +381,12 @@ STDAPI DLLEXPORT RegisterMonitorMessageCallback(
     {
         return E_FAIL;
     }
-    
+
+    return S_OK;
+}
+
+STDAPI DLLEXPORT UnregisterMonitorMessageCallback()
+{
+    g_pManagedMessageCallback.store(nullptr);
     return S_OK;
 }

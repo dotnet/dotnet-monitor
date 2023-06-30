@@ -9,3 +9,4 @@ EXPORTS
     RequestFunctionProbeInstallation   PRIVATE
     RequestFunctionProbeUninstallation PRIVATE
     RegisterMonitorMessageCallback     PRIVATE
+    UnregisterMonitorMessageCallback   PRIVATE
