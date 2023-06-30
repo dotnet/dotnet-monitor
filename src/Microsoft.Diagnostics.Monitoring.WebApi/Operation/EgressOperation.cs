@@ -49,15 +49,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _operation = operation;
         }
 
-        // The below constructors don't need EgressProcessInfo as their callers don't store to the operations table.
-        public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata)
+        public EgressOperation(IArtifactOperation operation, TaskCompletionSource<object> taskCompletionSource, string endpointName, IProcessInfo processInfo, KeyValueLogScope scope, string tags, CollectionRuleMetadata collectionRuleMetadata = null)
+            : this((stream, token) => operation.ExecuteAsync(stream, taskCompletionSource, token), endpointName, operation.GenerateFileName(), processInfo, operation.ContentType, scope, tags, collectionRuleMetadata)
         {
-            _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, source, collectionRuleMetadata, token);
-            EgressProviderName = endpointName;
-            _scope = scope;
+            _operation = operation;
         }
 
-        public EgressOperation(Func<CancellationToken, Task<Stream>> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata)
+        // TODO Remove this constructor once Callstacks and GCDumps move to IArtifactOperation implementations
+        public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata)
         {
             _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, source, collectionRuleMetadata, token);
             EgressProviderName = endpointName;

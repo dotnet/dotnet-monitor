@@ -41,6 +41,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             _outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
         }
 
+        public Uri BaseAddress => _httpClient.BaseAddress;
+
         /// <summary>
         /// GET /
         /// </summary>

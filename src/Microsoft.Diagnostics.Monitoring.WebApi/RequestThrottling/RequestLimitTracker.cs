@@ -11,6 +11,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal sealed class RequestLimitTracker
     {
+        public static readonly string Unlimited = string.Empty;
+
         private sealed class RequestCount : IDisposable
         {
             private int _count;
@@ -35,6 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _requestLimitTable.Add(Utilities.ArtifactType_Trace, 3);
             _requestLimitTable.Add(Utilities.ArtifactType_Metrics, 3);
             _requestLimitTable.Add(Utilities.ArtifactType_Stacks, 1);
+            _requestLimitTable.Add(Unlimited, int.MaxValue);
 
             _logger = logger;
         }

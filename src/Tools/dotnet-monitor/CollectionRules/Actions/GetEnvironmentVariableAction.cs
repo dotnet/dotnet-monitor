@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             _logger = logger ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, GetEnvironmentVariableOptions options)
+        public ICollectionRuleAction Create(IProcessInfo processInfo, GetEnvironmentVariableOptions options)
         {
             if (null == options)
             {
@@ -36,21 +36,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ValidationContext context = new(options, _serviceProvider, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            return new GetEnvironmentVariableAction(_logger, endpointInfo, options);
+            return new GetEnvironmentVariableAction(_logger, processInfo, options);
         }
 
         internal sealed partial class GetEnvironmentVariableAction :
             CollectionRuleActionBase<GetEnvironmentVariableOptions>
         {
-            private readonly IEndpointInfo _endpointInfo;
             private readonly ILogger _logger;
             private readonly GetEnvironmentVariableOptions _options;
 
-            public GetEnvironmentVariableAction(ILogger logger, IEndpointInfo endpointInfo, GetEnvironmentVariableOptions options)
-                : base(endpointInfo, options)
+            public GetEnvironmentVariableAction(ILogger logger, IProcessInfo processInfo, GetEnvironmentVariableOptions options)
+                : base(processInfo, options)
             {
                 _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-                _endpointInfo = endpointInfo ?? throw new ArgumentNullException(nameof(endpointInfo));
                 _options = options ?? throw new ArgumentNullException(nameof(options));
             }
 
@@ -61,9 +59,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 try
                 {
-                    DiagnosticsClient client = new DiagnosticsClient(_endpointInfo.Endpoint);
+                    DiagnosticsClient client = new DiagnosticsClient(EndpointInfo.Endpoint);
 
-                    _logger.GettingEnvironmentVariable(_options.Name, _endpointInfo.ProcessId);
+                    _logger.GettingEnvironmentVariable(_options.Name, EndpointInfo.ProcessId);
                     Dictionary<string, string> envBlock = await client.GetProcessEnvironmentAsync(token);
                     if (!envBlock.TryGetValue(Options.Name, out string value))
                     {

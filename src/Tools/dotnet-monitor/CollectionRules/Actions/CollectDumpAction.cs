@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, CollectDumpOptions options)
+        public ICollectionRuleAction Create(IProcessInfo processInfo, CollectDumpOptions options)
         {
             if (null == options)
             {
@@ -35,26 +35,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ValidationContext context = new(options, _serviceProvider, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            return new CollectDumpAction(_serviceProvider, endpointInfo, options);
+            return new CollectDumpAction(_serviceProvider, processInfo, options);
         }
 
         internal sealed class CollectDumpAction :
-            CollectionRuleActionBase<CollectDumpOptions>
+            CollectionRuleEgressActionBase<CollectDumpOptions>
         {
             private readonly IDumpOperationFactory _dumpOperationFactory;
-            private readonly IServiceProvider _serviceProvider;
 
-            public CollectDumpAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectDumpOptions options)
-                : base(endpointInfo, options)
+            public CollectDumpAction(IServiceProvider serviceProvider, IProcessInfo processInfo, CollectDumpOptions options)
+                : base(serviceProvider, processInfo, options)
             {
-                _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
                 _dumpOperationFactory = serviceProvider.GetRequiredService<IDumpOperationFactory>();
             }
 
-            protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
-                TaskCompletionSource<object> startCompletionSource,
-                CollectionRuleMetadata collectionRuleMetadata,
-                CancellationToken token)
+            protected override EgressOperation CreateArtifactOperation(TaskCompletionSource<object> startCompletionSource, CollectionRuleMetadata collectionRuleMetadata)
             {
                 DumpType dumpType = Options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
                 string egressProvider = Options.Egress;
@@ -64,28 +59,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 IArtifactOperation dumpOperation = _dumpOperationFactory.Create(EndpointInfo, dumpType);
 
                 EgressOperation egressOperation = new EgressOperation(
-                    (outputStream, token) => dumpOperation.ExecuteAsync(outputStream, startCompletionSource, token),
+                    dumpOperation,
+                    startCompletionSource,
                     egressProvider,
-                    dumpOperation.GenerateFileName(),
-                    EndpointInfo,
-                    dumpOperation.ContentType,
+                    ProcessInfo,
                     scope,
-                    collectionRuleMetadata);
+                    tags: null,
+                    collectionRuleMetadata: collectionRuleMetadata);
 
-                ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
-                if (null != result.Exception)
-                {
-                    throw new CollectionRuleActionException(result.Exception);
-                }
-                string dumpFilePath = result.Result.Value;
-
-                return new CollectionRuleActionResult()
-                {
-                    OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
-                    {
-                        { CollectionRuleActionConstants.EgressPathOutputValueName, dumpFilePath }
-                    }
-                };
+                return egressOperation;
             }
         }
     }

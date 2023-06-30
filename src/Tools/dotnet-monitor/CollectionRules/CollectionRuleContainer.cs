@@ -200,7 +200,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 _logger.CollectionRuleStarted(ruleName);
 
-                CollectionRuleContext context = new(ruleName, options, _processInfo.EndpointInfo, _logger, _systemClock);
+                CollectionRuleContext context = new(ruleName, options, _processInfo, _logger, _systemClock);
 
                 await using CollectionRulePipeline pipeline = new(
                     _actionListExecutor,

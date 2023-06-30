@@ -32,6 +32,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             public Guid OperationId { get; set; }
 
             public ISet<string> Tags { get; set; }
+
+            public TaskCompletionSource TaskCompletionSource { get; } = new();
         }
 
         private readonly Dictionary<Guid, EgressEntry> _requests = new();
@@ -47,6 +49,23 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _taskQueue = queue;
             _requestLimits = requestLimits;
             _serviceProvider = serviceProvider;
+        }
+
+        public async Task<ExecutionResult<EgressResult>> ExecuteOperation(IEgressOperation egressOperation)
+        {
+            // Collection Rules do not follow request limits.
+
+            Guid operationGuid = await AddOperation(egressOperation, RequestLimitTracker.Unlimited);
+            EgressEntry entry = null;
+
+            lock (_requests)
+            {
+                _requests.TryGetValue(operationGuid, out entry);
+            }
+
+            await entry?.TaskCompletionSource.Task;
+
+            return entry?.ExecutionResult;
         }
 
         public async Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey)
@@ -131,6 +150,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 entry.State = Models.OperationState.Cancelled;
                 entry.EgressRequest.CancellationTokenSource.Cancel();
                 entry.EgressRequest.Dispose();
+
+                entry.TaskCompletionSource.TrySetResult();
             }
         }
 
@@ -160,6 +181,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     entry.State = Models.OperationState.Failed;
                 }
+
+                entry.TaskCompletionSource.TrySetResult();
             }
         }
 

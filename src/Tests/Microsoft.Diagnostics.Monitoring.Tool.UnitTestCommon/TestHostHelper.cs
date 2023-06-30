@@ -25,13 +25,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             List<IConfigurationSource> overrideSource = null)
         {
             IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback, overrideSource);
-
             try
             {
+                //It is necessary to start the host so that the OperationsStore background service is started.
+                await host.StartAsync();
                 await hostCallback(host);
             }
             finally
             {
+                await host.StopAsync();
                 await DisposableHelper.DisposeAsync(host);
             }
         }
@@ -100,6 +102,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     services.AddSingleton<OperationTrackerService>();
                     services.ConfigureCollectionRules();
                     services.ConfigureEgress();
+                    services.AddSingleton<RequestLimitTracker>();
+                    services.ConfigureOperationStore();
 
                     services.ConfigureDiagnosticPort(context.Configuration);
 
