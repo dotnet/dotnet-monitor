@@ -13,6 +13,7 @@
 #include "../Utilities/ThreadUtilities.h"
 #include "corhlpr.h"
 #include "macros.h"
+#include <atomic>
 #include <memory>
 
 using namespace std;
@@ -24,8 +25,7 @@ using namespace std;
 #endif
 
 typedef INT32 (STDMETHODCALLTYPE *ManagedMessageCallback)(INT16, const BYTE*, UINT64);
-std::mutex g_messageCallbackMutex;
-ManagedMessageCallback g_pManagedMessageCallback = nullptr;
+std::atomic<ManagedMessageCallback> g_pManagedMessageCallback;
 
 GUID MainProfiler::GetClsid()
 {
@@ -302,13 +302,13 @@ HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
         case IpcCommand::Callstack:
             return ProcessCallstackMessage();
         default:
-            lock_guard<mutex> lock(g_messageCallbackMutex);
-            if (g_pManagedMessageCallback == nullptr)
+            ManagedMessageCallback pCallback = g_pManagedMessageCallback.load();
+            if (pCallback == nullptr)
             {
                 return E_FAIL;
             }
 
-            return g_pManagedMessageCallback(
+            return pCallback(
                 static_cast<INT16>(message.Command),
                 message.Payload.data(),
                 message.Payload.size());
@@ -374,20 +374,13 @@ HRESULT STDMETHODCALLTYPE MainProfiler::GetReJITParameters(ModuleID moduleId, md
 }
 
 STDAPI DLLEXPORT RegisterMonitorMessageCallback(
-    ManagedMessageCallback pCallback
-    )
+    ManagedMessageCallback pCallback)
 {
-    if (g_pManagedMessageCallback != nullptr)
+    ManagedMessageCallback pPreviousCallback = nullptr;
+    if (!g_pManagedMessageCallback.compare_exchange_strong(pPreviousCallback, pCallback))
     {
         return E_FAIL;
     }
-
-    lock_guard<mutex> lock(g_messageCallbackMutex);
-    if (g_pManagedMessageCallback != nullptr)
-    {
-        return E_FAIL;
-    }
-
-    g_pManagedMessageCallback = pCallback;
+    
     return S_OK;
 }

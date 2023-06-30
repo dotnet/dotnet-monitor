@@ -36,6 +36,11 @@ HRESULT IpcCommClient::Receive(IpcMessage& message)
 
     assert(bufferOffset == sizeof(headersBuffer));
 
+    if (payloadSize < 0 || payloadSize > MaxPayloadSize)
+    {
+        return E_FAIL;
+    }
+
     if (payloadSize != 0)
     {
         IfOomRetMem(message.Payload.resize(payloadSize));
@@ -103,7 +108,7 @@ HRESULT IpcCommClient::Send(const IpcMessage& message)
         return E_UNEXPECTED;
     }
 
-    if (message.Payload.size() > UINT32_MAX)
+    if (message.Payload.size() > MaxPayloadSize)
     {
         return E_FAIL;
     }

@@ -23,4 +23,7 @@ private:
 private:
     SocketWrapper _socket;
     std::atomic_bool _shutdown;
+
+private:
+    static constexpr int MaxPayloadSize = 4 * 1024 * 1024; // 4 MiB
 };

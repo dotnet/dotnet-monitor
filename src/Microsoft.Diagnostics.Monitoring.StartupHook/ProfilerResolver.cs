@@ -29,12 +29,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             Assembly assembly = type.Assembly;
             lock (s_registeredAssembliesLocker)
             {
-                if (s_registeredAssemblies.Contains(assembly))
+                if (!s_registeredAssemblies.Add(assembly))
                 {
                     return;
                 }
 
-                s_registeredAssemblies.Add(assembly);
                 NativeLibrary.SetDllImportResolver(assembly, ResolveProfilerDllImport);
             }
         }

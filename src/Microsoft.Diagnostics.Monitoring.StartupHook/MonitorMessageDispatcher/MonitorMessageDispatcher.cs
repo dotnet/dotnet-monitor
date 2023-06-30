@@ -5,7 +5,7 @@
 using System.IO;
 using System;
 using System.Text.Json;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 {
@@ -17,9 +17,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             public Action<object> Callback { get; set; }
         }
 
-        private ConcurrentDictionary<IpcCommand, MessageDispatchEntry> _dispatchTable = new();
+        private readonly object _dispatchTableLocker = new();
+        private readonly Dictionary<IpcCommand, MessageDispatchEntry> _dispatchTable = new();
 
-        private IMonitorMessageSource _messageSource;
+        private readonly IMonitorMessageSource _messageSource;
 
         private long _disposedState;
 
@@ -40,37 +41,47 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
                 }
             };
 
-            if (!_dispatchTable.TryAdd(command, dispatchEntry))
+            lock (_dispatchTableLocker)
             {
-                throw new InvalidOperationException("Callback already registered for the requested command.");
+                if (!_dispatchTable.TryAdd(command, dispatchEntry))
+                {
+                    throw new InvalidOperationException("Callback already registered for the requested command.");
+                }
             }
         }
 
         public void UnregisterCallback(IpcCommand command)
         {
-            _dispatchTable.TryRemove(command, out _);
+            lock (_dispatchTableLocker)
+            {
+                _dispatchTable.Remove(command, out _);
+            }
         }
 
         private void OnMessage(object sender, MonitorMessageArgs args)
         {
-            object? payload = null;
-            if (!_dispatchTable.TryGetValue(args.Command, out MessageDispatchEntry dispatchEntry))
+            lock (_dispatchTableLocker)
             {
-                throw new NotSupportedException("Unsupported message type.");
-            }
+                if (!_dispatchTable.TryGetValue(args.Command, out MessageDispatchEntry dispatchEntry))
+                {
+                    throw new NotSupportedException("Unsupported message type.");
+                }
 
-            unsafe
-            {
-                using UnmanagedMemoryStream memoryStream = new((byte*)args.NativeBuffer.ToPointer(), args.BufferSize);
-                payload = JsonSerializer.Deserialize(memoryStream, dispatchEntry.DeserializeType);
-            }
+                object? payload = null;
+                unsafe
+                {
+                    using UnmanagedMemoryStream memoryStream = new((byte*)args.NativeBuffer.ToPointer(), args.BufferSize);
+                    // Exceptions thrown during deserialization will be handled by the message source
+                    payload = JsonSerializer.Deserialize(memoryStream, dispatchEntry.DeserializeType);
+                }
 
-            if (payload == null)
-            {
-                throw new ArgumentException("Could not deserialize.");
-            }
+                if (payload == null)
+                {
+                    throw new ArgumentException("Could not deserialize.");
+                }
 
-            dispatchEntry.Callback(payload);
+                dispatchEntry.Callback(payload);
+            }
         }
 
         public void Dispose()

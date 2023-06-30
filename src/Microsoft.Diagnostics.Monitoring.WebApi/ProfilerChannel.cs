@@ -3,7 +3,6 @@
 
 using Microsoft.Extensions.Options;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
@@ -17,6 +16,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// </summary>
     internal sealed class ProfilerChannel
     {
+        private const int MaxPayloadSize = 4 * 1024 * 1024; // 4 MiB
+
         private IOptionsMonitor<StorageOptions> _storageOptions;
 
         public ProfilerChannel(IOptionsMonitor<StorageOptions> storageOptions)
@@ -26,6 +27,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public async Task SendMessage(IEndpointInfo endpointInfo, IProfilerMessage message, CancellationToken token)
         {
+            if (message.Payload.Length > MaxPayloadSize)
+            {
+                throw new ArgumentException(nameof(message));
+            }
+
             string channelPath = ComputeChannelPath(endpointInfo);
             var endpoint = new UnixDomainSocketEndPoint(channelPath);
             using var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
