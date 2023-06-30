@@ -20,7 +20,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
         [DllImport(ProfilerIdentifiers.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
         private static extern void UnregisterMonitorMessageCallback();
         
-
         public ProfilerMessageSource()
         {
             ProfilerResolver.InitializeResolver<ProfilerMessageSource>();
