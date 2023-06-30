@@ -7,11 +7,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 {
     internal sealed class MockMessageSource : IMonitorMessageSource
     {
-        public event IMonitorMessageSource.MonitorMessageHandler? MonitorMessageEvent;
+        public event EventHandler<MonitorMessageArgs>? MonitorMessage;
 
         private void RaiseMessage(MonitorMessageArgs e)
         {
-            MonitorMessageEvent?.Invoke(this, e);
+            MonitorMessage?.Invoke(this, e);
         }
 
         public void RaiseMessage(IProfilerMessage message)

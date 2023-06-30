@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
         public MonitorMessageDispatcher(IMonitorMessageSource messageSource)
         {
             _messageSource = messageSource;
-            _messageSource.MonitorMessageEvent += OnMessage;
+            _messageSource.MonitorMessage += OnMessage;
         }
 
         public void RegisterCallback<T>(IpcCommand command, Action<T> callback)
@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             }
         }
 
-        private void OnMessage(object sender, MonitorMessageArgs args)
+        private void OnMessage(object? sender, MonitorMessageArgs args)
         {
             lock (_dispatchTableLocker)
             {
@@ -89,7 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             if (!DisposableHelper.CanDispose(ref _disposedState))
                 return;
 
-            _messageSource.MonitorMessageEvent -= OnMessage;
+            _messageSource.MonitorMessage -= OnMessage;
             _messageSource.Dispose();
         }
     }

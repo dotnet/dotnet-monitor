@@ -21,7 +21,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 
     internal interface IMonitorMessageSource : IDisposable
     {
-        public delegate void MonitorMessageHandler(object sender, MonitorMessageArgs args);
-        public event MonitorMessageHandler MonitorMessageEvent;
+        public event EventHandler<MonitorMessageArgs> MonitorMessage;
     }
 }

@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 {
     internal sealed class ProfilerMessageSource : IMonitorMessageSource
     {
-        public event IMonitorMessageSource.MonitorMessageHandler? MonitorMessageEvent;
+        public event EventHandler<MonitorMessageArgs>? MonitorMessage;
 
         public delegate int ProfilerMessageCallback(IpcCommand command, IntPtr nativeBuffer, long bufferSize);
 
@@ -19,7 +19,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 
         [DllImport(ProfilerIdentifiers.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
         private static extern void UnregisterMonitorMessageCallback();
-        
+
+        private long _disposedState;
+
         public ProfilerMessageSource()
         {
             ProfilerResolver.InitializeResolver<ProfilerMessageSource>();
@@ -28,7 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 
         private void RaiseMonitorMessage(MonitorMessageArgs e)
         {
-            MonitorMessageEvent?.Invoke(this, e);
+            MonitorMessage?.Invoke(this, e);
         }
 
         private int OnProfilerMessage(IpcCommand command, IntPtr nativeBuffer, long bufferSize)
@@ -57,6 +59,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 
         public void Dispose()
         {
+            if (!DisposableHelper.CanDispose(ref _disposedState))
+                return;
+
             try
             {
                 UnregisterMonitorMessageCallback();
