@@ -1,0 +1,4 @@
+<Project>
+  <!-- Dependabot is configured to read package versions from Directory.Build.props, so just use this file as a shim. -->
+  <Import Project="Versions.props" />
+</Project>
