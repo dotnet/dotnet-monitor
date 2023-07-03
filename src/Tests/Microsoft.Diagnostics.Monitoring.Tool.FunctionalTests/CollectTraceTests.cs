@@ -16,6 +16,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -80,6 +82,49 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 { TestAppScenarios.TraceEvents.UniqueEventPayloadField, TestAppScenarios.TraceEvents.UniqueEventMessage.ToUpperInvariant() }
             });
+        }
+
+        [Fact]
+        public async Task ExitOnStdinDisconnect_Succeeds()
+        {
+            // Start an app in 'connect' mode to match what the Visual Studio profiler does.
+            DiagnosticPortHelper.Generate(
+                DiagnosticPortConnectionMode.Listen,
+                out DiagnosticPortConnectionMode appConnectionMode,
+                out string diagnosticPortPath);
+
+            await using AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
+            appRunner.ConnectionMode = appConnectionMode;
+            appRunner.DiagnosticPortPath = diagnosticPortPath;
+            appRunner.ScenarioName = TestAppScenarios.AspNet.Name;
+            using (CancellationTokenSource appStartCancellationTokenSource = new(CommonTestTimeouts.StartProcess))
+            {
+                // Start the app, but don't wait for it to be ready since we're not going to make any requests.
+                await appRunner.StartAsync(appStartCancellationTokenSource.Token, waitForReady: false);
+            }
+
+            // Start dotnet-monitor in `--exit-on-stdin-disconnect` mode.
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
+            toolRunner.ConnectionModeViaCommandLine = DiagnosticPortConnectionMode.Listen;
+            toolRunner.DiagnosticPortPath = diagnosticPortPath;
+            toolRunner.DisableAuthentication = true;
+            toolRunner.ExitOnStdinDisconnect = true;
+            await toolRunner.StartAsync();
+            Assert.False(toolRunner.HasExited);
+
+            // Close the tool's stdin, which should cause it to exit.
+            toolRunner.StandardInput.Close();
+
+            using (CancellationTokenSource monitorExitCancellationTokenSource = new(TimeSpan.FromSeconds(10)))
+            {
+                await toolRunner.WaitForExitAsync(monitorExitCancellationTokenSource.Token);
+            }
+
+            // Verify that everything shutdown cleanly
+            Assert.Equal(0, toolRunner.ExitCode);
+            Assert.False(appRunner.HasExited);
+
+            await appRunner.StopAsync();
         }
 
         private static string ConstructQualifiedEventName(string eventName, TraceEventOpcode opcode)

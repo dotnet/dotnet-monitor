@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -18,6 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
     /// <summary>
     /// Runner for running the unit test application.
     /// </summary>
+    [DebuggerDisplay(@"\{AppRunner:{_runner.StateForDebuggerDisplay,nq}\}")]
     public sealed class AppRunner : IAsyncDisposable
     {
         private readonly LoggingRunnerAdapter _adapter;
@@ -71,6 +73,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         public int ExitCode => _adapter.ExitCode;
 
+        public bool HasExited => _adapter.HasExited;
+
         public Task<int> ProcessIdTask => _adapter.ProcessIdTask;
 
         /// <summary>
@@ -117,7 +121,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             _runner.Dispose();
         }
 
-        public async Task StartAsync(CancellationToken token)
+        public async Task StartAsync(CancellationToken token, bool waitForReady = true)
         {
             if (string.IsNullOrEmpty(ScenarioName))
             {
@@ -165,7 +169,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
             await _adapter.StartAsync(token).ConfigureAwait(false);
 
-            await _readySource.WithCancellation(token);
+            if (waitForReady)
+            {
+                await _readySource.WithCancellation(token);
+            }
         }
 
         public Task StopAsync(CancellationToken token)

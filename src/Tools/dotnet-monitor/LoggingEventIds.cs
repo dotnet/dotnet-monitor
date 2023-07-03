@@ -92,6 +92,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         StartupHookEnvironmentMissing = 80,
         StartupHookMissing = 81,
         StartupHookInstructions = 82,
+        /* Gap for events declared in v8 */
+        WatchForStdinDisconnectFailure = 98
     }
 
     internal static class LoggingEventIdsExtensions
