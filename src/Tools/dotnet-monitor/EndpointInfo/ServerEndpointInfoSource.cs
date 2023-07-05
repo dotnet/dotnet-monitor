@@ -159,13 +159,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private async Task ResumeAndQueueEndpointInfo(ReversedDiagnosticsServer server, IpcEndpointInfo info, CancellationToken token)
         {
+            List<Exception> exceptions = new();
             try
             {
                 EndpointInfo endpointInfo = await EndpointInfo.FromIpcEndpointInfoAsync(info, token);
 
                 foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
                 {
-                    await callback.OnBeforeResumeAsync(endpointInfo, token).ConfigureAwait(false);
+                    try
+                    {
+                        await callback.OnBeforeResumeAsync(endpointInfo, token).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
                 }
 
                 // Send ResumeRuntime message for runtime instances that connect to the server. This will allow
@@ -181,6 +189,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     // The runtime likely doesn't understand the ResumeRuntime command.
                 }
+                catch
+                {
+                    server?.RemoveConnection(info.RuntimeInstanceCookie);
+                    throw;
+                }
 
                 await _activeEndpointsSemaphore.WaitAsync(token).ConfigureAwait(false);
                 try
@@ -189,7 +202,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
                     {
-                        await callback.OnAddedEndpointInfoAsync(endpointInfo, token).ConfigureAwait(false);
+                        try
+                        {
+                            await callback.OnAddedEndpointInfoAsync(endpointInfo, token).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            exceptions.Add(ex);
+                        }
                     }
                 }
                 finally
@@ -197,11 +217,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     _activeEndpointsSemaphore.Release();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                server?.RemoveConnection(info.RuntimeInstanceCookie);
+                exceptions.Add(ex);
+            }
 
-                throw;
+            if (exceptions.Count != 0)
+            {
+                throw new AggregateException(exceptions);
             }
         }
 
