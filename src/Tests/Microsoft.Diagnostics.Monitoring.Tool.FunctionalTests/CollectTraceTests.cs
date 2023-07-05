@@ -115,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             // Close the tool's stdin, which should cause it to exit.
             toolRunner.StandardInput.Close();
 
-            using (CancellationTokenSource monitorExitCancellationTokenSource = new(TimeSpan.FromSeconds(10)))
+            using (CancellationTokenSource monitorExitCancellationTokenSource = new(TestTimeouts.DotnetMonitorExitAfterStdinCloseTimeout))
             {
                 await toolRunner.WaitForExitAsync(monitorExitCancellationTokenSource.Token);
             }
