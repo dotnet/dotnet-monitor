@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +29,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
         Task IEndpointInfoSourceCallbacks.OnRemovedEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            Console.WriteLine("HUIIII");
+            throw new InvalidOperationException("Some internal error");
         }
     }
 }

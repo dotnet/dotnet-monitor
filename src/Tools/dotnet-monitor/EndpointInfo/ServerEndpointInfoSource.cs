@@ -149,7 +149,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     IpcEndpointInfo info = await server.AcceptAsync(token).ConfigureAwait(false);
 
-                    _ = Task.Run( async () =>
+                    _ = Task.Run(async () =>
                     {
                         try
                         {
@@ -226,9 +226,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 exceptions.Add(ex);
             }
 
-            if (exceptions.Count != 0)
+            if (exceptions.Count > 0)
             {
-                throw new AggregateException(exceptions);
+                _logger.EndpointRemovalFailed(info.ProcessId, new AggregateException(exceptions));
             }
         }
 
@@ -248,9 +248,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 IEndpointInfo endpoint = await _pendingRemovalReader.ReadAsync(token);
 
+                List<Exception> exceptions = new();
                 foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
                 {
-                    await callback.OnRemovedEndpointInfoAsync(endpoint, token).ConfigureAwait(false);
+                    try
+                    {
+                        await callback.OnRemovedEndpointInfoAsync(endpoint, token).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
+                if (exceptions.Count > 0)
+                {
+                    throw new AggregateException(exceptions);
                 }
 
                 server.RemoveConnection(endpoint.RuntimeInstanceCookie);
