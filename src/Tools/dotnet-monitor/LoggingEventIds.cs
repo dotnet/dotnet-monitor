@@ -108,7 +108,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         EgressProviderTypeNotExist = 96,
         ProfilerRuntimeIdentifier = 97,
         EndpointInitializationFailed = 98,
-        EndpointRemovalFailed = 98
+        EndpointRemovalFailed = 99
     }
 
     internal static class LoggingEventIdsExtensions
