@@ -18,11 +18,13 @@ updates:
     prefix: '[main] '
   groups:
     azure-storage-dependencies:
-    - Azure.Storage.*
+      patterns:
+      - Azure.Storage.*
     identity-dependencies:
-    - Azure.Identity
-    - Microsoft.Identity.*
-    - Microsoft.IdentityModel.*
+      patterns:
+      - Azure.Identity
+      - Microsoft.Identity.*
+      - Microsoft.IdentityModel.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
@@ -43,8 +45,9 @@ updates:
     prefix: '[main] '
   groups:
     runtime-dependencies:
-    - Microsoft.Extensions.*
-    - Microsoft.NETCore.App.Runtime.*
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
   schedule:
@@ -58,8 +61,9 @@ updates:
     prefix: '[main] '
   groups:
     runtime-dependencies:
-    - Microsoft.Extensions.*
-    - Microsoft.NETCore.App.Runtime.*
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/netcoreapp3.1
   schedule:
@@ -73,8 +77,9 @@ updates:
     prefix: '[main] '
   groups:
     runtime-dependencies:
-    - Microsoft.Extensions.*
-    - Microsoft.NETCore.App.Runtime.*
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot
   schedule:
@@ -88,11 +93,13 @@ updates:
     prefix: '[release/7.x] '
   groups:
     azure-storage-dependencies:
-    - Azure.Storage.*
+      patterns:
+      - Azure.Storage.*
     identity-dependencies:
-    - Azure.Identity
-    - Microsoft.Identity.*
-    - Microsoft.IdentityModel.*
+      patterns:
+      - Azure.Identity
+      - Microsoft.Identity.*
+      - Microsoft.IdentityModel.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
@@ -113,8 +120,9 @@ updates:
     prefix: '[release/7.x] '
   groups:
     runtime-dependencies:
-    - Microsoft.Extensions.*
-    - Microsoft.NETCore.App.Runtime.*
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
   schedule:
@@ -128,8 +136,9 @@ updates:
     prefix: '[release/7.x] '
   groups:
     runtime-dependencies:
-    - Microsoft.Extensions.*
-    - Microsoft.NETCore.App.Runtime.*
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/netcoreapp3.1
   schedule:
@@ -143,8 +152,9 @@ updates:
     prefix: '[release/7.x] '
   groups:
     runtime-dependencies:
-    - Microsoft.Extensions.*
-    - Microsoft.NETCore.App.Runtime.*
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot
   schedule:
@@ -158,11 +168,13 @@ updates:
     prefix: '[release/7.2] '
   groups:
     azure-storage-dependencies:
-    - Azure.Storage.*
+      patterns:
+      - Azure.Storage.*
     identity-dependencies:
-    - Azure.Identity
-    - Microsoft.Identity.*
-    - Microsoft.IdentityModel.*
+      patterns:
+      - Azure.Identity
+      - Microsoft.Identity.*
+      - Microsoft.IdentityModel.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
@@ -183,8 +195,9 @@ updates:
     prefix: '[release/7.2] '
   groups:
     runtime-dependencies:
-    - Microsoft.Extensions.*
-    - Microsoft.NETCore.App.Runtime.*
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
   schedule:
@@ -198,8 +211,9 @@ updates:
     prefix: '[release/7.2] '
   groups:
     runtime-dependencies:
-    - Microsoft.Extensions.*
-    - Microsoft.NETCore.App.Runtime.*
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/netcoreapp3.1
   schedule:
@@ -213,8 +227,9 @@ updates:
     prefix: '[release/7.2] '
   groups:
     runtime-dependencies:
-    - Microsoft.Extensions.*
-    - Microsoft.NETCore.App.Runtime.*
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot
   schedule:
@@ -228,11 +243,13 @@ updates:
     prefix: '[release/7.1] '
   groups:
     azure-storage-dependencies:
-    - Azure.Storage.*
+      patterns:
+      - Azure.Storage.*
     identity-dependencies:
-    - Azure.Identity
-    - Microsoft.Identity.*
-    - Microsoft.IdentityModel.*
+      patterns:
+      - Azure.Identity
+      - Microsoft.Identity.*
+      - Microsoft.IdentityModel.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
@@ -253,8 +270,9 @@ updates:
     prefix: '[release/7.1] '
   groups:
     runtime-dependencies:
-    - Microsoft.Extensions.*
-    - Microsoft.NETCore.App.Runtime.*
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
   schedule:
@@ -268,8 +286,9 @@ updates:
     prefix: '[release/7.1] '
   groups:
     runtime-dependencies:
-    - Microsoft.Extensions.*
-    - Microsoft.NETCore.App.Runtime.*
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/netcoreapp3.1
   schedule:
@@ -283,8 +302,9 @@ updates:
     prefix: '[release/7.1] '
   groups:
     runtime-dependencies:
-    - Microsoft.Extensions.*
-    - Microsoft.NETCore.App.Runtime.*
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot
   schedule:
@@ -298,11 +318,13 @@ updates:
     prefix: '[release/6.x] '
   groups:
     azure-storage-dependencies:
-    - Azure.Storage.*
+      patterns:
+      - Azure.Storage.*
     identity-dependencies:
-    - Azure.Identity
-    - Microsoft.Identity.*
-    - Microsoft.IdentityModel.*
+      patterns:
+      - Azure.Identity
+      - Microsoft.Identity.*
+      - Microsoft.IdentityModel.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
@@ -323,8 +345,9 @@ updates:
     prefix: '[release/6.x] '
   groups:
     runtime-dependencies:
-    - Microsoft.Extensions.*
-    - Microsoft.NETCore.App.Runtime.*
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
   schedule:
@@ -338,8 +361,9 @@ updates:
     prefix: '[release/6.x] '
   groups:
     runtime-dependencies:
-    - Microsoft.Extensions.*
-    - Microsoft.NETCore.App.Runtime.*
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/netcoreapp3.1
   schedule:
@@ -353,5 +377,6 @@ updates:
     prefix: '[release/6.x] '
   groups:
     runtime-dependencies:
-    - Microsoft.Extensions.*
-    - Microsoft.NETCore.App.Runtime.*
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*

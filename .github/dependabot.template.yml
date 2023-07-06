@@ -23,11 +23,13 @@ updates:
       prefix: #@ commit_prefix
     groups:
       azure-storage-dependencies:
-        - "Azure.Storage.*"
+        patterns:
+          - "Azure.Storage.*"
       identity-dependencies:
-        - "Azure.Identity"
-        - "Microsoft.Identity.*"
-        - "Microsoft.IdentityModel.*"
+        patterns:
+          - "Azure.Identity"
+          - "Microsoft.Identity.*"
+          - "Microsoft.IdentityModel.*"
   - package-ecosystem: "nuget"
     directory: "/eng/dependabot/nuget.org"
     schedule:
@@ -48,7 +50,8 @@ updates:
       prefix: #@ commit_prefix
     groups:
       runtime-dependencies:
-        - "Microsoft.Extensions.*"
-        - "Microsoft.NETCore.App.Runtime.*"
+        patterns:
+          - "Microsoft.Extensions.*"
+          - "Microsoft.NETCore.App.Runtime.*"
 #@ end
 #@ end
