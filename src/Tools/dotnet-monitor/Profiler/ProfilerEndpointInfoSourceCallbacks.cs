@@ -29,8 +29,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
         Task IEndpointInfoSourceCallbacks.OnRemovedEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            Console.WriteLine("HUIIII");
-            throw new InvalidOperationException("Some internal error");
+            return Task.CompletedTask;
         }
     }
 }
