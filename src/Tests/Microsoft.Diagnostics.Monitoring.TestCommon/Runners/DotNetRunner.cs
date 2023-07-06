@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -17,6 +18,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
     /// </summary>
     public sealed class DotNetRunner : IDisposable
     {
+        private const string ProcessReaperStartupHookAssemblyName = "Microsoft.Diagnostics.Monitoring.Tool.ProcessReaperStartupHook";
+
         // Event handler for the Process.Exited event
         private readonly EventHandler _exitedHandler;
 
@@ -93,6 +96,22 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public bool WaitForDiagnosticPipe { get; set; }
 
+        /// <summary>
+        /// Determines if the spawned process should be killed when the currently executing process exits.
+        /// </summary>
+        public bool KillProcessOnExit { get; set; } = true;
+
+        private static string ProcessReaperStartupHookPath =>
+            AssemblyHelper.GetAssemblyArtifactBinPath(
+                Assembly.GetExecutingAssembly(),
+                ProcessReaperStartupHookAssemblyName,
+#if NET7_0_OR_GREATER
+                TargetFrameworkMoniker.Net80
+#else
+                TargetFrameworkMoniker.Net60
+#endif
+                );
+
         public DotNetRunner()
         {
             _process = new Process();
@@ -136,6 +155,31 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             argsBuilder.Append(EntrypointAssemblyPath);
             argsBuilder.Append("\" ");
             argsBuilder.Append(Arguments);
+
+            if (KillProcessOnExit)
+            {
+                int pid;
+#if NET5_0_OR_GREATER
+                pid = System.Environment.ProcessId;
+#else
+                using (Process process = Process.GetCurrentProcess())
+                {
+                    pid = process.Id;
+                }
+#endif
+                Environment.Add(ProcessReaperIdentifiers.EnvironmentVariables.ParentPid, pid.ToString());
+
+                if (Environment.TryGetValue(ToolIdentifiers.EnvironmentVariables.StartupHooks, out string startupHooks))
+                {
+                    startupHooks += Path.PathSeparator + ProcessReaperStartupHookPath;
+                }
+                else
+                {
+                    startupHooks = ProcessReaperStartupHookPath;
+                }
+
+                Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, startupHooks);
+            }
 
             _process.StartInfo.FileName = TestDotNetHost.GetPath(Architecture);
             _process.StartInfo.Arguments = argsBuilder.ToString();

@@ -28,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj" />
+    <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.Tool.ProcessReaperStartupHook\Microsoft.Diagnostics.Monitoring.Tool.ProcessReaperStartupHook.csproj" />
   </ItemGroup>
 
   <ItemGroup>
