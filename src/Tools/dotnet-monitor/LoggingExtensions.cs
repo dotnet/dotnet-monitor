@@ -500,6 +500,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_ProfilerRuntimeIdentifier);
 
+        private static readonly Action<ILogger, int, Exception> _endpointInitializeFailed =
+            LoggerMessage.Define<int>(
+                eventId: LoggingEventIds.EndpointInitializeFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_ProfilerRuntimeIdentifier);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -918,6 +924,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ProfilerRuntimeIdentifier(this ILogger logger, string runtimeIdentifier)
         {
             _profilerRuntimeIdentifier(logger, runtimeIdentifier, null);
+        }
+
+        public static void EndpointInitializeFailed(this ILogger logger, int processId, Exception ex)
+        {
+            _endpointInitializeFailed(logger, processId, ex);
         }
     }
 }

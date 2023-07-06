@@ -149,7 +149,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     IpcEndpointInfo info = await server.AcceptAsync(token).ConfigureAwait(false);
 
-                    _ = Task.Run(() => ResumeAndQueueEndpointInfo(server, info, token), token);
+                    _ = Task.Run( async () =>
+                    {
+                        try
+                        {
+                            await ResumeAndQueueEndpointInfo(server, info, token).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.EndpointInitializeFailed(info.ProcessId, ex);
+                        }
+                    }, token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -163,7 +173,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             try
             {
                 EndpointInfo endpointInfo = await EndpointInfo.FromIpcEndpointInfoAsync(info, token);
-
                 foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
                 {
                     try
@@ -188,11 +197,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 catch (ServerErrorException)
                 {
                     // The runtime likely doesn't understand the ResumeRuntime command.
-                }
-                catch
-                {
-                    server?.RemoveConnection(info.RuntimeInstanceCookie);
-                    throw;
                 }
 
                 await _activeEndpointsSemaphore.WaitAsync(token).ConfigureAwait(false);

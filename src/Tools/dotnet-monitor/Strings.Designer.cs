@@ -1124,6 +1124,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to fully initialize endpoint for process {processId}. Some monitoring features may be unavailable..
+        /// </summary>
+        internal static string LogFormatString_EndpointInitializeFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_EndpointInitializeFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unexpected timeout from process {processId}. Process will no longer be monitored..
         /// </summary>
         internal static string LogFormatString_EndpointTimeout {
