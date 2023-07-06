@@ -107,7 +107,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ExtensionMalformedOutput = 95,
         EgressProviderTypeNotExist = 96,
         ProfilerRuntimeIdentifier = 97,
-        EndpointInitializeFailed = 98
+        EndpointInitializationFailed = 98
     }
 
     internal static class LoggingEventIdsExtensions

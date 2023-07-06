@@ -157,7 +157,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         }
                         catch (Exception ex)
                         {
-                            _logger.EndpointInitializeFailed(info.ProcessId, ex);
+                            _logger.EndpointInitializationFailed(info.ProcessId, ex);
                         }
                     }, token);
                 }
