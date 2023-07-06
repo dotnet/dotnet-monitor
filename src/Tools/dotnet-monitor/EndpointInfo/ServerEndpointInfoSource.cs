@@ -228,7 +228,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             if (exceptions.Count > 0)
             {
-                _logger.EndpointRemovalFailed(info.ProcessId, new AggregateException(exceptions));
+                throw new AggregateException(exceptions);
             }
         }
 
@@ -263,7 +263,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 if (exceptions.Count > 0)
                 {
-                    throw new AggregateException(exceptions);
+                    _logger.EndpointRemovalFailed(endpoint.ProcessId, new AggregateException(exceptions));
                 }
 
                 server.RemoveConnection(endpoint.RuntimeInstanceCookie);
