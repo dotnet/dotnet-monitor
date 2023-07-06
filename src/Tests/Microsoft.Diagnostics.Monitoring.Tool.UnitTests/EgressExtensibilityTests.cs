@@ -70,10 +70,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.NotNull(extension);
         }
 
-        // Conditionally disable on Alpine. The apphost for the extension is currently built for glibc x64
-        // in CI builds. Need to publish the test extension for different RIDs and dynamic select which
+        // Conditionally disable on Alpine and ARM64. The apphost for the extension is currently built for glibc x64
+        // in CI builds. Need to publish the test extension for different RIDs and dynamically select which
         // variant with which tests are run.
-        [ConditionalFact(typeof(TestConditions), nameof(TestConditions.IsNotAlpine))]
+        [ConditionalFact(nameof(IsNotAlpineAndNotArm64))]
         public async Task ExtensionResponse_Success()
         {
             EgressArtifactResult result = await GetExtensionResponse(true);
@@ -82,10 +82,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(EgressExtensibilityTestsConstants.SampleArtifactPath, result.ArtifactPath);
         }
 
-        // Conditionally disable on Alpine. The apphost for the extension is currently built for glibc x64
-        // in CI builds. Need to publish the test extension for different RIDs and dynamic select which
+        // Conditionally disable on Alpine and ARM64. The apphost for the extension is currently built for glibc x64
+        // in CI builds. Need to publish the test extension for different RIDs and dynamically select which
         // variant with which tests are run.
-        [ConditionalFact(typeof(TestConditions), nameof(TestConditions.IsNotAlpine))]
+        [ConditionalFact(nameof(IsNotAlpineAndNotArm64))]
         public async Task ExtensionResponse_Failure()
         {
             EgressArtifactResult result = await GetExtensionResponse(false);
@@ -221,6 +221,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     throw new ArgumentException("configDirectory not found.");
             }
         }
+
+        private static bool IsNotAlpineAndNotArm64 => TestConditions.IsNotAlpine && TestConditions.IsNotArm64;
 
         public enum ConfigDirectory
         {
