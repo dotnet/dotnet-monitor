@@ -24,7 +24,7 @@ updates:
     groups:
       azure-storage-dependencies:
         - "Azure.Storage.*"
-      microsoft-identity-dependencies:
+      identity-dependencies:
         - "Azure.Identity"
         - "Microsoft.Identity.*"
         - "Microsoft.IdentityModel.*"
