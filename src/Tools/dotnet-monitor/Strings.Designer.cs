@@ -566,6 +566,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to If specified, dotnet-monitor will monitor `stdin`, and if it closes, will exit. This is useful when dotnet-monitor is started remotely without a pseudo-terminal, and the caller wishes for it to exit when the connection is dropped (example: `docker exec -i ...`)..
+        /// </summary>
+        internal static string HelpDescription_OptionExitOnStdinDisconnect {
+            get {
+                return ResourceManager.GetString("HelpDescription_OptionExitOnStdinDisconnect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configuration level. Unredacted configuration can show sensitive information..
         /// </summary>
         internal static string HelpDescription_OptionLevel {
@@ -1336,6 +1345,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_UnableToListenToAddress {
             get {
                 return ResourceManager.GetString("LogFormatString_UnableToListenToAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to watch &apos;stdin&apos; for disconnect..
+        /// </summary>
+        internal static string LogFormatString_UnableToWatchForDisconnect {
+            get {
+                return ResourceManager.GetString("LogFormatString_UnableToWatchForDisconnect", resourceCulture);
             }
         }
         

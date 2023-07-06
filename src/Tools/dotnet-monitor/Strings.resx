@@ -389,6 +389,10 @@
     <value>The fully qualified path and filename of the diagnostic port to which runtime instances can connect.</value>
     <comment>Gets the string to display in help that explains what the '--diagnostic-port' option does.</comment>
   </data>
+  <data name="HelpDescription_OptionExitOnStdinDisconnect" xml:space="preserve">
+    <value>If specified, dotnet-monitor will monitor `stdin`, and if it closes, will exit. This is useful when dotnet-monitor is started remotely without a pseudo-terminal, and the caller wishes for it to exit when the connection is dropped (example: `docker exec -i ...`).</value>
+    <comment>Gets the string to display in help that explains what the '--exit-on-stdin-disconnect' option does.</comment>
+  </data>
   <data name="HelpDescription_OptionLevel" xml:space="preserve">
     <value>Configuration level. Unredacted configuration can show sensitive information.</value>
     <comment>Gets the string to display in help that explains what the '--level' option does.</comment>
@@ -756,6 +760,9 @@
     <comment>Gets the format string that is printed in the 15:UnableToListenToAddress event.
 1 Format Parameter:
 1. url: The URL that could not have a listener attached to it</comment>
+  </data>
+  <data name="LogFormatString_UnableToWatchForDisconnect" xml:space="preserve">
+    <value>Unable to watch 'stdin' for disconnect.</value>
   </data>
   <data name="LogFormatString_WritingMessageToQueueFailed" xml:space="preserve">
     <value>Unable to send message to the queue {0}.</value>

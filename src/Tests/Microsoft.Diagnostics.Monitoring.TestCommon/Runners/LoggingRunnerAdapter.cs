@@ -29,6 +29,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public int ExitCode => _runner.HasExited ?
             _runner.ExitCode : throw new InvalidOperationException("Must call WaitForExitAsync before getting exit code.");
 
+        public bool HasExited => _runner.HasExited;
+
         public Task<int> ProcessIdTask => _processIdSource.Task;
 
         public event Action<string> ReceivedStandardErrorLine;
