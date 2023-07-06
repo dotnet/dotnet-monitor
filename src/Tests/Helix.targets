@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup Condition="'$(TargetFramework)' != ''">
+    <HelixDotnetTestArgs>$(TargetName) $(Configuration) $(TargetFramework) $(Platform) $(TestRunnerFilterArguments)</HelixDotnetTestArgs>
+    <HelixDotnetTestCommand Condition="'$(IsHelixPosixShell)' != 'true'">call %HELIX_CORRELATION_PAYLOAD%\dotnettest.cmd $(HelixDotnetTestArgs)</HelixDotnetTestCommand>
+    <HelixDotnetTestCommand Condition="'$(IsHelixPosixShell)' == 'true'">$HELIX_CORRELATION_PAYLOAD/dotnettest.sh $(HelixDotnetTestArgs)</HelixDotnetTestCommand>
+  </PropertyGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' != ''">
+    <!-- Helix work item that calls "dotnet test" for the test assembly. -->
+    <HelixWorkItem Include="$(MSBuildProjectName)-$(TargetFramework)-$(Platform)">
+      <PreCommands Condition="'$(HelixTargetQueue)' != ''">@(HelixWorkItemPreCommand)</PreCommands>
+      <Command Condition="'$(HelixTargetQueue)' != ''">$(HelixDotnetTestCommand)</Command>
+      <PostCommands Condition="'$(HelixTargetQueue)' != ''">@(HelixWorkItemPostCommand)</PostCommands>
+      <Timeout>00:30:00</Timeout>
+    </HelixWorkItem>
+  </ItemGroup>
+</Project>
