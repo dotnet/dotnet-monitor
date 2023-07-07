@@ -169,7 +169,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 #endif
                 Environment.Add(ProcessReaperIdentifiers.EnvironmentVariables.ParentPid, pid.ToString());
 
-                if (Environment.TryGetValue(ToolIdentifiers.EnvironmentVariables.StartupHooks, out string startupHooks))
+                if (Environment.TryGetValue(ToolIdentifiers.EnvironmentVariables.StartupHooks, out string startupHooks) &&
+                    !string.IsNullOrEmpty(startupHooks))
                 {
                     startupHooks += Path.PathSeparator + ProcessReaperStartupHookPath;
                 }
