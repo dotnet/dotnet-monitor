@@ -101,7 +101,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public bool StopProcessOnExit { get; set; } = true;
 
-        private static string ProcessReaperStartupHookPath =>
+        private static string TestProcessCleanupStartupHookPath =>
             AssemblyHelper.GetAssemblyArtifactBinPath(
                 Assembly.GetExecutingAssembly(),
                 TestProcessCleanupStartupHookAssemblyName,
@@ -172,11 +172,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 if (Environment.TryGetValue(ToolIdentifiers.EnvironmentVariables.StartupHooks, out string startupHooks) &&
                     !string.IsNullOrEmpty(startupHooks))
                 {
-                    startupHooks += Path.PathSeparator + ProcessReaperStartupHookPath;
+                    startupHooks += Path.PathSeparator + TestProcessCleanupStartupHookPath;
                 }
                 else
                 {
-                    startupHooks = ProcessReaperStartupHookPath;
+                    startupHooks = TestProcessCleanupStartupHookPath;
                 }
 
                 Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, startupHooks);
