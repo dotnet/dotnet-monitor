@@ -14,7 +14,6 @@ public sealed class StartupHook
     {
         string parentPid = Environment.GetEnvironmentVariable(ProcessReaperIdentifiers.EnvironmentVariables.ParentPid);
         int pid = int.Parse(parentPid);
-        Console.WriteLine($"Waiting for {pid} to exit");
         using Process parentProcess = Process.GetProcessById(pid);
         Task.Run(async () =>
         {
