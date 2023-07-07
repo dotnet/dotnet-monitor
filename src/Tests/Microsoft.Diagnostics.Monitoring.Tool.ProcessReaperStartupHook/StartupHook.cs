@@ -12,13 +12,21 @@ public sealed class StartupHook
 {
     public static void Initialize()
     {
-        string parentPid = Environment.GetEnvironmentVariable(ProcessReaperIdentifiers.EnvironmentVariables.ParentPid);
-        int pid = int.Parse(parentPid);
-        using Process parentProcess = Process.GetProcessById(pid);
-        Task.Run(async () =>
+        _ = Task.Run(async () =>
         {
-            await parentProcess.WaitForExitAsync().ConfigureAwait(false);
-            Console.WriteLine("Parent process exited, stopping.");
+            int parentPid = int.Parse(Environment.GetEnvironmentVariable(ProcessReaperIdentifiers.EnvironmentVariables.ParentPid));
+
+            try
+            {
+                using Process parentProcess = Process.GetProcessById(parentPid);
+                await parentProcess.WaitForExitAsync().ConfigureAwait(false);
+                Console.WriteLine("Parent process exited, stopping.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error while waiting for parent process to exit, stopping: {ex}");
+            }
+
             Environment.Exit(1);
         });
     }
