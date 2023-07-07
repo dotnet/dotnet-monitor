@@ -105,11 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             AssemblyHelper.GetAssemblyArtifactBinPath(
                 Assembly.GetExecutingAssembly(),
                 TestProcessCleanupStartupHookAssemblyName,
-#if NET7_0_OR_GREATER
-                TargetFrameworkMoniker.Net80
-#else
                 TargetFrameworkMoniker.Net60
-#endif
                 );
 
         public DotNetRunner()
