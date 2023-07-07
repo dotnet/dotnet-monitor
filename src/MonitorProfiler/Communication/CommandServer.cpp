@@ -77,10 +77,7 @@ void CommandServer::ListeningThread()
             continue;
         }
 
-        for (size_t i = 0; i < sizeof(HRESULT); i++)
-        {
-            response.Payload[i] = static_cast<BYTE>(hr >> (i * 8));
-        }
+        *reinterpret_cast<HRESULT*>(response.Payload.data()) = hr;
 
         hr = client->Send(response);
         if (FAILED(hr))
