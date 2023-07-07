@@ -1,7 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Monitoring;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ public sealed class StartupHook
     {
         _ = Task.Run(async () =>
         {
-            int parentPid = int.Parse(Environment.GetEnvironmentVariable(ProcessReaperIdentifiers.EnvironmentVariables.ParentPid));
+            int parentPid = int.Parse(Environment.GetEnvironmentVariable(TestProcessCleanupIdentifiers.EnvironmentVariables.ParentPid));
 
             try
             {

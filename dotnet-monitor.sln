@@ -58,7 +58,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook\Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook.csproj", "{9BEB8058-7EE4-4EE2-B83D-592E85236E78}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Tool.ProcessReaperStartupHook", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.ProcessReaperStartupHook\Microsoft.Diagnostics.Monitoring.Tool.ProcessReaperStartupHook.csproj", "{D2D8F2EB-9FAD-4DB6-B4E4-8805118CB236}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.TestProcessCleanupStartupHook", "src\Tests\Microsoft.Diagnostics.Monitoring.TestProcessCleanupStartupHook\Microsoft.Diagnostics.Monitoring.TestProcessCleanupStartupHook.csproj", "{D2D8F2EB-9FAD-4DB6-B4E4-8805118CB236}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon", "src\Tests\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon.csproj", "{E438C0E0-0301-4A8F-9153-BFE4839F213E}"
 EndProject

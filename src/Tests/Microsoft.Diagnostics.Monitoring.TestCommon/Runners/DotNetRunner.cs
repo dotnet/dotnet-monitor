@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
     /// </summary>
     public sealed class DotNetRunner : IDisposable
     {
-        private const string ProcessReaperStartupHookAssemblyName = "Microsoft.Diagnostics.Monitoring.Tool.ProcessReaperStartupHook";
+        private const string TestProcessCleanupStartupHookAssemblyName = "Microsoft.Diagnostics.Monitoring.TestProcessCleanupStartupHook";
 
         // Event handler for the Process.Exited event
         private readonly EventHandler _exitedHandler;
@@ -97,14 +97,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public bool WaitForDiagnosticPipe { get; set; }
 
         /// <summary>
-        /// Determines if the spawned process should be killed when the currently executing process exits.
+        /// Determines if the spawned process should be stopped when the currently executing process exits.
         /// </summary>
-        public bool KillProcessOnExit { get; set; } = true;
+        public bool StopProcessOnExit { get; set; } = true;
 
         private static string ProcessReaperStartupHookPath =>
             AssemblyHelper.GetAssemblyArtifactBinPath(
                 Assembly.GetExecutingAssembly(),
-                ProcessReaperStartupHookAssemblyName,
+                TestProcessCleanupStartupHookAssemblyName,
 #if NET7_0_OR_GREATER
                 TargetFrameworkMoniker.Net80
 #else
@@ -156,7 +156,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             argsBuilder.Append("\" ");
             argsBuilder.Append(Arguments);
 
-            if (KillProcessOnExit)
+            if (StopProcessOnExit)
             {
                 int pid;
 #if NET5_0_OR_GREATER
@@ -167,7 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                     pid = process.Id;
                 }
 #endif
-                Environment.Add(ProcessReaperIdentifiers.EnvironmentVariables.ParentPid, pid.ToString());
+                Environment.Add(TestProcessCleanupIdentifiers.EnvironmentVariables.ParentPid, pid.ToString());
 
                 if (Environment.TryGetValue(ToolIdentifiers.EnvironmentVariables.StartupHooks, out string startupHooks) &&
                     !string.IsNullOrEmpty(startupHooks))
