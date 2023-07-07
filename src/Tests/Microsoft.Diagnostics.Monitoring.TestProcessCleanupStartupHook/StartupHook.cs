@@ -14,10 +14,9 @@ public sealed class StartupHook
     {
         _ = Task.Run(async () =>
         {
-            int parentPid = int.Parse(Environment.GetEnvironmentVariable(TestProcessCleanupIdentifiers.EnvironmentVariables.ParentPid));
-
             try
             {
+                int parentPid = int.Parse(Environment.GetEnvironmentVariable(TestProcessCleanupIdentifiers.EnvironmentVariables.ParentPid));
                 using Process parentProcess = Process.GetProcessById(parentPid);
                 await parentProcess.WaitForExitAsync().ConfigureAwait(false);
                 Console.WriteLine("Parent process exited, stopping.");
