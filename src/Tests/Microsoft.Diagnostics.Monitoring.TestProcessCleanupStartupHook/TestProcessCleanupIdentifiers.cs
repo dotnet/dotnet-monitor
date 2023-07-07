@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring
 
         public static class EnvironmentVariables
         {
-            private const string TestProcessCleanupPrefix = ToolIdentifiers.StandardPrefix + "TestProcessCleanup";
+            private const string TestProcessCleanupPrefix = ToolIdentifiers.StandardPrefix + "TestProcessCleanup_";
 
             public const string ParentPid = TestProcessCleanupPrefix + nameof(ParentPid);
         }
