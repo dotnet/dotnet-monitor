@@ -55,8 +55,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         public static string GetHostFullPath(Architecture? arch = null)
         {
-            // e.g. <DOTNET_ROOT>/dotnet
-            string dotnetDirPath = Environment.GetEnvironmentVariable("DOTNET_ROOT");
+            // e.g. <TEST_DOTNET_ROOT>/dotnet
+            string dotnetDirPath = Environment.GetEnvironmentVariable("TEST_DOTNET_ROOT");
             if (string.IsNullOrEmpty(dotnetDirPath))
             {
                 // e.g. <repoPath>/.dotnet
