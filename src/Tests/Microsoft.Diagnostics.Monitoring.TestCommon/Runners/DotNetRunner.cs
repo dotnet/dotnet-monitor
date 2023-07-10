@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -99,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// <summary>
         /// Determines if the spawned process should be stopped when the currently executing process exits.
         /// </summary>
-        public bool StopProcessOnExit { get; set; } = true;
+        public bool StopOnParentExit { get; set; } = true;
 
         private static string TestProcessCleanupStartupHookPath =>
             AssemblyHelper.GetAssemblyArtifactBinPath(
@@ -152,7 +153,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             argsBuilder.Append("\" ");
             argsBuilder.Append(Arguments);
 
-            if (StopProcessOnExit)
+            if (StopOnParentExit)
             {
                 int pid;
 #if NET5_0_OR_GREATER
@@ -163,7 +164,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                     pid = process.Id;
                 }
 #endif
-                Environment.Add(TestProcessCleanupIdentifiers.EnvironmentVariables.ParentPid, pid.ToString());
+                Environment.Add(TestProcessCleanupIdentifiers.EnvironmentVariables.ParentPid, pid.ToString(CultureInfo.InvariantCulture));
 
                 if (Environment.TryGetValue(ToolIdentifiers.EnvironmentVariables.StartupHooks, out string startupHooks) &&
                     !string.IsNullOrEmpty(startupHooks))
