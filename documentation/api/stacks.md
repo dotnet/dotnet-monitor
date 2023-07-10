@@ -3,9 +3,9 @@
 
 # Stacks - Get
 
-Captures the call stacks of the currently running process. Note that only managed frames are collected.
+Captures the call stacks of a target process. Note that only managed frames are collected.
 
->**Note**: This feature is [experimental](./../experimental.md). To enable this feature, set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. Additionally, the [in-process features](./../configuration/README.md#experimental-in-process-features-configuration-70) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
+>**Note**: This feature is not enabled by default and requires configuration to be enabled. The [in-process features](./../configuration/in-process-features-configuration.md) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
 
 ## HTTP Route
 
@@ -45,7 +45,7 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | [CallStackResult](definitions.md#experimental-callstackresult-70) | Callstacks for all managed threads in the process. | `application/json` |
+| 200 OK | [CallStackResult](definitions.md#callstackresult) | Callstacks for all managed threads in the process. | `application/json` |
 | 200 OK | text | Text representation of callstacks in the process. | `text/plain` |
 | 202 Accepted | | When an egress provider is specified, the artifact has begun being collected. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
