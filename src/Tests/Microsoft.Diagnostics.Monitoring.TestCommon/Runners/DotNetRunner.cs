@@ -126,7 +126,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public async Task StartAsync(CancellationToken token)
         {
             StringBuilder argsBuilder = new();
-            if (TestDotNetHost.HasHostInRepository)
+            if (TestDotNetHost.HasHostFullPath)
             {
                 argsBuilder.Append("exec --runtimeconfig \"");
                 argsBuilder.Append(Path.ChangeExtension(EntrypointAssemblyPath, ".runtimeconfig.test.json"));
