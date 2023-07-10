@@ -9,8 +9,8 @@ Some diagnostic features (e.g. memory dumps, stack traces) require that a direct
 
 The default shared path option (`DefaultSharedPath`) can be set, which allows artifacts to be shared automatically without requiring additional configuration for each artifact type. By setting this property with an appropriate value, the following become available:
 - dumps are temporarily stored in this directory or in a subdirectory.
-- **[Experimental]** shared libraries are shared from `dotnet monitor` to target applications in this directory or in a subdirectory.
-- **[Experimental]** in-process diagnostics share files back to `dotnet monitor` in this directory or in a subdirectory.
+- (8.0+) shared libraries are shared from `dotnet monitor` to target applications in this directory or in a subdirectory.
+- (8.0+) in-process diagnostics share files back to `dotnet monitor` in this directory or in a subdirectory.
 
 <details>
   <summary>JSON</summary>
@@ -76,7 +76,9 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
   ```
 </details>
 
-## **[Experimental]** Shared Library Path (7.0+)
+## Shared Library Path
+
+First Available: 8.0 Preview 7
 
 The shared library path option (`SharedLibraryPath`) allows specifying the path to where shared libraries are copied from the `dotnet monitor` installation to make them available to target applications for in-process diagnostics scenarios, such as call stack collection.
 
