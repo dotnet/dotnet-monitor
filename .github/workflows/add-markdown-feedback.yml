@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   add-markdown-feedback:
+    if: contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.pull_request.author_association)
     name: 'Add Markdown Feedback'
     runs-on: ubuntu-latest
 
