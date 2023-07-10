@@ -21,7 +21,7 @@ Collection rules are specified in configuration as a named item under the `Colle
   - [CollectLiveMetrics](#collectlivemetrics-action)
   - [CollectLogs](#collectlogs-action)
   - [Execute](#execute-action)
-  - [CollectStacks](#experimental-collectstacks-action-70)
+  - [CollectStacks](#collectstacks-action)
   - [LoadProfiler](#loadprofiler-action)
   - [SetEnvironmentVariable](#setenvironmentvariable-action)
   - [GetEnvironmentVariable](#getenvironmentvariable-action)
@@ -912,17 +912,19 @@ Usage that executes a .NET executable named `myapp.dll` using `dotnet`.
   ```
 </details>
 
-### **[Experimental]** `CollectStacks` Action (7.0+)
+### `CollectStacks` Action
+
+First Available: 8.0 Preview 7
 
 Collect call stacks from the target process.
 
->**Note**: This feature is [experimental](../experimental.md). To enable this feature, set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. Additionally, the [in-process features](#experimental-in-process-features-configuration-70) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
+>**Note**: This feature is not enabled by default and requires configuration to be enabled. The [in-process features](./../configuration/in-process-features-configuration.md) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
 
 #### Properties
 
 | Name | Type | Required | Description | Default Value |
 |---|---|---|---|---|
-| `Format` | [CallStackFormat](../api/definitions.md#experimental-callstackformat-70) | false | The format of the collected call stack. | `Json` |
+| `Format` | [CallStackFormat](../api/definitions.md#callstackformat) | false | The format of the collected call stack. | `Json` |
 | `Egress` | string | true | The named [egress provider](../egress.md) for egressing the collected stacks. | |
 
 ### `LoadProfiler` Action

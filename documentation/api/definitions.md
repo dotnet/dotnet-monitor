@@ -5,25 +5,31 @@
 
 >**Note**: Some features are [experimental](./../experimental.md) and are denoted as `**[Experimental]**` in this document.
 
-## **[Experimental]** CallStack (7.0+)
+## CallStack
+
+First Available: 8.0 Preview 7
 
 | Name | Type | Description |
 |---|---|---|
 | `threadId` | int | The native thread id of the managed thread. |
 | `threadName` | string | Optional name of the managed thread. |
-| `frames` | [CallStackFrame](#experimental-callstackframe-70)[] | Managed frame for the thread at the time of collection. |
+| `frames` | [CallStackFrame](#callstackframe)[] | Managed frame for the thread at the time of collection. |
 
-## **[Experimental]** CallStackFormat (7.0+)
+## CallStackFormat
+
+First Available: 8.0 Preview 7
 
 Enumeration that describes the output format of the collected call stacks.
 
 | Name | Description |
 |---|---|
-| `Json` | Stacks are formatted in Json. See [CallStackResult](#experimental-callstackresult-70). |
+| `Json` | Stacks are formatted in Json. See [CallStackResult](#callstackresult). |
 | `PlainText` | Stacks are formatted in plain text. |
 | `Speedscope` | Stacks are formatted in [speedscope](https://www.speedscope.app). Note that performance data is not present. |
 
-## **[Experimental]** CallStackFrame (7.0+)
+## CallStackFrame
+
+First Available: 8.0 Preview 7
 
 | Name | Type | Description |
 |---|---|---|
@@ -31,11 +37,13 @@ Enumeration that describes the output format of the collected call stacks.
 | `className` | string | Name of the class for this frame. This includes generic parameters. |
 | `moduleName` | string | Name of the module for this frame. |
 
-## **[Experimental]** CallStackResult (7.0+)
+## CallStackResult
+
+First Available: 8.0 Preview 7
 
 | Name | Type | Description |
 |---|---|---|
-| `stacks` | [CallStack](#experimental-callstack-70)[] | List of all managed stacks at the time of collection. |
+| `stacks` | [CallStack](#callstack)[] | List of all managed stacks at the time of collection. |
 
 ## CollectionRuleDescription (6.3+)
 
