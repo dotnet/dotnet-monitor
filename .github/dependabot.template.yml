@@ -21,6 +21,15 @@ updates:
         update-types: [ "version-update:semver-major" ]
     commit-message:
       prefix: #@ commit_prefix
+    groups:
+      azure-storage-dependencies:
+        patterns:
+          - "Azure.Storage.*"
+      identity-dependencies:
+        patterns:
+          - "Azure.Identity"
+          - "Microsoft.Identity.*"
+          - "Microsoft.IdentityModel.*"
   - package-ecosystem: "nuget"
     directory: "/eng/dependabot/nuget.org"
     schedule:
@@ -39,5 +48,10 @@ updates:
         update-types: [ "version-update:semver-major" ]
     commit-message:
       prefix: #@ commit_prefix
+    groups:
+      runtime-dependencies:
+        patterns:
+          - "Microsoft.Extensions.*"
+          - "Microsoft.NETCore.App.Runtime.*"
 #@ end
 #@ end
