@@ -511,7 +511,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: LoggingEventIds.EndpointRemovalFailed.EventId(),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_EndpointRemovalFailed);
-        
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
