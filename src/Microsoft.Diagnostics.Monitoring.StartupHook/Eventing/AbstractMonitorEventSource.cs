@@ -62,7 +62,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Eventing
         [NonEvent]
         protected unsafe void WriteEventCore(int eventId)
         {
-            WriteEventCore(eventId, Array.Empty<EventData>());
+            WriteEvent(eventId);
+            RestartFlushingEventTimer();
         }
 
         [NonEvent]
