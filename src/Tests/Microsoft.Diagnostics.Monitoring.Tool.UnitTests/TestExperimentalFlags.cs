@@ -8,7 +8,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public bool IsCallStacksEnabled { get; set; }
 
         public bool IsExceptionsEnabled { get; set; }
-
-        public bool IsParameterCapturingEnabled { get; set; }
     }
 }

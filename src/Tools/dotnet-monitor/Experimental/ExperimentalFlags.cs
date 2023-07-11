@@ -20,20 +20,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const string Feature_Exceptions = ExperimentalPrefix + nameof(Feature_Exceptions);
 
         // Behaviors
-        public const string Feature_ParameterCapturing = ExperimentalPrefix + nameof(Feature_ParameterCapturing);
-
-        // Behaviors
         private readonly Lazy<bool> _isCallStacksEnabledLazy = new Lazy<bool>(() => ToolIdentifiers.IsEnvVarEnabled(Feature_CallStacks));
 
         private readonly Lazy<bool> _isExceptionsEnabledLazy = new Lazy<bool>(() => ToolIdentifiers.IsEnvVarEnabled(Feature_Exceptions));
 
-        private readonly Lazy<bool> _isParameterCapturingEnabledLazy = new Lazy<bool>(() => ToolIdentifiers.IsEnvVarEnabled(Feature_ParameterCapturing));
-
-
         public bool IsCallStacksEnabled => _isCallStacksEnabledLazy.Value;
 
         public bool IsExceptionsEnabled => _isExceptionsEnabledLazy.Value;
-
-        public bool IsParameterCapturingEnabled => _isParameterCapturingEnabledLazy.Value;
     }
 }
