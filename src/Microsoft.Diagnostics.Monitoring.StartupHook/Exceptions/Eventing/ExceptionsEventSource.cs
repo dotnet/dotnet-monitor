@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[ExceptionEvents.ExceptionGroupPayloads.ThrowingMethodId], ThrowingMethodId);
             SetValue(ref data[ExceptionEvents.ExceptionGroupPayloads.ILOffset], ILOffset);
 
-            WriteEventCore(ExceptionEvents.EventIds.ExceptionGroup, data);
+            WriteEventWithFlushing(ExceptionEvents.EventIds.ExceptionGroup, data);
         }
 
         [Event(ExceptionEvents.EventIds.ExceptionInstance)]
@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.Timestamp], Timestamp.ToFileTimeUtc());
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds], innerExceptionIdsSpan);
 
-            WriteEventCore(ExceptionEvents.EventIds.ExceptionInstance, data);
+            WriteEventWithFlushing(ExceptionEvents.EventIds.ExceptionInstance, data);
         }
 
         [Event(ExceptionEvents.EventIds.ClassDescription)]
@@ -74,7 +74,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.Flags], Flags);
             SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.TypeArgs], typeArgsSpan);
 
-            WriteEventCore(ExceptionEvents.EventIds.ClassDescription, data);
+            WriteEventWithFlushing(ExceptionEvents.EventIds.ClassDescription, data);
         }
 
         [Event(ExceptionEvents.EventIds.FunctionDescription)]
@@ -102,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.TypeArgs], typeArgsSpan);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ParameterTypes], parameterTypesSpan);
 
-            WriteEventCore(ExceptionEvents.EventIds.FunctionDescription, data);
+            WriteEventWithFlushing(ExceptionEvents.EventIds.FunctionDescription, data);
         }
 
         [Event(ExceptionEvents.EventIds.ModuleDescription)]
@@ -116,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.ModuleDescPayloads.ModuleId], ModuleId);
             SetValue(ref data[NameIdentificationEvents.ModuleDescPayloads.Name], namePinned);
 
-            WriteEventCore(ExceptionEvents.EventIds.ModuleDescription, data);
+            WriteEventWithFlushing(ExceptionEvents.EventIds.ModuleDescription, data);
         }
 
         [Event(ExceptionEvents.EventIds.StackFrameDescription)]
@@ -131,7 +131,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[ExceptionEvents.StackFrameIdentifierPayloads.FunctionId], FunctionId);
             SetValue(ref data[ExceptionEvents.StackFrameIdentifierPayloads.ILOffset], ILOffset);
 
-            WriteEventCore(ExceptionEvents.EventIds.StackFrameDescription, data);
+            WriteEventWithFlushing(ExceptionEvents.EventIds.StackFrameDescription, data);
         }
 
         [Event(ExceptionEvents.EventIds.TokenDescription)]
@@ -149,7 +149,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.OuterToken], OuterToken);
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.Name], namePinned);
 
-            WriteEventCore(ExceptionEvents.EventIds.TokenDescription, data);
+            WriteEventWithFlushing(ExceptionEvents.EventIds.TokenDescription, data);
         }
 
         [Event(ExceptionEvents.EventIds.Flush)]

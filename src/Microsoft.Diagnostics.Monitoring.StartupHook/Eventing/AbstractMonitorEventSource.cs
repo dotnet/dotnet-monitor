@@ -60,14 +60,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Eventing
         }
 
         [NonEvent]
-        protected unsafe void WriteEventCore(int eventId)
+        protected unsafe void WriteEventWithFlushing(int eventId)
         {
             WriteEvent(eventId);
             RestartFlushingEventTimer();
         }
 
         [NonEvent]
-        protected unsafe void WriteEventCore(int eventId, Span<EventData> data)
+        protected unsafe void WriteEventWithFlushing(int eventId, Span<EventData> data)
         {
             fixed (EventData* dataPtr = data)
             {
