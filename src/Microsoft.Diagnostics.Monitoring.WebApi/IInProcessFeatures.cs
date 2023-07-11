@@ -4,10 +4,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     public interface IInProcessFeatures
     {
-        bool IsCallStacksEnabled { get; }
-
-        bool IsExceptionsEnabled { get; }
-
         bool IsProfilerRequired { get; }
 
         bool IsStartupHookRequired { get; }
