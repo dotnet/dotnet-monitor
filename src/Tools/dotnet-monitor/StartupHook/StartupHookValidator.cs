@@ -8,7 +8,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,25 +33,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             _sharedLibraryService = sharedLibraryService;
         }
 
-        public async Task<bool> CheckAsync(IEndpointInfo endpointInfo, CancellationToken token)
+        public async Task<bool> ApplyStartupHook(IEndpointInfo endpointInfo, CancellationToken token)
         {
-            IFileProviderFactory fileProviderFactory = await _sharedLibraryService.GetFactoryAsync(token);
+            bool startupHookEnvVarSet = await CheckStartupHookEnvVarAsync(endpointInfo, token);
 
-            IFileProvider managedFileProvider = fileProviderFactory.CreateManaged(StartupHookTargetFramework);
-
-            IFileInfo startupHookLibraryFileInfo = managedFileProvider.GetFileInfo(StartupHookFileName);
-            if (!startupHookLibraryFileInfo.Exists)
+            if (startupHookEnvVarSet)
             {
-                // This would be a bug in dotnet-monitor; throw appropriate non-MonitoringException instance.
-                throw new FileNotFoundException(null, startupHookLibraryFileInfo.Name);
+                return true;
             }
-
-            DiagnosticsClient client = new(endpointInfo.Endpoint);
 
             if (endpointInfo.RuntimeVersion.Major >= 8)
             {
                 try
                 {
+                    IFileInfo startupHookLibraryFileInfo = await GetStartupHookLibaryFileInfo(token);
+                    DiagnosticsClient client = new(endpointInfo.Endpoint);
+
                     await client.ApplyStartupHookAsync(startupHookLibraryFileInfo.PhysicalPath, token);
 
                     return true;
@@ -63,27 +59,60 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
                 }
             }
 
+            return false;
+        }
+
+        public async Task<bool> CheckAsync(IEndpointInfo endpointInfo, CancellationToken token, bool logInstructions = false)
+        {
+            if (endpointInfo.RuntimeVersion.Major >= 8)
+            {
+                // We currently have no way of tracking whether the startup hook was applied successfully; for now,
+                // this assumes that the operation succeeded.
+                return true;
+            }
+
+            return await CheckStartupHookEnvVarAsync(endpointInfo, token, logInstructions);
+        }
+
+        private async Task<bool> CheckStartupHookEnvVarAsync(IEndpointInfo endpointInfo, CancellationToken token, bool logInstructions = false)
+        {
+            IFileInfo startupHookLibraryFileInfo = await GetStartupHookLibaryFileInfo(token);
+            DiagnosticsClient client = new(endpointInfo.Endpoint);
+
             IDictionary<string, string> env = await client.GetProcessEnvironmentAsync(token);
 
             if (!env.TryGetValue(ToolIdentifiers.EnvironmentVariables.StartupHooks, out string startupHookPaths))
             {
-                _logger.StartupHookEnvironmentMissing(endpointInfo.ProcessId);
-
-                LogInstructions(startupHookLibraryFileInfo);
+                if (logInstructions)
+                {
+                    _logger.StartupHookEnvironmentMissing(endpointInfo.ProcessId);
+                    LogInstructions(startupHookLibraryFileInfo);
+                }
 
                 return false;
             }
 
             if (string.IsNullOrEmpty(startupHookPaths) || !startupHookPaths.Contains(StartupHookFileName, StringComparison.OrdinalIgnoreCase))
             {
-                _logger.StartupHookMissing(endpointInfo.ProcessId, startupHookLibraryFileInfo.Name);
-
-                LogInstructions(startupHookLibraryFileInfo);
+                if (logInstructions)
+                {
+                    _logger.StartupHookMissing(endpointInfo.ProcessId, startupHookLibraryFileInfo.Name);
+                    LogInstructions(startupHookLibraryFileInfo);
+                }
 
                 return false;
             }
 
             return true;
+        }
+
+        private async Task<IFileInfo> GetStartupHookLibaryFileInfo(CancellationToken token)
+        {
+            IFileProviderFactory fileProviderFactory = await _sharedLibraryService.GetFactoryAsync(token);
+
+            IFileProvider managedFileProvider = fileProviderFactory.CreateManaged(StartupHookTargetFramework);
+
+            return managedFileProvider.GetFileInfo(StartupHookFileName);
         }
 
         private void LogInstructions(IFileInfo startupHookLibraryFileInfo)
