@@ -180,6 +180,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
                 {
                     return processInfo;
                 }
+
+                await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
             }
 
             throw new InvalidOperationException("Unable to get process information that has a process name.");
