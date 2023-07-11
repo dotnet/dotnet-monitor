@@ -500,6 +500,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_ProfilerRuntimeIdentifier);
 
+        private static readonly Action<ILogger, int, Exception> _endpointInitializationFailed =
+            LoggerMessage.Define<int>(
+                eventId: LoggingEventIds.EndpointInitializationFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EndpointInitializationFailed);
+
+        private static readonly Action<ILogger, int, Exception> _endpointRemovalFailed =
+            LoggerMessage.Define<int>(
+                eventId: LoggingEventIds.EndpointRemovalFailed.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_EndpointRemovalFailed);
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -918,6 +929,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ProfilerRuntimeIdentifier(this ILogger logger, string runtimeIdentifier)
         {
             _profilerRuntimeIdentifier(logger, runtimeIdentifier, null);
+        }
+
+        public static void EndpointInitializationFailed(this ILogger logger, int processId, Exception ex)
+        {
+            _endpointInitializationFailed(logger, processId, ex);
+        }
+
+        public static void EndpointRemovalFailed(this ILogger logger, int processId, Exception ex)
+        {
+            _endpointRemovalFailed(logger, processId, ex);
         }
     }
 }
