@@ -76,9 +76,9 @@
       ]
     },
     "7.2": {
-      "tag": "v7.2.0",
+      "tag": "v7.2.1",
       "minorReleaseDate": "2023-06-13T00:00:00.000Z",
-      "patchReleaseDate": "2023-06-13T00:00:00.000Z",
+      "patchReleaseDate": "2023-07-11T00:00:00.000Z",
       "supportedFrameworks": [
         "net6.0",
         "net7.0"
