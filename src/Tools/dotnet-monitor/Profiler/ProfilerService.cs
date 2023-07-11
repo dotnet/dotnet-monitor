@@ -54,50 +54,59 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 DiagnosticsClient client = new DiagnosticsClient(endpointInfo.Endpoint);
                 Dictionary<string, string> env = await client.GetProcessEnvironmentAsync(cancellationToken);
 
+                string runtimeIdentifierSource = "ProcessEnvironment";
                 if (!env.TryGetValue(ToolIdentifiers.EnvironmentVariables.RuntimeIdentifier, out string runtimeIdentifier))
                 {
                     ProcessInfo processInfo = await client.GetProcessInfoAsync(cancellationToken);
 
-                    // This is mostly correct, except that "arm" and "armv6" are both reported as "arm32".
-                    string ridArchitecture = processInfo.ProcessArchitecture;
-                    Debug.Assert(!"arm32".Equals(ridArchitecture, StringComparison.Ordinal), "Unable to distinguish arm from armv6");
+                    // Use portable runtime identifier as reported by the runtime
+                    runtimeIdentifier = processInfo.PortableRuntimeIdentifier;
+                    runtimeIdentifierSource = "ProcessHost";
 
-                    if (!string.IsNullOrEmpty(ridArchitecture) && !ridArchitecture.Equals("Unknown", StringComparison.Ordinal))
+                    if (string.IsNullOrEmpty(runtimeIdentifier))
                     {
-                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                        {
-                            runtimeIdentifier = FormattableString.Invariant($"win-{ridArchitecture}");
-                        }
-                        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                        {
-                            runtimeIdentifier = FormattableString.Invariant($"osx-{ridArchitecture}");
-                        }
-                        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                        {
-                            // Make best effort to determine which type of C library is used
-                            // in order to pick the correct Linux RID.
-                            try
-                            {
-                                Process process = Process.GetProcessById((int)processInfo.ProcessId);
+                        runtimeIdentifierSource = "ProcessImplicit";
+                        // This is mostly correct, except that "arm" and "armv6" are both reported as "arm32".
+                        string ridArchitecture = processInfo.ProcessArchitecture;
+                        Debug.Assert(!"arm32".Equals(ridArchitecture, StringComparison.Ordinal), "Unable to distinguish arm from armv6");
 
-                                for (int i = 0; i < process.Modules.Count; i++)
+                        if (!string.IsNullOrEmpty(ridArchitecture) && !ridArchitecture.Equals("Unknown", StringComparison.Ordinal))
+                        {
+                            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                            {
+                                runtimeIdentifier = FormattableString.Invariant($"win-{ridArchitecture}");
+                            }
+                            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                            {
+                                runtimeIdentifier = FormattableString.Invariant($"osx-{ridArchitecture}");
+                            }
+                            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                            {
+                                // Make best effort to determine which type of C library is used
+                                // in order to pick the correct Linux RID.
+                                try
                                 {
-                                    ProcessModule module = process.Modules[i];
-                                    if (module.ModuleName.StartsWith("libc.", StringComparison.Ordinal) ||
-                                        module.ModuleName.StartsWith("libc-", StringComparison.Ordinal))
+                                    Process process = Process.GetProcessById((int)processInfo.ProcessId);
+
+                                    for (int i = 0; i < process.Modules.Count; i++)
                                     {
-                                        runtimeIdentifier = FormattableString.Invariant($"linux-{ridArchitecture}");
-                                        break;
-                                    }
-                                    else if (module.ModuleName.StartsWith("ld-musl-", StringComparison.Ordinal))
-                                    {
-                                        runtimeIdentifier = FormattableString.Invariant($"linux-musl-{ridArchitecture}");
-                                        break;
+                                        ProcessModule module = process.Modules[i];
+                                        if (module.ModuleName.StartsWith("libc.", StringComparison.Ordinal) ||
+                                            module.ModuleName.StartsWith("libc-", StringComparison.Ordinal))
+                                        {
+                                            runtimeIdentifier = FormattableString.Invariant($"linux-{ridArchitecture}");
+                                            break;
+                                        }
+                                        else if (module.ModuleName.StartsWith("ld-musl-", StringComparison.Ordinal))
+                                        {
+                                            runtimeIdentifier = FormattableString.Invariant($"linux-musl-{ridArchitecture}");
+                                            break;
+                                        }
                                     }
                                 }
-                            }
-                            catch
-                            {
+                                catch
+                                {
+                                }
                             }
                         }
                     }
@@ -109,7 +118,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 }
                 else
                 {
-                    _logger.ProfilerRuntimeIdentifier(runtimeIdentifier);
+                    _logger.ProfilerRuntimeIdentifier(runtimeIdentifier, runtimeIdentifierSource);
 
                     IFileProviderFactory fileProviderFactory = await _sharedLibraryService.GetFactoryAsync(cancellationToken);
 

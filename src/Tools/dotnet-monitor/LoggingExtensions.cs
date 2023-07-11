@@ -494,8 +494,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EgressProviderTypeNotExist);
 
-        private static readonly Action<ILogger, string, Exception> _profilerRuntimeIdentifier =
-            LoggerMessage.Define<string>(
+        private static readonly Action<ILogger, string, string, Exception> _profilerRuntimeIdentifier =
+            LoggerMessage.Define<string, string>(
                 eventId: LoggingEventIds.ProfilerRuntimeIdentifier.EventId(),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_ProfilerRuntimeIdentifier);
@@ -915,9 +915,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _egressProviderTypeNotExist(logger, providerType, null);
         }
 
-        public static void ProfilerRuntimeIdentifier(this ILogger logger, string runtimeIdentifier)
+        public static void ProfilerRuntimeIdentifier(this ILogger logger, string runtimeIdentifier, string source)
         {
-            _profilerRuntimeIdentifier(logger, runtimeIdentifier, null);
+            _profilerRuntimeIdentifier(logger, runtimeIdentifier, source, null);
         }
     }
 }
