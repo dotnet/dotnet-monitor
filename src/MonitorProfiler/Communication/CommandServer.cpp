@@ -53,6 +53,11 @@ void CommandServer::Shutdown()
 
 void CommandServer::ListeningThread()
 {
+    // TODO: Handle oom scenarios
+    IpcMessage response;
+    response.Command = IpcCommand::Status;
+    response.Payload.resize(sizeof(HRESULT));
+
     while (true)
     {
         std::shared_ptr<IpcCommClient> client;
@@ -72,9 +77,7 @@ void CommandServer::ListeningThread()
             continue;
         }
 
-        IpcMessage response;
-        response.MessageType = SUCCEEDED(hr) ? MessageType::OK : MessageType::Error;
-        response.Parameters = hr;
+        *reinterpret_cast<HRESULT*>(response.Payload.data()) = hr;
 
         hr = client->Send(response);
         if (FAILED(hr))
@@ -82,6 +85,7 @@ void CommandServer::ListeningThread()
             _logger->Log(LogLevel::Error, _LS("Unexpected error when sending data: 0x%08x"), hr);
             continue;
         }
+
         hr = client->Shutdown();
         if (FAILED(hr))
         {

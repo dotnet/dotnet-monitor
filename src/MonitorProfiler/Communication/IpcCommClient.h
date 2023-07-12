@@ -17,6 +17,13 @@ public:
     IpcCommClient(SOCKET socket);
 
 private:
+    HRESULT ReceiveFixedBuffer(char* pBuffer, int bufferSize);
+    HRESULT SendFixedBuffer(const char* pBuffer, int bufferSize);
+
+private:
     SocketWrapper _socket;
     std::atomic_bool _shutdown;
+
+private:
+    static constexpr int MaxPayloadSize = 4 * 1024 * 1024; // 4 MiB
 };

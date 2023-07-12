@@ -8,3 +8,5 @@ EXPORTS
     RequestFunctionProbeRegistration   PRIVATE
     RequestFunctionProbeInstallation   PRIVATE
     RequestFunctionProbeUninstallation PRIVATE
+    RegisterMonitorMessageCallback     PRIVATE
+    UnregisterMonitorMessageCallback   PRIVATE

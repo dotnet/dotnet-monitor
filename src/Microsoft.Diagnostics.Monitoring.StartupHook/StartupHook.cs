@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.StartupHook;
 using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions;
+using Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using System;
 using System.IO;
@@ -24,6 +25,14 @@ internal sealed class StartupHook
             }
 
             s_exceptionProcessor.Start();
+
+            try
+            {
+                SharedInternals.MessageDispatcher = new MonitorMessageDispatcher(new ProfilerMessageSource());
+            }
+            catch
+            {
+            }
         }
         catch
         {

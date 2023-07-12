@@ -3,15 +3,17 @@
 
 #pragma once
 
-enum class MessageType : short
+#include <vector>
+
+enum class IpcCommand : short
 {
-    OK,
-    Error,
+    Unknown,
+    Status,
     Callstack
 };
 
 struct IpcMessage
 {
-    MessageType MessageType = MessageType::OK;
-    int Parameters = 0;
+    IpcCommand Command = IpcCommand::Unknown;
+    std::vector<BYTE> Payload;
 };
