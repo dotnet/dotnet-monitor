@@ -47,8 +47,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 RuntimeVersion = endpointInfo.RuntimeVersion
             };
 
-            
-
             return EventPipeTriggerFactory.Create(
                 endpointInfo,
                 SystemDiagnosticsMetricsTrigger.CreateConfiguration(settings),
