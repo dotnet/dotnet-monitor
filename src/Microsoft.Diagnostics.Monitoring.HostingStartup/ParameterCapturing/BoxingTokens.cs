@@ -82,12 +82,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     methodParameterTypes.Insert(0, thisType);
                 }
             }
-             
+
             foreach (Type paramType in methodParameterTypes)
             {
                 if (paramType.IsByRef ||
                     paramType.IsByRefLike ||
                     paramType.IsPointer)
+                {
+                    boxingTokens.Add(UnsupportedParameterToken);
+                }
+                else if (paramType.IsGenericParameter)
                 {
                     boxingTokens.Add(UnsupportedParameterToken);
                 }
@@ -114,10 +118,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                         // Typedef
                         boxingTokens.Add((uint)paramType.MetadataToken);
                     }
-                }
-                else if (paramType.IsGenericParameter)
-                {
-                    boxingTokens.Add(UnsupportedParameterToken);
                 }
                 else if (paramType.IsArray ||
                     paramType.IsClass ||
