@@ -92,9 +92,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     {
                         KeyValueLogScope triggerScope = new();
                         triggerScope.AddCollectionRuleTrigger(Context.Options.Trigger.Type);
-                        IDisposable triggerScopeRegistration = Context.Logger.BeginScope(triggerScope);
+                        using IDisposable triggerScopeRegistration = Context.Logger.BeginScope(triggerScope);
 
-                        Context.Logger.CollectionRuleTriggerStarted(Context.Name, Context.Options.Trigger.Type);
+Context.Logger.CollectionRuleTriggerStarted(Context.Name, Context.Options.Trigger.Type);
 
                         trigger = factory.Create(
                             Context.EndpointInfo,
