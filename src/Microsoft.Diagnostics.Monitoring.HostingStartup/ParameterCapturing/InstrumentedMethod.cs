@@ -9,11 +9,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
     {
         public InstrumentedMethod(MethodInfo method, uint[] boxingTokens)
         {
-            bool[] supportedParameters = BoxingTokens.AreParametersSupported(boxingTokens);
-
-            MethodWithParametersTemplateString = PrettyPrinter.ConstructTemplateStringFromMethod(method, supportedParameters);
-            SupportedParameters = supportedParameters;
-            foreach (bool isParameterSupported in supportedParameters)
+            SupportedParameters = BoxingTokens.AreParametersSupported(boxingTokens);
+            MethodWithParametersTemplateString = PrettyPrinter.ConstructTemplateStringFromMethod(method, SupportedParameters);
+            foreach (bool isParameterSupported in SupportedParameters)
             {
                 if (isParameterSupported)
                 {

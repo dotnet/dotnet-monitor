@@ -71,6 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                     uint[] methodBoxingTokens = BoxingTokens.GetBoxingTokens(method);
                     if (!newMethodCache.TryAdd(functionId, new InstrumentedMethod(method, methodBoxingTokens)))
                     {
+                        // Duplicate, ignore
                         continue;
                     }
 
