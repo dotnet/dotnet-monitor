@@ -25,7 +25,7 @@ using namespace std;
 #endif
 
 typedef INT32 (STDMETHODCALLTYPE *ManagedMessageCallback)(INT16, const BYTE*, UINT64);
-mutex g_managedMessageCallbackMutex;
+mutex g_managedMessageCallbackMutex; // guards g_pManagedMessageCallback
 ManagedMessageCallback g_pManagedMessageCallback = nullptr;
 
 GUID MainProfiler::GetClsid()
@@ -377,6 +377,18 @@ HRESULT STDMETHODCALLTYPE MainProfiler::GetReJITParameters(ModuleID moduleId, md
 STDAPI DLLEXPORT RegisterMonitorMessageCallback(
     ManagedMessageCallback pCallback)
 {
+    //
+    // Note: Require locking to access g_pManagedMessageCallback as it is
+    // used on another thread (in ProcessCallstackMessage).
+    //
+    // A lock-free approach could be used to safely update and observe the value of the callback,
+    // however that would introduce the edge case where the provided callback is unregistered
+    // right before it is invoked.
+    // This means that the unregistered would still be invoked, leading to potential issues
+    // such as calling into an instanced method that has been disposed.
+    //
+    // For simplicitly just use locking for now as it prevents the above edge case.
+    //
     lock_guard<mutex> lock(g_managedMessageCallbackMutex);
     if (g_pManagedMessageCallback != nullptr)
     {
