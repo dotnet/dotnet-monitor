@@ -89,6 +89,8 @@ namespace SampleMethods
             float arg11,
             double arg12) { }
 
+        public static void NativeIntegers(IntPtr intPtr, UIntPtr uintPtr) { }
+
         public static void GenericParameters<T, K>(T t, K k) { }
 
         public static void TypeRef(Uri uri) { }

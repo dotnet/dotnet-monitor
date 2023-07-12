@@ -93,12 +93,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 }
                 else if (paramType.IsPrimitive)
                 {
-                    boxingTokens.Add(GetSpecialCaseBoxingToken(Type.GetTypeCode(paramType)));
+                    boxingTokens.Add(GetSpecialCaseBoxingTokenForPrimitive(Type.GetTypeCode(paramType)));
                 }
                 else if (paramType.IsValueType)
                 {
                     // Ref structs have already been filtered out by the above IsByRefLike check.
-
                     if (paramType.IsGenericType)
                     {
                         // Typespec
@@ -134,16 +133,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             return boxingTokens.ToArray();
         }
 
-        private static uint GetSpecialCaseBoxingToken(TypeCode typeCode)
+        private static uint GetSpecialCaseBoxingTokenForPrimitive(TypeCode typeCode)
         {
-            return GetSpecialCaseBoxingType(typeCode).BoxingToken();
+            return GetSpecialCaseBoxingTypeForPrimitive(typeCode).BoxingToken();
         }
 
-        private static SpecialCaseBoxingTypes GetSpecialCaseBoxingType(TypeCode typeCode)
+        private static SpecialCaseBoxingTypes GetSpecialCaseBoxingTypeForPrimitive(TypeCode typeCode)
         {
             return typeCode switch
             {
-                TypeCode.Object => SpecialCaseBoxingTypes.Object,
+                TypeCode.Object => SpecialCaseBoxingTypes.Unknown, // IntPtr, UIntPtr
                 TypeCode.Boolean => SpecialCaseBoxingTypes.Boolean,
                 TypeCode.Char => SpecialCaseBoxingTypes.Char,
                 TypeCode.SByte => SpecialCaseBoxingTypes.SByte,
