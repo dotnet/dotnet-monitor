@@ -7,20 +7,20 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 {
     internal sealed class LogEmittingProbes : IFunctionProbes
     {
-        private readonly InstrumentedMethodCache _methodCache;
         private readonly ILogger _logger;
 
-        public LogEmittingProbes(ILogger logger, InstrumentedMethodCache methodCache)
+        public LogEmittingProbes(ILogger logger)
         {
             _logger = logger;
-            _methodCache = methodCache;
         }
 
         public void EnterProbe(ulong uniquifier, object[] args)
         {
-            if (args == null ||
-                !_methodCache.TryGetValue(uniquifier, out InstrumentedMethod instrumentedMethod) ||
-                args.Length != instrumentedMethod.SupportedParameters.Length)
+            var methodCache = FunctionProbesStub.InstrumentedMethodCache;
+            if (methodCache == null ||
+                args == null ||
+                !methodCache.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod) ||
+                args.Length != instrumentedMethod?.SupportedParameters.Length)
             {
                 return;
             }

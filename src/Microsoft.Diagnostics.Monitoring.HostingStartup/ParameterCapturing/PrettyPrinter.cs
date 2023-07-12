@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             }
         }
 
-        public static string? ConstructTemplateStringFromMethod(MethodInfo method, bool[] supportedParameters)
+        public static string ConstructTemplateStringFromMethod(MethodInfo method, bool[] supportedParameters)
         {
             StringBuilder fmtStringBuilder = new();
 
@@ -79,7 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             int numberOfParameters = explicitParameters.Length + (method.HasImplicitThis() ? 1 : 0);
             if (numberOfParameters != supportedParameters.Length)
             {
-                return null;
+                throw new ArgumentException(nameof(supportedParameters));
             }
 
             // Implicit this

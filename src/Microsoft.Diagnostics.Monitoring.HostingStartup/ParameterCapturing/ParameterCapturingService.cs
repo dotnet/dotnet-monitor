@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             try
             {
-                _probeManager = new FunctionProbesManager(new LogEmittingProbes(_logger, FunctionProbesStub.InstrumentedMethodCache));
+                _probeManager = new FunctionProbesManager(new LogEmittingProbes(_logger));
                 _isAvailable = true;
             }
             catch
