@@ -384,7 +384,7 @@ STDAPI DLLEXPORT RegisterMonitorMessageCallback(
     // A lock-free approach could be used to safely update and observe the value of the callback,
     // however that would introduce the edge case where the provided callback is unregistered
     // right before it is invoked.
-    // This means that the unregistered would still be invoked, leading to potential issues
+    // This means that the unregistered callback would still be invoked, leading to potential issues
     // such as calling into an instanced method that has been disposed.
     //
     // For simplicitly just use locking for now as it prevents the above edge case.
