@@ -909,6 +909,12 @@
   <data name="LogFormatString_ProfilerRuntimeIdentifier" xml:space="preserve">
     <value>Using '{runtimeIdentifier}' runtime identifier for profiler enablement.</value>
   </data>
+  <data name="LogFormatString_EndpointInitializationFailed" xml:space="preserve">
+    <value>Unable to fully initialize endpoint for process {processId}. Some monitoring features may be unavailable.</value>
+  </data>
+  <data name="LogFormatString_EndpointRemovalFailed" xml:space="preserve">
+    <value>Unable to fully remove endpoint for process {processId}.</value>
+  </data>
   <data name="LogFormatString_StartupHookApplyFailed" xml:space="preserve">
     <value>Failed to apply the startup hook. Not all in process features will be available.</value>
     <comment>Gets a string similar to "Failed to apply the startup hook. Not all in process features will be available."</comment>
