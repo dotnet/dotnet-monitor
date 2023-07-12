@@ -45,7 +45,9 @@ First Available: 8.0 Preview 7
 |---|---|---|
 | `stacks` | [CallStack](#callstack)[] | List of all managed stacks at the time of collection. |
 
-## CollectionRuleDescription (6.3+)
+## CollectionRuleDescription
+
+First Available: 6.3
 
 Object describing the basic state of a collection rule for the executing instance of `dotnet monitor`.
 
@@ -54,7 +56,9 @@ Object describing the basic state of a collection rule for the executing instanc
 | State | [CollectionRuleState](#collectionrulestate-63) | Indicates what state the collection rule is in for the current process. |
 | StateReason | string | Human-readable explanation for the current state of the collection rule. |
 
-## CollectionRuleDetailedDescription (6.3+)
+## CollectionRuleDetailedDescription
+
+First Available: 6.3
 
 Object describing the detailed state of a collection rule for the executing instance of `dotnet monitor`.
 
@@ -69,7 +73,9 @@ Object describing the detailed state of a collection rule for the executing inst
 | SlidingWindowDurationCountdown | TimeSpan? | The amount of time remaining before the collection rule will no longer be throttled. |
 | RuleFinishedCountdown | TimeSpan? | The amount of time remaining before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely. |
 
-## CollectionRuleState (6.3+)
+## CollectionRuleState
+
+First Available: 6.3
 
 Enumeration that describes the current state of the collection rule.
 
@@ -285,7 +291,9 @@ Enumeration that describes the type of metrics a provider consumes.
 | `code` | string | Error code representing the failure. |
 | `message` | string | Detailed error message. |
 
-## OperationProcessInfo (6.3+)
+## OperationProcessInfo
+
+First Available: 6.3
 
 The process on which the egress operation is performed.
 
