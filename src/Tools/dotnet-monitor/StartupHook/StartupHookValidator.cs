@@ -35,13 +35,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
 
         public async Task<bool> ApplyStartupHook(IEndpointInfo endpointInfo, CancellationToken token)
         {
-            bool startupHookEnvVarSet = await CheckStartupHookEnvVarAsync(endpointInfo, token);
-
-            if (startupHookEnvVarSet)
-            {
-                return true;
-            }
-
             if (endpointInfo.RuntimeVersion.Major >= 8)
             {
                 try
@@ -62,19 +55,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             return false;
         }
 
-        public async Task<bool> CheckAsync(IEndpointInfo endpointInfo, CancellationToken token, bool logInstructions = false)
-        {
-            if (endpointInfo.RuntimeVersion.Major >= 8)
-            {
-                // We currently have no way of tracking whether the startup hook was applied successfully; for now,
-                // this assumes that the operation succeeded.
-                return true;
-            }
-
-            return await CheckStartupHookEnvVarAsync(endpointInfo, token, logInstructions);
-        }
-
-        private async Task<bool> CheckStartupHookEnvVarAsync(IEndpointInfo endpointInfo, CancellationToken token, bool logInstructions = false)
+        public async Task<bool> CheckEnvironmentAsync(IEndpointInfo endpointInfo, CancellationToken token, bool logInstructions = false)
         {
             IFileInfo startupHookLibraryFileInfo = await GetStartupHookLibaryFileInfo(token);
             DiagnosticsClient client = new(endpointInfo.Endpoint);

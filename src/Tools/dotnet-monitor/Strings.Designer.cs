@@ -1457,7 +1457,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The startup hook failed to automatically apply..
+        ///   Looks up a localized string similar to Failed to apply the startup hook. Not all in process features will be available..
         /// </summary>
         internal static string LogFormatString_StartupHookApplyFailed {
             get {

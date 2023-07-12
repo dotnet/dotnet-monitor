@@ -910,7 +910,7 @@
     <value>Using '{runtimeIdentifier}' runtime identifier for profiler enablement.</value>
   </data>
   <data name="LogFormatString_StartupHookApplyFailed" xml:space="preserve">
-    <value>The startup hook failed to automatically apply.</value>
-    <comment>Gets a string similar to "The startup hook failed to automatically apply."</comment>
+    <value>Failed to apply the startup hook. Not all in process features will be available.</value>
+    <comment>Gets a string similar to "Failed to apply the startup hook. Not all in process features will be available."</comment>
   </data>
 </root>

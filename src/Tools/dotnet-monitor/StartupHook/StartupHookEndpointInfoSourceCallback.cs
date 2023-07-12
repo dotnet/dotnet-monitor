@@ -30,9 +30,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
         {
             if (_inProcessFeatures.IsStartupHookRequired)
             {
-                _ = _startupHookValidator.ApplyStartupHook(endpointInfo, cancellationToken); // Not currently doing anything with the result
+                if (_startupHookValidator.CheckEnvironmentAsync(endpointInfo, cancellationToken).Result)
+                {
+                    return Task.CompletedTask;
+                }
 
-                return _startupHookValidator.CheckAsync(endpointInfo, cancellationToken, logInstructions: true);
+                if (_startupHookValidator.ApplyStartupHook(endpointInfo, cancellationToken).Result)
+                {
+                    return Task.CompletedTask;
+                }
+
+                return _startupHookValidator.CheckEnvironmentAsync(endpointInfo, cancellationToken, logInstructions: true);
             }
 
             return Task.CompletedTask;

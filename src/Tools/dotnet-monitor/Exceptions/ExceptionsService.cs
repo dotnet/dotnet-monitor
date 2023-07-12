@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     }
 
                     // Validate that the process is configured correctly for collecting exceptions.
-                    if (!await _startupHookValidator.CheckAsync(pi.EndpointInfo, stoppingToken))
+                    if (!await _startupHookValidator.CheckEnvironmentAsync(pi.EndpointInfo, stoppingToken))
                     {
                         _unconfiguredProcesses.Add(key);
 
