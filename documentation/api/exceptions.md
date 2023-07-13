@@ -29,7 +29,7 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | [ExceptionIsntance](definitions.md#exceptioninstance)[] | JSON representation of first chance exceptions from the default process. | `application/x-ndjson` |
+| 200 OK | [ExceptionInstance](definitions.md#exceptioninstance)[] | JSON representation of first chance exceptions from the default process. | `application/x-ndjson` |
 | 200 OK | text | Text representation of first chance exceptions from the default process. | `text/plain` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 
