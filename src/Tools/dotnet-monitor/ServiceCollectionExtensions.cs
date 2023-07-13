@@ -346,7 +346,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureStartupHook(this IServiceCollection services)
         {
             services.AddSingleton<StartupHookValidator>();
-            services.AddSingleton<IEndpointInfoSourceCallbacks, StartupHookEndpointInfoSourceCallbacks>();
+            services.AddSingleton<StartupHookEndpointInfoSourceCallbacks>();
+            services.AddSingletonForwarder<IEndpointInfoSourceCallbacks, StartupHookEndpointInfoSourceCallbacks>();
             return services;
         }
 

@@ -28,6 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private readonly IDiagnosticServices _diagnosticServices;
         private readonly IOptions<ExceptionsOptions> _exceptionsOptions;
         private readonly StartupHookValidator _startupHookValidator;
+        private readonly StartupHookEndpointInfoSourceCallbacks _startupHookEndpointInfoSourceCallbacks;
 
         private EventExceptionsPipeline _pipeline;
 
@@ -35,12 +36,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             StartupHookValidator startupHookValidator,
             IDiagnosticServices diagnosticServices,
             IOptions<ExceptionsOptions> exceptionsOptions,
-            IExceptionsStore exceptionsStore)
+            IExceptionsStore exceptionsStore,
+            StartupHookEndpointInfoSourceCallbacks startupHookEndpointInfoSourceCallbacks)
         {
             _diagnosticServices = diagnosticServices;
             _exceptionsStore = exceptionsStore;
             _exceptionsOptions = exceptionsOptions;
             _startupHookValidator = startupHookValidator;
+            _startupHookEndpointInfoSourceCallbacks = startupHookEndpointInfoSourceCallbacks;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -66,8 +69,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         throw new NotSupportedException();
                     }
 
+                    bool isStartupHookApplied = false;
+                    _ = _startupHookEndpointInfoSourceCallbacks.ApplyStartupState.TryGetValue(pi.EndpointInfo.RuntimeInstanceCookie, out isStartupHookApplied);
+
                     // Validate that the process is configured correctly for collecting exceptions.
-                    if (!await _startupHookValidator.CheckEnvironmentAsync(pi.EndpointInfo, stoppingToken))
+                    if (!isStartupHookApplied && !await _startupHookValidator.CheckEnvironmentAsync(pi.EndpointInfo, stoppingToken))
                     {
                         _unconfiguredProcesses.Add(key);
 
