@@ -5,10 +5,11 @@ set testAssembly=%1
 set configuration=%2
 set targetFramework=%3
 set architecture=%~4
+set timeoutMinutes=%~5
 
 set filterArgs=
-if not "%~5" == "" (
-   set filterArgs=--filter ^"%~5^"
+if not "%~6" == "" (
+   set filterArgs=--filter ^"%~6^"
 )
 
 set exit_code=0
@@ -21,7 +22,7 @@ dotnet.exe test ^
   --logger:"trx;LogFileName=%testAssembly%_%targetFramework%_%architecture%.trx" ^
   --logger:"html;LogFileName=%testAssembly%_%targetFramework%_%architecture%.html" ^
   --ResultsDirectory:%HELIX_WORKITEM_UPLOAD_ROOT% ^
-  --blame "CollectHangDump;TestTimeout=15m" ^
+  --blame "CollectHangDump;TestTimeout=%timeoutMinutes%m" ^
   %filterArgs%
 
 if not errorlevel 0 (

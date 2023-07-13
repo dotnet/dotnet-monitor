@@ -4,10 +4,11 @@ testAssembly="$1"
 configuration="$2"
 targetFramework="$3"
 architecture="$4"
+timeoutMinutes="$5"
 
 filterArgs=""
-if [[ ! -z "$filter" ]]; then
-  filterArgs="--filter \"$5\""
+if [[ ! -z "$6" ]]; then
+  filterArgs="--filter \"$6\""
 fi
 
 exit_code=0
@@ -20,7 +21,7 @@ dotnet test \
   --logger:"trx;LogFileName=${testAssembly}_${targetFramework}_${architecture}.trx" \
   --logger:"html;LogFileName=${testAssembly}_${targetFramework}_${architecture}.html" \
   --ResultsDirectory:$HELIX_WORKITEM_UPLOAD_ROOT \
-  --blame "CollectHangDump;TestTimeout=15m" \
+  --blame "CollectHangDump;TestTimeout=${timeoutMinutes}m" \
   $filterArgs
 
 exit_code=$?
