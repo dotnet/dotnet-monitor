@@ -35,6 +35,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             {
                 if (await _startupHookValidator.CheckEnvironmentAsync(endpointInfo, cancellationToken))
                 {
+                    ApplyStartupState[endpointInfo.RuntimeInstanceCookie] = true;
                     return;
                 }
 
