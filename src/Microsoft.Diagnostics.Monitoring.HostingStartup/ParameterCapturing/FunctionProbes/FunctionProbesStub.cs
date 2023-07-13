@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System.Collections.ObjectModel;
 using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
@@ -12,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private static readonly ThreadLocal<bool> s_inProbe = new();
 
-        internal static InstrumentedMethodCache InstrumentedMethodCache { get; private set; } = new();
+        internal static ReadOnlyDictionary<ulong, InstrumentedMethod>? InstrumentedMethodCache { get; set; }
 
         internal static IFunctionProbes? Instance { get; set; }
 
