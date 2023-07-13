@@ -43,11 +43,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             runner.DiagnosticPortPath = sourceHolder.TransportName;
             runner.ScenarioName = scenarioName;
 
-            Task<IEndpointInfo> endpointInfoTask = endpointInfoCallback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+            Task<IProcessInfo> processInfoTask = endpointInfoCallback.WaitAddedProcessInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
             await runner.ExecuteAsync(async () =>
             {
-                IEndpointInfo endpointInfo = await endpointInfoTask;
+                IProcessInfo processInfo = await processInfoTask;
 
                 await TestHostHelper.CreateCollectionRulesHost(
                     outputHelper,
@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         CollectionRuleContext context = new(
                             collectionRuleName,
                             optionsMonitor.Get(collectionRuleName),
-                            endpointInfo,
+                            processInfo,
                             logger,
                             clock,
                             callbacks.NotifyActionsThrottled);

@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             _service = service;
         }
 
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, BaseRecordOptions options)
+        public ICollectionRuleAction Create(IProcessInfo processInfo, BaseRecordOptions options)
         {
             return new CallbackAction(_service);
         }
@@ -65,7 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             _service = service;
         }
 
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, BaseRecordOptions options)
+        public ICollectionRuleAction Create(IProcessInfo processInfo, BaseRecordOptions options)
         {
             return new DelayedCallbackAction(_service);
         }

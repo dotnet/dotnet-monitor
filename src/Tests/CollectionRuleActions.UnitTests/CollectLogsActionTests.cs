@@ -245,13 +245,13 @@ namespace CollectionRuleActions.UnitTests
                 await using AppRunner runner = _endpointUtilities.CreateAppRunner(Assembly.GetExecutingAssembly(), sourceHolder.TransportName, tfm);
                 runner.ScenarioName = TestAppScenarios.Logger.Name;
 
-                Task<IEndpointInfo> newEndpointInfoTask = endpointInfoCallback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+                Task<IProcessInfo> processInfoTask = endpointInfoCallback.WaitAddedProcessInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
                 await runner.ExecuteAsync(async () =>
                 {
-                    IEndpointInfo endpointInfo = await newEndpointInfoTask;
+                    IProcessInfo processInfo = await processInfoTask;
 
-                    ICollectionRuleAction action = factory.Create(endpointInfo, options);
+                    ICollectionRuleAction action = factory.Create(processInfo, options);
 
                     using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
 

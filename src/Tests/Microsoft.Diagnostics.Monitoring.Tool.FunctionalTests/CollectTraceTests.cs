@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
+using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading;
@@ -127,6 +129,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await appRunner.StopAsync();
         }
 
+        [Fact]
+        public Task StopOnOperation_Succeeds()
+        {
+            return StopOnEventTestCore(expectStoppingEvent: false,
+                collectRundown: true,
+                opcode: TraceEventOpcode.Resume,
+                duration: TimeSpan.FromSeconds(200),
+                stopWithApi: true);
+        }
+
         private static string ConstructQualifiedEventName(string eventName, TraceEventOpcode opcode)
         {
             return (opcode == TraceEventOpcode.Info)
@@ -134,7 +146,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 : FormattableString.Invariant($"{eventName}/{opcode}");
         }
 
-        private async Task StopOnEventTestCore(bool expectStoppingEvent, TraceEventOpcode opcode = TestAppScenarios.TraceEvents.UniqueEventOpcode, bool collectRundown = true, IDictionary<string, string> payloadFilter = null, TimeSpan? duration = null)
+        private async Task StopOnEventTestCore(bool expectStoppingEvent,
+            TraceEventOpcode opcode = TestAppScenarios.TraceEvents.UniqueEventOpcode,
+            bool collectRundown = true,
+            IDictionary<string, string> payloadFilter = null,
+            TimeSpan? duration = null,
+            bool stopWithApi = false)
         {
             TimeSpan DefaultCollectTraceTimeout = TimeSpan.FromSeconds(10);
             const string DefaultRuleName = "FunctionalTestRule";
@@ -158,6 +175,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 appValidate: async (appRunner, apiClient) =>
                 {
                     await appRunner.SendCommandAsync(TestAppScenarios.TraceEvents.Commands.EmitUniqueEvent);
+
+                    if (stopWithApi)
+                    {
+                        var operations = await apiClient.GetOperations();
+                        Assert.Single(operations);
+                        await apiClient.StopEgressOperation(operations.First().OperationId);
+                    }
+
                     await ruleCompletedTask;
                     await appRunner.SendCommandAsync(TestAppScenarios.TraceEvents.Commands.ShutdownScenario);
                 },

@@ -159,7 +159,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 RuntimeId = _ruleContext.EndpointInfo?.RuntimeInstanceCookie ?? Guid.Empty,
                 ProcessId = _ruleContext.EndpointInfo?.ProcessId ?? 0,
                 CommandLine = commandLine,
-                ProcessName = Monitoring.WebApi.ProcessInfoImpl.GetProcessName(commandLine, _ruleContext.EndpointInfo?.OperatingSystem)
+                ProcessName = _ruleContext.ProcessInfo?.ProcessName ?? string.Empty
             });
 
             return settings;
