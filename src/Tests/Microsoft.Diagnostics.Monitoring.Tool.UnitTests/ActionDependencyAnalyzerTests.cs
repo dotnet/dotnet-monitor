@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             public string ProcessArchitecture => EndpointInfo.ProcessArchitecture;
 
-            public string ProcessName => throw new NotImplementedException();
+            public string ProcessName => ProcessInfoImpl.GetProcessName(CommandLine, OperatingSystem);
         }
 
         private sealed class TestEndpointInfo : WebApi.EndpointInfoBase
