@@ -103,10 +103,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 writer.WriteString("moduleName", instance.ModuleName);
                 writer.WriteString("message", instance.Message);
 
-                writer.WriteStartObject("callStack");
-                writer.WriteNumber("threadId", instance.CallStack.ThreadId);
-                writer.WriteString("threadName", instance.CallStack.ThreadName);
-
                 writer.WriteStartArray("innerExceptions");
                 foreach (ulong innerExceptionId in instance.InnerExceptionIds)
                 {
@@ -115,6 +111,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     writer.WriteEndObject();
                 }
                 writer.WriteEndArray();
+
+                writer.WriteStartObject("callStack");
+                writer.WriteNumber("threadId", instance.CallStack.ThreadId);
+                writer.WriteString("threadName", instance.CallStack.ThreadName);
 
                 writer.WriteStartArray("frames");
 
