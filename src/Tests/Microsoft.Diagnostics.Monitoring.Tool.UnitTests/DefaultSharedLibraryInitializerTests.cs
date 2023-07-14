@@ -13,6 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public sealed class DefaultSharedLibraryInitializerTests : IDisposable
     {
         private const string ManagedTargetFramework = "custom";
