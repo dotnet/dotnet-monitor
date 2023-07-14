@@ -39,10 +39,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
                     return;
                 }
 
-                if (await _startupHookValidator.ApplyStartupHook(endpointInfo, cancellationToken))
+                if (!ApplyStartupState.ContainsKey(endpointInfo.RuntimeInstanceCookie))
                 {
-                    ApplyStartupState[endpointInfo.RuntimeInstanceCookie] = true;
-                    return;
+                    if (await _startupHookValidator.ApplyStartupHook(endpointInfo, cancellationToken))
+                    {
+                        ApplyStartupState[endpointInfo.RuntimeInstanceCookie] = true;
+                        return;
+                    }
                 }
 
                 ApplyStartupState[endpointInfo.RuntimeInstanceCookie] = false;
