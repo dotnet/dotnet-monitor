@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, CollectLogsOptions options)
+        public ICollectionRuleAction Create(IProcessInfo processInfo, CollectLogsOptions options)
         {
             if (null == options)
             {
@@ -37,24 +37,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ValidationContext context = new(options, _serviceProvider, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            return new CollectLogsAction(_serviceProvider, endpointInfo, options);
+            return new CollectLogsAction(_serviceProvider, processInfo, options);
         }
 
         private sealed class CollectLogsAction :
-            CollectionRuleActionBase<CollectLogsOptions>
+            CollectionRuleEgressActionBase<CollectLogsOptions>
         {
-            private readonly IServiceProvider _serviceProvider;
-
-            public CollectLogsAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectLogsOptions options)
-                : base(endpointInfo, options)
+            public CollectLogsAction(IServiceProvider serviceProvider, IProcessInfo processInfo, CollectLogsOptions options)
+                : base(serviceProvider, processInfo, options)
             {
-                _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             }
 
-            protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
-                TaskCompletionSource<object> startCompletionSource,
-                CollectionRuleMetadata collectionRuleMetadata,
-                CancellationToken token)
+            protected override EgressOperation CreateArtifactOperation(TaskCompletionSource<object> startCompletionSource, CollectionRuleMetadata collectionRuleMetadata)
             {
                 TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectLogsOptionsDefaults.Duration));
                 bool useAppFilters = Options.UseAppFilters.GetValueOrDefault(CollectLogsOptionsDefaults.UseAppFilters);
@@ -73,7 +67,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Logs, EndpointInfo);
 
-                ILogsOperationFactory operationFactory = _serviceProvider.GetRequiredService<ILogsOperationFactory>();
+                ILogsOperationFactory operationFactory = ServiceProvider.GetRequiredService<ILogsOperationFactory>();
 
                 IArtifactOperation operation = operationFactory.Create(
                     EndpointInfo,
@@ -81,28 +75,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     logFormat);
 
                 EgressOperation egressOperation = new EgressOperation(
-                    (outputStream, token) => operation.ExecuteAsync(outputStream, startCompletionSource, token),
+                    operation,
+                    startCompletionSource,
                     egressProvider,
-                    operation.GenerateFileName(),
-                    EndpointInfo,
-                    operation.ContentType,
+                    ProcessInfo,
                     scope,
+                    null,
                     collectionRuleMetadata);
 
-                ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
-                if (null != result.Exception)
-                {
-                    throw new CollectionRuleActionException(result.Exception);
-                }
-                string logsFilePath = result.Result.Value;
-
-                return new CollectionRuleActionResult()
-                {
-                    OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
-                    {
-                        { CollectionRuleActionConstants.EgressPathOutputValueName, logsFilePath }
-                    }
-                };
+                return egressOperation;
             }
         }
     }

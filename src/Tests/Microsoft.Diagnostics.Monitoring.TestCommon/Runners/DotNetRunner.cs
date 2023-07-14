@@ -17,8 +17,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
     /// <summary>
     /// Runner for running dotnet processes.
     /// </summary>
+    [DebuggerDisplay(@"\{DotNetRunner:{StateForDebuggerDisplay,nq}\}")]
     public sealed class DotNetRunner : IDisposable
     {
+        private string StateForDebuggerDisplay =>
+            !HasStarted ? "Not started" :
+            HasExited ? $"Exited with code: {ExitCode}" :
+            FormattableString.Invariant($"ProcessId={ProcessId}");
+
         private const string TestProcessCleanupStartupHookAssemblyName = "Microsoft.Diagnostics.Monitoring.TestProcessCleanupStartupHook";
 
         // Event handler for the Process.Exited event
