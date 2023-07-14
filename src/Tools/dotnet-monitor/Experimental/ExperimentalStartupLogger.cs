@@ -10,17 +10,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         IStartupLogger
     {
         private readonly ILogger _logger;
-        private readonly IExperimentalFlags _experimentalFlags;
+        private readonly IInProcessFeatures _inProcessFeatures;
 
-        public ExperimentalStartupLogger(ILogger<Startup> logger, IExperimentalFlags experimentalFlags)
+        public ExperimentalStartupLogger(ILogger<Startup> logger, IInProcessFeatures inProcessFeatures)
         {
             _logger = logger;
-            _experimentalFlags = experimentalFlags;
+            _inProcessFeatures = inProcessFeatures;
         }
 
         public void Log()
         {
-            if (_experimentalFlags.IsParameterCapturingEnabled)
+            if (_inProcessFeatures.IsParameterCapturingEnabled)
             {
                 _logger.ExperimentalFeatureEnabled(Strings.FeatureName_ParameterCapturing);
             }

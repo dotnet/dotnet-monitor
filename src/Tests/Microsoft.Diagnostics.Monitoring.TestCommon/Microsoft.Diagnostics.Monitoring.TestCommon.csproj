@@ -7,9 +7,7 @@
 
   <ItemGroup>
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\CancellationTokenSourceExtensions.cs" Link="CancellationTokenSourceExtensions.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\IExperimentalFlags.cs" Link="IExperimentalFlags.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\DisposableHelper.cs" Link="DisposableHelper.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Experimental\ExperimentalFlags.cs" Link="ExperimentalFlags.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Profiler\ProfilerIdentifiers.cs" Link="ProfilerIdentifiers.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\TaskCompletionSourceExtensions.cs" Link="TaskCompletionSourceExtensions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\TaskExtensions.cs" Link="TaskExtensions.cs" />

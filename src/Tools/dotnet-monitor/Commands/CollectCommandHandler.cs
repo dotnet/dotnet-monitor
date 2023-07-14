@@ -127,7 +127,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureHostingStartup();
                 services.ConfigureExceptions();
                 services.ConfigureStartupLoggers(authConfigurator);
-                services.AddSingleton<IExperimentalFlags, ExperimentalFlags>();
                 services.ConfigureInProcessFeatures(context.Configuration);
                 services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
                 services.AddSingleton<IDumpOperationFactory, DumpOperationFactory>();

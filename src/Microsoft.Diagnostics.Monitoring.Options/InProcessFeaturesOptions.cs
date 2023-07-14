@@ -27,5 +27,11 @@ namespace Microsoft.Diagnostics.Monitoring.Options
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_InProcessFeaturesOptions_Exceptions))]
         public ExceptionsOptions Exceptions { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_InProcessFeaturesOptions_ParameterCapturing))]
+        [Experimental]
+        public ParameterCapturingOptions ParameterCapturing { get; set; }
     }
 }

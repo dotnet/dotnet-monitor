@@ -1082,6 +1082,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Options for the in-process parameter capturing feature..
+        /// </summary>
+        public static string DisplayAttributeDescription_InProcessFeaturesOptions_ParameterCapturing {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_InProcessFeaturesOptions_ParameterCapturing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gets or sets JsonWriterOptions..
         /// </summary>
         public static string DisplayAttributeDescription_JsonConsoleFormatterOptions_WriterOptions {
@@ -1294,6 +1303,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_MonitorApiKeyOptions_Subject {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_MonitorApiKeyOptions_Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enables or disables the parameter capturing feature. By default, this feature is not enabled..
+        /// </summary>
+        public static string DisplayAttributeDescription_ParameterCapturingOptions_Enabled {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ParameterCapturingOptions_Enabled", resourceCulture);
             }
         }
         

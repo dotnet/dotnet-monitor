@@ -27,6 +27,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static readonly string InProcessFeatures_Exceptions = ConfigurationPath.Combine(InProcessFeatures, "Exceptions");
 
+        public static readonly string InProcessFeatures_ParameterCapturing = ConfigurationPath.Combine(InProcessFeatures, "ParameterCapturing");
+
         public const string Egress = nameof(Egress);
 
         public const string Egress_Properties = "Properties";
