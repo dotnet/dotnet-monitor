@@ -123,6 +123,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureCollectionRules();
                 services.ConfigureLibrarySharing();
                 services.ConfigureProfiler();
+                services.ConfigureStartupHook();
                 services.ConfigureExceptions();
                 services.ConfigureStartupLoggers(authConfigurator);
                 services.AddSingleton<IExperimentalFlags, ExperimentalFlags>();

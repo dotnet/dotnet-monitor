@@ -500,6 +500,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_ProfilerRuntimeIdentifier);
 
+        private static readonly Action<ILogger, Exception> _startupHookApplyFailed =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.StartupHookApplyFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_StartupHookApplyFailed);
+
         private static readonly Action<ILogger, int, Exception> _endpointInitializationFailed =
             LoggerMessage.Define<int>(
                 eventId: LoggingEventIds.EndpointInitializationFailed.EventId(),
@@ -511,6 +517,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 eventId: LoggingEventIds.EndpointRemovalFailed.EventId(),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_EndpointRemovalFailed);
+
         public static void EgressProviderInvalidOptions(this ILogger logger, string providerName)
         {
             _egressProviderInvalidOptions(logger, providerName, null);
@@ -929,6 +936,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void ProfilerRuntimeIdentifier(this ILogger logger, string runtimeIdentifier)
         {
             _profilerRuntimeIdentifier(logger, runtimeIdentifier, null);
+        }
+
+        public static void StartupHookApplyFailed(this ILogger logger, Exception ex)
+        {
+            _startupHookApplyFailed(logger, ex);
         }
 
         public static void EndpointInitializationFailed(this ILogger logger, int processId, Exception ex)
