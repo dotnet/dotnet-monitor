@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, CollectLiveMetricsOptions options)
+        public ICollectionRuleAction Create(IProcessInfo processInfo, CollectLiveMetricsOptions options)
         {
             if (null == options)
             {
@@ -37,28 +37,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ValidationContext context = new(options, _serviceProvider, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            return new CollectLiveMetricsAction(_serviceProvider, endpointInfo, options);
+            return new CollectLiveMetricsAction(_serviceProvider, processInfo, options);
         }
 
         private sealed class CollectLiveMetricsAction :
-            CollectionRuleActionBase<CollectLiveMetricsOptions>
+            CollectionRuleEgressActionBase<CollectLiveMetricsOptions>
         {
-            private readonly IServiceProvider _serviceProvider;
             private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
             private readonly IMetricsOperationFactory _metricsOperationFactory;
 
-            public CollectLiveMetricsAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectLiveMetricsOptions options)
-                : base(endpointInfo, options)
+            public CollectLiveMetricsAction(IServiceProvider serviceProvider, IProcessInfo processInfo, CollectLiveMetricsOptions options)
+                : base(serviceProvider, processInfo, options)
             {
-                _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
                 _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
                 _metricsOperationFactory = serviceProvider.GetRequiredService<IMetricsOperationFactory>();
             }
 
-            protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
-                TaskCompletionSource<object> startCompletionSource,
-                CollectionRuleMetadata collectionRuleMetadata,
-                CancellationToken token)
+            protected override EgressOperation CreateArtifactOperation(TaskCompletionSource<object> startCompletionSource, CollectionRuleMetadata collectionRuleMetadata)
             {
                 EventMetricsProvider[] providers = Options.Providers;
                 EventMetricsMeter[] meters = Options.Meters;
@@ -85,28 +80,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Metrics, EndpointInfo);
 
                 EgressOperation egressOperation = new EgressOperation(
-                    (outputStream, token) => operation.ExecuteAsync(outputStream, startCompletionSource, token),
+                    operation,
+                    startCompletionSource,
                     egressProvider,
-                    operation.GenerateFileName(),
-                    EndpointInfo,
-                    operation.ContentType,
+                    ProcessInfo,
                     scope,
+                    null,
                     collectionRuleMetadata);
 
-                ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
-                if (null != result.Exception)
-                {
-                    throw new CollectionRuleActionException(result.Exception);
-                }
-                string liveMetricsFilePath = result.Result.Value;
-
-                return new CollectionRuleActionResult()
-                {
-                    OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
-                    {
-                        { CollectionRuleActionConstants.EgressPathOutputValueName, liveMetricsFilePath }
-                    }
-                };
+                return egressOperation;
             }
         }
     }

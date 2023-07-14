@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
@@ -26,9 +27,27 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
 
+        private sealed class TestProcessInfo : WebApi.IProcessInfo
+        {
+            public TestProcessInfo(Guid runtimeInstanceCookie, int processId = 0, string commandLine = null, string operatingSystem = null, string processArchitecture = null)
+            {
+                EndpointInfo = new TestEndpointInfo(runtimeInstanceCookie, processId, commandLine, operatingSystem, processArchitecture);
+            }
+
+            public IEndpointInfo EndpointInfo { get; }
+
+            public string CommandLine => EndpointInfo.CommandLine;
+
+            public string OperatingSystem => EndpointInfo.OperatingSystem;
+
+            public string ProcessArchitecture => EndpointInfo.ProcessArchitecture;
+
+            public string ProcessName => ProcessInfoImpl.GetProcessName(CommandLine, OperatingSystem);
+        }
+
         private sealed class TestEndpointInfo : WebApi.EndpointInfoBase
         {
-            public TestEndpointInfo(Guid runtimeInstanceCookie, int processId = 0, string commandLine = null, string operatingSystem = null, string processArchitecture = null)
+            public TestEndpointInfo(Guid runtimeInstanceCookie, int processId, string commandLine, string operatingSystem, string processArchitecture)
             {
                 ProcessId = processId;
                 RuntimeInstanceCookie = runtimeInstanceCookie;
@@ -139,7 +158,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 string commandLine = FormattableString.Invariant($"{processName} arg1");
 
                 Guid instanceId = Guid.NewGuid();
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestEndpointInfo(instanceId, processId: processId, commandLine: commandLine), logger, timeProvider);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId, processId: processId, commandLine: commandLine), logger, timeProvider);
 
                 ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
                 PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
@@ -219,7 +238,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
                 Guid instanceId = Guid.NewGuid();
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestEndpointInfo(instanceId), logger, timeProvider);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), logger, timeProvider);
 
                 ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
                 PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
@@ -265,7 +284,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 Guid instanceId = Guid.NewGuid();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestEndpointInfo(instanceId), logger, timeProvider);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), logger, timeProvider);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;

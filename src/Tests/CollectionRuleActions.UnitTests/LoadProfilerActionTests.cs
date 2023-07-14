@@ -94,7 +94,9 @@ namespace CollectionRuleActions.UnitTests
             {
                 SetEnvironmentVariableOptions envOptions = ActionTestsHelper.GetActionOptions<SetEnvironmentVariableOptions>(_host, DefaultRuleName, actionIndex: 0);
                 Assert.True(_host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.SetEnvironmentVariable, out ICollectionRuleActionFactoryProxy setEnvFactory));
-                ICollectionRuleAction setEnvAction = setEnvFactory.Create(endpointInfo, envOptions);
+
+                IProcessInfo processInfo = await ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo, token);
+                ICollectionRuleAction setEnvAction = setEnvFactory.Create(processInfo, envOptions);
                 await ActionTestsHelper.ExecuteAndDisposeAsync(setEnvAction, CommonTestTimeouts.EnvVarsTimeout);
 
                 // Load the profiler into the target process
@@ -103,7 +105,7 @@ namespace CollectionRuleActions.UnitTests
                 ICollectionRuleActionFactoryProxy factory;
                 Assert.True(_host.Services.GetService<ICollectionRuleActionOperations>().TryCreateFactory(KnownCollectionRuleActions.LoadProfiler, out factory));
 
-                ICollectionRuleAction action = factory.Create(endpointInfo, options);
+                ICollectionRuleAction action = factory.Create(processInfo, options);
 
                 CollectionRuleActionResult result = await ActionTestsHelper.ExecuteAndDisposeAsync(action, CommonTestTimeouts.LoadProfilerTimeout);
                 Assert.Null(result.OutputValues);

@@ -488,6 +488,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_StartupHookInstructions);
 
+        private static readonly Action<ILogger, Exception> _unableToWatchForDisconnect =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.WatchForStdinDisconnectFailure.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_UnableToWatchForDisconnect);
+
         private static readonly Action<ILogger, string, Exception> _egressProviderTypeNotExist =
             LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.EgressProviderTypeNotExist.EventId(),
@@ -926,6 +932,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static void StartupHookInstructions(this ILogger logger, string startupHookLibraryPath)
         {
             _startupHookInstructions(logger, startupHookLibraryPath, null);
+        }
+
+        public static void UnableToWatchForDisconnect(this ILogger logger, Exception exception)
+        {
+            _unableToWatchForDisconnect(logger, exception);
         }
 
         public static void EgressProviderTypeNotExist(this ILogger logger, string providerType)

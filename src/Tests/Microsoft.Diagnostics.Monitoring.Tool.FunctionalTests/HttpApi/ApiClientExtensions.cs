@@ -431,6 +431,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return await client.GetOperations(tags, timeoutSource.Token).ConfigureAwait(false);
         }
 
+        public static Task<HttpStatusCode> StopEgressOperation(this ApiClient client, Guid operationId)
+        {
+            return StopEgressOperation(client, new Uri(client.BaseAddress, FormattableString.Invariant($"operations/{operationId}")));
+        }
+
         public static async Task<HttpStatusCode> StopEgressOperation(this ApiClient client, Uri operation)
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
