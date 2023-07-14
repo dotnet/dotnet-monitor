@@ -4,7 +4,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     public interface IInProcessFeatures
     {
-        /* Requirements */
         bool IsProfilerRequired { get; }
 
         bool IsStartupHookRequired { get; }
@@ -12,12 +11,5 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         bool IsHostingStartupRequired { get; }
 
         bool IsLibrarySharingRequired { get; }
-
-        /* Features */
-        public bool IsCallStacksEnabled { get; }
-
-        public bool IsExceptionsEnabled { get; }
-
-        public bool IsParameterCapturingEnabled { get; }
     }
 }

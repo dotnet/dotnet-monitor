@@ -22,11 +22,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _parameterCapturingOptions = parameterCapturingOptions.Value;
         }
 
-        public bool IsCallStacksEnabled => _callStacksOptions.GetEnabled();
+        private bool IsCallStacksEnabled => _callStacksOptions.GetEnabled();
 
-        public bool IsExceptionsEnabled => _exceptionsOptions.GetEnabled();
+        private bool IsExceptionsEnabled => _exceptionsOptions.GetEnabled();
 
-        public bool IsParameterCapturingEnabled => _parameterCapturingOptions.GetEnabled();
+        private bool IsParameterCapturingEnabled => _parameterCapturingOptions.GetEnabled();
 
         public bool IsProfilerRequired => IsCallStacksEnabled || IsParameterCapturingEnabled;
 
