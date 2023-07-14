@@ -75,7 +75,7 @@ stages:
     - template: /eng/pipelines/jobs/platform-matrix.yml
       parameters:
         jobTemplate: /eng/pipelines/jobs/test-binaries.yml
-        includeArm64: true
+        includeArm64: ${{ ne(variables['System.TeamProject'], 'public') }}
         jobParameters:
           testGroup: ${{ parameters.testGroup }}
           useHelix: true
