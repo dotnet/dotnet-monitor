@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Extensions.FileProviders;
 using System;
@@ -213,6 +214,37 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Arrange
             string SourceFileName = "source.txt";
             CreateSourceManagedFile(SourceFileName);
+
+            string TargetFilePath = CreateTargetManagedFilePath(SourceFileName);
+
+            DefaultSharedLibraryPathProvider provider = new(_sourceDir.FullName, _targetDir.FullName);
+
+            // Act
+            using (DefaultSharedLibraryInitializer initializer = new(provider, _logger))
+            {
+                await initializer.InitializeAsync(CancellationToken.None);
+            }
+
+            // Assert
+            Assert.True(File.Exists(TargetFilePath));
+
+            using (DefaultSharedLibraryInitializer initializer = new(provider, _logger))
+            {
+                await initializer.InitializeAsync(CancellationToken.None);
+            }
+        }
+
+        /// <summary>
+        /// Validate that initialization will succeed if size of file in target directory is a multiple
+        /// of the default buffer size.
+        /// </summary>
+        [Fact]
+        public async Task DefaultSharedLibraryInitializer_SourceAndTarget_TargetIsMultipleOfBufferSize()
+        {
+            // Arrange
+            string SourceFileName = "source.txt";
+            string SourceFilePath = CreateSourceManagedFile(SourceFileName);
+            File.WriteAllText(SourceFilePath, new string('a', 2 * StreamDefaults.BufferSize));
 
             string TargetFilePath = CreateTargetManagedFilePath(SourceFileName);
 
