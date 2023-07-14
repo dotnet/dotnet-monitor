@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.Buffers;
 using System.IO;
@@ -11,17 +12,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class StreamExtensions
     {
-        private const int DefaultBufferSize = 4096;
-
         public static async Task<bool> HasSameContentAsync(
             this Stream thisStream,
             Stream otherStream,
             CancellationToken cancellationToken)
         {
-            byte[] thisBuffer = ArrayPool<byte>.Shared.Rent(DefaultBufferSize);
+            byte[] thisBuffer = ArrayPool<byte>.Shared.Rent(StreamDefaults.BufferSize);
             Array.Fill<byte>(thisBuffer, 0);
 
-            byte[] otherBuffer = ArrayPool<byte>.Shared.Rent(DefaultBufferSize);
+            byte[] otherBuffer = ArrayPool<byte>.Shared.Rent(StreamDefaults.BufferSize);
             Array.Fill<byte>(otherBuffer, 0);
 
             try

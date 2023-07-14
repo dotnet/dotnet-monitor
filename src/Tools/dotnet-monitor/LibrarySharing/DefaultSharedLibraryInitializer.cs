@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32.SafeHandles;
@@ -116,8 +117,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
                             }
 
                             // Check that they have the same content
-                            using FileStream sourceStream = new(sourceHandle, FileAccess.Read);
-                            using FileStream targetStream = new(targetHandle, FileAccess.Read);
+                            using FileStream sourceStream = new(sourceHandle, FileAccess.Read, StreamDefaults.BufferSize, isAsync: true);
+                            using FileStream targetStream = new(targetHandle, FileAccess.Read, StreamDefaults.BufferSize, isAsync: true);
 
                             if (!await sourceStream.HasSameContentAsync(targetStream, cancellationToken))
                             {
