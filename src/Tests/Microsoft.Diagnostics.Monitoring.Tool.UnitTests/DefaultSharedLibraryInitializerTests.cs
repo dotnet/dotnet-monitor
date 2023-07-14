@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Extensions.FileProviders;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -119,7 +120,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Validate that files copied to the target directory cannot be edited or deleted
         /// during the user of the initializer.
         /// </summary>
-        [Fact]
+        /// <remarks>
+        /// File locks are advisory on non-Windows systems.
+        /// </remarks>
+        [ConditionalFact(typeof(TestConditions), nameof(TestConditions.IsWindows))]
         public async Task DefaultSharedLibraryInitializer_SourceAndTarget_TargetModifyDenied()
         {
             // Arrange
@@ -162,7 +166,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 await initializer.InitializeAsync(CancellationToken.None);
 
                 // Assert
-                Assert.Throws<IOException>(() => CreateTargetFileWriter(TargetFilePath));
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    Assert.Throws<IOException>(() => CreateTargetFileWriter(TargetFilePath));
+                }
             }
 
             CreateTargetFileWriter(TargetFilePath).Dispose();
@@ -188,7 +195,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 await initializer.InitializeAsync(CancellationToken.None);
 
                 // Assert
-                Assert.Throws<IOException>(() => File.Delete(TargetFilePath));
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    Assert.Throws<IOException>(() => File.Delete(TargetFilePath));
+                }
             }
 
             File.Delete(TargetFilePath);
