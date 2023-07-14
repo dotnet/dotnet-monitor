@@ -15,6 +15,7 @@
     <!-- Open queues require a creator to be set. -->
     <Creator Condition=" '$(USERNAME)' != '' ">$(USERNAME)</Creator>
     <Creator Condition=" '$(USER)' != '' ">$(USER)</Creator>
+    <Creator Condition=" '$(Creator)' == '' ">dotnet-monitor</Creator>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(SYSTEM_COLLECTIONURI)' == 'https://dev.azure.com/dnceng/'">
