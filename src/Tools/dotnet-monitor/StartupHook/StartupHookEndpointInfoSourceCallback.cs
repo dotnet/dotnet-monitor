@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
 
         async Task IEndpointInfoSourceCallbacks.OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            if (_inProcessFeatures.IsStartupHookRequired)
+            if (_inProcessFeatures.IsStartupHookRequired && !ApplyStartupState.ContainsKey(endpointInfo.RuntimeInstanceCookie))
             {
                 if (await _startupHookValidator.CheckEnvironmentAsync(endpointInfo, cancellationToken))
                 {
@@ -39,13 +39,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
                     return;
                 }
 
-                if (!ApplyStartupState.ContainsKey(endpointInfo.RuntimeInstanceCookie))
+                if (await _startupHookValidator.ApplyStartupHook(endpointInfo, cancellationToken))
                 {
-                    if (await _startupHookValidator.ApplyStartupHook(endpointInfo, cancellationToken))
-                    {
-                        ApplyStartupState[endpointInfo.RuntimeInstanceCookie] = true;
-                        return;
-                    }
+                    ApplyStartupState[endpointInfo.RuntimeInstanceCookie] = true;
+                    return;
                 }
 
                 ApplyStartupState[endpointInfo.RuntimeInstanceCookie] = false;
