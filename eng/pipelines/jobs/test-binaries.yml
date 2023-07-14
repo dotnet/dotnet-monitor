@@ -123,8 +123,9 @@ jobs:
       # This is blank in public builds
       DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET: $(DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET)
       ${{ if eq(parameters.useHelix, 'true')}}:
-        HelixAccessToken: $(HelixApiAccessToken)
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+        ${{ ne(variables['System.TeamProject'], 'public') }}:
+          HelixAccessToken: $(HelixApiAccessToken)
 
     postBuildSteps:
     - ${{ if ne(parameters.useHelix, 'true')}}:
