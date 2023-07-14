@@ -14,8 +14,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const int DefaultBufferSize = 4096;
 
         public static async Task<bool> HasSameContentAsync(
-            this FileStream thisStream,
-            FileStream otherStream,
+            this Stream thisStream,
+            Stream otherStream,
             CancellationToken cancellationToken)
         {
             byte[] thisBuffer = ArrayPool<byte>.Shared.Rent(DefaultBufferSize);
