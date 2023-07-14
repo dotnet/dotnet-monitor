@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Reflection.Metadata;
 using System.Security.Cryptography;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
