@@ -1,17 +1,14 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Win32.SafeHandles;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Security.Cryptography;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
@@ -20,20 +17,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
         ISharedLibraryInitializer,
         IDisposable
     {
-        private static readonly string SharedLibrarySourcePath = Path.Combine(AppContext.BaseDirectory, "shared");
-
         private readonly List<SafeFileHandle> _sharedFileHandles = new();
         private readonly ILogger<DefaultSharedLibraryInitializer> _logger;
-        private readonly string _sharedLibraryTargetPath;
+        private readonly DefaultSharedLibraryPathProvider _pathProvider;
 
         private long _disposeState;
 
         public DefaultSharedLibraryInitializer(
-            IOptions<StorageOptions> _storageOptions,
+            DefaultSharedLibraryPathProvider pathProvider,
             ILogger<DefaultSharedLibraryInitializer> logger)
         {
             _logger = logger;
-            _sharedLibraryTargetPath = _storageOptions.Value.SharedLibraryPath;
+            _pathProvider = pathProvider;
         }
 
         public void Dispose()
@@ -54,40 +49,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
             // Copy the shared libraries to the path specified by Storage:SharedLibraryPath.
             // Copying, instead of linking or using them in-place, prevents file locks from the target process.
             // If shared path is not specified, use the libraries in-place.
-            DirectoryInfo sharedLibrarySourceDir = new DirectoryInfo(SharedLibrarySourcePath);
+            DirectoryInfo sharedLibrarySourceDir = new DirectoryInfo(_pathProvider.SourcePath);
             if (!sharedLibrarySourceDir.Exists)
             {
                 throw new DirectoryNotFoundException(
                     string.Format(
                         CultureInfo.InvariantCulture,
                         Strings.ErrorMessage_ExpectedToFindSharedLibrariesAtPath,
-                        SharedLibrarySourcePath));
+                        _pathProvider.SourcePath));
             }
 
             string sharedLibraryPath;
-            if (string.IsNullOrEmpty(_sharedLibraryTargetPath))
+            if (string.IsNullOrEmpty(_pathProvider.TargetPath))
             {
                 // Since Storage:SharedLibraryPath was not specified, allow providing shared libraries directly
-                // from the 'shared' folder in the dotnet-monitor package.
-                sharedLibraryPath = SharedLibrarySourcePath;
+                // from the source path.
+                sharedLibraryPath = _pathProvider.SourcePath;
             }
             else
             {
-                string expectedVersion = Assembly.GetExecutingAssembly().GetInformationalVersionString();
-                // Remove '+' and commit hash from version string
-                int hashSeparatorIndex = expectedVersion.IndexOf('+');
-                if (hashSeparatorIndex > 0)
-                {
-                    expectedVersion = expectedVersion.Substring(0, hashSeparatorIndex);
-                }
-
-                // This is the target location to where shared libraries will be copied.
-                // If the user specified '/diag/libs' for Storage:SharedLibraryPath, this path may look like '/diag/libs/7.0.0'
-                // This path includes the dotnet-monitor version in order to avoid collisions when performing rolling updates
-                // in containerized environments; newer dotnet-monitor versions must repopulate the shared library directory, but
-                // do not assume that the prior versions are deletable due to possible file locks.
-                string versionedSharedLibraryTargetPath = Path.Combine(_sharedLibraryTargetPath, expectedVersion);
-
                 Queue<string> subDirectories = new();
                 subDirectories.Enqueue(string.Empty); // The root of the shared library source directory
                 using SHA256 hasher = SHA256.Create();
@@ -100,7 +80,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
                 while (subDirectories.TryDequeue(out string subDirectory))
                 {
                     DirectoryInfo sourceDir = new(Path.Combine(sharedLibrarySourceDir.FullName, subDirectory));
-                    DirectoryInfo targetDir = Directory.CreateDirectory(Path.Combine(versionedSharedLibraryTargetPath, subDirectory));
+                    DirectoryInfo targetDir = Directory.CreateDirectory(Path.Combine(_pathProvider.TargetPath, subDirectory));
 
                     FileInfo[] sourceFiles = sourceDir.GetFiles();
                     for (int i = 0; i < sourceFiles.Length; i++)
@@ -158,7 +138,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
                     }
                 }
 
-                sharedLibraryPath = versionedSharedLibraryTargetPath;
+                sharedLibraryPath = _pathProvider.TargetPath;
             }
 
             _logger.SharedLibraryPath(sharedLibraryPath);
