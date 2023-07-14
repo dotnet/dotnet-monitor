@@ -19,6 +19,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 {
     internal sealed class ProfilerService
     {
+        private static class RuntimeIdentifierSource
+        {
+            // Retrieved from the environment block of the target process
+            public const string ProcessEnvironment = nameof(ProcessEnvironment);
+
+            // Retrieved from the host of the target process
+            public const string ProcessHost = nameof(ProcessHost);
+
+            // Implicitly determined from some heuristic based on what is running in the target process
+            public const string ProcessImplicit = nameof(ProcessImplicit);
+        }
+
         private readonly IInProcessFeatures _inProcessFeatures;
         private readonly ISharedLibraryService _sharedLibraryService;
         private readonly IOptions<StorageOptions> _storageOptions;
@@ -54,18 +66,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 DiagnosticsClient client = new DiagnosticsClient(endpointInfo.Endpoint);
                 Dictionary<string, string> env = await client.GetProcessEnvironmentAsync(cancellationToken);
 
-                string runtimeIdentifierSource = "ProcessEnvironment";
+                string runtimeIdentifierSource = RuntimeIdentifierSource.ProcessEnvironment;
                 if (!env.TryGetValue(ToolIdentifiers.EnvironmentVariables.RuntimeIdentifier, out string runtimeIdentifier))
                 {
                     ProcessInfo processInfo = await client.GetProcessInfoAsync(cancellationToken);
 
                     // Use portable runtime identifier as reported by the runtime
                     runtimeIdentifier = processInfo.PortableRuntimeIdentifier;
-                    runtimeIdentifierSource = "ProcessHost";
+                    runtimeIdentifierSource = RuntimeIdentifierSource.ProcessHost;
 
                     if (string.IsNullOrEmpty(runtimeIdentifier))
                     {
-                        runtimeIdentifierSource = "ProcessImplicit";
+                        runtimeIdentifierSource = RuntimeIdentifierSource.ProcessImplicit;
                         // This is mostly correct, except that "arm" and "armv6" are both reported as "arm32".
                         string ridArchitecture = processInfo.ProcessArchitecture;
                         Debug.Assert(!"arm32".Equals(ridArchitecture, StringComparison.Ordinal), "Unable to distinguish arm from armv6");
