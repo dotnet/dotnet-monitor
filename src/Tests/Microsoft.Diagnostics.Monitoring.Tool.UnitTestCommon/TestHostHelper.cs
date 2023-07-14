@@ -112,7 +112,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     }
 
                     services.ConfigureEgress();
-                    services.AddSingleton<RequestLimitTracker>();
+                    services.AddSingleton<IRequestLimitTracker, RequestLimitTracker>();
                     services.ConfigureOperationStore();
 
                     services.ConfigureDiagnosticPort(context.Configuration);
