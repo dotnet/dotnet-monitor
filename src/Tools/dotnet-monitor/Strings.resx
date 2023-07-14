@@ -915,6 +915,10 @@
   <data name="LogFormatString_EndpointRemovalFailed" xml:space="preserve">
     <value>Unable to fully remove endpoint for process {processId}.</value>
   </data>
+  <data name="LogFormatString_StartupHookApplyFailed" xml:space="preserve">
+    <value>Failed to apply the startup hook. Not all in process features will be available.</value>
+    <comment>Gets a string similar to "Failed to apply the startup hook. Not all in process features will be available."</comment>
+  </data>
   <data name="ErrorMessage_SharedFileDiffersFromSource" xml:space="preserve">
     <value>The shared file '{0}' is different from source file '{1}'.</value>
   </data>

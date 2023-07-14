@@ -169,6 +169,20 @@ Object describing the list of event providers, keywords, event levels, and addit
 }
 ```
 
+## ExceptionInstance
+
+Object describing an exception instance.
+
+| Name | Type | Description |
+|---|---|---|
+| `id` | int | Unique identifier of the exception instance. |
+| `timestamp` | string | The UTC date and time in the ISO 8601 format of when the current exception was observed. |
+| `typeName` | string | The name of the current exception type, including the namespace and parent type names if it is a nested type. |
+| `moduleName` | string | The name of the module in which the current exception type exists. |
+| `message` | string | The message that describes the current exception. |
+| `innerExceptions` | int[] | The IDs of the [ExceptionInstance](#exceptioninstance)s that are the inner exceptions of the current exception. |
+| `callStack` | [CallStack](#callstack) | The call stack of the current exception, if it was thrown. |
+
 ## ExtensionMode
 
 Enumeration that describes additional execution modes supported by the extension; the ability to execute is assumed.

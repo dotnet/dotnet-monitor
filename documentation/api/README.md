@@ -18,6 +18,7 @@ The following are the root routes on the HTTP API surface.
 | [`/metrics`](metrics.md) | Captures metrics of a process in the Prometheus exposition format. | 6.0 |
 | [`/livemetrics`](livemetrics.md) | Captures live metrics of a process. | 6.0 |
   [`/stacks`](stacks.md) | Gets the current callstacks of all .NET threads. | 8.0 Preview 7 |
+  [`/exceptions`](exceptions.md) | Gets a history of first chance exceptions from the default process. | 8.0 Preview 7 |
 | [`/logs`](logs.md) | Captures logs of processes. | 6.0 |
 | [`/info`](info.md) | Gets info about `dotnet monitor`. | 6.0 |
 | [`/operations`](operations.md) | Gets egress operation status or cancels operations. | 6.0 |
