@@ -192,6 +192,35 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
+        /// Validate that initialization will succeed if that target directory already has the files cached.
+        /// </summary>
+        [Fact]
+        public void DefaultSharedLibraryInitializer_SourceAndTarget_TargetAlreadyCached()
+        {
+            // Arrange
+            string SourceFileName = "source.txt";
+            CreateSourceManagedFile(SourceFileName);
+
+            string TargetFilePath = CreateTargetManagedFilePath(SourceFileName);
+
+            DefaultSharedLibraryPathProvider provider = new(_sourceDir.FullName, _targetDir.FullName);
+
+            // Act
+            using (DefaultSharedLibraryInitializer initializer = new(provider, _logger))
+            {
+                initializer.Initialize();
+            }
+
+            // Assert
+            Assert.True(File.Exists(TargetFilePath));
+
+            using (DefaultSharedLibraryInitializer initializer = new(provider, _logger))
+            {
+                initializer.Initialize();
+            }
+        }
+
+        /// <summary>
         /// Validate that initialization will fail if the target directory already has the files cached
         /// but the files have been modified to be different.
         /// </summary>
