@@ -273,7 +273,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     IExceptionInstance outerInstance = instances.Skip(1).Single();
                     Assert.NotNull(outerInstance);
-                    
+
                     Assert.NotEqual(0UL, outerInstance.Id);
                     Assert.Equal(typeof(InvalidOperationException).FullName, outerInstance.TypeName);
                     Assert.Equal(innerInstance.Id, Assert.Single(outerInstance.InnerExceptionIds));

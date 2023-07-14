@@ -9,7 +9,6 @@ using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,24 +22,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
     {
         private readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(5);
 
-        private readonly List<UniqueProcessKey> _unconfiguredProcesses = new();
         private readonly IExceptionsStore _exceptionsStore;
         private readonly IDiagnosticServices _diagnosticServices;
         private readonly IOptions<ExceptionsOptions> _exceptionsOptions;
-        private readonly StartupHookValidator _startupHookValidator;
+        private readonly StartupHookEndpointInfoSourceCallbacks _startupHookEndpointInfoSourceCallbacks;
 
         private EventExceptionsPipeline _pipeline;
 
         public ExceptionsService(
-            StartupHookValidator startupHookValidator,
             IDiagnosticServices diagnosticServices,
             IOptions<ExceptionsOptions> exceptionsOptions,
-            IExceptionsStore exceptionsStore)
+            IExceptionsStore exceptionsStore,
+            StartupHookEndpointInfoSourceCallbacks startupHookEndpointInfoSourceCallbacks)
         {
             _diagnosticServices = diagnosticServices;
             _exceptionsStore = exceptionsStore;
             _exceptionsOptions = exceptionsOptions;
-            _startupHookValidator = startupHookValidator;
+            _startupHookEndpointInfoSourceCallbacks = startupHookEndpointInfoSourceCallbacks;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -57,20 +55,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     // Get default process
                     IProcessInfo pi = await _diagnosticServices.GetProcessAsync(processKey: null, stoppingToken);
 
-                    // If previous checked configuration and it did not pass, do not check again or attempt
-                    // to start the event pipe session.
-                    UniqueProcessKey key = new(pi.EndpointInfo.ProcessId, pi.EndpointInfo.RuntimeInstanceCookie);
-                    if (_unconfiguredProcesses.Contains(key))
-                    {
-                        // This exception is not user visible.
-                        throw new NotSupportedException();
-                    }
+                    bool isStartupHookApplied = false;
+                    _ = _startupHookEndpointInfoSourceCallbacks.ApplyStartupState.TryGetValue(pi.EndpointInfo.RuntimeInstanceCookie, out isStartupHookApplied);
 
                     // Validate that the process is configured correctly for collecting exceptions.
-                    if (!await _startupHookValidator.CheckAsync(pi.EndpointInfo, stoppingToken))
+                    if (!isStartupHookApplied)
                     {
-                        _unconfiguredProcesses.Add(key);
-
                         // This exception is not user visible.
                         throw new NotSupportedException();
                     }

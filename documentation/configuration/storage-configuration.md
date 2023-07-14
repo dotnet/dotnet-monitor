@@ -5,7 +5,9 @@
 
 Some diagnostic features (e.g. memory dumps, stack traces) require that a directory is shared between the `dotnet monitor` tool and the target applications. The `Storage` configuration section allows specifying these directories to facilitate this sharing.
 
-## Default Shared Path (7.0+)
+## Default Shared Path
+
+First Available: 7.0
 
 The default shared path option (`DefaultSharedPath`) can be set, which allows artifacts to be shared automatically without requiring additional configuration for each artifact type. By setting this property with an appropriate value, the following become available:
 - dumps are temporarily stored in this directory or in a subdirectory.

@@ -112,6 +112,6 @@ The release image is `mcr.microsoft.com/dotnet/monitor`. The tag list is https:/
 
 ## After the Release
 
-1. Change the `NightlyUpdateDockerFromMain` variable to `true` in the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) to begin the consumption of nightly builds into dotnet-docker.
+1. Change the `NightlyUpdateDockerFromMain` variable to `true` in the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) to begin the consumption of nightly builds into dotnet-docker. Note this should not necessarily be done right after the release, but after the merge from main to nightly in the dotnet-docker repo (such as https://github.com/dotnet/dotnet-docker/pull/4741).
 1. Review and merge the automatically create `Register new release information` PR.
 1. When necessary, update this document if its instructions were unclear or incorrect.

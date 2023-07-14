@@ -1124,6 +1124,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to fully initialize endpoint for process {processId}. Some monitoring features may be unavailable..
+        /// </summary>
+        internal static string LogFormatString_EndpointInitializationFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_EndpointInitializationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to fully remove endpoint for process {processId}..
+        /// </summary>
+        internal static string LogFormatString_EndpointRemovalFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_EndpointRemovalFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unexpected timeout from process {processId}. Process will no longer be monitored..
         /// </summary>
         internal static string LogFormatString_EndpointTimeout {
@@ -1385,7 +1403,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Using &apos;{runtimeIdentifier}&apos; runtime identifier for profiler enablement..
+        ///   Looks up a localized string similar to Using &apos;{runtimeIdentifier}&apos; profiler runtime identifier. Source: {source}.
         /// </summary>
         internal static string LogFormatString_ProfilerRuntimeIdentifier {
             get {
@@ -1453,6 +1471,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_StartCollectArtifact {
             get {
                 return ResourceManager.GetString("LogFormatString_StartCollectArtifact", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to apply the startup hook. Not all in process features will be available..
+        /// </summary>
+        internal static string LogFormatString_StartupHookApplyFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_StartupHookApplyFailed", resourceCulture);
             }
         }
         

@@ -4,7 +4,6 @@
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Options;
-
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class InProcessFeatures : IInProcessFeatures
@@ -17,13 +16,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _callStacksOptions = callStacksOptions.Value;
             _exceptionsOptions = exceptionsOptions.Value;
         }
-
         private bool IsCallStacksEnabled => _callStacksOptions.GetEnabled();
 
         private bool IsExceptionsEnabled => _exceptionsOptions.GetEnabled();
 
         public bool IsProfilerRequired => IsCallStacksEnabled;
 
-        public bool IsLibrarySharingRequired => IsCallStacksEnabled || IsExceptionsEnabled;
+        public bool IsStartupHookRequired => IsExceptionsEnabled;
+
+        public bool IsLibrarySharingRequired => IsProfilerRequired || IsStartupHookRequired;
     }
 }
