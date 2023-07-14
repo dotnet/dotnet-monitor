@@ -122,10 +122,10 @@ jobs:
       TEST_AZURITE_MUST_INITIALIZE: 1
       # This is blank in public builds
       DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET: $(DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET)
-      ${{ if eq(parameters.useHelix, 'true')}}:
+      ${{ if eq(parameters.useHelix, 'true') }}:
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-        ${{ ne(variables['System.TeamProject'], 'public') }}:
-          HelixAccessToken: $(HelixApiAccessToken)
+      ${{ if ne(variables['System.TeamProject'], 'public') }}:
+        HelixAccessToken: $(HelixApiAccessToken)
 
     postBuildSteps:
     - ${{ if ne(parameters.useHelix, 'true')}}:
