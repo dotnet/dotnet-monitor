@@ -1403,7 +1403,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Using &apos;{runtimeIdentifier}&apos; runtime identifier for profiler enablement..
+        ///   Looks up a localized string similar to Using &apos;{runtimeIdentifier}&apos; profiler runtime identifier. Source: {source}.
         /// </summary>
         internal static string LogFormatString_ProfilerRuntimeIdentifier {
             get {
