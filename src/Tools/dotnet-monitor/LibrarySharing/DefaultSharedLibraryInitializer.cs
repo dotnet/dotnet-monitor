@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Reflection.Metadata;
 using System.Security.Cryptography;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
@@ -110,15 +111,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
                         {
                             string sourceFilePath = sourceFiles[i].FullName;
                             using SafeFileHandle sourceHandle = File.OpenHandle(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                            int sourceLength = ComputeHashAndLength(sourceHandle, sourceHash);
+                            long sourceLength = RandomAccess.GetLength(sourceHandle);
 
                             // Open target file handle for reading and only allow read sharing to prevent modification of file while in use
                             SafeFileHandle targetHandle = File.OpenHandle(targetFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
                             _sharedFileHandles.Add(targetHandle);
-                            int targetLength = ComputeHashAndLength(targetHandle, targetHash);
+                            long targetLength = RandomAccess.GetLength(targetHandle);
 
-                            // Check that they are the same
-                            if (targetLength != sourceLength || !sourceHash.SequenceEqual(targetHash))
+                            // Check that they are the same length
+                            if (targetLength != sourceLength)
+                            {
+                                throw new InvalidOperationException(
+                                    string.Format(
+                                        CultureInfo.InvariantCulture,
+                                        Strings.ErrorMessage_SharedFileDiffersFromSource,
+                                        targetFilePath,
+                                        sourceFilePath));
+                            }
+
+                            // Check that they have the same hash value
+                            ComputeHash(sourceHandle, sourceHash);
+                            ComputeHash(targetHandle, targetHash);
+
+                            if (!sourceHash.SequenceEqual(targetHash))
                             {
                                 throw new InvalidOperationException(
                                     string.Format(
@@ -152,7 +167,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
             return new Factory(sharedLibraryPath);
         }
 
-        private static int ComputeHashAndLength(SafeFileHandle handle, Span<byte> destination)
+        private static void ComputeHash(SafeFileHandle handle, Span<byte> destination)
         {
             int length = (int)RandomAccess.GetLength(handle);
             byte[] content = ArrayPool<byte>.Shared.Rent(length);
@@ -165,7 +180,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
             {
                 ArrayPool<byte>.Shared.Return(content);
             }
-            return length;
         }
 
         private sealed class Factory : IFileProviderFactory
