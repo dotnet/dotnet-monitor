@@ -1,0 +1,14 @@
+<Project>
+  <ItemGroup>
+    <!-- Set TEST_DOTNET_ROOT to same as DOTNET_ROOT (which is provided by the dotnet cli correlation payload) -->
+    <HelixWorkItemPreCommand Include="export TEST_DOTNET_ROOT=${DOTNET_ROOT}"
+                             Condition="'$(IsHelixPosixShell)' == 'true'" />
+    <HelixWorkItemPreCommand Include="SET TEST_DOTNET_ROOT=%DOTNET_ROOT%"
+                             Condition="'$(IsHelixPosixShell)' != 'true'" />
+  </ItemGroup>
+
+  <!-- TODO: Add Helix work item PreCommands to install Node and Azurite -->
+
+  <Target Name="CollectHelixWorkItems"
+          Outputs="@(HelixWorkItem)" />
+</Project>

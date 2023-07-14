@@ -1,0 +1,16 @@
+<Project>
+  <Target Name="CollectHelixWorkItems"
+          Outputs="@(HelixWorkItem)">
+    <ItemGroup>
+      <_TargetFrameworks Remove="@(_TargetFrameworks)" />
+      <_TargetFrameworks Include="$(TargetFrameworks)" />
+    </ItemGroup>
+    <MSBuild Projects="$(MSBuildProjectFullPath)"
+             Targets="CollectHelixWorkItems"
+             Properties="TargetFramework=%(_TargetFrameworks.Identity)"
+             RemoveProperties="TargetFrameworks">
+      <Output TaskParameter="TargetOutputs"
+              ItemName="HelixWorkItem" />
+    </MSBuild>
+  </Target>
+</Project>
