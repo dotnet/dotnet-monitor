@@ -59,6 +59,20 @@ If necessary, update dependencies in the release branch.
 1. For new branches only, you need to setup a subscription using darc: `darc add-subscription --channel ".NET Core Tooling Release" --source-repo https://github.com/dotnet/diagnostics --target-repo https://github.com/dotnet/dotnet-monitor --target-branch release/8.x --update-frequency None --standard-automerge`
 1. Use `darc get-subscriptions --target-repo monitor` to see existing subscriptions.
 1. Use `darc trigger-subscriptions` to trigger an update. This will create a pull request that will update the Versions.details.xml file.
+1. Sometimes an existing subscription needs to be updated. For example, when updating from Preview 5 to Preview 6:
+
+```
+darc get-subscriptions --target-repo https://github.com/dotnet/dotnet-monitor --target-branch release/8.x
+https://github.com/dotnet/installer (.NET 8.0.1xx SDK Preview 5) ==> 'https://github.com/dotnet/dotnet-monitor' ('release/8.x')
+  - Id: 2f528213-5355-43ec-0bf5-08db410c84fe
+
+darc update-subscription --id 2f528213-5355-43ec-0bf5-08db410c84fe
+
+darc get-subscriptions --target-repo https://github.com/dotnet/dotnet-monitor --target-branch release/8.x
+https://github.com/dotnet/installer (.NET 8.0.1xx SDK Preview 6) ==> 'https://github.com/dotnet/dotnet-monitor' ('release/8.x')
+  - Id: 2f528213-5355-43ec-0bf5-08db410c84fe
+
+```
 
 ### Image Update Process
 
@@ -98,6 +112,6 @@ The release image is `mcr.microsoft.com/dotnet/monitor`. The tag list is https:/
 
 ## After the Release
 
-1. Change the `NightlyUpdateDockerFromMain` variable to `true` in the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) to begin the consumption of nightly builds into dotnet-docker.
+1. Change the `NightlyUpdateDockerFromMain` variable to `true` in the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) to begin the consumption of nightly builds into dotnet-docker. Note this should not necessarily be done right after the release, but after the merge from main to nightly in the dotnet-docker repo (such as https://github.com/dotnet/dotnet-docker/pull/4741).
 1. Review and merge the automatically create `Register new release information` PR.
 1. When necessary, update this document if its instructions were unclear or incorrect.

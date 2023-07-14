@@ -98,6 +98,8 @@ jobs:
       /m:1
 
     buildEnv:
+      # Indicate that tests based on Azurite should not be skipped if it is not initialized
+      TEST_AZURITE_MUST_INITIALIZE: 1
       # This is blank in public builds
       DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET: $(DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET)
 

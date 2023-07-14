@@ -232,11 +232,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         /// <summary>
-        /// Verifies that the /stacks route returns 404 if the stacks feature is not enabled.
+        /// Verifies that the /stacks route returns 404 if the stacks feature is disabled.
         /// </summary>
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
-        public Task TestFeatureNotEnabled(Architecture targetArchitecture)
+        public Task TestInProcessFeaturesEnabledCallStacksDisabled(Architecture targetArchitecture)
         {
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
@@ -259,16 +259,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureTool: runner =>
                 {
                     runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
-                    // Note that the Stacks experimental feature is not enabled
+                    runner.ConfigurationFromEnvironment.DisableCallStacks();
                 });
         }
 
         /// <summary>
-        /// Verifies that the /stacks route returns 404 if the in-process features are not enabled.
+        /// Verifies that the /stacks route returns 404 if the in-process features are disabled.
         /// </summary>
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
-        public Task TestInProcessFeaturesNotEnabled(Architecture targetArchitecture)
+        public Task TestInProcessFeaturesDisabledCallStacksEnabled(Architecture targetArchitecture)
         {
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
@@ -290,8 +290,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 },
                 configureTool: runner =>
                 {
-                    runner.EnableCallStacksFeature = true;
-                    // Note that the in-process features are not enabled
+                    runner.ConfigurationFromEnvironment.DisableInProcessFeatures();
+                    runner.ConfigurationFromEnvironment.EnableCallStacks();
                 });
         }
 
@@ -350,9 +350,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private void CollectStacksActionConfigureTool(MonitorCollectRunner runner, out Task ruleCompletedTask)
         {
             const string fileEgress = nameof(fileEgress);
-            runner.EnableCallStacksFeature = true;
             runner.ConfigurationFromEnvironment
                 .EnableInProcessFeatures()
+                .EnableCallStacks()
                 .AddFileSystemEgress(fileEgress, _tempDirectory.FullName)
                 .CreateCollectionRule("StacksCounterRule")
                 .SetEventCounterTrigger(options =>
@@ -394,8 +394,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 },
                 configureTool: runner =>
                 {
-                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
-                    runner.EnableCallStacksFeature = true;
+                    runner.ConfigurationFromEnvironment.EnableCallStacks();
 
                     configureTool?.Invoke(runner);
                 });
@@ -428,8 +427,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 toolRunner.ConnectionModeViaCommandLine = WebApi.DiagnosticPortConnectionMode.Listen;
                 toolRunner.DiagnosticPortPath = diagnosticPortPath;
                 toolRunner.DisableAuthentication = true;
-                toolRunner.ConfigurationFromEnvironment.EnableInProcessFeatures();
-                toolRunner.EnableCallStacksFeature = true;
+                toolRunner.ConfigurationFromEnvironment.EnableCallStacks();
 
                 configureTool?.Invoke(toolRunner);
 

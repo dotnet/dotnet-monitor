@@ -13,25 +13,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal class ExperimentalFlags : IExperimentalFlags
     {
+#pragma warning disable CA1823 // Avoid unused private fields
         private const string ExperimentalPrefix = ToolIdentifiers.StandardPrefix + "Experimental_";
+#pragma warning restore CA1823 // Avoid unused private fields
 
         // Feature flags
-        public const string Feature_CallStacks = ExperimentalPrefix + nameof(Feature_CallStacks);
-        public const string Feature_Exceptions = ExperimentalPrefix + nameof(Feature_Exceptions);
         public const string Feature_ParameterCapturing = ExperimentalPrefix + nameof(Feature_ParameterCapturing);
 
         // Behaviors
-        private readonly Lazy<bool> _isCallStacksEnabledLazy = new Lazy<bool>(() => ToolIdentifiers.IsEnvVarEnabled(Feature_CallStacks));
-
-        private readonly Lazy<bool> _isExceptionsEnabledLazy = new Lazy<bool>(() => ToolIdentifiers.IsEnvVarEnabled(Feature_Exceptions));
-
         private readonly Lazy<bool> _isParameterCapturingEnabledLazy = new Lazy<bool>(() => ToolIdentifiers.IsEnvVarEnabled(Feature_ParameterCapturing));
 
-
-        public bool IsCallStacksEnabled => _isCallStacksEnabledLazy.Value;
-
-        public bool IsExceptionsEnabled => _isExceptionsEnabledLazy.Value;
-
         public bool IsParameterCapturingEnabled => _isParameterCapturingEnabledLazy.Value;
+
+        private static bool IsFeatureEnabled(string environmentVariable)
+        {
+            string value = Environment.GetEnvironmentVariable(environmentVariable);
+
+            return string.Equals(EnabledTrueValue, value, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(EnabledOneValue, value, StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

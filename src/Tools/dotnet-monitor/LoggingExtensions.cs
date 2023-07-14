@@ -494,6 +494,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EgressProviderTypeNotExist);
 
+        private static readonly Action<ILogger, string, string, Exception> _profilerRuntimeIdentifier =
+            LoggerMessage.Define<string, string>(
+                eventId: LoggingEventIds.ProfilerRuntimeIdentifier.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_ProfilerRuntimeIdentifier);
+
+        private static readonly Action<ILogger, Exception> _startupHookApplyFailed =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.StartupHookApplyFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_StartupHookApplyFailed);
+
+        private static readonly Action<ILogger, int, Exception> _endpointInitializationFailed =
+            LoggerMessage.Define<int>(
+                eventId: LoggingEventIds.EndpointInitializationFailed.EventId(),
+                logLevel: LogLevel.Warning,
+                formatString: Strings.LogFormatString_EndpointInitializationFailed);
+
+        private static readonly Action<ILogger, int, Exception> _endpointRemovalFailed =
+            LoggerMessage.Define<int>(
+                eventId: LoggingEventIds.EndpointRemovalFailed.EventId(),
+                logLevel: LogLevel.Debug,
+                formatString: Strings.LogFormatString_EndpointRemovalFailed);
+
         private static readonly Action<ILogger, Exception> _unableToApplyHostingStartup =
             LoggerMessage.Define(
                 eventId: LoggingEventIds.UnableToApplyHostingStartup.EventId(),
@@ -921,7 +945,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _egressProviderTypeNotExist(logger, providerType, null);
         }
 
-        public static void UnableToApplyHostingStartup(this ILogger logger, Exception ex)
+        public static void ProfilerRuntimeIdentifier(this ILogger logger, string runtimeIdentifier, string source)
+        {
+            _profilerRuntimeIdentifier(logger, runtimeIdentifier, source, null);
+        }
+
+        public static void StartupHookApplyFailed(this ILogger logger, Exception ex)
+        {
+            _startupHookApplyFailed(logger, ex);
+        }
+
+        public static void EndpointInitializationFailed(this ILogger logger, int processId, Exception ex)
+        {
+            _endpointInitializationFailed(logger, processId, ex);
+        }
+
+        public static void EndpointRemovalFailed(this ILogger logger, int processId, Exception ex)
+        {
+            _endpointRemovalFailed(logger, processId, ex);
+        }
+
+                public static void UnableToApplyHostingStartup(this ILogger logger, Exception ex)
         {
             _unableToApplyHostingStartup(logger, ex);
         }

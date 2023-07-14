@@ -9,8 +9,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     public partial class TestDotNetHost
     {
-        private static Lazy<bool> s_HasHostInRepositoryLazy =
-            new(() => File.Exists(GetHostFromRepository()));
+        private static Lazy<bool> s_HasHostFullPath =
+            new(() => File.Exists(GetHostFullPath()));
 
         // The version is in the Major.Minor.Patch-label format; remove the label
         // and only parse the Major.Minor.Patch part.
@@ -26,15 +26,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             Path.GetFileNameWithoutExtension(ExeName) :
             ExeName;
 
-        public static bool HasHostInRepository => s_HasHostInRepositoryLazy.Value;
+        public static bool HasHostFullPath => s_HasHostFullPath.Value;
 
         public static string GetPath(Architecture? arch = null)
         {
-            string hostInRepositoryPath = GetHostFromRepository(arch);
+            string hostPath = GetHostFullPath(arch);
 
-            if (File.Exists(hostInRepositoryPath))
+            if (File.Exists(hostPath))
             {
-                return hostInRepositoryPath;
+                return hostPath;
             }
 
             // If the current repo enlistment has only ever been built and tested with Visual Studio,
@@ -46,17 +46,23 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                 && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VSAPPIDDIR")))
             {
-                Console.WriteLine($"'{hostInRepositoryPath}' does not exist, falling back to the system's version.");
+                Console.WriteLine($"'{hostPath}' does not exist, falling back to the system's version.");
                 return ExeName;
             }
 
-            throw new InvalidOperationException("Could not locate the dotnet host executable.");
+            throw new FileNotFoundException(null, hostPath);
         }
 
-        public static string GetHostFromRepository(Architecture? arch = null)
+        public static string GetHostFullPath(Architecture? arch = null)
         {
-            // e.g. <repoPath>/.dotnet
-            string dotnetDirPath = Path.Combine("..", "..", "..", "..", "..", ".dotnet");
+            // e.g. <TEST_DOTNET_ROOT>/dotnet
+            string dotnetDirPath = Environment.GetEnvironmentVariable("TEST_DOTNET_ROOT");
+            if (string.IsNullOrEmpty(dotnetDirPath))
+            {
+                // e.g. <repoPath>/.dotnet
+                dotnetDirPath = Path.Combine("..", "..", "..", "..", "..", ".dotnet");
+            }
+
             if (arch.HasValue && arch.Value != RuntimeInformation.OSArchitecture)
             {
                 // e.g. Append "\x86" to the path

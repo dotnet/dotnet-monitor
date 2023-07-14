@@ -44,11 +44,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public RootOptions ConfigurationFromEnvironment { get; } = new();
 
         /// <summary>
-        /// Determines whether the stacks feature is enabled.
-        /// </summary>
-        public bool EnableCallStacksFeature { get; set; }
-
-        /// <summary>
         /// Determines whether the parameter capturing feature is enabled.
         /// </summary>
         public bool EnableParameterCapturingFeature { get; set; }
@@ -163,12 +158,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             _adapter.Environment.Add("DotnetMonitorTestSettings__SharedConfigDirectoryOverride", SharedConfigDirectoryPath);
             // Override the user config directory
             _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
-
-            // Enable experimental stacks feature
-            if (EnableCallStacksFeature)
-            {
-                _adapter.Environment.Add(ExperimentalFlags.Feature_CallStacks, ToolIdentifiers.EnvVarEnabledValue);
-            }
 
             // Enable experimental parameter capturing feature
             if (EnableParameterCapturingFeature)
