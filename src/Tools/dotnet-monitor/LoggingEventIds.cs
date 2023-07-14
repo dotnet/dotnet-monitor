@@ -110,8 +110,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         StartupHookApplyFailed = 98,
         EndpointInitializationFailed = 99,
         EndpointRemovalFailed = 100,
-        UnableToApplyHostingStartup = 101,
-        UnableToApplyInProcessFeatureFlags = 102
+        WatchForStdinDisconnectFailure = 101,
+        UnableToApplyHostingStartup = 102,
+        UnableToApplyInProcessFeatureFlags = 103
     }
 
     internal static class LoggingEventIdsExtensions

@@ -26,13 +26,15 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(ContinuousIntegrationBuild)' == 'true'">
-    <TestRunnerAdditionalArguments>--blame "CollectHangDump;TestTimeout=15m"</TestRunnerAdditionalArguments>
+    <TestRunnerTestTimeoutMinutes>15</TestRunnerTestTimeoutMinutes>
+    <TestRunnerAdditionalArguments>--blame "CollectHangDump;TestTimeout=$(TestRunnerTestTimeoutMinutes)m"</TestRunnerAdditionalArguments>
   </PropertyGroup>
 
   <!-- Filter tests based on specified TestGroup -->
   <PropertyGroup Condition="'$(TestGroup)' == 'PR'">
     <!-- Only run tests for .NET 8 -->
-    <TestRunnerAdditionalArguments>$(TestRunnerAdditionalArguments) --filter "TargetFrameworkMoniker=Net80"</TestRunnerAdditionalArguments>
+    <TestRunnerFilterArguments>TargetFrameworkMoniker=Net80</TestRunnerFilterArguments>
+    <TestRunnerAdditionalArguments>$(TestRunnerAdditionalArguments) --filter "$(TestRunnerFilterArguments)"</TestRunnerAdditionalArguments>
   </PropertyGroup>
 
   <ItemGroup>
@@ -62,5 +64,6 @@
   </ItemGroup>
 
   <Import Project="$(RepositoryEngineeringDir)Analyzers.props" />
+  <Import Project="$(RepositoryEngineeringDir)Helix.props" />
   <Import Project="$(RepositoryEngineeringDir)native\naming.props" />
 </Project>

@@ -1,0 +1,164 @@
+<Project Sdk="Microsoft.DotNet.Helix.Sdk"
+         DefaultTargets="Test">
+
+  <PropertyGroup>
+    <HelixConfiguration>$(Configuration)</HelixConfiguration>
+    <HelixArchitecture>$(BuildArch)</HelixArchitecture>
+    <UseOpenQueues>true</UseOpenQueues>
+    <UseOpenQueues Condition="'$(HelixAccessToken)' != ''">false</UseOpenQueues>
+    <!-- Ensure dotnet correlation payloads match the tested RID -->
+    <DotNetCliRuntime>$(PackageRid)</DotNetCliRuntime>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(UseOpenQueues)' == 'true'">
+    <QueueSuffix>.open</QueueSuffix>
+    <!-- Open queues require a creator to be set. -->
+    <Creator Condition=" '$(USERNAME)' != '' ">$(USERNAME)</Creator>
+    <Creator Condition=" '$(USER)' != '' ">$(USER)</Creator>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SYSTEM_COLLECTIONURI)' == 'https://dev.azure.com/dnceng/'">
+    <HelixSourcePrefix Condition="'$(BUILD_REASON)' == 'Manual'">pr</HelixSourcePrefix>
+    <HelixSourcePrefix Condition="'$(BUILD_REASON)' == 'PullRequest'">pr</HelixSourcePrefix>
+    <HelixSourcePrefix Condition="'$(HelixSourcePrefix)' == ''">official</HelixSourcePrefix>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <HelixSourcePrefix Condition="'$(HelixSourcePrefix)' == ''">pr</HelixSourcePrefix>
+    <HelixSource>$(HelixSourcePrefix)/dotnet/dotnet-monitor</HelixSource>
+    <HelixSource Condition="'$(BUILD_SOURCEBRANCH)' != ''">$(HelixSource)/$(BUILD_SOURCEBRANCH)</HelixSource>
+    <HelixType>test/binaries/</HelixType>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <HelixAvailableTargetQueue>
+      <AdditionalProperties>Platform=$(HelixArchitecture)</AdditionalProperties>
+    </HelixAvailableTargetQueue>
+  </ItemDefinitionGroup>
+
+  <!-- List of all available Helix machines: https://helix.dot.net/ -->
+
+  <!-- Windows queues -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform(Windows))">
+    <!-- win-arm64 -->
+    <HelixAvailableTargetQueue Include="windows.11.arm64$(QueueSuffix)"
+                               Condition="'$(HelixArchitecture)' == 'arm64'">
+      <TestRunName>Windows 11 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+    </HelixAvailableTargetQueue>
+    <!-- win-x64 -->
+    <HelixAvailableTargetQueue Include="windows.10.amd64.client$(QueueSuffix)"
+                               Condition="'$(HelixArchitecture)' == 'x64'">
+      <TestRunName>Windows 10 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+    </HelixAvailableTargetQueue>
+    <!-- win-x86 -->
+    <!-- Windows x64 clients can run dotnet x86 natively -->
+    <HelixAvailableTargetQueue Include="windows.10.amd64.client$(QueueSuffix)"
+                               Condition="'$(HelixArchitecture)' == 'x86'">
+      <TestRunName>Windows 10 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+    </HelixAvailableTargetQueue>
+  </ItemGroup>
+
+  <!-- Linux gnu libc queues -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform(Linux)) and !$(PackageRid.Contains(musl))">
+    <!-- linux-arm64 -->
+    <HelixAvailableTargetQueue Include="ubuntu.1804.armarch$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-11-helix-arm64v8"
+                               Condition="'$(HelixArchitecture)' == 'arm64'">
+      <TestRunName>Debian 11 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+    </HelixAvailableTargetQueue>
+    <HelixAvailableTargetQueue Include="ubuntu.1804.armarch$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-helix-arm64v8"
+                               Condition="'$(HelixArchitecture)' == 'arm64'">
+      <TestRunName>Ubuntu 18.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+    </HelixAvailableTargetQueue>
+    <!-- linux-x64 -->
+    <HelixAvailableTargetQueue Include="ubuntu.1804.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-11-helix-amd64"
+                               Condition="'$(HelixArchitecture)' == 'x64'">
+      <TestRunName>Debian 11 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+    </HelixAvailableTargetQueue>
+    <HelixAvailableTargetQueue Include="ubuntu.1804.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-helix-amd64"
+                               Condition="'$(HelixArchitecture)' == 'x64'">
+      <TestRunName>Mariner 2.0 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+    </HelixAvailableTargetQueue>
+    <HelixAvailableTargetQueue Include="ubuntu.1804.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-helix-amd64"
+                               Condition="'$(HelixArchitecture)' == 'x64'">
+      <TestRunName>Ubuntu 18.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+    </HelixAvailableTargetQueue>
+  </ItemGroup>
+
+  <!-- Linux musl libc queues -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform(Linux)) and $(PackageRid.Contains(musl))">
+    <!-- linux-musl-arm64 -->
+    <HelixAvailableTargetQueue Include="ubuntu.1804.armarch$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.15-helix-arm64v8"
+                               Condition="'$(HelixArchitecture)' == 'arm64'">
+      <TestRunName>Alpine 3.15 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+    </HelixAvailableTargetQueue>
+    <!-- linux-musl-x64 -->
+    <HelixAvailableTargetQueue Include="ubuntu.1804.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.15-helix-amd64"
+                               Condition="'$(HelixArchitecture)' == 'x64'">
+      <TestRunName>Alpine 3.15 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+    </HelixAvailableTargetQueue>
+  </ItemGroup>
+
+  <!-- OSX queues -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform(OSX))">
+    <!-- osx-arm64 -->
+    <HelixAvailableTargetQueue Include="osx.13.arm64$(QueueSuffix)"
+                               Condition="'$(HelixArchitecture)' == 'arm64'">
+      <TestRunName>OSX 13 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+    </HelixAvailableTargetQueue>
+    <!-- osx-x64 -->
+    <HelixAvailableTargetQueue Include="osx.13.amd64$(QueueSuffix)"
+                               Condition="'$(HelixArchitecture)' == 'x64'">
+      <TestRunName>OSX 13 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+    </HelixAvailableTargetQueue>
+  </ItemGroup>
+
+  <ItemGroup>
+    <HelixTargetQueue Include="@(HelixAvailableTargetQueue)">
+      <AdditionalProperties>%(AdditionalProperties);Configuration=$(HelixConfiguration)</AdditionalProperties>
+    </HelixTargetQueue>
+  </ItemGroup>
+
+  <!-- Correlation Payload: SDK (to use "dotnet test") -->
+  <PropertyGroup>
+    <IncludeDotNetCli>true</IncludeDotNetCli>
+    <DotNetCliPackageType>sdk</DotNetCliPackageType>
+    <DotNetCliVersion>$(MicrosoftDotnetSdkInternalVersion)</DotNetCliVersion>
+  </PropertyGroup>
+
+  <!-- Correlation Payload: AspNetCore (these packages also contain corresponding NetCoreApp version) -->
+  <ItemGroup>
+    <AdditionalDotNetPackage Include="$(MicrosoftAspNetCoreApp60Version)">
+      <PackageType>aspnetcore-runtime</PackageType>
+    </AdditionalDotNetPackage>
+    <AdditionalDotNetPackage Include="$(MicrosoftAspNetCoreApp70Version)">
+      <PackageType>aspnetcore-runtime</PackageType>
+    </AdditionalDotNetPackage>
+    <AdditionalDotNetPackage Include="$(MicrosoftAspNetCoreApp80Version)">
+      <PackageType>aspnetcore-runtime</PackageType>
+    </AdditionalDotNetPackage>
+  </ItemGroup>
+
+  <!-- Correlation Payload: Common Helix payload -->
+  <ItemGroup>
+    <HelixCorrelationPayload Include="$(RepoRoot)eng\helix\payload" />
+  </ItemGroup>
+
+  <!-- Correlation Payload: Built binaries -->
+  <ItemGroup>
+    <HelixCorrelationPayload Include="$(ArtifactsBinDir)" />
+  </ItemGroup>
+
+  <!-- Collect HelixWorkItems from each project that participates in testing. -->
+  <Target Name="CollectHelixWorkItems"
+          BeforeTargets="BeforeTest">
+    <ItemGroup>
+      <ProjectWithHelixWorkItems Include="$(RepoRoot)src\Tests\**\*.*proj" />
+    </ItemGroup>
+    <MSBuild Projects="@(ProjectWithHelixWorkItems)"
+             Targets="CollectHelixWorkItems"
+             SkipNonexistentTargets="true">
+      <Output TaskParameter="TargetOutputs"
+              ItemName="HelixWorkItem" />
+    </MSBuild>
+  </Target>
+</Project>

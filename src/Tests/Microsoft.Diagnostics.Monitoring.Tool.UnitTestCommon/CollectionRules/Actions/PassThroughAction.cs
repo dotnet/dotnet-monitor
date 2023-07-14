@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     internal sealed class PassThroughActionFactory : ICollectionRuleActionFactory<PassThroughOptions>
     {
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, PassThroughOptions options)
+        public ICollectionRuleAction Create(IProcessInfo processInfo, PassThroughOptions options)
         {
             return new PassThroughAction(options);
         }
