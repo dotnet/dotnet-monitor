@@ -5,6 +5,8 @@ using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
 {
@@ -17,11 +19,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
             _logger = logger;
         }
 
-        public IFileProviderFactory Initialize()
+        public Task<IFileProviderFactory> InitializeAsync(CancellationToken cancellationToken)
         {
             _logger.SharedLibraryPath(BuildOutput.RootPath);
 
-            return new Factory();
+            return Task.FromResult<IFileProviderFactory>(new Factory());
         }
 
         private sealed class Factory : IFileProviderFactory

@@ -5,11 +5,11 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32.SafeHandles;
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Security.Cryptography;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
 {
@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
             _sharedFileHandles.Clear();
         }
 
-        public IFileProviderFactory Initialize()
+        public async Task<IFileProviderFactory> InitializeAsync(CancellationToken cancellationToken)
         {
             // Copy the shared libraries to the path specified by Storage:SharedLibraryPath.
             // Copying, instead of linking or using them in-place, prevents file locks from the target process.
@@ -70,9 +70,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
             {
                 Queue<string> subDirectories = new();
                 subDirectories.Enqueue(string.Empty); // The root of the shared library source directory
-                using SHA256 hasher = SHA256.Create();
-                Span<byte> sourceHash = stackalloc byte[32];
-                Span<byte> targetHash = stackalloc byte[32];
 
                 // Go through each directory and validate the existing files are exactly the same as expected
                 // or create new files if they do not exist. Hold onto the file handles to prevent modification
@@ -89,11 +86,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
                         if (File.Exists(targetFilePath))
                         {
                             string sourceFilePath = sourceFiles[i].FullName;
-                            using SafeFileHandle sourceHandle = File.OpenHandle(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                            using SafeFileHandle sourceHandle = File.OpenHandle(
+                                sourceFilePath,
+                                FileMode.Open,
+                                FileAccess.Read,
+                                FileShare.Read,
+                                FileOptions.Asynchronous | FileOptions.SequentialScan);
                             long sourceLength = RandomAccess.GetLength(sourceHandle);
 
                             // Open target file handle for reading and only allow read sharing to prevent modification of file while in use
-                            SafeFileHandle targetHandle = File.OpenHandle(targetFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                            SafeFileHandle targetHandle = File.OpenHandle(
+                                targetFilePath,
+                                FileMode.Open,
+                                FileAccess.Read,
+                                FileShare.Read,
+                                FileOptions.Asynchronous | FileOptions.SequentialScan);
                             _sharedFileHandles.Add(targetHandle);
                             long targetLength = RandomAccess.GetLength(targetHandle);
 
@@ -108,11 +115,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
                                         sourceFilePath));
                             }
 
-                            // Check that they have the same hash value
-                            ComputeHash(sourceHandle, sourceHash);
-                            ComputeHash(targetHandle, targetHash);
+                            // Check that they have the same content
+                            using FileStream sourceStream = new(sourceHandle, FileAccess.Read);
+                            using FileStream targetStream = new(targetHandle, FileAccess.Read);
 
-                            if (!sourceHash.SequenceEqual(targetHash))
+                            if (!await sourceStream.HasSameContentAsync(targetStream, cancellationToken))
                             {
                                 throw new InvalidOperationException(
                                     string.Format(
@@ -125,7 +132,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
                         else
                         {
                             // Open target file handle for writing and only allow read sharing to prevent modification of file while in use
-                            SafeFileHandle targetHandle = File.OpenHandle(targetFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.Read, FileOptions.WriteThrough);
+                            SafeFileHandle targetHandle = File.OpenHandle(
+                                targetFilePath,
+                                FileMode.CreateNew,
+                                FileAccess.Write,
+                                FileShare.Read,
+                                FileOptions.WriteThrough | FileOptions.Asynchronous);
                             _sharedFileHandles.Add(targetHandle);
                             RandomAccess.Write(targetHandle, File.ReadAllBytes(sourceFiles[i].FullName), 0);
                         }
@@ -144,21 +156,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
             _logger.SharedLibraryPath(sharedLibraryPath);
 
             return new Factory(sharedLibraryPath);
-        }
-
-        private static void ComputeHash(SafeFileHandle handle, Span<byte> destination)
-        {
-            int length = (int)RandomAccess.GetLength(handle);
-            byte[] content = ArrayPool<byte>.Shared.Rent(length);
-            try
-            {
-                RandomAccess.Read(handle, content, 0);
-                SHA256.HashData(content, destination);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(content);
-            }
         }
 
         private sealed class Factory : IFileProviderFactory

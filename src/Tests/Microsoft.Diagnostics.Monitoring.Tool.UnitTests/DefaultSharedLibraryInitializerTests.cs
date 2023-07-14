@@ -6,6 +6,8 @@ using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Extensions.FileProviders;
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -36,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Validate that initialization fails if the source directory does not exist.
         /// </summary>
         [Fact]
-        public void DefaultSharedLibraryInitializer_SourceNotExist_InitializeThrows()
+        public async Task DefaultSharedLibraryInitializer_SourceNotExist_InitializeThrows()
         {
             DefaultSharedLibraryPathProvider provider = new(
                 Path.Combine(_sourceDir.FullName, "doesNotExist"),
@@ -44,14 +46,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             using DefaultSharedLibraryInitializer initializer = new(provider, _logger);
 
-            Assert.Throws<DirectoryNotFoundException>(initializer.Initialize);
+            await Assert.ThrowsAsync<DirectoryNotFoundException>(() => initializer.InitializeAsync(CancellationToken.None));
         }
 
         /// <summary>
         /// Validate that initialization succeeds when there is not target directory.
         /// </summary>
         [Fact]
-        public void DefaultSharedLibraryInitializer_SourceNoTarget_ReturnsSourcePath()
+        public async Task DefaultSharedLibraryInitializer_SourceNoTarget_ReturnsSourcePath()
         {
             // Arrange
             string SourceFileName = "source.txt";
@@ -62,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Act
             using DefaultSharedLibraryInitializer initializer = new(provider, _logger);
 
-            IFileProviderFactory factory = initializer.Initialize();
+            IFileProviderFactory factory = await initializer.InitializeAsync(CancellationToken.None);
 
             // Assert
             Assert.NotNull(factory);
@@ -80,7 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Validate that files copied to the target directory are readable.
         /// </summary>
         [Fact]
-        public void DefaultSharedLibraryInitializer_SourceAndTarget_TargetReadAllowed()
+        public async Task DefaultSharedLibraryInitializer_SourceAndTarget_TargetReadAllowed()
         {
             // Arrange
             string SourceFileName = "source.txt";
@@ -92,7 +94,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Act
             using DefaultSharedLibraryInitializer initializer = new(provider, _logger);
 
-            IFileProviderFactory factory = initializer.Initialize();
+            IFileProviderFactory factory = await initializer.InitializeAsync(CancellationToken.None);
 
             // Assert
             Assert.NotNull(factory);
@@ -117,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// during the user of the initializer.
         /// </summary>
         [Fact]
-        public void DefaultSharedLibraryInitializer_SourceAndTarget_TargetModifyDenied()
+        public async Task DefaultSharedLibraryInitializer_SourceAndTarget_TargetModifyDenied()
         {
             // Arrange
             string SourceFileName = "source.txt";
@@ -130,7 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Act
             using DefaultSharedLibraryInitializer initializer = new(provider, _logger);
 
-            initializer.Initialize();
+            await initializer.InitializeAsync(CancellationToken.None);
 
             // Assert
             Assert.True(File.Exists(TargetFilePath));
@@ -143,7 +145,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Validate that files copied to the target directory can be edited after release of the initializer.
         /// </summary>
         [Fact]
-        public void DefaultSharedLibraryInitializer_SourceAndTarget_TargetAllowWriteAfterRelease()
+        public async Task DefaultSharedLibraryInitializer_SourceAndTarget_TargetAllowWriteAfterRelease()
         {
             // Arrange
             string SourceFileName = "source.txt";
@@ -156,7 +158,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Act
             using (DefaultSharedLibraryInitializer initializer = new(provider, _logger))
             {
-                initializer.Initialize();
+                await initializer.InitializeAsync(CancellationToken.None);
 
                 // Assert
                 Assert.Throws<IOException>(() => CreateTargetFileWriter(TargetFilePath));
@@ -169,7 +171,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Validate that files copied to the target directory can be deleted after release of the initializer.
         /// </summary>
         [Fact]
-        public void DefaultSharedLibraryInitializer_SourceAndTarget_TargetAllowDeleteAfterRelease()
+        public async Task DefaultSharedLibraryInitializer_SourceAndTarget_TargetAllowDeleteAfterRelease()
         {
             // Arrange
             string SourceFileName = "source.txt";
@@ -182,7 +184,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Act
             using (DefaultSharedLibraryInitializer initializer = new(provider, _logger))
             {
-                initializer.Initialize();
+                await initializer.InitializeAsync(CancellationToken.None);
 
                 // Assert
                 Assert.Throws<IOException>(() => File.Delete(TargetFilePath));
@@ -195,7 +197,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Validate that initialization will succeed if that target directory already has the files cached.
         /// </summary>
         [Fact]
-        public void DefaultSharedLibraryInitializer_SourceAndTarget_TargetAlreadyCached()
+        public async Task DefaultSharedLibraryInitializer_SourceAndTarget_TargetAlreadyCached()
         {
             // Arrange
             string SourceFileName = "source.txt";
@@ -208,7 +210,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Act
             using (DefaultSharedLibraryInitializer initializer = new(provider, _logger))
             {
-                initializer.Initialize();
+                await initializer.InitializeAsync(CancellationToken.None);
             }
 
             // Assert
@@ -216,7 +218,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             using (DefaultSharedLibraryInitializer initializer = new(provider, _logger))
             {
-                initializer.Initialize();
+                await initializer.InitializeAsync(CancellationToken.None);
             }
         }
 
@@ -225,7 +227,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// but the files have been modified to be different.
         /// </summary>
         [Fact]
-        public void DefaultSharedLibraryInitializer_SourceModifiedTarget_InitializeThrows()
+        public async Task DefaultSharedLibraryInitializer_SourceModifiedTarget_InitializeThrows()
         {
             // Arrange
             string SourceFileName = "source.txt";
@@ -238,7 +240,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Act
             using (DefaultSharedLibraryInitializer initializer = new(provider, _logger))
             {
-                initializer.Initialize();
+                await initializer.InitializeAsync(CancellationToken.None);
             }
 
             using (StreamWriter writer = CreateTargetFileWriter(TargetFilePath))
@@ -249,7 +251,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             // Assert
             using (DefaultSharedLibraryInitializer initializer = new(provider, _logger))
             {
-                Assert.Throws<InvalidOperationException>(initializer.Initialize);
+                await Assert.ThrowsAsync<InvalidOperationException>(() => initializer.InitializeAsync(CancellationToken.None));
             }
         }
 
