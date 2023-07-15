@@ -15,6 +15,7 @@
     <SignAndNotarizeRuntimeIdentifiers>osx-arm64;osx-x64</SignAndNotarizeRuntimeIdentifiers>
     <DefaultRuntimeIdentifiers>$(SignOnlyRuntimeIdentifiers);$(SignAndNotarizeRuntimeIdentifiers)</DefaultRuntimeIdentifiers>
     <DisableCustomBlobStoragePublishing Condition="'$(DisableCustomBlobStoragePublishing)' == ''">false</DisableCustomBlobStoragePublishing>
+    <TestRunnerTestTimeoutMinutes>15</TestRunnerTestTimeoutMinutes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">
@@ -26,7 +27,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(ContinuousIntegrationBuild)' == 'true'">
-    <TestRunnerTestTimeoutMinutes>15</TestRunnerTestTimeoutMinutes>
     <TestRunnerAdditionalArguments>--blame "CollectHangDump;TestTimeout=$(TestRunnerTestTimeoutMinutes)m"</TestRunnerAdditionalArguments>
   </PropertyGroup>
 
