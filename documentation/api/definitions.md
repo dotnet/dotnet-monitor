@@ -45,7 +45,9 @@ First Available: 8.0 Preview 7
 |---|---|---|
 | `stacks` | [CallStack](#callstack)[] | List of all managed stacks at the time of collection. |
 
-## CollectionRuleDescription (6.3+)
+## CollectionRuleDescription
+
+First Available: 6.3
 
 Object describing the basic state of a collection rule for the executing instance of `dotnet monitor`.
 
@@ -54,7 +56,9 @@ Object describing the basic state of a collection rule for the executing instanc
 | State | [CollectionRuleState](#collectionrulestate-63) | Indicates what state the collection rule is in for the current process. |
 | StateReason | string | Human-readable explanation for the current state of the collection rule. |
 
-## CollectionRuleDetailedDescription (6.3+)
+## CollectionRuleDetailedDescription
+
+First Available: 6.3
 
 Object describing the detailed state of a collection rule for the executing instance of `dotnet monitor`.
 
@@ -69,7 +73,9 @@ Object describing the detailed state of a collection rule for the executing inst
 | SlidingWindowDurationCountdown | TimeSpan? | The amount of time remaining before the collection rule will no longer be throttled. |
 | RuleFinishedCountdown | TimeSpan? | The amount of time remaining before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely. |
 
-## CollectionRuleState (6.3+)
+## CollectionRuleState
+
+First Available: 6.3
 
 Enumeration that describes the current state of the collection rule.
 
@@ -162,6 +168,20 @@ Object describing the list of event providers, keywords, event levels, and addit
     "BufferSizeInMB": 1024
 }
 ```
+
+## ExceptionInstance
+
+Object describing an exception instance.
+
+| Name | Type | Description |
+|---|---|---|
+| `id` | int | Unique identifier of the exception instance. |
+| `timestamp` | string | The UTC date and time in the ISO 8601 format of when the current exception was observed. |
+| `typeName` | string | The name of the current exception type, including the namespace and parent type names if it is a nested type. |
+| `moduleName` | string | The name of the module in which the current exception type exists. |
+| `message` | string | The message that describes the current exception. |
+| `innerExceptions` | int[] | The IDs of the [ExceptionInstance](#exceptioninstance)s that are the inner exceptions of the current exception. |
+| `callStack` | [CallStack](#callstack) | The call stack of the current exception, if it was thrown. |
 
 ## ExtensionMode
 
@@ -285,7 +305,9 @@ Enumeration that describes the type of metrics a provider consumes.
 | `code` | string | Error code representing the failure. |
 | `message` | string | Detailed error message. |
 
-## OperationProcessInfo (6.3+)
+## OperationProcessInfo
+
+First Available: 6.3
 
 The process on which the egress operation is performed.
 
