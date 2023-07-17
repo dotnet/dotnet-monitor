@@ -33,6 +33,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             public Guid OperationId { get; set; }
 
             public ISet<string> Tags { get; set; }
+
+            public TaskCompletionSource TaskCompletionSource { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         private readonly Dictionary<Guid, EgressEntry> _requests = new();
@@ -47,7 +49,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _serviceProvider = serviceProvider;
         }
 
+        public async Task<ExecutionResult<EgressResult>> ExecuteOperation(IEgressOperation egressOperation)
+        {
+            // Collection Rules do not follow request limits.
+
+            EgressEntry entry = await AddOperationInternal(egressOperation, RequestLimitTracker.Unlimited);
+
+            await entry?.TaskCompletionSource.Task;
+
+            return entry?.ExecutionResult;
+        }
+
         public async Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey)
+        {
+            EgressEntry entry = await AddOperationInternal(egressOperation, limitKey);
+            return entry.OperationId;
+        }
+
+        private async Task<EgressEntry> AddOperationInternal(IEgressOperation egressOperation, string limitKey)
         {
             egressOperation.Validate(_serviceProvider);
 
@@ -64,21 +83,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             var request = new EgressRequest(operationId, egressOperation, limitTracker);
+            var egressEntry = new EgressEntry
+            {
+                State = Models.OperationState.Running,
+                EgressRequest = request,
+                OperationId = operationId,
+                Tags = request.EgressOperation.Tags
+            };
+
             lock (_requests)
             {
                 //Add operation object to central table.
-                _requests.Add(operationId,
-                    new EgressEntry
-                    {
-                        State = Models.OperationState.Running,
-                        EgressRequest = request,
-                        OperationId = operationId,
-                        Tags = request.EgressOperation.Tags
-                    });
+                _requests.Add(operationId, egressEntry);
             }
             await _taskQueue.EnqueueAsync(request);
 
-            return operationId;
+            return egressEntry;
         }
 
         public void StopOperation(Guid operationId, Action<Exception> onStopException)
@@ -129,6 +149,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 entry.State = Models.OperationState.Cancelled;
                 entry.EgressRequest.CancellationTokenSource.Cancel();
                 entry.EgressRequest.Dispose();
+
+                entry.TaskCompletionSource.TrySetCanceled();
             }
         }
 
@@ -158,6 +180,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     entry.State = Models.OperationState.Failed;
                 }
+
+                entry.TaskCompletionSource.TrySetResult();
             }
         }
 

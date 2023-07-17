@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <IsHelixPosixShell>true</IsHelixPosixShell>
+    <IsHelixPosixShell Condition="$(HelixTargetQueue.Contains('windows'))">false</IsHelixPosixShell>
+  </PropertyGroup>
+</Project>

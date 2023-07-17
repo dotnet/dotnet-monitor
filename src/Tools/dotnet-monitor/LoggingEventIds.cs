@@ -109,7 +109,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ProfilerRuntimeIdentifier = 97,
         StartupHookApplyFailed = 98,
         EndpointInitializationFailed = 99,
-        EndpointRemovalFailed = 100
+        EndpointRemovalFailed = 100,
+        WatchForStdinDisconnectFailure = 101
     }
 
     internal static class LoggingEventIdsExtensions

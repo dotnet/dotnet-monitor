@@ -488,14 +488,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_StartupHookInstructions);
 
+        private static readonly Action<ILogger, Exception> _unableToWatchForDisconnect =
+            LoggerMessage.Define(
+                eventId: LoggingEventIds.WatchForStdinDisconnectFailure.EventId(),
+                logLevel: LogLevel.Error,
+                formatString: Strings.LogFormatString_UnableToWatchForDisconnect);
+
         private static readonly Action<ILogger, string, Exception> _egressProviderTypeNotExist =
             LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.EgressProviderTypeNotExist.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_EgressProviderTypeNotExist);
 
-        private static readonly Action<ILogger, string, Exception> _profilerRuntimeIdentifier =
-            LoggerMessage.Define<string>(
+        private static readonly Action<ILogger, string, string, Exception> _profilerRuntimeIdentifier =
+            LoggerMessage.Define<string, string>(
                 eventId: LoggingEventIds.ProfilerRuntimeIdentifier.EventId(),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_ProfilerRuntimeIdentifier);
@@ -928,14 +934,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _startupHookInstructions(logger, startupHookLibraryPath, null);
         }
 
+        public static void UnableToWatchForDisconnect(this ILogger logger, Exception exception)
+        {
+            _unableToWatchForDisconnect(logger, exception);
+        }
+
         public static void EgressProviderTypeNotExist(this ILogger logger, string providerType)
         {
             _egressProviderTypeNotExist(logger, providerType, null);
         }
 
-        public static void ProfilerRuntimeIdentifier(this ILogger logger, string runtimeIdentifier)
+        public static void ProfilerRuntimeIdentifier(this ILogger logger, string runtimeIdentifier, string source)
         {
-            _profilerRuntimeIdentifier(logger, runtimeIdentifier, null);
+            _profilerRuntimeIdentifier(logger, runtimeIdentifier, source, null);
         }
 
         public static void StartupHookApplyFailed(this ILogger logger, Exception ex)

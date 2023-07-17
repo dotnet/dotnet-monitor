@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         /// <inheritdoc/>
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, object options)
+        public ICollectionRuleAction Create(IProcessInfo processInfo, object options)
         {
             TOptions typedOptions = options as TOptions;
             if (null != options && null == typedOptions)
@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 throw new ArgumentException(nameof(options));
             }
 
-            return _factory.Create(endpointInfo, typedOptions);
+            return _factory.Create(processInfo, typedOptions);
         }
     }
 }

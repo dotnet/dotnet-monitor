@@ -95,8 +95,6 @@ jobs:
     variables:
     - JobName: ${{ parameters.prefix }}_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
     - _BuildConfig: ${{ parameters.configuration }}
-    - _HelixType: build/product
-    - _HelixBuildConfig: ${{ parameters.configuration }}
     - _InternalInstallArgs: ''
     - _InternalBuildArgs: ''
     - ${{ each variable in parameters.variables }}:

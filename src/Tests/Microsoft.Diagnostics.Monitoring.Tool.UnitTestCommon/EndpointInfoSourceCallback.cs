@@ -59,6 +59,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 timeout);
         }
 
+        public async Task<IProcessInfo> WaitAddedProcessInfoAsync(AppRunner runner, TimeSpan timeout)
+        {
+            IEndpointInfo endpointInfo = await WaitAddedEndpointInfoAsync(runner, timeout);
+            return await ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo, timeout);
+        }
+
         public Task<IEndpointInfo> WaitRemovedEndpointInfoAsync(AppRunner runner, TimeSpan timeout)
         {
             return WaitForCompletionAsync(
