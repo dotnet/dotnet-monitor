@@ -47,6 +47,6 @@ Once you've added the `$schema` property, you should have support for completion
 
 ## Garbage Collector Mode
 
-By default `dotnet monitor` (7.0+) will use Workstation GC mode, unless running in one of the official [docker images](../docker.md) where it will use Server GC mode by default but will fallback to Workstation mode if only one logical CPU core is available.
+Starting in 7.0, by default `dotnet monitor` will use Workstation GC mode, unless running in one of the official [docker images](../docker.md) where it will use Server GC mode by default but will fallback to Workstation mode if only one logical CPU core is available.
 
 You can learn more about the different GC modes [here](https://learn.microsoft.com/aspnet/core/performance/memory?view=aspnetcore-6.0#workstation-gc-vs-server-gc), and how to configure the default GC mode [here](https://learn.microsoft.com/dotnet/core/runtime-config/garbage-collector#workstation-vs-server).
