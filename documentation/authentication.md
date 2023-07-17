@@ -5,7 +5,7 @@
 
 Authenticated requests to `dotnet monitor` help protect sensitive diagnostic artifacts from unauthorized users and lower privileged processes. `dotnet monitor` can be configured to use any one of the following authentication modes:
 - [API Key](#api-key-authentication)
-- [Azure Active Directory Authentication](#azure-active-directory-authentication) (7.1+)
+- [Azure Active Directory Authentication](#azure-active-directory-authentication)
 - [Windows Authentication](#windows-authentication)
 
 It is also possible, although strongly not recommended, to [disable authentication](#disabling-authentication).
@@ -15,6 +15,8 @@ It is also possible, although strongly not recommended, to [disable authenticati
 The recommended configuration for `dotnet monitor` is to use [Azure Active Directory Authentication](#azure-active-directory-authentication) over a channel secured with TLS.
 
 ## Azure Active Directory Authentication
+
+First Available: 7.1
 
 Azure Active Directory integration (referred to as Azure AD) is the recommended authentication mechanism for `dotnet monitor` as it does not require storing any secrets or rotating keys yourself. To enable Azure AD authentication:
 

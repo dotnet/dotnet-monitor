@@ -1,7 +1,9 @@
 
 ### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fcollectionrules-list)
 
-# Collection Rules - List (6.3+)
+# Collection Rules - List
+
+First Available: 6.3
 
 Get the basic state of all collection rules for all processes or for the specified process.
 
