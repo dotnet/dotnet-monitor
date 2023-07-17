@@ -93,7 +93,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private sealed class AutoDeleteFileStream : FileStream
         {
             public AutoDeleteFileStream(string path) : base(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete,
-                bufferSize: 4096, FileOptions.DeleteOnClose)
+                StreamDefaults.BufferSize, FileOptions.DeleteOnClose)
             {
             }
 

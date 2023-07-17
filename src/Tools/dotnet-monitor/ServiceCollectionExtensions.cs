@@ -323,6 +323,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingletonForwarder<ISharedLibraryService, SharedLibraryService>();
             services.AddHostedServiceForwarder<SharedLibraryService>();
             services.TryAddSingleton<ISharedLibraryInitializer, DefaultSharedLibraryInitializer>();
+            services.AddSingleton<DefaultSharedLibraryPathProvider>();
             return services;
         }
 
