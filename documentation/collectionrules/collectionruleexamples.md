@@ -224,7 +224,9 @@ This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1
 
 This rule, named "HighCpuUsage", will trigger when a process named "MyProcessName" causes CPU usage to exceed 60% for greater than 10 seconds. If the rule is triggered, a Cpu trace will be collected for the default duration (30 seconds), and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the trace to the local filesystem). There is a default `ActionCount` limit stating that this rule may only be triggered 5 times.
 
-## Collect Logs - Custom Histogram Metrics (`EventMeter` Trigger) (7.1+)
+## Collect Logs - Custom Histogram Metrics (`EventMeter` Trigger)
+
+First Available: 7.1
 
 <details>
   <summary>JSON</summary>
