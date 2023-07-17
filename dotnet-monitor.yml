@@ -75,9 +75,10 @@ stages:
     - template: /eng/pipelines/jobs/platform-matrix.yml
       parameters:
         jobTemplate: /eng/pipelines/jobs/test-binaries.yml
-        includeDebug: true
+        includeArm64: ${{ ne(variables['System.TeamProject'], 'public') }}
         jobParameters:
           testGroup: ${{ parameters.testGroup }}
+          useHelix: true
 
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   - stage: Archive
