@@ -26,6 +26,5 @@ stages:
   - template: /eng/pipelines/jobs/platform-matrix.yml
     parameters:
       jobTemplate: /eng/pipelines/jobs/build-codeql.yml
-      includeArm64: true
       jobParameters:
         enableTsa: ${{ parameters.enableTsa }}
