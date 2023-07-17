@@ -59,7 +59,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
                     exception.Message,
                     frameIds,
                     context.Timestamp,
-                    GetInnerExceptionsIds(exception)
+                    GetInnerExceptionsIds(exception),
+                    context.ActivityId,
+                    context.ActivityIdFormat
                     );
             }
 

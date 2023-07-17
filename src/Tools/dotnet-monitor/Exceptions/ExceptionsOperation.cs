@@ -103,6 +103,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 writer.WriteString("moduleName", instance.ModuleName);
                 writer.WriteString("message", instance.Message);
 
+                if (IncludeActivityId(instance))
+                {
+                    writer.WriteString("activityId", instance.ActivityId);
+                    writer.WriteString("activityIdFormat", instance.ActivityIdFormat.ToString());
+                }
+
                 writer.WriteStartObject("callStack");
                 writer.WriteNumber("threadId", instance.CallStack.ThreadId);
                 writer.WriteString("threadName", instance.CallStack.ThreadName);
@@ -183,6 +189,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             await writer.WriteLineAsync();
             await WriteTextExceptionFormat(writer, currentInstance);
             await WriteTextInnerExceptionsAndStackFrames(writer, currentInstance, priorInstances);
+
+            if (IncludeActivityId(currentInstance))
+            {
+                // ActivityIdFormat is intentionally being omitted
+                await writer.WriteLineAsync();
+                await writer.WriteAsync($"Activity ID: {currentInstance.ActivityId}");
+            }
 
             await writer.WriteLineAsync();
             await writer.WriteLineAsync();
@@ -281,6 +294,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 await writer.WriteAsync(": ");
                 await writer.WriteAsync(instance.Message);
             }
+        }
+
+        private static bool IncludeActivityId(IExceptionInstance instance)
+        {
+            return !string.IsNullOrEmpty(instance.ActivityId) && instance.ActivityId != Guid.Empty.ToString();
         }
     }
 }

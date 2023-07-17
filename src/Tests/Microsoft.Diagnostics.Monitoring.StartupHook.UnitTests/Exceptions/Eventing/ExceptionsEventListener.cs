@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Threading;
 
@@ -38,7 +39,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                                 ToString(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage]),
                                 ToArray<ulong>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.StackFrameIds]),
                                 ToType<DateTime>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.Timestamp]),
-                                ToArray<ulong>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds])
+                                ToArray<ulong>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds]),
+                                ToString(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ActivityId]),
+                                ToEnum<ActivityIdFormat>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ActivityIdFormat])
                             ));
                         break;
                     case ExceptionEvents.EventIds.ExceptionGroup:
@@ -115,6 +118,16 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             return ToType<ulong>(value);
         }
 
+        private static T ToEnum<T>(object? value)
+        {
+            if (value != null)
+            {
+                return (T)Enum.Parse(typeof(T), value!.ToString()!);
+            }
+
+            throw new InvalidCastException();
+        }
+
         private static unsafe T[] ToArray<T>(object? value) where T : unmanaged
         {
             // EventSource doesn't decode non-primitive types very well for EventListeners. In the case of non-byte arrays, it interprets the data
@@ -144,7 +157,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
     internal sealed class ExceptionInstance
     {
-        public ExceptionInstance(ulong id, ulong groupId, string? message, ulong[] frameIds, DateTime timestamp, ulong[] innerExceptionIds)
+        public ExceptionInstance(ulong id, ulong groupId, string? message, ulong[] frameIds, DateTime timestamp, ulong[] innerExceptionIds, string activityId, ActivityIdFormat activityIdFormat)
         {
             Id = id;
             GroupId = groupId;
@@ -152,6 +165,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             StackFrameIds = frameIds;
             Timestamp = timestamp;
             InnerExceptionIds = innerExceptionIds;
+            ActivityId = activityId;
+            ActivityIdFormat = activityIdFormat;
         }
 
         public ulong Id { get; }
@@ -165,5 +180,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         public DateTime Timestamp { get; }
 
         public ulong[] InnerExceptionIds { get; }
+
+        public string? ActivityId { get; }
+
+        public ActivityIdFormat ActivityIdFormat { get; }
     }
 }

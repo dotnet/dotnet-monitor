@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline
 {
@@ -40,7 +41,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline
             // (e.g. EventSource provides events but diagnostic pipe events are queued and asynchronously emitted).
             // Synchronous execution is required for scenarios where the exception needs to be held
             // at the site of where it is thrown before allowing it to unwind (e.g. capturing a dump of the exception).
-            _exceptionHandler.Invoke(args.Exception, new ExceptionPipelineExceptionContext(args.Timestamp));
+            if (Activity.Current != null && !string.IsNullOrEmpty(Activity.Current.Id))
+            {
+                _exceptionHandler.Invoke(args.Exception, new ExceptionPipelineExceptionContext(args.Timestamp, Activity.Current.Id, Activity.Current.IdFormat));
+            }
+            else
+            {
+                _exceptionHandler.Invoke(args.Exception, new ExceptionPipelineExceptionContext(args.Timestamp));
+            }
         }
 
         public void Dispose()
