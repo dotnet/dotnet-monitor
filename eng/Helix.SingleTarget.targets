@@ -1,13 +1,56 @@
 <Project>
+
+  <PropertyGroup>
+    <!-- Azurite requires Node -->
+    <HelixRequiresNode Condition="'$(HelixRequiresAzurite)' == 'true'">true</HelixRequiresNode>
+  </PropertyGroup>
+
+  <!-- Skip installation on musl libc systems (node is not supported) -->
+  <PropertyGroup Condition="'$(IsHelixMuslLibc)' == 'true'">
+    <HelixRequiresAzurite>false</HelixRequiresAzurite>
+    <HelixRequiresNode>false</HelixRequiresNode>
+  </PropertyGroup>
+
   <ItemGroup>
-    <!-- Set TEST_DOTNET_ROOT to same as DOTNET_ROOT (which is provided by the dotnet cli correlation payload) -->
+    <!-- Helper to dynamically use a semicolon for path separation at execution time. -->
+    <HelixWorkItemPreCommand Include="SET /p semicolon=%3C%HELIX_CORRELATION_PAYLOAD%\semicolon.txt"
+                             Condition="'$(IsHelixPosixShell)' != 'true'" />
+    <!-- Set TEST_DOTNET_ROOT to same as DOTNET_ROOT (which is provided by ) -->
     <HelixWorkItemPreCommand Include="export TEST_DOTNET_ROOT=${DOTNET_ROOT}"
                              Condition="'$(IsHelixPosixShell)' == 'true'" />
     <HelixWorkItemPreCommand Include="SET TEST_DOTNET_ROOT=%DOTNET_ROOT%"
                              Condition="'$(IsHelixPosixShell)' != 'true'" />
   </ItemGroup>
 
-  <!-- TODO: Add Helix work item PreCommands to install Node and Azurite -->
+  <!-- Configure NodeJs and Npm -->
+  <ItemGroup Condition="'$(HelixRequiresNode)' == 'true'">
+    <!-- Add node to path -->
+    <HelixWorkItemPreCommand Include="export PATH=$HELIX_CORRELATION_PAYLOAD/nodejs/$(HelixNodeName)/bin:$PATH"
+                             Condition="'$(IsHelixPosixShell)' == 'true'" />
+    <HelixWorkItemPreCommand Include="SET PATH=%HELIX_CORRELATION_PAYLOAD%\nodejs\$(HelixNodeName)%semicolon%%PATH%"
+                             Condition="'$(IsHelixPosixShell)' != 'true'" />
+    <!-- Configure npm prefix to writable location -->
+    <HelixWorkItemPreCommand Include="npm config set prefix $HELIX_WORKITEM_ROOT/.npm"
+                             Condition="'$(IsHelixPosixShell)' == 'true'" />
+    <HelixWorkItemPreCommand Include="npm config set prefix %HELIX_WORKITEM_ROOT%\.npm"
+                             Condition="'$(IsHelixPosixShell)' != 'true'" />
+    <!-- Add .npm executables to path -->
+    <HelixWorkItemPreCommand Include="export PATH=$HELIX_WORKITEM_ROOT/.npm/bin:$PATH"
+                             Condition="'$(IsHelixPosixShell)' == 'true'" />
+    <HelixWorkItemPreCommand Include="SET PATH=%HELIX_WORKITEM_ROOT%\.npm%semicolon%%PATH%"
+                             Condition="'$(IsHelixPosixShell)' != 'true'" />
+  </ItemGroup>
+
+  <!-- Configure Azurite -->
+  <ItemGroup Condition="'$(HelixRequiresAzurite)' == 'true'">
+    <!-- Install Azurite -->
+    <HelixWorkItemPreCommand Include="npm install -g azurite" />
+    <!-- Indicate that tests based on Azurite should not skip if it is not initialized -->
+    <HelixWorkItemPreCommand Include="export TEST_AZURITE_MUST_INITIALIZE=1"
+                             Condition="'$(IsHelixPosixShell)' == 'true'" />
+    <HelixWorkItemPreCommand Include="SET TEST_AZURITE_MUST_INITIALIZE=1"
+                             Condition="'$(IsHelixPosixShell)' != 'true'" />
+  </ItemGroup>
 
   <Target Name="CollectHelixWorkItems"
           Outputs="@(HelixWorkItem)" />
