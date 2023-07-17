@@ -41,6 +41,10 @@ parameters:
   displayName: 'Update dotnet-docker? (Only for release branches)'
   type: boolean
   default: false
+- name: useHelix
+  displayName: Use Helix Testing
+  type: boolean
+  default: true
 
 variables:
 - template: /eng/common/templates/variables/pool-providers.yml
@@ -65,6 +69,7 @@ stages:
   - template: /eng/pipelines/jobs/platform-matrix.yml
     parameters:
       jobTemplate: /eng/pipelines/jobs/build-binaries.yml
+      includeArm64: ${{ parameters.useHelix }}
       includeDebug: true
       jobParameters:
         publishBinaries: true
@@ -74,9 +79,10 @@ stages:
     - template: /eng/pipelines/jobs/platform-matrix.yml
       parameters:
         jobTemplate: /eng/pipelines/jobs/test-binaries.yml
+        includeArm64: ${{ parameters.useHelix }}
         jobParameters:
           testGroup: ${{ parameters.testGroup }}
-          useHelix: true
+          useHelix: ${{ parameters.useHelix }}
 
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   - stage: Archive
@@ -91,6 +97,7 @@ stages:
     - template: /eng/pipelines/jobs/platform-matrix.yml
       parameters:
         jobTemplate: /eng/pipelines/jobs/build-archive.yml
+        includeArm64: true
 # This stage creates NuGet packages and generates the BAR manifests
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   - stage: PackSignPublish
