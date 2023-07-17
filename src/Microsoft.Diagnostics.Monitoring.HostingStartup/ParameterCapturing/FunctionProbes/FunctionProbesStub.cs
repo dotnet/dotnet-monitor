@@ -1,8 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System;
 using System.Collections.ObjectModel;
-using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
@@ -11,7 +11,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         private delegate void EnterProbeDelegate(ulong uniquifier, object[] args);
         private static readonly EnterProbeDelegate s_fixedEnterProbeDelegate = EnterProbeStub;
 
-        private static readonly ThreadLocal<bool> s_inProbe = new();
+        [ThreadStatic]
+        private static bool s_inProbe;
 
         internal static ReadOnlyDictionary<ulong, InstrumentedMethod>? InstrumentedMethodCache { get; set; }
 
@@ -25,19 +26,19 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         public static void EnterProbeStub(ulong uniquifier, object[] args)
         {
             IFunctionProbes? probes = Instance;
-            if (probes == null || s_inProbe.Value)
+            if (probes == null || s_inProbe)
             {
                 return;
             }
 
             try
             {
-                s_inProbe.Value = true;
+                s_inProbe = true;
                 probes.EnterProbe(uniquifier, args);
             }
             finally
             {
-                s_inProbe.Value = false;
+                s_inProbe = false;
             }
         }
     }
