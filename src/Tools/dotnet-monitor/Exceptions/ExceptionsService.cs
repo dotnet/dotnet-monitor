@@ -1,13 +1,14 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,29 +22,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
     {
         private readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(5);
 
-        private readonly List<UniqueProcessKey> _unconfiguredProcesses = new();
         private readonly IExceptionsStore _exceptionsStore;
         private readonly IDiagnosticServices _diagnosticServices;
-        private readonly IInProcessFeatures _inProcessFeatures;
-        private readonly StartupHookValidator _startupHookValidator;
+        private readonly IOptions<ExceptionsOptions> _exceptionsOptions;
+        private readonly StartupHookEndpointInfoSourceCallbacks _startupHookEndpointInfoSourceCallbacks;
 
         private EventExceptionsPipeline _pipeline;
 
         public ExceptionsService(
-            StartupHookValidator startupHookValidator,
             IDiagnosticServices diagnosticServices,
-            IInProcessFeatures inProcessFeatures,
-            IExceptionsStore exceptionsStore)
+            IOptions<ExceptionsOptions> exceptionsOptions,
+            IExceptionsStore exceptionsStore,
+            StartupHookEndpointInfoSourceCallbacks startupHookEndpointInfoSourceCallbacks)
         {
             _diagnosticServices = diagnosticServices;
             _exceptionsStore = exceptionsStore;
-            _inProcessFeatures = inProcessFeatures;
-            _startupHookValidator = startupHookValidator;
+            _exceptionsOptions = exceptionsOptions;
+            _startupHookEndpointInfoSourceCallbacks = startupHookEndpointInfoSourceCallbacks;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (!_inProcessFeatures.IsExceptionsEnabled)
+            if (!_exceptionsOptions.Value.GetEnabled())
             {
                 return;
             }
@@ -55,20 +55,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     // Get default process
                     IProcessInfo pi = await _diagnosticServices.GetProcessAsync(processKey: null, stoppingToken);
 
-                    // If previous checked configuration and it did not pass, do not check again or attempt
-                    // to start the event pipe session.
-                    UniqueProcessKey key = new(pi.EndpointInfo.ProcessId, pi.EndpointInfo.RuntimeInstanceCookie);
-                    if (_unconfiguredProcesses.Contains(key))
-                    {
-                        // This exception is not user visible.
-                        throw new NotSupportedException();
-                    }
+                    bool isStartupHookApplied = false;
+                    _ = _startupHookEndpointInfoSourceCallbacks.ApplyStartupState.TryGetValue(pi.EndpointInfo.RuntimeInstanceCookie, out isStartupHookApplied);
 
                     // Validate that the process is configured correctly for collecting exceptions.
-                    if (!await _startupHookValidator.CheckAsync(pi.EndpointInfo, stoppingToken))
+                    if (!isStartupHookApplied)
                     {
-                        _unconfiguredProcesses.Add(key);
-
                         // This exception is not user visible.
                         throw new NotSupportedException();
                     }

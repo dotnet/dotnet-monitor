@@ -1,6 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Extensions.Configuration;
+
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class ConfigurationKeys
@@ -18,6 +20,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const string DiagnosticPort = nameof(RootOptions.DiagnosticPort);
 
         public const string InProcessFeatures = nameof(RootOptions.InProcessFeatures);
+
+        public static readonly string InProcessFeatures_CallStacks = ConfigurationPath.Combine(InProcessFeatures, "CallStacks");
+
+        public static readonly string InProcessFeatures_Enabled = ConfigurationPath.Combine(InProcessFeatures, "Enabled");
+
+        public static readonly string InProcessFeatures_Exceptions = ConfigurationPath.Combine(InProcessFeatures, "Exceptions");
+
+        public static readonly string InProcessFeatures_ParameterCapturing = ConfigurationPath.Combine(InProcessFeatures, "ParameterCapturing");
 
         public const string Egress = nameof(Egress);
 

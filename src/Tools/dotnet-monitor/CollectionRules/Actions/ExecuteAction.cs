@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     internal sealed class ExecuteActionFactory :
         ICollectionRuleActionFactory<ExecuteOptions>
     {
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, ExecuteOptions options)
+        public ICollectionRuleAction Create(IProcessInfo processInfo, ExecuteOptions options)
         {
             if (null == options)
             {
@@ -29,14 +29,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ValidationContext context = new(options, null, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            return new ExecuteAction(endpointInfo, options);
+            return new ExecuteAction(processInfo, options);
         }
 
         internal sealed class ExecuteAction :
             CollectionRuleActionBase<ExecuteOptions>
         {
-            public ExecuteAction(IEndpointInfo endpointInfo, ExecuteOptions options)
-                : base(endpointInfo, options)
+            public ExecuteAction(IProcessInfo processInfo, ExecuteOptions options)
+                : base(processInfo, options)
             {
             }
 

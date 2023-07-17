@@ -52,7 +52,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
                     // Enable a feature that requires the hosting startup assembly.
-                    runner.EnableParameterCapturingFeature = tryLoadHostingStartup;
+                    runner.ConfigurationFromEnvironment.InProcessFeatures.ParameterCapturing = new()
+                    {
+                        Enabled = tryLoadHostingStartup
+                    };
                 },
                 profilerLogLevel: LogLevel.Trace,
                 subScenarioName: subScenario);

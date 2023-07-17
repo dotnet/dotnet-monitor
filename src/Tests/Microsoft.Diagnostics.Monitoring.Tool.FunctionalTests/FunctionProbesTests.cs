@@ -75,7 +75,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureTool: runner =>
                 {
                     runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
-                    runner.EnableParameterCapturingFeature = true;
+                    runner.ConfigurationFromEnvironment.InProcessFeatures.ParameterCapturing = new()
+                    {
+                        Enabled = true
+                    };
                 },
                 profilerLogLevel: LogLevel.Trace,
                 subScenarioName: subScenario);

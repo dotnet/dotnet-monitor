@@ -3,12 +3,15 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
@@ -35,9 +38,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         private readonly SemaphoreSlim _removedEndpointEntriesSemaphore = new(1);
         private readonly List<CompletionEntry> _removedEndpointEntries = new();
 
-        public EndpointInfoSourceCallback(ITestOutputHelper outputHelper)
+        // Path to a startup hook assembly that will be applied to the target runtime
+        // before it is resumed.
+        private readonly string _startupHookPath;
+
+        public EndpointInfoSourceCallback(ITestOutputHelper outputHelper, string startupHookPath = null)
         {
             _outputHelper = outputHelper;
+            _startupHookPath = startupHookPath;
         }
 
         public Task<IEndpointInfo> WaitAddedEndpointInfoAsync(AppRunner runner, TimeSpan timeout)
@@ -51,6 +59,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 timeout);
         }
 
+        public async Task<IProcessInfo> WaitAddedProcessInfoAsync(AppRunner runner, TimeSpan timeout)
+        {
+            IEndpointInfo endpointInfo = await WaitAddedEndpointInfoAsync(runner, timeout);
+            return await ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo, timeout);
+        }
+
         public Task<IEndpointInfo> WaitRemovedEndpointInfoAsync(AppRunner runner, TimeSpan timeout)
         {
             return WaitForCompletionAsync(
@@ -62,9 +76,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 timeout);
         }
 
-        public virtual Task OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken token)
+        public virtual async Task OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken token)
         {
-            return Task.CompletedTask;
+            if (endpointInfo.RuntimeVersion.Major >= 8 && !string.IsNullOrEmpty(_startupHookPath))
+            {
+                await ApplyStartupHookAsync(new DiagnosticsClient(endpointInfo.ProcessId), _startupHookPath, token);
+            }
         }
 
         public Task OnAddedEndpointInfoAsync(IEndpointInfo info, CancellationToken token)
@@ -87,6 +104,19 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 _outputHelper,
                 info,
                 token);
+        }
+
+        private static Task ApplyStartupHookAsync(DiagnosticsClient client, string path, CancellationToken token)
+        {
+            // DiagnosticsClient.ApplyStartupHookAsync currently is not public
+            MethodBase applyStartupHookAsync =
+                typeof(DiagnosticsClient).GetMethod(
+                    "ApplyStartupHookAsync",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+
+            Assert.NotNull(applyStartupHookAsync);
+
+            return (Task)applyStartupHookAsync.Invoke(client, new object[] { path, token });
         }
 
         private static async Task<IEndpointInfo> WaitForCompletionAsync(string operation, SemaphoreSlim semaphore, List<CompletionEntry> entries, ITestOutputHelper outputHelper, AppRunner runner, TimeSpan timeout)

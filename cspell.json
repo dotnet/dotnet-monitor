@@ -27,6 +27,7 @@
         "codespaces",
         "configurator",
         "coreclr",
+        "cctor",
         "darc",
         "dbug",
         "disambiguator",

@@ -180,6 +180,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
                 {
                     return processInfo;
                 }
+
+                await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
             }
 
             throw new InvalidOperationException("Unable to get process information that has a process name.");
@@ -427,6 +429,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         {
             using CancellationTokenSource timeoutSource = new(TestTimeouts.HttpApi);
             return await client.GetOperations(tags, timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        public static Task<HttpStatusCode> StopEgressOperation(this ApiClient client, Guid operationId)
+        {
+            return StopEgressOperation(client, new Uri(client.BaseAddress, FormattableString.Invariant($"operations/{operationId}")));
         }
 
         public static async Task<HttpStatusCode> StopEgressOperation(this ApiClient client, Uri operation)

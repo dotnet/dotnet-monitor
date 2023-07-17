@@ -259,6 +259,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enables or disables the call stacks feature. By default, this feature is enabled if in-process features are enabled..
+        /// </summary>
+        public static string DisplayAttributeDescription_CallStacksOptions_Enabled {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CallStacksOptions_Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name of the egress provider to which the dump is egressed..
         /// </summary>
         public static string DisplayAttributeDescription_CollectDumpOptions_Egress {
@@ -955,6 +964,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enables or disables the exceptions feature. By default, this feature is enabled if in-process features are enabled..
+        /// </summary>
+        public static string DisplayAttributeDescription_ExceptionsOptions_Enabled {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ExceptionsOptions_Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The arguments to pass to the executable..
         /// </summary>
         public static string DisplayAttributeDescription_ExecuteOptions_Arguments {
@@ -1037,11 +1055,38 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Options for the in-process call stacks feature..
+        /// </summary>
+        public static string DisplayAttributeDescription_InProcessFeaturesOptions_CallStacks {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_InProcessFeaturesOptions_CallStacks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes..
         /// </summary>
         public static string DisplayAttributeDescription_InProcessFeaturesOptions_Enabled {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_InProcessFeaturesOptions_Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options for the in-process exceptions feature..
+        /// </summary>
+        public static string DisplayAttributeDescription_InProcessFeaturesOptions_Exceptions {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_InProcessFeaturesOptions_Exceptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options for the in-process parameter capturing feature..
+        /// </summary>
+        public static string DisplayAttributeDescription_InProcessFeaturesOptions_ParameterCapturing {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_InProcessFeaturesOptions_ParameterCapturing", resourceCulture);
             }
         }
         
@@ -1262,6 +1307,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enables or disables the parameter capturing feature. By default, this feature is not enabled..
+        /// </summary>
+        public static string DisplayAttributeDescription_ParameterCapturingOptions_Enabled {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ParameterCapturingOptions_Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Performs a match based on the contents of the command passed to launch the process on the system; this typically includes the executable path and arguments to the process..
         /// </summary>
         public static string DisplayAttributeDescription_ProcessFilterDescriptor_CommandLine {
@@ -1478,7 +1532,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} field, {1} field, or {2} field is required..
+        ///   Looks up a localized string similar to The {0} field, {1} field, {2} field, or {3} field is required..
         /// </summary>
         public static string ErrorMessage_CredentialsMissing {
             get {

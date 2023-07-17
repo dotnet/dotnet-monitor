@@ -149,7 +149,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     IpcEndpointInfo info = await server.AcceptAsync(token).ConfigureAwait(false);
 
-                    _ = Task.Run(() => ResumeAndQueueEndpointInfo(server, info, token), token);
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await ResumeAndQueueEndpointInfo(server, info, token).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.EndpointInitializationFailed(info.ProcessId, ex);
+                        }
+                    }, token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -159,13 +169,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private async Task ResumeAndQueueEndpointInfo(ReversedDiagnosticsServer server, IpcEndpointInfo info, CancellationToken token)
         {
+            List<Exception> exceptions = new();
             try
             {
                 EndpointInfo endpointInfo = await EndpointInfo.FromIpcEndpointInfoAsync(info, token);
-
                 foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
                 {
-                    await callback.OnBeforeResumeAsync(endpointInfo, token).ConfigureAwait(false);
+                    try
+                    {
+                        await callback.OnBeforeResumeAsync(endpointInfo, token).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
                 }
 
                 // Send ResumeRuntime message for runtime instances that connect to the server. This will allow
@@ -189,7 +206,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
                     {
-                        await callback.OnAddedEndpointInfoAsync(endpointInfo, token).ConfigureAwait(false);
+                        try
+                        {
+                            await callback.OnAddedEndpointInfoAsync(endpointInfo, token).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            exceptions.Add(ex);
+                        }
                     }
                 }
                 finally
@@ -197,11 +221,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     _activeEndpointsSemaphore.Release();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                server?.RemoveConnection(info.RuntimeInstanceCookie);
+                exceptions.Add(ex);
+            }
 
-                throw;
+            if (exceptions.Count > 0)
+            {
+                throw new AggregateException(exceptions);
             }
         }
 
@@ -221,9 +248,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 IEndpointInfo endpoint = await _pendingRemovalReader.ReadAsync(token);
 
+                List<Exception> exceptions = new();
                 foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
                 {
-                    await callback.OnRemovedEndpointInfoAsync(endpoint, token).ConfigureAwait(false);
+                    try
+                    {
+                        await callback.OnRemovedEndpointInfoAsync(endpoint, token).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
+                if (exceptions.Count > 0)
+                {
+                    _logger.EndpointRemovalFailed(endpoint.ProcessId, new AggregateException(exceptions));
                 }
 
                 server.RemoveConnection(endpoint.RuntimeInstanceCookie);

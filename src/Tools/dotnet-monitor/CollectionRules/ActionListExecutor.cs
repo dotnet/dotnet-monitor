@@ -87,7 +87,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                         }
 
                         object newSettings = dependencyAnalyzer.SubstituteOptionValues(actionResults, actionIndex, actionOption.Settings);
-                        ICollectionRuleAction action = factory.Create(context.EndpointInfo, newSettings);
+                        ICollectionRuleAction action = factory.Create(context.ProcessInfo, newSettings);
 
                         try
                         {

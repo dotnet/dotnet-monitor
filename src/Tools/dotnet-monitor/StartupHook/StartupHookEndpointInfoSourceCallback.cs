@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,6 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
         private readonly IInProcessFeatures _inProcessFeatures;
         private readonly StartupHookValidator _startupHookValidator;
 
+        public IDictionary<Guid, bool> ApplyStartupState { get; set; } = new Dictionary<Guid, bool>();
 
         public StartupHookEndpointInfoSourceCallbacks(
             IInProcessFeatures inProcessFeatures,
@@ -26,14 +29,28 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             return Task.CompletedTask;
         }
 
-        Task IEndpointInfoSourceCallbacks.OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
+        async Task IEndpointInfoSourceCallbacks.OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            if (_inProcessFeatures.IsStartupHookRequired)
+            if (_inProcessFeatures.IsStartupHookRequired && !ApplyStartupState.ContainsKey(endpointInfo.RuntimeInstanceCookie))
             {
-                return _startupHookValidator.CheckAsync(endpointInfo, cancellationToken, logInstructions: true);
+                if (await _startupHookValidator.CheckEnvironmentAsync(endpointInfo, cancellationToken))
+                {
+                    ApplyStartupState[endpointInfo.RuntimeInstanceCookie] = true;
+                    return;
+                }
+
+                if (await _startupHookValidator.ApplyStartupHook(endpointInfo, cancellationToken))
+                {
+                    ApplyStartupState[endpointInfo.RuntimeInstanceCookie] = true;
+                    return;
+                }
+
+                ApplyStartupState[endpointInfo.RuntimeInstanceCookie] = false;
+
+                await _startupHookValidator.CheckEnvironmentAsync(endpointInfo, cancellationToken, logInstructions: true);
             }
 
-            return Task.CompletedTask;
+            return;
         }
 
         Task IEndpointInfoSourceCallbacks.OnRemovedEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)

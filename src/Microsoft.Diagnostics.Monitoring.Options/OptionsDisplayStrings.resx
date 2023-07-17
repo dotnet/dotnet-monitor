@@ -772,4 +772,22 @@
   <data name="DisplayAttributeDescription_EgressOptions_Properties" xml:space="preserve">
     <value>Additional properties, such as secrets, that can be referenced by the provider definitions.</value>
   </data>
+  <data name="DisplayAttributeDescription_CallStacksOptions_Enabled" xml:space="preserve">
+    <value>Enables or disables the call stacks feature. By default, this feature is enabled if in-process features are enabled.</value>
+  </data>
+  <data name="DisplayAttributeDescription_ExceptionsOptions_Enabled" xml:space="preserve">
+    <value>Enables or disables the exceptions feature. By default, this feature is enabled if in-process features are enabled.</value>
+  </data>
+  <data name="DisplayAttributeDescription_InProcessFeaturesOptions_Exceptions" xml:space="preserve">
+    <value>Options for the in-process exceptions feature.</value>
+  </data>
+  <data name="DisplayAttributeDescription_ParameterCapturingOptions_Enabled" xml:space="preserve">
+    <value>Enables or disables the parameter capturing feature. By default, this feature is not enabled.</value>
+  </data>
+  <data name="DisplayAttributeDescription_InProcessFeaturesOptions_CallStacks" xml:space="preserve">
+    <value>Options for the in-process call stacks feature.</value>
+  </data>
+  <data name="DisplayAttributeDescription_InProcessFeaturesOptions_ParameterCapturing" xml:space="preserve">
+    <value>Options for the in-process parameter capturing feature.</value>
+  </data>
 </root>

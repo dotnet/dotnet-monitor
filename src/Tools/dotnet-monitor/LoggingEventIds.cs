@@ -106,8 +106,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ExtensionManifestNotParsable = 94,
         ExtensionMalformedOutput = 95,
         EgressProviderTypeNotExist = 96,
-        UnableToApplyHostingStartup = 97,
-        UnableToApplyInProcessFeatureFlags = 98
+        ProfilerRuntimeIdentifier = 97,
+        StartupHookApplyFailed = 98,
+        EndpointInitializationFailed = 99,
+        EndpointRemovalFailed = 100,
+        WatchForStdinDisconnectFailure = 101,
+        UnableToApplyHostingStartup = 102,
+        UnableToApplyInProcessFeatureFlags = 103
     }
 
     internal static class LoggingEventIdsExtensions

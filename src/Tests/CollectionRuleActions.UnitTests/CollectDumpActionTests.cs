@@ -74,13 +74,13 @@ namespace CollectionRuleActions.UnitTests
 
                 await using AppRunner runner = _endpointUtilities.CreateAppRunner(Assembly.GetExecutingAssembly(), sourceHolder.TransportName, tfm);
 
-                Task<IEndpointInfo> newEndpointInfoTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+                Task<IProcessInfo> newProcessInfoTask = callback.WaitAddedProcessInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
                 await runner.ExecuteAsync(async () =>
                 {
-                    IEndpointInfo endpointInfo = await newEndpointInfoTask;
+                    IProcessInfo processInfo = await newProcessInfoTask;
 
-                    ICollectionRuleAction action = factory.Create(endpointInfo, options);
+                    ICollectionRuleAction action = factory.Create(processInfo, options);
 
                     CollectionRuleActionResult result = await ActionTestsHelper.ExecuteAndDisposeAsync(action, CommonTestTimeouts.DumpTimeout);
 

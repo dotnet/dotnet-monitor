@@ -4,25 +4,29 @@
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Options;
-
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class InProcessFeatures : IInProcessFeatures
     {
-        private readonly InProcessFeaturesOptions _options;
-        private readonly IExperimentalFlags _experimentalFlags;
+        private readonly CallStacksOptions _callStacksOptions;
+        private readonly ExceptionsOptions _exceptionsOptions;
+        private readonly ParameterCapturingOptions _parameterCapturingOptions;
 
-        public InProcessFeatures(IOptions<InProcessFeaturesOptions> options, IExperimentalFlags experimentalFlags)
+        public InProcessFeatures(
+            IOptions<CallStacksOptions> callStacksOptions,
+            IOptions<ExceptionsOptions> exceptionsOptions,
+            IOptions<ParameterCapturingOptions> parameterCapturingOptions)
         {
-            _options = options.Value;
-            _experimentalFlags = experimentalFlags;
+            _callStacksOptions = callStacksOptions.Value;
+            _exceptionsOptions = exceptionsOptions.Value;
+            _parameterCapturingOptions = parameterCapturingOptions.Value;
         }
 
-        public bool IsCallStacksEnabled => _options.GetEnabled() && _experimentalFlags.IsCallStacksEnabled;
+        private bool IsCallStacksEnabled => _callStacksOptions.GetEnabled();
 
-        public bool IsExceptionsEnabled => _options.GetEnabled() && _experimentalFlags.IsExceptionsEnabled;
+        private bool IsExceptionsEnabled => _exceptionsOptions.GetEnabled();
 
-        public bool IsParameterCapturingEnabled => _options.GetEnabled() && _experimentalFlags.IsParameterCapturingEnabled;
+        private bool IsParameterCapturingEnabled => _parameterCapturingOptions.GetEnabled();
 
         public bool IsProfilerRequired => IsCallStacksEnabled || IsParameterCapturingEnabled;
 

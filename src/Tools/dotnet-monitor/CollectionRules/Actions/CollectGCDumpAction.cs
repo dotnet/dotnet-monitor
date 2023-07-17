@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, CollectGCDumpOptions options)
+        public ICollectionRuleAction Create(IProcessInfo processInfo, CollectGCDumpOptions options)
         {
             if (null == options)
             {
@@ -34,26 +34,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ValidationContext context = new(options, _serviceProvider, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            return new CollectGCDumpAction(_serviceProvider, endpointInfo, options);
+            return new CollectGCDumpAction(_serviceProvider, processInfo, options);
         }
 
         private sealed class CollectGCDumpAction :
-            CollectionRuleActionBase<CollectGCDumpOptions>
+            CollectionRuleEgressActionBase<CollectGCDumpOptions>
         {
-            private readonly IServiceProvider _serviceProvider;
             private readonly OperationTrackerService _operationTrackerService;
 
-            public CollectGCDumpAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectGCDumpOptions options)
-                : base(endpointInfo, options)
+            public CollectGCDumpAction(IServiceProvider serviceProvider, IProcessInfo processInfo, CollectGCDumpOptions options)
+                : base(serviceProvider, processInfo, options)
             {
-                _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-                _operationTrackerService = _serviceProvider.GetRequiredService<OperationTrackerService>();
+                _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
             }
 
-            protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
-                TaskCompletionSource<object> startCompleteSource,
-                CollectionRuleMetadata collectionRuleMetadata,
-                CancellationToken token)
+            protected override EgressOperation CreateArtifactOperation(TaskCompletionSource<object> startCompletionSource, CollectionRuleMetadata collectionRuleMetadata)
             {
                 string egress = Options.Egress;
 
@@ -65,7 +60,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     async (stream, token) =>
                     {
                         using IDisposable operationRegistration = _operationTrackerService.Register(EndpointInfo);
-                        startCompleteSource.TrySetResult(null);
+                        startCompletionSource.TrySetResult(null);
                         await GCDumpUtilities.CaptureGCDumpAsync(EndpointInfo, stream, token);
                     },
                     egress,
@@ -75,20 +70,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     scope,
                     collectionRuleMetadata);
 
-                ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
-                if (null != result.Exception)
-                {
-                    throw new CollectionRuleActionException(result.Exception);
-                }
-                string gcdumpFilePath = result.Result.Value;
-
-                return new CollectionRuleActionResult()
-                {
-                    OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
-                    {
-                        { CollectionRuleActionConstants.EgressPathOutputValueName, gcdumpFilePath }
-                    }
-                };
+                return egressOperation;
             }
         }
     }

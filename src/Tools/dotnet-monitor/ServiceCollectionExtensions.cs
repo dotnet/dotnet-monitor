@@ -28,7 +28,9 @@ using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
+using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
+using Microsoft.Diagnostics.Tools.Monitor.Stacks;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -68,10 +70,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureInProcessFeatures(this IServiceCollection services, IConfiguration configuration)
         {
-            ConfigureOptions<InProcessFeaturesOptions>(services, configuration, ConfigurationKeys.InProcessFeatures);
-            services.AddSingleton<IPostConfigureOptions<InProcessFeaturesOptions>, InProcessFeaturesPostConfigureOptions>();
-            services.AddSingleton<InProcessFeaturesService>();
-            services.AddSingleton<IEndpointInfoSourceCallbacks, InProcessFeaturesEndpointInfoSourceCallbacks>();
+            ConfigureOptions<CallStacksOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_CallStacks)
+                .AddSingleton<IPostConfigureOptions<CallStacksOptions>, CallStacksPostConfigureOptions>();
+
+            ConfigureOptions<ExceptionsOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_Exceptions)
+                .AddSingleton<IPostConfigureOptions<ExceptionsOptions>, ExceptionsPostConfigureOptions>();
+
+            ConfigureOptions<ParameterCapturingOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_ParameterCapturing)
+             .AddSingleton<IPostConfigureOptions<ParameterCapturingOptions>, ParameterCapturingPostConfigureOptions>();
+
+            ConfigureOptions<InProcessFeaturesOptions>(services, configuration, ConfigurationKeys.InProcessFeatures)
+                .AddSingleton<InProcessFeaturesService>()
+                .AddSingleton<IEndpointInfoSourceCallbacks, InProcessFeaturesEndpointInfoSourceCallbacks>();
 
             return services;
         }
@@ -352,7 +362,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureStartupHook(this IServiceCollection services)
         {
             services.AddSingleton<StartupHookValidator>();
-            services.AddSingleton<IEndpointInfoSourceCallbacks, StartupHookEndpointInfoSourceCallbacks>();
+            services.AddSingleton<StartupHookEndpointInfoSourceCallbacks>();
+            services.AddSingletonForwarder<IEndpointInfoSourceCallbacks, StartupHookEndpointInfoSourceCallbacks>();
             return services;
         }
 
