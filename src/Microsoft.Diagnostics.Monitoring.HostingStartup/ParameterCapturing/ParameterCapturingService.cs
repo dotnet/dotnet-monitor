@@ -214,7 +214,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             while (IsAvailable() && !stoppingToken.IsCancellationRequested)
             {
                 StartCapturingParametersPayload req = await _requests!.Reader.ReadAsync(stoppingToken);
-                Debugger.Launch();
                 try
                 {
                     StartCapturing(req);
