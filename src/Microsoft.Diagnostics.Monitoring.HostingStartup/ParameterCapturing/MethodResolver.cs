@@ -105,8 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                         BindingFlags.Public |
                         BindingFlags.NonPublic |
                         BindingFlags.Instance |
-                        BindingFlags.Static |
-                        BindingFlags.FlattenHierarchy);
+                        BindingFlags.Static);
 
                     if (allMethods == null)
                     {

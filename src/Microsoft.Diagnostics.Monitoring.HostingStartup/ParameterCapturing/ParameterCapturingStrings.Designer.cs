@@ -134,6 +134,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Too many requests.
+        /// </summary>
+        internal static string TooManyRequestsErrorMessage {
+            get {
+                return ResourceManager.GetString("TooManyRequestsErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to unknown.
         /// </summary>
         internal static string UnknownArgumentValue {
@@ -152,7 +161,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to resolve one or more methods {0}.
+        ///   Looks up a localized string similar to Unable to resolve one or more methods: {0}.
         /// </summary>
         internal static string UnresolvedMethodsFormatString {
             get {

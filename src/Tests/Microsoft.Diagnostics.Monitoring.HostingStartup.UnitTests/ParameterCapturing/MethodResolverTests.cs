@@ -116,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             MethodDescription description = new()
             {
                 ModuleName = typeof(StaticTestMethodSignatures).Module.Name,
-                ClassName = "SampleMethods.TestAmbigousGenericSignatures`1",
+                ClassName = "SampleMethods.TestAmbiguousGenericSignatures`1",
                 MethodName = "AmbiguousMethod",
             };
 
@@ -124,7 +124,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             List<MethodInfo> methods = resolver.ResolveMethodDescription(description);
 
             // Assert
-            Assert.Equal(2, methods);
+            Assert.Equal(2, methods.Count);
         }
 
 

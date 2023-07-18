@@ -141,6 +141,9 @@
   <data name="ThisParameterName" xml:space="preserve">
     <value>this</value>
   </data>
+  <data name="TooManyRequestsErrorMessage" xml:space="preserve">
+    <value>Too many requests</value>
+  </data>
   <data name="UnknownArgumentValue" xml:space="preserve">
     <value>unknown</value>
   </data>
@@ -148,7 +151,7 @@
     <value>&lt;unknown_name_at_position_{0}&gt;</value>
   </data>
   <data name="UnresolvedMethodsFormatString" xml:space="preserve">
-    <value>Unable to resolve one or more methods {0}</value>
+    <value>Unable to resolve one or more methods: {0}</value>
   </data>
   <data name="UnsupportedParameter" xml:space="preserve">
     <value>unsupported</value>

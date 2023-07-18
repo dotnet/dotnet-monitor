@@ -46,7 +46,7 @@ namespace SampleMethods
         public override void DerivedMethod() { }
     }
 
-    internal sealed class TestAmbigousGenericSignatures<T1>
+    internal sealed class TestAmbiguousGenericSignatures<T1>
     {
         public void AmbiguousMethod<T2>(T1 t, T2 t2) { }
         public void AmbiguousMethod<T2, T3>(T1 t, T2 t2, T3  t3) { }

@@ -56,12 +56,25 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 ArgumentNullException.ThrowIfNull(SharedInternals.MessageDispatcher);
 
 
-                // TODO: Clarify the threading model here
+                //
+                // Request processing overview:
+                //
+                // - Incoming Requests
+                //   - dotnet-monitor will properly rate limit requests so there will never be 2 start requests at any given time.
+                //   - Our monitor message processing (start/stop commands) happens serially.
+                //   - Our monitor message processing simply ACKs a command if there's nothing immediatly wrong and queues the
+                //     work to happen on our background service.
+                // - Request Handling
+                //  - Happens on our background service.
+                //  - The background service may stop at any given point if an unrecoverable error occurs. In this scenario,
+                //    dotnet-monitor is notified of the error, and all future requests will short-circuit and notify
+                //    dotnet-monitor that the parameter capturing service is unavailable.
+                //
                 _requests = Channel.CreateBounded<StartCapturingParametersPayload>(new BoundedChannelOptions(capacity: 1)
                 {
                     FullMode = BoundedChannelFullMode.DropWrite
                 });
-                _stopRequests = Channel.CreateBounded<bool>(new BoundedChannelOptions(capacity: 2)
+                _stopRequests = Channel.CreateBounded<bool>(new BoundedChannelOptions(capacity: 1)
                 {
                     FullMode = BoundedChannelFullMode.DropWrite
                 });
@@ -97,7 +110,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 else
                 {
                     // The channel is full, which should never happen if dotnet-monitor is properly rate limiting requests.
-                    _eventSource.FailedToCapture(ParameterCapturingEvents.CapturingFailedReason.TooManyRequests, string.Empty);
+                    _eventSource.FailedToCapture(
+                        ParameterCapturingEvents.CapturingFailedReason.TooManyRequests,
+                        ParameterCapturingStrings.TooManyRequestsErrorMessage);
                 }
             }
         }
@@ -174,8 +189,23 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 return;
             }
 
-            stoppingToken.Register(StopCapturing);
-            while (!stoppingToken.IsCancellationRequested)
+            void tryToStopCapturing()
+            {
+                try
+                {
+                    StopCapturing();
+                    _eventSource.CapturingStop();
+                }
+                catch (Exception ex)
+                {
+                    // We're in a faulted state from an internal exception so there's
+                    // nothing else that can be safely done for the remainder of the app's lifetime.
+                    UnrecoverableError(ex);
+                }
+            }
+
+            stoppingToken.Register(tryToStopCapturing);
+            while (IsAvailable() && !stoppingToken.IsCancellationRequested)
             {
                 StartCapturingParametersPayload req = await _requests!.Reader.ReadAsync(stoppingToken);
                 try
@@ -191,26 +221,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
                 using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
                 Task stopSignalTask = _stopRequests!.Reader.WaitToReadAsync(cts.Token).AsTask();
-                _ = await Task.WhenAny(stopSignalTask, Task.Delay(req.Duration, cts.Token)).ConfigureAwait(false);
+                _ = Task.WhenAny(stopSignalTask, Task.Delay(req.Duration, cts.Token)).WaitAsync(stoppingToken).ConfigureAwait(false);
 
                 // Signal the other stop condition tasks to cancel
                 cts.Cancel();
 
-                // Clear the stop request (if present)
+                // Drain the stop request (if present)
                 _ = _stopRequests.Reader.TryRead(out _);
 
-                try
-                {
-                    StopCapturing();
-                    _eventSource.CapturingStop();
-                }
-                catch (Exception ex)
-                {
-                    // We're in a faulted state from an internal exception so there's
-                    // nothing else that can be safely done for the remainder of the app's lifetime.
-                    UnrecoverableError(ex);
-                    return;
-                }
+                tryToStopCapturing();
             }
         }
 
