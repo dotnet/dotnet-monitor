@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
     public class MethodDescription
     {
-        // CONSIDER: Commonize this with our stack frame representation
+        // CONSIDER: Standardize this with our stack frame representation
         [JsonPropertyName("moduleName")]
         [Required]
         public string ModuleName { get; set; } = string.Empty;

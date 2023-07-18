@@ -63,7 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 // - Incoming Requests
                 //   - dotnet-monitor will properly rate limit requests so there will never be 2 start requests at any given time.
                 //   - Our monitor message processing (start/stop commands) happens serially.
-                //   - Our monitor message processing simply ACKs a command if there's nothing immediatly wrong and queues the
+                //   - Our monitor message processing simply ACKs a command if there's nothing immediately wrong and queues the
                 //     work to happen on our background service.
                 // - Request Handling
                 //  - Happens on our background service.
