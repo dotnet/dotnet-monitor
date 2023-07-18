@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Theory]
-        // Inheritence
+        // Inheritance
         [InlineData(typeof(TestDerivedSignatures), TestAbstractSignatures.PrivateStaticBaseMethodName, 0)]
         [InlineData(typeof(TestDerivedSignatures), TestAbstractSignatures.PrivateBaseMethodName, 0)]
         [InlineData(typeof(TestDerivedSignatures), TestAbstractSignatures.ProtectedBaseMethodName, 1)]
