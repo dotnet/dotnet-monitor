@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Channels;
@@ -198,8 +199,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 }
                 catch (Exception ex)
                 {
+                    //
                     // We're in a faulted state from an internal exception so there's
                     // nothing else that can be safely done for the remainder of the app's lifetime.
+                    //
+                    // The probe method cache will have been cleared by the _probeManager in this situation
+                    // so while the probes may still be installed they will be no-ops.
+                    //
                     UnrecoverableError(ex);
                 }
             }
