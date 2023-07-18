@@ -214,6 +214,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             while (IsAvailable() && !stoppingToken.IsCancellationRequested)
             {
                 StartCapturingParametersPayload req = await _requests!.Reader.ReadAsync(stoppingToken);
+                Debugger.Launch();
                 try
                 {
                     StartCapturing(req);
@@ -227,7 +228,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
                 using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
                 Task stopSignalTask = _stopRequests!.Reader.WaitToReadAsync(cts.Token).AsTask();
-                _ = Task.WhenAny(stopSignalTask, Task.Delay(req.Duration, cts.Token)).WaitAsync(stoppingToken).ConfigureAwait(false);
+                _ = await Task.WhenAny(stopSignalTask, Task.Delay(req.Duration, cts.Token)).WaitAsync(stoppingToken).ConfigureAwait(false);
 
                 // Signal the other stop condition tasks to cancel
                 cts.Cancel();
