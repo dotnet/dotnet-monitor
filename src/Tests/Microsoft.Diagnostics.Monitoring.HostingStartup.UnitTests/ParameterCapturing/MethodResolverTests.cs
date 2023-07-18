@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Fact]
-        public void Handles_NonExistentModule()
+        public void ResolveMethodDescription_SkipsMissingModule()
         {
             // Arrange
             MethodResolver resolver = new();
