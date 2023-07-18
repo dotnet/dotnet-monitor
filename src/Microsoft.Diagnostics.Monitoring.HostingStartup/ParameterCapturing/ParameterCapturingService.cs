@@ -122,7 +122,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             if (_stopRequests?.Writer.TryWrite(true) != true)
             {
-                if (IsAvailable())
+                if (!IsAvailable())
                 {
                     _eventSource.ServiceNotAvailable(_notAvailableReason!.Value, _notAvailableDetails);
                     return;
