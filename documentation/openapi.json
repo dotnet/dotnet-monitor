@@ -892,6 +892,100 @@
         }
       }
     },
+    "/parameters": {
+      "post": {
+        "tags": [
+          "Diag"
+        ],
+        "operationId": "CaptureParameters",
+        "parameters": [
+          {
+            "name": "durationSeconds",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": -1,
+              "type": "integer",
+              "format": "int32",
+              "default": 30
+            }
+          },
+          {
+            "name": "pid",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/MethodDescription"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/MethodDescription"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/MethodDescription"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequestsResponse"
+          },
+          "202": {
+            "description": "Accepted"
+          }
+        }
+      }
+    },
     "/stacks": {
       "get": {
         "tags": [
@@ -1610,6 +1704,29 @@
           "useAppFilters": {
             "type": "boolean",
             "description": "Set to true to collect logs at the application-defined categories and levels."
+          }
+        },
+        "additionalProperties": false
+      },
+      "MethodDescription": {
+        "required": [
+          "className",
+          "methodName",
+          "moduleName"
+        ],
+        "type": "object",
+        "properties": {
+          "moduleName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "className": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "methodName": {
+            "minLength": 1,
+            "type": "string"
           }
         },
         "additionalProperties": false

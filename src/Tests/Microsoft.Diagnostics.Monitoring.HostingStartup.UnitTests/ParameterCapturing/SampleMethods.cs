@@ -27,6 +27,31 @@ namespace SampleMethods
         public void ImplicitThis() { }
     }
 
+    internal abstract class TestAbstractSignatures
+    {
+        public const string PrivateStaticBaseMethodName = nameof(PrivateStaticBaseMethod);
+        public const string PrivateBaseMethodName = nameof(PrivateBaseMethod);
+        public const string ProtectedBaseMethodName = nameof(ProtectedBaseMethod);
+
+        private static void PrivateStaticBaseMethod() { }
+        private void PrivateBaseMethod() { }
+        protected void ProtectedBaseMethod() { }
+        public void BaseMethod() { }
+        public abstract void DerivedMethod();
+    }
+
+    internal sealed class TestDerivedSignatures : TestAbstractSignatures
+    {
+        public void NonInheritedMethod() { }
+        public override void DerivedMethod() { }
+    }
+
+    internal sealed class TestAmbigousGenericSignatures<T1>
+    {
+        public void AmbiguousMethod<T2>(T1 t, T2 t2) { }
+        public void AmbiguousMethod<T2, T3>(T1 t, T2 t2, T3  t3) { }
+    }
+
     internal static class StaticTestMethodSignatures
     {
         internal struct SampleNestedStruct
@@ -35,6 +60,10 @@ namespace SampleMethods
         }
 
         public delegate int MyDelegate(int i, int j);
+
+        public static void AmbiguousMethod() { }
+        public static bool AmbiguousMethod(int i) { return true; }
+        public static int AmbiguousMethod(int i, int j) { return i + j; }
 
         public static void Arrays(int[] intArray, bool[,] multidimensionalArray) { }
 

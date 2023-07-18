@@ -28,6 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
        
         private readonly object _requestLocker = new();
         private long _disposedState;
+        private bool _isCapturing;
 
         public FunctionProbesManager(IFunctionProbes probes)
         {
@@ -41,8 +42,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         {
             lock (_requestLocker)
             {
+                if (!_isCapturing)
+                {
+                    return;
+                }
+
                 FunctionProbesStub.InstrumentedMethodCache = null;
                 RequestFunctionProbeUninstallation();
+
+                _isCapturing = false;
             }
         }
 
@@ -56,6 +64,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             Dictionary<ulong, InstrumentedMethod> newMethodCache = new(methods.Count);
             lock (_requestLocker)
             {
+                if (_isCapturing)
+                {
+                    throw new InvalidOperationException();
+                }
+
                 List<ulong> functionIds = new(methods.Count);
                 List<uint> argumentCounts = new(methods.Count);
                 List<uint> boxingTokens = new();
@@ -86,6 +99,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                     (uint)functionIds.Count,
                     boxingTokens.ToArray(),
                     argumentCounts.ToArray());
+
+                _isCapturing = true;
             }
         }
 

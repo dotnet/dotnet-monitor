@@ -1,0 +1,141 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
+using Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher.Models;
+using Microsoft.Diagnostics.Monitoring.TestCommon;
+using SampleMethods;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using Xunit;
+using Xunit.Abstractions;
+
+namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing
+{
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
+    public class MethodResolverTests
+    {
+        private readonly ITestOutputHelper _outputHelper;
+
+        public MethodResolverTests(ITestOutputHelper outputHelper)
+        {
+            _outputHelper = outputHelper;
+        }
+
+        [Fact]
+        public void Handles_NonExistentModule()
+        {
+            // Arrange
+            MethodResolver resolver = new();
+            MethodDescription description = new()
+            {
+                ModuleName = Guid.NewGuid().ToString("D"),
+                ClassName = "Test",
+                MethodName = "Test",
+            };
+
+            // Act
+            List<MethodInfo> methods = resolver.ResolveMethodDescription(description);
+
+            // Assert
+            Assert.Empty(methods);
+        }
+
+        [Theory]
+        // Inheritence
+        [InlineData(typeof(TestDerivedSignatures), TestAbstractSignatures.PrivateStaticBaseMethodName, 0)]
+        [InlineData(typeof(TestDerivedSignatures), TestAbstractSignatures.PrivateBaseMethodName, 0)]
+        [InlineData(typeof(TestDerivedSignatures), TestAbstractSignatures.ProtectedBaseMethodName, 1)]
+        [InlineData(typeof(TestAbstractSignatures), TestAbstractSignatures.PrivateStaticBaseMethodName, 1)]
+        [InlineData(typeof(TestAbstractSignatures), TestAbstractSignatures.PrivateBaseMethodName, 1)]
+        [InlineData(typeof(TestAbstractSignatures), TestAbstractSignatures.ProtectedBaseMethodName, 1)]
+        [InlineData(typeof(TestDerivedSignatures), nameof(TestDerivedSignatures.BaseMethod), 1)]
+        [InlineData(typeof(TestDerivedSignatures), nameof(TestDerivedSignatures.DerivedMethod), 1)]
+        [InlineData(typeof(TestDerivedSignatures), nameof(TestDerivedSignatures.NonInheritedMethod), 1)]
+
+        // Ambiguous
+        [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.AmbiguousMethod), 3)]
+        public void ResolveMethodDescription_MatchesCorrectly(Type declaringType, string methodName, int matches)
+        {
+            // Arrange
+            MethodResolver resolver = new();
+            MethodDescription description = GetMethodDescription(declaringType, methodName);
+
+            // Act
+            List<MethodInfo> methods = resolver.ResolveMethodDescription(description);
+
+            // Assert
+            Assert.Equal(matches, methods.Count);
+        }
+
+
+        [Fact]
+        public void ResolveMethodDescription_Generics_Matches()
+        {
+            // Arrange
+            MethodResolver resolver = new();
+            MethodDescription description = new()
+            {
+                ModuleName = typeof(StaticTestMethodSignatures).Module.Name,
+                ClassName = "SampleMethods.GenericTestMethodSignatures`2",
+                MethodName = "GenericParameters",
+            };
+
+            // Act
+            List<MethodInfo> methods = resolver.ResolveMethodDescription(description);
+
+            // Assert
+            Assert.Single(methods);
+        }
+
+        [Fact]
+        public void ResolveMethodDescription_Generics_RequiresArity()
+        {
+            // Arrange
+            MethodResolver resolver = new();
+            MethodDescription description = new()
+            {
+                ModuleName = typeof(StaticTestMethodSignatures).Module.Name,
+                ClassName = "SampleMethods.GenericTestMethodSignatures",
+                MethodName = "GenericParameters",
+            };
+
+            // Act
+            List<MethodInfo> methods = resolver.ResolveMethodDescription(description);
+
+            // Assert
+            Assert.Empty(methods);
+        }
+
+        [Fact]
+        public void ResolveMethodDescription_Generics_MatchesAmbiguous()
+        {
+            // Arrange
+            MethodResolver resolver = new();
+            MethodDescription description = new()
+            {
+                ModuleName = typeof(StaticTestMethodSignatures).Module.Name,
+                ClassName = "SampleMethods.TestAmbigousGenericSignatures`1",
+                MethodName = "AmbiguousMethod",
+            };
+
+            // Act
+            List<MethodInfo> methods = resolver.ResolveMethodDescription(description);
+
+            // Assert
+            Assert.Equal(2, methods);
+        }
+
+
+        private static MethodDescription GetMethodDescription(Type declaringType, string methodName)
+        {
+            return new MethodDescription
+            {
+                ModuleName = declaringType.Module.Name,
+                ClassName = declaringType.FullName,
+                MethodName = methodName
+            };
+        }
+    }
+}

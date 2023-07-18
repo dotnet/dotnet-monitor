@@ -111,6 +111,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ErrorPayload);
 
+        private static readonly Action<ILogger, Exception> _generatedInProcessArtifact =
+            LoggerMessage.Define(
+                eventId: new EventId(18, "GeneratedInProcessArtifact"),
+                logLevel: LogLevel.Information,
+                formatString: Strings.Message_GeneratedInProcessArtifact);
+        
         public static void RequestFailed(this ILogger logger, Exception ex)
         {
             _requestFailed(logger, ex);
@@ -194,6 +200,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static void ErrorPayload(this ILogger logger, string message)
         {
             _errorPayload(logger, message, null);
+        }
+
+        public static void GeneratedInProcessArtifact(this ILogger logger)
+        {
+            _generatedInProcessArtifact(logger, null);
         }
     }
 }

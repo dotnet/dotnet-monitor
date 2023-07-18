@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="FeatureUnsupported_NoLogger" xml:space="preserve">
+    <value>Unable to create an ILogger instance in the target process.</value>
+  </data>
   <data name="NullArgumentValue" xml:space="preserve">
     <value>null</value>
   </data>
@@ -129,6 +132,12 @@
   <data name="ParameterModifier_RefOrRefLike" xml:space="preserve">
     <value>ref</value>
   </data>
+  <data name="StartParameterCapturingFormatString" xml:space="preserve">
+    <value>Started Parameter Capturing for {duration} on {numberOfMethods} method(s).</value>
+  </data>
+  <data name="StopParameterCapturing" xml:space="preserve">
+    <value>Stopped Parameter Capturing.</value>
+  </data>
   <data name="ThisParameterName" xml:space="preserve">
     <value>this</value>
   </data>
@@ -137,6 +146,9 @@
   </data>
   <data name="UnknownParameterNameFormatString" xml:space="preserve">
     <value>&lt;unknown_name_at_position_{0}&gt;</value>
+  </data>
+  <data name="UnresolvedMethodsFormatString" xml:space="preserve">
+    <value>Unable to resolve one or more methods {0}</value>
   </data>
   <data name="UnsupportedParameter" xml:space="preserve">
     <value>unsupported</value>

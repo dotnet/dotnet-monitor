@@ -5,6 +5,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <IsShippingAssembly>true</IsShippingAssembly>
     <OutputType>Library</OutputType>
+    <DefineConstants>$(DefineConstants);HOSTINGSTARTUP</DefineConstants>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -14,6 +15,7 @@
 
   <ItemGroup>
     <Compile Include="..\Tools\dotnet-monitor\InProcessFeatures\InProcessFeaturesIdentifiers.cs" Link="InProcessFeaturesIdentifiers.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\ParameterCapturing\ParameterCapturingEvents.cs" Link="ParameterCapturing\Eventing\ParameterCapturingEvents.cs" />
   </ItemGroup>
 
   <ItemGroup>
