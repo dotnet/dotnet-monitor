@@ -1,0 +1,26 @@
+schedules:
+- cron: "0 9 * * Mon-Fri"
+  displayName: Shipped Component Governance Scan
+  branches:
+    include:
+    - shipped/*
+  always: true
+
+variables:
+- name: _TeamName
+  value: DotNetCore
+# These branches represent shipped assets, thus use Svc build pool
+- name: DncEngInternalBuildPool
+  value: NetCore1ESPool-Svc-Internal
+
+stages:
+- stage: Build
+  displayName: Build and Scan
+  jobs:
+  - template: /eng/pipelines/jobs/platform-matrix.yml
+    parameters:
+      jobTemplate: /eng/pipelines/jobs/build-binaries.yml
+      includeArm64: true
+      jobParameters:
+        disableComponentGovernance: false
+        disableSbom: true
