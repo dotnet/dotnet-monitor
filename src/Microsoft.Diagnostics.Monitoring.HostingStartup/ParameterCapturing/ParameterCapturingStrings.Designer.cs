@@ -107,7 +107,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Started Parameter Capturing for {duration} on {numberOfMethods} method(s)..
+        ///   Looks up a localized string similar to Started parameter capturing for {duration} on {numberOfMethods} method(s)..
         /// </summary>
         internal static string StartParameterCapturingFormatString {
             get {
@@ -116,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Stopped Parameter Capturing..
+        ///   Looks up a localized string similar to Stopped parameter capturing..
         /// </summary>
         internal static string StopParameterCapturing {
             get {

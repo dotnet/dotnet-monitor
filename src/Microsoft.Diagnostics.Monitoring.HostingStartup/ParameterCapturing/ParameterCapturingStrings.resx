@@ -133,10 +133,10 @@
     <value>ref</value>
   </data>
   <data name="StartParameterCapturingFormatString" xml:space="preserve">
-    <value>Started Parameter Capturing for {duration} on {numberOfMethods} method(s).</value>
+    <value>Started parameter capturing for {duration} on {numberOfMethods} method(s).</value>
   </data>
   <data name="StopParameterCapturing" xml:space="preserve">
-    <value>Stopped Parameter Capturing.</value>
+    <value>Stopped parameter capturing.</value>
   </data>
   <data name="ThisParameterName" xml:space="preserve">
     <value>this</value>

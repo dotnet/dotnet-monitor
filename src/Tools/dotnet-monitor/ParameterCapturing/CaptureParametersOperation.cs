@@ -4,8 +4,13 @@
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,13 +33,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _duration = duration;
         }
 
+        private async Task<bool> IsEndpointIsCapableOfProcessingRequestsAsync(CancellationToken token)
+        {
+            DiagnosticsClient client = new(_endpointInfo.Endpoint);
+
+            IDictionary<string, string> env = await client.GetProcessEnvironmentAsync(token);
+
+            if (!env.TryGetValue(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.ManagedMessaging, out string isManagedMessagingAvailable) ||
+                !env.TryGetValue(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.HostingStartup, out string isHostingStartupAvailable))
+            {
+                return false;
+            }
+
+            return ToolIdentifiers.IsEnvVarValueEnabled(isManagedMessagingAvailable) && ToolIdentifiers.IsEnvVarValueEnabled(isHostingStartupAvailable);
+        }
+
         public async Task ExecuteAsync(TaskCompletionSource<object> startCompletionSource, CancellationToken token)
         {
-            var settings = new EventParameterCapturingPipelineSettings
+            // Check if the endpoint is capable of responding to our requests
+            if (!await IsEndpointIsCapableOfProcessingRequestsAsync(token))
+            {
+                throw new MonitoringException(Strings.ErrorMessage_ParameterCapturingNotAvailable);
+            }
+
+            EventParameterCapturingPipelineSettings settings = new()
             {
                 Duration = Timeout.InfiniteTimeSpan
             };
-
 
             TaskCompletionSource<object> capturingStoppedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
             TaskCompletionSource<object> capturingStartedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -95,7 +120,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
             token.Register(async () =>
             {
-                await StopAsync(CancellationToken.None);
+                using CancellationTokenSource cancellationToken = new(TimeSpan.FromSeconds(30));
+                await StopAsync(cancellationToken.Token);
             });
 
             await capturingStartedCompletionSource.Task.WaitAsync(token).ConfigureAwait(false);

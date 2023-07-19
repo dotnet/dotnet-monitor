@@ -938,4 +938,7 @@
     <value>Failed to apply the startup hook. Not all in process features will be available.</value>
     <comment>Gets a string similar to "Failed to apply the startup hook. Not all in process features will be available."</comment>
   </data>
+  <data name="ErrorMessage_ParameterCapturingNotAvailable" xml:space="preserve">
+    <value>Parameter capturing is not available in the process.</value>
+  </data>
 </root>

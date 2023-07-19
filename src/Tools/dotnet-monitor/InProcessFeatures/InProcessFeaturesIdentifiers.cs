@@ -10,6 +10,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
             private const string InProcessFeaturesPrefix = ToolIdentifiers.StandardPrefix + "InProcessFeatures_";
 
             public const string EnableParameterCapturing = InProcessFeaturesPrefix + nameof(EnableParameterCapturing);
+
+
+            public static class AvailableInfrastructure
+            {
+                private const string ReverseInProcessFeaturesPrefix = InProcessFeaturesPrefix + "AvailableInfrastructure_";
+                public const string ManagedMessaging = ReverseInProcessFeaturesPrefix + nameof(ManagedMessaging);
+                public const string StartupHook = ReverseInProcessFeaturesPrefix + nameof(StartupHook);
+                public const string HostingStartup = ReverseInProcessFeaturesPrefix + nameof(HostingStartup);
+            }
         }
     }
 }
