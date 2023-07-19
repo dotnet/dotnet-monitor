@@ -58,7 +58,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             string activityId,
             ActivityIdFormat activityIdFormat)
         {
-            ExceptionInstanceEntry entry = new(cache, exceptionId, groupId, message, timestamp, stackFrameIds, threadId, innerExceptionIds, activityId, activityIdFormat);            // This should never fail to write because the behavior is to drop the oldest.
+            ExceptionInstanceEntry entry = new(cache, exceptionId, groupId, message, timestamp, stackFrameIds, threadId, innerExceptionIds, activityId, activityIdFormat);
+            // This should never fail to write because the behavior is to drop the oldest.
             _channel.Writer.TryWrite(entry);
         }
 

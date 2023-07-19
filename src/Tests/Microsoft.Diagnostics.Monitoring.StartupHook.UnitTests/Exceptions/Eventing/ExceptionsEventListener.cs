@@ -120,9 +120,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
         private static T ToEnum<T>(object? value)
         {
-            if (value != null)
+            if (value != null && Enum.TryParse(typeof(T), value!.ToString()!, out object? result))
             {
-                return (T)Enum.Parse(typeof(T), value!.ToString()!);
+                return (T)result!;
             }
 
             throw new InvalidCastException();
