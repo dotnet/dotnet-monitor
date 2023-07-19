@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             {
                 try
                 {
-                    IFileInfo startupHookLibraryFileInfo = await GetStartupHookLibaryFileInfo(token);
+                    IFileInfo startupHookLibraryFileInfo = await GetStartupHookLibraryFileInfo(token);
                     DiagnosticsClient client = new(endpointInfo.Endpoint);
 
                     await client.ApplyStartupHookAsync(startupHookLibraryFileInfo.PhysicalPath, token);
@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
 
         public async Task<bool> CheckEnvironmentAsync(IEndpointInfo endpointInfo, CancellationToken token, bool logInstructions = false)
         {
-            IFileInfo startupHookLibraryFileInfo = await GetStartupHookLibaryFileInfo(token);
+            IFileInfo startupHookLibraryFileInfo = await GetStartupHookLibraryFileInfo(token);
             DiagnosticsClient client = new(endpointInfo.Endpoint);
 
             IDictionary<string, string> env = await client.GetProcessEnvironmentAsync(token);
@@ -87,7 +87,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             return true;
         }
 
-        private async Task<IFileInfo> GetStartupHookLibaryFileInfo(CancellationToken token)
+        private async Task<IFileInfo> GetStartupHookLibraryFileInfo(CancellationToken token)
         {
             IFileProviderFactory fileProviderFactory = await _sharedLibraryService.GetFactoryAsync(token);
 
