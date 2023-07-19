@@ -6,6 +6,9 @@ schedules:
     - shipped/*
   always: true
 
+trigger: none
+pr: none
+
 variables:
 - name: _TeamName
   value: DotNetCore
