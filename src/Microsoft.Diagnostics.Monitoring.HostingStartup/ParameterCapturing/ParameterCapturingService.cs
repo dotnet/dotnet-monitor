@@ -36,26 +36,25 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public ParameterCapturingService(IServiceProvider services)
         {
-            // Register the command callbacks (if possible) first so that dotnet-monitor
-            // can be notified of any initialization errors when it tries to invoke the commands.
-            SharedInternals.MessageDispatcher?.RegisterCallback<StartCapturingParametersPayload>(
-                IpcCommand.StartCapturingParameters,
-                OnStartMessage);
-
-            SharedInternals.MessageDispatcher?.RegisterCallback<EmptyPayload>(
-                IpcCommand.StopCapturingParameters,
-                OnStopMessage);
-
             try
             {
+                ArgumentNullException.ThrowIfNull(SharedInternals.MessageDispatcher);
+
+                // Register the command callbacks (if possible) first so that dotnet-monitor
+                // can be notified of any initialization errors when it tries to invoke the commands.
+                SharedInternals.MessageDispatcher.RegisterCallback<StartCapturingParametersPayload>(
+                    IpcCommand.StartCapturingParameters,
+                    OnStartMessage);
+
+                SharedInternals.MessageDispatcher.RegisterCallback<EmptyPayload>(
+                    IpcCommand.StopCapturingParameters,
+                    OnStopMessage);
+
                 _logger = services.GetService<ILogger<ParameterCapturingService>>();
                 if (_logger == null)
                 {
                     throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
                 }
-
-                ArgumentNullException.ThrowIfNull(SharedInternals.MessageDispatcher);
-
 
                 //
                 // Request processing overview:
