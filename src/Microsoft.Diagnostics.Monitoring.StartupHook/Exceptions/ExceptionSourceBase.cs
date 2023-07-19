@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 {
@@ -10,9 +11,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
     /// </summary>
     internal abstract class ExceptionSourceBase
     {
-        protected void RaiseExceptionThrown(Exception ex, DateTime timestamp)
+        protected void RaiseExceptionThrown(Exception ex, DateTime timestamp, string activityId, ActivityIdFormat format)
         {
-            ExceptionThrown?.Invoke(this, new ExceptionEventArgs(ex, timestamp));
+            ExceptionThrown?.Invoke(this, new ExceptionEventArgs(ex, timestamp, activityId, format));
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 
@@ -40,7 +41,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             {
                 _handlingException.Value = true;
 
-                RaiseExceptionThrown(e.Exception, timestamp);
+                RaiseExceptionThrown(e.Exception,
+                    timestamp,
+                    Activity.Current?.Id ?? Guid.Empty.ToString(),
+                    Activity.Current?.IdFormat ?? ActivityIdFormat.Unknown);
             }
             catch
             {
