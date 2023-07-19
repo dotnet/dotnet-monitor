@@ -14,10 +14,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
 
             public static class AvailableInfrastructure
             {
-                private const string ReverseInProcessFeaturesPrefix = InProcessFeaturesPrefix + "AvailableInfrastructure_";
-                public const string ManagedMessaging = ReverseInProcessFeaturesPrefix + nameof(ManagedMessaging);
-                public const string StartupHook = ReverseInProcessFeaturesPrefix + nameof(StartupHook);
-                public const string HostingStartup = ReverseInProcessFeaturesPrefix + nameof(HostingStartup);
+                private const string AvailableInfrastructurePrefix = InProcessFeaturesPrefix + "AvailableInfrastructure_";
+                public const string ManagedMessaging = AvailableInfrastructurePrefix + nameof(ManagedMessaging);
+                public const string StartupHook = AvailableInfrastructurePrefix + nameof(StartupHook);
+                public const string HostingStartup = AvailableInfrastructurePrefix + nameof(HostingStartup);
             }
         }
     }
