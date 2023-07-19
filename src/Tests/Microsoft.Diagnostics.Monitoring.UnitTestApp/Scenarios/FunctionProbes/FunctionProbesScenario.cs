@@ -48,6 +48,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 { TestAppScenarios.FunctionProbes.SubScenarios.ExceptionThrownByProbe, Test_ExceptionThrownByProbeAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.RecursingProbe, Test_RecursingProbeAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.RequestInstallationOnProbeFunction, Test_RequestInstallationOnProbeFunctionAsync},
+
+                /* Self tests */
+                { TestAppScenarios.FunctionProbes.SubScenarios.AssertsInProbesAreCaught, Test_AssertsInProbesAreCaughtAsync},
+
             };
 
             CliCommand scenarioCommand = new(TestAppScenarios.FunctionProbes.Name);
@@ -251,6 +255,17 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
             // There's currently no notification mechanism for determining probe installation success, wait for timeout instead.
             await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await WaitForProbeInstallationAsync(probeManager, probeProxy, new[] { method }, timeoutSource.Token));
+        }
+
+        private static async Task Test_AssertsInProbesAreCaughtAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = typeof(SampleNestedStruct).GetMethod(nameof(SampleNestedStruct.DoWork));
+            SampleNestedStruct nestedStruct = new();
+
+            await Assert.ThrowsAnyAsync<XunitException>(async () => await RunInstanceMethodTestCaseAsync(probeManager, probeProxy, method, new object[]
+            {
+                5
+            }, nestedStruct, thisParameterSupported: true, token));
         }
 
         private static Task RunInstanceMethodTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, bool thisParameterSupported, CancellationToken token)
