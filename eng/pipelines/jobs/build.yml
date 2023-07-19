@@ -22,7 +22,7 @@ parameters:
   # Sub paths under 'artifacts' folder from which files are published to artifacts location
   publishArtifactsSubPaths: []
   # Disable Component Governance injection and analysis
-  disableComponentGovernance: false
+  disableComponentGovernance: ''
   # Disable SBOM generation
   disableSbom: false
   buildArgs: ''
@@ -34,7 +34,10 @@ jobs:
     displayName: ${{ format('{0} {1} {2} {3}', parameters.prefix, parameters.osGroup, parameters.architecture, parameters.configuration) }}
     timeoutInMinutes: ${{ parameters.timeoutInMinutes }}
     enableTelemetry: true
-    disableComponentGovernance: ${{ or(eq(parameters.disableComponentGovernance, 'true'), eq(parameters.osGroup, 'Linux_Musl')) }}
+    ${{ if eq(parameters.disableComponentGovernance, '') }}:
+      disableComponentGovernance: ${{ eq(parameters.osGroup, 'Linux_Musl') }}
+    ${{ else }}:
+      disableComponentGovernance: ${{ parameters.disableComponentGovernance }}
     ${{ if eq(parameters.disableSbom, 'true') }}:
       enableSbom: false
     helixRepo: dotnet/dotnet-monitor
@@ -97,10 +100,6 @@ jobs:
     - _InternalBuildArgs: ''
     - ${{ each variable in parameters.variables }}:
       - ${{ variable }}
-
-    # Component Governance does not work on Musl
-    - ${{ if or(eq(parameters.disableComponentGovernance, 'true'), eq(parameters.osGroup, 'Linux_Musl')) }}:
-      - skipComponentGovernanceDetection: true
     
     # Cross build for arm64 non-Windows builds
     - ${{ if and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')) }}:
