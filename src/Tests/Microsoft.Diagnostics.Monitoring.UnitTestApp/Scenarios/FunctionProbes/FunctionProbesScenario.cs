@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Sdk;
 using static SampleMethods.StaticTestMethodSignatures;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
@@ -302,6 +303,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             await invoker().WaitAsync(token);
 
             Assert.Equal(1, probeProxy.GetProbeInvokeCount(method));
+
+            XunitException assertFailure = probeProxy.GetProbeAssertException(method);
+            if (assertFailure != null)
+            {
+                throw assertFailure;
+            }
         }
 
         private static async Task WaitForProbeUninstallationAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token, bool explicitStopCaptureCall = true)

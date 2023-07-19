@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Threading;
+using Xunit.Sdk;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
@@ -12,6 +13,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
     {
         Action<object[]> _probe;
         private int _invokeCount;
+
+        public XunitException AssertException { get; private set; }
 
         public PerFunctionProbeWrapper(Action<object[]> probe)
         {
@@ -26,7 +29,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         public void Invoke(object[] args)
         {
             Interlocked.Increment(ref _invokeCount);
-            _probe(args);
+
+            try
+            {
+                _probe(args);
+            }
+            catch (XunitException ex)
+            {
+                AssertException = ex;
+            }
         }
     }
 
@@ -57,6 +68,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             }
 
             return probe.GetInvokeCount();
+        }
+
+        public XunitException GetProbeAssertException(MethodInfo method)
+        {
+            if (!_perFunctionProbes.TryGetValue(method.GetFunctionId(), out PerFunctionProbeWrapper probe))
+            {
+                return null;
+            }
+
+            return probe.AssertException;
         }
 
         public void EnterProbe(ulong uniquifier, object[] args)
