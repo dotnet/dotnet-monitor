@@ -34,8 +34,8 @@ jobs:
     displayName: ${{ format('{0} {1} {2} {3}', parameters.prefix, parameters.osGroup, parameters.architecture, parameters.configuration) }}
     timeoutInMinutes: ${{ parameters.timeoutInMinutes }}
     enableTelemetry: true
-    ${{ if eq(parameters.disableComponentGovernance, '') }}:
-      disableComponentGovernance: ${{ eq(parameters.osGroup, 'Linux_Musl') }}
+    ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
+      disableComponentGovernance: true
     ${{ else }}:
       disableComponentGovernance: ${{ parameters.disableComponentGovernance }}
     ${{ if eq(parameters.disableSbom, 'true') }}:
