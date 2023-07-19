@@ -259,13 +259,22 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
         private static async Task Test_AssertsInProbesAreCaughtAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
-            MethodInfo method = typeof(SampleNestedStruct).GetMethod(nameof(SampleNestedStruct.DoWork));
-            SampleNestedStruct nestedStruct = new();
+            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.NoArgs));
 
-            await Assert.ThrowsAnyAsync<XunitException>(async () => await RunInstanceMethodTestCaseAsync(probeManager, probeProxy, method, new object[]
+            await Assert.ThrowsAnyAsync<XunitException>(async () =>
             {
-                5
-            }, nestedStruct, thisParameterSupported: true, token));
+                // To force an assert in the test probes, call a method with no parameters but assert that a parameter is still captured.
+                await RunTestCaseWithCustomInvokerAsync(probeManager, probeProxy, method, () =>
+                {
+                    StaticTestMethodSignatures.NoArgs();
+                    return Task.CompletedTask;
+                },
+                new object[]
+                {
+                    5
+                },
+                thisObj: null, thisParameterSupported: false, token);
+            });
         }
 
         private static Task RunInstanceMethodTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, bool thisParameterSupported, CancellationToken token)
@@ -319,8 +328,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
             Assert.Equal(1, probeProxy.GetProbeInvokeCount(method));
 
-            XunitException assertFailure = probeProxy.GetProbeAssertException(method);
-            if (assertFailure != null)
+            if (probeProxy.TryGetProbeAssertException(method, out XunitException assertFailure))
             {
                 throw assertFailure;
             }

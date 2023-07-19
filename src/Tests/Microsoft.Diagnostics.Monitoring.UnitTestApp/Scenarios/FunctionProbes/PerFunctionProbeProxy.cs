@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using System;
 using System.Collections.Concurrent;
 using System.Reflection;
@@ -70,14 +71,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             return probe.GetInvokeCount();
         }
 
-        public XunitException GetProbeAssertException(MethodInfo method)
+        public bool TryGetProbeAssertException(MethodInfo method, out XunitException exception)
         {
+            exception = null;
             if (!_perFunctionProbes.TryGetValue(method.GetFunctionId(), out PerFunctionProbeWrapper probe))
             {
-                return null;
+                return false;
             }
 
-            return probe.AssertException;
+            exception = probe.AssertException;
+            return exception != null;
         }
 
         public void EnterProbe(ulong uniquifier, object[] args)
