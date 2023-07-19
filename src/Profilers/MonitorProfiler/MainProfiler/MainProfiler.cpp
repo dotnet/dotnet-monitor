@@ -2,15 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #include "MainProfiler.h"
-#include "../Environment/EnvironmentHelper.h"
-#include "../Environment/ProfilerEnvironment.h"
-#include "../Logging/AggregateLogger.h"
-#include "../Logging/DebugLogger.h"
-#include "../Logging/StdErrLogger.h"
+#include "Environment/EnvironmentHelper.h"
+#include "Environment/ProfilerEnvironment.h"
+#include "Logging/AggregateLogger.h"
+#include "Logging/DebugLogger.h"
+#include "Logging/StdErrLogger.h"
+#include "Utilities/ThreadUtilities.h"
 #include "../Stacks/StacksEventProvider.h"
 #include "../Stacks/StackSampler.h"
-#include "../ProbeInstrumentation/ProbeInstrumentation.h"
-#include "../Utilities/ThreadUtilities.h"
 #include "corhlpr.h"
 #include "macros.h"
 #include <memory>
@@ -52,12 +51,6 @@ STDMETHODIMP MainProfiler::Shutdown()
 {
     m_pLogger.reset();
     m_pEnvironment.reset();
-
-    if (m_pProbeInstrumentation)
-    {
-        m_pProbeInstrumentation->ShutdownBackgroundService();
-        m_pProbeInstrumentation.reset();
-    }
 
     _commandServer->Shutdown();
     _commandServer.reset();
@@ -157,8 +150,7 @@ STDMETHODIMP MainProfiler::LoadAsNotificationOnly(BOOL *pbNotificationOnly)
 {
     ExpectedPtr(pbNotificationOnly);
 
-    // JSFIX: Split this into two profilers, one notification-only and one capable of mutating the target app.
-    *pbNotificationOnly = FALSE;
+    *pbNotificationOnly = TRUE;
 
     return S_OK;
 }
@@ -195,27 +187,9 @@ HRESULT MainProfiler::InitializeCommon()
 
     _threadNameCache = make_shared<ThreadNameCache>();
 
-    bool enableParameterCapturing;
-    IfFailLogRet(_environmentHelper->GetIsParameterCapturingEnabled(enableParameterCapturing));
-    if (enableParameterCapturing)
-    {
-        m_pProbeInstrumentation.reset(new (nothrow) ProbeInstrumentation(m_pLogger, m_pCorProfilerInfo));
-        IfNullRet(m_pProbeInstrumentation);
-        m_pProbeInstrumentation->AddProfilerEventMask(eventsLow);
-    }
-    else
-    {
-        ProbeInstrumentation::DisableIncomingRequests();
-    }
-
     IfFailRet(m_pCorProfilerInfo->SetEventMask2(
         eventsLow,
         COR_PRF_HIGH_MONITOR::COR_PRF_HIGH_MONITOR_NONE));
-
-    if (enableParameterCapturing)
-    {
-        IfFailLogRet(m_pProbeInstrumentation->InitBackgroundService());
-    }
 
     //Initialize this last. The CommandServer creates secondary threads, which will be difficult to cleanup if profiler initialization fails.
     IfFailLogRet(InitializeCommandServer());
@@ -360,16 +334,6 @@ HRESULT MainProfiler::ProcessCallstackMessage()
     ThreadUtilities::Sleep(200);
 
     IfFailLogRet(eventProvider->WriteEndEvent());
-
-    return S_OK;
-}
-
-HRESULT STDMETHODCALLTYPE MainProfiler::GetReJITParameters(ModuleID moduleId, mdMethodDef methodId, ICorProfilerFunctionControl* pFunctionControl)
-{
-    if (m_pProbeInstrumentation)
-    {
-        return m_pProbeInstrumentation->GetReJITParameters(moduleId, methodId, pFunctionControl);
-    }
 
     return S_OK;
 }

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "../EventProvider/ProfilerEventProvider.h"
-#include "../Utilities/ClrData.h"
+#include "EventProvider/ProfilerEventProvider.h"
+#include "Utilities/ClrData.h"
 #include <memory>
 #include "Stack.h"
 

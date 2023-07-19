@@ -9,7 +9,7 @@
 
 #include "SocketWrapper.h"
 #include "IpcCommClient.h"
-#include "../Logging/Logger.h"
+#include "Logging/Logger.h"
 
 class IpcCommServer
 {

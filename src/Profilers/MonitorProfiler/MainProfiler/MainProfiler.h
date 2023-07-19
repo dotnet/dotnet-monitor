@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "../ProfilerBase.h"
-#include "../Environment/Environment.h"
-#include "../Environment/EnvironmentHelper.h"
-#include "../Logging/Logger.h"
 #include "../Communication/CommandServer.h"
-#include "../ProbeInstrumentation/ProbeInstrumentation.h"
-#include "../Utilities/ThreadNameCache.h"
+
+#include "ProfilerBase.h"
+#include "Environment/Environment.h"
+#include "Environment/EnvironmentHelper.h"
+#include "Logging/Logger.h"
+#include "Utilities/ThreadNameCache.h"
 #include <memory>
 
 #ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
@@ -29,7 +29,6 @@ private:
     std::shared_ptr<ThreadDataManager> _threadDataManager;
     std::unique_ptr<ExceptionTracker> _exceptionTracker;
 #endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
-    std::unique_ptr<ProbeInstrumentation> m_pProbeInstrumentation;
 
 
 public:
@@ -45,7 +44,6 @@ public:
     STDMETHOD(ExceptionUnwindFunctionEnter)(FunctionID functionId) override;
     STDMETHOD(InitializeForAttach)(IUnknown* pCorProfilerInfoUnk, void* pvClientData, UINT cbClientData) override;
     STDMETHOD(LoadAsNotificationOnly)(BOOL *pbNotificationOnly) override;
-    STDMETHOD(GetReJITParameters)(ModuleID moduleId, mdMethodDef methodId, ICorProfilerFunctionControl* pFunctionControl) override;
 
 private:
     HRESULT InitializeCommon();

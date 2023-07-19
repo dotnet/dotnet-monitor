@@ -9,8 +9,8 @@
 #include "AssemblyProbePrep.h"
 #include "ProbeInjector.h"
 #include "CallbackDefinitions.h"
-#include "../Logging/Logger.h"
-#include "../Utilities/PairHash.h"
+#include "Logging/Logger.h"
+#include "Utilities/PairHash.h"
 
 #include <unordered_map>
 #include <vector>

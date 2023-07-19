@@ -6,8 +6,8 @@
 #include "cor.h"
 #include "corprof.h"
 #include "tstring.h"
-#include "../Logging/Logger.h"
-#include "../Utilities/NameCache.h"
+#include "Logging/Logger.h"
+#include "Utilities/NameCache.h"
 
 #include <unordered_map>
 #include <vector>
