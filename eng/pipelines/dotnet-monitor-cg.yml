@@ -6,6 +6,9 @@ schedules:
     - shipped/*
   always: true
 
+trigger: none
+pr: none
+
 variables:
 - name: _TeamName
   value: DotNetCore
@@ -19,7 +22,7 @@ stages:
   jobs:
   - template: /eng/pipelines/jobs/platform-matrix.yml
     parameters:
-      jobTemplate: /eng/pipelines/jobs/build-binaries.yml
+      jobTemplate: /eng/pipelines/jobs/build.yml
       includeArm64: true
       jobParameters:
         disableComponentGovernance: false
