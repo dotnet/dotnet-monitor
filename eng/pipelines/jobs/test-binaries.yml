@@ -28,7 +28,7 @@ jobs:
     osGroup: ${{ parameters.osGroup }}
     configuration: ${{ parameters.configuration }}
     architecture: ${{ parameters.architecture }}
-    timeoutInMinutes: 60
+    timeoutInMinutes: 120
     dependsOn: Build_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
     disableComponentGovernance: true
     disableSbom: true
