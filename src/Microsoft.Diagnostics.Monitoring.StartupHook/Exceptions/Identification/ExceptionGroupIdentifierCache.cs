@@ -105,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                 GetOrAdd(method.Module),
                 GetOrAdd(genericArguments),
                 GetOrAdd(method.GetParameters())
-                );
+                ); // probably add another parameter here for assemblies for each parameter...?
 
             if (_nameCache.FunctionData.TryAdd(methodId, data))
             {
@@ -192,6 +192,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         /// </returns>
         public ulong GetOrAdd(Type type)
         {
+            var currAssembly = Assembly.GetAssembly(type);
+
             ulong originalId = GetId(type);
             ulong classId = originalId;
             while (!_nameCache.ClassData.ContainsKey(classId))
