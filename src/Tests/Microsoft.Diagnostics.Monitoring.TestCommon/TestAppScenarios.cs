@@ -100,6 +100,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string ExceptionThrownByProbe = nameof(ExceptionThrownByProbe);
                 public const string RecursingProbe = nameof(RecursingProbe);
                 public const string RequestInstallationOnProbeFunction = nameof(RequestInstallationOnProbeFunction);
+
+                /* Self tests */
+                public const string AssertsInProbesAreCaught = nameof(AssertsInProbesAreCaught);
             }
         }
 
