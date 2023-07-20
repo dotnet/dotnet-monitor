@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             public string ProcessName => ProcessInfoImpl.GetProcessName(CommandLine, OperatingSystem);
         }
 
-        private sealed class TestEndpointInfo : WebApi.EndpointInfoBase
+        private sealed class TestEndpointInfo : EndpointInfoBase
         {
             public TestEndpointInfo(Guid runtimeInstanceCookie, int processId, string commandLine, string operatingSystem, string processArchitecture)
             {
@@ -54,6 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CommandLine = commandLine;
                 OperatingSystem = operatingSystem;
                 ProcessArchitecture = processArchitecture;
+                ServiceProvider = new NotSupportedServiceProvider();
             }
 
             public override int ProcessId { get; protected set; }
@@ -63,6 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             public override string ProcessArchitecture { get; protected set; }
 
             public override Version RuntimeVersion { get; protected set; }
+            public override IServiceProvider ServiceProvider { get; protected set; }
         }
 
         private readonly ITestOutputHelper _outputHelper;
