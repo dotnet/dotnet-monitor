@@ -18,7 +18,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         private const string ObjectDisposedExceptionMessage = "Cannot access a disposed object.";
         private const string OperationCancelledExceptionMessage = "The operation was canceled.";
         private const string NonEmptyGuidString = "00000000-0000-0000-0000-000000000001";
-        private const string EmptyGuidString = "00000000-0000-0000-0000-000000000000";
 
         [Theory]
         [InlineData(0, 3, 14, int.MaxValue)]
@@ -67,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         }
 
         [Theory]
-        [InlineData(0, 0, null, "0,0,0", "", EmptyGuidString, ActivityIdFormat.Unknown)]
+        [InlineData(0, 0, null, "0,0,0", "", null, ActivityIdFormat.Unknown)]
         [InlineData(1, 5, "", "1,2", "1", NonEmptyGuidString, ActivityIdFormat.Hierarchical)]
         [InlineData(7, 13, InvalidOperationExceptionMessage, "", "3,5", NonEmptyGuidString, ActivityIdFormat.W3C)]
         [InlineData(ulong.MaxValue - 1, ulong.MaxValue - 1, OperationCancelledExceptionMessage, "3,5,7", "2", NonEmptyGuidString, ActivityIdFormat.W3C)]
@@ -109,7 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Warning);
 
-            source.ExceptionInstance(5, 7, ObjectDisposedExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow, Array.Empty<ulong>(), EmptyGuidString, ActivityIdFormat.Unknown);
+            source.ExceptionInstance(5, 7, ObjectDisposedExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow, Array.Empty<ulong>(), null, ActivityIdFormat.Unknown);
 
             Assert.Empty(listener.Exceptions);
         }
@@ -121,7 +120,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
             using ExceptionsEventListener listener = new();
 
-            source.ExceptionInstance(7, 9, OperationCancelledExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow, Array.Empty<ulong>(), EmptyGuidString, ActivityIdFormat.Unknown);
+            source.ExceptionInstance(7, 9, OperationCancelledExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow, Array.Empty<ulong>(), null, ActivityIdFormat.Unknown);
 
             Assert.Empty(listener.Exceptions);
         }

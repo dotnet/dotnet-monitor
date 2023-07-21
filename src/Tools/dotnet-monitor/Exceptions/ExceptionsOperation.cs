@@ -300,7 +300,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private static bool IncludeActivityId(IExceptionInstance instance)
         {
-            return !string.IsNullOrEmpty(instance.ActivityId) && instance.ActivityId != Guid.Empty.ToString();
+            return !string.IsNullOrEmpty(instance.ActivityId);
         }
     }
 }
