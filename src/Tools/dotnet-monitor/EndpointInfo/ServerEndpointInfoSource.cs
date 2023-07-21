@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private readonly List<EndpointInfo> _activeEndpoints = new();
         private readonly SemaphoreSlim _activeEndpointsSemaphore = new(1);
         private readonly Dictionary<Guid, AsyncServiceScope> _activeEndpointServiceScopes = new();
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceScopeFactory _scopeFactory;
 
         private readonly ChannelReader<IEndpointInfo> _pendingRemovalReader;
         private readonly ChannelWriter<IEndpointInfo> _pendingRemovalWriter;
@@ -55,17 +55,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// from a reversed diagnostics server at path specified by <paramref name="portOptions"/>.
         /// </summary>
         public ServerEndpointInfoSource(
+            IServiceScopeFactory scopeFactory,
             IOptions<DiagnosticPortOptions> portOptions,
             IEnumerable<IEndpointInfoSourceCallbacks> callbacks = null,
             OperationTrackerService operationTrackerService = null,
-            ILogger<ServerEndpointInfoSource> logger = null,
-            IServiceProvider serviceProvider = null)
+            ILogger<ServerEndpointInfoSource> logger = null)
         {
             _callbacks = callbacks ?? Enumerable.Empty<IEndpointInfoSourceCallbacks>();
             _operationTrackerService = operationTrackerService;
             _portOptions = portOptions.Value;
             _logger = logger;
-            _serviceProvider = serviceProvider;
+            _scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
 
             BoundedChannelOptions channelOptions = new(PendingRemovalChannelCapacity)
             {
@@ -178,7 +178,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             try
             {
                 // Create the process service scope
-                AsyncServiceScope scope = _serviceProvider.CreateAsyncScope();
+                AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
 
                 EndpointInfo endpointInfo = await EndpointInfo.FromIpcEndpointInfoAsync(info, scope.ServiceProvider, token);
                 _activeEndpointServiceScopes.Add(endpointInfo.RuntimeInstanceCookie, scope);
