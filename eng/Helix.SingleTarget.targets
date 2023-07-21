@@ -23,7 +23,7 @@
   <ItemGroup Condition="'$(HelixRequiresNode)' == 'true'">
     <HelixWorkItemPreCommand Include=". $HELIX_CORRELATION_PAYLOAD/setupnode.sh $(HelixNodeName)"
                              Condition="'$(IsHelixPosixShell)' == 'true'" />
-    <HelixWorkItemPreCommand Include="%HELIX_CORRELATION_PAYLOAD%\setupnode.cmd $(HelixNodeName)"
+    <HelixWorkItemPreCommand Include="call %HELIX_CORRELATION_PAYLOAD%\setupnode.cmd $(HelixNodeName)"
                              Condition="'$(IsHelixPosixShell)' != 'true'" />
   </ItemGroup>
 
@@ -31,7 +31,7 @@
   <ItemGroup Condition="'$(HelixRequiresAzurite)' == 'true'">
     <HelixWorkItemPreCommand Include=". $HELIX_CORRELATION_PAYLOAD/installazurite.sh"
                              Condition="'$(IsHelixPosixShell)' == 'true'" />
-    <HelixWorkItemPreCommand Include="%HELIX_CORRELATION_PAYLOAD%\installazurite.cmd"
+    <HelixWorkItemPreCommand Include="call %HELIX_CORRELATION_PAYLOAD%\installazurite.cmd"
                              Condition="'$(IsHelixPosixShell)' != 'true'" />
   </ItemGroup>
 
