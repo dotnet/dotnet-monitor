@@ -21,7 +21,9 @@
 
   <!-- Configure NodeJs and Npm -->
   <ItemGroup Condition="'$(HelixRequiresNode)' == 'true'">
-    <HelixWorkItemPreCommand Include=". $HELIX_CORRELATION_PAYLOAD/setupnode.sh $(HelixNodeName)"
+    <HelixWorkItemPreCommand Include=". $HELIX_CORRELATION_PAYLOAD/setupnode.sh"
+                             Condition="'$(IsHelixPosixShell)' == 'true'" />
+    <HelixWorkItemPreCommand Include="setupNode $(HelixNodeName)"
                              Condition="'$(IsHelixPosixShell)' == 'true'" />
     <HelixWorkItemPreCommand Include="call %HELIX_CORRELATION_PAYLOAD%\setupnode.cmd $(HelixNodeName)"
                              Condition="'$(IsHelixPosixShell)' != 'true'" />
