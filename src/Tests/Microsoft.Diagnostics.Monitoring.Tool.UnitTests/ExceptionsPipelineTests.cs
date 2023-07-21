@@ -9,6 +9,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -497,7 +498,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 _instanceThreshold = instanceThreshold;
             }
 
-            public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, ulong groupId, string message, DateTime timestamp, ulong[] stackFrameIds, int threadId, ulong[] innerExceptionIds)
+            public void AddExceptionInstance(IExceptionsNameCache cache, ulong exceptionId, ulong groupId, string message, DateTime timestamp, ulong[] stackFrameIds, int threadId, ulong[] innerExceptionIds, string activityId, ActivityIdFormat activityIdFormat)
             {
                 string moduleName = string.Empty;
                 StringBuilder typeBuilder = new();
@@ -529,7 +530,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     message,
                     timestamp,
                     callStack,
-                    innerExceptionIds));
+                    innerExceptionIds,
+                    activityId,
+                    activityIdFormat));
 
                 if (++_instanceCount >= _instanceThreshold)
                 {
@@ -542,7 +545,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 return _instances;
             }
 
-            public sealed record class ExceptionInstance(ulong Id, string ModuleName, string TypeName, string Message, DateTime Timestamp, CallStack CallStack, ulong[] InnerExceptionIds)
+            public sealed record class ExceptionInstance(ulong Id, string ModuleName, string TypeName, string Message, DateTime Timestamp, CallStack CallStack, ulong[] InnerExceptionIds, string ActivityId, ActivityIdFormat ActivityIdFormat)
                 : IExceptionInstance
             {
             }

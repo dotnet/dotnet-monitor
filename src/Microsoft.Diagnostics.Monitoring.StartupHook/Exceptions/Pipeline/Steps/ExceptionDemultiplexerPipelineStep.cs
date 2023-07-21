@@ -24,8 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
 
         public void Invoke(Exception exception, ExceptionPipelineExceptionContext context)
         {
-            ExceptionPipelineExceptionContext innerContext = new(context.Timestamp, isInnerException: true);
-
+            ExceptionPipelineExceptionContext innerContext = new(context.Timestamp, context.ActivityId, context.ActivityIdFormat, isInnerException: true);
             if (exception is AggregateException aggregateException)
             {
                 // AggregateException will always pull the first exception out of the list of inner exceptions
