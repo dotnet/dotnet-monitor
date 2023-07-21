@@ -128,7 +128,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             throw new InvalidCastException();
         }
 
-            private static unsafe T[] ToArray<T>(object? value) where T : unmanaged
+        private static unsafe T[] ToArray<T>(object? value) where T : unmanaged
         {
             // EventSource doesn't decode non-primitive types very well for EventListeners. In the case of non-byte arrays, it interprets the data
             // as a string and attempts to decode it as a series of chars.
