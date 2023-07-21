@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                                 ToType<DateTime>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.Timestamp]),
                                 ToArray<ulong>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds]),
                                 ToString(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ActivityId]),
-                                ToEnum<ActivityIdFormat>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ActivityIdFormat])
+                                ToActivityIdFormat(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ActivityIdFormat])
                             ));
                         break;
                     case ExceptionEvents.EventIds.ExceptionGroup:
@@ -118,17 +118,17 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             return ToType<ulong>(value);
         }
 
-        private static T ToEnum<T>(object? value)
+        private static ActivityIdFormat ToActivityIdFormat(object? value)
         {
-            if (value != null && Enum.TryParse(typeof(T), value!.ToString()!, out object? result))
+            if (value != null && Enum.TryParse(value!.ToString(), out ActivityIdFormat format))
             {
-                return (T)result!;
+                return format;
             }
 
             throw new InvalidCastException();
         }
 
-        private static unsafe T[] ToArray<T>(object? value) where T : unmanaged
+            private static unsafe T[] ToArray<T>(object? value) where T : unmanaged
         {
             // EventSource doesn't decode non-primitive types very well for EventListeners. In the case of non-byte arrays, it interprets the data
             // as a string and attempts to decode it as a series of chars.

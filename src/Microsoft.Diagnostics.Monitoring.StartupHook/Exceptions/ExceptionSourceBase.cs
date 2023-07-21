@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
     /// </summary>
     internal abstract class ExceptionSourceBase
     {
-        protected void RaiseExceptionThrown(Exception ex, DateTime timestamp, string activityId, ActivityIdFormat format)
+        protected void RaiseExceptionThrown(Exception ex, DateTime timestamp, string? activityId, ActivityIdFormat format)
         {
             ExceptionThrown?.Invoke(this, new ExceptionEventArgs(ex, timestamp, activityId, format));
         }

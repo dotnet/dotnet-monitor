@@ -105,8 +105,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                 if (IncludeActivityId(instance))
                 {
-                    writer.WriteString("activityId", instance.ActivityId);
-                    writer.WriteString("activityIdFormat", instance.ActivityIdFormat.ToString());
+                    writer.WriteStartObject("activity");
+                    writer.WriteString("id", instance.ActivityId);
+                    writer.WriteString("idFormat", instance.ActivityIdFormat.ToString("G"));
+                    writer.WriteEndObject();
                 }
 
                 writer.WriteStartObject("callStack");

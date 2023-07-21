@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 
                 RaiseExceptionThrown(e.Exception,
                     timestamp,
-                    Activity.Current?.Id ?? Guid.Empty.ToString(),
+                    Activity.Current?.Id,
                     Activity.Current?.IdFormat ?? ActivityIdFormat.Unknown);
             }
             catch
