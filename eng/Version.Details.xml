@@ -4,13 +4,13 @@
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>579d547d708eb19f8b05b00f5386649d6dac7b6a</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="7.0.0-preview.23369.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="7.0.0-preview.23370.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>67250d1f1bf55fe6dad63b3cb09d493b0904fa4a</Sha>
+      <Sha>a8c9b63ae43fe502aec7bc0c8cc1175d2116643d</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="7.0.0-preview.23369.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="7.0.0-preview.23370.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>67250d1f1bf55fe6dad63b3cb09d493b0904fa4a</Sha>
+      <Sha>a8c9b63ae43fe502aec7bc0c8cc1175d2116643d</Sha>
     </Dependency>
     <Dependency Name="System.CommandLine" Version="2.0.0-beta4.23326.1">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
