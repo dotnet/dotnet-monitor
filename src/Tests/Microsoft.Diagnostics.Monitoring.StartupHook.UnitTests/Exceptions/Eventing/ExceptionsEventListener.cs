@@ -120,11 +120,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
         private static ActivityIdFormat ToActivityIdFormat(object? value)
         {
-            if (value != null && Enum.TryParse(value!.ToString(), out ActivityIdFormat format))
+            if (value is int intValue)
             {
-                return format;
+                return (ActivityIdFormat)intValue;
             }
-
             throw new InvalidCastException();
         }
 
