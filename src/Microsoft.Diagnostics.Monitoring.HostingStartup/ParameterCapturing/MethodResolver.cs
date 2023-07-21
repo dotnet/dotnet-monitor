@@ -11,30 +11,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     public sealed class MethodResolver
     {
-        private sealed class DeclaringTypeDescription : IEquatable<DeclaringTypeDescription?>
-        {
-            public string ModuleName { get; set; } = string.Empty;
-            public string ClassName { get; set; } = string.Empty;
+        private record DeclaringTypeDescription(string AssemblyName, string TypeName);
 
-            public override bool Equals(object? obj)
-            {
-                return Equals(obj as DeclaringTypeDescription);
-            }
-
-            public bool Equals(DeclaringTypeDescription? other)
-            {
-                return other is not null &&
-                       ModuleName == other.ModuleName &&
-                       ClassName == other.ClassName;
-            }
-
-            public override int GetHashCode()
-            {
-                return HashCode.Combine(ModuleName, ClassName);
-            }
-        }
-
-        private readonly Dictionary<string, List<Module>> _dllNameToModules = new(StringComparer.InvariantCultureIgnoreCase);
+        private readonly Dictionary<string, List<Assembly>> _nameToAssemblies = new(StringComparer.InvariantCultureIgnoreCase);
         private readonly Dictionary<DeclaringTypeDescription, List<MethodInfo>> _declaringTypeToMethods = new();
 
         public MethodResolver()
@@ -46,15 +25,18 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             foreach (Assembly assembly in assemblies)
             {
-                foreach (Module module in assembly.GetModules())
+                string? assemblySimpleName = assembly.GetName().Name;
+                if (assemblySimpleName == null)
                 {
-                    if (!_dllNameToModules.TryGetValue(module.Name, out List<Module>? moduleList))
-                    {
-                        moduleList = new List<Module>();
-                        _dllNameToModules[module.Name] = moduleList;
-                    }
+                    continue;
+                }
 
-                    moduleList.Add(module);
+                if (!_nameToAssemblies.TryGetValue(assemblySimpleName, out List<Assembly>? assemblyList))
+                {
+                    _nameToAssemblies[assemblySimpleName] = new List<Assembly>()
+                    {
+                        assembly
+                    };
                 }
             }
         }
@@ -78,30 +60,25 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private List<MethodInfo> GetMethodsForDeclaringType(MethodDescription methodDescription)
         {
-            // Maintain a cache for all methods for a given module+class.
-            DeclaringTypeDescription declType = new()
-            {
-                ModuleName = methodDescription.ModuleName,
-                ClassName = methodDescription.ClassName
-            };
-
+            // Maintain a cache for all methods for a given assembly+type.
+            DeclaringTypeDescription declType = new(methodDescription.AssemblyName, methodDescription.TypeName);
             if (_declaringTypeToMethods.TryGetValue(declType, out List<MethodInfo>? methods))
             {
                 return methods;
             }
 
             List<MethodInfo> classMethods = new();
-            if (!_dllNameToModules.TryGetValue(methodDescription.ModuleName, out List<Module>? possibleModules))
+            if (!_nameToAssemblies.TryGetValue(methodDescription.AssemblyName, out List<Assembly>? possibleAssemblies))
             {
                 _declaringTypeToMethods.Add(declType, classMethods);
                 return classMethods;
             }
 
-            foreach (Module module in possibleModules)
+            foreach (Assembly assembly in possibleAssemblies)
             {
                 try
                 {
-                    MethodInfo[]? allMethods = module.Assembly.GetType(methodDescription.ClassName)?.GetMethods(
+                    MethodInfo[]? allMethods = assembly.GetType(methodDescription.TypeName)?.GetMethods(
                         BindingFlags.Public |
                         BindingFlags.NonPublic |
                         BindingFlags.Instance |

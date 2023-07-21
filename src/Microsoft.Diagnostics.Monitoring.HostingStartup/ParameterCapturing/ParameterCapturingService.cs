@@ -12,7 +12,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Channels;
@@ -31,8 +30,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         private readonly ParameterCapturingEventSource _eventSource = new();
         private readonly ILogger? _logger;
 
-        private Channel<StartCapturingParametersPayload>? _requests;
-        private Channel<bool>? _stopRequests;
+        private readonly Channel<StartCapturingParametersPayload>? _requests;
+        private readonly Channel<bool>? _stopRequests;
 
         public ParameterCapturingService(IServiceProvider services)
         {
@@ -209,7 +208,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 }
             }
 
-            stoppingToken.Register(tryToStopCapturing);
+            using IDisposable _ = stoppingToken.Register(tryToStopCapturing);
             while (IsAvailable() && !stoppingToken.IsCancellationRequested)
             {
                 StartCapturingParametersPayload req = await _requests!.Reader.ReadAsync(stoppingToken);
@@ -226,13 +225,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
                 using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
                 Task stopSignalTask = _stopRequests!.Reader.WaitToReadAsync(cts.Token).AsTask();
-                _ = await Task.WhenAny(stopSignalTask, Task.Delay(req.Duration, cts.Token)).WaitAsync(stoppingToken).ConfigureAwait(false);
+                await Task.WhenAny(stopSignalTask, Task.Delay(req.Duration, cts.Token)).WaitAsync(stoppingToken).ConfigureAwait(false);
 
                 // Signal the other stop condition tasks to cancel
                 cts.Cancel();
 
                 // Drain the stop request (if present)
-                _ = _stopRequests.Reader.TryRead(out _);
+                _stopRequests.Reader.TryRead(out bool _discard);
 
                 tryToStopCapturing();
             }

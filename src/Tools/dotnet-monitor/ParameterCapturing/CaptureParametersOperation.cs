@@ -9,8 +9,6 @@ using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _duration = duration;
         }
 
-        private async Task<bool> IsEndpointIsCapableOfProcessingRequestsAsync(CancellationToken token)
+        private async Task<bool> CanEndpointProcessRequestsAsync(CancellationToken token)
         {
             DiagnosticsClient client = new(_endpointInfo.Endpoint);
 
@@ -51,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         public async Task ExecuteAsync(TaskCompletionSource<object> startCompletionSource, CancellationToken token)
         {
             // Check if the endpoint is capable of responding to our requests
-            if (!await IsEndpointIsCapableOfProcessingRequestsAsync(token))
+            if (!await CanEndpointProcessRequestsAsync(token))
             {
                 throw new MonitoringException(Strings.ErrorMessage_ParameterCapturingNotAvailable);
             }
@@ -67,11 +65,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             await using EventParameterCapturingPipeline eventTracePipeline = new(_endpointInfo.Endpoint, settings);
             eventTracePipeline.OnStartedCapturing += (_, _) =>
             {
-                _ = capturingStartedCompletionSource.TrySetResult(null);
+                capturingStartedCompletionSource.TrySetResult(null);
             };
             eventTracePipeline.OnStoppedCapturing += (_, _) =>
             {
-                _ = capturingStoppedCompletionSource.TrySetResult(null);
+                capturingStoppedCompletionSource.TrySetResult(null);
             };
             eventTracePipeline.OnCapturingFailed += (_, failureArgs) =>
             {
@@ -118,7 +116,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 }),
                 token);
 
-            token.Register(async () =>
+            using IDisposable _ = token.Register(async () =>
             {
                 using CancellationTokenSource cancellationToken = new(TimeSpan.FromSeconds(30));
                 await StopAsync(cancellationToken.Token);
