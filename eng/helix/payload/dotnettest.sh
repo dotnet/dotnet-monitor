@@ -8,7 +8,7 @@ timeoutMinutes="$5"
 
 filterArgs=""
 if [[ ! -z "$6" ]]; then
-  filterArgs="--filter \"$6\""
+  filterArgs="--filter $6"
 fi
 
 exit_code=0
