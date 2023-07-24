@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.StartupHook.Eventing;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics.Tracing;
 
@@ -11,35 +12,93 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
     [EventSource(Name = ParameterCapturingEvents.SourceName)]
     internal sealed class ParameterCapturingEventSource : AbstractMonitorEventSource
     {
-        [Event(ParameterCapturingEvents.EventIds.CapturingStart)]
-        public void CapturingStart()
+        [NonEvent]
+        public void CapturingStartStuff(Guid RequestId)
         {
-            WriteEventWithFlushing(ParameterCapturingEvents.EventIds.CapturingStart);
+            CapturingStart(RequestId.ToByteArray());
+        }
+
+        [NonEvent]
+        public void CapturingStopStuff(Guid RequestId)
+        {
+            CapturingStop(RequestId.ToByteArray());
+        }
+
+        [Event(ParameterCapturingEvents.EventIds.CapturingStart)]
+        private void CapturingStart(byte[] RequestId)
+        {
+            Span<EventData> data = stackalloc EventData[1];
+
+            Span<byte> requestIdSpan = stackalloc byte[GetArrayDataSize(RequestId)];
+            FillArrayData(requestIdSpan, RequestId);
+
+            SetValue(ref data[ParameterCapturingEvents.CapturingActivityPayload.RequestId], requestIdSpan);
+
+            WriteEventWithFlushing(ParameterCapturingEvents.EventIds.CapturingStart, data);
         }
 
         [Event(ParameterCapturingEvents.EventIds.CapturingStop)]
-        public void CapturingStop()
+        private void CapturingStop(byte[] RequestId)
         {
-            WriteEventWithFlushing(ParameterCapturingEvents.EventIds.CapturingStop);
+            Span<EventData> data = stackalloc EventData[1];
+
+            Span<byte> requestIdSpan = stackalloc byte[GetArrayDataSize(RequestId)];
+            FillArrayData(requestIdSpan, RequestId);
+
+            SetValue(ref data[ParameterCapturingEvents.CapturingActivityPayload.RequestId], requestIdSpan);
+
+            WriteEventWithFlushing(ParameterCapturingEvents.EventIds.CapturingStop, data);
         }
 
+        [NonEvent]
+        private void CapturingActivityCore(int eventId, byte[] RequestId)
+        {
+            Span<EventData> data = stackalloc EventData[1];
 
-        [Event(ParameterCapturingEvents.EventIds.ServiceNotAvailable)]
-        public void ServiceNotAvailable(
-            ParameterCapturingEvents.ServiceNotAvailableReason Reason,
+            Span<byte> requestIdSpan = stackalloc byte[GetArrayDataSize(RequestId)];
+            FillArrayData(requestIdSpan, RequestId);
+
+            SetValue(ref data[ParameterCapturingEvents.CapturingActivityPayload.RequestId], requestIdSpan);
+
+            WriteEventWithFlushing(eventId, data);
+        }
+
+        [Event(ParameterCapturingEvents.EventIds.ServiceStateChanged)]
+        public void ServiceStateChanged(
+            ParameterCapturingEvents.ServiceState State,
             string Details)
         {
             Span<EventData> data = stackalloc EventData[2];
             using PinnedData detailsPinned = PinnedData.Create(Details);
 
-            SetValue(ref data[ParameterCapturingEvents.ServiceNotAvailablePayload.Reason], Reason);
-            SetValue(ref data[ParameterCapturingEvents.ServiceNotAvailablePayload.Details], detailsPinned);
+            SetValue(ref data[ParameterCapturingEvents.ServiceStatePayload.State], State);
+            SetValue(ref data[ParameterCapturingEvents.ServiceStatePayload.Details], detailsPinned);
 
-            WriteEventWithFlushing(ParameterCapturingEvents.EventIds.ServiceNotAvailable, data);
+            WriteEventWithFlushing(ParameterCapturingEvents.EventIds.ServiceStateChanged, data);
         }
 
         [NonEvent]
-        public void FailedToCapture(Exception ex)
+        public void UnknownRequestId(Guid RequestId)
+        {
+            UnknownRequestId(RequestId.ToByteArray());
+        }
+
+        [Event(ParameterCapturingEvents.EventIds.UnknownRequestId)]
+        private void UnknownRequestId(byte[] RequestId)
+        {
+            Span<EventData> data = stackalloc EventData[1];
+
+            Span<byte> requestIdSpan = stackalloc byte[GetArrayDataSize(RequestId)];
+            FillArrayData(requestIdSpan, RequestId);
+
+            SetValue(ref data[ParameterCapturingEvents.UnknownRequestIdPayload.RequestId], requestIdSpan);
+
+            WriteEventWithFlushing(ParameterCapturingEvents.EventIds.UnknownRequestId, data);
+        }
+
+
+        [NonEvent]
+        public void FailedToCapture(Guid RequestId, Exception ex)
         {
             ParameterCapturingEvents.CapturingFailedReason reason;
             string details;
@@ -59,17 +118,32 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
                 details = ex.ToString();
             }
 
-            FailedToCapture(reason, details);
+            FailedToCapture(RequestId.ToByteArray(), reason, details);
         }
 
-        [Event(ParameterCapturingEvents.EventIds.FailedToCapture)]
+        [NonEvent]
         public void FailedToCapture(
+            Guid RequestId,
             ParameterCapturingEvents.CapturingFailedReason Reason,
             string Details)
         {
-            Span<EventData> data = stackalloc EventData[2];
+            FailedToCapture(RequestId.ToByteArray(), Reason, Details);
+        }
+
+        [Event(ParameterCapturingEvents.EventIds.FailedToCapture)]
+        private void FailedToCapture(
+            byte[] RequestId,
+            ParameterCapturingEvents.CapturingFailedReason Reason,
+            string Details)
+        {
+            Span<EventData> data = stackalloc EventData[3];
+
+            Span<byte> requestIdSpan = stackalloc byte[GetArrayDataSize(RequestId)];
+            FillArrayData(requestIdSpan, RequestId);
+
             using PinnedData detailsPinned = PinnedData.Create(Details);
 
+            SetValue(ref data[ParameterCapturingEvents.CapturingFailedPayloads.RequestId], requestIdSpan);
             SetValue(ref data[ParameterCapturingEvents.CapturingFailedPayloads.Reason], Reason);
             SetValue(ref data[ParameterCapturingEvents.CapturingFailedPayloads.Details], detailsPinned);
 

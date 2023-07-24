@@ -14,22 +14,36 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             public const int CapturingStart = 2;
             public const int CapturingStop = 3;
             public const int FailedToCapture = 4;
-            public const int ServiceNotAvailable = 5;
+            public const int UnknownRequestId = 5;
+            public const int ServiceStateChanged = 6;
         }
 
 
-        public enum ServiceNotAvailableReason : uint
+        public enum ServiceState : uint
         {
-            NotSupported = 0,
-            InternalError
+            NotStarted = 0,
+            Running,
+            Stopped,
+            NotSupported,
+            InternalError,
         }
 
-        public static class ServiceNotAvailablePayload
+        public static class CapturingActivityPayload
         {
-            public const int Reason = 0;
+            public const int RequestId = 0;
+        }
+
+
+        public static class UnknownRequestIdPayload
+        {
+            public const int RequestId = 0;
+        }
+
+        public static class ServiceStatePayload
+        {
+            public const int State = 0;
             public const int Details = 1;
         }
-
 
         public enum CapturingFailedReason : uint
         {
@@ -41,8 +55,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
         public static class CapturingFailedPayloads
         {
-            public const int Reason = 0;
-            public const int Details = 1;
+            public const int RequestId = 0;
+            public const int Reason = 1;
+            public const int Details = 2;
         }
     }
 }

@@ -17,8 +17,14 @@ namespace Microsoft.Diagnostics.Monitoring
 
     internal sealed class StartCapturingParametersPayload
     {
+        public Guid RequestId { get; set; } = Guid.Empty;
         public TimeSpan Duration { get; set; } = Timeout.InfiniteTimeSpan;
         public MethodDescription[] Methods { get; set; } = Array.Empty<MethodDescription>();
+    }
+
+    internal sealed class StopCapturingParametersPayload
+    {
+        public Guid RequestId { get; set; } = Guid.Empty;
     }
 
     internal enum IpcCommand : short

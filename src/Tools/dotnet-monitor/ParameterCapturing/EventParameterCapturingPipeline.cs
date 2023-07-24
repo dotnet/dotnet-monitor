@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tracing;
 using System;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,20 +15,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 {
     internal sealed class CapturingFailedArgs
     {
+        public Guid RequestId { get; set; }
         public ParameterCapturingEvents.CapturingFailedReason Reason { get; set; }
         public string Details { get; set; }
     }
 
     internal sealed class ServiceNotAvailableArgs
     {
-        public ParameterCapturingEvents.ServiceNotAvailableReason Reason { get; set; }
+        public ParameterCapturingEvents.ServiceState ServiceState { get; set; }
         public string Details { get; set; }
     }
 
     internal sealed class EventParameterCapturingPipeline : EventSourcePipeline<EventParameterCapturingPipelineSettings>
     {
-        public EventHandler OnStartedCapturing;
-        public EventHandler OnStoppedCapturing;
+        public EventHandler<Guid> OnStartedCapturing;
+        public EventHandler<Guid> OnStoppedCapturing;
 
         public EventHandler<CapturingFailedArgs> OnCapturingFailed;
         public EventHandler<ServiceNotAvailableArgs> OnServiceNotAvailable;
@@ -58,21 +60,39 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
         private void Callback(TraceEvent traceEvent)
         {
+            if (!Debugger.IsAttached)
+            {
+                Debugger.Launch();
+            }
+            Console.WriteLine(traceEvent.EventName);
             switch (traceEvent.EventName)
             {
                 case "Capturing/Start":
-                    OnStartedCapturing.Invoke(this, EventArgs.Empty);
+                {
+                    byte[] requestIdBytes = traceEvent.GetPayload<byte[]>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
+                    OnStartedCapturing.Invoke(this, new Guid(requestIdBytes));
                     break;
+                }
                 case "Capturing/Stop":
-                    OnStoppedCapturing.Invoke(this, EventArgs.Empty);
+                {
+                    byte[] requestIdBytes = traceEvent.GetPayload<byte[]>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
+                    OnStoppedCapturing.Invoke(this, new Guid(requestIdBytes));
                     break;
+                }
+                case "UnknownRequestId":
+                {
+                    byte[] requestIdBytes = traceEvent.GetPayload<byte[]>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
+                    break;
+                }
                 case "FailedToCapture":
                 {
+                    byte[] requestIdBytes = traceEvent.GetPayload<byte[]>(ParameterCapturingEvents.CapturingFailedPayloads.RequestId);
                     ParameterCapturingEvents.CapturingFailedReason reason = traceEvent.GetPayload<ParameterCapturingEvents.CapturingFailedReason>(ParameterCapturingEvents.CapturingFailedPayloads.Reason);
                     string details = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturingFailedPayloads.Details);
 
                     OnCapturingFailed.Invoke(this, new CapturingFailedArgs()
                     {
+                        RequestId = new Guid(requestIdBytes),
                         Reason = reason,
                         Details = details
                     });
@@ -80,11 +100,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 }
                 case "ServiceNotAvailable":
                 {
-                    ParameterCapturingEvents.ServiceNotAvailableReason reason = traceEvent.GetPayload<ParameterCapturingEvents.ServiceNotAvailableReason>(ParameterCapturingEvents.ServiceNotAvailablePayload.Reason);
-                    string details = traceEvent.GetPayload<string>(ParameterCapturingEvents.ServiceNotAvailablePayload.Details);
+                    ParameterCapturingEvents.ServiceState state = traceEvent.GetPayload<ParameterCapturingEvents.ServiceState>(ParameterCapturingEvents.ServiceStatePayload.State);
+                    string details = traceEvent.GetPayload<string>(ParameterCapturingEvents.ServiceStatePayload.Details);
                     OnServiceNotAvailable.Invoke(this, new ServiceNotAvailableArgs()
                     {
-                        Reason = reason,
+                        ServiceState = state,
                         Details = details
                     });
                     break;

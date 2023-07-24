@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
@@ -21,17 +22,53 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     internal sealed class ParameterCapturingService : BackgroundService, IDisposable
     {
-        private long _disposedState;
+        private sealed class QueuedRequest
+        {
+            public QueuedRequest(StartCapturingParametersPayload payload)
+            {
+                Payload = payload ?? throw new ArgumentNullException(nameof(payload));
+                StopRequest = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
+            }
 
-        private ParameterCapturingEvents.ServiceNotAvailableReason? _notAvailableReason;
+            public StartCapturingParametersPayload Payload { get; }
+            public TaskCompletionSource<object?> StopRequest { get; }
+        }
+
+        private sealed class InitializedState : IDisposable
+        {
+            public InitializedState(IServiceProvider services)
+            {
+                Logger = services.GetService<ILogger<ParameterCapturingService>>()
+                    ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
+
+                ProbeManager = new(new LogEmittingProbes(Logger));
+
+                RequestQueue = Channel.CreateBounded<QueuedRequest>(new BoundedChannelOptions(capacity: 1)
+                {
+                    FullMode = BoundedChannelFullMode.DropWrite
+                });
+            }
+
+            public FunctionProbesManager ProbeManager { get; }
+            public ILogger Logger { get; }
+            public Channel<QueuedRequest> RequestQueue { get; }
+            public ConcurrentDictionary<Guid, QueuedRequest> AllRequests { get; } = new();
+
+            public void Dispose()
+            {
+                ProbeManager.Dispose();
+            }
+        }
+
+        private long _disposedState;
+        private ParameterCapturingEvents.ServiceState _serviceState;
         private string _notAvailableDetails = string.Empty;
 
-        private readonly FunctionProbesManager? _probeManager;
-        private readonly ParameterCapturingEventSource _eventSource = new();
-        private readonly ILogger? _logger;
+        private readonly InitializedState? _state;
 
-        private readonly Channel<StartCapturingParametersPayload>? _requests;
-        private readonly Channel<bool>? _stopRequests;
+        private readonly ParameterCapturingEventSource _eventSource = new();
+
+
 
         public ParameterCapturingService(IServiceProvider services)
         {
@@ -45,40 +82,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     IpcCommand.StartCapturingParameters,
                     OnStartMessage);
 
-                SharedInternals.MessageDispatcher.RegisterCallback<EmptyPayload>(
+                SharedInternals.MessageDispatcher.RegisterCallback<StopCapturingParametersPayload>(
                     IpcCommand.StopCapturingParameters,
                     OnStopMessage);
 
-                _logger = services.GetService<ILogger<ParameterCapturingService>>();
-                if (_logger == null)
-                {
-                    throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
-                }
-
-                //
-                // Request processing overview:
-                //
-                // - Incoming Requests
-                //   - dotnet-monitor will properly rate limit requests so there will never be 2 start requests at any given time.
-                //   - Our monitor message processing (start/stop commands) happens serially.
-                //   - Our monitor message processing simply ACKs a command if there's nothing immediately wrong and queues the
-                //     work to happen on our background service.
-                // - Request Handling
-                //  - Happens on our background service.
-                //  - The background service may stop at any given point if an unrecoverable error occurs. In this scenario,
-                //    dotnet-monitor is notified of the error, and all future requests will short-circuit and notify
-                //    dotnet-monitor that the parameter capturing service is unavailable.
-                //
-                _requests = Channel.CreateBounded<StartCapturingParametersPayload>(new BoundedChannelOptions(capacity: 1)
-                {
-                    FullMode = BoundedChannelFullMode.DropWrite
-                });
-                _stopRequests = Channel.CreateBounded<bool>(new BoundedChannelOptions(capacity: 1)
-                {
-                    FullMode = BoundedChannelFullMode.DropWrite
-                });
-
-                _probeManager = new FunctionProbesManager(new LogEmittingProbes(_logger));
+                _state = new InitializedState(services);
+            }
+            catch (NotSupportedException ex)
+            {
+                ChangeServiceState(ParameterCapturingEvents.ServiceState.NotSupported, ex.Message);
             }
             catch (Exception ex)
             {
@@ -88,172 +100,190 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private bool IsAvailable()
         {
-            return _notAvailableReason == null;
+            return _serviceState == ParameterCapturingEvents.ServiceState.Running;
         }
 
         private void OnStartMessage(StartCapturingParametersPayload payload)
         {
-            if (payload.Methods.Length == 0)
+            if (!IsAvailable())
             {
-                _eventSource.FailedToCapture(new ArgumentException(nameof(payload.Methods)));
+                BroadcastServiceState();
                 return;
             }
 
-            if (_requests?.Writer.TryWrite(payload) != true)
+            if (payload.Methods.Length == 0)
             {
+                _eventSource.FailedToCapture(payload.RequestId, new ArgumentException(nameof(payload.Methods)));
+                return;
+            }
+
+            QueuedRequest request = new(payload);
+            if (!_state!.AllRequests.TryAdd(payload.RequestId, request))
+            {
+                _eventSource.FailedToCapture(payload.RequestId, new ArgumentException(nameof(payload.RequestId)));
+                return;
+            }
+
+            if (_state!.RequestQueue?.Writer.TryWrite(request) != true)
+            {
+                _state!.AllRequests.TryRemove(payload.RequestId, out _);
                 if (!IsAvailable())
                 {
-                    _eventSource.ServiceNotAvailable(_notAvailableReason!.Value, _notAvailableDetails);
-                    return;
+                    BroadcastServiceState();
                 }
                 else
                 {
                     // The channel is full, which should never happen if dotnet-monitor is properly rate limiting requests.
                     _eventSource.FailedToCapture(
+                        payload.RequestId,
                         ParameterCapturingEvents.CapturingFailedReason.TooManyRequests,
                         ParameterCapturingStrings.TooManyRequestsErrorMessage);
                 }
             }
         }
 
-        private void OnStopMessage(EmptyPayload _)
+        private void OnStopMessage(StopCapturingParametersPayload payload)
         {
-            if (_stopRequests?.Writer.TryWrite(true) != true)
+            if (!IsAvailable())
+            {
+                BroadcastServiceState();
+                return;
+            }
+
+            if (!_state!.AllRequests.TryGetValue(payload.RequestId, out QueuedRequest? request))
+            {
+                _eventSource.UnknownRequestId(payload.RequestId);
+                return;
+            }
+
+            request.StopRequest.TrySetResult(null);
+        }
+
+        private bool TryStartCapturing(StartCapturingParametersPayload request)
+        {
+            try
             {
                 if (!IsAvailable())
                 {
-                    _eventSource.ServiceNotAvailable(_notAvailableReason!.Value, _notAvailableDetails);
-                    return;
+                    throw new InvalidOperationException();
                 }
-                else
+
+                MethodResolver resolver = new();
+                List<MethodInfo> methods = new(request.Methods.Length);
+                List<MethodDescription> methodsFailedToResolve = new();
+
+                for (int i = 0; i < request.Methods.Length; i++)
                 {
-                    // The channel is full which is OK as stop requests aren't tied to a specific operation.
+                    MethodDescription methodDescription = request.Methods[i];
+
+                    List<MethodInfo> resolvedMethods = resolver.ResolveMethodDescription(methodDescription);
+                    if (resolvedMethods.Count == 0)
+                    {
+                        methodsFailedToResolve.Add(methodDescription);
+                    }
+
+                    methods.AddRange(resolvedMethods);
                 }
+
+                if (methodsFailedToResolve.Count > 0)
+                {
+                    UnresolvedMethodsExceptions ex = new(methodsFailedToResolve);
+                    _state!.Logger.LogWarning(ex.Message);
+                    throw ex;
+                }
+
+                _state!.ProbeManager.StartCapturing(methods);
+                _eventSource.CapturingStartStuff(request.RequestId);
+                _state!.Logger.LogInformation(
+                    ParameterCapturingStrings.StartParameterCapturingFormatString,
+                    request.Duration,
+                    request.Methods.Length);
+
+                return true;
             }
+            catch (Exception ex)
+            {
+                _eventSource.FailedToCapture(request.RequestId, ex);
+            }
+
+            return false;
         }
 
-        private void StartCapturing(StartCapturingParametersPayload request)
+        private bool TryStopCapturing(Guid requestId)
         {
             if (!IsAvailable())
             {
-                throw new InvalidOperationException();
+                return false;
             }
 
-            MethodResolver resolver = new();
-            List<MethodInfo> methods = new(request.Methods.Length);
-            List<MethodDescription> methodsFailedToResolve = new();
-
-            for (int i = 0; i < request.Methods.Length; i++)
+            try
             {
-                MethodDescription methodDescription = request.Methods[i];
+                _state!.Logger.LogInformation(ParameterCapturingStrings.StopParameterCapturing);
+                _state!.ProbeManager.StopCapturing();
+                _eventSource.CapturingStopStuff(requestId);
 
-                List<MethodInfo> resolvedMethods = resolver.ResolveMethodDescription(methodDescription);
-                if (resolvedMethods.Count == 0)
-                {
-                    methodsFailedToResolve.Add(methodDescription);
-                }
-
-                methods.AddRange(resolvedMethods);
+                return true;
             }
-
-            if (methodsFailedToResolve.Count > 0)
+            catch (Exception ex)
             {
-                UnresolvedMethodsExceptions ex = new(methodsFailedToResolve);
-                _logger!.LogWarning(ex.Message);
-                throw ex;
+                //
+                // We're in a faulted state from an internal exception so there's
+                // nothing else that can be safely done for the remainder of the app's lifetime.
+                //
+                // The probe method cache will have been cleared by the _probeManager in this situation
+                // so while the probes may still be installed they will be no-ops.
+                //
+                UnrecoverableError(ex);
             }
 
-            _probeManager!.StartCapturing(methods);
-            _logger!.LogInformation(
-                ParameterCapturingStrings.StartParameterCapturingFormatString,
-                request.Duration,
-                request.Methods.Length);
+            return false;
         }
 
-        private void StopCapturing()
+        private void ChangeServiceState(ParameterCapturingEvents.ServiceState state, string? details = null)
         {
-            if (!IsAvailable())
-            {
-                return;
-            }
-
-            _logger!.LogInformation(ParameterCapturingStrings.StopParameterCapturing);
-            _probeManager!.StopCapturing();
+            _serviceState = state;
+            _notAvailableDetails = details ?? string.Empty;
+            BroadcastServiceState();
         }
+
+        private void BroadcastServiceState()
+        {
+            _eventSource.ServiceStateChanged(_serviceState, _notAvailableDetails);
+        }
+
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (!IsAvailable())
-            {
-                return;
-            }
-
-            void tryToStopCapturing()
-            {
-                try
-                {
-                    StopCapturing();
-                    _eventSource.CapturingStop();
-                }
-                catch (Exception ex)
-                {
-                    //
-                    // We're in a faulted state from an internal exception so there's
-                    // nothing else that can be safely done for the remainder of the app's lifetime.
-                    //
-                    // The probe method cache will have been cleared by the _probeManager in this situation
-                    // so while the probes may still be installed they will be no-ops.
-                    //
-                    UnrecoverableError(ex);
-                }
-            }
-
-            using IDisposable _ = stoppingToken.Register(tryToStopCapturing);
+            ChangeServiceState(ParameterCapturingEvents.ServiceState.Running);
             while (IsAvailable() && !stoppingToken.IsCancellationRequested)
             {
-                StartCapturingParametersPayload req = await _requests!.Reader.ReadAsync(stoppingToken);
-                try
+                QueuedRequest request = await _state!.RequestQueue.Reader.ReadAsync(stoppingToken);
+                if (!TryStartCapturing(request.Payload))
                 {
-                    StartCapturing(req);
-                    _eventSource.CapturingStart();
-                }
-                catch (Exception ex)
-                {
-                    _eventSource.FailedToCapture(ex);
                     continue;
                 }
 
                 using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-                Task stopSignalTask = _stopRequests!.Reader.WaitToReadAsync(cts.Token).AsTask();
-                await Task.WhenAny(stopSignalTask, Task.Delay(req.Duration, cts.Token)).WaitAsync(stoppingToken).ConfigureAwait(false);
+                cts.CancelAfter(request.Payload.Duration);
 
-                // Signal the other stop condition tasks to cancel
-                cts.Cancel();
+                try
+                {
+                    await request.StopRequest.Task.WaitAsync(cts.Token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
 
-                // Drain the stop request (if present)
-                _stopRequests.Reader.TryRead(out bool _discard);
+                }
 
-                tryToStopCapturing();
+                _ = TryStopCapturing(request.Payload.RequestId);
+                _state!.AllRequests.TryRemove(request.Payload.RequestId, out _);
             }
         }
 
         private void UnrecoverableError(Exception ex)
         {
-            if (ex is NotSupportedException)
-            {
-                _notAvailableReason = ParameterCapturingEvents.ServiceNotAvailableReason.NotSupported;
-                _notAvailableDetails = ex.Message;
-            }
-            else
-            {
-                _notAvailableReason = ParameterCapturingEvents.ServiceNotAvailableReason.InternalError;
-                _notAvailableDetails = ex.ToString();
-            }
-
-            _eventSource.ServiceNotAvailable(_notAvailableReason!.Value, _notAvailableDetails);
-
-            _ = _requests?.Writer.TryComplete();
-            _ = _stopRequests?.Writer.TryComplete();
+            ChangeServiceState(ParameterCapturingEvents.ServiceState.InternalError, ex.ToString());
+            _ = _state!.RequestQueue.Writer.TryComplete();
         }
 
         public override void Dispose()
@@ -266,7 +296,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             try
             {
-                _probeManager?.Dispose();
+                _state?.Dispose();
             }
             catch
             {

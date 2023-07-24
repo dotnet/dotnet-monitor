@@ -22,6 +22,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         private readonly MethodDescription[] _methods;
         private readonly TimeSpan _duration;
 
+        private readonly Guid _requestId;
+
         public CaptureParametersOperation(IEndpointInfo endpointInfo, ProfilerChannel profilerChannel, ILogger logger, MethodDescription[] methods, TimeSpan duration)
         {
             _profilerChannel = profilerChannel;
@@ -29,6 +31,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _logger = logger;
             _methods = methods;
             _duration = duration;
+
+            _requestId = Guid.NewGuid();
         }
 
         private async Task<bool> CanEndpointProcessRequestsAsync(CancellationToken token)
@@ -63,16 +67,31 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             TaskCompletionSource<object> capturingStartedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
             await using EventParameterCapturingPipeline eventTracePipeline = new(_endpointInfo.Endpoint, settings);
-            eventTracePipeline.OnStartedCapturing += (_, _) =>
+            eventTracePipeline.OnStartedCapturing += (_, requestId) =>
             {
+                if (requestId != _requestId)
+                {
+                    return;
+                }
+
                 capturingStartedCompletionSource.TrySetResult(null);
             };
-            eventTracePipeline.OnStoppedCapturing += (_, _) =>
+            eventTracePipeline.OnStoppedCapturing += (_, requestId) =>
             {
+                if (requestId != _requestId)
+                {
+                    return;
+                }
+
                 capturingStoppedCompletionSource.TrySetResult(null);
             };
             eventTracePipeline.OnCapturingFailed += (_, failureArgs) =>
             {
+                if (failureArgs.RequestId != _requestId)
+                {
+                    return;
+                }
+
                 Exception ex;
                 switch (failureArgs.Reason)
                 {
@@ -90,9 +109,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             eventTracePipeline.OnServiceNotAvailable += (_, notAvailableArgs) =>
             {
                 Exception ex;
-                switch (notAvailableArgs.Reason)
+                switch (notAvailableArgs.ServiceState)
                 {
-                    case ParameterCapturingEvents.ServiceNotAvailableReason.NotSupported:
+                    case ParameterCapturingEvents.ServiceState.NotSupported:
                         ex = new MonitoringException(notAvailableArgs.Details);
                         break;
                     default:
@@ -111,6 +130,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 _endpointInfo,
                 new JsonProfilerMessage(IpcCommand.StartCapturingParameters, new StartCapturingParametersPayload
                 {
+                    RequestId = _requestId,
                     Duration = _duration,
                     Methods = _methods
                 }),
@@ -132,7 +152,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         {
             await _profilerChannel.SendMessage(
                 _endpointInfo,
-                new JsonProfilerMessage(IpcCommand.StopCapturingParameters, new EmptyPayload()),
+                new JsonProfilerMessage(IpcCommand.StopCapturingParameters, new StopCapturingParametersPayload()
+                {
+                    RequestId = _requestId
+                }),
                 token);
         }
 
