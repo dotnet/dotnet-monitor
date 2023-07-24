@@ -11,12 +11,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// Set of services provided by the monitoring tool. These are consumed by
     /// the REST Api.
     /// </summary>
-    internal interface IDiagnosticServices
+    public interface IDiagnosticServices
     {
         /// <summary>
         /// Returns running processes, optionally based on filter criteria.
         /// </summary>
-        Task<IEnumerable<IProcessInfo>> GetProcessesAsync(DiagProcessFilter processFilter, CancellationToken token);
+        internal Task<IEnumerable<IProcessInfo>> GetProcessesAsync(DiagProcessFilter processFilter, CancellationToken token);
 
         /// <summary>
         /// Returns a process based on a key. If no key is specified, the DefaultProcess configuration is used.
@@ -26,12 +26,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// In the future, may want to update this to have an overload that also takes a DiagProcessFilter object, if different
         /// situations allow a different process object.
         /// </remarks>
-        Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token);
+        internal Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token);
     }
 
-    internal interface IProcessInfo
+    public interface IProcessInfo
     {
-        IEndpointInfo EndpointInfo { get; }
+        internal IEndpointInfo EndpointInfo { get; }
 
         string CommandLine { get; }
 

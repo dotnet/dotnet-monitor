@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        internal Task<ActionResult> InvokeForProcess(Func<IProcessInfo, ActionResult> func, ProcessKey? processKey, string artifactType = null)
+        protected Task<ActionResult> InvokeForProcess(Func<IProcessInfo, ActionResult> func, ProcessKey? processKey, string artifactType = null)
         {
             Func<IProcessInfo, Task<ActionResult>> asyncFunc =
                 processInfo => Task.FromResult(func(processInfo));
@@ -24,19 +24,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return InvokeForProcess(asyncFunc, processKey, artifactType);
         }
 
-        internal async Task<ActionResult> InvokeForProcess(Func<IProcessInfo, Task<ActionResult>> func, ProcessKey? processKey, string artifactType)
+        protected async Task<ActionResult> InvokeForProcess(Func<IProcessInfo, Task<ActionResult>> func, ProcessKey? processKey, string artifactType)
         {
             ActionResult<object> result = await InvokeForProcess<object>(async processInfo => await func(processInfo), processKey, artifactType);
 
             return result.Result;
         }
 
-        internal Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, ActionResult<T>> func, ProcessKey? processKey, string artifactType = null)
+        protected Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, ActionResult<T>> func, ProcessKey? processKey, string artifactType = null)
         {
             return InvokeForProcess(processInfo => Task.FromResult(func(processInfo)), processKey, artifactType);
         }
 
-        internal async Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, Task<ActionResult<T>>> func, ProcessKey? processKey, string artifactType = null)
+        protected async Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, Task<ActionResult<T>>> func, ProcessKey? processKey, string artifactType = null)
         {
             IDisposable artifactTypeRegistration = null;
             if (!string.IsNullOrEmpty(artifactType))

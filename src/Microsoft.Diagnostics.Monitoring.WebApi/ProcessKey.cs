@@ -8,7 +8,7 @@ using System.Globalization;
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     [TypeConverter(typeof(ProcessKeyTypeConverter))]
-    internal struct ProcessKey
+    public struct ProcessKey
     {
         internal ProcessKey(int processId)
         {
