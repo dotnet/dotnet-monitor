@@ -103,6 +103,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 writer.WriteString("moduleName", instance.ModuleName);
                 writer.WriteString("message", instance.Message);
 
+                if (IncludeActivityId(instance))
+                {
+                    writer.WriteStartObject("activity");
+                    writer.WriteString("id", instance.ActivityId);
+                    writer.WriteString("idFormat", instance.ActivityIdFormat.ToString("G"));
+                    writer.WriteEndObject();
+                }
+
                 writer.WriteStartArray("innerExceptions");
                 foreach (ulong innerExceptionId in instance.InnerExceptionIds)
                 {
@@ -183,6 +191,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             await writer.WriteLineAsync();
             await WriteTextExceptionFormat(writer, currentInstance);
             await WriteTextInnerExceptionsAndStackFrames(writer, currentInstance, priorInstances);
+
+            if (IncludeActivityId(currentInstance))
+            {
+                // ActivityIdFormat is intentionally being omitted
+                await writer.WriteLineAsync();
+                await writer.WriteAsync($"Activity ID: {currentInstance.ActivityId}");
+            }
 
             await writer.WriteLineAsync();
             await writer.WriteLineAsync();
@@ -285,6 +300,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 await writer.WriteAsync(": ");
                 await writer.WriteAsync(instance.Message);
             }
+        }
+
+        private static bool IncludeActivityId(IExceptionInstance instance)
+        {
+            return !string.IsNullOrEmpty(instance.ActivityId);
         }
     }
 }

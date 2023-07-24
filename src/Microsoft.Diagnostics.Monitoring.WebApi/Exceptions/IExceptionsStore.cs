@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 {
@@ -16,7 +17,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
             DateTime timestamp,
             ulong[] stackFrameIds,
             int threadId,
-            ulong[] innerExceptionIds);
+            ulong[] innerExceptionIds,
+            string activityId,
+            ActivityIdFormat activityIdFormat);
 
         IReadOnlyList<IExceptionInstance> GetSnapshot();
     }
