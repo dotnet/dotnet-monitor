@@ -64,31 +64,31 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             {
                 case "Capturing/Start":
                 {
-                    byte[] requestIdBytes = traceEvent.GetPayload<byte[]>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
-                    OnStartedCapturing.Invoke(this, new Guid(requestIdBytes));
+                    Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
+                    OnStartedCapturing.Invoke(this, requestId);
                     break;
                 }
                 case "Capturing/Stop":
                 {
-                    byte[] requestIdBytes = traceEvent.GetPayload<byte[]>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
-                    OnStoppedCapturing.Invoke(this, new Guid(requestIdBytes));
+                        Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
+                        OnStoppedCapturing.Invoke(this, requestId);
                     break;
                 }
                 case "UnknownRequestId":
                 {
-                    byte[] requestIdBytes = traceEvent.GetPayload<byte[]>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
-                    OnUnknownRequestId.Invoke(this, new Guid(requestIdBytes));
+                        Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.UnknownRequestIdPayload.RequestId);
+                        OnUnknownRequestId.Invoke(this, requestId);
                     break;
                 }
                 case "FailedToCapture":
                 {
-                    byte[] requestIdBytes = traceEvent.GetPayload<byte[]>(ParameterCapturingEvents.CapturingFailedPayloads.RequestId);
+                    Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturingFailedPayloads.RequestId);
                     ParameterCapturingEvents.CapturingFailedReason reason = traceEvent.GetPayload<ParameterCapturingEvents.CapturingFailedReason>(ParameterCapturingEvents.CapturingFailedPayloads.Reason);
                     string details = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturingFailedPayloads.Details);
 
                     OnCapturingFailed.Invoke(this, new CapturingFailedArgs()
                     {
-                        RequestId = new Guid(requestIdBytes),
+                        RequestId = requestId,
                         Reason = reason,
                         Details = details
                     });
