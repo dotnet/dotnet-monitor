@@ -5,6 +5,22 @@
             "Egress": "artifacts"
         }
     },
+    "DefaultProcess": {
+        "Filters": [{
+            "Key": "ProcessName",
+            "Value": "dotnet"
+        }]
+    },
+    "DiagnosticPort": {
+        "ConnectionMode": "Listen",
+        "EndpointName": "diag.sock"
+    },
+    "InProcessFeatures": {
+        "Enabled": true,
+        "ParameterCapturing": {
+            "Enabled": true
+        }
+    },
     "Egress": {
         "FileSystem": {
             "artifacts": {

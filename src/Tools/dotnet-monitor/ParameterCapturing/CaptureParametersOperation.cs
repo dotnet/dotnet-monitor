@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Azure.Core;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
@@ -23,6 +24,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         private readonly TimeSpan _duration;
 
         private readonly Guid _requestId;
+
+        private readonly TaskCompletionSource<object> _capturingStoppedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<object> _capturingStartedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         public CaptureParametersOperation(IEndpointInfo endpointInfo, ProfilerChannel profilerChannel, ILogger logger, MethodDescription[] methods, TimeSpan duration)
         {
@@ -67,62 +71,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             TaskCompletionSource<object> capturingStartedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
             await using EventParameterCapturingPipeline eventTracePipeline = new(_endpointInfo.Endpoint, settings);
-            eventTracePipeline.OnStartedCapturing += (_, requestId) =>
-            {
-                if (requestId != _requestId)
-                {
-                    return;
-                }
-
-                capturingStartedCompletionSource.TrySetResult(null);
-            };
-            eventTracePipeline.OnStoppedCapturing += (_, requestId) =>
-            {
-                if (requestId != _requestId)
-                {
-                    return;
-                }
-
-                capturingStoppedCompletionSource.TrySetResult(null);
-            };
-            eventTracePipeline.OnCapturingFailed += (_, failureArgs) =>
-            {
-                if (failureArgs.RequestId != _requestId)
-                {
-                    return;
-                }
-
-                Exception ex;
-                switch (failureArgs.Reason)
-                {
-                    case ParameterCapturingEvents.CapturingFailedReason.UnresolvedMethods:
-                    case ParameterCapturingEvents.CapturingFailedReason.InvalidRequest:
-                        ex = new MonitoringException(failureArgs.Details);
-                        break;
-                    default:
-                        ex = new InvalidOperationException(failureArgs.Details);
-                        break;
-                }
-
-                _ = capturingStartedCompletionSource.TrySetException(ex);
-            };
-            eventTracePipeline.OnServiceNotAvailable += (_, notAvailableArgs) =>
-            {
-                Exception ex;
-                switch (notAvailableArgs.ServiceState)
-                {
-                    case ParameterCapturingEvents.ServiceState.NotSupported:
-                        ex = new MonitoringException(notAvailableArgs.Details);
-                        break;
-                    default:
-                        ex = new InvalidOperationException(notAvailableArgs.Details);
-                        break;
-                }
-
-                _ = capturingStartedCompletionSource.TrySetException(ex);
-                _ = capturingStoppedCompletionSource.TrySetException(ex);
-            };
-
+            eventTracePipeline.OnStartedCapturing += OnStartedCapturing;
+            eventTracePipeline.OnStoppedCapturing += OnStoppedCapturing;
+            eventTracePipeline.OnCapturingFailed += OnCapturingFailed;
+            eventTracePipeline.OnServiceNotAvailable += OnServiceNotAvailable;
+            eventTracePipeline.OnUnknownRequestId += (_, requestId) => { }; // no-op
 
             Task runPipelineTask = eventTracePipeline.StartAsync(token);
 
@@ -142,11 +95,72 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 await StopAsync(cancellationToken.Token);
             });
 
-            await capturingStartedCompletionSource.Task.WaitAsync(token).ConfigureAwait(false);
+            await _capturingStartedCompletionSource.Task.WaitAsync(token).ConfigureAwait(false);
             startCompletionSource?.TrySetResult(null);
 
-            await capturingStoppedCompletionSource.Task.WaitAsync(token).ConfigureAwait(false);
+            await _capturingStoppedCompletionSource.Task.WaitAsync(token).ConfigureAwait(false);
         }
+
+        private void OnStartedCapturing(object sender, Guid requestId)
+        {
+            if (requestId != _requestId)
+            {
+                return;
+            }
+
+            _ = _capturingStartedCompletionSource.TrySetResult(null);
+        }
+
+        private void OnStoppedCapturing(object sender, Guid requestId)
+        {
+            if (requestId != _requestId)
+            {
+                return;
+            }
+
+            _ = _capturingStoppedCompletionSource.TrySetResult(null);
+        }
+
+        private void OnCapturingFailed(object sender, CapturingFailedArgs args)
+        {
+            if (args.RequestId != _requestId)
+            {
+                return;
+            }
+
+            Exception ex;
+            switch (args.Reason)
+            {
+                case ParameterCapturingEvents.CapturingFailedReason.UnresolvedMethods:
+                case ParameterCapturingEvents.CapturingFailedReason.InvalidRequest:
+                    ex = new MonitoringException(args.Details);
+                    break;
+                default:
+                    ex = new InvalidOperationException(args.Details);
+                    break;
+            }
+
+            _ = _capturingStartedCompletionSource.TrySetException(ex);
+        }
+
+        private void OnServiceNotAvailable(object sender, ServiceNotAvailableArgs args)
+        {
+            Exception ex;
+            switch (args.ServiceState)
+            {
+                case ParameterCapturingEvents.ServiceState.NotSupported:
+                    ex = new MonitoringException(args.Details);
+                    break;
+                default:
+                    ex = new InvalidOperationException(args.Details);
+                    break;
+            }
+
+            _ = _capturingStartedCompletionSource.TrySetException(ex);
+            _ = _capturingStoppedCompletionSource.TrySetException(ex);
+        }
+
+
 
         public async Task StopAsync(CancellationToken token)
         {

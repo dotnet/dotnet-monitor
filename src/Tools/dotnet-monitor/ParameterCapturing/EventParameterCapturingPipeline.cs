@@ -30,6 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
     {
         public EventHandler<Guid> OnStartedCapturing;
         public EventHandler<Guid> OnStoppedCapturing;
+        public EventHandler<Guid> OnUnknownRequestId;
 
         public EventHandler<CapturingFailedArgs> OnCapturingFailed;
         public EventHandler<ServiceNotAvailableArgs> OnServiceNotAvailable;
@@ -60,10 +61,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
         private void Callback(TraceEvent traceEvent)
         {
-            if (!Debugger.IsAttached)
-            {
-                Debugger.Launch();
-            }
             Console.WriteLine(traceEvent.EventName);
             switch (traceEvent.EventName)
             {
@@ -82,6 +79,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 case "UnknownRequestId":
                 {
                     byte[] requestIdBytes = traceEvent.GetPayload<byte[]>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
+                    OnUnknownRequestId.Invoke(this, new Guid(requestIdBytes));
                     break;
                 }
                 case "FailedToCapture":
