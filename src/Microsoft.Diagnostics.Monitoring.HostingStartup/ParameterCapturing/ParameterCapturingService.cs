@@ -193,7 +193,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 }
 
                 _initializedState.ProbeManager.StartCapturing(methods);
-                _eventSource.CapturingStartStuff(request.RequestId);
+                _eventSource.CapturingStart(request.RequestId);
                 _initializedState.Logger.LogInformation(
                     ParameterCapturingStrings.StartParameterCapturingFormatString,
                     request.Duration,
@@ -221,7 +221,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
                 _initializedState.Logger.LogInformation(ParameterCapturingStrings.StopParameterCapturing);
                 _initializedState.ProbeManager.StopCapturing();
-                _eventSource.CapturingStopStuff(requestId);
+                _eventSource.CapturingStop(requestId);
 
                 return true;
             }

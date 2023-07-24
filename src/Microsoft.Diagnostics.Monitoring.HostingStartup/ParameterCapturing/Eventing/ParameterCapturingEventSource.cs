@@ -12,13 +12,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
     internal sealed class ParameterCapturingEventSource : AbstractMonitorEventSource
     {
         [NonEvent]
-        public void CapturingStartStuff(Guid RequestId)
+        public void CapturingStart(Guid RequestId)
         {
             CapturingStart(RequestId.ToByteArray());
         }
 
         [NonEvent]
-        public void CapturingStopStuff(Guid RequestId)
+        public void CapturingStop(Guid RequestId)
         {
             CapturingStop(RequestId.ToByteArray());
         }
