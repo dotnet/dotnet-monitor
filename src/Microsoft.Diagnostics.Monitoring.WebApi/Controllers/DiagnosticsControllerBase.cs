@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
     public abstract class DiagnosticsControllerBase : ControllerBase
     {
-        internal DiagnosticsControllerBase(IDiagnosticServices diagnosticServices, ILogger logger)
+        private protected DiagnosticsControllerBase(IDiagnosticServices diagnosticServices, ILogger logger)
         {
             DiagnosticServices = diagnosticServices ?? throw new ArgumentNullException(nameof(diagnosticServices));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        internal IDiagnosticServices DiagnosticServices { get; }
+        private protected IDiagnosticServices DiagnosticServices { get; }
 
         protected ILogger Logger { get; }
     }
