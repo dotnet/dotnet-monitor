@@ -29,9 +29,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         Task<IProcessInfo> GetProcessAsync(ProcessKey? processKey, CancellationToken token);
     }
 
-    public interface IProcessInfo
+    internal interface IProcessInfo
     {
-        internal IEndpointInfo EndpointInfo { get; }
+        IEndpointInfo EndpointInfo { get; }
 
         string CommandLine { get; }
 
