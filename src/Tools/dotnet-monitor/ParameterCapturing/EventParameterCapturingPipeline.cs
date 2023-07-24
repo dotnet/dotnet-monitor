@@ -60,7 +60,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
         private void Callback(TraceEvent traceEvent)
         {
-            Console.WriteLine(traceEvent.EventName);
             switch (traceEvent.EventName)
             {
                 case "Capturing/Start":
