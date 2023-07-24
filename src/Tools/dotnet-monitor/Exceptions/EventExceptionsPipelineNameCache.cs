@@ -41,11 +41,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _nameCache.ModuleData.TryAdd(id, new ModuleData(moduleName));
         }
 
-        public void AddToken(ulong moduleId, uint token, uint outerToken, string name)
+        public void AddToken(ulong moduleId, uint token, uint outerToken, string name, string friendlyName)
         {
             _nameCache.TokenData.TryAdd(
                 new ModuleScopedToken(moduleId, token),
-                new TokenData(name, outerToken));
+                new TokenData(name, friendlyName, outerToken));
         }
 
         public bool TryGetExceptionGroup(ulong groupId, out ulong exceptionClassId, out ulong throwingMethodId, out int ilOffset)

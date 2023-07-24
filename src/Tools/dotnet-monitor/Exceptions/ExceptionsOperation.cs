@@ -222,11 +222,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     await writer.WriteAsync(frame.MethodName);
                     await writer.WriteAsync(MethodParameterTypesStart);
 
-                    for (int i = 0; i < frame.ParameterTypes.Count; i++)
+                    for (int i = 0; i < frame.FriendlyParameterTypes.Count; i++)
                     {
-                        await writer.WriteAsync(frame.ParameterTypes[i]);
+                        await writer.WriteAsync(frame.FriendlyParameterTypes[i]);
 
-                        if (i < frame.ParameterTypes.Count - 1)
+                        if (i < frame.FriendlyParameterTypes.Count - 1)
                         {
                             await writer.WriteAsync(GenericSeparator);
                         }

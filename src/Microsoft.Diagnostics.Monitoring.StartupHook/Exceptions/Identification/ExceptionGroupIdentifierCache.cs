@@ -192,8 +192,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         /// </returns>
         public ulong GetOrAdd(Type type)
         {
-            var currAssembly = Assembly.GetAssembly(type);
-
             ulong originalId = GetId(type);
             ulong classId = originalId;
             while (!_nameCache.ClassData.ContainsKey(classId))
@@ -222,6 +220,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 
                     TokenData tokenData = new(
                         null == type.DeclaringType ? type.FullName ?? type.Name : type.Name,
+                        type.Name,
                         parentToken);
 
                     if (!_nameCache.TokenData.TryAdd(key, tokenData))

@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        public static void BuildClassName(StringBuilder builder, NameCache cache, ulong classId)
+        public static void BuildClassName(StringBuilder builder, NameCache cache, ulong classId, bool friendlyNames = false)
         {
             string className = UnknownClass;
             if (cache.ClassData.TryGetValue(classId, out ClassData? classData))
@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 }
                 else
                 {
-                    BuildClassName(builder, cache, classData.ModuleId, classData.Token);
+                    BuildClassName(builder, cache, classData.ModuleId, classData.Token, friendlyNames: friendlyNames);
                 }
                 BuildGenericParameters(builder, cache, classData.TypeArgs);
             }
@@ -71,14 +71,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        private static void BuildClassName(StringBuilder builder, NameCache cache, ulong moduleId, uint token)
+        private static void BuildClassName(StringBuilder builder, NameCache cache, ulong moduleId, uint token, bool friendlyNames = false)
         {
             var classNames = new Stack<string>();
 
             uint currentToken = token;
             while (currentToken != 0 && cache.TokenData.TryGetValue(new ModuleScopedToken(moduleId, currentToken), out TokenData? tokenData))
             {
-                classNames.Push(tokenData.Name);
+                classNames.Push(friendlyNames ? tokenData.FriendlyName : tokenData.Name);
                 currentToken = tokenData.OuterToken;
             }
 
@@ -118,13 +118,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        public static IList<string> GetMethodParameterTypes(StringBuilder builder, NameCache cache, ulong[] parameterTypes)
+        public static IList<string> GetMethodParameterTypes(StringBuilder builder, NameCache cache, ulong[] parameterTypes, bool friendlyNames = false)
         {
             List<string> parameterTypesList = new();
             for (int i = 0; i < parameterTypes?.Length; i++)
             {
                 builder.Clear();
-                BuildClassName(builder, cache, parameterTypes[i]);
+                BuildClassName(builder, cache, parameterTypes[i], friendlyNames: friendlyNames);
                 parameterTypesList.Add(builder.ToString());
             }
 

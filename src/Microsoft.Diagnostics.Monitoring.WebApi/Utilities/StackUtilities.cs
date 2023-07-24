@@ -70,6 +70,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     builder.Clear();
                     frameModel.ParameterTypes = NameFormatter.GetMethodParameterTypes(builder, cache, functionData.ParameterTypes);
+                    builder.Clear();
+                    frameModel.FriendlyParameterTypes = NameFormatter.GetMethodParameterTypes(builder, cache, functionData.ParameterTypes, friendlyNames: true);
                 }
 
                 builder.Clear();
