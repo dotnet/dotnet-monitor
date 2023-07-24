@@ -88,16 +88,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 }),
                 token);
 
-            using IDisposable _ = token.Register(async () =>
+            try
             {
-                using CancellationTokenSource cancellationToken = new(TimeSpan.FromSeconds(30));
-                await StopAsync(cancellationToken.Token);
-            });
+                await _capturingStartedCompletionSource.Task.WaitAsync(token).ConfigureAwait(false);
+                startCompletionSource?.TrySetResult(null);
 
-            await _capturingStartedCompletionSource.Task.WaitAsync(token).ConfigureAwait(false);
-            startCompletionSource?.TrySetResult(null);
-
-            await _capturingStoppedCompletionSource.Task.WaitAsync(token).ConfigureAwait(false);
+                await _capturingStoppedCompletionSource.Task.WaitAsync(token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                using CancellationTokenSource stopCancellationToken = new(TimeSpan.FromSeconds(30));
+                await StopAsync(stopCancellationToken.Token);
+                throw;
+            }
         }
 
         private void OnStartedCapturing(object sender, Guid requestId)
