@@ -35,15 +35,11 @@ jobs:
     architecture: ${{ parameters.architecture }}
     disableComponentGovernance: ${{ parameters.disableComponentGovernance }}
     disableSbom: ${{ parameters.disableSbom }}
+    enableCrossBuild: true
     variables:
-    - _CrossBuildArgs: ''
     - _PublishProjectsArgs: ''
     - ${{ each variable in parameters.variables }}:
       - ${{ variable }}
-
-    # Cross build for all Linux builds and arm64 non-Windows builds
-    - ${{ if or(in(parameters.osGroup, 'Linux', 'Linux_Musl'), and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows'))) }}:
-      - _CrossBuildArgs: '-cross'
 
     - ${{ if and(eq(parameters.targetRid, 'win-x64'), eq(parameters.configuration, 'Release')) }}:
       - _PublishProjectsArgs: '/p:PublishProjectsAfterBuild=true'
@@ -54,14 +50,7 @@ jobs:
     - ${{ each step in parameters.preBuildSteps }}:
       - ${{ step }}
 
-    buildArgs: >-
-      $(_CrossBuildArgs)
-      $(_PublishProjectsArgs)
-
-    # Set ROOTFS_DIR for Linux cross builds
-    ${{ if in(parameters.osGroup, 'Linux', 'Linux_Musl') }}:
-      buildEnv:
-        ROOTFS_DIR: '/crossrootfs/${{ parameters.architecture }}'
+    buildArgs: $(_PublishProjectsArgs)
 
     postBuildSteps:
     - ${{ each step in parameters.postBuildSteps }}:
