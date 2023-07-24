@@ -123,4 +123,10 @@
     <MicrosoftDiagnosticsMonitoringLibraryVersion>$(MicrosoftDiagnosticsMonitoringVersion)</MicrosoftDiagnosticsMonitoringLibraryVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeLibraryVersion>$(MicrosoftDiagnosticsMonitoringEventPipeVersion)</MicrosoftDiagnosticsMonitoringEventPipeLibraryVersion>
   </PropertyGroup>
+  <PropertyGroup Label="Helix">
+    <!-- Ubuntu 18.04 requires older nodejs version due to glibc version -->
+    <HelixNodeVersion>16.20.1</HelixNodeVersion>
+    <!-- win-arm64 is only supported on newer versions -->
+    <HelixNodeVersion Condition="$([MSBuild]::IsOSPlatform(Windows)) and '$(BuildArch)' == 'arm64'">20.4.0</HelixNodeVersion>
+  </PropertyGroup>
 </Project>
