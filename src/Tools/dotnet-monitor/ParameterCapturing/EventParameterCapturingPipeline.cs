@@ -6,7 +6,6 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tracing;
 using System;
-using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,7 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         public string Details { get; set; }
     }
 
-    internal sealed class ServiceNotAvailableArgs
+    internal sealed class ServiceStateUpdateArgs
     {
         public ParameterCapturingEvents.ServiceState ServiceState { get; set; }
         public string Details { get; set; }
@@ -33,7 +32,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         public EventHandler<Guid> OnUnknownRequestId;
 
         public EventHandler<CapturingFailedArgs> OnCapturingFailed;
-        public EventHandler<ServiceNotAvailableArgs> OnServiceNotAvailable;
+        public EventHandler<ServiceStateUpdateArgs> OnServiceStateUpdate;
 
         public EventParameterCapturingPipeline(IpcEndpoint endpoint, EventParameterCapturingPipelineSettings settings)
             : base(new DiagnosticsClient(endpoint), settings)
@@ -96,11 +95,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                     });
                     break;
                 }
-                case "ServiceNotAvailable":
+                case "ServiceStateUpdate":
                 {
                     ParameterCapturingEvents.ServiceState state = traceEvent.GetPayload<ParameterCapturingEvents.ServiceState>(ParameterCapturingEvents.ServiceStatePayload.State);
                     string details = traceEvent.GetPayload<string>(ParameterCapturingEvents.ServiceStatePayload.Details);
-                    OnServiceNotAvailable.Invoke(this, new ServiceNotAvailableArgs()
+                        OnServiceStateUpdate.Invoke(this, new ServiceStateUpdateArgs()
                     {
                         ServiceState = state,
                         Details = details

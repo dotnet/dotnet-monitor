@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.StartupHook.Eventing;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics.Tracing;
 
@@ -63,8 +62,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
             WriteEventWithFlushing(eventId, data);
         }
 
-        [Event(ParameterCapturingEvents.EventIds.ServiceStateChanged)]
-        public void ServiceStateChanged(
+        [Event(ParameterCapturingEvents.EventIds.ServiceStateUpdate)]
+        public void ServiceStateUpdate(
             ParameterCapturingEvents.ServiceState State,
             string Details)
         {
@@ -74,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
             SetValue(ref data[ParameterCapturingEvents.ServiceStatePayload.State], State);
             SetValue(ref data[ParameterCapturingEvents.ServiceStatePayload.Details], detailsPinned);
 
-            WriteEventWithFlushing(ParameterCapturingEvents.EventIds.ServiceStateChanged, data);
+            WriteEventWithFlushing(ParameterCapturingEvents.EventIds.ServiceStateUpdate, data);
         }
 
         [NonEvent]

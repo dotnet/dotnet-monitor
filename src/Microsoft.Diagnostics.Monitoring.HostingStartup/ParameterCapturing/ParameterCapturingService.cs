@@ -13,7 +13,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Channels;
@@ -23,9 +22,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     internal sealed class ParameterCapturingService : BackgroundService, IDisposable
     {
-        private sealed class QueuedRequest
+        private sealed class CapturingRequest
         {
-            public QueuedRequest(StartCapturingParametersPayload payload)
+            public CapturingRequest(StartCapturingParametersPayload payload)
             {
                 Payload = payload ?? throw new ArgumentNullException(nameof(payload));
                 StopRequest = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -44,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
                 ProbeManager = new(new LogEmittingProbes(Logger));
 
-                RequestQueue = Channel.CreateBounded<QueuedRequest>(new BoundedChannelOptions(capacity: 1)
+                RequestQueue = Channel.CreateBounded<CapturingRequest>(new BoundedChannelOptions(capacity: 1)
                 {
                     FullMode = BoundedChannelFullMode.DropWrite
                 });
@@ -52,8 +51,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             public FunctionProbesManager ProbeManager { get; }
             public ILogger Logger { get; }
-            public Channel<QueuedRequest> RequestQueue { get; }
-            public ConcurrentDictionary<Guid, QueuedRequest> AllRequests { get; } = new();
+            public Channel<CapturingRequest> RequestQueue { get; }
+            public ConcurrentDictionary<Guid, CapturingRequest> AllRequests { get; } = new();
 
             public void Dispose()
             {
@@ -62,14 +61,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         }
 
         private long _disposedState;
-        private ParameterCapturingEvents.ServiceState _serviceState;
-        private string _notAvailableDetails = string.Empty;
 
-        private readonly InitializedState? _state;
+        private ParameterCapturingEvents.ServiceState _serviceState;
+        private string _serviceStateDetails = string.Empty;
+
+        private readonly InitializedState? _initializedState;
 
         private readonly ParameterCapturingEventSource _eventSource = new();
-
-
 
         public ParameterCapturingService(IServiceProvider services)
         {
@@ -87,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     IpcCommand.StopCapturingParameters,
                     OnStopMessage);
 
-                _state = new InitializedState(services);
+                _initializedState = new InitializedState(services);
             }
             catch (NotSupportedException ex)
             {
@@ -106,7 +104,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private void OnStartMessage(StartCapturingParametersPayload payload)
         {
-            if (!IsAvailable())
+            if (!IsAvailable() || _initializedState == null)
             {
                 BroadcastServiceState();
                 return;
@@ -118,16 +116,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 return;
             }
 
-            QueuedRequest request = new(payload);
-            if (!_state!.AllRequests.TryAdd(payload.RequestId, request))
+            CapturingRequest request = new(payload);
+            if (!_initializedState.AllRequests.TryAdd(payload.RequestId, request))
             {
                 _eventSource.FailedToCapture(payload.RequestId, new ArgumentException(nameof(payload.RequestId)));
                 return;
             }
 
-            if (_state!.RequestQueue?.Writer.TryWrite(request) != true)
+            if (_initializedState.RequestQueue.Writer.TryWrite(request) != true)
             {
-                _state!.AllRequests.TryRemove(payload.RequestId, out _);
+                _initializedState.AllRequests.TryRemove(payload.RequestId, out _);
                 if (!IsAvailable())
                 {
                     BroadcastServiceState();
@@ -145,13 +143,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private void OnStopMessage(StopCapturingParametersPayload payload)
         {
-            if (!IsAvailable())
+            if (!IsAvailable() || _initializedState == null)
             {
                 BroadcastServiceState();
                 return;
             }
 
-            if (!_state!.AllRequests.TryGetValue(payload.RequestId, out QueuedRequest? request))
+            if (!_initializedState.AllRequests.TryGetValue(payload.RequestId, out CapturingRequest? request))
             {
                 _eventSource.UnknownRequestId(payload.RequestId);
                 return;
@@ -164,7 +162,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             try
             {
-                if (!IsAvailable())
+                // _initializedState will never be null here, this is added to avoid needing to use _initializedState! everywhere
+                if (_initializedState == null)
                 {
                     throw new InvalidOperationException();
                 }
@@ -189,13 +188,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 if (methodsFailedToResolve.Count > 0)
                 {
                     UnresolvedMethodsExceptions ex = new(methodsFailedToResolve);
-                    _state!.Logger.LogWarning(ex.Message);
+                    _initializedState.Logger.LogWarning(ex.Message);
                     throw ex;
                 }
 
-                _state!.ProbeManager.StartCapturing(methods);
+                _initializedState.ProbeManager.StartCapturing(methods);
                 _eventSource.CapturingStartStuff(request.RequestId);
-                _state!.Logger.LogInformation(
+                _initializedState.Logger.LogInformation(
                     ParameterCapturingStrings.StartParameterCapturingFormatString,
                     request.Duration,
                     request.Methods.Length);
@@ -212,15 +211,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private bool TryStopCapturing(Guid requestId)
         {
-            if (!IsAvailable())
-            {
-                return false;
-            }
-
             try
             {
-                _state!.Logger.LogInformation(ParameterCapturingStrings.StopParameterCapturing);
-                _state!.ProbeManager.StopCapturing();
+                // _initializedState will never be null here, this is added to avoid needing to use _initializedState! everywhere
+                if (_initializedState == null)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                _initializedState.Logger.LogInformation(ParameterCapturingStrings.StopParameterCapturing);
+                _initializedState.ProbeManager.StopCapturing();
                 _eventSource.CapturingStopStuff(requestId);
 
                 return true;
@@ -240,25 +240,39 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             return false;
         }
 
+        private void UnrecoverableError(Exception ex)
+        {
+            ChangeServiceState(ParameterCapturingEvents.ServiceState.InternalError, ex.ToString());
+        }
+
         private void ChangeServiceState(ParameterCapturingEvents.ServiceState state, string? details = null)
         {
             _serviceState = state;
-            _notAvailableDetails = details ?? string.Empty;
+            _serviceStateDetails = details ?? string.Empty;
+            if (state != ParameterCapturingEvents.ServiceState.Running)
+            {
+                _ = _initializedState?.RequestQueue.Writer.TryComplete();
+            }
+
             BroadcastServiceState();
         }
 
         private void BroadcastServiceState()
         {
-            _eventSource.ServiceStateChanged(_serviceState, _notAvailableDetails);
+            _eventSource.ServiceStateUpdate(_serviceState, _serviceStateDetails);
         }
-
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            if (_initializedState == null)
+            {
+                return;
+            }
+
             ChangeServiceState(ParameterCapturingEvents.ServiceState.Running);
             while (IsAvailable() && !stoppingToken.IsCancellationRequested)
             {
-                QueuedRequest request = await _state!.RequestQueue.Reader.ReadAsync(stoppingToken);
+                CapturingRequest request = await _initializedState.RequestQueue.Reader.ReadAsync(stoppingToken);
                 if (!TryStartCapturing(request.Payload))
                 {
                     continue;
@@ -277,14 +291,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 }
 
                 _ = TryStopCapturing(request.Payload.RequestId);
-                _state!.AllRequests.TryRemove(request.Payload.RequestId, out _);
+                _initializedState.AllRequests.TryRemove(request.Payload.RequestId, out _);
             }
-        }
 
-        private void UnrecoverableError(Exception ex)
-        {
-            ChangeServiceState(ParameterCapturingEvents.ServiceState.InternalError, ex.ToString());
-            _ = _state!.RequestQueue.Writer.TryComplete();
+            if (IsAvailable())
+            {
+                ChangeServiceState(ParameterCapturingEvents.ServiceState.Stopped);
+            }
         }
 
         public override void Dispose()
@@ -297,7 +310,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             try
             {
-                _state?.Dispose();
+                _initializedState?.Dispose();
             }
             catch
             {

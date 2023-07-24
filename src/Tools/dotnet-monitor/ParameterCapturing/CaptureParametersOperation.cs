@@ -74,9 +74,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             eventTracePipeline.OnStartedCapturing += OnStartedCapturing;
             eventTracePipeline.OnStoppedCapturing += OnStoppedCapturing;
             eventTracePipeline.OnCapturingFailed += OnCapturingFailed;
-            eventTracePipeline.OnServiceNotAvailable += OnServiceNotAvailable;
-            eventTracePipeline.OnUnknownRequestId += (_, requestId) => { }; // no-op
-
+            eventTracePipeline.OnServiceStateUpdate += OnServiceStateUpdate;
+            eventTracePipeline.OnUnknownRequestId += OnUnknownRequestId;
             Task runPipelineTask = eventTracePipeline.StartAsync(token);
 
             await _profilerChannel.SendMessage(
@@ -143,7 +142,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _ = _capturingStartedCompletionSource.TrySetException(ex);
         }
 
-        private void OnServiceNotAvailable(object sender, ServiceNotAvailableArgs args)
+        private void OnServiceStateUpdate(object sender, ServiceStateUpdateArgs args)
         {
             Exception ex;
             switch (args.ServiceState)
@@ -160,7 +159,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _ = _capturingStoppedCompletionSource.TrySetException(ex);
         }
 
+        private void OnUnknownRequestId(object sender, Guid requestId)
+        {
+            if (requestId != _requestId)
+            {
+                return;
+            }
 
+            _ = _capturingStoppedCompletionSource.TrySetException(new InvalidOperationException(nameof(requestId)));
+        }
 
         public async Task StopAsync(CancellationToken token)
         {
