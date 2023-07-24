@@ -29,7 +29,7 @@ jobs:
     configuration: ${{ parameters.configuration }}
     architecture: ${{ parameters.architecture }}
     enableCrossBuild: ${{ parameters.useHelix }}
-    timeoutInMinutes: 60
+    timeoutInMinutes: 120
     dependsOn: Build_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
     disableComponentGovernance: true
     disableSbom: true
