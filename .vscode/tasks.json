@@ -72,9 +72,7 @@
                 "run",
                 "--project",
                 "./src/Tests/Microsoft.Diagnostics.Monitoring.ConfigurationSchema/Microsoft.Diagnostics.Monitoring.ConfigurationSchema.csproj",
-                "./documentation/schema.json",
-                "--framework",
-                "net6.0"
+                "./documentation/schema.json"
             ],
             "problemMatcher": [
                 "$msCompile"
@@ -91,9 +89,7 @@
                 "run",
                 "--project",
                 "./src/Tests/Microsoft.Diagnostics.Monitoring.OpenApiGen/Microsoft.Diagnostics.Monitoring.OpenApiGen.csproj",
-                "./documentation/openapi.json",
-                "--framework",
-                "net6.0"
+                "./documentation/openapi.json"
             ],
             "problemMatcher": [
                 "$msCompile"

@@ -1710,17 +1710,17 @@
       },
       "MethodDescription": {
         "required": [
-          "className",
+          "assemblyName",
           "methodName",
-          "moduleName"
+          "typeName"
         ],
         "type": "object",
         "properties": {
-          "moduleName": {
+          "assemblyName": {
             "minLength": 1,
             "type": "string"
           },
-          "className": {
+          "typeName": {
             "minLength": 1,
             "type": "string"
           },
