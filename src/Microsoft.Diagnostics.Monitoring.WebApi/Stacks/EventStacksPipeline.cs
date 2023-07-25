@@ -130,7 +130,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 uint token = action.GetPayload<uint>(NameIdentificationEvents.TokenDescPayloads.Token);
                 var tokenData = new TokenData(
                     action.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.Name),
-                    string.Empty, // TEMP
+                    action.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.FriendlyName),
                     action.GetPayload<uint>(NameIdentificationEvents.TokenDescPayloads.OuterToken)
                     );
 

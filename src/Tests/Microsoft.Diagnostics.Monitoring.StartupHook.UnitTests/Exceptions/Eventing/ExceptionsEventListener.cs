@@ -92,6 +92,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                                 ),
                             new TokenData(
                                 ToString(eventData.Payload[NameIdentificationEvents.TokenDescPayloads.Name]),
+                                ToString(eventData.Payload[NameIdentificationEvents.TokenDescPayloads.FriendlyName]),
                                 ToUInt32(eventData.Payload[NameIdentificationEvents.TokenDescPayloads.OuterToken])));
                         break;
                     default:
