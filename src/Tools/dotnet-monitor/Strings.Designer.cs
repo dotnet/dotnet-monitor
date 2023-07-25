@@ -448,6 +448,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The shared file &apos;{0}&apos; is different from source file &apos;{1}&apos;..
+        /// </summary>
+        internal static string ErrorMessage_SharedFileDiffersFromSource {
+            get {
+                return ResourceManager.GetString("ErrorMessage_SharedFileDiffersFromSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The following unrecoverable validation issues were found with the &apos;{0}&apos; configuration:
         ///{1}.
         /// </summary>
@@ -634,6 +643,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string HelpDescription_OptionDiagnosticPort {
             get {
                 return ResourceManager.GetString("HelpDescription_OptionDiagnosticPort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If specified, dotnet-monitor will monitor `stdin`, and if it closes, will exit. This is useful when dotnet-monitor is started remotely without a pseudo-terminal, and the caller wishes for it to exit when the connection is dropped (example: `docker exec -i ...`)..
+        /// </summary>
+        internal static string HelpDescription_OptionExitOnStdinDisconnect {
+            get {
+                return ResourceManager.GetString("HelpDescription_OptionExitOnStdinDisconnect", resourceCulture);
             }
         }
         
@@ -1124,6 +1142,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to fully initialize endpoint for process {processId}. Some monitoring features may be unavailable..
+        /// </summary>
+        internal static string LogFormatString_EndpointInitializationFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_EndpointInitializationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to fully remove endpoint for process {processId}..
+        /// </summary>
+        internal static string LogFormatString_EndpointRemovalFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_EndpointRemovalFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unexpected timeout from process {processId}. Process will no longer be monitored..
         /// </summary>
         internal static string LogFormatString_EndpointTimeout {
@@ -1268,7 +1304,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to initialize shared library storage..
+        ///   Looks up a localized string similar to Failed to initialize shared library storage. Some monitoring features may be unavailable..
         /// </summary>
         internal static string LogFormatString_FailedInitializeSharedLibraryStorage {
             get {
@@ -1385,6 +1421,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Using &apos;{runtimeIdentifier}&apos; profiler runtime identifier. Source: {source}.
+        /// </summary>
+        internal static string LogFormatString_ProfilerRuntimeIdentifier {
+            get {
+                return ResourceManager.GetString("LogFormatString_ProfilerRuntimeIdentifier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The queue {0} does not exist; ensure that the {queueName} and {queueAccountUri} fields are set correctly..
         /// </summary>
         internal static string LogFormatString_QueueDoesNotExist {
@@ -1448,6 +1493,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to apply the startup hook. Not all in process features will be available..
+        /// </summary>
+        internal static string LogFormatString_StartupHookApplyFailed {
+            get {
+                return ResourceManager.GetString("LogFormatString_StartupHookApplyFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The DOTNET_STARTUP_HOOKS environment variable is missing from target process {processId}..
         /// </summary>
         internal static string LogFormatString_StartupHookEnvironmentMissing {
@@ -1489,6 +1543,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_UnableToListenToAddress {
             get {
                 return ResourceManager.GetString("LogFormatString_UnableToListenToAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to watch &apos;stdin&apos; for disconnect..
+        /// </summary>
+        internal static string LogFormatString_UnableToWatchForDisconnect {
+            get {
+                return ResourceManager.GetString("LogFormatString_UnableToWatchForDisconnect", resourceCulture);
             }
         }
         

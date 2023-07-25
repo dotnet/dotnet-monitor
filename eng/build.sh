@@ -242,45 +242,21 @@ fi
 #
 
 if [[ "$__Test" == 1 ]]; then
-   if [[ "$__CrossBuild" == 0 ]]; then
-      if [[ -z "$LLDB_PATH" ]]; then
-          export LLDB_PATH="$(which lldb-3.9.1 2> /dev/null)"
-          if [[ -z "$LLDB_PATH" ]]; then
-              export LLDB_PATH="$(which lldb-3.9 2> /dev/null)"
-              if [[ -z "$LLDB_PATH" ]]; then
-                  export LLDB_PATH="$(which lldb-4.0 2> /dev/null)"
-                  if [[ -z "$LLDB_PATH" ]]; then
-                      export LLDB_PATH="$(which lldb-5.0 2> /dev/null)"
-                      if [[ -z "$LLDB_PATH" ]]; then
-                          export LLDB_PATH="$(which lldb 2> /dev/null)"
-                      fi
-                  fi
-              fi
-          fi
-      fi
+    "$__RepoRootDir/eng/common/build.sh" \
+    --test \
+    --configuration "$__BuildType" \
+    /p:BuildArch="$__TargetArch" \
+    -nobl \
+    /bl:"$__LogsDir"/Test.binlog \
+    /p:TestGroup="$__TestGroup" \
+    $__CommonMSBuildArgs \
+    $__ManagedBuildArgs \
+    $__ArcadeScriptArgs \
+    $__UnprocessedBuildArgs
 
-      if [[ -z "$GDB_PATH" ]]; then
-          export GDB_PATH="$(which gdb 2> /dev/null)"
-      fi
-
-      echo "lldb: '$LLDB_PATH' gdb: '$GDB_PATH'"
-
-      "$__RepoRootDir/eng/common/build.sh" \
-        --test \
-        --configuration "$__BuildType" \
-        /p:BuildArch="$__TargetArch" \
-        -nobl \
-        /bl:"$__LogsDir"/Test.binlog \
-        /p:TestGroup="$__TestGroup" \
-        $__CommonMSBuildArgs \
-        $__ManagedBuildArgs \
-        $__ArcadeScriptArgs \
-        $__UnprocessedBuildArgs
-
-      if [ $? != 0 ]; then
-          exit 1
-      fi
-   fi
+    if [ $? != 0 ]; then
+        exit 1
+    fi
 fi
 
 echo "BUILD: Repo sucessfully built."

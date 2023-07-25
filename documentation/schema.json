@@ -49,7 +49,6 @@
       ]
     },
     "InProcessFeatures": {
-      "description": "[Experimental]",
       "default": {},
       "oneOf": [
         {
@@ -1012,8 +1011,58 @@
             "boolean",
             "null"
           ],
-          "description": "[Experimental] Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.",
+          "description": "Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.",
           "default": false
+        },
+        "CallStacks": {
+          "description": "Options for the in-process call stacks feature.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/CallStacksOptions"
+            }
+          ]
+        },
+        "Exceptions": {
+          "description": "Options for the in-process exceptions feature.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ExceptionsOptions"
+            }
+          ]
+        }
+      }
+    },
+    "CallStacksOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Enabled": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Enables or disables the call stacks feature. By default, this feature is enabled if in-process features are enabled.",
+          "default": true
+        }
+      }
+    },
+    "ExceptionsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Enabled": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Enables or disables the exceptions feature. By default, this feature is enabled if in-process features are enabled.",
+          "default": true
         }
       }
     },
@@ -1725,11 +1774,11 @@
       "properties": {
         "Egress": {
           "type": "string",
-          "description": "[Experimental] The name of the egress provider to which the call stacks are egressed.",
+          "description": "The name of the egress provider to which the call stacks are egressed.",
           "minLength": 1
         },
         "Format": {
-          "description": "[Experimental] The format used to display the call stacks.",
+          "description": "The format used to display the call stacks.",
           "default": "Json",
           "oneOf": [
             {

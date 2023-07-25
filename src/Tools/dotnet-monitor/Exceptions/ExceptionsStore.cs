@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Channels;
@@ -53,9 +54,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             DateTime timestamp,
             ulong[] stackFrameIds,
             int threadId,
-            ulong[] innerExceptionIds)
+            ulong[] innerExceptionIds,
+            string activityId,
+            ActivityIdFormat activityIdFormat)
         {
-            ExceptionInstanceEntry entry = new(cache, exceptionId, groupId, message, timestamp, stackFrameIds, threadId, innerExceptionIds);
+            ExceptionInstanceEntry entry = new(cache, exceptionId, groupId, message, timestamp, stackFrameIds, threadId, innerExceptionIds, activityId, activityIdFormat);
             // This should never fail to write because the behavior is to drop the oldest.
             _channel.Writer.TryWrite(entry);
         }
@@ -124,7 +127,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                             entry.Message,
                             entry.Timestamp,
                             callStack,
-                            entry.InnerExceptionIds));
+                            entry.InnerExceptionIds,
+                            entry.ActivityId,
+                            entry.ActivityIdFormat));
                     }
                 }
 
@@ -164,7 +169,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 DateTime timestamp,
                 ulong[] stackFrameIds,
                 int threadId,
-                ulong[] innerExceptionIds)
+                ulong[] innerExceptionIds,
+                string activityId,
+                ActivityIdFormat activityIdFormat)
             {
                 Cache = cache;
                 ExceptionId = exceptionId;
@@ -174,6 +181,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 StackFrameIds = stackFrameIds;
                 ThreadId = threadId;
                 InnerExceptionIds = innerExceptionIds;
+                ActivityId = activityId;
+                ActivityIdFormat = activityIdFormat;
             }
 
             public IExceptionsNameCache Cache { get; }
@@ -191,6 +200,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             public int ThreadId { get; }
 
             public ulong[] InnerExceptionIds { get; }
+
+            public string ActivityId { get; }
+
+            public ActivityIdFormat ActivityIdFormat { get; }
         }
     }
 }

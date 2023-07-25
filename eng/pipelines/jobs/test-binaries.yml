@@ -19,6 +19,7 @@ parameters:
     value: .NET 7
   - key: net8.0
     value: .NET 8
+  useHelix: false
 
 jobs:
 - template: /eng/pipelines/jobs/build.yml
@@ -27,16 +28,18 @@ jobs:
     osGroup: ${{ parameters.osGroup }}
     configuration: ${{ parameters.configuration }}
     architecture: ${{ parameters.architecture }}
-    timeoutInMinutes: 60
+    enableCrossBuild: ${{ parameters.useHelix }}
+    timeoutInMinutes: 120
     dependsOn: Build_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
     disableComponentGovernance: true
     disableSbom: true
 
     # Override containers for Linux to test on real clib and architecture variants
-    ${{ if eq(parameters.osGroup, 'Linux') }}:
-      container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04
-    ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
-      container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-WithNode
+    ${{ if ne(parameters.useHelix, 'true')}}:
+      ${{ if eq(parameters.osGroup, 'Linux') }}:
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04
+      ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
+        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-WithNode
 
     variables:
     # If TestGroup == 'Default', choose the test group based on the type of pipeline run
@@ -63,66 +66,82 @@ jobs:
         artifactName: Build_Binaries_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
         targetPath: '$(Build.SourcesDirectory)/artifacts'
 
-    - ${{ if ne(parameters.osGroup, 'Windows') }}:
-      - task: NodeTool@0
-        displayName: Install Node.js
-        inputs:
-          # Version requirements:
-          # - Azurite requires 8.x or higher.
-          # - The alpine containers have their own build of Node.js of 10.x but without supplemental tooling like npm.
-          # Since the alpine containers already have a Node.js build, match it's major version for a compatible version
-          # of npm across all build environments.
-          versionSpec: '10.x'
+    - ${{ if ne(parameters.useHelix, 'true')}}:
+      - ${{ if ne(parameters.osGroup, 'Windows') }}:
+        - task: NodeTool@0
+          displayName: Install Node.js
+          inputs:
+            # Version requirements:
+            # - Azurite requires 8.x or higher.
+            # - The alpine containers have their own build of Node.js of 10.x but without supplemental tooling like npm.
+            # Since the alpine containers already have a Node.js build, match it's major version for a compatible version
+            # of npm across all build environments.
+            versionSpec: '10.x'
 
-      - task: Npm@1
-        displayName: Install Azurite
-        inputs:
-          command: custom
-          customCommand: install -g azurite
+        - task: Npm@1
+          displayName: Install Azurite
+          inputs:
+            command: custom
+            customCommand: install -g azurite
 
-    # When using the Alpine build containers, the above npm install will install to the system's
-    # node directory instead of the agent's copy.
-    # The container doesn't have the node bin directory included in PATH by default, so global npm tool installations
-    # are not discoverable by the test infrastructure.
-    #
-    # Add the azurite installation location to PATH to workaround this.
-    - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
-      - script: echo "##vso[task.prependpath]/usr/share/node/bin"
-        displayName: Add Azurite to PATH
+      # When using the Alpine build containers, the above npm install will install to the system's
+      # node directory instead of the agent's copy.
+      # The container doesn't have the node bin directory included in PATH by default, so global npm tool installations
+      # are not discoverable by the test infrastructure.
+      #
+      # Add the azurite installation location to PATH to workaround this.
+      - ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
+        - script: echo "##vso[task.prependpath]/usr/share/node/bin"
+          displayName: Add Azurite to PATH
 
-    buildArgs: >-
-      -test
-      -testgroup $(_TestGroup)
-      -skipmanaged
-      -skipnative
-      /m:1
+    ${{ if eq(parameters.useHelix, 'true')}}:
+      buildArgs: >-
+        -test
+        -testgroup $(_TestGroup)
+        -projects $(Build.SourcesDirectory)/eng/helix/Helix.proj
+        -skipmanaged
+        -skipnative
+    ${{ else }}:
+      buildArgs: >-
+        -test
+        -testgroup $(_TestGroup)
+        -skipmanaged
+        -skipnative
+        /m:1
 
     buildEnv:
+      # Indicate that tests based on Azurite should not be skipped if it is not initialized
+      TEST_AZURITE_MUST_INITIALIZE: 1
       # This is blank in public builds
       DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET: $(DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET)
+      ${{ if eq(parameters.useHelix, 'true') }}:
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      ${{ if ne(variables['System.TeamProject'], 'public') }}:
+        HelixAccessToken: $(HelixApiAccessToken)
 
     postBuildSteps:
-    # Publish test results to Azure Pipelines
-    - ${{ each testResultTfm in parameters.testResultTfms }}:
-      - task: PublishTestResults@2
-        displayName: Publish Test Results (${{ testResultTfm.value }})
-        inputs:
-          testResultsFormat: VSTest
-          testResultsFiles: '**/*Tests*${{ testResultTfm.key }}*.trx'
-          searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
-          failTaskOnFailedTests: true
-          testRunTitle: '${{ parameters.configuration }} ${{ parameters.osGroup }} ${{ parameters.architecture }} ${{ testResultTfm.value }}'
-          publishRunAttachments: true
-          mergeTestResults: true
-          buildConfiguration: $(JobName)
-        continueOnError: true
-        condition: succeededOrFailed()
+    - ${{ if ne(parameters.useHelix, 'true')}}:
+      # Publish test results to Azure Pipelines
+      - ${{ each testResultTfm in parameters.testResultTfms }}:
+        - task: PublishTestResults@2
+          displayName: Publish Test Results (${{ testResultTfm.value }})
+          inputs:
+            testResultsFormat: VSTest
+            testResultsFiles: '**/*Tests*${{ testResultTfm.key }}*.trx'
+            searchFolder: '$(Build.SourcesDirectory)/artifacts/TestResults'
+            failTaskOnFailedTests: true
+            testRunTitle: '${{ parameters.configuration }} ${{ parameters.osGroup }} ${{ parameters.architecture }} ${{ testResultTfm.value }}'
+            publishRunAttachments: true
+            mergeTestResults: true
+            buildConfiguration: $(JobName)
+          continueOnError: true
+          condition: succeededOrFailed()
 
-    - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-      - task: PublishBuildArtifacts@1
-        displayName: Publish Test Result Files
-        inputs:
-          PathtoPublish: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
-          ArtifactName: TestResults_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
-        continueOnError: true
-        condition: succeededOrFailed()
+      - ${{ if ne(variables['System.TeamProject'], 'public') }}:
+        - task: PublishBuildArtifacts@1
+          displayName: Publish Test Result Files
+          inputs:
+            PathtoPublish: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
+            ArtifactName: TestResults_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
+          continueOnError: true
+          condition: succeededOrFailed()

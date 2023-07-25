@@ -9,6 +9,8 @@ parameters:
   configuration: Release
   # Build architecture (arm64, x64, x86, etc)
   architecture: x64
+  # Enables cross build from host target libraries and architectures
+  enableCrossBuild: true
   # Docker container in which job steps shall be run (leave empty to choose default build container).
   # This should be empty unless exclusively testing on a specific container image.
   container: ''
@@ -95,12 +97,15 @@ jobs:
     variables:
     - JobName: ${{ parameters.prefix }}_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
     - _BuildConfig: ${{ parameters.configuration }}
-    - _HelixType: build/product
-    - _HelixBuildConfig: ${{ parameters.configuration }}
+    - _CrossBuildArgs: ''
     - _InternalInstallArgs: ''
     - _InternalBuildArgs: ''
     - ${{ each variable in parameters.variables }}:
       - ${{ variable }}
+    
+    # Cross build for all Linux builds and arm64 non-Windows builds
+    - ${{ if and(eq(parameters.enableCrossBuild, 'true'), or(in(parameters.osGroup, 'Linux', 'Linux_Musl'), and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')))) }}:
+      - _CrossBuildArgs: '-cross'
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - group: DotNet-MSRC-Storage
@@ -153,11 +158,15 @@ jobs:
         -configuration ${{ parameters.configuration }}
         -architecture ${{ parameters.architecture }}
         ${{ parameters.buildArgs }}
+        $(_CrossBuildArgs)
         $(_InternalInstallArgs)
         $(_InternalBuildArgs)
       displayName: Build
       env:
         ${{ insert }}: ${{ parameters.buildEnv }}
+        # Set ROOTFS_DIR for Linux cross builds
+        ${{ if and(eq(parameters.enableCrossBuild, 'true'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
+          ROOTFS_DIR: '/crossrootfs/${{ parameters.architecture }}'
 
     - ${{ each step in parameters.postBuildSteps }}:
       - ${{ step }}

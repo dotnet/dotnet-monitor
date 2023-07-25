@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             _logger = logger ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, LoadProfilerOptions options)
+        public ICollectionRuleAction Create(IProcessInfo processInfo, LoadProfilerOptions options)
         {
             if (null == options)
             {
@@ -35,21 +35,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ValidationContext context = new(options, _serviceProvider, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            return new LoadProfilerAction(_logger, endpointInfo, options);
+            return new LoadProfilerAction(_logger, processInfo, options);
         }
 
         internal sealed partial class LoadProfilerAction :
             CollectionRuleActionBase<LoadProfilerOptions>
         {
-            private readonly IEndpointInfo _endpointInfo;
             private readonly ILogger _logger;
             private readonly LoadProfilerOptions _options;
 
-            public LoadProfilerAction(ILogger logger, IEndpointInfo endpointInfo, LoadProfilerOptions options)
-                : base(endpointInfo, options)
+            public LoadProfilerAction(ILogger logger, IProcessInfo processInfo, LoadProfilerOptions options)
+                : base(processInfo, options)
             {
                 _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-                _endpointInfo = endpointInfo ?? throw new ArgumentNullException(nameof(endpointInfo));
                 _options = options ?? throw new ArgumentNullException(nameof(options));
             }
 
@@ -60,9 +58,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 try
                 {
-                    DiagnosticsClient client = new DiagnosticsClient(_endpointInfo.Endpoint);
+                    DiagnosticsClient client = new DiagnosticsClient(EndpointInfo.Endpoint);
 
-                    _logger.LoadingProfiler(_options.Clsid, _options.Path, _endpointInfo.ProcessId);
+                    _logger.LoadingProfiler(_options.Clsid, _options.Path, EndpointInfo.ProcessId);
                     await client.SetStartupProfilerAsync(_options.Clsid, _options.Path, token);
 
                     if (!startCompletionSource.TrySetResult(null))

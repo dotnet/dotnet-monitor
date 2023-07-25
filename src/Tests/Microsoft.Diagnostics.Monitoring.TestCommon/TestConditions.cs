@@ -12,5 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static bool IsNotAlpine => !DistroInformation.IsAlpineLinux;
 
         public static bool IsNotWindows => !IsWindows;
+
+        public static bool IsNotArm64 => RuntimeInformation.OSArchitecture != Architecture.Arm64;
     }
 }

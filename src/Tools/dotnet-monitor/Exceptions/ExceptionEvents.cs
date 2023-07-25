@@ -31,6 +31,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             public const int StackFrameIds = 3;
             public const int Timestamp = 4;
             public const int InnerExceptionIds = 5;
+            public const int ActivityId = 6;
+            public const int ActivityIdFormat = 7;
         }
 
         public static class ExceptionGroupPayloads

@@ -28,6 +28,8 @@ When running a dotnet application, differences in diverse local and production e
     - [`/info`](./api/info.md)
     - [`/operations`](./api/operations.md)
     - [`/collectionrules`](./api/collectionrules.md)
+    - [`/stacks`](./api/stacks.md)
+    - [`/exceptions`](./api/exceptions.md)
 - [Configuration](./configuration/README.md)
     - [JSON Schema](./schema.json)
 - [Authentication](./authentication.md)

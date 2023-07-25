@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 {
     internal static class CollectCommandHandler
     {
-        public static async Task<int> Invoke(CancellationToken token, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress, FileInfo configurationFilePath)
+        public static async Task<int> Invoke(CancellationToken token, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress, FileInfo configurationFilePath, bool exitOnStdinDisconnect)
         {
             try
             {
@@ -33,6 +33,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 
                 try
                 {
+                    if (exitOnStdinDisconnect)
+                    {
+                        WatchStdinForDisconnect(host.Services, token);
+                    }
+
                     await host.StartAsync(token);
 
                     await host.WaitForShutdownAsync(token);
@@ -123,6 +128,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureCollectionRules();
                 services.ConfigureLibrarySharing();
                 services.ConfigureProfiler();
+                services.ConfigureStartupHook();
                 services.ConfigureExceptions();
                 services.ConfigureStartupLoggers(authConfigurator);
                 services.AddSingleton<IExperimentalFlags, ExperimentalFlags>();
@@ -132,6 +138,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
                 services.AddSingleton<IMetricsOperationFactory, MetricsOperationFactory>();
                 services.AddSingleton<ITraceOperationFactory, TraceOperationFactory>();
+
+                // Per-process services must be scoped
+                services.AddScoped<ScopedEndpointInfo>();
+                services.AddScopedForwarder<IEndpointInfo, ScopedEndpointInfo>();
             })
             .ConfigureContainer((HostBuilderContext context, IServiceCollection services) =>
             {
@@ -144,6 +154,63 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                     manager.IsBlocking = true;
                 }
             });
+        }
+
+        private static void WatchStdinForDisconnect(IServiceProvider serviceProvider, CancellationToken cancellationToken)
+        {
+            IHostApplicationLifetime lifetime;
+            Stream inputStream;
+            try
+            {
+                lifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
+                inputStream = Console.OpenStandardInput();
+            }
+            catch (Exception e)
+            {
+                serviceProvider.GetRequiredService<ILoggerFactory>()
+                    .CreateLogger(typeof(CollectCommandHandler))
+                    .UnableToWatchForDisconnect(e);
+
+                throw new MonitoringException(Strings.LogFormatString_UnableToWatchForDisconnect);
+            }
+
+            async Task WatchAsync()
+            {
+                byte[] buffer = new byte[100];
+                try
+                {
+                    while (true)
+                    {
+                        if (await inputStream.ReadAsync(buffer.AsMemory(), cancellationToken) == 0)
+                        {
+                            // input stream closed
+                            break;
+                        }
+                    }
+                }
+                catch (IOException)
+                {
+                    // In case the input stream returns a OS error, we will just exit.
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // In case the input stream returns ERROR_ACCESS_DENIED, we will just exit.
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                lifetime.StopApplication();
+            }
+
+            // Kick off asynchronously reading from stdin
+            _ = WatchAsync();
         }
     }
 }
