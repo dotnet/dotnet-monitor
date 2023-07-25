@@ -96,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             // but in-process listener doesn't decode non-byte arrays correctly.
             Assert.Equal(Array.Empty<ulong>(), instance.InnerExceptionIds);
 
-            Assert.Equal(activityId, instance.ActivityId);
+            Assert.Equal(CoalesceNull(activityId), instance.ActivityId);
             Assert.Equal(activityIdFormat, instance.ActivityIdFormat);
         }
 
