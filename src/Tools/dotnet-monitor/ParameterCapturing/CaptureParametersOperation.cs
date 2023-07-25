@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
+using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -65,16 +66,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             {
                 Duration = Timeout.InfiniteTimeSpan
             };
-
-            TaskCompletionSource<object> capturingStoppedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-            TaskCompletionSource<object> capturingStartedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            settings.OnStartedCapturing += OnStartedCapturing;
+            settings.OnStoppedCapturing += OnStoppedCapturing;
+            settings.OnCapturingFailed += OnCapturingFailed;
+            settings.OnServiceStateUpdate += OnServiceStateUpdate;
+            settings.OnUnknownRequestId += OnUnknownRequestId;
 
             await using EventParameterCapturingPipeline eventTracePipeline = new(_endpointInfo.Endpoint, settings);
-            eventTracePipeline.OnStartedCapturing += OnStartedCapturing;
-            eventTracePipeline.OnStoppedCapturing += OnStoppedCapturing;
-            eventTracePipeline.OnCapturingFailed += OnCapturingFailed;
-            eventTracePipeline.OnServiceStateUpdate += OnServiceStateUpdate;
-            eventTracePipeline.OnUnknownRequestId += OnUnknownRequestId;
             Task runPipelineTask = eventTracePipeline.StartAsync(token);
 
             await _profilerChannel.SendMessage(

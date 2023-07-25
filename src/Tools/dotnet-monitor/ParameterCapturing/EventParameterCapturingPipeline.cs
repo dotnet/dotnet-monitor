@@ -27,13 +27,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
     internal sealed class EventParameterCapturingPipeline : EventSourcePipeline<EventParameterCapturingPipelineSettings>
     {
-        public EventHandler<Guid> OnStartedCapturing;
-        public EventHandler<Guid> OnStoppedCapturing;
-        public EventHandler<Guid> OnUnknownRequestId;
-
-        public EventHandler<CapturingFailedArgs> OnCapturingFailed;
-        public EventHandler<ServiceStateUpdateArgs> OnServiceStateUpdate;
-
         public EventParameterCapturingPipeline(IpcEndpoint endpoint, EventParameterCapturingPipelineSettings settings)
             : base(new DiagnosticsClient(endpoint), settings)
 
@@ -65,19 +58,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 case "Capturing/Start":
                 {
                     Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
-                    OnStartedCapturing.Invoke(this, requestId);
+                    Settings.OnStartedCapturing.Invoke(this, requestId);
                     break;
                 }
                 case "Capturing/Stop":
                 {
-                        Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
-                        OnStoppedCapturing.Invoke(this, requestId);
+                    Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
+                    Settings.OnStoppedCapturing.Invoke(this, requestId);
                     break;
                 }
                 case "UnknownRequestId":
                 {
-                        Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.UnknownRequestIdPayload.RequestId);
-                        OnUnknownRequestId.Invoke(this, requestId);
+                    Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.UnknownRequestIdPayload.RequestId);
+                    Settings.OnUnknownRequestId.Invoke(this, requestId);
                     break;
                 }
                 case "FailedToCapture":
@@ -86,7 +79,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                     ParameterCapturingEvents.CapturingFailedReason reason = traceEvent.GetPayload<ParameterCapturingEvents.CapturingFailedReason>(ParameterCapturingEvents.CapturingFailedPayloads.Reason);
                     string details = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturingFailedPayloads.Details);
 
-                    OnCapturingFailed.Invoke(this, new CapturingFailedArgs()
+                    Settings.OnCapturingFailed.Invoke(this, new CapturingFailedArgs()
                     {
                         RequestId = requestId,
                         Reason = reason,
@@ -98,7 +91,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 {
                     ParameterCapturingEvents.ServiceState state = traceEvent.GetPayload<ParameterCapturingEvents.ServiceState>(ParameterCapturingEvents.ServiceStatePayload.State);
                     string details = traceEvent.GetPayload<string>(ParameterCapturingEvents.ServiceStatePayload.Details);
-                        OnServiceStateUpdate.Invoke(this, new ServiceStateUpdateArgs()
+                    Settings.OnServiceStateUpdate.Invoke(this, new ServiceStateUpdateArgs()
                     {
                         ServiceState = state,
                         Details = details
@@ -122,6 +115,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
     internal sealed class EventParameterCapturingPipelineSettings : EventSourcePipelineSettings
     {
+        public EventHandler<Guid> OnStartedCapturing;
+        public EventHandler<Guid> OnStoppedCapturing;
+        public EventHandler<Guid> OnUnknownRequestId;
+
+        public EventHandler<CapturingFailedArgs> OnCapturingFailed;
+        public EventHandler<ServiceStateUpdateArgs> OnServiceStateUpdate;
+
         public EventParameterCapturingPipelineSettings()
         {
             Duration = Timeout.InfiniteTimeSpan;
