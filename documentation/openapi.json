@@ -1155,8 +1155,33 @@
         "tags": [
           "Exceptions"
         ],
-        "summary": "Gets the exceptions from the default process.",
+        "summary": "Gets the exceptions from the target process.",
         "operationId": "GetExceptions",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"

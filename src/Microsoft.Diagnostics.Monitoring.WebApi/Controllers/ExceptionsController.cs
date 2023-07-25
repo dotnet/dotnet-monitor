@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
@@ -21,43 +23,50 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     [Authorize(Policy = AuthConstants.PolicyName)]
     [ProducesErrorResponseType(typeof(ValidationProblemDetails))]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    public sealed class ExceptionsController : ControllerBase
+    public sealed class ExceptionsController :
+        DiagnosticsControllerBase
     {
-        private readonly IExceptionsStore _exceptionsStore;
-        private readonly IOptions<ExceptionsOptions> _exceptionsOptions;
-        private readonly IExceptionsOperationFactory _operationFactory;
+        private readonly IOptions<ExceptionsOptions> _options;
 
-        public ExceptionsController(IServiceProvider serviceProvider)
+        public ExceptionsController(
+            IServiceProvider serviceProvider,
+            ILogger<ExceptionsController> logger)
+            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), logger)
         {
-            // The exceptions store for the default process
-            _exceptionsStore = serviceProvider.GetRequiredService<IExceptionsStore>();
-            _exceptionsOptions = serviceProvider.GetRequiredService<IOptions<ExceptionsOptions>>();
-            _operationFactory = serviceProvider.GetRequiredService<IExceptionsOperationFactory>();
+            _options = serviceProvider.GetRequiredService<IOptions<ExceptionsOptions>>();
         }
 
         /// <summary>
-        /// Gets the exceptions from the default process.
+        /// Gets the exceptions from the target process.
         /// </summary>
         [HttpGet("exceptions", Name = nameof(GetExceptions))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [EgressValidation]
-        public ActionResult GetExceptions()
+        public Task<ActionResult> GetExceptions(
+            [FromQuery]
+            int? pid = null,
+            [FromQuery]
+            Guid? uid = null,
+            [FromQuery]
+            string name = null)
         {
-            if (!_exceptionsOptions.Value.GetEnabled())
+            if (!_options.Value.GetEnabled())
             {
-                return NotFound();
+                return Task.FromResult<ActionResult>(NotFound());
             }
 
-            ExceptionsFormat? format = ComputeFormat(Request.GetTypedHeaders().Accept);
-            if (!format.HasValue)
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
+
+            return InvokeForProcess(processInfo =>
             {
-                return this.NotAcceptable();
-            }
+                ExceptionsFormat format = ComputeFormat(Request.GetTypedHeaders().Accept) ?? ExceptionsFormat.PlainText;
 
-            IArtifactOperation operation = _operationFactory.Create(_exceptionsStore, format.Value);
+                IArtifactOperation operation = processInfo.EndpointInfo.ServiceProvider
+                    .GetRequiredService<IExceptionsOperationFactory>()
+                    .Create(format);
 
-            return new OutputStreamResult(operation);
+                return new OutputStreamResult(operation);
+            }, processKey, Utilities.ArtifactType_Exceptions);
         }
 
         private static ExceptionsFormat? ComputeFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
