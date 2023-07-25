@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public MethodResolver()
         {
-            // Build a lookup table of all viable dll names to their backing reflection Module.
+            // Build a lookup table of all viable assembly names to their backing reflection Assembly.
             IEnumerable<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(
                 assembly => !assembly.ReflectionOnly &&
                 !assembly.IsDynamic);
