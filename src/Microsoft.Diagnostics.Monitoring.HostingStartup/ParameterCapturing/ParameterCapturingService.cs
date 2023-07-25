@@ -206,7 +206,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 _initializedState.Logger.LogInformation(
                     ParameterCapturingStrings.StartParameterCapturingFormatString,
                     request.Duration,
-                    request.Methods.Length);
+                    methods.Count);
 
                 return true;
             }
