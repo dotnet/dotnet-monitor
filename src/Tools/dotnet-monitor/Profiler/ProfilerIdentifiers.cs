@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
     {
         public static class NotifyOnlyProfiler
         {
-            // Name of the monitor profiler library file without the
+            // Name of the profiler library file without the
             // extra platform specific library naming conventions.
             public const string LibraryRootFileName = "MonitorProfiler";
 
@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
         public static class MutatingProfiler
         {
-            // Name of the monitor profiler library file without the
+            // Name of the profiler library file without the
             // extra platform specific library naming conventions.
             public const string LibraryRootFileName = "MutatingMonitorProfiler";
 
