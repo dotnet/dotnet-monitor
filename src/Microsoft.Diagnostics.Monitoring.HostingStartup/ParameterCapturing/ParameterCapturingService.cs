@@ -306,7 +306,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 }
 
                 _ = TryStopCapturing(request.Payload.RequestId);
-                _initializedState.AllRequests.TryRemove(request.Payload.RequestId, out _);
+                _ = _initializedState.AllRequests.TryRemove(request.Payload.RequestId, out _);
             }
 
             if (IsAvailable())
