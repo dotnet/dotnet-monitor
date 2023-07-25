@@ -94,6 +94,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             }
             catch (OperationCanceledException)
             {
+                _ = _capturingStartedCompletionSource.TrySetCanceled(token);
+                _ = _capturingStoppedCompletionSource.TrySetCanceled(token);
+
                 using CancellationTokenSource stopCancellationToken = new(TimeSpan.FromSeconds(30));
                 await StopAsync(stopCancellationToken.Token);
                 throw;
