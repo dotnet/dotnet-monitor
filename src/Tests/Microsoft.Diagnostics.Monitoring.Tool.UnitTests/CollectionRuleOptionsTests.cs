@@ -1910,7 +1910,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
-        public async Task CollectionRuleOptions_CollectStacksAction_FeatureDisabled()
+        public async Task CollectionRuleOptions_CollectStacksAction_NotEnabled()
         {
             await ValidateFailure(
                 rootOptions =>
@@ -1926,23 +1926,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
                     VerifyFeatureDisabled(failures, 0);
-                },
-                servicesCallback =>
-                {
-                    // Set the experimental flags, but we did not set InProcessFeatures to be enabled
-                    servicesCallback.AddSingleton<Microsoft.Diagnostics.Monitoring.WebApi.IExperimentalFlags, TestExperimentalFlags>((_) => new TestExperimentalFlags { IsCallStacksEnabled = true });
                 });
         }
 
         [Fact]
-        public async Task CollectionRuleOptions_CollectStacksAction_FeatureDisabledByFlag()
+        public async Task CollectionRuleOptions_CollectStacksAction_DisabledViaCallStacks()
         {
             await ValidateFailure(
                 rootOptions =>
                 {
                     const string fileEgress = nameof(fileEgress);
                     rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
-                        .EnableInProcessFeatures() //Enable in-proc features but don't set the flag
+                        .DisableCallStacks() // Make feature unavailable
                         .CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
                         .AddCollectStacksAction(fileEgress);
@@ -1952,16 +1947,50 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
                     VerifyFeatureDisabled(failures, 0);
-                },
-                servicesCallback =>
-                {
-                    servicesCallback.AddSingleton<Microsoft.Diagnostics.Monitoring.WebApi.IExperimentalFlags, Tools.Monitor.ExperimentalFlags>();
                 });
-
         }
 
         [Fact]
-        public async Task CollectionRuleOptions_CollectStacksAction_FeatureEnabled()
+        public async Task CollectionRuleOptions_CollectStacksAction_DisabledViaInProcessFeatures()
+        {
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    const string fileEgress = nameof(fileEgress);
+                    rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
+                        .DisableInProcessFeatures() // Make all in-process features unavailable
+                        .CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectStacksAction(fileEgress);
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyFeatureDisabled(failures, 0);
+                });
+        }
+
+        [Fact]
+        public async Task CollectionRuleOptions_CollectStacksAction_EnabledViaCallStacks()
+        {
+            await ValidateSuccess(
+                rootOptions =>
+                {
+                    const string fileEgress = nameof(fileEgress);
+                    rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
+                        .EnableCallStacks()
+                        .CreateCollectionRule(DefaultRuleName)
+                        .SetCPUUsageTrigger(usageOptions => { usageOptions.GreaterThan = 100; })
+                        .AddCollectStacksAction(fileEgress);
+                },
+                ruleOptions =>
+                {
+                });
+        }
+
+        [Fact]
+        public async Task CollectionRuleOptions_CollectStacksAction_EnabledViaInProcessFeatures()
         {
             await ValidateSuccess(
                 rootOptions =>
@@ -1975,10 +2004,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 },
                 ruleOptions =>
                 {
-                },
-                servicesCallback =>
-                {
-                    servicesCallback.AddSingleton<Microsoft.Diagnostics.Monitoring.WebApi.IExperimentalFlags, TestExperimentalFlags>((_) => new TestExperimentalFlags { IsCallStacksEnabled = true });
                 });
         }
 

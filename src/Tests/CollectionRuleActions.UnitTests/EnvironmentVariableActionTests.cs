@@ -67,13 +67,12 @@ namespace CollectionRuleActions.UnitTests
                     await using AppRunner runner = _endpointUtilities.CreateAppRunner(Assembly.GetExecutingAssembly(), sourceHolder.TransportName, tfm);
                     runner.ScenarioName = TestAppScenarios.EnvironmentVariables.Name;
 
-                    Task<IEndpointInfo> newEndpointInfoTask = endpointInfoCallback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
-
+                    Task<IProcessInfo> processInfoTask = endpointInfoCallback.WaitAddedProcessInfoAsync(runner, CommonTestTimeouts.StartProcess);
                     await runner.ExecuteAsync(async () =>
                     {
-                        IEndpointInfo endpointInfo = await newEndpointInfoTask;
+                        IProcessInfo processInfo = await processInfoTask;
 
-                        ICollectionRuleAction setAction = setFactory.Create(endpointInfo, setOpts);
+                        ICollectionRuleAction setAction = setFactory.Create(processInfo, setOpts);
 
                         await ActionTestsHelper.ExecuteAndDisposeAsync(setAction, CommonTestTimeouts.EnvVarsTimeout);
 
@@ -118,13 +117,13 @@ namespace CollectionRuleActions.UnitTests
                     await using AppRunner runner = _endpointUtilities.CreateAppRunner(Assembly.GetExecutingAssembly(), sourceHolder.TransportName, tfm);
                     runner.ScenarioName = TestAppScenarios.EnvironmentVariables.Name;
 
-                    Task<IEndpointInfo> newEndpointInfoTask = endpointInfoCallback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+                    Task<IProcessInfo> processInfoTask = endpointInfoCallback.WaitAddedProcessInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
                     await runner.ExecuteAsync(async () =>
                     {
-                        IEndpointInfo endpointInfo = await newEndpointInfoTask;
+                        IProcessInfo processInfo = await processInfoTask;
 
-                        ICollectionRuleAction getAction = getFactory.Create(endpointInfo, getOpts);
+                        ICollectionRuleAction getAction = getFactory.Create(processInfo, getOpts);
 
                         await runner.SendCommandAsync(TestAppScenarios.EnvironmentVariables.Commands.IncVar);
                         Assert.Equal("1", await runner.GetEnvironmentVariable(TestAppScenarios.EnvironmentVariables.IncrementVariableName, CommonTestTimeouts.EnvVarsTimeout));
@@ -138,7 +137,7 @@ namespace CollectionRuleActions.UnitTests
                         await runner.SendCommandAsync(TestAppScenarios.EnvironmentVariables.Commands.IncVar);
                         Assert.Equal("3", await runner.GetEnvironmentVariable(TestAppScenarios.EnvironmentVariables.IncrementVariableName, CommonTestTimeouts.EnvVarsTimeout));
 
-                        ICollectionRuleAction getActionFailure = getFactory.Create(endpointInfo, getFailOpts);
+                        ICollectionRuleAction getActionFailure = getFactory.Create(processInfo, getFailOpts);
                         CollectionRuleActionException thrownEx = await Assert.ThrowsAsync<CollectionRuleActionException>(async () =>
                         {
                             await ActionTestsHelper.ExecuteAndDisposeAsync(getActionFailure, CommonTestTimeouts.EnvVarsTimeout);
@@ -185,14 +184,13 @@ namespace CollectionRuleActions.UnitTests
                     await using AppRunner runner = _endpointUtilities.CreateAppRunner(Assembly.GetExecutingAssembly(), sourceHolder.TransportName, tfm);
                     runner.ScenarioName = TestAppScenarios.EnvironmentVariables.Name;
 
-                    Task<IEndpointInfo> newEndpointInfoTask = endpointInfoCallback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+                    Task<IProcessInfo> newProcessInfoTask = endpointInfoCallback.WaitAddedProcessInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
                     await runner.ExecuteAsync(async () =>
                         {
-                            IEndpointInfo endpointInfo = await newEndpointInfoTask;
-
-                            ICollectionRuleAction setAction = setFactory.Create(endpointInfo, setOpts);
-                            ICollectionRuleAction getAction = getFactory.Create(endpointInfo, getOpts);
+                            IProcessInfo processInfo = await newProcessInfoTask;
+                            ICollectionRuleAction setAction = setFactory.Create(processInfo, setOpts);
+                            ICollectionRuleAction getAction = getFactory.Create(processInfo, getOpts);
 
                             await ActionTestsHelper.ExecuteAndDisposeAsync(setAction, CommonTestTimeouts.EnvVarsTimeout);
                             CollectionRuleActionResult getResult = await ActionTestsHelper.ExecuteAndDisposeAsync(getAction, CommonTestTimeouts.EnvVarsTimeout);

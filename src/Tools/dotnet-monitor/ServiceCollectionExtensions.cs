@@ -28,6 +28,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
+using Microsoft.Diagnostics.Tools.Monitor.Stacks;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -67,8 +68,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureInProcessFeatures(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<InProcessFeaturesOptions>(services, configuration, ConfigurationKeys.InProcessFeatures)
-                .AddSingleton<IPostConfigureOptions<InProcessFeaturesOptions>, InProcessFeaturesPostConfigureOptions>();
+            ConfigureOptions<CallStacksOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_CallStacks)
+                .AddSingleton<IPostConfigureOptions<CallStacksOptions>, CallStacksPostConfigureOptions>();
+
+            ConfigureOptions<ExceptionsOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_Exceptions)
+                .AddSingleton<IPostConfigureOptions<ExceptionsOptions>, ExceptionsPostConfigureOptions>();
+
+            return services;
         }
 
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
@@ -317,6 +323,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingletonForwarder<ISharedLibraryService, SharedLibraryService>();
             services.AddHostedServiceForwarder<SharedLibraryService>();
             services.TryAddSingleton<ISharedLibraryInitializer, DefaultSharedLibraryInitializer>();
+            services.AddSingleton<DefaultSharedLibraryPathProvider>();
             return services;
         }
 
@@ -334,7 +341,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // that wants to participate in exception collection.
             services.AddSingleton<IExceptionsStore, ExceptionsStore>();
             services.AddHostedService<ExceptionsService>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureStartupHook(this IServiceCollection services)
+        {
             services.AddSingleton<StartupHookValidator>();
+            services.AddSingleton<StartupHookEndpointInfoSourceCallbacks>();
+            services.AddSingletonForwarder<IEndpointInfoSourceCallbacks, StartupHookEndpointInfoSourceCallbacks>();
             return services;
         }
 
@@ -353,6 +367,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             });
             services.AddSingleton<IStartupLogger, EgressStartupLogger>();
             return services;
+        }
+
+        public static void AddScopedForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
+        {
+            services.AddScoped<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
         }
 
         private static void AddSingletonForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class

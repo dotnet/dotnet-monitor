@@ -17,18 +17,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         private Task<CollectionRuleActionResult> _completionTask;
         private long _disposedState;
 
-        protected IEndpointInfo EndpointInfo { get; }
+        protected IEndpointInfo EndpointInfo => ProcessInfo?.EndpointInfo;
+
+        protected IProcessInfo ProcessInfo { get; }
 
         protected TOptions Options { get; }
 
-        protected CollectionRuleActionBase(IEndpointInfo endpointInfo, TOptions options)
+        protected CollectionRuleActionBase(IProcessInfo processInfo, TOptions options)
         {
-            // TODO: Allow null endpointInfo to allow tests to pass, but this should be provided by
+            // TODO: Allow null processInfo to allow tests to pass, but this should be provided by
             // tests since it will be required by all aspects in the future. For example, the ActionListExecutor
             // (which uses null in tests) will require this when needing to get process information for
             // the actions property bag used for token replacement.
-            //EndpointInfo = endpointInfo ?? throw new ArgumentNullException(nameof(endpointInfo));
-            EndpointInfo = endpointInfo;
+            //ProcessInfo = processInfo ?? throw new ArgumentNullException(nameof(processInfo));
+            ProcessInfo = processInfo;
             Options = options ?? throw new ArgumentNullException(nameof(options));
         }
 

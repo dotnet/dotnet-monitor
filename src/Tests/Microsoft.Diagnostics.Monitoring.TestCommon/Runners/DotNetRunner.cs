@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -15,8 +17,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
     /// <summary>
     /// Runner for running dotnet processes.
     /// </summary>
+    [DebuggerDisplay(@"\{DotNetRunner:{StateForDebuggerDisplay,nq}\}")]
     public sealed class DotNetRunner : IDisposable
     {
+        private string StateForDebuggerDisplay =>
+            !HasStarted ? "Not started" :
+            HasExited ? $"Exited with code: {ExitCode}" :
+            FormattableString.Invariant($"ProcessId={ProcessId}");
+
+        private const string TestProcessCleanupStartupHookAssemblyName = "Microsoft.Diagnostics.Monitoring.TestProcessCleanupStartupHook";
+
         // Event handler for the Process.Exited event
         private readonly EventHandler _exitedHandler;
 
@@ -93,6 +103,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public bool WaitForDiagnosticPipe { get; set; }
 
+        /// <summary>
+        /// Determines if the spawned process should be stopped when the currently executing process exits.
+        /// </summary>
+        public bool StopOnParentExit { get; set; } = true;
+
+        private static string TestProcessCleanupStartupHookPath =>
+            AssemblyHelper.GetAssemblyArtifactBinPath(
+                Assembly.GetExecutingAssembly(),
+                TestProcessCleanupStartupHookAssemblyName,
+                TargetFrameworkMoniker.Net60
+                );
+
         public DotNetRunner()
         {
             _process = new Process();
@@ -126,7 +148,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public async Task StartAsync(CancellationToken token)
         {
             StringBuilder argsBuilder = new();
-            if (TestDotNetHost.HasHostInRepository)
+            if (TestDotNetHost.HasHostFullPath)
             {
                 argsBuilder.Append("exec --runtimeconfig \"");
                 argsBuilder.Append(Path.ChangeExtension(EntrypointAssemblyPath, ".runtimeconfig.test.json"));
@@ -136,6 +158,32 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             argsBuilder.Append(EntrypointAssemblyPath);
             argsBuilder.Append("\" ");
             argsBuilder.Append(Arguments);
+
+            if (StopOnParentExit)
+            {
+                int pid;
+#if NET5_0_OR_GREATER
+                pid = System.Environment.ProcessId;
+#else
+                using (Process process = Process.GetCurrentProcess())
+                {
+                    pid = process.Id;
+                }
+#endif
+                Environment.Add(TestProcessCleanupIdentifiers.EnvironmentVariables.ParentPid, pid.ToString(CultureInfo.InvariantCulture));
+
+                if (Environment.TryGetValue(ToolIdentifiers.EnvironmentVariables.StartupHooks, out string startupHooks) &&
+                    !string.IsNullOrEmpty(startupHooks))
+                {
+                    startupHooks += Path.PathSeparator + TestProcessCleanupStartupHookPath;
+                }
+                else
+                {
+                    startupHooks = TestProcessCleanupStartupHookPath;
+                }
+
+                Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, startupHooks);
+            }
 
             _process.StartInfo.FileName = TestDotNetHost.GetPath(Architecture);
             _process.StartInfo.Arguments = argsBuilder.ToString();

@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
-    internal static class DiagControllerExtensions
+    internal static class ControllerExtensions
     {
         public static ActionResult NotAcceptable(this ControllerBase controller)
         {

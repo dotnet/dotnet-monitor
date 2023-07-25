@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Tools.Monitor;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
@@ -19,6 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
     /// <summary>
     /// Runner for the dotnet-monitor tool.
     /// </summary>
+    [DebuggerDisplay(@"\{MonitorRunner:{_runner.StateForDebuggerDisplay,nq}\}")]
     internal class MonitorRunner : IAsyncDisposable
     {
         private const string TestHostingStartupAssemblyName = "Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup";
@@ -44,15 +46,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public RootOptions ConfigurationFromEnvironment { get; } = new();
 
         /// <summary>
-        /// Determines whether the stacks feature is enabled.
-        /// </summary>
-        public bool EnableCallStacksFeature { get; set; }
-
-        /// <summary>
         /// Gets the task for the underlying <see cref="DotNetRunner"/>'s
         /// <see cref="DotNetRunner.ExitedTask"/> which is used to wait for process exit.
         /// </summary>
         protected Task<int> RunnerExitedTask => _runner.ExitedTask;
+
+        /// <summary>
+        /// Gets the standard input of the dotnet-monitor process
+        /// </summary>
+        public StreamWriter StandardInput => _runner.StandardInput;
+
+        public bool HasExited => _runner.HasExited;
+
+        public int ExitCode => _runner.ExitCode;
 
         /// <summary>
         /// The path to dotnet-monitor.
@@ -158,12 +164,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             _adapter.Environment.Add("DotnetMonitorTestSettings__SharedConfigDirectoryOverride", SharedConfigDirectoryPath);
             // Override the user config directory
             _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
-
-            // Enable experimental stacks feature
-            if (EnableCallStacksFeature)
-            {
-                _adapter.Environment.Add(ExperimentalFlags.Feature_CallStacks, "true");
-            }
 
             // Ensures that the TestStartupHook is loaded early so it helps resolve other test assemblies
             _adapter.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, TestStartupHookPath);

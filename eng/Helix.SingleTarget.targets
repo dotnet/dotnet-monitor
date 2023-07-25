@@ -1,0 +1,42 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- Azurite requires Node -->
+    <HelixRequiresNode Condition="'$(HelixRequiresAzurite)' == 'true'">true</HelixRequiresNode>
+  </PropertyGroup>
+
+  <!-- Skip installation on musl libc systems (node is not supported) -->
+  <PropertyGroup Condition="'$(IsHelixMuslLibc)' == 'true'">
+    <HelixRequiresAzurite>false</HelixRequiresAzurite>
+    <HelixRequiresNode>false</HelixRequiresNode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Set TEST_DOTNET_ROOT to same as DOTNET_ROOT (which is provided by the dotnet cli correlation payload) -->
+    <HelixWorkItemPreCommand Include="export TEST_DOTNET_ROOT=${DOTNET_ROOT}"
+                             Condition="'$(IsHelixPosixShell)' == 'true'" />
+    <HelixWorkItemPreCommand Include="SET TEST_DOTNET_ROOT=%DOTNET_ROOT%"
+                             Condition="'$(IsHelixPosixShell)' != 'true'" />
+  </ItemGroup>
+
+  <!-- Configure NodeJs and Npm -->
+  <ItemGroup Condition="'$(HelixRequiresNode)' == 'true'">
+    <HelixWorkItemPreCommand Include=". $HELIX_CORRELATION_PAYLOAD/setupnode.sh"
+                             Condition="'$(IsHelixPosixShell)' == 'true'" />
+    <HelixWorkItemPreCommand Include="setupNode $(HelixNodeName)"
+                             Condition="'$(IsHelixPosixShell)' == 'true'" />
+    <HelixWorkItemPreCommand Include="call %HELIX_CORRELATION_PAYLOAD%\setupnode.cmd $(HelixNodeName)"
+                             Condition="'$(IsHelixPosixShell)' != 'true'" />
+  </ItemGroup>
+
+  <!-- Configure Azurite -->
+  <ItemGroup Condition="'$(HelixRequiresAzurite)' == 'true'">
+    <HelixWorkItemPreCommand Include=". $HELIX_CORRELATION_PAYLOAD/installazurite.sh"
+                             Condition="'$(IsHelixPosixShell)' == 'true'" />
+    <HelixWorkItemPreCommand Include="call %HELIX_CORRELATION_PAYLOAD%\installazurite.cmd"
+                             Condition="'$(IsHelixPosixShell)' != 'true'" />
+  </ItemGroup>
+
+  <Target Name="CollectHelixWorkItems"
+          Outputs="@(HelixWorkItem)" />
+</Project>

@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, CollectStacksOptions options)
+        public ICollectionRuleAction Create(IProcessInfo processInfo, CollectStacksOptions options)
         {
             if (null == options)
             {
@@ -33,22 +33,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ValidationContext context = new(options, _serviceProvider, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            return new CollectStacksAction(_serviceProvider, endpointInfo, options);
+            return new CollectStacksAction(_serviceProvider, processInfo, options);
         }
     }
 
-    internal sealed class CollectStacksAction : CollectionRuleActionBase<CollectStacksOptions>
+    internal sealed class CollectStacksAction :
+        CollectionRuleEgressActionBase<CollectStacksOptions>
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly ProfilerChannel _profilerChannel;
 
-        public CollectStacksAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectStacksOptions options) : base(endpointInfo, options)
+        public CollectStacksAction(IServiceProvider serviceProvider, IProcessInfo processInfo, CollectStacksOptions options)
+            : base(serviceProvider, processInfo, options)
         {
-            _serviceProvider = serviceProvider;
-            _profilerChannel = _serviceProvider.GetRequiredService<ProfilerChannel>();
+            _profilerChannel = serviceProvider.GetRequiredService<ProfilerChannel>();
         }
 
-        protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(TaskCompletionSource<object> startCompletionSource, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
+        protected override EgressOperation CreateArtifactOperation(TaskCompletionSource<object> startCompletionSource, CollectionRuleMetadata collectionRuleMetadata)
         {
             bool isPlainText = Options.GetFormat() == CallStackFormat.PlainText;
 
@@ -67,19 +67,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 scope,
                 collectionRuleMetadata);
 
-            ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
-            if (null != result.Exception)
-            {
-                throw new CollectionRuleActionException(result.Exception);
-            }
-
-            return new CollectionRuleActionResult()
-            {
-                OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    { CollectionRuleActionConstants.EgressPathOutputValueName, result.Result.Value }
-                }
-            };
+            return egressOperation;
         }
 
         private static StackFormat MapCallstackFormat(CallStackFormat format) =>

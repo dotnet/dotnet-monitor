@@ -20,14 +20,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public void Log()
         {
-            if (_experimentalFlags.IsCallStacksEnabled)
-            {
-                _logger.ExperimentalFeatureEnabled(Strings.FeatureName_CallStacks);
-            }
-            if (_experimentalFlags.IsExceptionsEnabled)
-            {
-                _logger.ExperimentalFeatureEnabled(Strings.FeatureName_Exceptions);
-            }
+            // Experimental features should log a warning when they are activated e.g.
+            // _logger.ExperimentalFeatureEnabled("CallStacks");
         }
     }
 }

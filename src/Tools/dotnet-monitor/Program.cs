@@ -43,7 +43,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 NoAuthOption,
                 TempApiKeyOption,
                 NoHttpEgressOption,
-                ConfigurationFilePathOption
+                ConfigurationFilePathOption,
+                ExitOnStdinDisconnect
             };
 
             command.SetAction((result, token) =>
@@ -57,7 +58,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     result.GetValue(NoAuthOption),
                     result.GetValue(TempApiKeyOption),
                     result.GetValue(NoHttpEgressOption),
-                    result.GetValue(ConfigurationFilePathOption));
+                    result.GetValue(ConfigurationFilePathOption),
+                    result.GetValue(ExitOnStdinDisconnect));
             });
 
             return command;
@@ -190,6 +192,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 DefaultValueFactory = (_) => false,
                 Description = Strings.HelpDescription_OptionShowSources,
                 HelpName = "showSources"
+            };
+
+        private static CliOption<bool> ExitOnStdinDisconnect =
+            new CliOption<bool>("--exit-on-stdin-disconnect")
+            {
+                DefaultValueFactory = (_) => false,
+                Description = Strings.HelpDescription_OptionExitOnStdinDisconnect
             };
 
         public static Task<int> Main(string[] args)
