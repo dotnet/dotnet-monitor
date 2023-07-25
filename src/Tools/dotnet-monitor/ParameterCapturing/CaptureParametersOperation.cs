@@ -149,6 +149,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             Exception ex;
             switch (args.ServiceState)
             {
+                case ParameterCapturingEvents.ServiceState.Running:
+                    return;
                 case ParameterCapturingEvents.ServiceState.NotSupported:
                     ex = new MonitoringException(args.Details);
                     break;
