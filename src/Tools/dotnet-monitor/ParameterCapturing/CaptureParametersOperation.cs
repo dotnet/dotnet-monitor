@@ -25,8 +25,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
         private readonly Guid _requestId;
 
-        private readonly TaskCompletionSource<object> _capturingStoppedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly TaskCompletionSource<object> _capturingStartedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource _capturingStoppedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource _capturingStartedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         public CaptureParametersOperation(IEndpointInfo endpointInfo, ProfilerChannel profilerChannel, ILogger logger, MethodDescription[] methods, TimeSpan duration)
         {
@@ -107,7 +107,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 return;
             }
 
-            _ = _capturingStartedCompletionSource.TrySetResult(null);
+            _ = _capturingStartedCompletionSource.TrySetResult();
         }
 
         private void OnStoppedCapturing(object sender, Guid requestId)
@@ -117,7 +117,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 return;
             }
 
-            _ = _capturingStoppedCompletionSource.TrySetResult(null);
+            _ = _capturingStoppedCompletionSource.TrySetResult();
         }
 
         private void OnCapturingFailed(object sender, CapturingFailedArgs args)
