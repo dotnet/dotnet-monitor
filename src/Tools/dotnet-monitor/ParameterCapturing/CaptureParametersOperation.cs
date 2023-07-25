@@ -66,8 +66,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 Duration = Timeout.InfiniteTimeSpan
             };
 
-            TaskCompletionSource<object> capturingStoppedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-            TaskCompletionSource<object> capturingStartedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
             await using EventParameterCapturingPipeline eventTracePipeline = new(_endpointInfo.Endpoint, settings);
             eventTracePipeline.OnStartedCapturing += OnStartedCapturing;
