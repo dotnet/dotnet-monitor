@@ -24,8 +24,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public const string ClrEnvVarProfiler = ClrEnvVarPrefix + "PROFILER";
         public const string ClrEnvVarProfilerPath = ClrEnvVarPrefix + "PROFILER_PATH";
 
-        public static string GetPath(Architecture architecture) =>
-            NativeLibraryHelper.GetSharedLibraryPath(architecture, ProfilerIdentifiers.LibraryRootFileName);
+        public static string GetNotifyOnlyPath(Architecture architecture) =>
+            NativeLibraryHelper.GetSharedLibraryPath(architecture, ProfilerIdentifiers.NotifyOnlyProfiler.LibraryRootFileName);
 
         public static IEnumerable<object[]> GetArchitecture()
         {
@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             static void AddTestCases(List<object[]> arguments, Architecture architecture)
             {
-                string profilerPath = GetPath(architecture);
+                string profilerPath = GetNotifyOnlyPath(architecture);
                 if (File.Exists(profilerPath))
                 {
                     arguments.Add(new object[] { architecture });
@@ -63,7 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             static void AddTestCases(List<object[]> arguments, Architecture architecture)
             {
-                string profilerPath = GetPath(architecture);
+                string profilerPath = GetNotifyOnlyPath(architecture);
                 if (File.Exists(profilerPath))
                 {
                     arguments.Add(new object[] { architecture, profilerPath });
@@ -73,9 +73,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         public static async Task VerifyProductVersionEnvironmentVariableAsync(AppRunner runner, ITestOutputHelper outputHelper)
         {
-            string productVersion = await runner.GetEnvironmentVariable(ProfilerIdentifiers.EnvironmentVariables.ProductVersion, CommonTestTimeouts.EnvVarsTimeout);
+            string productVersion = await runner.GetEnvironmentVariable(ProfilerIdentifiers.NotifyOnlyProfiler.EnvironmentVariables.ProductVersion, CommonTestTimeouts.EnvVarsTimeout);
             Assert.False(string.IsNullOrEmpty(productVersion), "Expected product version to not be null or empty.");
-            outputHelper.WriteLine("{0} = {1}", ProfilerIdentifiers.EnvironmentVariables.ProductVersion, productVersion);
+            outputHelper.WriteLine("{0} = {1}", ProfilerIdentifiers.NotifyOnlyProfiler.EnvironmentVariables.ProductVersion, productVersion);
         }
 
         public static async Task WaitForProfilerCommunicationChannelAsync(ProcessInfo processInfo)

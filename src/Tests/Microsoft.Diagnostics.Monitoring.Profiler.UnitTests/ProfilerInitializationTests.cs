@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
             string runtimeInstanceId = Guid.NewGuid().ToString("D");
             runner.Environment.Add(ProfilerHelper.ClrEnvVarEnableNotificationProfilers, ProfilerHelper.ClrEnvVarEnabledValue);
             runner.Environment.Add(ProfilerHelper.ClrEnvVarEnableProfiling, ProfilerHelper.ClrEnvVarEnabledValue);
-            runner.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.Clsid.StringWithBraces);
+            runner.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.NotifyOnlyProfiler.Clsid.StringWithBraces);
             runner.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath, profilerPath);
             runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, runtimeInstanceId);
             runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, LogLevel.Trace.ToString("G"));
@@ -79,7 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
                 // All settings must be applied before issuing attach profiler call.
                 client.AttachProfiler(
                     TimeSpan.FromSeconds(10),
-                    ProfilerIdentifiers.Clsid.Guid,
+                    ProfilerIdentifiers.NotifyOnlyProfiler.Clsid.Guid,
                     profilerPath);
 
                 await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
@@ -106,7 +106,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
             string runtimeInstanceId = Guid.NewGuid().ToString("D");
             runner.Environment.Add(ProfilerHelper.ClrEnvVarEnableNotificationProfilers, ProfilerHelper.ClrEnvVarEnabledValue);
             runner.Environment.Add(ProfilerHelper.ClrEnvVarEnableProfiling, ProfilerHelper.ClrEnvVarEnabledValue);
-            runner.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.Clsid.StringWithBraces);
+            runner.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.NotifyOnlyProfiler.Clsid.StringWithBraces);
             runner.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath, profilerPath);
             runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, runtimeInstanceId);
             runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.SharedPath, tempDir.FullName);

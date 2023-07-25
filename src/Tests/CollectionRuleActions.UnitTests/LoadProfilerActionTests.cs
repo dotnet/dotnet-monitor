@@ -53,7 +53,7 @@ namespace CollectionRuleActions.UnitTests
                     .AddLoadProfilerAction(options =>
                     {
                         options.Path = profilerPath;
-                        options.Clsid = ProfilerIdentifiers.Clsid.Guid;
+                        options.Clsid = ProfilerIdentifiers.NotifyOnlyProfiler.Clsid.Guid;
                     })
                     .SetStartupTrigger();
             }, async host =>
