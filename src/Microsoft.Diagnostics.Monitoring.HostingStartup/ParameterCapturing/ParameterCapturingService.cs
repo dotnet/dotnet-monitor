@@ -27,11 +27,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             public CapturingRequest(StartCapturingParametersPayload payload)
             {
                 Payload = payload ?? throw new ArgumentNullException(nameof(payload));
-                StopRequest = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
+                StopRequest = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
             }
 
             public StartCapturingParametersPayload Payload { get; }
-            public TaskCompletionSource<object?> StopRequest { get; }
+            public TaskCompletionSource StopRequest { get; }
         }
 
         private sealed class InitializedState : IDisposable
@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 Logger = services.GetService<ILogger<ParameterCapturingService>>()
                     ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
 
-                ProbeManager = new(new LogEmittingProbes(Logger));
+                ProbeManager = new FunctionProbesManager(new LogEmittingProbes(Logger));
 
                 RequestQueue = Channel.CreateBounded<CapturingRequest>(new BoundedChannelOptions(capacity: 1)
                 {
@@ -112,20 +112,28 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             if (payload.Methods.Length == 0)
             {
-                _eventSource.FailedToCapture(payload.RequestId, new ArgumentException(nameof(payload.Methods)));
+                _eventSource.FailedToCapture(
+                    payload.RequestId,
+                    ParameterCapturingEvents.CapturingFailedReason.InvalidRequest,
+                    nameof(payload.Methods));
                 return;
             }
 
             CapturingRequest request = new(payload);
             if (!_initializedState.AllRequests.TryAdd(payload.RequestId, request))
             {
-                _eventSource.FailedToCapture(payload.RequestId, new ArgumentException(nameof(payload.RequestId)));
+                _eventSource.FailedToCapture(
+                    payload.RequestId,
+                    ParameterCapturingEvents.CapturingFailedReason.InvalidRequest,
+                    nameof(payload.RequestId));
                 return;
             }
 
-            if (_initializedState.RequestQueue.Writer.TryWrite(request) != true)
+            if (!_initializedState.RequestQueue.Writer.TryWrite(request))
             {
-                _initializedState.AllRequests.TryRemove(payload.RequestId, out _);
+                _ = request.StopRequest.TrySetCanceled();
+                _ = _initializedState.AllRequests.TryRemove(payload.RequestId, out _);
+
                 if (!IsAvailable())
                 {
                     BroadcastServiceState();
@@ -155,7 +163,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 return;
             }
 
-            request.StopRequest.TrySetResult(null);
+            _ = request.StopRequest.TrySetResult();
         }
 
         private bool TryStartCapturing(StartCapturingParametersPayload request)
@@ -200,6 +208,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     request.Methods.Length);
 
                 return true;
+            }
+            catch (UnresolvedMethodsExceptions ex)
+            {
+                _eventSource.FailedToCapture(
+                    request.RequestId,
+                    ParameterCapturingEvents.CapturingFailedReason.UnresolvedMethods,
+                    ex.Message);
             }
             catch (Exception ex)
             {

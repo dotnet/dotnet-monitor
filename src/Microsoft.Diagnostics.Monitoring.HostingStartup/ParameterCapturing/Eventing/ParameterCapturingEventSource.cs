@@ -59,25 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
         [NonEvent]
         public void FailedToCapture(Guid RequestId, Exception ex)
         {
-            ParameterCapturingEvents.CapturingFailedReason reason;
-            string details;
-            if (ex is UnresolvedMethodsExceptions)
-            {
-                reason = ParameterCapturingEvents.CapturingFailedReason.UnresolvedMethods;
-                details = ex.Message;
-            }
-            else if (ex is ArgumentException)
-            {
-                reason = ParameterCapturingEvents.CapturingFailedReason.InvalidRequest;
-                details = ex.Message;
-            }
-            else
-            {
-                reason = ParameterCapturingEvents.CapturingFailedReason.InternalError;
-                details = ex.ToString();
-            }
-
-            FailedToCapture(RequestId, reason, details);
+            FailedToCapture(RequestId, ParameterCapturingEvents.CapturingFailedReason.InternalError, ex.ToString());
         }
 
         [Event(ParameterCapturingEvents.EventIds.FailedToCapture)]

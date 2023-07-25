@@ -67,38 +67,35 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 return methods;
             }
 
-            List<MethodInfo> classMethods = new();
-            if (!_nameToAssemblies.TryGetValue(methodDescription.AssemblyName, out List<Assembly>? possibleAssemblies))
+            List<MethodInfo> declaringTypeMethods = new();
+            if (_nameToAssemblies.TryGetValue(methodDescription.AssemblyName, out List<Assembly>? possibleAssemblies))
             {
-                _declaringTypeToMethods.Add(declType, classMethods);
-                return classMethods;
-            }
-
-            foreach (Assembly assembly in possibleAssemblies)
-            {
-                try
+                foreach (Assembly assembly in possibleAssemblies)
                 {
-                    MethodInfo[]? allMethods = assembly.GetType(methodDescription.TypeName)?.GetMethods(
-                        BindingFlags.Public |
-                        BindingFlags.NonPublic |
-                        BindingFlags.Instance |
-                        BindingFlags.Static);
-
-                    if (allMethods == null)
+                    try
                     {
-                        continue;
-                    }
+                        MethodInfo[]? allMethods = assembly.GetType(methodDescription.TypeName)?.GetMethods(
+                            BindingFlags.Public |
+                            BindingFlags.NonPublic |
+                            BindingFlags.Instance |
+                            BindingFlags.Static);
 
-                    classMethods.AddRange(allMethods);
-                }
-                catch
-                {
-                    // CONSIDER: Are there certain exceptions we don't want to swallow here?
+                        if (allMethods == null)
+                        {
+                            continue;
+                        }
+
+                        declaringTypeMethods.AddRange(allMethods);
+                    }
+                    catch
+                    {
+                        // CONSIDER: Are there certain exceptions we don't want to swallow here?
+                    }
                 }
             }
 
-            _declaringTypeToMethods.Add(declType, classMethods);
-            return classMethods;
+            _declaringTypeToMethods.Add(declType, declaringTypeMethods);
+            return declaringTypeMethods;
         }
     }
 }
