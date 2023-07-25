@@ -41,4 +41,4 @@ if(CLR_CMAKE_HOST_WIN32)
         )
 endif(CLR_CMAKE_HOST_WIN32)
 
-add_subdirectory(src/MonitorProfiler)
+add_subdirectory(src/Profilers)

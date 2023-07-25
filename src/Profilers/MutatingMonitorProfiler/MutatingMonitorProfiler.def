@@ -4,3 +4,6 @@ EXPORTS
     DllCanUnloadNow                    PRIVATE
     DllGetClassObject                  PRIVATE
     DllMain                            PRIVATE
+    RequestFunctionProbeRegistration   PRIVATE
+    RequestFunctionProbeInstallation   PRIVATE
+    RequestFunctionProbeUninstallation PRIVATE
