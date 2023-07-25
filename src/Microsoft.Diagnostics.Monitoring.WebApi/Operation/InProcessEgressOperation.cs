@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public EgressProcessInfo ProcessInfo { get; private set; }
         public string EgressProviderName { get { return null; } }
-        public bool IsStoppable { get { return _operation?.IsStoppable ?? false; } }
+        public bool IsStoppable => _operation.IsStoppable;
         public ISet<string> Tags { get; private set; }
 
         private readonly IInProcessOperation _operation;
