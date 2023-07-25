@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tracing;
 using System;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Threading;
 using System.Threading.Tasks;
@@ -82,7 +83,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         traceEvent.GetPayload<DateTime>(ExceptionEvents.ExceptionInstancePayloads.Timestamp).ToUniversalTime(),
                         traceEvent.GetPayload<ulong[]>(ExceptionEvents.ExceptionInstancePayloads.StackFrameIds),
                         traceEvent.ThreadID,
-                        traceEvent.GetPayload<ulong[]>(ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds));
+                        traceEvent.GetPayload<ulong[]>(ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds),
+                        traceEvent.GetPayload<string>(ExceptionEvents.ExceptionInstancePayloads.ActivityId),
+                        traceEvent.GetPayload<ActivityIdFormat>(ExceptionEvents.ExceptionInstancePayloads.ActivityIdFormat));
                     break;
                 case "FunctionDescription":
                     _cache.AddFunction(

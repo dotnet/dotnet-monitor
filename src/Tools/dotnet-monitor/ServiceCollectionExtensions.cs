@@ -369,6 +369,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
+        public static void AddScopedForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
+        {
+            services.AddScoped<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
+        }
+
         private static void AddSingletonForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
         {
             services.AddSingleton<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
