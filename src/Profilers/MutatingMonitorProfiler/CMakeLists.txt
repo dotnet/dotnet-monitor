@@ -24,7 +24,7 @@ set(SOURCES
 
 # Build library and split symbols
 add_library_clr(MutatingMonitorProfiler SHARED ${SOURCES})
-target_link_libraries(MutatingMonitorProfiler SharedMonitorProfiler)
+target_link_libraries(MutatingMonitorProfiler CommonMonitorProfiler)
 
 
 if (CLR_CMAKE_HOST_UNIX)

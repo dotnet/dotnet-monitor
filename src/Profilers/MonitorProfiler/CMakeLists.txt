@@ -32,7 +32,7 @@ set(SOURCES
 
 # Build library and split symbols
 add_library_clr(MonitorProfiler SHARED ${SOURCES})
-target_link_libraries(MonitorProfiler SharedMonitorProfiler)
+target_link_libraries(MonitorProfiler CommonMonitorProfiler)
 
 if(CLR_CMAKE_HOST_WIN32)
     target_link_libraries(MonitorProfiler ws2_32)

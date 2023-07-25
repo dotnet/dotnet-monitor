@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.14)
 
 
-add_subdirectory(Shared)
+add_subdirectory(Common)
 
 include_directories(
-    Shared
+    Common
     )
 
 add_subdirectory(MonitorProfiler)

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(SharedMonitorProfiler)
+project(CommonMonitorProfiler)
 
 if(CLR_CMAKE_HOST_WIN32)
     set(SOURCES
@@ -29,16 +29,16 @@ set(SOURCES
     )
 
 # Build library and split symbols
-add_library_clr(SharedMonitorProfiler STATIC ${SOURCES})
+add_library_clr(CommonMonitorProfiler STATIC ${SOURCES})
 
 if (CLR_CMAKE_HOST_UNIX)
-    target_link_libraries(SharedMonitorProfiler
+    target_link_libraries(CommonMonitorProfiler
     stdc++
     pthread)
 endif(CLR_CMAKE_HOST_UNIX)
 
 # Install library
-install(TARGETS SharedMonitorProfiler DESTINATION .)
+install(TARGETS CommonMonitorProfiler DESTINATION .)
 # Install symbols
-get_symbol_file_name(SharedMonitorProfiler SymbolFileName)
+get_symbol_file_name(CommonMonitorProfiler SymbolFileName)
 install(FILES ${SymbolFileName} DESTINATION . OPTIONAL)
