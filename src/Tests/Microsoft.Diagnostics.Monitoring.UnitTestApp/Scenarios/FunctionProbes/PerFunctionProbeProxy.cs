@@ -1,10 +1,12 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using System;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Threading;
+using Xunit.Sdk;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
@@ -12,6 +14,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
     {
         Action<object[]> _probe;
         private int _invokeCount;
+
+        public XunitException AssertException { get; private set; }
 
         public PerFunctionProbeWrapper(Action<object[]> probe)
         {
@@ -26,7 +30,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         public void Invoke(object[] args)
         {
             Interlocked.Increment(ref _invokeCount);
-            _probe(args);
+
+            try
+            {
+                _probe(args);
+            }
+            catch (XunitException ex)
+            {
+                AssertException = ex;
+            }
         }
     }
 
@@ -57,6 +69,18 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             }
 
             return probe.GetInvokeCount();
+        }
+
+        public bool TryGetProbeAssertException(MethodInfo method, out XunitException exception)
+        {
+            exception = null;
+            if (!_perFunctionProbes.TryGetValue(method.GetFunctionId(), out PerFunctionProbeWrapper probe))
+            {
+                return false;
+            }
+
+            exception = probe.AssertException;
+            return exception != null;
         }
 
         public void EnterProbe(ulong uniquifier, object[] args)

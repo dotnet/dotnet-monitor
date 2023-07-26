@@ -17,6 +17,7 @@
         }
     ],
     "words": [
+        "arity",
         "armv",
         "Bldr",
         "Brotli",
@@ -70,6 +71,7 @@
         "openapi",
         "PCCOR",
         "Pids",
+        "PINVOKE",
         "Pinnable",
         "Pkce",
         "PKCS",

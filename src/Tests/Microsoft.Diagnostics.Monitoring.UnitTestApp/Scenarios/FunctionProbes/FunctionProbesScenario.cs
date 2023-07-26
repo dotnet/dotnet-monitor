@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Sdk;
 using static SampleMethods.StaticTestMethodSignatures;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
@@ -47,6 +48,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 { TestAppScenarios.FunctionProbes.SubScenarios.ExceptionThrownByProbe, Test_ExceptionThrownByProbeAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.RecursingProbe, Test_RecursingProbeAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.RequestInstallationOnProbeFunction, Test_RequestInstallationOnProbeFunctionAsync},
+
+                /* Self tests */
+                { TestAppScenarios.FunctionProbes.SubScenarios.AssertsInProbesAreCaught, Test_AssertsInProbesAreCaughtAsync},
+
             };
 
             CliCommand scenarioCommand = new(TestAppScenarios.FunctionProbes.Name);
@@ -252,6 +257,26 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await WaitForProbeInstallationAsync(probeManager, probeProxy, new[] { method }, timeoutSource.Token));
         }
 
+        private static async Task Test_AssertsInProbesAreCaughtAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.NoArgs));
+
+            await Assert.ThrowsAnyAsync<XunitException>(async () =>
+            {
+                // To force an assert in the test probes, call a method with no parameters but assert that a parameter is still captured.
+                await RunTestCaseWithCustomInvokerAsync(probeManager, probeProxy, method, () =>
+                {
+                    StaticTestMethodSignatures.NoArgs();
+                    return Task.CompletedTask;
+                },
+                new object[]
+                {
+                    5
+                },
+                thisObj: null, thisParameterSupported: false, token);
+            });
+        }
+
         private static Task RunInstanceMethodTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, bool thisParameterSupported, CancellationToken token)
         {
             Assert.False(method.IsStatic);
@@ -302,6 +327,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             await invoker().WaitAsync(token);
 
             Assert.Equal(1, probeProxy.GetProbeInvokeCount(method));
+
+            if (probeProxy.TryGetProbeAssertException(method, out XunitException assertFailure))
+            {
+                throw assertFailure;
+            }
         }
 
         private static async Task WaitForProbeUninstallationAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token, bool explicitStopCaptureCall = true)
