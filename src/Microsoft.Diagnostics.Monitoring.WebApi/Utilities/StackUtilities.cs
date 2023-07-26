@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
     internal static class StackUtilities
     {
-        public static Models.CallStack TranslateCallStackToModel(CallStack stack, NameCache cache)
+        public static Models.CallStack TranslateCallStackToModel(CallStack stack, NameCache cache, bool methodNameIncludesGenericParameters = true)
         {
             Models.CallStack stackModel = new Models.CallStack();
             stackModel.ThreadId = stack.ThreadId;
@@ -28,13 +28,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             foreach (CallStackFrame frame in stack.Frames)
             {
-                stackModel.Frames.Add(CreateFrameModel(frame, cache));
+                stackModel.Frames.Add(CreateFrameModel(frame, cache, methodNameIncludesGenericParameters));
             }
 
             return stackModel;
         }
 
-        internal static Models.CallStackFrame CreateFrameModel(CallStackFrame frame, NameCache cache)
+        internal static Models.CallStackFrame CreateFrameModel(CallStackFrame frame, NameCache cache, bool methodNameIncludesGenericParameters)
         {
             var builder = new StringBuilder();
 
@@ -61,17 +61,32 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 if (functionData.TypeArgs.Length > 0)
                 {
-                    NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
-                }
+                    if (methodNameIncludesGenericParameters)
+                    {
+                        NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
+                        frameModel.MethodName = builder.ToString();
+                    }
+                    else
+                    {
+                        frameModel.MethodName = builder.ToString();
 
-                frameModel.MethodName = builder.ToString();
+                        builder.Clear();
+                        frameModel.GenericParameters = NameFormatter.GetTypes(builder, cache, functionData.TypeArgs);
+                        builder.Clear();
+                        frameModel.FriendlyGenericParameters = NameFormatter.GetTypes(builder, cache, functionData.TypeArgs, friendlyNames: true);
+                    }
+                }
+                else
+                {
+                    frameModel.MethodName = builder.ToString();
+                }
 
                 if (functionData.ParameterTypes.Length > 0)
                 {
                     builder.Clear();
-                    frameModel.ParameterTypes = NameFormatter.GetMethodParameterTypes(builder, cache, functionData.ParameterTypes);
+                    frameModel.ParameterTypes = NameFormatter.GetTypes(builder, cache, functionData.ParameterTypes);
                     builder.Clear();
-                    frameModel.FriendlyParameterTypes = NameFormatter.GetMethodParameterTypes(builder, cache, functionData.ParameterTypes, friendlyNames: true);
+                    frameModel.FriendlyParameterTypes = NameFormatter.GetTypes(builder, cache, functionData.ParameterTypes, friendlyNames: true);
                 }
 
                 builder.Clear();

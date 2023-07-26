@@ -61,9 +61,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 }
                 else
                 {
-                    BuildClassName(builder, cache, classData.ModuleId, classData.Token, friendlyNames: friendlyNames);
+                    BuildClassName(builder, cache, classData.ModuleId, classData.Token, friendlyNames);
                 }
-                BuildGenericParameters(builder, cache, classData.TypeArgs);
+                BuildGenericParameters(builder, cache, classData.TypeArgs, friendlyNames);
             }
             else
             {
@@ -98,7 +98,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        public static void BuildGenericParameters(StringBuilder builder, NameCache cache, ulong[] parameters)
+        public static void BuildGenericParameters(StringBuilder builder, NameCache cache, ulong[] parameters, bool friendlyNames = false)
         {
             for (int i = 0; i < parameters?.Length; i++)
             {
@@ -106,7 +106,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 {
                     builder.Append(GenericStart);
                 }
-                BuildClassName(builder, cache, parameters[i]);
+                BuildClassName(builder, cache, parameters[i], friendlyNames);
                 if (i < parameters.Length - 1)
                 {
                     builder.Append(GenericSeparator);
@@ -118,17 +118,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        public static IList<string> GetMethodParameterTypes(StringBuilder builder, NameCache cache, ulong[] parameterTypes, bool friendlyNames = false)
+        public static IList<string> GetTypes(StringBuilder builder, NameCache cache, ulong[] types, bool friendlyNames = false)
         {
-            List<string> parameterTypesList = new();
-            for (int i = 0; i < parameterTypes?.Length; i++)
+            List<string> typesList = new();
+            for (int i = 0; i < types?.Length; i++)
             {
                 builder.Clear();
-                BuildClassName(builder, cache, parameterTypes[i], friendlyNames: friendlyNames);
-                parameterTypesList.Add(builder.ToString());
+                BuildClassName(builder, cache, types[i], friendlyNames: friendlyNames);
+                typesList.Add(builder.ToString());
             }
 
-            return parameterTypesList;
+            return typesList;
         }
 
         public static string GetModuleName(NameCache cache, ulong moduleId)

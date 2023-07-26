@@ -151,7 +151,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 }
             }
 
-            return StackUtilities.TranslateCallStackToModel(callStack, cache.NameCache);
+            return StackUtilities.TranslateCallStackToModel(callStack, cache.NameCache, methodNameIncludesGenericParameters: false);
         }
 
         private sealed class ExceptionInstanceEntry

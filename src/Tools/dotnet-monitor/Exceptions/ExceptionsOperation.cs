@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +25,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private const char GenericSeparator = ',';
         private const char MethodParameterTypesStart = '(';
         private const char MethodParameterTypesEnd = ')';
+        private const char GenericStart = '[';
+        private const char GenericEnd = ']';
 
         private readonly ExceptionsFormat _format;
         private readonly IExceptionsStore _store;
@@ -118,10 +121,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                 writer.WriteStartArray("frames");
 
+                StringBuilder builder = new StringBuilder();
+
                 foreach (var frame in instance.CallStack.Frames)
                 {
                     writer.WriteStartObject();
 
+                    if (frame.GenericParameters.Count > 0)
+                    {
+                        builder.Clear();
+                        builder.Append(GenericStart);
+                        builder.Append(string.Join(GenericSeparator, frame.GenericParameters));
+                        builder.Append(GenericEnd);
+                        frame.MethodName += builder.ToString();
+                    }
                     writer.WriteString("methodName", frame.MethodName);
                     writer.WriteStartArray("parameterTypes");
                     foreach (string parameterType in frame.ParameterTypes)
@@ -220,18 +233,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     await writer.WriteAsync(frame.ClassName);
                     await writer.WriteAsync(".");
                     await writer.WriteAsync(frame.MethodName);
-                    await writer.WriteAsync(MethodParameterTypesStart);
 
-                    for (int i = 0; i < frame.FriendlyParameterTypes.Count; i++)
+                    if (frame.FriendlyGenericParameters.Count > 0)
                     {
-                        await writer.WriteAsync(frame.FriendlyParameterTypes[i]);
-
-                        if (i < frame.FriendlyParameterTypes.Count - 1)
-                        {
-                            await writer.WriteAsync(GenericSeparator);
-                        }
+                        await WriteTypesList(writer, frame.FriendlyGenericParameters, GenericStart, GenericEnd, GenericSeparator);
                     }
-                    await writer.WriteAsync(MethodParameterTypesEnd);
+
+                    await WriteTypesList(writer, frame.FriendlyParameterTypes, MethodParameterTypesStart, MethodParameterTypesEnd, GenericSeparator);
                 }
             }
 
@@ -247,6 +255,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     }
                 }
             }
+        }
+
+        private static async Task WriteTypesList(TextWriter writer, IList<string> types, char startChar, char endChar, char separationChar)
+        {
+            await writer.WriteAsync(startChar);
+
+            for (int i = 0; i < types.Count; i++)
+            {
+                await writer.WriteAsync(types[i]);
+
+                if (i < types.Count - 1)
+                {
+                    await writer.WriteAsync(separationChar);
+                }
+            }
+            await writer.WriteAsync(endChar);
         }
 
         // Writes the specified exception as an inner exception with the appropriate delimiters.

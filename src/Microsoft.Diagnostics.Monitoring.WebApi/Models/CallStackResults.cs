@@ -18,6 +18,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public string ModuleName { get; set; }
 
         [JsonIgnore]
+        internal IList<string> GenericParameters { get; set; } = new List<string>();
+
+        [JsonIgnore]
+        internal IList<string> FriendlyGenericParameters { get; set; } = new List<string>();
+
+        [JsonIgnore]
         internal IList<string> ParameterTypes { get; set; } = new List<string>();
 
         [JsonIgnore]
