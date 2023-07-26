@@ -15,5 +15,11 @@ namespace Microsoft.Diagnostics.Monitoring.Options
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExceptionsOptions_Enabled))]
         [DefaultValue(ExceptionsOptionsDefaults.Enabled)]
         public bool? Enabled { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExceptionsOptions_TopLevelLimit))]
+        [DefaultValue(ExceptionsOptionsDefaults.TopLevelLimit)]
+        public int? TopLevelLimit { get; set; }
     }
 }

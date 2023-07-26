@@ -543,6 +543,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 }
             }
 
+            public void RemoveExceptionInstance(ulong  exceptionId)
+            {
+                throw new NotSupportedException();
+            }
+
             public IReadOnlyList<IExceptionInstance> GetSnapshot()
             {
                 return _instances;

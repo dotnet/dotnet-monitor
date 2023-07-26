@@ -339,7 +339,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IExceptionsOperationFactory, ExceptionsOperationFactory>();
             // The exceptions store for the default process; long term, create a store for each process
             // that wants to participate in exception collection.
-            services.AddSingleton<IExceptionsStore, ExceptionsStore>();
+            services.AddSingleton<IExceptionsStore, ConfiguredExceptionsStore>();
             services.AddHostedService<ExceptionsService>();
             return services;
         }
