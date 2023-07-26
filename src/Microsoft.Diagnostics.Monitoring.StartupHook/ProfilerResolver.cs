@@ -13,10 +13,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 {
     internal static class ProfilerResolver
     {
-        private static readonly Lazy<string> s_profilerModulePath = new Lazy<string>(() => Environment.GetEnvironmentVariable(ProfilerIdentifiers.NotifyOnlyProfiler.EnvironmentVariables.ModulePath) ?? string.Empty);
+        private static readonly Lazy<string?> s_profilerModulePath = new Lazy<string?>(() => Environment.GetEnvironmentVariable(ProfilerIdentifiers.NotifyOnlyProfiler.EnvironmentVariables.ModulePath));
         private static readonly Lazy<bool> s_profilerModuleExists = new Lazy<bool>(() => File.Exists(s_profilerModulePath.Value));
 
-        private static readonly Lazy<string> s_mutatingProfilerModulePath = new Lazy<string>(() => Environment.GetEnvironmentVariable(ProfilerIdentifiers.MutatingProfiler.EnvironmentVariables.ModulePath) ?? string.Empty);
+        private static readonly Lazy<string?> s_mutatingProfilerModulePath = new Lazy<string?>(() => Environment.GetEnvironmentVariable(ProfilerIdentifiers.MutatingProfiler.EnvironmentVariables.ModulePath));
         private static readonly Lazy<bool> s_mutatingProfilerModuleExists = new Lazy<bool>(() => File.Exists(s_mutatingProfilerModulePath.Value));
 
         private static readonly HashSet<Assembly> s_registeredAssemblies = new HashSet<Assembly>();
@@ -24,12 +24,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 
         public static void InitializeResolver(Type type)
         {
-            if (!s_profilerModuleExists.Value)
+            if (s_profilerModulePath.Value != null && !s_profilerModuleExists.Value)
             {
                 throw new FileNotFoundException(s_profilerModulePath.Value);
             }
 
-            if (!s_mutatingProfilerModuleExists.Value)
+            if (s_mutatingProfilerModulePath.Value != null && !s_mutatingProfilerModuleExists.Value)
             {
                 throw new FileNotFoundException(s_mutatingProfilerModulePath.Value);
             }
@@ -55,16 +55,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         {
             // DllImport for Windows automatically loads in-memory modules (such as the profiler). This is not the case for Linux/MacOS.
             // If we fail resolving the DllImport, we have to load the profiler ourselves.
-            if (s_profilerModulePath.Value != null &&
-                libraryName == ProfilerIdentifiers.NotifyOnlyProfiler.LibraryRootFileName)
+            if (s_profilerModulePath.Value != null && libraryName == ProfilerIdentifiers.NotifyOnlyProfiler.LibraryRootFileName)
             {
                 if (NativeLibrary.TryLoad(s_profilerModulePath.Value, out IntPtr handle))
                 {
                     return handle;
                 }
             }
-            else if (s_mutatingProfilerModulePath.Value != null &&
-                libraryName == ProfilerIdentifiers.MutatingProfiler.LibraryRootFileName)
+            else if (s_mutatingProfilerModulePath.Value != null && libraryName == ProfilerIdentifiers.MutatingProfiler.LibraryRootFileName)
             {
                 if (NativeLibrary.TryLoad(s_mutatingProfilerModulePath.Value, out IntPtr handle))
                 {
