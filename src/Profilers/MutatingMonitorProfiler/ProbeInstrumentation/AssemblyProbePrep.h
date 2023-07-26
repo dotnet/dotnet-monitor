@@ -7,7 +7,7 @@
 #include "corprof.h"
 #include "tstring.h"
 #include "Logging/Logger.h"
-#include "Utilities/NameCache.h"
+#include "CommonUtilities/NameCache.h"
 
 #include <unordered_map>
 #include <vector>

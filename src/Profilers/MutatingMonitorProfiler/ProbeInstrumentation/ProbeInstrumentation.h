@@ -10,7 +10,7 @@
 #include "ProbeInjector.h"
 #include "CallbackDefinitions.h"
 #include "Logging/Logger.h"
-#include "Utilities/PairHash.h"
+#include "CommonUtilities/PairHash.h"
 
 #include <unordered_map>
 #include <vector>

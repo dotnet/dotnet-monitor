@@ -7,7 +7,7 @@
 #include "Environment/Environment.h"
 #include "Environment/EnvironmentHelper.h"
 #include "Logging/Logger.h"
-#include "Utilities/ThreadNameCache.h"
+#include "CommonUtilities/ThreadNameCache.h"
 #include "ProbeInstrumentation/ProbeInstrumentation.h"
 #include <memory>
 

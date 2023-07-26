@@ -8,8 +8,8 @@
 #include "com.h"
 #include "tstring.h"
 #include "Stack.h"
-#include "Utilities/NameCache.h"
-#include "Utilities/ThreadNameCache.h"
+#include "CommonUtilities/NameCache.h"
+#include "CommonUtilities/ThreadNameCache.h"
 
 class StackSamplerState
 {

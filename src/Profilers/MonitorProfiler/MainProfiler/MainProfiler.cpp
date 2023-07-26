@@ -5,7 +5,7 @@
 #include "Environment/EnvironmentHelper.h"
 #include "Environment/ProfilerEnvironment.h"
 #include "Logging/LoggerFactory.h"
-#include "Utilities/ThreadUtilities.h"
+#include "CommonUtilities/ThreadUtilities.h"
 #include "../Stacks/StacksEventProvider.h"
 #include "../Stacks/StackSampler.h"
 #include "corhlpr.h"

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "EventProvider/ProfilerEventProvider.h"
-#include "Utilities/ClrData.h"
+#include "CommonUtilities/ClrData.h"
 #include <memory>
 #include "Stack.h"
 
