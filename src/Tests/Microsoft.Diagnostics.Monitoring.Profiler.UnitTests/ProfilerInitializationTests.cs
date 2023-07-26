@@ -114,7 +114,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
         [MemberData(nameof(ProfilerHelper.GetNotifyOnlyArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
         public async Task VerifyCustomSharedPath(Architecture architecture, string profilerPath, ProfilerHelper.ProfilerVariant variant)
         {
-            // Only the notify-only profiler sets up the communicate socket
+            // Only the notify-only profiler sets up the communication socket
             Assert.Equal(ProfilerHelper.ProfilerVariant.NotifyOnly, variant);
 
             using TemporaryDirectory tempDir = new(_outputHelper);
