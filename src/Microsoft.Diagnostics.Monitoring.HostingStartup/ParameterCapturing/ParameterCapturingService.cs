@@ -225,7 +225,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             return false;
         }
 
-        private bool TryStopCapturing(Guid requestId)
+        private void TryStopCapturing(Guid requestId)
         {
             try
             {
@@ -238,8 +238,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 _initializedState.Logger.LogInformation(ParameterCapturingStrings.StopParameterCapturing);
                 _initializedState.ProbeManager.StopCapturing();
                 _eventSource.CapturingStop(requestId);
-
-                return true;
             }
             catch (Exception ex)
             {
@@ -252,8 +250,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 //
                 UnrecoverableError(ex);
             }
-
-            return false;
         }
 
         private void UnrecoverableError(Exception ex)
@@ -306,7 +302,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
                 }
 
-                _ = TryStopCapturing(request.Payload.RequestId);
+                TryStopCapturing(request.Payload.RequestId);
                 _ = _initializedState.AllRequests.TryRemove(request.Payload.RequestId, out _);
             }
 
