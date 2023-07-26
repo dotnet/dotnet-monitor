@@ -4,9 +4,7 @@
 #include "MutatingMonitorProfiler.h"
 #include "Environment/EnvironmentHelper.h"
 #include "Environment/ProfilerEnvironment.h"
-#include "Logging/AggregateLogger.h"
-#include "Logging/DebugLogger.h"
-#include "Logging/StdErrLogger.h"
+#include "Logging/LoggerFactory.h"
 #include "corhlpr.h"
 #include "macros.h"
 #include <memory>
@@ -81,7 +79,7 @@ HRESULT MutatingMonitorProfiler::InitializeCommon()
 
     // These are created in dependency order!
     IfFailRet(InitializeEnvironment());
-    IfFailRet(InitializeLogging());
+    IfFailRet(LoggerFactory::Create(m_pEnvironment, m_pLogger));
     IfFailRet(InitializeEnvironmentHelper());
 
     // Logging is initialized and can now be used
@@ -133,32 +131,6 @@ HRESULT MutatingMonitorProfiler::InitializeEnvironmentHelper()
     IfNullRet(m_pEnvironment);
 
     _environmentHelper = make_shared<EnvironmentHelper>(m_pEnvironment, m_pLogger);
-
-    return S_OK;
-}
-
-HRESULT MutatingMonitorProfiler::InitializeLogging()
-{
-    HRESULT hr = S_OK;
-
-    // Create an aggregate logger to allow for multiple logging implementations
-    unique_ptr<AggregateLogger> pAggregateLogger(new (nothrow) AggregateLogger());
-    IfNullRet(pAggregateLogger);
-
-    shared_ptr<StdErrLogger> pStdErrLogger = make_shared<StdErrLogger>(m_pEnvironment);
-    IfNullRet(pStdErrLogger);
-    pAggregateLogger->Add(pStdErrLogger);
-
-#ifdef _DEBUG
-#ifdef TARGET_WINDOWS
-    // Add the debug output logger for when debugging on Windows
-    shared_ptr<DebugLogger> pDebugLogger = make_shared<DebugLogger>(m_pEnvironment);
-    IfNullRet(pDebugLogger);
-    pAggregateLogger->Add(pDebugLogger);
-#endif
-#endif
-
-    m_pLogger.reset(pAggregateLogger.release());
 
     return S_OK;
 }

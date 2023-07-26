@@ -37,6 +37,5 @@ private:
     HRESULT InitializeCommon();
     HRESULT InitializeEnvironment();
     HRESULT InitializeEnvironmentHelper();
-    HRESULT InitializeLogging();
 };
 
