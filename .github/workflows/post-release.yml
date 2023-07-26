@@ -18,50 +18,6 @@ env:
 permissions: {}
 
 jobs:
-  update-shipping-branch:
-    name: 'Update shipping branch'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
-        with:
-          persist-credentials: false
-
-      - name: Calculate branch name
-        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410
-        id: calculate-branch-name
-        with:
-          result-encoding: string
-          script: |
-            const actionUtils = require('./.github/actions/action-utils.js');
-            const [major, minor] = actionUtils.splitVersionTag(context.payload.release.tag_name);
-            return `shipped/v${major}.${minor}`;
-
-      - name: Create or update shipped branch
-        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410
-        with:
-          retries: 3
-          script: |
-            const branchName = '${{ steps.calculate-branch-name.outputs.result }}';
-            const createOrUpdateRef = require('./.github/actions/gh-script-utils/create-or-update-ref.js');
-            await createOrUpdateRef(github, context, context.sha, branchName);
-
-            //
-            // Trigger branch mirror, empty commits and new refs will **not** trigger mirroring.
-            // The simplest way of doing this is to create an empty file on the desired branch.
-            //
-            await github.rest.repos.createOrUpdateFileContents({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              branch: branchName,
-              message: 'Trigger branch mirroring',
-              path: '.mirror',
-              content: ''
-            });
-
   calculate-supported-frameworks:
     name: 'Calculated supported frameworks'
     runs-on: ubuntu-latest

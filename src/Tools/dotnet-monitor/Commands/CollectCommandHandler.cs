@@ -138,6 +138,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
                 services.AddSingleton<IMetricsOperationFactory, MetricsOperationFactory>();
                 services.AddSingleton<ITraceOperationFactory, TraceOperationFactory>();
+
+                // Per-process services must be scoped
+                services.AddScoped<ScopedEndpointInfo>();
+                services.AddScopedForwarder<IEndpointInfo, ScopedEndpointInfo>();
             })
             .ConfigureContainer((HostBuilderContext context, IServiceCollection services) =>
             {

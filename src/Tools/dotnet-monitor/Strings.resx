@@ -728,7 +728,7 @@
     <value>Experimental feature '{name}' is enabled.</value>
   </data>
   <data name="LogFormatString_FailedInitializeSharedLibraryStorage" xml:space="preserve">
-    <value>Failed to initialize shared library storage.</value>
+    <value>Failed to initialize shared library storage. Some monitoring features may be unavailable.</value>
   </data>
   <data name="LogFormatString_GetEnvironmentVariable" xml:space="preserve">
     <value>Getting the environment variable {variableName} from process {processId}.</value>
@@ -937,5 +937,8 @@
   <data name="LogFormatString_StartupHookApplyFailed" xml:space="preserve">
     <value>Failed to apply the startup hook. Not all in process features will be available.</value>
     <comment>Gets a string similar to "Failed to apply the startup hook. Not all in process features will be available."</comment>
+  </data>
+  <data name="ErrorMessage_SharedFileDiffersFromSource" xml:space="preserve">
+    <value>The shared file '{0}' is different from source file '{1}'.</value>
   </data>
 </root>
