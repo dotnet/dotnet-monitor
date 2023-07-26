@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
         public async Task ApplyProfilersAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            if (!_inProcessFeatures.IsProfilerRequired || !_inProcessFeatures.IsMutatingProfilerRequired)
+            if (!_inProcessFeatures.IsProfilerRequired && !_inProcessFeatures.IsMutatingProfilerRequired)
             {
                 return;
             }
