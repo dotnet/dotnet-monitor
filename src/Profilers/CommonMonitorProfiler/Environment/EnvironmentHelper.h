@@ -53,7 +53,7 @@ public:
     /// <summary>
     /// Sets the product version environment variable in the specified environment.
     /// </summary>
-    HRESULT SetProductVersion(tstring& profilerVariant);
+    HRESULT SetProductVersion(const tstring& profilerVariant);
 
     HRESULT GetRuntimeInstanceId(tstring& instanceId);
 

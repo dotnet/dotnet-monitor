@@ -30,7 +30,7 @@ HRESULT EnvironmentHelper::GetDebugLoggerLevel(LogLevel& level)
     return S_OK;
 }
 
-HRESULT EnvironmentHelper::SetProductVersion(tstring& profilerVariant)
+HRESULT EnvironmentHelper::SetProductVersion(const tstring& profilerVariant)
 {
     HRESULT hr = S_OK;
 
