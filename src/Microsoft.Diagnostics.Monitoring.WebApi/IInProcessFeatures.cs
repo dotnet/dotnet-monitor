@@ -6,6 +6,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         bool IsProfilerRequired { get; }
 
+        bool IsManagedMessagingRequired { get; }
+
         bool IsMutatingProfilerRequired { get; }
 
         bool IsStartupHookRequired { get; }
