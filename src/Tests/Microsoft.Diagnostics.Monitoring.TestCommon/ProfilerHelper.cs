@@ -50,7 +50,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             static void AddTestCases(List<object[]> arguments, Architecture architecture)
             {
-                string profilerPath = GetPath(architecture);
+                // Both profiler variants support the same architecture, so simply use the notify-only one to check
+                // which are available.
+                string profilerPath = GetPath(architecture, ProfilerVariant.NotifyOnly);
                 if (File.Exists(profilerPath))
                 {
                     arguments.Add(new object[] { architecture });
