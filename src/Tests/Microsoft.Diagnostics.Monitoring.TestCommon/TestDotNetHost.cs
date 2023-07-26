@@ -57,16 +57,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             // e.g. <TEST_DOTNET_ROOT>/dotnet
             string dotnetDirPath = Environment.GetEnvironmentVariable("TEST_DOTNET_ROOT");
+
             if (string.IsNullOrEmpty(dotnetDirPath))
             {
                 // e.g. <repoPath>/.dotnet
                 dotnetDirPath = Path.Combine("..", "..", "..", "..", "..", ".dotnet");
-            }
 
-            if (arch.HasValue && arch.Value != RuntimeInformation.OSArchitecture)
-            {
-                // e.g. Append "\x86" to the path
-                dotnetDirPath = Path.Combine(dotnetDirPath, arch.Value.ToString("G").ToLowerInvariant());
+                if (arch.HasValue && arch.Value != RuntimeInformation.OSArchitecture)
+                {
+                    // e.g. Append "\x86" to the path
+                    dotnetDirPath = Path.Combine(dotnetDirPath, arch.Value.ToString("G").ToLowerInvariant());
+                }
             }
 
             return Path.GetFullPath(Path.Combine(dotnetDirPath, ExeName));

@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
     internal sealed class TestOutputLogger<T> : TestOutputLogger, ILogger<T>
     {
-        public TestOutputLogger(ITestOutputHelper outputHelper) : base(outputHelper, nameof(T))
+        public TestOutputLogger(ITestOutputHelper outputHelper) : base(outputHelper, typeof(T).Name)
         {
         }
     }

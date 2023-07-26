@@ -70,10 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.NotNull(extension);
         }
 
-        // Conditionally disable on Alpine and ARM64. The apphost for the extension is currently built for glibc x64
-        // in CI builds. Need to publish the test extension for different RIDs and dynamically select which
-        // variant with which tests are run.
-        [ConditionalFact(nameof(IsNotAlpineAndNotArm64))]
+        [Fact(Skip = "https://github.com/dotnet/dotnet-monitor/issues/4983")]
         public async Task ExtensionResponse_Success()
         {
             EgressArtifactResult result = await GetExtensionResponse(true);
@@ -82,10 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(EgressExtensibilityTestsConstants.SampleArtifactPath, result.ArtifactPath);
         }
 
-        // Conditionally disable on Alpine and ARM64. The apphost for the extension is currently built for glibc x64
-        // in CI builds. Need to publish the test extension for different RIDs and dynamically select which
-        // variant with which tests are run.
-        [ConditionalFact(nameof(IsNotAlpineAndNotArm64))]
+        [Fact(Skip = "https://github.com/dotnet/dotnet-monitor/issues/4983")]
         public async Task ExtensionResponse_Failure()
         {
             EgressArtifactResult result = await GetExtensionResponse(false);

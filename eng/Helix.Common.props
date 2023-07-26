@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <HelixArchitecture Condition=" '$(HelixArchitecture)' == ''">$(Platform)</HelixArchitecture>
+    <HelixArchiveExtension Condition="$([MSBuild]::IsOSPlatform(Windows))">zip</HelixArchiveExtension>
+    <HelixArchiveExtension Condition="!$([MSBuild]::IsOSPlatform(Windows))">tar.gz</HelixArchiveExtension>
+    <HelixNodeRuntimeIdentifier Condition="$([MSBuild]::IsOSPlatform(Windows))">win-$(HelixArchitecture)</HelixNodeRuntimeIdentifier>
+    <HelixNodeRuntimeIdentifier Condition="$([MSBuild]::IsOSPlatform(Linux))">linux-$(HelixArchitecture)</HelixNodeRuntimeIdentifier>
+    <HelixNodeRuntimeIdentifier Condition="$([MSBuild]::IsOSPlatform(OSX))">darwin-$(HelixArchitecture)</HelixNodeRuntimeIdentifier>
+    <HelixNodeName>node-v$(HelixNodeVersion)-$(HelixNodeRuntimeIdentifier)</HelixNodeName>
+  </PropertyGroup>
+</Project>
