@@ -338,7 +338,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             ulong actualIdentifier = dictionary.GetOrAdd(key, identifier);
 
             // If the candidate identifier is the same as the actual value from the dictionary, then this thread
-            // was reponsible for inserting the identifier. Otherwise, some other concurrent thread inserted the identifier.
+            // was responsible for inserting the identifier. Otherwise, some other concurrent thread inserted the identifier.
             if (actualIdentifier == identifier)
             {
                 return true;

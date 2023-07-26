@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     internal sealed class EndpointInfo : EndpointInfoBase
     {
-        public static async Task<EndpointInfo> FromProcessIdAsync(int processId, CancellationToken token)
+        public static async Task<EndpointInfo> FromProcessIdAsync(int processId, IServiceProvider serviceProvider, CancellationToken token)
         {
             var client = new DiagnosticsClient(processId);
 
@@ -50,11 +50,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 CommandLine = processInfo?.CommandLine,
                 OperatingSystem = processInfo?.OperatingSystem,
                 ProcessArchitecture = processInfo?.ProcessArchitecture,
-                RuntimeVersion = runtimeVersion
+                RuntimeVersion = runtimeVersion,
+                ServiceProvider = serviceProvider
             };
         }
 
-        public static async Task<EndpointInfo> FromIpcEndpointInfoAsync(IpcEndpointInfo info, CancellationToken token)
+        public static async Task<EndpointInfo> FromIpcEndpointInfoAsync(IpcEndpointInfo info, IServiceProvider serviceProvider, CancellationToken token)
         {
             var client = new DiagnosticsClient(info.Endpoint);
 
@@ -88,7 +89,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 CommandLine = processInfo?.CommandLine,
                 OperatingSystem = processInfo?.OperatingSystem,
                 ProcessArchitecture = processInfo?.ProcessArchitecture,
-                RuntimeVersion = runtimeVersion
+                RuntimeVersion = runtimeVersion,
+                ServiceProvider = serviceProvider
             };
         }
 
@@ -133,6 +135,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public override string ProcessArchitecture { get; protected set; }
 
         public override Version RuntimeVersion { get; protected set; }
+
+        public override IServiceProvider ServiceProvider { get; protected set; }
 
         internal string DebuggerDisplay => FormattableString.Invariant($"PID={ProcessId}, Cookie={RuntimeInstanceCookie}");
     }

@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.StartupHook.Eventing;
 using System;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
@@ -37,14 +38,17 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             string? ExceptionMessage,
             ulong[] StackFrameIds,
             DateTime Timestamp,
-            ulong[] InnerExceptionIds)
+            ulong[] InnerExceptionIds,
+            string? ActivityId,
+            ActivityIdFormat ActivityIdFormat)
         {
-            Span<EventData> data = stackalloc EventData[6];
+            Span<EventData> data = stackalloc EventData[8];
             using PinnedData namePinned = PinnedData.Create(ExceptionMessage);
             Span<byte> stackFrameIdsSpan = stackalloc byte[GetArrayDataSize(StackFrameIds)];
             FillArrayData(stackFrameIdsSpan, StackFrameIds);
             Span<byte> innerExceptionIdsSpan = stackalloc byte[GetArrayDataSize(InnerExceptionIds)];
             FillArrayData(innerExceptionIdsSpan, InnerExceptionIds);
+            using PinnedData activityIdPinned = PinnedData.Create(ActivityId);
 
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionId], ExceptionId);
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ExceptionGroupId], ExceptionGroupId);
@@ -52,6 +56,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.StackFrameIds], stackFrameIdsSpan);
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.Timestamp], Timestamp.ToFileTimeUtc());
             SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds], innerExceptionIdsSpan);
+            SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ActivityId], activityIdPinned);
+            SetValue(ref data[ExceptionEvents.ExceptionInstancePayloads.ActivityIdFormat], ActivityIdFormat);
 
             WriteEventWithFlushing(ExceptionEvents.EventIds.ExceptionInstance, data);
         }

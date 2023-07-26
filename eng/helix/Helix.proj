@@ -10,6 +10,8 @@
     <DotNetCliRuntime>$(PackageRid)</DotNetCliRuntime>
   </PropertyGroup>
 
+  <Import Project="$(MSBuildThisFileDirectory)..\Helix.Common.props" />
+
   <PropertyGroup Condition="'$(UseOpenQueues)' == 'true'">
     <QueueSuffix>.open</QueueSuffix>
     <!-- Open queues require a creator to be set. -->
@@ -30,12 +32,6 @@
     <HelixSource Condition="'$(BUILD_SOURCEBRANCH)' != ''">$(HelixSource)/$(BUILD_SOURCEBRANCH)</HelixSource>
     <HelixType>test/binaries/</HelixType>
   </PropertyGroup>
-
-  <ItemDefinitionGroup>
-    <HelixAvailableTargetQueue>
-      <AdditionalProperties>Platform=$(HelixArchitecture)</AdditionalProperties>
-    </HelixAvailableTargetQueue>
-  </ItemDefinitionGroup>
 
   <!-- List of all available Helix machines: https://helix.dot.net/ -->
 
@@ -114,9 +110,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <HelixTargetQueue Include="@(HelixAvailableTargetQueue)">
-      <AdditionalProperties>%(AdditionalProperties);Configuration=$(HelixConfiguration)</AdditionalProperties>
-    </HelixTargetQueue>
+    <HelixTargetQueue Include="@(HelixAvailableTargetQueue)" />
   </ItemGroup>
 
   <!-- Correlation Payload: SDK (to use "dotnet test") -->
@@ -139,6 +133,14 @@
     </AdditionalDotNetPackage>
   </ItemGroup>
 
+  <!-- Correlation Paylod: Node -->
+  <ItemGroup>
+    <HelixCorrelationPayload Include="nodejs">
+      <Uri>http://nodejs.org/dist/v$(HelixNodeVersion)/$(HelixNodeName).$(HelixArchiveExtension)</Uri>
+      <Destination>nodejs</Destination>
+    </HelixCorrelationPayload>
+  </ItemGroup>
+
   <!-- Correlation Payload: Common Helix payload -->
   <ItemGroup>
     <HelixCorrelationPayload Include="$(RepoRoot)eng\helix\payload" />
@@ -151,12 +153,14 @@
 
   <!-- Collect HelixWorkItems from each project that participates in testing. -->
   <Target Name="CollectHelixWorkItems"
-          BeforeTargets="BeforeTest">
+          BeforeTargets="BeforeTest"
+          Condition="'$(HelixTargetQueue)'!=''">
     <ItemGroup>
       <ProjectWithHelixWorkItems Include="$(RepoRoot)src\Tests\**\*.*proj" />
     </ItemGroup>
     <MSBuild Projects="@(ProjectWithHelixWorkItems)"
              Targets="CollectHelixWorkItems"
+             Properties="Platform=$(HelixArchitecture)"
              SkipNonexistentTargets="true">
       <Output TaskParameter="TargetOutputs"
               ItemName="HelixWorkItem" />

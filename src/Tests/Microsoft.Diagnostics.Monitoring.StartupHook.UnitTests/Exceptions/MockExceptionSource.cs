@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 {
@@ -18,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 
         public void ProvideException(Exception exception)
         {
-            RaiseExceptionThrown(exception, DateTime.UtcNow);
+            RaiseExceptionThrown(exception, DateTime.UtcNow, Guid.Empty.ToString(), ActivityIdFormat.Unknown);
         }
     }
 }

@@ -28,7 +28,8 @@ jobs:
     osGroup: ${{ parameters.osGroup }}
     configuration: ${{ parameters.configuration }}
     architecture: ${{ parameters.architecture }}
-    timeoutInMinutes: 60
+    enableCrossBuild: ${{ parameters.useHelix }}
+    timeoutInMinutes: 120
     dependsOn: Build_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
     disableComponentGovernance: true
     disableSbom: true
@@ -41,11 +42,6 @@ jobs:
         container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-WithNode
 
     variables:
-    - ${{ if eq(parameters.useHelix, 'true')}}:
-      - _CrossBuildArgs: ''
-      # Cross build for all Linux builds and arm64 non-Windows builds
-      - ${{ if or(in(parameters.osGroup, 'Linux', 'Linux_Musl'), and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows'))) }}:
-        - _CrossBuildArgs: '-cross'
     # If TestGroup == 'Default', choose the test group based on the type of pipeline run
     - ${{ if eq(parameters.testGroup, 'Default') }}:
       - ${{ if in(variables['Build.Reason'], 'BatchedCI', 'IndividualCI') }}:
@@ -105,7 +101,6 @@ jobs:
         -projects $(Build.SourcesDirectory)/eng/helix/Helix.proj
         -skipmanaged
         -skipnative
-        $(_CrossBuildArgs)
     ${{ else }}:
       buildArgs: >-
         -test
@@ -115,9 +110,6 @@ jobs:
         /m:1
 
     buildEnv:
-      ${{ if and(eq(parameters.useHelix, 'true'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
-        # Set ROOTFS_DIR for Linux cross builds
-        ROOTFS_DIR: '/crossrootfs/${{ parameters.architecture }}'
       # Indicate that tests based on Azurite should not be skipped if it is not initialized
       TEST_AZURITE_MUST_INITIALIZE: 1
       # This is blank in public builds
