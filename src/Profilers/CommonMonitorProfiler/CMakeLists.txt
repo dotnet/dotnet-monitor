@@ -13,6 +13,10 @@ endif(CLR_CMAKE_HOST_WIN32)
 set(SOURCES
     ${SOURCES}
     ${PROFILER_SOURCES}
+    CommonUtilities/NameCache.cpp
+    CommonUtilities/ThreadNameCache.cpp
+    CommonUtilities/ThreadUtilities.cpp
+    CommonUtilities/TypeNameUtilities.cpp
     Environment/EnvironmentHelper.cpp
     Environment/ProfilerEnvironment.cpp
     EventProvider/ProfilerEventProvider.cpp
@@ -21,10 +25,6 @@ set(SOURCES
     Logging/LoggerHelper.cpp
     Logging/NullLogger.cpp
     Logging/StdErrLogger.cpp
-    Utilities/NameCache.cpp
-    Utilities/ThreadNameCache.cpp
-    Utilities/ThreadUtilities.cpp
-    Utilities/TypeNameUtilities.cpp
     ProfilerBase.cpp
     )
 
