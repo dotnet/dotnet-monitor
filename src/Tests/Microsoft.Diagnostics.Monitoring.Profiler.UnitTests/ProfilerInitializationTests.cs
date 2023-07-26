@@ -26,18 +26,24 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
-        public async Task LoadAtStart(Architecture architecture, string profilerPath)
+        [MemberData(nameof(ProfilerHelper.GetNotifyOnlyArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
+        [MemberData(nameof(ProfilerHelper.GetMutatingArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
+        public async Task LoadAtStart(Architecture architecture, string profilerPath, ProfilerHelper.ProfilerVariant variant)
         {
             await using AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly());
             runner.Architecture = architecture;
             runner.ScenarioName = TestAppScenarios.AsyncWait.Name;
 
+            string clsidWithBraces =
+                variant == ProfilerHelper.ProfilerVariant.NotifyOnly
+                ? ProfilerIdentifiers.NotifyOnlyProfiler.Clsid.StringWithBraces
+                : ProfilerIdentifiers.MutatingProfiler.Clsid.StringWithBraces;
+
             // Environment variables necessary for running the profiler + enable all logging to stderr
             string runtimeInstanceId = Guid.NewGuid().ToString("D");
             runner.Environment.Add(ProfilerHelper.ClrEnvVarEnableNotificationProfilers, ProfilerHelper.ClrEnvVarEnabledValue);
             runner.Environment.Add(ProfilerHelper.ClrEnvVarEnableProfiling, ProfilerHelper.ClrEnvVarEnabledValue);
-            runner.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.NotifyOnlyProfiler.Clsid.StringWithBraces);
+            runner.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, clsidWithBraces);
             runner.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath, profilerPath);
             runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, runtimeInstanceId);
             runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, LogLevel.Trace.ToString("G"));
@@ -46,21 +52,30 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
             {
                 // At this point, the profiler has already been initialized and managed code is already running.
                 // Use any of the initialization state of the profiler to validate that it is loaded.
-                await ProfilerHelper.VerifyProductVersionEnvironmentVariableAsync(runner, _outputHelper);
+                await ProfilerHelper.VerifyProductVersionEnvironmentVariableAsync(runner, _outputHelper, variant);
 
-                VerifySocketPath(Path.GetTempPath(), runtimeInstanceId);
+                if (variant == ProfilerHelper.ProfilerVariant.NotifyOnly)
+                {
+                    VerifySocketPath(Path.GetTempPath(), runtimeInstanceId);
+                }
 
                 await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
             });
         }
 
         [Theory]
-        [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
-        public async Task AttachAfterStarted(Architecture architecture, string profilerPath)
+        [MemberData(nameof(ProfilerHelper.GetNotifyOnlyArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
+        [MemberData(nameof(ProfilerHelper.GetMutatingArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
+        public async Task AttachAfterStarted(Architecture architecture, string profilerPath, ProfilerHelper.ProfilerVariant variant)
         {
             await using AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly());
             runner.Architecture = architecture;
             runner.ScenarioName = TestAppScenarios.AsyncWait.Name;
+
+            Guid clsid =
+                variant == ProfilerHelper.ProfilerVariant.NotifyOnly
+                ? ProfilerIdentifiers.NotifyOnlyProfiler.Clsid.Guid
+                : ProfilerIdentifiers.MutatingProfiler.Clsid.Guid;
 
             string runtimeInstanceId = Guid.NewGuid().ToString("D");
             await runner.ExecuteAsync(async () =>
@@ -79,23 +94,29 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
                 // All settings must be applied before issuing attach profiler call.
                 client.AttachProfiler(
                     TimeSpan.FromSeconds(10),
-                    ProfilerIdentifiers.NotifyOnlyProfiler.Clsid.Guid,
+                    clsid,
                     profilerPath);
 
                 await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
 
                 // At this point, the profiler has already been initialized and managed code is already running.
                 // Use any of the initialization state of the profiler to validate that it is loaded.
-                await ProfilerHelper.VerifyProductVersionEnvironmentVariableAsync(runner, _outputHelper);
+                await ProfilerHelper.VerifyProductVersionEnvironmentVariableAsync(runner, _outputHelper, variant);
 
-                VerifySocketPath(Path.GetTempPath(), runtimeInstanceId);
+                if (variant == ProfilerHelper.ProfilerVariant.NotifyOnly)
+                {
+                    VerifySocketPath(Path.GetTempPath(), runtimeInstanceId);
+                }
             });
         }
 
         [Theory]
-        [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
-        public async Task VerifyCustomSharedPath(Architecture architecture, string profilerPath)
+        [MemberData(nameof(ProfilerHelper.GetNotifyOnlyArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
+        public async Task VerifyCustomSharedPath(Architecture architecture, string profilerPath, ProfilerHelper.ProfilerVariant variant)
         {
+            // Only the notify-only profiler sets up the communicate socket
+            Assert.Equal(ProfilerHelper.ProfilerVariant.NotifyOnly, variant);
+
             using TemporaryDirectory tempDir = new(_outputHelper);
 
             await using AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly());

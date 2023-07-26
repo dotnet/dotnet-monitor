@@ -34,16 +34,18 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
         }
 
         [Theory(Skip = "Exception tracking via profiler is currently disabled")]
-        [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
-        public Task ExceptionThrowCatch(Architecture architecture, string profilerPath)
+        [MemberData(nameof(ProfilerHelper.GetNotifyOnlyArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
+        public Task ExceptionThrowCatch(Architecture architecture, string profilerPath, ProfilerHelper.ProfilerVariant variant)
         {
+            Assert.Equal(ProfilerHelper.ProfilerVariant.NotifyOnly, variant);
             return RunAndCompare(nameof(ExceptionThrowCatch), architecture, profilerPath);
         }
 
         [Theory(Skip = "Exception tracking via profiler is currently disabled")]
-        [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
-        public Task ExceptionThrowCrash(Architecture architecture, string profilerPath)
+        [MemberData(nameof(ProfilerHelper.GetNotifyOnlyArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
+        public Task ExceptionThrowCrash(Architecture architecture, string profilerPath, ProfilerHelper.ProfilerVariant variant)
         {
+            Assert.Equal(ProfilerHelper.ProfilerVariant.NotifyOnly, variant);
             return RunAndCompare(nameof(ExceptionThrowCrash), architecture, profilerPath);
         }
 

@@ -21,7 +21,7 @@ class MainProfiler final :
     public ProfilerBase
 {
 private:
-    static constexpr LPCWSTR ProfilerVariantName = _T("MainProfiler");
+    static constexpr LPCWSTR ProfilerVariantName = _T("MonitorProfiler");
 
 private:
     std::shared_ptr<IEnvironment> m_pEnvironment;

@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             //DllImport for Windows automatically loads in-memory modules (such as the profiler). This is not the case for Linux/MacOS.
             //If we fail resolving the DllImport, we have to load the profiler ourselves.
 
-            string profilerName = ProfilerHelper.GetNotifyOnlyPath(RuntimeInformation.ProcessArchitecture);
+            string profilerName = ProfilerHelper.GetPath(RuntimeInformation.ProcessArchitecture);
             if (NativeLibrary.TryLoad(profilerName, out IntPtr handle))
             {
                 return handle;

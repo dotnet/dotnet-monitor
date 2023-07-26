@@ -15,7 +15,7 @@ class MutatingMonitorProfiler final :
     public ProfilerBase
 {
 private:
-    static constexpr LPCWSTR ProfilerVariantName = _T("MutatingProfiler");
+    static constexpr LPCWSTR ProfilerVariantName = _T("MutatingMonitorProfiler");
     static constexpr LPCWSTR EnableParameterCapturingEnvVar = _T("DotnetMonitor_InProcessFeatures_EnableParameterCapturing");
 
 private:
