@@ -14,10 +14,6 @@ using namespace std;
 
 #define IfFailLogRet(EXPR) IfFailLogRet_(m_pLogger, EXPR)
 
-#ifndef DLLEXPORT
-#define DLLEXPORT
-#endif
-
 GUID MutatingMonitorProfiler::GetClsid()
 {
     // {38759DC4-0685-4771-AD09-A7627CE1B3B4}
