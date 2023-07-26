@@ -63,6 +63,7 @@
     <!-- Profiler symbols items for all of the native platforms. -->
     <MonitorProfilerSymbolsFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MonitorProfiler%(SymbolsExtension)')" />
     <MutatingMonitorProfilerSymbolsFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)MutatingMonitorProfiler%(SymbolsExtension)')" />
+    <CommonMonitorProfilerSymbolsFile Include="@(NativeArtifactDirectories->'%(Identity)\%(LibraryPrefix)CommonMonitorProfiler%(SymbolsExtension)')" />
   </ItemGroup>
 
   <Import Project="$(RepositoryEngineeringDir)Analyzers.props" />

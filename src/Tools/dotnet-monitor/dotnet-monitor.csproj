@@ -106,6 +106,9 @@
       <AdditionalPackageFile Include="@(MutatingMonitorProfilerSymbolsFile)">
         <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
       </AdditionalPackageFile>
+      <AdditionalPackageFile Include="@(CommonMonitorProfilerSymbolsFile)">
+        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
+      </AdditionalPackageFile>
     </ItemGroup>
     <ItemGroup>
       <!-- Pack the file if it exists. -->
