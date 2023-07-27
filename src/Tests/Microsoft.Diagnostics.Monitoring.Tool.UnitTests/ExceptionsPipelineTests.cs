@@ -543,7 +543,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 }
             }
 
-            public void RemoveExceptionInstance(ulong  exceptionId)
+            public void RemoveExceptionInstance(ulong exceptionId)
             {
                 throw new NotSupportedException();
             }
