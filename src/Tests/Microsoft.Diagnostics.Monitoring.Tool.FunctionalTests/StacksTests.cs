@@ -37,6 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private const string ExpectedModule = @"Microsoft.Diagnostics.Monitoring.UnitTestApp.dll";
         private const string ExpectedClass = @"Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.StacksWorker+StacksWorkerNested`1[System.Int32]";
         private const string ExpectedFunction = @"DoWork[System.Int64]";
+        private const string ExpectedTextFunction = @"DoWork[Int64]";
         private const string ExpectedCallbackFunction = @"Callback";
         private const string NativeFrame = "[NativeFrame]";
         private const string ExpectedThreadName = "TestThread";
@@ -76,7 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 FormatFrame(ExpectedModule, ExpectedClass, ExpectedCallbackFunction),
                 NativeFrame,
-                FormatFrame(ExpectedModule, ExpectedClass, ExpectedFunction),
+                FormatFrame(ExpectedModule, ExpectedClass, ExpectedTextFunction),
             };
 
             var actualFrames = new List<string>();
