@@ -7,18 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DotnetMonitor
+namespace DotnetMonitor.ParameterCapture
 {
     /// <summary>
     /// Special namespace and class used for Parameter Capture logging.
     /// This is to prevent log filtering that normally occurs for Microsoft categories.
     /// We can also use this to classify different types of logs, such as user vs. library code.
     /// </summary>
-    internal sealed class ParameterCaptureUserCode
+    internal sealed class UserCode
     {
     }
 
-    internal sealed class ParameterCaptureSystemCode
+    internal sealed class SystemCode
     {
     }
 }
