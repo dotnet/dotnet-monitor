@@ -37,10 +37,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
     internal sealed record class ClassData(uint Token, ulong ModuleId, ClassFlags Flags, ulong[] TypeArgs);
 
     /// <param name="Name">The name of the token.</param>
-    /// <param name="FriendlyName">The friendly name of the token.</param>
+    /// <param name="TokenNamespace">The namespace of the token.</param>
     /// <param name="OuterToken">The metadata token of the parent container.</param>
     [DebuggerDisplay("{Name}")]
-    internal sealed record class TokenData(string Name, string FriendlyName, uint OuterToken);
+    internal sealed record class TokenData(string Name, string TokenNamespace, uint OuterToken);
 
     /// <param name="Name">The name of the function.</param>
     /// <param name="ParentClass">The parent class identifier of the function.</param>

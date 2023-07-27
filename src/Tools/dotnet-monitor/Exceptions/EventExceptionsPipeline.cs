@@ -114,7 +114,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         traceEvent.GetPayload<uint>(NameIdentificationEvents.TokenDescPayloads.Token),
                         traceEvent.GetPayload<uint>(NameIdentificationEvents.TokenDescPayloads.OuterToken),
                         traceEvent.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.Name),
-                        traceEvent.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.FriendlyName)
+                        traceEvent.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.TokenNamespace)
                         );
                     break;
                 case "Flush":

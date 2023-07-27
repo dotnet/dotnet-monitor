@@ -12,6 +12,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 #endif
 {
+    // will need to be relocated
+    internal enum TypeFormat
+    {
+        FullName,
+        OmitNamespace
+    }
+
     internal sealed class NameFormatter
     {
         public const string UnknownModule = "UnknownModule";
@@ -29,15 +36,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         {
             if (functionData.ParentClass != 0)
             {
-                BuildClassName(builder, cache, functionData.ParentClass);
+                BuildClassName(builder, cache, functionData.ParentClass, TypeFormat.FullName);
             }
             else
             {
-                BuildClassName(builder, cache, functionData.ModuleId, functionData.ParentToken);
+                BuildClassName(builder, cache, functionData.ModuleId, functionData.ParentToken, TypeFormat.FullName);
             }
         }
 
-        public static void BuildClassName(StringBuilder builder, NameCache cache, ulong classId, bool friendlyNames = false)
+        public static void BuildClassName(StringBuilder builder, NameCache cache, ulong classId, TypeFormat typeFormat)
         {
             string className = UnknownClass;
             if (cache.ClassData.TryGetValue(classId, out ClassData? classData))
@@ -61,9 +68,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 }
                 else
                 {
-                    BuildClassName(builder, cache, classData.ModuleId, classData.Token, friendlyNames);
+                    BuildClassName(builder, cache, classData.ModuleId, classData.Token, typeFormat);
                 }
-                BuildGenericParameters(builder, cache, classData.TypeArgs, friendlyNames);
+                BuildGenericParameters(builder, cache, classData.TypeArgs, typeFormat);
             }
             else
             {
@@ -71,14 +78,25 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        private static void BuildClassName(StringBuilder builder, NameCache cache, ulong moduleId, uint token, bool friendlyNames = false)
+        private static void BuildClassName(StringBuilder builder, NameCache cache, ulong moduleId, uint token, TypeFormat typeFormat)
         {
             var classNames = new Stack<string>();
 
             uint currentToken = token;
             while (currentToken != 0 && cache.TokenData.TryGetValue(new ModuleScopedToken(moduleId, currentToken), out TokenData? tokenData))
             {
-                classNames.Push(friendlyNames ? tokenData.FriendlyName : tokenData.Name);
+                string className;
+
+                if (typeFormat == TypeFormat.OmitNamespace || string.IsNullOrEmpty(tokenData.TokenNamespace))
+                {
+                    className = tokenData.Name;
+                }
+                else
+                {
+                    className = tokenData.TokenNamespace + "." + tokenData.Name;
+                }
+
+                classNames.Push(className);
                 currentToken = tokenData.OuterToken;
             }
 
@@ -98,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        public static void BuildGenericParameters(StringBuilder builder, NameCache cache, ulong[] parameters, bool friendlyNames = false)
+        public static void BuildGenericParameters(StringBuilder builder, NameCache cache, ulong[] parameters, TypeFormat typeFormat)
         {
             for (int i = 0; i < parameters?.Length; i++)
             {
@@ -106,7 +124,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 {
                     builder.Append(GenericStart);
                 }
-                BuildClassName(builder, cache, parameters[i], friendlyNames);
+                BuildClassName(builder, cache, parameters[i], typeFormat);
                 if (i < parameters.Length - 1)
                 {
                     builder.Append(GenericSeparator);
@@ -118,13 +136,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        public static IList<string> GetTypes(StringBuilder builder, NameCache cache, ulong[] types, bool friendlyNames = false)
+        public static IList<string> GetTypes(StringBuilder builder, NameCache cache, ulong[] types, TypeFormat typeFormat)
         {
             List<string> typesList = new();
             for (int i = 0; i < types?.Length; i++)
             {
                 builder.Clear();
-                BuildClassName(builder, cache, types[i], friendlyNames: friendlyNames);
+                BuildClassName(builder, cache, types[i], typeFormat);
                 typesList.Add(builder.ToString());
             }
 

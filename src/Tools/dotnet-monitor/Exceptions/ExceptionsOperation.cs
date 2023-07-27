@@ -127,15 +127,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 {
                     writer.WriteStartObject();
 
-                    if (frame.GenericParameters.Count > 0)
+                    string assembledMethodName = frame.MethodName;
+                    if (frame.GenericParameterTypes.Count > 0)
                     {
                         builder.Clear();
                         builder.Append(GenericStart);
-                        builder.Append(string.Join(GenericSeparator, frame.GenericParameters));
+                        builder.Append(string.Join(GenericSeparator, frame.GenericParameterTypes));
                         builder.Append(GenericEnd);
-                        frame.MethodName += builder.ToString();
+                        assembledMethodName += builder.ToString();
                     }
-                    writer.WriteString("methodName", frame.MethodName);
+                    writer.WriteString("methodName", assembledMethodName);
                     writer.WriteStartArray("parameterTypes");
                     foreach (string parameterType in frame.ParameterTypes)
                     {
@@ -234,12 +235,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     await writer.WriteAsync(".");
                     await writer.WriteAsync(frame.MethodName);
 
-                    if (frame.FriendlyGenericParameters.Count > 0)
+                    if (frame.GenericParameterFullTypes.Count > 0)
                     {
-                        await WriteTypesList(writer, frame.FriendlyGenericParameters, GenericStart, GenericEnd, GenericSeparator);
+                        await WriteTypesList(writer, frame.GenericParameterFullTypes, GenericStart, GenericEnd, GenericSeparator);
                     }
 
-                    await WriteTypesList(writer, frame.FriendlyParameterTypes, MethodParameterTypesStart, MethodParameterTypesEnd, GenericSeparator);
+                    await WriteTypesList(writer, frame.ParameterFullTypes, MethodParameterTypesStart, MethodParameterTypesEnd, GenericSeparator);
                 }
             }
 

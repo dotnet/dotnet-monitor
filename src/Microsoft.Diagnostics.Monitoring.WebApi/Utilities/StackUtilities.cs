@@ -63,7 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     if (methodNameIncludesGenericParameters)
                     {
-                        NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
+                        NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs, TypeFormat.FullName);
                         frameModel.MethodName = builder.ToString();
                     }
                     else
@@ -71,9 +71,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         frameModel.MethodName = builder.ToString();
 
                         builder.Clear();
-                        frameModel.GenericParameters = NameFormatter.GetTypes(builder, cache, functionData.TypeArgs);
+                        frameModel.GenericParameterTypes = NameFormatter.GetTypes(builder, cache, functionData.TypeArgs, TypeFormat.FullName);
                         builder.Clear();
-                        frameModel.FriendlyGenericParameters = NameFormatter.GetTypes(builder, cache, functionData.TypeArgs, friendlyNames: true);
+                        frameModel.GenericParameterFullTypes = NameFormatter.GetTypes(builder, cache, functionData.TypeArgs, TypeFormat.OmitNamespace);
                     }
                 }
                 else
@@ -84,9 +84,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 if (functionData.ParameterTypes.Length > 0)
                 {
                     builder.Clear();
-                    frameModel.ParameterTypes = NameFormatter.GetTypes(builder, cache, functionData.ParameterTypes);
+                    frameModel.ParameterTypes = NameFormatter.GetTypes(builder, cache, functionData.ParameterTypes, TypeFormat.FullName);
                     builder.Clear();
-                    frameModel.FriendlyParameterTypes = NameFormatter.GetTypes(builder, cache, functionData.ParameterTypes, friendlyNames: true);
+                    frameModel.ParameterFullTypes = NameFormatter.GetTypes(builder, cache, functionData.ParameterTypes, TypeFormat.OmitNamespace);
                 }
 
                 builder.Clear();

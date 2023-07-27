@@ -506,7 +506,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     Assert.True(cache.TryGetExceptionGroup(groupId, out ulong exceptionClassId, out _, out _));
 
-                    NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId);
+                    NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId, TypeFormat.FullName);
 
                     if (cache.NameCache.ClassData.TryGetValue(exceptionClassId, out ClassData exceptionClassData))
                     {
