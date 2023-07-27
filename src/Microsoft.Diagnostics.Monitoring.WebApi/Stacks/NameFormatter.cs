@@ -12,13 +12,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 #endif
 {
-    // will need to be relocated
-    internal enum TypeFormat
-    {
-        FullName,
-        OmitNamespace
-    }
-
     internal sealed class NameFormatter
     {
         public const string UnknownModule = "UnknownModule";
@@ -85,15 +78,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             uint currentToken = token;
             while (currentToken != 0 && cache.TokenData.TryGetValue(new ModuleScopedToken(moduleId, currentToken), out TokenData? tokenData))
             {
-                string className;
+                string className = tokenData.Name;
 
-                if (typeFormat == TypeFormat.OmitNamespace || string.IsNullOrEmpty(tokenData.TokenNamespace))
+                if (typeFormat == TypeFormat.FullName && !string.IsNullOrEmpty(tokenData.TokenNamespace))
                 {
-                    className = tokenData.Name;
-                }
-                else
-                {
-                    className = tokenData.TokenNamespace + "." + tokenData.Name;
+                    className = tokenData.TokenNamespace + "." + className;
                 }
 
                 classNames.Push(className);

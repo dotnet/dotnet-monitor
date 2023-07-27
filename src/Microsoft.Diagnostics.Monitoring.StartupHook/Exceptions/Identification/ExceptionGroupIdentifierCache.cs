@@ -105,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                 GetOrAdd(method.Module),
                 GetOrAdd(genericArguments),
                 GetOrAdd(method.GetParameters())
-                ); // probably add another parameter here for assemblies for each parameter...?
+                );
 
             if (_nameCache.FunctionData.TryAdd(methodId, data))
             {

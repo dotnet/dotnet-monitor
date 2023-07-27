@@ -18,6 +18,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         Speedscope
     }
 
+    internal enum TypeFormat
+    {
+        FullName,
+        Name
+    }
+
     internal static class StackUtilities
     {
         public static Models.CallStack TranslateCallStackToModel(CallStack stack, NameCache cache, bool methodNameIncludesGenericParameters = true)
@@ -71,9 +77,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         frameModel.MethodName = builder.ToString();
 
                         builder.Clear();
-                        frameModel.GenericParameterTypes = NameFormatter.GetTypes(builder, cache, functionData.TypeArgs, TypeFormat.FullName);
+                        frameModel.GenericParameterTypes = NameFormatter.GetTypes(builder, cache, functionData.TypeArgs, TypeFormat.Name);
                         builder.Clear();
-                        frameModel.GenericParameterFullTypes = NameFormatter.GetTypes(builder, cache, functionData.TypeArgs, TypeFormat.OmitNamespace);
+                        frameModel.GenericParameterFullTypes = NameFormatter.GetTypes(builder, cache, functionData.TypeArgs, TypeFormat.FullName);
                     }
                 }
                 else
@@ -84,9 +90,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 if (functionData.ParameterTypes.Length > 0)
                 {
                     builder.Clear();
-                    frameModel.ParameterTypes = NameFormatter.GetTypes(builder, cache, functionData.ParameterTypes, TypeFormat.FullName);
+                    frameModel.ParameterTypes = NameFormatter.GetTypes(builder, cache, functionData.ParameterTypes, TypeFormat.Name);
                     builder.Clear();
-                    frameModel.ParameterFullTypes = NameFormatter.GetTypes(builder, cache, functionData.ParameterTypes, TypeFormat.OmitNamespace);
+                    frameModel.ParameterFullTypes = NameFormatter.GetTypes(builder, cache, functionData.ParameterTypes, TypeFormat.FullName);
                 }
 
                 builder.Clear();
