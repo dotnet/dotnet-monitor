@@ -212,9 +212,9 @@ void NameCache::AddClassData(ModuleID moduleId, ClassID id, mdTypeDef typeDef, C
     _classNames.emplace(id, classData);
 }
 
-void NameCache::AddTokenData(ModuleID moduleId, mdTypeDef typeDef, mdTypeDef outerToken, tstring&& name)
+void NameCache::AddTokenData(ModuleID moduleId, mdTypeDef typeDef, mdTypeDef outerToken, tstring&& name, tstring&& typeNamespace)
 {
-    std::shared_ptr<TokenData> tokenData = std::make_shared<TokenData>(std::move(name), outerToken);
+    std::shared_ptr<TokenData> tokenData = std::make_shared<TokenData>(std::move(name), std::move(typeNamespace), outerToken);
 
     _names.emplace(std::make_pair(moduleId, typeDef), tokenData);
 }

@@ -68,7 +68,7 @@ HRESULT StacksEventProvider::WriteModuleData(ModuleID moduleId, const ModuleData
 
 HRESULT StacksEventProvider::WriteTokenData(ModuleID moduleId, mdTypeDef typeDef, const TokenData& tokenData)
 {
-    return _tokenEvent->WritePayload(moduleId, typeDef, tokenData.GetOuterToken(), tokenData.GetName());
+    return _tokenEvent->WritePayload(moduleId, typeDef, tokenData.GetOuterToken(), tokenData.GetName(), tokenData.GetTokenNamespace());
 }
 
 HRESULT StacksEventProvider::WriteEndEvent()
