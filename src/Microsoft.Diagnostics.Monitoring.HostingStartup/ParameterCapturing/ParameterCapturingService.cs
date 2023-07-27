@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public ParameterCapturingService(IServiceProvider services)
         {
-            _logger = services.GetService<ILogger<ParameterCapturingService>>();
+            _logger = services.GetService<ILogger<DotnetMonitor.ParameterCaptureUserCode>>();
             if (_logger == null)
             {
                 return;
