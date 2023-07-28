@@ -1161,6 +1161,7 @@
           {
             "name": "pid",
             "in": "query",
+            "description": "Process ID used to identify the target process.",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -1169,6 +1170,7 @@
           {
             "name": "uid",
             "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -1177,6 +1179,7 @@
           {
             "name": "name",
             "in": "query",
+            "description": "Process name used to identify the target process.",
             "schema": {
               "type": "string"
             }
