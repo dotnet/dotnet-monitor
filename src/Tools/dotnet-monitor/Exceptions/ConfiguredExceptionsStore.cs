@@ -68,6 +68,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             // access to this relationship without having to look up IExceptionInstances.
             private readonly Dictionary<ulong, List<ulong>> _outerExceptionMap = new();
             private readonly ConfiguredExceptionsStore _store;
+            // Front of the list has the latest top-level exception ID and the
+            // back of the list has the oldest top-level exception ID.
             private readonly LinkedList<ulong> _topLevelExceptions = new();
             private readonly int _topLevelLimit;
 
@@ -105,10 +107,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 // exceptions that are not shared with any current top-level exception.
                 if (_topLevelExceptions.Count > _topLevelLimit)
                 {
-                    LinkedListNode<ulong> firstNode = _topLevelExceptions.First;
-                    _topLevelExceptions.Remove(firstNode);
+                    LinkedListNode<ulong> lastNode = _topLevelExceptions.Last;
+                    _topLevelExceptions.RemoveLast();
 
-                    RemoveIfNoOuterExceptions(firstNode.Value);
+                    RemoveIfNoOuterExceptions(lastNode.Value);
                 }
 
                 _callback?.BeforeAdd(instance);
