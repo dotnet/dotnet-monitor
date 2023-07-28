@@ -48,6 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ILogsOperationFactory _logsOperationFactory;
         private readonly IMetricsOperationFactory _metricsOperationFactory;
         private readonly ITraceOperationFactory _traceOperationFactory;
+        private readonly IStacksOperationFactory _stacksOperationFactory;
 
         public DiagController(IServiceProvider serviceProvider, ILogger<DiagController> logger)
             : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), logger)
@@ -63,6 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _logsOperationFactory = serviceProvider.GetRequiredService<ILogsOperationFactory>();
             _metricsOperationFactory = serviceProvider.GetRequiredService<IMetricsOperationFactory>();
             _traceOperationFactory = serviceProvider.GetRequiredService<ITraceOperationFactory>();
+            _stacksOperationFactory = serviceProvider.GetRequiredService<IStacksOperationFactory>();
         }
 
         /// <summary>
@@ -586,7 +588,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [EgressValidation]
-        public async Task<ActionResult> CaptureStacks(
+        public Task<ActionResult> CaptureStacks(
             [FromQuery]
             int? pid = null,
             [FromQuery]
@@ -600,24 +602,25 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             if (!_callStacksOptions.Value.GetEnabled())
             {
-                return NotFound();
+                return Task.FromResult<ActionResult>(NotFound());
             }
 
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
-            return await InvokeForProcess(async processInfo =>
+            return InvokeForProcess(processInfo =>
             {
                 //Stack format based on Content-Type
 
                 StackFormat stackFormat = ContentTypeUtilities.ComputeStackFormat(Request.GetTypedHeaders().Accept) ?? StackFormat.PlainText;
-                bool plainText = ContentTypeUtilities.IsPlainText(stackFormat);
 
-                return await Result(Utilities.ArtifactType_Stacks, egressProvider, async (stream, token) =>
-                {
-                    await StackUtilities.CollectStacksAsync(null, processInfo.EndpointInfo, _profilerChannel, stackFormat, stream, token);
+                IArtifactOperation operation = _stacksOperationFactory.Create(processInfo.EndpointInfo, stackFormat);
 
-                }, StackUtilities.GenerateStacksFilename(processInfo.EndpointInfo, plainText), ContentTypeUtilities.MapFormatToContentType(stackFormat), processInfo, tags, asAttachment: false);
-
+                return Result(
+                    Utilities.ArtifactType_Stacks,
+                    egressProvider,
+                    operation,
+                    processInfo,
+                    tags);
             }, processKey, Utilities.ArtifactType_Stacks);
         }
 

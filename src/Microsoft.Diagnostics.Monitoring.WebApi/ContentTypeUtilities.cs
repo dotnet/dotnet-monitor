@@ -31,8 +31,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return null;
         }
 
-        public static bool IsPlainText(StackFormat format) => format == StackFormat.PlainText;
-
         public static string MapFormatToContentType(StackFormat stackFormat) =>
             stackFormat switch
             {
