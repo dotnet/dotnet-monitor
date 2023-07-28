@@ -39,6 +39,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <summary>
         /// Gets the exceptions from the target process.
         /// </summary>
+        /// <param name="pid">Process ID used to identify the target process.</param>
+        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
+        /// <param name="name">Process name used to identify the target process.</param>
         [HttpGet("exceptions", Name = nameof(GetExceptions))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
