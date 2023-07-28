@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 SlidingWindowDuration = options.SlidingWindowDuration.GetValueOrDefault(TimeSpan.Parse(EventMeterOptionsDefaults.SlidingWindowDuration)),
                 MaxHistograms = _counterOptions.CurrentValue.GetMaxHistograms(),
                 MaxTimeSeries = _counterOptions.CurrentValue.GetMaxTimeSeries(),
-                RuntimeVersion = endpointInfo.RuntimeVersion
+                UseSharedSession = endpointInfo.RuntimeVersion.Major >= 8
             };
 
             return EventPipeTriggerFactory.Create(
