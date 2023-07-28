@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using NameFormatter = Microsoft.Diagnostics.Monitoring.WebApi.Stacks.NameFormatter;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {
@@ -128,11 +129,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     writer.WriteStartObject();
 
                     string assembledMethodName = frame.MethodName;
-                    if (frame.GenericParameterFullTypes.Count > 0)
+                    if (frame.FullTypeArgs.Count > 0)
                     {
                         builder.Clear();
                         builder.Append(GenericStart);
-                        builder.Append(string.Join(GenericSeparator, frame.GenericParameterFullTypes));
+                        builder.Append(string.Join(GenericSeparator, frame.FullTypeArgs));
                         builder.Append(GenericEnd);
                         assembledMethodName += builder.ToString();
                     }
@@ -225,6 +226,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 }
             }
 
+            StringBuilder builder = new();
             if (null != currentInstance.CallStack)
             {
                 foreach (CallStackFrame frame in currentInstance.CallStack.Frames)
@@ -235,12 +237,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     await writer.WriteAsync(".");
                     await writer.WriteAsync(frame.MethodName);
 
-                    if (frame.GenericParameterTypes.Count > 0)
-                    {
-                        await WriteTypesList(writer, frame.GenericParameterTypes, GenericStart, GenericEnd, GenericSeparator);
-                    }
+                    NameFormatter.WriteTypeNamesList(builder, frame.TypeArgs);
+                    await writer.WriteAsync(builder);
+                    builder.Clear();
 
-                    await WriteTypesList(writer, frame.ParameterTypes, MethodParameterTypesStart, MethodParameterTypesEnd, GenericSeparator);
+                    NameFormatter.WriteTypeNamesList(builder, frame.ParameterTypes, MethodParameterTypesStart, MethodParameterTypesEnd, GenericSeparator);
+                    await writer.WriteAsync(builder);
+                    builder.Clear();
                 }
             }
 
@@ -256,22 +259,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     }
                 }
             }
-        }
-
-        private static async Task WriteTypesList(TextWriter writer, IList<string> types, char startChar, char endChar, char separationChar)
-        {
-            await writer.WriteAsync(startChar);
-
-            for (int i = 0; i < types.Count; i++)
-            {
-                await writer.WriteAsync(types[i]);
-
-                if (i < types.Count - 1)
-                {
-                    await writer.WriteAsync(separationChar);
-                }
-            }
-            await writer.WriteAsync(endChar);
         }
 
         // Writes the specified exception as an inner exception with the appropriate delimiters.

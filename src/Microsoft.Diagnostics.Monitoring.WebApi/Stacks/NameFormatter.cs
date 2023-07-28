@@ -20,10 +20,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         private const string ArrayType = "_ArrayType_";
         private const string CompositeType = "_CompositeType_";
 
+        private const char DotSeparator = '.';
         private const char NestedSeparator = '+';
         private const char GenericStart = '[';
         private const char GenericSeparator = ',';
         private const char GenericEnd = ']';
+
+        internal enum TypeFormat
+        {
+            FullName,
+            Name
+        }
 
         public static void BuildClassName(StringBuilder builder, NameCache cache, FunctionData functionData)
         {
@@ -63,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 {
                     BuildClassName(builder, cache, classData.ModuleId, classData.Token, typeFormat);
                 }
-                BuildGenericParameters(builder, cache, classData.TypeArgs, typeFormat);
+                BuildGenericTypeNames(builder, cache, classData.TypeArgs, typeFormat);
             }
             else
             {
@@ -82,7 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
                 if (typeFormat == TypeFormat.FullName && !string.IsNullOrEmpty(tokenData.TokenNamespace))
                 {
-                    className = tokenData.TokenNamespace + "." + className;
+                    className = tokenData.TokenNamespace + DotSeparator + className;
                 }
 
                 classNames.Push(className);
@@ -105,29 +112,37 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        public static void BuildGenericParameters(StringBuilder builder, NameCache cache, ulong[] parameters, TypeFormat typeFormat)
+        public static void BuildGenericTypeNames(StringBuilder builder, NameCache cache, ulong[] parameters, TypeFormat typeFormat = TypeFormat.FullName)
         {
-            for (int i = 0; i < parameters?.Length; i++)
+            IList<string> typeNames = GetTypeNames(cache, parameters, typeFormat);
+
+            WriteTypeNamesList(builder, typeNames);
+        }
+
+        public static void WriteTypeNamesList(StringBuilder builder, IList<string> typeNames, char startChar = GenericStart, char endChar = GenericEnd, char separationChar = GenericSeparator)
+        {
+            for (int i = 0; i < typeNames?.Count; i++)
             {
                 if (i == 0)
                 {
-                    builder.Append(GenericStart);
+                    builder.Append(startChar);
                 }
-                BuildClassName(builder, cache, parameters[i], typeFormat);
-                if (i < parameters.Length - 1)
+                builder.Append(typeNames[i]);
+                if (i < typeNames.Count - 1)
                 {
-                    builder.Append(GenericSeparator);
+                    builder.Append(separationChar);
                 }
-                else if (i == parameters.Length - 1)
+                else if (i == typeNames.Count - 1)
                 {
-                    builder.Append(GenericEnd);
+                    builder.Append(endChar);
                 }
             }
         }
 
-        public static IList<string> GetTypes(StringBuilder builder, NameCache cache, ulong[] types, TypeFormat typeFormat)
+        public static IList<string> GetTypeNames(NameCache cache, ulong[] types, TypeFormat typeFormat)
         {
             List<string> typesList = new();
+            StringBuilder builder = new();
             for (int i = 0; i < types?.Length; i++)
             {
                 builder.Clear();
