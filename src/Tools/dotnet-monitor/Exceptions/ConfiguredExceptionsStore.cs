@@ -55,8 +55,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private sealed class Callback : ExceptionsStoreCallback
         {
+            // Note: The term "outer exception" refers to an exception at the other end of the "parent" relationship
+            // of a given exception; it is possible that a given exception has many outer exceptions, but it is
+            // fairly unlikely for there to be more than one outer exception for a given exception.
+            // Example: if exception A has an inner exception B, then A is an outer exception of B.
+
             private readonly ExceptionsStoreCallback _callback;
+            // Track the list of inner exceptions for a given exception; allows for quicker
+            // access to this relationship without having to look up IExceptionInstances.
             private readonly Dictionary<ulong, List<ulong>> _innerExceptionMap = new();
+            // Track the list of outer exceptions for a given exception; allows for quicker
+            // access to this relationship without having to look up IExceptionInstances.
             private readonly Dictionary<ulong, List<ulong>> _outerExceptionMap = new();
             private readonly ConfiguredExceptionsStore _store;
             private readonly LinkedList<ulong> _topLevelExceptions = new();
@@ -90,7 +99,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     _topLevelExceptions.Remove(innerExceptionId);
                 }
 
-                _topLevelExceptions.AddLast(instance.Id);
+                _topLevelExceptions.AddFirst(instance.Id);
 
                 // If over the limit, remove the oldest exception as well as its inner
                 // exceptions that are not shared with any current top-level exception.

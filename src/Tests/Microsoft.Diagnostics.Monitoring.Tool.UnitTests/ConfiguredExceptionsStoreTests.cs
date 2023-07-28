@@ -40,11 +40,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ConfiguredExceptionsStore_LimitOne_OnlyExceptionRemains()
         {
-            int ExceptedCount = 1;
+            int ExpectedCount = 1;
             int TopLevelLimit = 1;
             ulong ExpectedId = 1;
 
-            ThresholdCallback callback = new(ExceptedCount);
+            ThresholdCallback callback = new(ExpectedCount);
             await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(TopLevelLimit, callback);
 
             IExceptionsNameCache cache = CreateCache();
@@ -61,8 +61,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
-        /// Validates adding an inner exception and outer exception will hold both exceptions, even
-        /// will be top level of one (because there is only one top level exception).
+        /// Validates adding that the store will contain both an inner exception and outer exception, even
+        /// with be top level of one (because there is only one top level exception and the inner exception
+        /// is an inner exception of the outer exception).
         /// </summary>
         [Fact]
         public async Task ConfiguredExceptionsStore_LimitOne_SingleRemainsWithInnerExceptions()
@@ -104,12 +105,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ConfiguredExceptionsStore_LimitOne_LastRemains()
         {
-            int ExceptedCount = 2;
+            int ExpectedCount = 2;
             int TopLevelLimit = 1;
             ulong OuterException1Id = 1;
             ulong OuterException2Id = 2;
 
-            ThresholdCallback callback = new(ExceptedCount);
+            ThresholdCallback callback = new(ExpectedCount);
             await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(TopLevelLimit, callback);
 
             IExceptionsNameCache cache = CreateCache();
@@ -174,7 +175,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Validates that the last top level exception that shares an inner exception with a prior
         /// top level exception remains in the store with a limit of one, including the inner exception.
         /// </summary>
-        /// <returns></returns>
         [Fact]
         public async Task ConfiguredExceptionsStore_LimitOne_LastRemainsWithSharedInnerException()
         {
@@ -209,6 +209,46 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             IExceptionInstance outerInstance2 = instances[1];
             Assert.NotNull(outerInstance2);
             Assert.Equal(OuterException2Id, outerInstance2.Id);
+        }
+
+        /// <summary>
+        /// Validates that adding a third top level exception to a store with a limit of two
+        /// will remove the first exception.
+        /// </summary>
+        [Fact]
+        public async Task ConfiguredExceptionsStore_LimitTwo_LastTwoRemain()
+        {
+            int ExceptedInstanceCount = 3;
+            int ExpectedStoreCount = 2;
+            int TopLevelLimit = 2;
+            ulong OuterException1Id = 1;
+            ulong OuterException2Id = 2;
+            ulong OuterException3Id = 3;
+
+            ThresholdCallback callback = new(ExceptedInstanceCount);
+            await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(TopLevelLimit, callback);
+
+            IExceptionsNameCache cache = CreateCache();
+
+            // Act
+            AddExceptionInstance(store, cache, OuterException1Id, Array.Empty<ulong>());
+            AddExceptionInstance(store, cache, OuterException2Id, Array.Empty<ulong>());
+            AddExceptionInstance(store, cache, OuterException3Id, Array.Empty<ulong>());
+
+            await callback.WaitForThresholdAsync(CommonTestTimeouts.GeneralTimeout);
+
+            // Assert
+            IReadOnlyList<IExceptionInstance> instances = store.GetSnapshot();
+            Assert.NotNull(instances);
+            Assert.Equal(ExpectedStoreCount, instances.Count);
+
+            IExceptionInstance outerInstance2 = instances[0];
+            Assert.NotNull(outerInstance2);
+            Assert.Equal(OuterException2Id, outerInstance2.Id);
+
+            IExceptionInstance outerInstance3 = instances[1];
+            Assert.NotNull(outerInstance3);
+            Assert.Equal(OuterException3Id, outerInstance3.Id);
         }
 
         private static IExceptionsNameCache CreateCache()

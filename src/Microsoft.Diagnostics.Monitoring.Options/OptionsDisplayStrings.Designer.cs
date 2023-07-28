@@ -973,7 +973,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The number of top-level exceptions to keep in the cache before automatically removing older exceptions. A top-level is exception is one that is not an inner exception of another exception..
+        ///   Looks up a localized string similar to The number of top-level exceptions to keep in the cache before automatically removing older exceptions. A top-level exception is one that is not an inner exception of another exception..
         /// </summary>
         public static string DisplayAttributeDescription_ExceptionsOptions_TopLevelLimit {
             get {

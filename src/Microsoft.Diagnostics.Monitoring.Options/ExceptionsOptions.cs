@@ -19,6 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExceptionsOptions_TopLevelLimit))]
+        [Range(1, int.MaxValue)]
         [DefaultValue(ExceptionsOptionsDefaults.TopLevelLimit)]
         public int? TopLevelLimit { get; set; }
     }
