@@ -19,6 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         IAsyncDisposable
     {
         private Task _executingTask;
+        private object _executionLock = new object();
         private CancellationTokenSource _stoppingSource;
 
         public virtual ValueTask DisposeAsync()
@@ -30,10 +31,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public async ValueTask StartAsync(CancellationToken cancellationToken)
         {
-            _stoppingSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            if (null == _executingTask)
+            {
+                // Protect from concurrent calls of StartAsync as well as
+                // race between calls of StartAsync and StopAsync.
+                lock (_executionLock)
+                {
+                    if (null == _executingTask)
+                    {
+                        _stoppingSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-            // Begin to execute but don't wait for it to complete.
-            _executingTask = ExecuteAsync(_stoppingSource.Token);
+                        // Begin to execute but don't wait for it to complete.
+                        _executingTask = ExecuteAsync(_stoppingSource.Token);
+                    }
+                }
+            }
 
             // If task already completed (e.g. faulted, cancelled, etc),
             // await it to propagate the likely faulting or cancellation exception.
@@ -45,10 +57,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public async ValueTask StopAsync(CancellationToken cancellationToken)
         {
-            // If execution never started, then there is no work to do.
             if (null == _executingTask)
             {
-                return;
+                // Protect from concurrent calls of StopAsync as well as
+                // race between calls of StartAsync and StopAsync.
+                lock (_executionLock)
+                {
+                    // If execution never started, then there is no work to do.
+                    if (null == _executingTask)
+                    {
+                        return;
+                    }
+                }
             }
 
             // Signal to the execution that it should stop.
