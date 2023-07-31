@@ -28,14 +28,14 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetNotifyOnlyArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
         [MemberData(nameof(ProfilerHelper.GetMutatingArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
-        public async Task LoadAtStart(Architecture architecture, string profilerPath, ProfilerHelper.ProfilerVariant variant)
+        public async Task LoadAtStart(Architecture architecture, string profilerPath, ProfilerVariant variant)
         {
             await using AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly());
             runner.Architecture = architecture;
             runner.ScenarioName = TestAppScenarios.AsyncWait.Name;
 
             string clsidWithBraces =
-                variant == ProfilerHelper.ProfilerVariant.NotifyOnly
+                variant == ProfilerVariant.NotifyOnly
                 ? ProfilerIdentifiers.NotifyOnlyProfiler.Clsid.StringWithBraces
                 : ProfilerIdentifiers.MutatingProfiler.Clsid.StringWithBraces;
 
@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
                 // Use any of the initialization state of the profiler to validate that it is loaded.
                 await ProfilerHelper.VerifyProductVersionEnvironmentVariableAsync(runner, _outputHelper, variant);
 
-                if (variant == ProfilerHelper.ProfilerVariant.NotifyOnly)
+                if (variant == ProfilerVariant.NotifyOnly)
                 {
                     VerifySocketPath(Path.GetTempPath(), runtimeInstanceId);
                 }
@@ -66,14 +66,14 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetNotifyOnlyArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
         [MemberData(nameof(ProfilerHelper.GetMutatingArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
-        public async Task AttachAfterStarted(Architecture architecture, string profilerPath, ProfilerHelper.ProfilerVariant variant)
+        public async Task AttachAfterStarted(Architecture architecture, string profilerPath, ProfilerVariant variant)
         {
             await using AppRunner runner = new(_outputHelper, Assembly.GetExecutingAssembly());
             runner.Architecture = architecture;
             runner.ScenarioName = TestAppScenarios.AsyncWait.Name;
 
             Guid clsid =
-                variant == ProfilerHelper.ProfilerVariant.NotifyOnly
+                variant == ProfilerVariant.NotifyOnly
                 ? ProfilerIdentifiers.NotifyOnlyProfiler.Clsid.Guid
                 : ProfilerIdentifiers.MutatingProfiler.Clsid.Guid;
 
@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
                 // Use any of the initialization state of the profiler to validate that it is loaded.
                 await ProfilerHelper.VerifyProductVersionEnvironmentVariableAsync(runner, _outputHelper, variant);
 
-                if (variant == ProfilerHelper.ProfilerVariant.NotifyOnly)
+                if (variant == ProfilerVariant.NotifyOnly)
                 {
                     VerifySocketPath(Path.GetTempPath(), runtimeInstanceId);
                 }
@@ -112,10 +112,10 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetNotifyOnlyArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
-        public async Task VerifyCustomSharedPath(Architecture architecture, string profilerPath, ProfilerHelper.ProfilerVariant variant)
+        public async Task VerifyCustomSharedPath(Architecture architecture, string profilerPath, ProfilerVariant variant)
         {
             // Only the notify-only profiler sets up the communication socket
-            Assert.Equal(ProfilerHelper.ProfilerVariant.NotifyOnly, variant);
+            Assert.Equal(ProfilerVariant.NotifyOnly, variant);
 
             using TemporaryDirectory tempDir = new(_outputHelper);
 

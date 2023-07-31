@@ -14,6 +14,12 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
+    public enum ProfilerVariant
+    {
+        NotifyOnly,
+        Mutating
+    }
+
     public static class ProfilerHelper
     {
         private const string ClrEnvVarPrefix = "CORECLR_";
@@ -23,12 +29,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public const string ClrEnvVarEnableProfiling = ClrEnvVarPrefix + "ENABLE_PROFILING";
         public const string ClrEnvVarProfiler = ClrEnvVarPrefix + "PROFILER";
         public const string ClrEnvVarProfilerPath = ClrEnvVarPrefix + "PROFILER_PATH";
-
-        public enum ProfilerVariant
-        {
-            NotifyOnly,
-            Mutating
-        }
 
         public static string GetPath(Architecture architecture, ProfilerVariant variant = ProfilerVariant.NotifyOnly) =>
             NativeLibraryHelper.GetSharedLibraryPath(architecture,

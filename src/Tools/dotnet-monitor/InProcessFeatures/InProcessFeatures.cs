@@ -28,9 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private bool IsParameterCapturingEnabled => _parameterCapturingOptions.GetEnabled();
 
-        public bool IsMessagingRequired => IsCallStacksEnabled || IsParameterCapturingEnabled;
-
-        public bool IsProfilerRequired => IsMessagingRequired || IsCallStacksEnabled;
+        public bool IsProfilerRequired => IsCallStacksEnabled || IsParameterCapturingEnabled;
 
         public bool IsMutatingProfilerRequired => IsParameterCapturingEnabled;
 

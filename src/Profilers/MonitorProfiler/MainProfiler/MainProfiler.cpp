@@ -174,7 +174,7 @@ HRESULT MainProfiler::InitializeCommon()
     // Set product version environment variable to allow discovery of if the profiler
     // as been applied to a target process. Diagnostic tools must use the diagnostic
     // communication channel's GetProcessEnvironment command to get this value.
-    IfFailLogRet(_environmentHelper->SetProductVersion(tstring(ProfilerVariantName)));
+    IfFailLogRet(_environmentHelper->SetProductVersion(ProfilerVersionEnvVar));
 
     DWORD eventsLow = COR_PRF_MONITOR::COR_PRF_MONITOR_NONE;
 #ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS

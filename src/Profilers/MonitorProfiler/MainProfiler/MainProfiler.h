@@ -21,7 +21,7 @@ class MainProfiler final :
     public ProfilerBase
 {
 private:
-    static constexpr LPCWSTR ProfilerVariantName = _T("MonitorProfiler");
+    static constexpr LPCWSTR ProfilerVersionEnvVar = _T("DotnetMonitor_MonitorProfiler_ProductVersion");
 
 private:
     std::shared_ptr<IEnvironment> m_pEnvironment;

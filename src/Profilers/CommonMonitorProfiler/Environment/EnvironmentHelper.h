@@ -20,8 +20,6 @@ private:
     static constexpr LPCWSTR EnableEnvVarValue = _T("1");
 
     static constexpr LPCWSTR DebugLoggerLevelEnvVar = _T("DotnetMonitor_Profiler_DebugLogger_Level");
-    static constexpr LPCWSTR ProfilerVersionPrefixEnvVar = _T("DotnetMonitor_");
-    static constexpr LPCWSTR ProfilerVersionPostfixEnvVar = _T("_ProductVersion");
     static constexpr LPCWSTR RuntimeInstanceEnvVar = _T("DotnetMonitor_Profiler_RuntimeInstanceId");
     static constexpr LPCWSTR SharedPathEnvVar = _T("DotnetMonitor_Profiler_SharedPath");
     static constexpr LPCWSTR StdErrLoggerLevelEnvVar = _T("DotnetMonitor_Profiler_StdErrLogger_Level");
@@ -53,7 +51,7 @@ public:
     /// <summary>
     /// Sets the product version environment variable in the specified environment.
     /// </summary>
-    HRESULT SetProductVersion(const tstring& profilerVariant);
+    HRESULT SetProductVersion(const tstring& envVarName);
 
     HRESULT GetRuntimeInstanceId(tstring& instanceId);
 

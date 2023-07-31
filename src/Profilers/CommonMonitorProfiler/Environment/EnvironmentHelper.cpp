@@ -30,12 +30,12 @@ HRESULT EnvironmentHelper::GetDebugLoggerLevel(LogLevel& level)
     return S_OK;
 }
 
-HRESULT EnvironmentHelper::SetProductVersion(const tstring& profilerVariant)
+HRESULT EnvironmentHelper::SetProductVersion(const tstring& envVarName)
 {
     HRESULT hr = S_OK;
 
     IfFailLogRet(_environment->SetEnvironmentVariable(
-        tstring(ProfilerVersionPrefixEnvVar) + profilerVariant + tstring(ProfilerVersionPostfixEnvVar),
+        envVarName,
         QUOTE_MACRO_T(RuntimeProductVersion)
         ));
 
