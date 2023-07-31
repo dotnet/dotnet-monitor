@@ -138,6 +138,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
                 services.AddSingleton<IMetricsOperationFactory, MetricsOperationFactory>();
                 services.AddSingleton<ITraceOperationFactory, TraceOperationFactory>();
+                services.AddSingleton<IGCDumpOperationFactory, GCDumpOperationFactory>();
 
                 // Per-process services must be scoped
                 services.AddScoped<ScopedEndpointInfo>();
