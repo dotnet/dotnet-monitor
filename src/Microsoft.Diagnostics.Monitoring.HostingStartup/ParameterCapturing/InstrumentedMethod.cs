@@ -5,8 +5,18 @@ using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
+    public enum ParameterCaptureMode
+    {
+        Disallowed = 0,
+        Inline,
+        Background,
+    }
+
     public sealed class InstrumentedMethod
     {
+        private const char NamespaceSeparator = '.';
+        private static readonly string[] SystemTypePrefixes = { nameof(System) + NamespaceSeparator, nameof(Microsoft) + NamespaceSeparator };
+
         public InstrumentedMethod(MethodInfo method, uint[] boxingTokens)
         {
             SupportedParameters = BoxingTokens.AreParametersSupported(boxingTokens);
@@ -18,7 +28,24 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     NumberOfSupportedParameters++;
                 }
             }
+
+            CaptureMode = ComputeCaptureMode(method.DeclaringType?.FullName);
         }
+
+        private static ParameterCaptureMode ComputeCaptureMode(string? typeName)
+        {
+            foreach(string prefix in SystemTypePrefixes)
+            {
+                if (typeName?.StartsWith(prefix) == true)
+                {
+                    return ParameterCaptureMode.Background;
+                }
+            }
+
+            return ParameterCaptureMode.Inline;
+        }
+
+        public ParameterCaptureMode CaptureMode { get; }
 
         /// <summary>
         /// The total number of parameters (implicit and explicit) that are supported.

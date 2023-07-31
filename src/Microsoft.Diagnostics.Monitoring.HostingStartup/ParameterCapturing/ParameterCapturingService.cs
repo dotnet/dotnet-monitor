@@ -37,12 +37,19 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private sealed class InitializedState : IDisposable
         {
+            private readonly ParameterCapturingLogger? _parameterCapturingLogger;
+
             public InitializedState(IServiceProvider services)
             {
                 Logger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.UserCode>>()
                     ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
 
-                ProbeManager = new FunctionProbesManager(new LogEmittingProbes(Logger));
+                SystemLogger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.SystemCode>>()
+                    ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
+
+                _parameterCapturingLogger = new ParameterCapturingLogger(Logger, SystemLogger);
+
+                ProbeManager = new FunctionProbesManager(new LogEmittingProbes(_parameterCapturingLogger));
 
                 RequestQueue = Channel.CreateBounded<CapturingRequest>(new BoundedChannelOptions(capacity: 1)
                 {
@@ -55,9 +62,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             public Channel<CapturingRequest> RequestQueue { get; }
             public ConcurrentDictionary<Guid, CapturingRequest> AllRequests { get; } = new();
 
+            private ILogger SystemLogger { get; }
+
             public void Dispose()
             {
                 ProbeManager.Dispose();
+                _parameterCapturingLogger?.Dispose();
             }
         }
 
