@@ -482,5 +482,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
                 return ResourceManager.GetString("Message_CollectionRuleStateReason_Throttled", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finished generating in-process artifact.
+        /// </summary>
+        internal static string Message_GeneratedInProcessArtifact {
+            get {
+                return ResourceManager.GetString("Message_GeneratedInProcessArtifact", resourceCulture);
+            }
+        }
     }
 }

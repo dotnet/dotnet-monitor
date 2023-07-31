@@ -941,4 +941,7 @@
   <data name="ErrorMessage_SharedFileDiffersFromSource" xml:space="preserve">
     <value>The shared file '{0}' is different from source file '{1}'.</value>
   </data>
+  <data name="ErrorMessage_ParameterCapturingNotAvailable" xml:space="preserve">
+    <value>Parameter capturing is not available in the process.</value>
+  </data>
 </root>
