@@ -3,14 +3,23 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
+using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {
-    internal sealed class ExceptionsOperationFactory : IExceptionsOperationFactory
+    internal sealed class ExceptionsOperationFactory :
+        IExceptionsOperationFactory
     {
-        public IArtifactOperation Create(IExceptionsStore store, ExceptionsFormat format)
+        private IExceptionsStore _store;
+
+        public ExceptionsOperationFactory(IExceptionsStore store)
         {
-            return new ExceptionsOperation(store, format);
+            _store = store ?? throw new ArgumentNullException(nameof(store));
+        }
+
+        public IArtifactOperation Create(ExceptionsFormat format)
+        {
+            return new ExceptionsOperation(_store, format);
         }
     }
 }
