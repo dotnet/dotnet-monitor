@@ -47,7 +47,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         protected override EgressOperation CreateArtifactOperation(TaskCompletionSource<object> startCompletionSource, CollectionRuleMetadata collectionRuleMetadata)
         {
-            KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Dump, EndpointInfo);
+            KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Stacks, EndpointInfo);
 
             IArtifactOperation stacksOperation = _operationFactory.Create(EndpointInfo, MapCallStackFormat(Options.GetFormat()));
 
