@@ -337,7 +337,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureExceptions(this IServiceCollection services)
         {
             services.AddTransient<IExceptionsOperationFactory, ExceptionsOperationFactory>();
-            services.AddScoped<IExceptionsStore, ExceptionsStore>();
+            services.AddScoped<IExceptionsStore, ConfiguredExceptionsStore>();
             services.AddScoped<IDiagnosticLifetimeService, ExceptionsService>();
             return services;
         }
