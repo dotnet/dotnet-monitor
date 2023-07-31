@@ -7,8 +7,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
 
 
-if ($ReleaseVersion -notmatch '^(?<majorMinorVersion>v[0-9]+\.[0-9]+)\.+')
-{
+if ($ReleaseVersion -notmatch '^(?<majorMinorVersion>v[0-9]+\.[0-9]+)\.+') {
     Write-Host "Error: unexpected release version: $ReleaseVersion"
     exit 1
 }
