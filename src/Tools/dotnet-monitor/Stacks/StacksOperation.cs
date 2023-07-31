@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Stacks
             _ => throw new InvalidOperationException()
         };
 
-        public sealed class StacksOperationPipeline : Pipeline
+        internal sealed class StacksOperationPipeline : Pipeline
         {
             private readonly ProfilerChannel _channel;
             private readonly IEndpointInfo _endpointInfo;
