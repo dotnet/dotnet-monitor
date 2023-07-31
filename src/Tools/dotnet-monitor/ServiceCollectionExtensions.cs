@@ -332,6 +332,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingletonForwarder<ISharedLibraryService, SharedLibraryService>();
             services.AddHostedServiceForwarder<SharedLibraryService>();
             services.TryAddSingleton<ISharedLibraryInitializer, DefaultSharedLibraryInitializer>();
+            services.AddSingleton<DefaultSharedLibraryPathProvider>();
             return services;
         }
 
@@ -382,6 +383,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             });
             services.AddSingleton<IStartupLogger, EgressStartupLogger>();
             return services;
+        }
+
+        public static void AddScopedForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
+        {
+            services.AddScoped<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
         }
 
         private static void AddSingletonForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class

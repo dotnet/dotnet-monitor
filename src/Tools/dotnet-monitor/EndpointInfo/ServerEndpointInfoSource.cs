@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -36,6 +37,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private readonly List<EndpointInfo> _activeEndpoints = new();
         private readonly SemaphoreSlim _activeEndpointsSemaphore = new(1);
+        private readonly Dictionary<Guid, AsyncServiceScope> _activeEndpointServiceScopes = new();
+        private readonly IServiceScopeFactory _scopeFactory;
 
         private readonly ChannelReader<IEndpointInfo> _pendingRemovalReader;
         private readonly ChannelWriter<IEndpointInfo> _pendingRemovalWriter;
@@ -52,6 +55,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// from a reversed diagnostics server at path specified by <paramref name="portOptions"/>.
         /// </summary>
         public ServerEndpointInfoSource(
+            IServiceScopeFactory scopeFactory,
             IOptions<DiagnosticPortOptions> portOptions,
             IEnumerable<IEndpointInfoSourceCallbacks> callbacks = null,
             OperationTrackerService operationTrackerService = null,
@@ -61,6 +65,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _operationTrackerService = operationTrackerService;
             _portOptions = portOptions.Value;
             _logger = logger;
+            _scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
 
             BoundedChannelOptions channelOptions = new(PendingRemovalChannelCapacity)
             {
@@ -172,12 +177,32 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             List<Exception> exceptions = new();
             try
             {
-                EndpointInfo endpointInfo = await EndpointInfo.FromIpcEndpointInfoAsync(info, token);
+                // Create the process service scope
+                AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
+
+                EndpointInfo endpointInfo = await EndpointInfo.FromIpcEndpointInfoAsync(info, scope.ServiceProvider, token);
+                _activeEndpointServiceScopes.Add(endpointInfo.RuntimeInstanceCookie, scope);
+
+                // Initialize endpoint information within the service scope
+                endpointInfo.ServiceProvider.GetRequiredService<ScopedEndpointInfo>().Set(endpointInfo);
+
                 foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
                 {
                     try
                     {
                         await callback.OnBeforeResumeAsync(endpointInfo, token).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
+                foreach (IDiagnosticLifetimeService lifetimeService in endpointInfo.ServiceProvider.GetServices<IDiagnosticLifetimeService>())
+                {
+                    try
+                    {
+                        await lifetimeService.StartAsync(token);
                     }
                     catch (Exception ex)
                     {
@@ -249,11 +274,39 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 IEndpointInfo endpoint = await _pendingRemovalReader.ReadAsync(token);
 
                 List<Exception> exceptions = new();
+
+                if (_activeEndpointServiceScopes.TryGetValue(endpoint.RuntimeInstanceCookie, out AsyncServiceScope stopScope))
+                {
+                    foreach (IDiagnosticLifetimeService lifetimeService in stopScope.ServiceProvider.GetServices<IDiagnosticLifetimeService>())
+                    {
+                        try
+                        {
+                            await lifetimeService.StopAsync(token);
+                        }
+                        catch (Exception ex)
+                        {
+                            exceptions.Add(ex);
+                        }
+                    }
+                }
+
                 foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
                 {
                     try
                     {
                         await callback.OnRemovedEndpointInfoAsync(endpoint, token).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
+                if (_activeEndpointServiceScopes.Remove(endpoint.RuntimeInstanceCookie, out AsyncServiceScope disposeScope))
+                {
+                    try
+                    {
+                        await disposeScope.DisposeAsync();
                     }
                     catch (Exception ex)
                     {

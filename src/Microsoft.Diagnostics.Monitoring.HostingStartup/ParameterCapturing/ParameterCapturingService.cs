@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             public InitializedState(IServiceProvider services)
             {
-                Logger = services.GetService<ILogger<ParameterCapturingService>>()
+                Logger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.UserCode>>()
                     ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
 
                 ProbeManager = new FunctionProbesManager(new LogEmittingProbes(Logger));

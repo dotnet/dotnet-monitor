@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using System;
+using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 {
@@ -21,5 +22,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
         CallStack CallStack { get; }
 
         ulong[] InnerExceptionIds { get; }
+
+        public string ActivityId { get; }
+
+        public ActivityIdFormat ActivityIdFormat { get; }
     }
 }

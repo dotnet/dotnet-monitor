@@ -33,12 +33,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 #endif
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    public partial class DiagController : ControllerBase
+    public partial class DiagController : DiagnosticsControllerBase
     {
         private const Models.TraceProfile DefaultTraceProfiles = Models.TraceProfile.Cpu | Models.TraceProfile.Http | Models.TraceProfile.Metrics;
 
-        private readonly ILogger<DiagController> _logger;
-        private readonly IDiagnosticServices _diagnosticServices;
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
         private readonly IOptions<CallStacksOptions> _callStacksOptions;
         private readonly IOptions<ParameterCapturingOptions> _parameterCapturingOptions;
@@ -53,11 +51,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ITraceOperationFactory _traceOperationFactory;
         private readonly ICaptureParametersOperationFactory _captureParametersFactory;
 
-        public DiagController(ILogger<DiagController> logger,
-            IServiceProvider serviceProvider)
+        public DiagController(IServiceProvider serviceProvider, ILogger<DiagController> logger)
+            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), logger)
         {
-            _logger = logger;
-            _diagnosticServices = serviceProvider.GetRequiredService<IDiagnosticServices>();
             _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
             _callStacksOptions = serviceProvider.GetRequiredService<IOptions<CallStacksOptions>>();
             _parameterCapturingOptions = serviceProvider.GetRequiredService<IOptions<ParameterCapturingOptions>>();
@@ -86,7 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 IProcessInfo defaultProcessInfo = null;
                 try
                 {
-                    defaultProcessInfo = await _diagnosticServices.GetProcessAsync(null, HttpContext.RequestAborted);
+                    defaultProcessInfo = await DiagnosticServices.GetProcessAsync(null, HttpContext.RequestAborted);
                 }
                 catch (ArgumentException)
                 {
@@ -97,11 +93,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 }
                 catch (Exception ex) when (!(ex is OperationCanceledException))
                 {
-                    _logger.DefaultProcessUnexpectedFailure(ex);
+                    Logger.DefaultProcessUnexpectedFailure(ex);
                 }
 
                 IList<Models.ProcessIdentifier> processesIdentifiers = new List<Models.ProcessIdentifier>();
-                foreach (IProcessInfo p in await _diagnosticServices.GetProcessesAsync(processFilter: null, HttpContext.RequestAborted))
+                foreach (IProcessInfo p in await DiagnosticServices.GetProcessesAsync(processFilter: null, HttpContext.RequestAborted))
                 {
                     processesIdentifiers.Add(new Models.ProcessIdentifier()
                     {
@@ -113,9 +109,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                             p.EndpointInfo.RuntimeInstanceCookie == defaultProcessInfo.EndpointInfo.RuntimeInstanceCookie)
                     });
                 }
-                _logger.WrittenToHttpStream();
+                Logger.WrittenToHttpStream();
                 return new ActionResult<IEnumerable<Models.ProcessIdentifier>>(processesIdentifiers);
-            }, _logger);
+            }, Logger);
         }
 
         /// <summary>
@@ -149,7 +145,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     Uid = processInfo.EndpointInfo.RuntimeInstanceCookie
                 };
 
-                _logger.WrittenToHttpStream();
+                Logger.WrittenToHttpStream();
 
                 return processModel;
             },
@@ -183,7 +179,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 {
                     Dictionary<string, string> environment = await client.GetProcessEnvironmentAsync(HttpContext.RequestAborted);
 
-                    _logger.WrittenToHttpStream();
+                    Logger.WrittenToHttpStream();
 
                     return environment;
                 }
@@ -533,9 +529,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     DiagnosticPortName = diagnosticPortName
                 };
 
-                _logger.WrittenToHttpStream();
+                Logger.WrittenToHttpStream();
                 return new ActionResult<Models.DotnetMonitorInfo>(dotnetMonitorInfo);
-            }, _logger);
+            }, Logger);
         }
 
         /// <summary>
@@ -853,57 +849,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             string operationUrl = await RegisterOperation(egressOperation, limitKey);
             return Accepted(operationUrl);
-        }
-
-        private Task<ActionResult> InvokeForProcess(Func<IProcessInfo, ActionResult> func, ProcessKey? processKey, string artifactType = null)
-        {
-            Func<IProcessInfo, Task<ActionResult>> asyncFunc =
-                processInfo => Task.FromResult(func(processInfo));
-
-            return InvokeForProcess(asyncFunc, processKey, artifactType);
-        }
-
-        private async Task<ActionResult> InvokeForProcess(Func<IProcessInfo, Task<ActionResult>> func, ProcessKey? processKey, string artifactType)
-        {
-            ActionResult<object> result = await InvokeForProcess<object>(async processInfo => await func(processInfo), processKey, artifactType);
-
-            return result.Result;
-        }
-
-        private Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, ActionResult<T>> func, ProcessKey? processKey, string artifactType = null)
-        {
-            return InvokeForProcess(processInfo => Task.FromResult(func(processInfo)), processKey, artifactType);
-        }
-
-        private async Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, Task<ActionResult<T>>> func, ProcessKey? processKey, string artifactType = null)
-        {
-            IDisposable artifactTypeRegistration = null;
-            if (!string.IsNullOrEmpty(artifactType))
-            {
-                KeyValueLogScope artifactTypeScope = new KeyValueLogScope();
-                artifactTypeScope.AddArtifactType(artifactType);
-                artifactTypeRegistration = _logger.BeginScope(artifactTypeScope);
-            }
-
-            try
-            {
-                return await this.InvokeService(async () =>
-                {
-                    IProcessInfo processInfo = await _diagnosticServices.GetProcessAsync(processKey, HttpContext.RequestAborted);
-
-                    KeyValueLogScope processInfoScope = new KeyValueLogScope();
-                    processInfoScope.AddArtifactEndpointInfo(processInfo.EndpointInfo);
-                    using var _ = _logger.BeginScope(processInfoScope);
-
-                    _logger.ResolvedTargetProcess();
-
-                    return await func(processInfo);
-                }, _logger);
-            }
-            finally
-            {
-                artifactTypeRegistration?.Dispose();
-            }
         }
     }
 }

@@ -15,6 +15,7 @@ jobs:
     osGroup: ${{ parameters.osGroup }}
     configuration: ${{ parameters.configuration }}
     architecture: ${{ parameters.architecture }}
+    enableCrossBuild: true
     dependsOn:
     - Sign_Binaries
 
