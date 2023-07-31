@@ -48,6 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ILogsOperationFactory _logsOperationFactory;
         private readonly IMetricsOperationFactory _metricsOperationFactory;
         private readonly ITraceOperationFactory _traceOperationFactory;
+        private readonly IGCDumpOperationFactory _gcdumpOperationFactory;
         private readonly IStacksOperationFactory _stacksOperationFactory;
 
         public DiagController(IServiceProvider serviceProvider, ILogger<DiagController> logger)
@@ -64,6 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _logsOperationFactory = serviceProvider.GetRequiredService<ILogsOperationFactory>();
             _metricsOperationFactory = serviceProvider.GetRequiredService<IMetricsOperationFactory>();
             _traceOperationFactory = serviceProvider.GetRequiredService<ITraceOperationFactory>();
+            _gcdumpOperationFactory = serviceProvider.GetRequiredService<IGCDumpOperationFactory>();
             _stacksOperationFactory = serviceProvider.GetRequiredService<IStacksOperationFactory>();
         }
 
@@ -265,34 +267,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
-            return InvokeForProcess(processInfo =>
-            {
-                string fileName = GCDumpUtilities.GenerateGCDumpFileName(processInfo.EndpointInfo);
-
-                return Result(
+            return InvokeForProcess(
+                processInfo => Result(
                     Utilities.ArtifactType_GCDump,
                     egressProvider,
-                    async (stream, token) =>
-                    {
-                        IDisposable operationRegistration = null;
-                        try
-                        {
-                            if (_diagnosticPortOptions.Value.ConnectionMode == DiagnosticPortConnectionMode.Listen)
-                            {
-                                operationRegistration = _operationTrackerService.Register(processInfo.EndpointInfo);
-                            }
-                            await GCDumpUtilities.CaptureGCDumpAsync(processInfo.EndpointInfo, stream, token);
-                        }
-                        finally
-                        {
-                            operationRegistration?.Dispose();
-                        }
-                    },
-                    fileName,
-                    ContentTypes.ApplicationOctetStream,
+                    _gcdumpOperationFactory.Create(processInfo.EndpointInfo),
                     processInfo,
-                    tags);
-            }, processKey, Utilities.ArtifactType_GCDump);
+                    tags),
+                processKey,
+                Utilities.ArtifactType_GCDump);
         }
 
         /// <summary>
