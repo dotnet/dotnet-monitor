@@ -13,7 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.GCDump
+namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class GCDumpOperation : PipelineArtifactOperation<GCDumpOperation.GCDumpOperationPipeline>
     {

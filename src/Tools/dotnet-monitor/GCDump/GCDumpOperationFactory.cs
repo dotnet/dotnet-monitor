@@ -4,7 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.GCDump
+namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class GCDumpOperationFactory : IGCDumpOperationFactory
     {
