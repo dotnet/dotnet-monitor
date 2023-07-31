@@ -56,6 +56,27 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             CliCommand reflectionTypeLoadExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ReflectionTypeLoadException);
             reflectionTypeLoadExceptionCommand.SetAction(ReflectionTypeLoadExceptionAsync);
 
+            CliCommand command = new(TestAppScenarios.Exceptions.Name);
+
+            command.SetAction(ExecuteAsync);
+
+            command.Subcommands.Add(singleExceptionCommand);
+            command.Subcommands.Add(repeatExceptionCommand);
+            command.Subcommands.Add(asyncExceptionCommand);
+            command.Subcommands.Add(frameworkExceptionCommand);
+            command.Subcommands.Add(customExceptionCommand);
+            command.Subcommands.Add(esotericStackFrameTypesCommand);
+            command.Subcommands.Add(reversePInvokeExceptionCommand);
+            command.Subcommands.Add(dynamicMethodExceptionCommand);
+            command.Subcommands.Add(arrayExceptionCommand);
+            command.Subcommands.Add(innerUnthrownExceptionCommand);
+            command.Subcommands.Add(innerThrownExceptionCommand);
+            command.Subcommands.Add(aggregateExceptionCommand);
+            command.Subcommands.Add(reflectionTypeLoadExceptionCommand);
+
+            return command;
+
+            /*
             CliCommand scenarioCommand = new(TestAppScenarios.Exceptions.Name);
             scenarioCommand.Subcommands.Add(singleExceptionCommand);
             scenarioCommand.Subcommands.Add(repeatExceptionCommand);
@@ -71,6 +92,26 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             scenarioCommand.Subcommands.Add(aggregateExceptionCommand);
             scenarioCommand.Subcommands.Add(reflectionTypeLoadExceptionCommand);
             return scenarioCommand;
+            */
+        }
+
+        public static Task<int> ExecuteAsync(ParseResult result, CancellationToken token)
+        {
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            {
+                Task continueCommand = Task.Run(() => ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Continue, logger));
+                while (!continueCommand.IsCompleted)
+                {
+                    ThrowAndCatchInvalidOperationException();
+                    await Task.Delay(100);
+                }
+                return 0;
+                /*
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
+                ThrowAndCatchInvalidOperationException();
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
+                return 0;*/
+            }, token);
         }
 
         public static Task<int> SingleExceptionAsync(ParseResult result, CancellationToken token)

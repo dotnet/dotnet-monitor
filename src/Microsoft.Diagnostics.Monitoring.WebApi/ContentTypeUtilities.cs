@@ -41,5 +41,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 StackFormat.Speedscope => ContentTypes.ApplicationSpeedscopeJson,
                 _ => throw new InvalidOperationException()
             };
+
+        public static string MapFormatToContentType(Exceptions.ExceptionsFormat exceptionsFormat) =>
+            exceptionsFormat switch
+            {
+                Exceptions.ExceptionsFormat.PlainText => ContentTypes.TextPlain,
+                Exceptions.ExceptionsFormat.JsonSequence => ContentTypes.ApplicationJsonSequence,
+                Exceptions.ExceptionsFormat.NewlineDelimitedJson => ContentTypes.ApplicationNdJson,
+                _ => throw new InvalidOperationException()
+            };
     }
 }
