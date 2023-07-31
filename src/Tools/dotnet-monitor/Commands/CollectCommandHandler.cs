@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
+using Microsoft.Diagnostics.Tools.Monitor.Stacks;
 using Microsoft.Diagnostics.Tools.Monitor.Swagger;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -139,6 +140,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<IMetricsOperationFactory, MetricsOperationFactory>();
                 services.AddSingleton<ITraceOperationFactory, TraceOperationFactory>();
                 services.AddSingleton<IGCDumpOperationFactory, GCDumpOperationFactory>();
+                services.AddSingleton<IStacksOperationFactory, StacksOperationFactory>();
 
                 // Per-process services must be scoped
                 services.AddScoped<ScopedEndpointInfo>();

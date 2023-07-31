@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             Logger.StartCollectArtifact(_artifactType);
 
-            // Signal that the logs operation has started
+            // Signal that the artifact operation has started
             startCompletionSource?.TrySetResult(null);
 
             await runTask;
