@@ -92,13 +92,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
                 await _capturingStoppedCompletionSource.Task.WaitAsync(token).ConfigureAwait(false);
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException ex)
             {
+                _ = startCompletionSource?.TrySetException(ex);
                 _ = _capturingStartedCompletionSource.TrySetCanceled(token);
                 _ = _capturingStoppedCompletionSource.TrySetCanceled(token);
 
                 using CancellationTokenSource stopCancellationToken = new(TimeSpan.FromSeconds(30));
-                await StopAsync(stopCancellationToken.Token);
+                await StopAsync(stopCancellationToken.Token).SafeAwait();
                 throw;
             }
         }
