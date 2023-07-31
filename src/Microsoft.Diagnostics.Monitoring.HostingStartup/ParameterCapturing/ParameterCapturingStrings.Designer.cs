@@ -62,6 +62,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to create an ILogger instance in the target process..
+        /// </summary>
+        internal static string FeatureUnsupported_NoLogger {
+            get {
+                return ResourceManager.GetString("FeatureUnsupported_NoLogger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to null.
         /// </summary>
         internal static string NullArgumentValue {
@@ -98,11 +107,38 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Started parameter capturing for {duration} on {numberOfMethods} method(s)..
+        /// </summary>
+        internal static string StartParameterCapturingFormatString {
+            get {
+                return ResourceManager.GetString("StartParameterCapturingFormatString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stopped parameter capturing..
+        /// </summary>
+        internal static string StopParameterCapturing {
+            get {
+                return ResourceManager.GetString("StopParameterCapturing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to this.
         /// </summary>
         internal static string ThisParameterName {
             get {
                 return ResourceManager.GetString("ThisParameterName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Too many requests.
+        /// </summary>
+        internal static string TooManyRequestsErrorMessage {
+            get {
+                return ResourceManager.GetString("TooManyRequestsErrorMessage", resourceCulture);
             }
         }
         
@@ -121,6 +157,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         internal static string UnknownParameterNameFormatString {
             get {
                 return ResourceManager.GetString("UnknownParameterNameFormatString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to resolve one or more methods: {0}.
+        /// </summary>
+        internal static string UnresolvedMethodsFormatString {
+            get {
+                return ResourceManager.GetString("UnresolvedMethodsFormatString", resourceCulture);
             }
         }
         

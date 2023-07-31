@@ -39,6 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
         private readonly IOptions<CallStacksOptions> _callStacksOptions;
+        private readonly IOptions<ParameterCapturingOptions> _parameterCapturingOptions;
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
         private readonly EgressOperationStore _operationsStore;
         private readonly OperationTrackerService _operationTrackerService;
@@ -48,12 +49,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ILogsOperationFactory _logsOperationFactory;
         private readonly IMetricsOperationFactory _metricsOperationFactory;
         private readonly ITraceOperationFactory _traceOperationFactory;
+        private readonly ICaptureParametersOperationFactory _captureParametersFactory;
 
         public DiagController(IServiceProvider serviceProvider, ILogger<DiagController> logger)
             : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), logger)
         {
             _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
             _callStacksOptions = serviceProvider.GetRequiredService<IOptions<CallStacksOptions>>();
+            _parameterCapturingOptions = serviceProvider.GetRequiredService<IOptions<ParameterCapturingOptions>>();
             _operationsStore = serviceProvider.GetRequiredService<EgressOperationStore>();
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
             _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
@@ -63,6 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _logsOperationFactory = serviceProvider.GetRequiredService<ILogsOperationFactory>();
             _metricsOperationFactory = serviceProvider.GetRequiredService<IMetricsOperationFactory>();
             _traceOperationFactory = serviceProvider.GetRequiredService<ITraceOperationFactory>();
+            _captureParametersFactory = serviceProvider.GetRequiredService<ICaptureParametersOperationFactory>();
         }
 
         /// <summary>
@@ -580,6 +584,40 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             Utilities.GetProcessKey(pid, uid, name));
         }
 
+        [HttpPost("parameters", Name = nameof(CaptureParameters))]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
+        [EgressValidation]
+        public async Task<ActionResult> CaptureParameters(
+            [FromBody][Required]
+            MethodDescription[] methods,
+            [FromQuery][Range(-1, int.MaxValue)]
+            int durationSeconds = 30,
+            [FromQuery]
+            int? pid = null,
+            [FromQuery]
+            Guid? uid = null,
+            [FromQuery]
+            string name = null,
+            [FromQuery]
+            string tags = null)
+        {
+            if (!_parameterCapturingOptions.Value.GetEnabled())
+            {
+                return NotFound();
+            }
+
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
+            TimeSpan duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds);
+
+            return await InvokeForProcess(async processInfo =>
+            {
+                IInProcessOperation operation = _captureParametersFactory.Create(processInfo.EndpointInfo, methods, duration);
+                return await InProcessResult(Utilities.ArtifactType_Parameters, processInfo, operation, tags);
+            }, processKey, Utilities.ArtifactType_Parameters);
+        }
+
         [HttpGet("stacks", Name = nameof(CaptureStacks))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson, ContentTypes.TextPlain, ContentTypes.ApplicationSpeedscopeJson)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
@@ -707,6 +745,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return LogFormat.JsonSequence;
             }
             return null;
+        }
+
+
+        private async Task<ActionResult> InProcessResult(
+            string artifactType,
+            IProcessInfo processInfo,
+            IInProcessOperation operation,
+            string tags)
+        {
+            KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
+            string location = await RegisterOperation(
+                new InProcessEgressOperation(processInfo, scope, tags, operation),
+                limitKey: artifactType);
+
+            return Accepted(location);
         }
 
         private async Task<ActionResult> Result(

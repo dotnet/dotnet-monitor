@@ -421,6 +421,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parameter capturing is not available in the process..
+        /// </summary>
+        internal static string ErrorMessage_ParameterCapturingNotAvailable {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ParameterCapturingNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} parameter value &apos;{1}&apos; is not allowed..
         /// </summary>
         internal static string ErrorMessage_ParameterNotAllowed {

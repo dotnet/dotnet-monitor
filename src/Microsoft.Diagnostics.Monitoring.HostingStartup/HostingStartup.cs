@@ -29,6 +29,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup
                     services.AddHostedService<ParameterCapturingService>();
                 }
             });
+
+            ToolIdentifiers.EnableEnvVar(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.HostingStartup);
         }
     }
 }

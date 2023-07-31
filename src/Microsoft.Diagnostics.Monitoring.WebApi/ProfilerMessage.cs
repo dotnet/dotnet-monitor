@@ -11,7 +11,9 @@ namespace Microsoft.Diagnostics.Monitoring
     {
         Unknown,
         Status,
-        Callstack
+        Callstack,
+        StartCapturingParameters,
+        StopCapturingParameters
     };
 
     internal interface IProfilerMessage

@@ -4,6 +4,8 @@
 using Microsoft.Diagnostics.Monitoring.StartupHook;
 using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions;
 using Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher;
+using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using System;
 using System.IO;
@@ -29,10 +31,13 @@ internal sealed class StartupHook
             try
             {
                 SharedInternals.MessageDispatcher = new MonitorMessageDispatcher(new ProfilerMessageSource());
+                ToolIdentifiers.EnableEnvVar(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.ManagedMessaging);
             }
             catch
             {
             }
+
+            ToolIdentifiers.EnableEnvVar(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.StartupHook);
         }
         catch
         {
