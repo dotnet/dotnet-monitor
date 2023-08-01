@@ -104,7 +104,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             {
                 StackFrame threadStackFrame = threadStackFrames[index];
                 if (throwingFrame.GetMethod() == threadStackFrame.GetMethod() &&
-                    throwingFrame.GetILOffset() == threadStackFrame.GetILOffset())
+                    throwingFrame.GetNativeOffset() == threadStackFrame.GetNativeOffset())
                 {
                     break;
                 }
