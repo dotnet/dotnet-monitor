@@ -26,12 +26,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     [Collection(DefaultCollectionFixture.Name)]
-    public class ExceptionTests
+    public class ExceptionsTests
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
 
-        public ExceptionTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
+        public ExceptionsTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
             _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
             _outputHelper = outputHelper;
@@ -48,15 +48,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.Exceptions.Name,
                 appValidate: async (appRunner, apiClient) =>
                 {
-                    string exceptionsResult = await GetExceptions(apiClient, appRunner, ExceptionsFormat.PlainText);
+                    string exceptionsString = await GetExceptions(apiClient, appRunner, ExceptionsFormat.PlainText);
 
-                    var exceptionResultLines = exceptionsResult.Split(new string[] { "\r\n","\n" }, StringSplitOptions.None);
+                    var exceptionsLines = exceptionsString.Split(new string[] { "\r\n","\n" }, StringSplitOptions.None);
 
-                    Assert.True(exceptionResultLines.Length >= 4);
-                    Assert.Contains("First chance exception at", exceptionResultLines[0]);
-                    Assert.Equal("System.InvalidOperationException: Exception of type 'System.InvalidOperationException' was thrown.", exceptionResultLines[1]);
-                    Assert.Equal("   at Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario.ThrowAndCatchInvalidOperationException(System.Boolean,System.Boolean)", exceptionResultLines[2]);
-                    Assert.Equal("   at Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario.ThrowAndCatchInvalidOperationException()", exceptionResultLines[3]);
+                    Assert.True(exceptionsLines.Length >= 4);
+                    Assert.Contains("First chance exception at", exceptionsLines[0]);
+                    Assert.Equal("System.InvalidOperationException: Exception of type 'System.InvalidOperationException' was thrown.", exceptionsLines[1]);
+                    Assert.Equal("   at Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario.ThrowAndCatchInvalidOperationException(System.Boolean,System.Boolean)", exceptionsLines[2]);
+                    Assert.Equal("   at Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario.ThrowAndCatchInvalidOperationException()", exceptionsLines[3]);
                 },
                 configureApp: runner =>
                 {
@@ -81,18 +81,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     DateTime startTime = DateTime.UtcNow.ToLocalTime();
 
-                    string exceptionsResult = await GetExceptions(apiClient, appRunner, ExceptionsFormat.NewlineDelimitedJson);
+                    string exceptionsString = await GetExceptions(apiClient, appRunner, ExceptionsFormat.NewlineDelimitedJson);
 
-                    var result = JsonSerializer.Deserialize<Dictionary<string, object>>(exceptionsResult);
-                    //var result = await JsonSerializer.DeserializeAsync<Dictionary<string, object>>(holder.Stream);
+                    var exceptionsDict = JsonSerializer.Deserialize<Dictionary<string, object>>(exceptionsString);
 
-                    Assert.Equal("2", result["id"].ToString());
-                    Assert.Equal("System.InvalidOperationException", result["typeName"].ToString());
-                    Assert.True(startTime < DateTime.Parse(result["timestamp"].ToString()));
-                    Assert.Equal("System.Private.CoreLib.dll", result["moduleName"].ToString());
-                    Assert.Equal("Exception of type 'System.InvalidOperationException' was thrown.", result["message"].ToString());
+                    Assert.Equal("2", exceptionsDict["id"].ToString());
+                    Assert.Equal("System.InvalidOperationException", exceptionsDict["typeName"].ToString());
+                    Assert.True(startTime < DateTime.Parse(exceptionsDict["timestamp"].ToString()));
+                    Assert.Equal("System.Private.CoreLib.dll", exceptionsDict["moduleName"].ToString());
+                    Assert.Equal("Exception of type 'System.InvalidOperationException' was thrown.", exceptionsDict["message"].ToString());
 
-                    var callStackResultsRootElement = JsonSerializer.SerializeToDocument(result["callStack"]).RootElement;
+                    var callStackResultsRootElement = JsonSerializer.SerializeToDocument(exceptionsDict["callStack"]).RootElement;
 
                     Assert.NotEqual("0", callStackResultsRootElement.GetProperty("threadId").ToString());
                     //Assert.NotNull(callStackResultsRootElement.GetProperty("threadName").ToString()); // No value is currently being set
@@ -116,18 +115,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        private static string TEMP_GetString(Stream stream)
-        {
-            StringBuilder builder = new();
-            using (var reader = new StreamReader(stream, Encoding.UTF8))
-            {
-                string value = reader.ReadToEnd();
-                builder.Append(value);
-                Console.WriteLine(value);
-            }
-            return builder.ToString();
-        }
-
         private static async Task<string> GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionsFormat format)
         {
             await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
@@ -137,13 +124,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             const int retryMaxCount = 5;
             string holderStreamString = string.Empty;
             int retryCounter = 0;
+            StringBuilder builder = new();
             while (string.IsNullOrEmpty(holderStreamString) && retryCounter < retryMaxCount)
             {
                 await Task.Delay(500);
 
                 ResponseStreamHolder holder = await apiClient.CaptureExceptionsAsync(processId, format);
 
-                holderStreamString = TEMP_GetString(holder.Stream);
+                builder.Clear();
+                using (var reader = new StreamReader(holder.Stream, Encoding.UTF8))
+                {
+                    builder.Append(reader.ReadToEnd());
+                }
+                holderStreamString = builder.ToString();
 
                 ++retryCounter;
             }
