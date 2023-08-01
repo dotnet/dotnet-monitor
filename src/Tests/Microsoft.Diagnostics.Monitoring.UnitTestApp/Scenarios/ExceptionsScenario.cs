@@ -99,13 +99,20 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         {
             return ScenarioHelpers.RunScenarioAsync(async logger =>
             {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Continue, logger);
+
+                ThrowAndCatchInvalidOperationException();
+
+                return 0;
+
+                /*
                 Task continueCommand = Task.Run(() => ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Continue, logger));
                 while (!continueCommand.IsCompleted)
                 {
                     ThrowAndCatchInvalidOperationException();
                     await Task.Delay(100);
                 }
-                return 0;
+                return 0;*/
                 /*
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
                 ThrowAndCatchInvalidOperationException();
