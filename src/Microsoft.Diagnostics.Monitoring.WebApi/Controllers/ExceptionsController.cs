@@ -68,7 +68,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     .GetRequiredService<IExceptionsOperationFactory>()
                     .Create(format);
 
-                return new OutputStreamResult(operation);
+                KeyValueLogScope scope = Utilities.CreateArtifactScope(Utilities.ArtifactType_Exceptions, processInfo.EndpointInfo);
+
+                return new OutputStreamResult(operation, fileDownloadName: null, scope);
             }, processKey, Utilities.ArtifactType_Exceptions);
         }
 

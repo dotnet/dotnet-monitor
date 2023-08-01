@@ -725,41 +725,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        private async Task<ActionResult> Result(
-            string artifactType,
-            string providerName,
-            Func<Stream, CancellationToken, Task> action,
-            string fileName,
-            string contentType,
-            IProcessInfo processInfo,
-            string tags,
-            bool asAttachment = true)
-        {
-            KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
-
-            if (string.IsNullOrEmpty(providerName))
-            {
-                await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType, tags);
-                return new OutputStreamResult(
-                    action,
-                    contentType,
-                    asAttachment ? fileName : null,
-                    scope);
-            }
-            else
-            {
-                return await SendToEgress(new EgressOperation(
-                    action,
-                    providerName,
-                    fileName,
-                    processInfo,
-                    contentType,
-                    scope,
-                    tags),
-                    limitKey: artifactType);
-            }
-        }
-
         private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, string tags, IArtifactOperation operation = null)
         {
             // While not strictly a Location redirect, use the same header as externally egressed operations for consistency.
