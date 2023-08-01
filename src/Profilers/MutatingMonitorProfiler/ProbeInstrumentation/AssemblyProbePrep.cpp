@@ -5,9 +5,9 @@
 #include "macros.h"
 #include "AssemblyProbePrep.h"
 #include "CallbackDefinitions.h"
-#include "../Utilities/TypeNameUtilities.h"
-#include "../Utilities/MetadataEnumCloser.h"
-#include "../Utilities/StringUtilities.h"
+#include "CommonUtilities/TypeNameUtilities.h"
+#include "CommonUtilities/MetadataEnumCloser.h"
+#include "CommonUtilities/StringUtilities.h"
 
 using namespace std;
 

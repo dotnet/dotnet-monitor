@@ -3,8 +3,8 @@
 
 #include "IpcCommClient.h"
 #include "IpcCommServer.h"
-#include "../Logging/Logger.h"
-#include "../Utilities/StringUtilities.h"
+#include "Logging/Logger.h"
+#include "CommonUtilities/StringUtilities.h"
 
 IpcCommServer::IpcCommServer(const std::shared_ptr<ILogger>& logger) : _shutdown(false), _logger(logger)
 {

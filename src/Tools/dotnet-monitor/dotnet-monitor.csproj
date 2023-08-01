@@ -96,8 +96,17 @@
       <AdditionalPackageFile Include="@(MonitorProfilerLibraryFile)">
         <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
       </AdditionalPackageFile>
+      <AdditionalPackageFile Include="@(MutatingMonitorProfilerLibraryFile)">
+        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
+      </AdditionalPackageFile>
       <!-- Pack the profiler symbols for each platform. -->
       <AdditionalPackageFile Include="@(MonitorProfilerSymbolsFile)">
+        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
+      </AdditionalPackageFile>
+      <AdditionalPackageFile Include="@(MutatingMonitorProfilerSymbolsFile)">
+        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
+      </AdditionalPackageFile>
+      <AdditionalPackageFile Include="@(CommonMonitorProfilerSymbolsFile)">
         <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
       </AdditionalPackageFile>
     </ItemGroup>

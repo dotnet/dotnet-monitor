@@ -4,7 +4,7 @@
 #include "corhlpr.h"
 #include "macros.h"
 #include "ProbeInstrumentation.h"
-#include "../Utilities/BlockingQueue.h"
+#include "CommonUtilities/BlockingQueue.h"
 
 using namespace std;
 

@@ -34,16 +34,18 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
         }
 
         [Theory(Skip = "Exception tracking via profiler is currently disabled")]
-        [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
-        public Task ExceptionThrowCatch(Architecture architecture, string profilerPath)
+        [MemberData(nameof(ProfilerHelper.GetNotifyOnlyArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
+        public Task ExceptionThrowCatch(Architecture architecture, string profilerPath, ProfilerVariant variant)
         {
+            Assert.Equal(ProfilerVariant.NotifyOnly, variant);
             return RunAndCompare(nameof(ExceptionThrowCatch), architecture, profilerPath);
         }
 
         [Theory(Skip = "Exception tracking via profiler is currently disabled")]
-        [MemberData(nameof(ProfilerHelper.GetArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
-        public Task ExceptionThrowCrash(Architecture architecture, string profilerPath)
+        [MemberData(nameof(ProfilerHelper.GetNotifyOnlyArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
+        public Task ExceptionThrowCrash(Architecture architecture, string profilerPath, ProfilerVariant variant)
         {
+            Assert.Equal(ProfilerVariant.NotifyOnly, variant);
             return RunAndCompare(nameof(ExceptionThrowCrash), architecture, profilerPath);
         }
 
@@ -63,7 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTests
             // Environment variables necessary for running the profiler + enable all logging to stderr
             adapter.Environment.Add(ProfilerHelper.ClrEnvVarEnableNotificationProfilers, ProfilerHelper.ClrEnvVarEnabledValue);
             adapter.Environment.Add(ProfilerHelper.ClrEnvVarEnableProfiling, ProfilerHelper.ClrEnvVarEnabledValue);
-            adapter.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.Clsid.StringWithBraces);
+            adapter.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.NotifyOnlyProfiler.Clsid.StringWithBraces);
             adapter.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath, profilerPath);
             adapter.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, Guid.NewGuid().ToString("D"));
             adapter.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, LogLevel.Trace.ToString("G"));

@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "../ProfilerBase.h"
-#include "../Environment/Environment.h"
-#include "../Environment/EnvironmentHelper.h"
-#include "../Logging/Logger.h"
 #include "../Communication/CommandServer.h"
-#include "../ProbeInstrumentation/ProbeInstrumentation.h"
-#include "../Utilities/ThreadNameCache.h"
+
+#include "ProfilerBase.h"
+#include "Environment/Environment.h"
+#include "Environment/EnvironmentHelper.h"
+#include "Logging/Logger.h"
+#include "CommonUtilities/ThreadNameCache.h"
 #include <memory>
 
 #ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
@@ -21,6 +21,9 @@ class MainProfiler final :
     public ProfilerBase
 {
 private:
+    static constexpr LPCWSTR ProfilerVersionEnvVar = _T("DotnetMonitor_MonitorProfiler_ProductVersion");
+
+private:
     std::shared_ptr<IEnvironment> m_pEnvironment;
     std::shared_ptr<EnvironmentHelper> _environmentHelper;
     std::shared_ptr<ILogger> m_pLogger;
@@ -29,7 +32,6 @@ private:
     std::shared_ptr<ThreadDataManager> _threadDataManager;
     std::unique_ptr<ExceptionTracker> _exceptionTracker;
 #endif // DOTNETMONITOR_FEATURE_EXCEPTIONS
-    std::unique_ptr<ProbeInstrumentation> m_pProbeInstrumentation;
 
 
 public:
@@ -45,13 +47,11 @@ public:
     STDMETHOD(ExceptionUnwindFunctionEnter)(FunctionID functionId) override;
     STDMETHOD(InitializeForAttach)(IUnknown* pCorProfilerInfoUnk, void* pvClientData, UINT cbClientData) override;
     STDMETHOD(LoadAsNotificationOnly)(BOOL *pbNotificationOnly) override;
-    STDMETHOD(GetReJITParameters)(ModuleID moduleId, mdMethodDef methodId, ICorProfilerFunctionControl* pFunctionControl) override;
 
 private:
     HRESULT InitializeCommon();
     HRESULT InitializeEnvironment();
     HRESULT InitializeEnvironmentHelper();
-    HRESULT InitializeLogging();
     HRESULT InitializeCommandServer();
     HRESULT MessageCallback(const IpcMessage& message);
     HRESULT ProcessCallstackMessage();

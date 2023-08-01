@@ -14,6 +14,12 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
+    public enum ProfilerVariant
+    {
+        NotifyOnly,
+        Mutating
+    }
+
     public static class ProfilerHelper
     {
         private const string ClrEnvVarPrefix = "CORECLR_";
@@ -24,8 +30,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public const string ClrEnvVarProfiler = ClrEnvVarPrefix + "PROFILER";
         public const string ClrEnvVarProfilerPath = ClrEnvVarPrefix + "PROFILER_PATH";
 
-        public static string GetPath(Architecture architecture) =>
-            NativeLibraryHelper.GetSharedLibraryPath(architecture, ProfilerIdentifiers.LibraryRootFileName);
+        public static string GetPath(Architecture architecture, ProfilerVariant variant = ProfilerVariant.NotifyOnly) =>
+            NativeLibraryHelper.GetSharedLibraryPath(architecture,
+                variant == ProfilerVariant.NotifyOnly
+                ? ProfilerIdentifiers.NotifyOnlyProfiler.LibraryRootFileName
+                : ProfilerIdentifiers.MutatingProfiler.LibraryRootFileName);
 
         public static IEnumerable<object[]> GetArchitecture()
         {
@@ -41,7 +50,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             static void AddTestCases(List<object[]> arguments, Architecture architecture)
             {
-                string profilerPath = GetPath(architecture);
+                // Both profiler variants support the same architecture, so simply use the notify-only one to check
+                // which are available.
+                string profilerPath = GetPath(architecture, ProfilerVariant.NotifyOnly);
                 if (File.Exists(profilerPath))
                 {
                     arguments.Add(new object[] { architecture });
@@ -49,7 +60,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             }
         }
 
-        public static IEnumerable<object[]> GetArchitectureProfilerPath()
+        public static IEnumerable<object[]> GetNotifyOnlyArchitectureProfilerPath()
+        {
+            return GetArchitectureProfilerPathCore(ProfilerVariant.NotifyOnly);
+        }
+
+        public static IEnumerable<object[]> GetMutatingArchitectureProfilerPath()
+        {
+            return GetArchitectureProfilerPathCore(ProfilerVariant.Mutating);
+        }
+
+        public static IEnumerable<object[]> GetArchitectureProfilerPathCore(ProfilerVariant variant)
         {
             // There isn't a good way to check which architecture to use when running unit tests.
             // Each build job builds one specific architecture, but from a test perspective,
@@ -61,21 +82,26 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             AddTestCases(arguments, Architecture.Arm64);
             return arguments;
 
-            static void AddTestCases(List<object[]> arguments, Architecture architecture)
+            void AddTestCases(List<object[]> arguments, Architecture architecture)
             {
-                string profilerPath = GetPath(architecture);
+                string profilerPath = GetPath(architecture, variant);
                 if (File.Exists(profilerPath))
                 {
-                    arguments.Add(new object[] { architecture, profilerPath });
+                    arguments.Add(new object[] { architecture, profilerPath, variant });
                 }
             }
         }
 
-        public static async Task VerifyProductVersionEnvironmentVariableAsync(AppRunner runner, ITestOutputHelper outputHelper)
+        public static async Task VerifyProductVersionEnvironmentVariableAsync(AppRunner runner, ITestOutputHelper outputHelper, ProfilerVariant variant = ProfilerVariant.NotifyOnly)
         {
-            string productVersion = await runner.GetEnvironmentVariable(ProfilerIdentifiers.EnvironmentVariables.ProductVersion, CommonTestTimeouts.EnvVarsTimeout);
+            string envVar =
+                variant == ProfilerVariant.NotifyOnly
+                ? ProfilerIdentifiers.NotifyOnlyProfiler.EnvironmentVariables.ProductVersion
+                : ProfilerIdentifiers.MutatingProfiler.EnvironmentVariables.ProductVersion;
+
+            string productVersion = await runner.GetEnvironmentVariable(envVar, CommonTestTimeouts.EnvVarsTimeout);
             Assert.False(string.IsNullOrEmpty(productVersion), "Expected product version to not be null or empty.");
-            outputHelper.WriteLine("{0} = {1}", ProfilerIdentifiers.EnvironmentVariables.ProductVersion, productVersion);
+            outputHelper.WriteLine("{0} = {1}", envVar, productVersion);
         }
 
         public static async Task WaitForProfilerCommunicationChannelAsync(ProcessInfo processInfo)

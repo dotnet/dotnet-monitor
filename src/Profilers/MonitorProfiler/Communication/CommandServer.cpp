@@ -3,7 +3,7 @@
 
 #include "CommandServer.h"
 #include <thread>
-#include "../Logging/Logger.h"
+#include "Logging/Logger.h"
 
 CommandServer::CommandServer(const std::shared_ptr<ILogger>& logger, ICorProfilerInfo12* profilerInfo) :
     _shutdown(false),

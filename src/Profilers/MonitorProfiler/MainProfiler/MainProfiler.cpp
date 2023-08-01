@@ -2,15 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #include "MainProfiler.h"
-#include "../Environment/EnvironmentHelper.h"
-#include "../Environment/ProfilerEnvironment.h"
-#include "../Logging/AggregateLogger.h"
-#include "../Logging/DebugLogger.h"
-#include "../Logging/StdErrLogger.h"
+#include "Environment/EnvironmentHelper.h"
+#include "Environment/ProfilerEnvironment.h"
+#include "Logging/LoggerFactory.h"
+#include "CommonUtilities/ThreadUtilities.h"
 #include "../Stacks/StacksEventProvider.h"
 #include "../Stacks/StackSampler.h"
-#include "../ProbeInstrumentation/ProbeInstrumentation.h"
-#include "../Utilities/ThreadUtilities.h"
 #include "corhlpr.h"
 #include "macros.h"
 #include <memory>
@@ -52,12 +49,6 @@ STDMETHODIMP MainProfiler::Shutdown()
 {
     m_pLogger.reset();
     m_pEnvironment.reset();
-
-    if (m_pProbeInstrumentation)
-    {
-        m_pProbeInstrumentation->ShutdownBackgroundService();
-        m_pProbeInstrumentation.reset();
-    }
 
     _commandServer->Shutdown();
     _commandServer.reset();
@@ -157,8 +148,7 @@ STDMETHODIMP MainProfiler::LoadAsNotificationOnly(BOOL *pbNotificationOnly)
 {
     ExpectedPtr(pbNotificationOnly);
 
-    // JSFIX: Split this into two profilers, one notification-only and one capable of mutating the target app.
-    *pbNotificationOnly = FALSE;
+    *pbNotificationOnly = TRUE;
 
     return S_OK;
 }
@@ -169,7 +159,7 @@ HRESULT MainProfiler::InitializeCommon()
 
     // These are created in dependency order!
     IfFailRet(InitializeEnvironment());
-    IfFailRet(InitializeLogging());
+    IfFailRet(LoggerFactory::Create(m_pEnvironment, m_pLogger));
     IfFailRet(InitializeEnvironmentHelper());
 
     // Logging is initialized and can now be used
@@ -184,7 +174,7 @@ HRESULT MainProfiler::InitializeCommon()
     // Set product version environment variable to allow discovery of if the profiler
     // as been applied to a target process. Diagnostic tools must use the diagnostic
     // communication channel's GetProcessEnvironment command to get this value.
-    IfFailLogRet(_environmentHelper->SetProductVersion());
+    IfFailLogRet(_environmentHelper->SetProductVersion(ProfilerVersionEnvVar));
 
     DWORD eventsLow = COR_PRF_MONITOR::COR_PRF_MONITOR_NONE;
 #ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
@@ -195,27 +185,9 @@ HRESULT MainProfiler::InitializeCommon()
 
     _threadNameCache = make_shared<ThreadNameCache>();
 
-    bool enableParameterCapturing;
-    IfFailLogRet(_environmentHelper->GetIsParameterCapturingEnabled(enableParameterCapturing));
-    if (enableParameterCapturing)
-    {
-        m_pProbeInstrumentation.reset(new (nothrow) ProbeInstrumentation(m_pLogger, m_pCorProfilerInfo));
-        IfNullRet(m_pProbeInstrumentation);
-        m_pProbeInstrumentation->AddProfilerEventMask(eventsLow);
-    }
-    else
-    {
-        ProbeInstrumentation::DisableIncomingRequests();
-    }
-
     IfFailRet(m_pCorProfilerInfo->SetEventMask2(
         eventsLow,
         COR_PRF_HIGH_MONITOR::COR_PRF_HIGH_MONITOR_NONE));
-
-    if (enableParameterCapturing)
-    {
-        IfFailLogRet(m_pProbeInstrumentation->InitBackgroundService());
-    }
 
     //Initialize this last. The CommandServer creates secondary threads, which will be difficult to cleanup if profiler initialization fails.
     IfFailLogRet(InitializeCommandServer());
@@ -238,32 +210,6 @@ HRESULT MainProfiler::InitializeEnvironmentHelper()
     IfNullRet(m_pEnvironment);
 
     _environmentHelper = make_shared<EnvironmentHelper>(m_pEnvironment, m_pLogger);
-
-    return S_OK;
-}
-
-HRESULT MainProfiler::InitializeLogging()
-{
-    HRESULT hr = S_OK;
-
-    // Create an aggregate logger to allow for multiple logging implementations
-    unique_ptr<AggregateLogger> pAggregateLogger(new (nothrow) AggregateLogger());
-    IfNullRet(pAggregateLogger);
-
-    shared_ptr<StdErrLogger> pStdErrLogger = make_shared<StdErrLogger>(m_pEnvironment);
-    IfNullRet(pStdErrLogger);
-    pAggregateLogger->Add(pStdErrLogger);
-
-#ifdef _DEBUG
-#ifdef TARGET_WINDOWS
-    // Add the debug output logger for when debugging on Windows
-    shared_ptr<DebugLogger> pDebugLogger = make_shared<DebugLogger>(m_pEnvironment);
-    IfNullRet(pDebugLogger);
-    pAggregateLogger->Add(pDebugLogger);
-#endif
-#endif
-
-    m_pLogger.reset(pAggregateLogger.release());
 
     return S_OK;
 }
@@ -360,16 +306,6 @@ HRESULT MainProfiler::ProcessCallstackMessage()
     ThreadUtilities::Sleep(200);
 
     IfFailLogRet(eventProvider->WriteEndEvent());
-
-    return S_OK;
-}
-
-HRESULT STDMETHODCALLTYPE MainProfiler::GetReJITParameters(ModuleID moduleId, mdMethodDef methodId, ICorProfilerFunctionControl* pFunctionControl)
-{
-    if (m_pProbeInstrumentation)
-    {
-        return m_pProbeInstrumentation->GetReJITParameters(moduleId, methodId, pFunctionControl);
-    }
 
     return S_OK;
 }

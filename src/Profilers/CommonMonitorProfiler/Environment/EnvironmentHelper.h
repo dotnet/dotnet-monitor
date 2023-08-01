@@ -20,12 +20,9 @@ private:
     static constexpr LPCWSTR EnableEnvVarValue = _T("1");
 
     static constexpr LPCWSTR DebugLoggerLevelEnvVar = _T("DotnetMonitor_Profiler_DebugLogger_Level");
-    static constexpr LPCWSTR ProfilerVersionEnvVar = _T("DotnetMonitor_Profiler_ProductVersion");
     static constexpr LPCWSTR RuntimeInstanceEnvVar = _T("DotnetMonitor_Profiler_RuntimeInstanceId");
     static constexpr LPCWSTR SharedPathEnvVar = _T("DotnetMonitor_Profiler_SharedPath");
     static constexpr LPCWSTR StdErrLoggerLevelEnvVar = _T("DotnetMonitor_Profiler_StdErrLogger_Level");
-
-    static constexpr LPCWSTR EnableParameterCapturingEnvVar = _T("DotnetMonitor_InProcessFeatures_EnableParameterCapturing");
 
     std::shared_ptr<IEnvironment> _environment;
     std::shared_ptr<ILogger> _logger;
@@ -54,7 +51,7 @@ public:
     /// <summary>
     /// Sets the product version environment variable in the specified environment.
     /// </summary>
-    HRESULT SetProductVersion();
+    HRESULT SetProductVersion(const tstring& envVarName);
 
     HRESULT GetRuntimeInstanceId(tstring& instanceId);
 
@@ -67,8 +64,5 @@ public:
 
     HRESULT GetTempFolder(tstring& tempFolder);
 
-    HRESULT GetIsParameterCapturingEnabled(bool& isEnabled);
-
-private:
     HRESULT GetIsFeatureEnabled(const LPCWSTR featureName, bool& isEnabled);
 };

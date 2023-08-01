@@ -5,7 +5,6 @@ project(MonitorProfiler)
 if(CLR_CMAKE_HOST_WIN32)
     set(SOURCES
         ${SOURCES}
-        Logging/DebugLogger.cpp
         MonitorProfiler.def
         )
     add_definitions(-DWIN32_LEAN_AND_MEAN)
@@ -14,31 +13,14 @@ endif(CLR_CMAKE_HOST_WIN32)
 set(SOURCES
     ${SOURCES}
     ${PROFILER_SOURCES}
-    Environment/EnvironmentHelper.cpp
-    Environment/ProfilerEnvironment.cpp
-    EventProvider/ProfilerEventProvider.cpp
-    Logging/AggregateLogger.cpp
-    Logging/Logger.cpp
-    Logging/LoggerHelper.cpp
-    Logging/NullLogger.cpp
-    Logging/StdErrLogger.cpp
     MainProfiler/ExceptionTracker.cpp
     MainProfiler/MainProfiler.cpp
     MainProfiler/ThreadData.cpp
     MainProfiler/ThreadDataManager.cpp
     Stacks/StacksEventProvider.cpp
     Stacks/StackSampler.cpp
-    ProbeInstrumentation/AssemblyProbePrep.cpp
-    ProbeInstrumentation/ProbeInstrumentation.cpp
-    ProbeInstrumentation/ProbeInjector.cpp
-    Utilities/ILRewriter.cpp
-    Utilities/NameCache.cpp
-    Utilities/ThreadNameCache.cpp
-    Utilities/ThreadUtilities.cpp
-    Utilities/TypeNameUtilities.cpp
     ClassFactory.cpp
     DllMain.cpp
-    ProfilerBase.cpp
     Communication/IpcCommServer.cpp
     Communication/IpcCommClient.cpp
     Communication/CommandServer.cpp
@@ -49,6 +31,7 @@ set(SOURCES
 
 # Build library and split symbols
 add_library_clr(MonitorProfiler SHARED ${SOURCES})
+target_link_libraries(MonitorProfiler CommonMonitorProfiler)
 
 if(CLR_CMAKE_HOST_WIN32)
     target_link_libraries(MonitorProfiler ws2_32)

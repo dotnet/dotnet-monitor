@@ -30,6 +30,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public bool IsProfilerRequired => IsCallStacksEnabled || IsParameterCapturingEnabled;
 
+        public bool IsMutatingProfilerRequired => IsParameterCapturingEnabled;
+
         public bool IsStartupHookRequired => IsHostingStartupRequired || IsExceptionsEnabled;
 
         public bool IsHostingStartupRequired => IsParameterCapturingEnabled;

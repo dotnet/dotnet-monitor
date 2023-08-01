@@ -30,12 +30,12 @@ HRESULT EnvironmentHelper::GetDebugLoggerLevel(LogLevel& level)
     return S_OK;
 }
 
-HRESULT EnvironmentHelper::SetProductVersion()
+HRESULT EnvironmentHelper::SetProductVersion(const tstring& envVarName)
 {
     HRESULT hr = S_OK;
 
     IfFailLogRet(_environment->SetEnvironmentVariable(
-        ProfilerVersionEnvVar,
+        envVarName,
         QUOTE_MACRO_T(RuntimeProductVersion)
         ));
 
@@ -105,11 +105,6 @@ HRESULT EnvironmentHelper::GetTempFolder(tstring& tempFolder)
     tempFolder = std::move(tmpDir);
 
     return S_OK;
-}
-
-HRESULT EnvironmentHelper::GetIsParameterCapturingEnabled(bool& isEnabled)
-{
-    return GetIsFeatureEnabled(EnableParameterCapturingEnvVar, isEnabled);
 }
 
 HRESULT EnvironmentHelper::GetIsFeatureEnabled(const LPCWSTR featureName, bool& isEnabled)

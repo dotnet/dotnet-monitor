@@ -12,8 +12,8 @@
 #include <string>
 #include <atomic>
 #include <thread>
-#include "../Logging/Logger.h"
-#include "../Utilities/BlockingQueue.h"
+#include "Logging/Logger.h"
+#include "CommonUtilities/BlockingQueue.h"
 
 class CommandServer final
 {

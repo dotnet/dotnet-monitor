@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
     internal static class MonitorLibrary
     {
-        [DllImport(ProfilerIdentifiers.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = true)]
+        [DllImport(ProfilerIdentifiers.NotifyOnlyProfiler.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = true)]
         public static extern int TestHook([MarshalAs(UnmanagedType.FunctionPtr)] Action callback);
 
         public static void InitializeResolver()

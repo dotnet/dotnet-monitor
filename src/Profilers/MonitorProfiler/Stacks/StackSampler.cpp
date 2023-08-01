@@ -6,7 +6,7 @@
 #include "Stack.h"
 #include <functional>
 #include <memory>
-#include "../Utilities/TypeNameUtilities.h"
+#include "CommonUtilities/TypeNameUtilities.h"
 
 StackSamplerState::StackSamplerState(ICorProfilerInfo12* profilerInfo, std::shared_ptr<NameCache> nameCache)
     : _profilerInfo(profilerInfo), _nameCache(nameCache)
