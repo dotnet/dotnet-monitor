@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -47,32 +48,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.Exceptions.Name,
                 appValidate: async (appRunner, apiClient) =>
                 {
-                    int processId = await appRunner.ProcessIdTask;
-                    //await appRunner.SendCommandAsync(TestAppScenarios.Exceptions.Commands.Begin);
-                    //await appRunner.SendCommandAsync(TestAppScenarios.Exceptions.Commands.End);
-                    await Task.Delay(5000); // TESTING ONLY
+                    string exceptionsResult = await GetExceptions(apiClient, appRunner, ExceptionsFormat.PlainText);
 
-                    ResponseStreamHolder holder = await apiClient.CaptureExceptionsAsync(processId, WebApi.Exceptions.ExceptionsFormat.PlainText);
-                    Assert.NotNull(holder);
-                    StringBuilder builder = new();
-                    using (var reader = new StreamReader(holder.Stream, Encoding.UTF8))
-                    {
-                        string value = reader.ReadToEnd();
-                        builder.Append(value);
-                        Console.WriteLine(value);
-                    }
-                    var fullString = builder.ToString();
-
-                    /*
-                    WebApi.Models.CallStackResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.CallStackResult>(holder.Stream);
-                    WebApi.Models.CallStackFrame[] expectedFrames = ExpectedFrames();
-                    (WebApi.Models.CallStack stack, IList<WebApi.Models.CallStackFrame> actualFrames) = GetActualFrames(result, expectedFrames.First(), expectedFrames.Length);
-
-                    Assert.NotNull(stack);
-                    */
-
-                    Assert.NotEmpty(fullString);
-                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                    Assert.NotEmpty(exceptionsResult);
                 },
                 configureApp: runner =>
                 {
@@ -96,28 +74,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 appValidate: async (appRunner, apiClient) =>
                 {
                     DateTime startTime = DateTime.UtcNow.ToLocalTime();
-                    int processId = await appRunner.ProcessIdTask;
-                    //await appRunner.SendCommandAsync(TestAppScenarios.Exceptions.Commands.Begin);
-                    //await appRunner.SendCommandAsync(TestAppScenarios.Exceptions.Commands.End);
-                    await Task.Delay(3000); // TESTING ONLY -> loop maybe?
 
-                    await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                    string exceptionsResult = await GetExceptions(apiClient, appRunner, ExceptionsFormat.NewlineDelimitedJson);
 
-                    await Task.Delay(500); // TESTING ONLY
-
-                    ResponseStreamHolder holder = await apiClient.CaptureExceptionsAsync(processId, WebApi.Exceptions.ExceptionsFormat.NewlineDelimitedJson);
-                    Assert.NotNull(holder);
-
-                    //string holderString = TEMP_GetString(holder.Stream);
-
-                    //holderString.Trim();
-                    //holderString.Substring(1, holderString.Length - 2); // remove open/close parentheses - hack
-
-                    //byte[] byteArray = Encoding.UTF8.GetBytes(holderString);
-                    //byte[] byteArray = Encoding.ASCII.GetBytes(contents);
-                    //MemoryStream stream = new MemoryStream(byteArray);
-
-                    var result = await JsonSerializer.DeserializeAsync<Dictionary<string, object>>(holder.Stream);
+                    var result = JsonSerializer.Deserialize<Dictionary<string, object>>(exceptionsResult);
+                    //var result = await JsonSerializer.DeserializeAsync<Dictionary<string, object>>(holder.Stream);
 
                     Assert.Equal("2", result["id"].ToString());
                     Assert.Equal("System.InvalidOperationException", result["typeName"].ToString());
@@ -159,6 +120,31 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 Console.WriteLine(value);
             }
             return builder.ToString();
+        }
+
+        private static async Task<string> GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionsFormat format)
+        {
+            await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+
+            int processId = await appRunner.ProcessIdTask;
+
+            const int retryMaxCount = 5;
+            string holderStreamString = string.Empty;
+            int retryCounter = 0;
+            while (string.IsNullOrEmpty(holderStreamString) && retryCounter < retryMaxCount)
+            {
+                await Task.Delay(500);
+
+                ResponseStreamHolder holder = await apiClient.CaptureExceptionsAsync(processId, format);
+
+                holderStreamString = TEMP_GetString(holder.Stream);
+
+                ++retryCounter;
+            }
+
+            Assert.NotEqual(retryMaxCount, retryCounter);
+
+            return holderStreamString;
         }
     }
 }
