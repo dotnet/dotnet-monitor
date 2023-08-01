@@ -136,7 +136,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ConfiguredExceptionsStore_LimitOne_LastRemainsWithInnerExceptions()
         {
-            int ExceptedInstanceCount = 4;
+            int ExpectedInstanceCount = 4;
             int ExpectedStoreCount = 2;
             int TopLevelLimit = 1;
             ulong InnerException1Id = 1;
@@ -178,7 +178,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ConfiguredExceptionsStore_LimitOne_LastRemainsWithSharedInnerException()
         {
-            int ExceptedInstanceCount = 3;
+            int ExpectedInstanceCount = 3;
             int ExpectedStoreCount = 2;
             int TopLevelLimit = 1;
             ulong InnerExceptionId = 1;
@@ -218,7 +218,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ConfiguredExceptionsStore_LimitTwo_LastTwoRemain()
         {
-            int ExceptedInstanceCount = 3;
+            int ExpectedInstanceCount = 3;
             int ExpectedStoreCount = 2;
             int TopLevelLimit = 2;
             ulong OuterException1Id = 1;
