@@ -71,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             Assert.Equal(moduleId, scopedToken.ModuleId);
             Assert.Equal(classData.Token, scopedToken.Token);
             Assert.Equal(ex.GetType().Name, data.Name);
-            Assert.Equal(ex.GetType().Namespace, data.TokenNamespace);
+            Assert.Equal(ex.GetType().Namespace, data.Namespace);
             Assert.Equal(InvalidId, data.OuterToken);
 
             // Validate exception ID registration
@@ -208,9 +208,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             Assert.True(cache.TokenData.TryGetValue(new ModuleScopedToken(moduleId, token), out TokenData? tokenData));
             Assert.NotNull(tokenData);
             string? expectedTypeName = expectedType.Name;
-            string? expectedTokenNamespace = (null == expectedType.DeclaringType) ? expectedType.Namespace : string.Empty;
+            string? expectedNamespace = (null == expectedType.DeclaringType) ? expectedType.Namespace : string.Empty;
             Assert.Equal(expectedTypeName, tokenData.Name);
-            Assert.Equal(expectedTokenNamespace, tokenData.TokenNamespace);
+            Assert.Equal(expectedNamespace, tokenData.Namespace);
             return tokenData.OuterToken;
         }
 

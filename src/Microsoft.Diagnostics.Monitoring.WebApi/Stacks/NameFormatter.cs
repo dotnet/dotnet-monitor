@@ -87,9 +87,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             {
                 string className = tokenData.Name;
 
-                if (typeFormat == TypeFormat.FullName && !string.IsNullOrEmpty(tokenData.TokenNamespace))
+                if (typeFormat == TypeFormat.FullName && !string.IsNullOrEmpty(tokenData.Namespace))
                 {
-                    className = tokenData.TokenNamespace + DotSeparator + className;
+                    className = tokenData.Namespace + DotSeparator + className;
                 }
 
                 classNames.Push(className);

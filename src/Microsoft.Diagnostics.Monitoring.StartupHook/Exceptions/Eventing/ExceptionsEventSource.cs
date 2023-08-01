@@ -185,17 +185,17 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             uint Token,
             uint OuterToken,
             string Name,
-            string TokenNamespace)
+            string Namespace)
         {
             Span<EventData> data = stackalloc EventData[5];
             using PinnedData namePinned = PinnedData.Create(Name);
-            using PinnedData tokenNamespacePinned = PinnedData.Create(TokenNamespace);
+            using PinnedData namespacePinned = PinnedData.Create(Namespace);
 
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.ModuleId], ModuleId);
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.Token], Token);
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.OuterToken], OuterToken);
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.Name], namePinned);
-            SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.TokenNamespace], tokenNamespacePinned);
+            SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.Namespace], namespacePinned);
 
             WriteEventCore(ExceptionEvents.EventIds.TokenDescription, data);
 

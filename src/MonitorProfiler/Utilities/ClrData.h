@@ -55,16 +55,16 @@ private:
 class TokenData
 {
 public:
-    TokenData(tstring&& name, tstring&& tokenNamespace, mdTypeDef outerClass) : _name(name), _tokenNamespace(tokenNamespace), _outerClass(outerClass)
+    TokenData(tstring&& name, tstring&& Namespace, mdTypeDef outerClass) : _name(name), _namespace(Namespace), _outerClass(outerClass)
     {
     }
 
     const tstring& GetName() const { return _name; }
-    const tstring& GetTokenNamespace() const { return _tokenNamespace; }
+    const tstring& GetNamespace() const { return _namespace; }
     const mdTypeDef& GetOuterToken() const { return _outerClass; }
 private:
     tstring _name;
-    tstring _tokenNamespace;
+    tstring _namespace;
     mdTypeDef _outerClass;
 };
 
