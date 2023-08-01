@@ -109,7 +109,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
 
             // Only dispose services and not notify of connection disconnects. Don't want services to spend
-            // spend time saving off state, completing sessions, etc but they should aggressively (yet correctly)
+            // time saving off state, completing sessions, etc but they should aggressively (yet correctly)
             // stop their operations at this point.
             foreach (AsyncServiceScope serviceScope in serviceScopes)
             {
