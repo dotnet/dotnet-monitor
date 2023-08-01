@@ -50,7 +50,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     string exceptionsResult = await GetExceptions(apiClient, appRunner, ExceptionsFormat.PlainText);
 
-                    Assert.NotEmpty(exceptionsResult);
+                    var exceptionResultLines = exceptionsResult.Split(new string[] { "\r\n","\n" }, StringSplitOptions.None);
+
+                    Assert.True(exceptionResultLines.Length >= 4);
+                    Assert.Contains("First chance exception at", exceptionResultLines[0]);
+                    Assert.Equal("System.InvalidOperationException: Exception of type 'System.InvalidOperationException' was thrown.", exceptionResultLines[1]);
+                    Assert.Equal("   at Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario.ThrowAndCatchInvalidOperationException(System.Boolean,System.Boolean)", exceptionResultLines[2]);
+                    Assert.Equal("   at Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario.ThrowAndCatchInvalidOperationException()", exceptionResultLines[3]);
                 },
                 configureApp: runner =>
                 {
