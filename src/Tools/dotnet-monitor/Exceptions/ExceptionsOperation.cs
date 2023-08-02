@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
@@ -25,10 +26,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private const char MethodParameterTypesStart = '(';
         private const char MethodParameterTypesEnd = ')';
 
-        private readonly ExceptionsFormat _format;
+        private readonly ExceptionFormat _format;
         private readonly IExceptionsStore _store;
 
-        public ExceptionsOperation(IExceptionsStore store, ExceptionsFormat format)
+        public ExceptionsOperation(IExceptionsStore store, ExceptionFormat format)
         {
             _store = store;
             _format = format;
@@ -36,9 +37,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         public string ContentType => _format switch
         {
-            ExceptionsFormat.PlainText => ContentTypes.TextPlain,
-            ExceptionsFormat.NewlineDelimitedJson => ContentTypes.ApplicationNdJson,
-            ExceptionsFormat.JsonSequence => ContentTypes.ApplicationJsonSequence,
+            ExceptionFormat.PlainText => ContentTypes.TextPlain,
+            ExceptionFormat.NewlineDelimitedJson => ContentTypes.ApplicationNdJson,
+            ExceptionFormat.JsonSequence => ContentTypes.ApplicationJsonSequence,
             _ => ContentTypes.TextPlain
         };
 
@@ -53,11 +54,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
             switch (_format)
             {
-                case ExceptionsFormat.JsonSequence:
-                case ExceptionsFormat.NewlineDelimitedJson:
+                case ExceptionFormat.JsonSequence:
+                case ExceptionFormat.NewlineDelimitedJson:
                     await WriteJson(outputStream, exceptions, token);
                     break;
-                case ExceptionsFormat.PlainText:
+                case ExceptionFormat.PlainText:
                     await WriteText(outputStream, exceptions, token);
                     break;
                 default:
@@ -85,7 +86,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private async Task WriteJsonInstance(Stream stream, IExceptionInstance instance, CancellationToken token)
         {
-            if (_format == ExceptionsFormat.JsonSequence)
+            if (_format == ExceptionFormat.JsonSequence)
             {
                 await stream.WriteAsync(JsonSequenceRecordSeparator, token);
             }

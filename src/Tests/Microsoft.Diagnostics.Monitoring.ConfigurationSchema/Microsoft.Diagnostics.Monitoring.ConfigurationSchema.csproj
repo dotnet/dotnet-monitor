@@ -18,6 +18,8 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\BaseRecordOptions.cs" Link="Options\CollectionRules\Actions\BaseRecordOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectDumpOptions.cs" Link="Options\CollectionRules\Actions\CollectDumpOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectDumpOptionsDefaults.cs" Link="Options\CollectionRules\Actions\CollectDumpOptionsDefaults.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectExceptionsOptions.cs" Link="Options\CollectionRules\Actions\CollectStacksOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectExceptionsOptionsDefaults.cs" Link="Options\CollectionRules\Actions\CollectStacksOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectGCDumpOptions.cs" Link="Options\CollectionRules\Actions\CollectGCDumpOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectLiveMetricsOptions.cs" Link="Options\CollectionRules\Actions\CollectLiveMetricsOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Actions\CollectLiveMetricsOptionsDefaults.cs" Link="Options\CollectionRules\Actions\CollectLiveMetricsOptionsDefaults.cs" />
