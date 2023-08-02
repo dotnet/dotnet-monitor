@@ -299,7 +299,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
                     Assert.Equal(OperationState.Cancelled, operationResult.OperationStatus.Status);
 
-                    await Assert.ThrowsAsync<IOException>(() => drainResponseTask);
+                    // In .NET 8+ this will throw an HttpIOException, which is derived from IOException
+                    await Assert.ThrowsAnyAsync<IOException>(() => drainResponseTask);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },

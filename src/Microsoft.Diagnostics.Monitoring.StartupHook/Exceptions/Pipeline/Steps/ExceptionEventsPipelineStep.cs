@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
@@ -104,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             {
                 StackFrame threadStackFrame = threadStackFrames[index];
                 if (throwingFrame.GetMethod() == threadStackFrame.GetMethod() &&
-                    throwingFrame.GetILOffset() == threadStackFrame.GetILOffset())
+                    GetFrameOffset(throwingFrame) == GetFrameOffset(threadStackFrame))
                 {
                     break;
                 }
@@ -116,7 +117,24 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             {
                 return threadStackFrames.Slice(index);
             }
+
             return ReadOnlySpan<StackFrame>.Empty;
+        }
+
+        // Workaround for https://github.com/dotnet/runtime/issues/89834
+        // The IL and native offsets seem to be correct for StackFrame for the current
+        // thread, but the StackFrame from the exception is giving incorrect values.
+        // Use helper function to make the same offsets together.
+        private static int GetFrameOffset(StackFrame frame)
+        {
+            if (RuntimeInformation.ProcessArchitecture == Architecture.X64)
+            {
+                return frame.GetNativeOffset();
+            }
+            else
+            {
+                return frame.GetILOffset();
+            }
         }
 
         private ulong GetExceptionId(Exception? exception)
