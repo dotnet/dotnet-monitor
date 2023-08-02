@@ -1183,6 +1183,22 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "egressProvider",
+            "in": "query",
+            "description": "The egress provider to which the exceptions are saved.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1208,6 +1224,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Accepted"
           }
         }
       }
