@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public IArtifactOperation Create(IEndpointInfo endpointInfo, MetricsPipelineSettings settings)
         {
-            settings.UseSharedSession = endpointInfo.RuntimeVersion.Major >= 8;
+            settings.UseSharedSession = endpointInfo.RuntimeVersion?.Major >= 8;
             return new MetricsOperation(endpointInfo, settings, _operationTrackerService, _logger);
         }
     }
