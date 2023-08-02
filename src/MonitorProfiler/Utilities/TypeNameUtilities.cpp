@@ -195,6 +195,10 @@ HRESULT TypeNameUtilities::GetTypeDefName(NameCache& nameCache, ModuleID moduleI
             NULL));
 
         mdTypeDef outerTokenType = mdTokenNil;
+
+        tstring wNameString = tstring(wName);
+        tstring wNamespaceString = tstring(wNamespace);
+
         if (IsTdNested(dwTypeDefFlags))
         {
             IfFailRet(pMDImport->GetNestedClassProps(tokenToProcess, &outerTokenType));
@@ -205,14 +209,11 @@ HRESULT TypeNameUtilities::GetTypeDefName(NameCache& nameCache, ModuleID moduleI
 
             if (found != std::string::npos)
             {
-                wcsncpy_s(wNamespace, wName, found);
-                WCHAR wTempName[256];
-                wcsncpy_s(wTempName, wName + found + 1, 256 - (found + 1));
-                memset(wName, 0, sizeof(wName));
-                wcsncpy_s(wName, wTempName, 256);
+                wNamespaceString = wNameString.substr(0, found);
+                wNameString = wNameString.substr(found + 1);
             }
         }
-        nameCache.AddTokenData(moduleId, tokenToProcess, outerTokenType, tstring(wName), tstring(wNamespace));
+        nameCache.AddTokenData(moduleId, tokenToProcess, outerTokenType, tstring(wNameString), tstring(wNamespaceString));
         tokenToProcess = outerTokenType;
     }
 
