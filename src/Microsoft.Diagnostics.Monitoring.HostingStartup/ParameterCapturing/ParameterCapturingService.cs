@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         private ParameterCapturingEvents.ServiceState _serviceState;
         private string _serviceStateDetails = string.Empty;
 
-        private readonly ParameterCapturingDriver? _driver;
+        private readonly ParameterCapturingPipeline? _pipeline;
 
         public ParameterCapturingService(IServiceProvider services)
         {
@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
                 FunctionProbesManager probeManager = new(new LogEmittingProbes(logger));
 
-                _driver = new ParameterCapturingDriver(logger, probeManager);
+                _pipeline = new ParameterCapturingPipeline(logger, probeManager);
             }
             catch (NotSupportedException ex)
             {
@@ -65,33 +65,24 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private void OnStartMessage(StartCapturingParametersPayload payload)
         {
-            if (!IsAvailable() || _driver == null)
+            if (!IsAvailable() || _pipeline == null)
             {
                 BroadcastServiceState();
                 return;
             }
 
-            CapturingRequest request = new(payload);
-
-            if (!_driver.TrySubmitRequest(request) &&
-                !IsAvailable())
-            {
-                BroadcastServiceState();
-            }
+            _ = _pipeline.TrySubmitRequest(payload);
         }
 
         private void OnStopMessage(StopCapturingParametersPayload payload)
         {
-            if (!IsAvailable() || _driver == null)
+            if (!IsAvailable() || _pipeline == null)
             {
                 BroadcastServiceState();
                 return;
             }
 
-            if (!_driver.TryStopRequest(payload.RequestId))
-            {
-                ParameterCapturingEventSource.Instance.UnknownRequestId(payload.RequestId);
-            }
+            _ = _pipeline.TryStopRequest(payload.RequestId);
         }
 
         private void UnrecoverableError(Exception ex)
@@ -105,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             _serviceStateDetails = details ?? string.Empty;
             if (state != ParameterCapturingEvents.ServiceState.Running)
             {
-                _ = _driver?.TryComplete();
+                _ = _pipeline?.TryComplete();
             }
 
             BroadcastServiceState();
@@ -118,7 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (_driver == null)
+            if (_pipeline == null)
             {
                 return;
             }
@@ -126,13 +117,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             ChangeServiceState(ParameterCapturingEvents.ServiceState.Running);
             try
             {
-                await _driver.ExecuteAsync(stoppingToken).ConfigureAwait(false);
+                await _pipeline.RunAsync(stoppingToken).ConfigureAwait(false);
             }
-            catch(OperationCanceledException)
+            catch (OperationCanceledException)
             {
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 UnrecoverableError(ex);
             }
@@ -151,7 +142,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             SharedInternals.MessageDispatcher?.UnregisterCallback(IpcCommand.StartCapturingParameters);
             SharedInternals.MessageDispatcher?.UnregisterCallback(IpcCommand.StopCapturingParameters);
 
-            _driver?.Dispose();
+            _pipeline?.Dispose();
 
             base.Dispose();
         }

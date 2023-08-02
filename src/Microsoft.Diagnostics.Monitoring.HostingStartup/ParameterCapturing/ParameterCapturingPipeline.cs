@@ -6,7 +6,6 @@ using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Functio
 using Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher.Models;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -18,27 +17,26 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
-    internal sealed class CapturingRequest
+    internal sealed class ParameterCapturingPipeline : IDisposable
     {
-        public CapturingRequest(StartCapturingParametersPayload payload)
+        private sealed class CapturingRequest
         {
-            Payload = payload ?? throw new ArgumentNullException(nameof(payload));
-            StopRequest = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            public CapturingRequest(StartCapturingParametersPayload payload)
+            {
+                Payload = payload ?? throw new ArgumentNullException(nameof(payload));
+                StopRequest = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            }
+
+            public StartCapturingParametersPayload Payload { get; }
+            public TaskCompletionSource StopRequest { get; }
         }
 
-        public StartCapturingParametersPayload Payload { get; }
-        public TaskCompletionSource StopRequest { get; }
-    }
-
-
-    internal sealed class ParameterCapturingDriver : IDisposable
-    {
         private readonly IFunctionProbesManager _probeManager;
         private readonly ILogger _logger;
         private readonly Channel<CapturingRequest> _requestQueue;
         private readonly ConcurrentDictionary<Guid, CapturingRequest> _allRequests = new();
 
-        public ParameterCapturingDriver(ILogger logger, IFunctionProbesManager probeManager)
+        public ParameterCapturingPipeline(ILogger logger, IFunctionProbesManager probeManager)
         {
             _logger = logger;
             _probeManager = probeManager;
@@ -47,6 +45,33 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             {
                 FullMode = BoundedChannelFullMode.DropWrite
             });
+        }
+
+        public async Task RunAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                CapturingRequest request = await _requestQueue.Reader.ReadAsync(stoppingToken);
+                if (!TryStartCapturing(request.Payload))
+                {
+                    continue;
+                }
+
+                using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+                cts.CancelAfter(request.Payload.Duration);
+
+                try
+                {
+                    await request.StopRequest.Task.WaitAsync(cts.Token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+
+                }
+
+                StopCapturing(request.Payload.RequestId);
+                _ = _allRequests.TryRemove(request.Payload.RequestId, out _);
+            }
         }
 
         private bool TryStartCapturing(StartCapturingParametersPayload request)
@@ -113,24 +138,26 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             return _requestQueue.Writer.TryComplete();
         }
 
-        public bool TrySubmitRequest(CapturingRequest request)
+        public bool TrySubmitRequest(StartCapturingParametersPayload payload)
         {
-            if (request.Payload.Methods.Length == 0)
+            if (payload.Methods.Length == 0)
             {
                 ParameterCapturingEventSource.Instance.FailedToCapture(
-                    request.Payload.RequestId,
+                    payload.RequestId,
                     ParameterCapturingEvents.CapturingFailedReason.InvalidRequest,
-                    nameof(request.Payload.Methods));
+                    nameof(payload.Methods));
 
                 return false;
             }
 
-            if (!_allRequests.TryAdd(request.Payload.RequestId, request))
+            CapturingRequest request = new(payload);
+
+            if (!_allRequests.TryAdd(payload.RequestId, request))
             {
                 ParameterCapturingEventSource.Instance.FailedToCapture(
-                   request.Payload.RequestId,
+                   payload.RequestId,
                    ParameterCapturingEvents.CapturingFailedReason.InvalidRequest,
-                   nameof(request.Payload.RequestId));
+                   nameof(payload.RequestId));
 
                 return false;
             }
@@ -138,10 +165,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             if (!_requestQueue.Writer.TryWrite(request))
             {
                 _ = request.StopRequest.TrySetCanceled();
-                _ = _allRequests.TryRemove(request.Payload.RequestId, out _);
+                _ = _allRequests.TryRemove(payload.RequestId, out _);
 
                 ParameterCapturingEventSource.Instance.FailedToCapture(
-                    request.Payload.RequestId,
+                    payload.RequestId,
                     ParameterCapturingEvents.CapturingFailedReason.TooManyRequests,
                     ParameterCapturingStrings.TooManyRequestsErrorMessage);
 
@@ -155,39 +182,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             if (!_allRequests.TryGetValue(requestId, out CapturingRequest? request))
             {
+                ParameterCapturingEventSource.Instance.UnknownRequestId(requestId);
                 return false;
             }
 
             _ = request.StopRequest?.TrySetResult();
 
             return true;
-        }
-
-        public async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                CapturingRequest request = await _requestQueue.Reader.ReadAsync(stoppingToken);
-                if (!TryStartCapturing(request.Payload))
-                {
-                    continue;
-                }
-
-                using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-                cts.CancelAfter(request.Payload.Duration);
-
-                try
-                {
-                    await request.StopRequest.Task.WaitAsync(cts.Token).ConfigureAwait(false);
-                }
-                catch (OperationCanceledException)
-                {
-
-                }
-
-                StopCapturing(request.Payload.RequestId);
-                _ = _allRequests.TryRemove(request.Payload.RequestId, out _);
-            }
         }
 
         public void Dispose()
