@@ -41,6 +41,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 return;
             }
 
+            if (instrumentedMethod.CaptureMode == ParameterCaptureMode.Disallowed)
+            {
+                return;
+            }
+
             string[] argValues = new string[instrumentedMethod.NumberOfSupportedParameters];
             int fmtIndex = 0;
             for (int i = 0; i < args.Length; i++)

@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private sealed class InitializedState : IDisposable
         {
-            private readonly ParameterCapturingLogger? _parameterCapturingLogger;
+            private readonly ParameterCapturingLogger _parameterCapturingLogger;
 
             public InitializedState(IServiceProvider services)
             {

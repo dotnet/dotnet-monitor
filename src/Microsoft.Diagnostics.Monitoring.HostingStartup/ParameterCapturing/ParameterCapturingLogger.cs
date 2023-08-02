@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         private BlockingCollection<(string format, string[] args)> _messages;
         private uint _droppedMessageCounter;
         private const int BackgroundLoggingCapacity = 1024;
-        private const string BackgroundLoggingThreadName = "Probe Logging Thread";
+        private const string BackgroundLoggingThreadName = "[dotnet-monitor] Probe Logging Thread";
         private long _disposedState;
 
         private static readonly string[] ExcludedThreads = new[]
@@ -33,6 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             _thread = new Thread(ThreadProc);
 
             _thread.Priority = ThreadPriority.BelowNormal;
+            _thread.IsBackground = true;
             _thread.Name = BackgroundLoggingThreadName;
             _messages = new BlockingCollection<(string, string[])>(BackgroundLoggingCapacity);
             _thread.Start();
@@ -72,10 +73,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private void ThreadProc()
         {
-            while (!DisposableHelper.IsDisposed(ref _disposedState))
+            try
             {
-                (string format, string[] args) = _messages.Take();
-                Log(_systemLogger, format, args);
+                while (!DisposableHelper.IsDisposed(ref _disposedState))
+                {
+                    (string format, string[] args) = _messages.Take();
+                    Log(_systemLogger, format, args);
+                }
+            }
+            catch
+            {
             }
         }
 
@@ -87,6 +94,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             {
                 return;
             }
+
+            _messages.CompleteAdding();
+            _thread.Join();
+            _messages.Dispose();
         }
     }
 }
