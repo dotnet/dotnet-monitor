@@ -11,6 +11,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
     [EventSource(Name = ParameterCapturingEvents.SourceName)]
     internal sealed class ParameterCapturingEventSource : AbstractMonitorEventSource
     {
+        private static readonly Lazy<ParameterCapturingEventSource> s_instance = new Lazy<ParameterCapturingEventSource>(() => new ParameterCapturingEventSource());
+
+
+        public static ParameterCapturingEventSource Instance
+        {
+            get { return s_instance.Value; }
+        }
+
         [Event(ParameterCapturingEvents.EventIds.CapturingStart)]
         public void CapturingStart(Guid RequestId)
         {
