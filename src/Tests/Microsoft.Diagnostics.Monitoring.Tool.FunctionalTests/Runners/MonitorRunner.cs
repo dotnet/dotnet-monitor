@@ -166,7 +166,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
 
             // Ensures that the TestStartupHook is loaded early so it helps resolve other test assemblies
-            _adapter.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, TestStartupHookPath);
+
+            if (!_adapter.Environment.ContainsKey(ToolIdentifiers.EnvironmentVariables.StartupHooks))
+            {
+                _adapter.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, TestStartupHookPath);
+            }
 
             // Allow TestHostingStartup to participate in host building in the tool
             _adapter.Environment.Add("ASPNETCORE_HOSTINGSTARTUPASSEMBLIES", TestHostingStartupAssemblyName);

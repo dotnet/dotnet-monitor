@@ -14,6 +14,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 {
+
     internal static class ScenarioRunner
     {
         public static async Task SingleTarget(
@@ -26,7 +27,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             Action<AppRunner> configureApp = null,
             Action<MonitorCollectRunner> configureTool = null,
             bool disableHttpEgress = false,
-            string profilerLogLevel = null)
+            string profilerLogLevel = null,
+            string CustomStartupHookPath = null)
         {
             DiagnosticPortHelper.Generate(
                 mode,
@@ -38,6 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             toolRunner.DiagnosticPortPath = diagnosticPortPath;
             toolRunner.DisableAuthentication = true;
             toolRunner.DisableHttpEgress = disableHttpEgress;
+            toolRunner.CustomStartupHookPath = CustomStartupHookPath;
 
             configureTool?.Invoke(toolRunner);
 
@@ -51,6 +54,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
             appRunner.ScenarioName = scenarioName;
+            if (!string.IsNullOrEmpty(CustomStartupHookPath))
+            {
+                appRunner.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, CustomStartupHookPath);
+            }
 
             configureApp?.Invoke(appRunner);
 
