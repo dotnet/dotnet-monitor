@@ -183,8 +183,6 @@ HRESULT TypeNameUtilities::GetTypeDefName(NameCache& nameCache, ModuleID moduleI
         }
 
         WCHAR wName[256];
-        WCHAR wNamespace[256];
-        memset(wNamespace, 0, sizeof(wNamespace));
 
         DWORD dwTypeDefFlags = 0;
         IfFailRet(pMDImport->GetTypeDefProps(tokenToProcess,
@@ -197,7 +195,7 @@ HRESULT TypeNameUtilities::GetTypeDefName(NameCache& nameCache, ModuleID moduleI
         mdTypeDef outerTokenType = mdTokenNil;
 
         tstring wNameString = tstring(wName);
-        tstring wNamespaceString = tstring(wNamespace);
+        tstring wNamespaceString = tstring();
 
         if (IsTdNested(dwTypeDefFlags))
         {
@@ -205,7 +203,7 @@ HRESULT TypeNameUtilities::GetTypeDefName(NameCache& nameCache, ModuleID moduleI
         }
         else
         {
-            std::string::size_type found = tstring(wName).find_last_of(L'.');
+            std::string::size_type found = tstring(wName).find_last_of(_T('.'));
 
             if (found != std::string::npos)
             {
