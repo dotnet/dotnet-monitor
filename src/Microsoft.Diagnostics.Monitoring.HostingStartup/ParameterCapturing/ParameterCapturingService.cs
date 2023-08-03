@@ -104,7 +104,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private void BroadcastServiceState()
         {
-            ParameterCapturingEventSource.Instance.ServiceStateUpdate(_serviceState, _serviceStateDetails);
+            ParameterCapturingEventSource.Log.ServiceStateUpdate(_serviceState, _serviceStateDetails);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

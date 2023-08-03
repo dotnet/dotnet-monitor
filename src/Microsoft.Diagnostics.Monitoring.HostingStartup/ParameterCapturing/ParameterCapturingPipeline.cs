@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 }
 
                 _probeManager.StartCapturing(methods);
-                ParameterCapturingEventSource.Instance.CapturingStart(request.RequestId);
+                ParameterCapturingEventSource.Log.CapturingStart(request.RequestId);
                 _logger.LogInformation(
                     ParameterCapturingStrings.StartParameterCapturingFormatString,
                     request.Duration,
@@ -113,14 +113,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             }
             catch (UnresolvedMethodsExceptions ex)
             {
-                ParameterCapturingEventSource.Instance.FailedToCapture(
+                ParameterCapturingEventSource.Log.FailedToCapture(
                     request.RequestId,
                     ParameterCapturingEvents.CapturingFailedReason.UnresolvedMethods,
                     ex.Message);
             }
             catch (Exception ex)
             {
-                ParameterCapturingEventSource.Instance.FailedToCapture(request.RequestId, ex);
+                ParameterCapturingEventSource.Log.FailedToCapture(request.RequestId, ex);
             }
 
             return false;
@@ -130,7 +130,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             _logger.LogInformation(ParameterCapturingStrings.StopParameterCapturing);
             _probeManager.StopCapturing();
-            ParameterCapturingEventSource.Instance.CapturingStop(requestId);
+            ParameterCapturingEventSource.Log.CapturingStop(requestId);
         }
 
         public bool TryComplete()
@@ -142,7 +142,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             if (payload.Methods.Length == 0)
             {
-                ParameterCapturingEventSource.Instance.FailedToCapture(
+                ParameterCapturingEventSource.Log.FailedToCapture(
                     payload.RequestId,
                     ParameterCapturingEvents.CapturingFailedReason.InvalidRequest,
                     nameof(payload.Methods));
@@ -154,7 +154,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             if (!_allRequests.TryAdd(payload.RequestId, request))
             {
-                ParameterCapturingEventSource.Instance.FailedToCapture(
+                ParameterCapturingEventSource.Log.FailedToCapture(
                    payload.RequestId,
                    ParameterCapturingEvents.CapturingFailedReason.InvalidRequest,
                    nameof(payload.RequestId));
@@ -167,7 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 _ = request.StopRequest.TrySetCanceled();
                 _ = _allRequests.TryRemove(payload.RequestId, out _);
 
-                ParameterCapturingEventSource.Instance.FailedToCapture(
+                ParameterCapturingEventSource.Log.FailedToCapture(
                     payload.RequestId,
                     ParameterCapturingEvents.CapturingFailedReason.TooManyRequests,
                     ParameterCapturingStrings.TooManyRequestsErrorMessage);
@@ -182,7 +182,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             if (!_allRequests.TryGetValue(requestId, out CapturingRequest? request))
             {
-                ParameterCapturingEventSource.Instance.UnknownRequestId(requestId);
+                ParameterCapturingEventSource.Log.UnknownRequestId(requestId);
                 return false;
             }
 
