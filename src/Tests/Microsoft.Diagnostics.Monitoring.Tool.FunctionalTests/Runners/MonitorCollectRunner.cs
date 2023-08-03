@@ -53,11 +53,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public DiagnosticPortConnectionMode? ConnectionModeViaCommandLine { get; set; }
 
         /// <summary>
-        /// Determines what StartupHook path (if any) should be set for DOTNET_STARTUP_HOOKS.
-        /// </summary>
-        public string CustomStartupHookPath { get; set; }
-
-        /// <summary>
         /// Path of the diagnostic port to establish when <see cref="ConnectionModeViaCommandLine"/> is <see cref="DiagnosticPortConnectionMode.Listen"/>.
         /// </summary>
         public string DiagnosticPortPath { get; set; }
@@ -144,10 +139,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             if (!string.IsNullOrEmpty(DotNetMonitorUrls))
             {
                 SetEnvironmentVariable("DOTNETMONITOR_Urls", DotNetMonitorUrls);
-            }
-            if (!string.IsNullOrEmpty(CustomStartupHookPath))
-            {
-                SetEnvironmentVariable(ToolIdentifiers.EnvironmentVariables.StartupHooks, CustomStartupHookPath);
             }
 
             if (DisableMetricsViaCommandLine)

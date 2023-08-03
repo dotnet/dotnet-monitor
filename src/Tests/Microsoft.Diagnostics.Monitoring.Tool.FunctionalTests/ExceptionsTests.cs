@@ -77,12 +77,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureApp: runner =>
                 {
                     runner.Architecture = targetArchitecture;
+                    runner.CustomStartupHookPath = RealStartupHookPath;
                 },
                 configureTool: runner =>
                 {
                     runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
-                },
-                customStartupHookPath: RealStartupHookPath);
+                });
         }
 
         [Theory]
@@ -143,12 +143,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureApp: runner =>
                 {
                     runner.Architecture = targetArchitecture;
+                    runner.CustomStartupHookPath = RealStartupHookPath;
                 },
                 configureTool: runner =>
                 {
                     runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
-                },
-                customStartupHookPath: startupHookPath);
+                });
         }
 
         private static async Task<string> GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionsFormat format)
