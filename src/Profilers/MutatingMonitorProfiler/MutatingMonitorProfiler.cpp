@@ -79,6 +79,13 @@ HRESULT MutatingMonitorProfiler::InitializeCommon()
     IfFailRet(InitializeEnvironmentHelper());
 
     // Logging is initialized and can now be used
+    BOOL supported;
+    IfFailLogRet(DoesSupportClrRuntime(supported));
+    if (!supported)
+    {
+        m_pLogger->Log(LogLevel::Debug, _LS("Unsupported runtime."));
+        return CORPROF_E_PROFILER_CANCEL_ACTIVATION;
+    }
 
     // Set product version environment variable to allow discovery of if the profiler
     // as been applied to a target process. Diagnostic tools must use the diagnostic
@@ -128,6 +135,25 @@ HRESULT MutatingMonitorProfiler::InitializeEnvironmentHelper()
 
     _environmentHelper = make_shared<EnvironmentHelper>(m_pEnvironment, m_pLogger);
 
+    return S_OK;
+}
+
+HRESULT MutatingMonitorProfiler::DoesSupportClrRuntime(BOOL& supported)
+{
+    HRESULT hr;
+
+    supported = FALSE;
+
+    COR_PRF_RUNTIME_TYPE runtimeType;
+    IfFailLogRet(m_pCorProfilerInfo->GetRuntimeInformation(
+        nullptr, // instance id
+        &runtimeType,
+        nullptr, nullptr, nullptr, nullptr, // version info
+        0, nullptr, nullptr // version string
+    ));
+
+
+    supported = (runtimeType == COR_PRF_CORE_CLR);
     return S_OK;
 }
 
