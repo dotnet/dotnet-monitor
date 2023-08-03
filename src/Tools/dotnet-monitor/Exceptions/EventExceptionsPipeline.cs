@@ -87,6 +87,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         traceEvent.GetPayload<string>(ExceptionEvents.ExceptionInstancePayloads.ActivityId),
                         traceEvent.GetPayload<ActivityIdFormat>(ExceptionEvents.ExceptionInstancePayloads.ActivityIdFormat));
                     break;
+                case "ExceptionInstanceUnhandled":
+                    // TODO: Advertise unhandled exception as necessary
+                    ulong exceptionId = traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionInstancePayloads.ExceptionId);
+                    break;
                 case "FunctionDescription":
                     _cache.AddFunction(
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.FunctionId),

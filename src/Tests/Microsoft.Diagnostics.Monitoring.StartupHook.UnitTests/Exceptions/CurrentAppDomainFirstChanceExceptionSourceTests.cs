@@ -10,7 +10,7 @@ using Xunit;
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
-    public sealed class CurrentAppDomainExceptionSourceTests
+    public sealed class CurrentAppDomainFirstChanceExceptionSourceTests
     {
         private readonly Thread _thisThread = Thread.CurrentThread;
 
@@ -26,14 +26,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
         }
 
         [Fact]
-        public void CurrentAppDomainExceptionSource_ReportsExceptionInsideLifetime()
+        public void CurrentAppDomainFirstChanceExceptionSource_ReportsExceptionInsideLifetime()
         {
             List<Exception> reportedExceptions = new();
 
             Exception thrownException = new();
-            using (CurrentAppDomainExceptionSource source = new())
+            using (CurrentAppDomainFirstChanceExceptionSource source = new())
             {
-                source.ExceptionThrown += CreateHandler(reportedExceptions);
+                source.Exception += CreateHandler(reportedExceptions);
                 try
                 {
                     throw thrownException;
@@ -48,13 +48,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
         }
 
         [Fact]
-        public void CurrentAppDomainExceptionSource_NoExceptionsOutsideLifetime()
+        public void CurrentAppDomainFirstChanceExceptionSource_NoExceptionsOutsideLifetime()
         {
             List<Exception> reportedExceptions = new();
 
-            using (CurrentAppDomainExceptionSource source = new())
+            using (CurrentAppDomainFirstChanceExceptionSource source = new())
             {
-                source.ExceptionThrown += CreateHandler(reportedExceptions);
+                source.Exception += CreateHandler(reportedExceptions);
             }
 
             try
@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
         }
 
         [Fact]
-        public void CurrentAppDomainExceptionSource_ReentrancyPrevented()
+        public void CurrentAppDomainFirstChanceExceptionSource_ReentrancyPrevented()
         {
             bool handled = false;
             EventHandler<ExceptionEventArgs> handler = (sender, args) =>
@@ -84,9 +84,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             };
 
             Exception thrownException = new();
-            using (CurrentAppDomainExceptionSource source = new())
+            using (CurrentAppDomainFirstChanceExceptionSource source = new())
             {
-                source.ExceptionThrown += handler;
+                source.Exception += handler;
                 try
                 {
                     throw thrownException;
