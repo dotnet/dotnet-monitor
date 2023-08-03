@@ -1073,6 +1073,17 @@
           ],
           "description": "Enables or disables the exceptions feature. By default, this feature is enabled if in-process features are enabled.",
           "default": true
+        },
+        "TopLevelLimit": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The number of top-level exceptions to keep in the cache before automatically removing older exceptions. A top-level exception is one that is not an inner exception of another exception.",
+          "format": "int32",
+          "default": 20,
+          "maximum": 2147483647.0,
+          "minimum": 1.0
         }
       }
     },

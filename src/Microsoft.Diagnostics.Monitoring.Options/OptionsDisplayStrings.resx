@@ -784,6 +784,9 @@
   <data name="DisplayAttributeDescription_InProcessFeaturesOptions_Exceptions" xml:space="preserve">
     <value>Options for the in-process exceptions feature.</value>
   </data>
+  <data name="DisplayAttributeDescription_ExceptionsOptions_TopLevelLimit" xml:space="preserve">
+    <value>The number of top-level exceptions to keep in the cache before automatically removing older exceptions. A top-level exception is one that is not an inner exception of another exception.</value>
+  </data>
   <data name="DisplayAttributeDescription_CollectExceptionsOptions_Egress" xml:space="preserve">
     <value>The name of the egress provider to which the exceptions are egressed.</value>
   </data>

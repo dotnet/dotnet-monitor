@@ -991,6 +991,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The number of top-level exceptions to keep in the cache before automatically removing older exceptions. A top-level exception is one that is not an inner exception of another exception..
+        /// </summary>
+        public static string DisplayAttributeDescription_ExceptionsOptions_TopLevelLimit {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ExceptionsOptions_TopLevelLimit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The arguments to pass to the executable..
         /// </summary>
         public static string DisplayAttributeDescription_ExecuteOptions_Arguments {
