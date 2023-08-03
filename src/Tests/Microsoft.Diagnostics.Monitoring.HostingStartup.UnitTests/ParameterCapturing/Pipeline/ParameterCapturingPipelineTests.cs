@@ -59,7 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             _onCapturingFailed = onCapturingFailed;
         }
 
-        public void CapturingStart(StartCapturingParametersPayload request, List<MethodInfo> methods)
+        public void CapturingStart(StartCapturingParametersPayload request, IList<MethodInfo> methods)
         {
             _onCapturingStart?.Invoke(request, methods);
         }
