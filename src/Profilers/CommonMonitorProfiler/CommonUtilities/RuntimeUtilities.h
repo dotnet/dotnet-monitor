@@ -13,9 +13,9 @@ class RuntimeUtilities
         {
             HRESULT hr;
 
-            ExpectedPtr(pCorProfilerInfo);
-
             supported = FALSE;
+
+            ExpectedPtr(pCorProfilerInfo);
 
             COR_PRF_RUNTIME_TYPE runtimeType;
             IfFailRet(pCorProfilerInfo->GetRuntimeInformation(
