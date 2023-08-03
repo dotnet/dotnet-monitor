@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             public void Dispose()
             {
                 ProbeManager.Dispose();
-                _parameterCapturingLogger?.Dispose();
+                _parameterCapturingLogger.Dispose();
             }
         }
 

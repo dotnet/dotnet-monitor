@@ -34,11 +34,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private static ParameterCaptureMode ComputeCaptureMode(string? typeName)
         {
-            foreach(string prefix in SystemTypePrefixes)
+            if (typeName != null)
             {
-                if (typeName?.StartsWith(prefix) == true)
+                foreach (string prefix in SystemTypePrefixes)
                 {
-                    return ParameterCaptureMode.Background;
+                    if (typeName?.StartsWith(prefix) == true)
+                    {
+                        return ParameterCaptureMode.Background;
+                    }
                 }
             }
 

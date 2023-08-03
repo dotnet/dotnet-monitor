@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             {
                 if (!_messages.TryAdd((format, args)))
                 {
-                    _droppedMessageCounter++;
+                    Interlocked.Increment(ref _droppedMessageCounter);
                 }
             }
         }
