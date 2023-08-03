@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.Options;
-using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -70,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return InvokeForProcess(processInfo =>
             {
-                ExceptionsFormat format = ComputeFormat(Request.GetTypedHeaders().Accept) ?? ExceptionsFormat.PlainText;
+                ExceptionFormat format = ComputeFormat(Request.GetTypedHeaders().Accept) ?? ExceptionFormat.PlainText;
 
                 IArtifactOperation operation = processInfo.EndpointInfo.ServiceProvider
                     .GetRequiredService<IExceptionsOperationFactory>()
@@ -86,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Exceptions);
         }
 
-        private static ExceptionsFormat? ComputeFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
+        private static ExceptionFormat? ComputeFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
         {
             if (acceptedHeaders == null || acceptedHeaders.Count == 0)
             {
@@ -95,27 +94,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             if (acceptedHeaders.Contains(ContentTypeUtilities.TextPlainHeader))
             {
-                return ExceptionsFormat.PlainText;
+                return ExceptionFormat.PlainText;
             }
             if (acceptedHeaders.Contains(ContentTypeUtilities.NdJsonHeader))
             {
-                return ExceptionsFormat.NewlineDelimitedJson;
+                return ExceptionFormat.NewlineDelimitedJson;
             }
             if (acceptedHeaders.Contains(ContentTypeUtilities.JsonSequenceHeader))
             {
-                return ExceptionsFormat.JsonSequence;
+                return ExceptionFormat.JsonSequence;
             }
             if (acceptedHeaders.Any(ContentTypeUtilities.TextPlainHeader.IsSubsetOf))
             {
-                return ExceptionsFormat.PlainText;
+                return ExceptionFormat.PlainText;
             }
             if (acceptedHeaders.Any(ContentTypeUtilities.NdJsonHeader.IsSubsetOf))
             {
-                return ExceptionsFormat.NewlineDelimitedJson;
+                return ExceptionFormat.NewlineDelimitedJson;
             }
             if (acceptedHeaders.Any(ContentTypeUtilities.JsonSequenceHeader.IsSubsetOf))
             {
-                return ExceptionsFormat.JsonSequence;
+                return ExceptionFormat.JsonSequence;
             }
             return null;
         }

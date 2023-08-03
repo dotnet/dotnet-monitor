@@ -6,6 +6,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
     internal static class KnownCollectionRuleActions
     {
         public const string CollectDump = nameof(CollectDump);
+        public const string CollectExceptions = nameof(CollectExceptions);
         public const string CollectGCDump = nameof(CollectGCDump);
         public const string CollectLogs = nameof(CollectLogs);
         public const string CollectStacks = nameof(CollectStacks);
