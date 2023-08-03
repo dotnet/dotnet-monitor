@@ -56,8 +56,19 @@ Allowed schemes:
 
 ### Sample Request
 
+Collect exceptions from a specific process in plain text format:
+
 ```http
-GET /exceptions HTTP/1.1
+GET /exceptions?pid=21632 HTTP/1.1
+Host: localhost:52323
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
+Accept: text/plain
+```
+
+or
+
+```http
+GET /exceptions?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 Accept: text/plain
@@ -97,6 +108,8 @@ Object name: 'System.Net.Sockets.NetworkStream'.
 ```
 
 ### Sample Request
+
+Collect exceptions from the default process in newline-delimited JSON format:
 
 ```http
 GET /exceptions HTTP/1.1
