@@ -268,11 +268,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name of the egress provider to which the dump is egressed..
+        ///   Looks up a localized string similar to The duration of time in which the artifact is collected..
         /// </summary>
-        public static string DisplayAttributeDescription_CollectDumpOptions_Egress {
+        public static string DisplayAttributeDescription_CollectArtifactOptions_Duration {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectDumpOptions_Egress", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectArtifactOptions_Duration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the egress provider to which the artifact is egressed..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectArtifactOptions_Egress {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectArtifactOptions_Egress", resourceCulture);
             }
         }
         
@@ -286,29 +295,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name of the egress provider to which the exceptions are egressed..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectExceptionsOptions_Egress {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectExceptionsOptions_Egress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The format used to display the exceptions..
         /// </summary>
         public static string DisplayAttributeDescription_CollectExceptionsOptions_Format {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_CollectExceptionsOptions_Format", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name of the egress provider to which the GC dump is egressed..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectGCDumpOptions_Egress {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectGCDumpOptions_Egress", resourceCulture);
             }
         }
         
@@ -523,24 +514,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The duration of time in which live metrics are collected..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectLiveMetricsOptions_Duration {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectLiveMetricsOptions_Duration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name of the egress provider to which the live metrics are egressed..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectLiveMetricsOptions_Egress {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectLiveMetricsOptions_Egress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Determines if the default counter providers should be used..
         /// </summary>
         public static string DisplayAttributeDescription_CollectLiveMetricsOptions_IncludeDefaultProviders {
@@ -577,24 +550,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The duration of time in which logs are collected..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectLogsOptions_Duration {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectLogsOptions_Duration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name of the egress provider to which the logs are egressed..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectLogsOptions_Egress {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectLogsOptions_Egress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to A custom mapping of logger categories to log levels that describes at what level a log statement that matches one of the given categories should be captured..
         /// </summary>
         public static string DisplayAttributeDescription_CollectLogsOptions_FilterSpecs {
@@ -622,15 +577,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name of the egress provider to which the call stacks are egressed..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectStacksOptions_Egress {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectStacksOptions_Egress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The format used to display the call stacks..
         /// </summary>
         public static string DisplayAttributeDescription_CollectStacksOptions_Format {
@@ -645,24 +591,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_CollectTraceOptions_BufferSizeMegabytes {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_BufferSizeMegabytes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The duration of time in which trace events are collected..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectTraceOptions_Duration {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_Duration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name of the egress provider to which the trace is egressed..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectTraceOptions_Egress {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_Egress", resourceCulture);
             }
         }
         

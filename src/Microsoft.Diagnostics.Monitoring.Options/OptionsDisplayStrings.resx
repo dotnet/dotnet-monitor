@@ -173,17 +173,9 @@
     <value>The list of HTTP response status codes to monitor. Each item of the list can be a single code or a range of codes (e.g. "400-499").</value>
     <comment>The description provided for the StatusCodes parameter on AspNetResponseStatusOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_CollectDumpOptions_Egress" xml:space="preserve">
-    <value>The name of the egress provider to which the dump is egressed.</value>
-    <comment>The description provided for the Egress parameter on CollectDumpOptions.</comment>
-  </data>
   <data name="DisplayAttributeDescription_CollectDumpOptions_Type" xml:space="preserve">
     <value>The type of dump to collect from the target process.</value>
     <comment>The description provided for the Type parameter on CollectDumpOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_CollectGCDumpOptions_Egress" xml:space="preserve">
-    <value>The name of the egress provider to which the GC dump is egressed.</value>
-    <comment>The description provided for the Egress parameter on CollectGCDumpOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectionRuleActionOptions_Settings" xml:space="preserve">
     <value>The settings to pass to the action when it is executed. Settings may be optional if the action doesn't require settings or its settings are all optional.</value>
@@ -233,14 +225,6 @@
     <value>The default log level at which logs are collected for entries in the FilterSpecs that do not have a specified LogLevel value.</value>
     <comment>The description provided for the LogLevel parameter on CollectLogsOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_CollectLogsOptions_Duration" xml:space="preserve">
-    <value>The duration of time in which logs are collected.</value>
-    <comment>The description provided for the Duration parameter on CollectLogsOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_CollectLogsOptions_Egress" xml:space="preserve">
-    <value>The name of the egress provider to which the logs are egressed.</value>
-    <comment>The description provided for the Egress parameter on CollectLogsOptions.</comment>
-  </data>
   <data name="DisplayAttributeDescription_CollectLogsOptions_FilterSpecs" xml:space="preserve">
     <value>A custom mapping of logger categories to log levels that describes at what level a log statement that matches one of the given categories should be captured.</value>
     <comment>The description provided for the FilterSpecs parameter on CollectLogsOptions.</comment>
@@ -252,14 +236,6 @@
   <data name="DisplayAttributeDescription_CollectTraceOptions_BufferSizeMegabytes" xml:space="preserve">
     <value>The size of the event pipe buffer to use in the target process. If the event pipe buffer fills with too many events, newer events will be dropped until the buffer is drained to fit new events.</value>
     <comment>The description provided for the BufferSizeMegabytes parameter on CollectTraceOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_CollectTraceOptions_Duration" xml:space="preserve">
-    <value>The duration of time in which trace events are collected.</value>
-    <comment>The description provided for the Duration parameter on CollectTraceOptions.</comment>
-  </data>
-  <data name="DisplayAttributeDescription_CollectTraceOptions_Egress" xml:space="preserve">
-    <value>The name of the egress provider to which the trace is egressed.</value>
-    <comment>The description provided for the Egress parameter on CollectTraceOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_CollectTraceOptions_Profile" xml:space="preserve">
     <value>Use a predefined set of event providers and settings to capture in the trace. More than one profile may be specified at the same time. Either Profile or Providers must be specified, but not both.</value>
@@ -631,13 +607,11 @@
     <value>The threshold level the counter must maintain (or lower) for the specified duration. If LessThan is specified, the default value of GreaterThan becomes null.</value>
     <comment>The description provided for the LessThan parameter on ThreadpoolQueueLengthOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_Duration" xml:space="preserve">
-    <value>The duration of time in which live metrics are collected.</value>
-    <comment>The description provided for the Duration parameter on CollectLiveMetricsOptions.</comment>
+  <data name="DisplayAttributeDescription_CollectArtifactOptions_Duration" xml:space="preserve">
+    <value>The duration of time in which the artifact is collected.</value>
   </data>
-  <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_Egress" xml:space="preserve">
-    <value>The name of the egress provider to which the live metrics are egressed.</value>
-    <comment>The description provided for the Egress parameter on CollectLiveMetricsOptions.</comment>
+  <data name="DisplayAttributeDescription_CollectArtifactOptions_Egress" xml:space="preserve">
+    <value>The name of the egress provider to which the artifact is egressed.</value>
   </data>
   <data name="DisplayAttributeDescription_CollectLiveMetricsOptions_IncludeDefaultProviders" xml:space="preserve">
     <value>Determines if the default counter providers should be used.</value>
@@ -663,9 +637,6 @@
   </data>
   <data name="DisplayAttributeDescription_CollectStacksOptions_Format" xml:space="preserve">
     <value>The format used to display the call stacks.</value>
-  </data>
-  <data name="DisplayAttributeDescription_CollectStacksOptions_Egress" xml:space="preserve">
-    <value>The name of the egress provider to which the call stacks are egressed.</value>
   </data>
   <data name="DisplayAttributeDescription_CollectTraceOptions_StoppingEvent" xml:space="preserve">
     <value>The event to watch for while collecting the trace, and once observed the trace will be stopped.</value>
@@ -786,9 +757,6 @@
   </data>
   <data name="DisplayAttributeDescription_ExceptionsOptions_TopLevelLimit" xml:space="preserve">
     <value>The number of top-level exceptions to keep in the cache before automatically removing older exceptions. A top-level exception is one that is not an inner exception of another exception.</value>
-  </data>
-  <data name="DisplayAttributeDescription_CollectExceptionsOptions_Egress" xml:space="preserve">
-    <value>The name of the egress provider to which the exceptions are egressed.</value>
   </data>
   <data name="DisplayAttributeDescription_CollectExceptionsOptions_Format" xml:space="preserve">
     <value>The format used to display the exceptions.</value>
