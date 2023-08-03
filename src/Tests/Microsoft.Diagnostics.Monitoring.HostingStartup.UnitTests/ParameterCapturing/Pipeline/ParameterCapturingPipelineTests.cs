@@ -45,12 +45,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
     internal sealed class TestParameterCapturingCallbacks : IParameterCapturingPipelineCallbacks
     {
-        private readonly Action<StartCapturingParametersPayload, List<MethodInfo>> _onCapturingStart;
+        private readonly Action<StartCapturingParametersPayload, IList<MethodInfo>> _onCapturingStart;
         private readonly Action<Guid> _onCapturingStop;
         private readonly Action<Guid, ParameterCapturingEvents.CapturingFailedReason, string> _onCapturingFailed;
 
         public TestParameterCapturingCallbacks(
-            Action<StartCapturingParametersPayload, List<MethodInfo>> onCapturingStart = null,
+            Action<StartCapturingParametersPayload, IList<MethodInfo>> onCapturingStart = null,
             Action<Guid> onCapturingStop = null,
             Action<Guid, ParameterCapturingEvents.CapturingFailedReason, string> onCapturingFailed = null)
         {

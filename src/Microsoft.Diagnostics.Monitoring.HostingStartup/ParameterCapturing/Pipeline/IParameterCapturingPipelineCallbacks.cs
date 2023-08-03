@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 {
     internal interface IParameterCapturingPipelineCallbacks
     {
-        public void CapturingStart(StartCapturingParametersPayload request, List<MethodInfo> methods);
+        public void CapturingStart(StartCapturingParametersPayload request, IList<MethodInfo> methods);
         public void CapturingStop(Guid RequestId);
         public void FailedToCapture(Guid RequestId, ParameterCapturingEvents.CapturingFailedReason Reason, string Details);
     }

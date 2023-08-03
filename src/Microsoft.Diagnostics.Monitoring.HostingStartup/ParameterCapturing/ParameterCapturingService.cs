@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 _eventSource = eventSource;
             }
 
-            public void CapturingStart(StartCapturingParametersPayload request, List<MethodInfo> methods)
+            public void CapturingStart(StartCapturingParametersPayload request, IList<MethodInfo> methods)
             {
                 _eventSource.CapturingStart(request.RequestId);
                 _logger?.LogInformation(
