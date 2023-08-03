@@ -99,14 +99,24 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public async Task Request_DoesInstallAndNotify()
         {
             // Arrange
+            using CancellationTokenSource cts = new();
+            cts.CancelAfter(CommonTestTimeouts.GeneralTimeout);
+
             TaskCompletionSource probeManagerStartSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            TaskCompletionSource<Guid> onStartCallbackSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            using IDisposable registration = cts.Token.Register(() =>
+            {
+                _ = probeManagerStartSource.TrySetCanceled(cts.Token);
+                _ = onStartCallbackSource.TrySetCanceled(cts.Token);
+            });
+
             TestFunctionProbesManager probeManager = new(
                 onStart: (_) =>
                 {
                     probeManagerStartSource.TrySetResult();
                 });
 
-            TaskCompletionSource<Guid> onStartCallbackSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
             TestParameterCapturingCallbacks callbacks = new(
                 onCapturingStart: (payload, _) =>
                 {
@@ -116,7 +126,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan);
 
-            using CancellationTokenSource cts = new();
             Task pipelineTask = pipeline.RunAsync(cts.Token);
 
             // Act
@@ -132,9 +141,17 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public async Task UnresolvableMethod_DoesNotify()
         {
             // Arrange
-            TestFunctionProbesManager probeManager = new();
+            using CancellationTokenSource cts = new();
+            cts.CancelAfter(CommonTestTimeouts.GeneralTimeout);
 
             TaskCompletionSource<(Guid, ParameterCapturingEvents.CapturingFailedReason, string)> onFailedCallbackSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            using IDisposable registration = cts.Token.Register(() =>
+            {
+                _ = onFailedCallbackSource.TrySetCanceled(cts.Token);
+            });
+
+            TestFunctionProbesManager probeManager = new();
+
             TestParameterCapturingCallbacks callbacks = new(
                 onCapturingFailed: (id, reason, details) =>
                 {
@@ -157,7 +174,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 }
             };
 
-            using CancellationTokenSource cts = new();
             Task pipelineTask = pipeline.RunAsync(cts.Token);
 
             // Act
@@ -174,14 +190,24 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public async Task RequestStop_DoesStopCapturingAndNotify()
         {
             // Arrange
+            using CancellationTokenSource cts = new();
+            cts.CancelAfter(CommonTestTimeouts.GeneralTimeout);
+
             TaskCompletionSource probeManagerStopSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            TaskCompletionSource<Guid> onStopCallbackSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            using IDisposable registration = cts.Token.Register(() =>
+            {
+                _ = probeManagerStopSource.TrySetCanceled(cts.Token);
+                _ = onStopCallbackSource.TrySetCanceled(cts.Token);
+            });
+
             TestFunctionProbesManager probeManager = new(
                 onStop: () =>
                 {
                     probeManagerStopSource.TrySetResult();
                 });
 
-            TaskCompletionSource<Guid> onStopCallbackSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
             TestParameterCapturingCallbacks callbacks = new(
                 onCapturingStop: (requestId) =>
                 {
@@ -191,7 +217,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan);
 
-            using CancellationTokenSource cts = new();
             Task pipelineTask = pipeline.RunAsync(cts.Token);
             pipeline.SubmitRequest(payload);
 
@@ -208,9 +233,18 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public async Task Request_StopsAfterDuration()
         {
             // Arrange
-            TestFunctionProbesManager probeManager = new();
+            using CancellationTokenSource cts = new();
+            cts.CancelAfter(CommonTestTimeouts.GeneralTimeout);
 
             TaskCompletionSource<Guid> onStopCallbackSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            using IDisposable registration = cts.Token.Register(() =>
+            {
+                _ = onStopCallbackSource.TrySetCanceled(cts.Token);
+            });
+
+            TestFunctionProbesManager probeManager = new();
+
             TestParameterCapturingCallbacks callbacks = new(
                 onCapturingStop: (requestId) =>
                 {
@@ -220,7 +254,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(TimeSpan.FromSeconds(1));
 
-            using CancellationTokenSource cts = new();
             Task pipelineTask = pipeline.RunAsync(cts.Token);
 
             // Act
@@ -235,6 +268,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public async Task RunAsync_ThrowsOnCapturingStopFailure()
         {
             // Arrange
+            using CancellationTokenSource cts = new();
+            cts.CancelAfter(CommonTestTimeouts.GeneralTimeout);
+
             Exception thrownException = new Exception("test");
             TestFunctionProbesManager probeManager = new(
                 onStop: () =>
@@ -247,22 +283,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(TimeSpan.FromSeconds(1));
 
-            using CancellationTokenSource cts = new();
-
             // Act
             Task pipelineTask = pipeline.RunAsync(cts.Token);
             pipeline.SubmitRequest(payload);
 
             // Assert
-            try
-            {
-                await pipelineTask;
-                Assert.Fail("Exception did not propagate");
-            }
-            catch (Exception ex)
-            {
-                Assert.Equal(ex, thrownException);
-            }
+            Exception ex = await Assert.ThrowsAsync<Exception>(() => pipelineTask).WaitAsync(cts.Token);
+            Assert.Equal(ex, thrownException);
         }
 
         private StartCapturingParametersPayload CreateStartCapturingPayload(TimeSpan duration)
