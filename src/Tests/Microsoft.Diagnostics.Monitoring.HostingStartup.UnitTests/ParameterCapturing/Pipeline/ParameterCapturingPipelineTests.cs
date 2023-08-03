@@ -116,7 +116,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan);
 
-            Task pipelineTask = pipeline.RunAsync(CancellationToken.None);
+            using CancellationTokenSource cts = new();
+            Task pipelineTask = pipeline.RunAsync(cts.Token);
 
             // Act
             pipeline.SubmitRequest(payload);
@@ -156,7 +157,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 }
             };
 
-            Task pipelineTask = pipeline.RunAsync(CancellationToken.None);
+            using CancellationTokenSource cts = new();
+            Task pipelineTask = pipeline.RunAsync(cts.Token);
 
             // Act
             pipeline.SubmitRequest(payload);
@@ -189,7 +191,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan);
 
-            Task pipelineTask = pipeline.RunAsync(CancellationToken.None);
+            using CancellationTokenSource cts = new();
+            Task pipelineTask = pipeline.RunAsync(cts.Token);
             pipeline.SubmitRequest(payload);
 
             // Act
@@ -217,7 +220,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(TimeSpan.FromSeconds(1));
 
-            Task pipelineTask = pipeline.RunAsync(CancellationToken.None);
+            using CancellationTokenSource cts = new();
+            Task pipelineTask = pipeline.RunAsync(cts.Token);
 
             // Act
             pipeline.SubmitRequest(payload);
@@ -243,8 +247,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(TimeSpan.FromSeconds(1));
 
+            using CancellationTokenSource cts = new();
+
             // Act
-            Task pipelineTask = pipeline.RunAsync(CancellationToken.None);
+            Task pipelineTask = pipeline.RunAsync(cts.Token);
             pipeline.SubmitRequest(payload);
 
             // Assert
