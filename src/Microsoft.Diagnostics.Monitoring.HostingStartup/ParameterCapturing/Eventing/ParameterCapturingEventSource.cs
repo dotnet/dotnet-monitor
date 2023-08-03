@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using Microsoft.Diagnostics.Monitoring.StartupHook.Eventing;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using System;
@@ -11,8 +12,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
     [EventSource(Name = ParameterCapturingEvents.SourceName)]
     internal sealed class ParameterCapturingEventSource : AbstractMonitorEventSource
     {
-        public static readonly ParameterCapturingEventSource Log = new();
-
         [Event(ParameterCapturingEvents.EventIds.CapturingStart)]
         public void CapturingStart(Guid RequestId)
         {

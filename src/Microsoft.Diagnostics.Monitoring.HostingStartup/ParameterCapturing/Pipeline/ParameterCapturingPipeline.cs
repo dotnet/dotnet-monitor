@@ -1,12 +1,10 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eventing;
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher.Models;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,7 +13,7 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
+namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pipeline
 {
     internal sealed class ParameterCapturingPipeline : IDisposable
     {
@@ -32,14 +30,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         }
 
         private readonly IFunctionProbesManager _probeManager;
-        private readonly ILogger _logger;
+        private readonly IParameterCapturingPipelineCallbacks _callbacks;
         private readonly Channel<CapturingRequest> _requestQueue;
         private readonly ConcurrentDictionary<Guid, CapturingRequest> _allRequests = new();
 
-        public ParameterCapturingPipeline(ILogger logger, IFunctionProbesManager probeManager)
+        public ParameterCapturingPipeline(IFunctionProbesManager probeManager, IParameterCapturingPipelineCallbacks callbacks)
         {
-            _logger = logger;
             _probeManager = probeManager;
+            _callbacks = callbacks;
 
             _requestQueue = Channel.CreateBounded<CapturingRequest>(new BoundedChannelOptions(capacity: 1)
             {
@@ -69,10 +67,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
                 }
 
-                _logger.LogInformation(ParameterCapturingStrings.StopParameterCapturing);
                 _probeManager.StopCapturing();
-                ParameterCapturingEventSource.Log.CapturingStop(request.Payload.RequestId);
 
+                _callbacks.CapturingStop(request.Payload.RequestId);
                 _ = _allRequests.TryRemove(request.Payload.RequestId, out _);
             }
         }
@@ -101,29 +98,27 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 if (methodsFailedToResolve.Count > 0)
                 {
                     UnresolvedMethodsExceptions ex = new(methodsFailedToResolve);
-                    _logger.LogWarning(ex.Message);
                     throw ex;
                 }
 
                 _probeManager.StartCapturing(methods);
-                ParameterCapturingEventSource.Log.CapturingStart(request.RequestId);
-                _logger.LogInformation(
-                    ParameterCapturingStrings.StartParameterCapturingFormatString,
-                    request.Duration,
-                    methods.Count);
+                _callbacks.CapturingStart(request, methods);
 
                 return true;
             }
             catch (UnresolvedMethodsExceptions ex)
             {
-                ParameterCapturingEventSource.Log.FailedToCapture(
+                _callbacks.FailedToCapture(
                     request.RequestId,
                     ParameterCapturingEvents.CapturingFailedReason.UnresolvedMethods,
                     ex.Message);
             }
             catch (Exception ex)
             {
-                ParameterCapturingEventSource.Log.FailedToCapture(request.RequestId, ex);
+                _callbacks.FailedToCapture(
+                    request.RequestId,
+                    ParameterCapturingEvents.CapturingFailedReason.InternalError,
+                    ex.ToString());
             }
 
             return false;
@@ -134,28 +129,17 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             return _requestQueue.Writer.TryComplete();
         }
 
-        public bool TrySubmitRequest(StartCapturingParametersPayload payload)
+        public void SubmitRequest(StartCapturingParametersPayload payload)
         {
             if (payload.Methods.Length == 0)
             {
-                ParameterCapturingEventSource.Log.FailedToCapture(
-                    payload.RequestId,
-                    ParameterCapturingEvents.CapturingFailedReason.InvalidRequest,
-                    nameof(payload.Methods));
-
-                return false;
+                throw new ArgumentException(nameof(payload.Methods));
             }
 
             CapturingRequest request = new(payload);
-
             if (!_allRequests.TryAdd(payload.RequestId, request))
             {
-                ParameterCapturingEventSource.Log.FailedToCapture(
-                   payload.RequestId,
-                   ParameterCapturingEvents.CapturingFailedReason.InvalidRequest,
-                   nameof(payload.RequestId));
-
-                return false;
+                throw new ArgumentException(nameof(payload.RequestId));
             }
 
             if (!_requestQueue.Writer.TryWrite(request))
@@ -163,28 +147,18 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 _ = request.StopRequest.TrySetCanceled();
                 _ = _allRequests.TryRemove(payload.RequestId, out _);
 
-                ParameterCapturingEventSource.Log.FailedToCapture(
-                    payload.RequestId,
-                    ParameterCapturingEvents.CapturingFailedReason.TooManyRequests,
-                    ParameterCapturingStrings.TooManyRequestsErrorMessage);
-
-                return false;
+                throw new TooManyRequestsException(ParameterCapturingStrings.TooManyRequestsErrorMessage);
             }
-
-            return true;
         }
 
-        public bool TryStopRequest(Guid requestId)
+        public void RequestStop(Guid requestId)
         {
             if (!_allRequests.TryGetValue(requestId, out CapturingRequest? request))
             {
-                ParameterCapturingEventSource.Log.UnknownRequestId(requestId);
-                return false;
+                throw new ArgumentException(nameof(requestId));
             }
 
             _ = request.StopRequest?.TrySetResult();
-
-            return true;
         }
 
         public void Dispose()

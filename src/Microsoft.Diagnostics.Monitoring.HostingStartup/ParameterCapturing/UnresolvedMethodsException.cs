@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
-    public class UnresolvedMethodsExceptions : Exception
+    internal sealed class UnresolvedMethodsExceptions : Exception
     {
 
         public UnresolvedMethodsExceptions(MethodDescription methodDescription) : this(new MethodDescription[] { methodDescription }) { }
