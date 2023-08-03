@@ -94,12 +94,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             _serviceState = state;
             _serviceStateDetails = details ?? string.Empty;
+            BroadcastServiceState();
+
             if (state != ParameterCapturingEvents.ServiceState.Running)
             {
                 _ = _pipeline?.TryComplete();
             }
-
-            BroadcastServiceState();
         }
 
         private void BroadcastServiceState()
