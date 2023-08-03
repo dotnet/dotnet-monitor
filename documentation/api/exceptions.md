@@ -48,7 +48,7 @@ Allowed schemes:
 | 200 OK | [ExceptionInstance](definitions.md#exceptioninstance)[] | Newline-delimited JSON representation of first chance exceptions from the target process. | `application/x-ndjson` |
 | 200 OK | [ExceptionInstance](definitions.md#exceptioninstance)[] | Separator-delimited JSON representation of first chance exceptions from the target process. | `application/json-seq` |
 | 200 OK | text | Text representation of first chance exceptions from the target process. | `text/plain` |
-| 202 Accepted | | When an egress provider is specified,. | |
+| 202 Accepted | | When an egress provider is specified. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 
