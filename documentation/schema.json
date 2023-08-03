@@ -1610,13 +1610,13 @@
               "type": "null"
             },
             {
-              "$ref": "#/definitions/ExceptionsFormat"
+              "$ref": "#/definitions/ExceptionFormat"
             }
           ]
         }
       }
     },
-    "ExceptionsFormat": {
+    "ExceptionFormat": {
       "type": "string",
       "description": "",
       "x-enumNames": [

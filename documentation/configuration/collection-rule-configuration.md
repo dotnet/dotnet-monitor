@@ -610,7 +610,7 @@ An action that collects exceptions from the process that the collection rule is 
 | Name | Type | Required | Description | Default Value |
 |---|---|---|---|---|
 | `Egress` | string | true | The named [egress provider](../egress.md) for egressing the collected dump. | |
-| `Format` | [ExceptionsFormat](../api/definitions.md#exceptionsformat)? | false | The format of the exception entries. | `PlainText` |
+| `Format` | [ExceptionFormat](../api/definitions.md#exceptionformat)? | false | The format of the exception entries. | `PlainText` |
 
 #### Outputs
 
