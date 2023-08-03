@@ -57,6 +57,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public DiagnosticPortConnectionMode ConnectionMode { get; set; } = DiagnosticPortConnectionMode.Listen;
 
         /// <summary>
+        /// Determines what StartupHook path (if any) should be set for DOTNET_STARTUP_HOOKS.
+        /// </summary>
+        public string CustomStartupHookPath { get; set; }
+
+        /// <summary>
         /// Path of the diagnostic port to connect to when <see cref="ConnectionMode"/> is <see cref="DiagnosticPortConnectionMode.Connect"/>.
         /// </summary>
         public string DiagnosticPortPath { get; set; }
@@ -138,6 +143,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
             // Enable diagnostics in case it is disabled via inheriting test environment.
             _adapter.Environment.Add("COMPlus_EnableDiagnostics", "1");
+
+            if (!string.IsNullOrEmpty(CustomStartupHookPath))
+            {
+                _adapter.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, CustomStartupHookPath);
+            }
 
             if (ConnectionMode == DiagnosticPortConnectionMode.Connect)
             {

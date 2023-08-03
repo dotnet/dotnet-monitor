@@ -165,8 +165,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             // Override the user config directory
             _adapter.Environment.Add("DotnetMonitorTestSettings__UserConfigDirectoryOverride", UserConfigDirectoryPath);
 
-            // Ensures that the TestStartupHook is loaded early so it helps resolve other test assemblies
-
             if (!_adapter.Environment.ContainsKey(ToolIdentifiers.EnvironmentVariables.StartupHooks))
             {
                 _adapter.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, TestStartupHookPath);

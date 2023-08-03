@@ -75,49 +75,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             command.Subcommands.Add(reflectionTypeLoadExceptionCommand);
 
             return command;
-
-            /*
-            CliCommand scenarioCommand = new(TestAppScenarios.Exceptions.Name);
-            scenarioCommand.Subcommands.Add(singleExceptionCommand);
-            scenarioCommand.Subcommands.Add(repeatExceptionCommand);
-            scenarioCommand.Subcommands.Add(asyncExceptionCommand);
-            scenarioCommand.Subcommands.Add(frameworkExceptionCommand);
-            scenarioCommand.Subcommands.Add(customExceptionCommand);
-            scenarioCommand.Subcommands.Add(esotericStackFrameTypesCommand);
-            scenarioCommand.Subcommands.Add(reversePInvokeExceptionCommand);
-            scenarioCommand.Subcommands.Add(dynamicMethodExceptionCommand);
-            scenarioCommand.Subcommands.Add(arrayExceptionCommand);
-            scenarioCommand.Subcommands.Add(innerUnthrownExceptionCommand);
-            scenarioCommand.Subcommands.Add(innerThrownExceptionCommand);
-            scenarioCommand.Subcommands.Add(aggregateExceptionCommand);
-            scenarioCommand.Subcommands.Add(reflectionTypeLoadExceptionCommand);
-            return scenarioCommand;
-            */
         }
 
         public static Task<int> ExecuteAsync(ParseResult result, CancellationToken token)
         {
             return ScenarioHelpers.RunScenarioAsync(async logger =>
             {
-                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Continue, logger);
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
 
                 ThrowAndCatchInvalidOperationException();
 
                 return 0;
 
-                /*
-                Task continueCommand = Task.Run(() => ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Continue, logger));
-                while (!continueCommand.IsCompleted)
-                {
-                    ThrowAndCatchInvalidOperationException();
-                    await Task.Delay(100);
-                }
-                return 0;*/
-                /*
-                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
-                ThrowAndCatchInvalidOperationException();
-                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
-                return 0;*/
             }, token);
         }
 

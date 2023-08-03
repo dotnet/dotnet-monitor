@@ -82,7 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
                 },
-                CustomStartupHookPath: RealStartupHookPath);
+                customStartupHookPath: RealStartupHookPath);
         }
 
         [Theory]
@@ -148,31 +148,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
                 },
-                CustomStartupHookPath: startupHookPath);
+                customStartupHookPath: startupHookPath);
         }
 
         private static async Task<string> GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionsFormat format)
         {
-            await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+            await appRunner.SendCommandAsync(TestAppScenarios.Exceptions.Commands.Begin);
 
             int processId = await appRunner.ProcessIdTask;
 
             const int retryMaxCount = 5;
             string holderStreamString = string.Empty;
             int retryCounter = 0;
-            StringBuilder builder = new();
             while (string.IsNullOrEmpty(holderStreamString) && retryCounter < retryMaxCount)
             {
                 await Task.Delay(500);
 
                 ResponseStreamHolder holder = await apiClient.CaptureExceptionsAsync(processId, format);
 
-                builder.Clear();
                 using (var reader = new StreamReader(holder.Stream, Encoding.UTF8))
                 {
-                    builder.Append(reader.ReadToEnd());
+                    holderStreamString = reader.ReadToEnd();
                 }
-                holderStreamString = builder.ToString();
 
                 ++retryCounter;
             }

@@ -67,7 +67,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             {
                 public const string Begin = nameof(Begin);
                 public const string End = nameof(End);
-                public const string Continue = nameof(Continue);
             }
         }
 
