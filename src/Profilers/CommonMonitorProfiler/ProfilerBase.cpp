@@ -10,6 +10,26 @@ ProfilerBase::ProfilerBase() :
 {
 }
 
+HRESULT ProfilerBase::IsRuntimeSupported(ICorProfilerInfo12* pCorProfilerInfo, bool& supported)
+{
+    HRESULT hr;
+
+    supported = false;
+
+    ExpectedPtr(pCorProfilerInfo);
+
+    COR_PRF_RUNTIME_TYPE runtimeType;
+    IfFailRet(pCorProfilerInfo->GetRuntimeInformation(
+        nullptr, // instance id
+        &runtimeType,
+        nullptr, nullptr, nullptr, nullptr, // version info
+        0, nullptr, nullptr // version string
+    ));
+
+    supported = (runtimeType == COR_PRF_CORE_CLR);
+    return S_OK;
+}
+
 STDMETHODIMP ProfilerBase::Initialize(IUnknown *pICorProfilerInfoUnk)
 {
     ExpectedPtr(pICorProfilerInfoUnk);

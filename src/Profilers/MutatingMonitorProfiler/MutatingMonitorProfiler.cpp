@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #include "MutatingMonitorProfiler.h"
-#include "CommonUtilities/RuntimeUtilities.h"
 #include "Environment/EnvironmentHelper.h"
 #include "Environment/ProfilerEnvironment.h"
 #include "Logging/LoggerFactory.h"
@@ -80,8 +79,8 @@ HRESULT MutatingMonitorProfiler::InitializeCommon()
     IfFailRet(InitializeEnvironmentHelper());
 
     // Logging is initialized and can now be used
-    BOOL supported;
-    IfFailLogRet(RuntimeUtilities::IsRuntimeSupported(m_pCorProfilerInfo, supported));
+    bool supported;
+    IfFailLogRet(ProfilerBase::IsRuntimeSupported(m_pCorProfilerInfo, supported));
     if (!supported)
     {
         m_pLogger->Log(LogLevel::Debug, _LS("Unsupported runtime."));
