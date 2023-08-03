@@ -81,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     operation,
                     processInfo,
                     tags,
-                    format != ExceptionsFormat.PlainText);
+                    format != ExceptionFormat.PlainText);
             }, processKey, Utilities.ArtifactType_Exceptions);
         }
 
