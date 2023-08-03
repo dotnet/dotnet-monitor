@@ -183,6 +183,18 @@ Object describing an exception instance.
 | `innerExceptions` | int[] | The IDs of the [ExceptionInstance](#exceptioninstance)s that are the inner exceptions of the current exception. |
 | `callStack` | [CallStack](#callstack) | The call stack of the current exception, if it was thrown. |
 
+## ExceptionFormat
+
+First Available: 8.0 RC 1
+
+Enumeration that describes the format to use when outputting exceptions.
+
+| Name |
+|---|
+| `JsonSequence` |
+| `NewlineDelimitedJson` |
+| `PlainText` |
+
 ## ExtensionMode
 
 Enumeration that describes additional execution modes supported by the extension; the ability to execute is assumed.

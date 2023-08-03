@@ -286,6 +286,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The name of the egress provider to which the exceptions are egressed..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectExceptionsOptions_Egress {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectExceptionsOptions_Egress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format used to display the exceptions..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectExceptionsOptions_Format {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectExceptionsOptions_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name of the egress provider to which the GC dump is egressed..
         /// </summary>
         public static string DisplayAttributeDescription_CollectGCDumpOptions_Egress {

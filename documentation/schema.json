@@ -804,6 +804,16 @@
         {
           "properties": {
             "Type": {
+              "const": "CollectExceptions"
+            },
+            "Settings": {
+              "$ref": "#/definitions/CollectExceptionsOptions"
+            }
+          }
+        },
+        {
+          "properties": {
+            "Type": {
               "const": "CollectGCDump"
             },
             "Settings": {
@@ -1543,6 +1553,7 @@
       "type": "string",
       "enum": [
         "CollectDump",
+        "CollectExceptions",
         "CollectGCDump",
         "CollectLiveMetrics",
         "CollectLogs",
@@ -1591,6 +1602,43 @@
         "Mini",
         "WithHeap",
         "Triage"
+      ]
+    },
+    "CollectExceptionsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Egress": {
+          "type": "string",
+          "description": "The name of the egress provider to which the exceptions are egressed.",
+          "minLength": 1
+        },
+        "Format": {
+          "description": "The format used to display the exceptions.",
+          "default": "PlainText",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ExceptionFormat"
+            }
+          ]
+        }
+      }
+    },
+    "ExceptionFormat": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "NewlineDelimitedJson",
+        "PlainText",
+        "JsonSequence"
+      ],
+      "enum": [
+        "NewlineDelimitedJson",
+        "PlainText",
+        "JsonSequence"
       ]
     },
     "CollectGCDumpOptions": {

@@ -126,6 +126,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureCollectionRules(this IServiceCollection services)
         {
             services.RegisterCollectionRuleAction<CollectDumpActionFactory, CollectDumpOptions>(KnownCollectionRuleActions.CollectDump);
+            services.RegisterCollectionRuleAction<CollectExceptionsActionFactory, CollectExceptionsOptions>(KnownCollectionRuleActions.CollectExceptions);
             services.RegisterCollectionRuleAction<CollectGCDumpActionFactory, CollectGCDumpOptions>(KnownCollectionRuleActions.CollectGCDump);
             services.RegisterCollectionRuleAction<CollectLiveMetricsActionFactory, CollectLiveMetricsOptions>(KnownCollectionRuleActions.CollectLiveMetrics);
             services.RegisterCollectionRuleAction<CollectLogsActionFactory, CollectLogsOptions>(KnownCollectionRuleActions.CollectLogs);
