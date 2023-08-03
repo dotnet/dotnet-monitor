@@ -25,7 +25,6 @@ class RuntimeUtilities
                 0, nullptr, nullptr // version string
             ));
 
-
             supported = (runtimeType == COR_PRF_CORE_CLR);
             return S_OK;
         }
