@@ -147,6 +147,9 @@
   <data name="UnknownArgumentValue" xml:space="preserve">
     <value>unknown</value>
   </data>
+  <data name="UnknownDeclaringType" xml:space="preserve">
+    <value>&lt;unknown_type&gt;</value>
+  </data>
   <data name="UnknownParameterNameFormatString" xml:space="preserve">
     <value>&lt;unknown_name_at_position_{0}&gt;</value>
   </data>
