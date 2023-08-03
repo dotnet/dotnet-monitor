@@ -5,6 +5,7 @@
 #include "Environment/EnvironmentHelper.h"
 #include "Environment/ProfilerEnvironment.h"
 #include "Logging/LoggerFactory.h"
+#include "CommonUtilities/RuntimeUtilities.h"
 #include "CommonUtilities/ThreadUtilities.h"
 #include "../Stacks/StacksEventProvider.h"
 #include "../Stacks/StackSampler.h"
@@ -163,6 +164,13 @@ HRESULT MainProfiler::InitializeCommon()
     IfFailRet(InitializeEnvironmentHelper());
 
     // Logging is initialized and can now be used
+    BOOL supported;
+    IfFailLogRet(RuntimeUtilities::IsRuntimeSupported(m_pCorProfilerInfo, supported));
+    if (!supported)
+    {
+        m_pLogger->Log(LogLevel::Debug, _LS("Unsupported runtime."));
+        return CORPROF_E_PROFILER_CANCEL_ACTIVATION;
+    }
 
 #ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
     _threadDataManager = make_shared<ThreadDataManager>(m_pLogger);
