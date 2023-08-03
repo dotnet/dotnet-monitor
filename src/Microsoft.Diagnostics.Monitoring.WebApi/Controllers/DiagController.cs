@@ -16,10 +16,8 @@ using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
@@ -35,15 +33,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     public partial class DiagController : DiagnosticsControllerBase
     {
-        private const Models.TraceProfile DefaultTraceProfiles = Models.TraceProfile.Cpu | Models.TraceProfile.Http | Models.TraceProfile.Metrics;
+        private const TraceProfile DefaultTraceProfiles = TraceProfile.Cpu | TraceProfile.Http | TraceProfile.Metrics;
 
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
         private readonly IOptions<CallStacksOptions> _callStacksOptions;
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
-        private readonly EgressOperationStore _operationsStore;
-        private readonly OperationTrackerService _operationTrackerService;
         private readonly ICollectionRuleService _collectionRuleService;
-        private readonly ProfilerChannel _profilerChannel;
         private readonly IDumpOperationFactory _dumpOperationFactory;
         private readonly ILogsOperationFactory _logsOperationFactory;
         private readonly IMetricsOperationFactory _metricsOperationFactory;
@@ -52,15 +47,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly IStacksOperationFactory _stacksOperationFactory;
 
         public DiagController(IServiceProvider serviceProvider, ILogger<DiagController> logger)
-            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), logger)
+            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<EgressOperationStore>(), logger)
         {
             _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
             _callStacksOptions = serviceProvider.GetRequiredService<IOptions<CallStacksOptions>>();
-            _operationsStore = serviceProvider.GetRequiredService<EgressOperationStore>();
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
-            _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
             _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
-            _profilerChannel = serviceProvider.GetRequiredService<ProfilerChannel>();
             _dumpOperationFactory = serviceProvider.GetRequiredService<IDumpOperationFactory>();
             _logsOperationFactory = serviceProvider.GetRequiredService<ILogsOperationFactory>();
             _metricsOperationFactory = serviceProvider.GetRequiredService<IMetricsOperationFactory>();
@@ -74,8 +66,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// </summary>
         [HttpGet("processes", Name = nameof(GetProcesses))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(IEnumerable<Models.ProcessIdentifier>), StatusCodes.Status200OK)]
-        public Task<ActionResult<IEnumerable<Models.ProcessIdentifier>>> GetProcesses()
+        [ProducesResponseType(typeof(IEnumerable<ProcessIdentifier>), StatusCodes.Status200OK)]
+        public Task<ActionResult<IEnumerable<ProcessIdentifier>>> GetProcesses()
         {
             return this.InvokeService(async () =>
             {
@@ -96,10 +88,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     Logger.DefaultProcessUnexpectedFailure(ex);
                 }
 
-                IList<Models.ProcessIdentifier> processesIdentifiers = new List<Models.ProcessIdentifier>();
+                IList<ProcessIdentifier> processesIdentifiers = new List<ProcessIdentifier>();
                 foreach (IProcessInfo p in await DiagnosticServices.GetProcessesAsync(processFilter: null, HttpContext.RequestAborted))
                 {
-                    processesIdentifiers.Add(new Models.ProcessIdentifier()
+                    processesIdentifiers.Add(new ProcessIdentifier()
                     {
                         Pid = p.EndpointInfo.ProcessId,
                         Uid = p.EndpointInfo.RuntimeInstanceCookie,
@@ -110,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     });
                 }
                 Logger.WrittenToHttpStream();
-                return new ActionResult<IEnumerable<Models.ProcessIdentifier>>(processesIdentifiers);
+                return new ActionResult<IEnumerable<ProcessIdentifier>>(processesIdentifiers);
             }, Logger);
         }
 
@@ -304,7 +296,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null,
             [FromQuery]
-            Models.TraceProfile profile = DefaultTraceProfiles,
+            TraceProfile profile = DefaultTraceProfiles,
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
@@ -344,7 +336,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [EgressValidation]
         public Task<ActionResult> CaptureTraceCustom(
             [FromBody][Required]
-            Models.EventPipeConfiguration configuration,
+            EventPipeConfiguration configuration,
             [FromQuery]
             int? pid = null,
             [FromQuery]
@@ -455,7 +447,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [EgressValidation]
         public Task<ActionResult> CaptureLogsCustom(
             [FromBody]
-            Models.LogsConfiguration configuration,
+            LogsConfiguration configuration,
             [FromQuery]
             int? pid = null,
             [FromQuery]
@@ -492,8 +484,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// </summary>
         [HttpGet("info", Name = nameof(GetInfo))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(Models.DotnetMonitorInfo), StatusCodes.Status200OK)]
-        public ActionResult<Models.DotnetMonitorInfo> GetInfo()
+        [ProducesResponseType(typeof(DotnetMonitorInfo), StatusCodes.Status200OK)]
+        public ActionResult<DotnetMonitorInfo> GetInfo()
         {
             return this.InvokeService(() =>
             {
@@ -502,7 +494,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 DiagnosticPortConnectionMode diagnosticPortMode = _diagnosticPortOptions.Value.GetConnectionMode();
                 string diagnosticPortName = GetDiagnosticPortName();
 
-                Models.DotnetMonitorInfo dotnetMonitorInfo = new Models.DotnetMonitorInfo()
+                DotnetMonitorInfo dotnetMonitorInfo = new()
                 {
                     Version = version,
                     RuntimeVersion = runtimeVersion,
@@ -511,7 +503,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 };
 
                 Logger.WrittenToHttpStream();
-                return new ActionResult<Models.DotnetMonitorInfo>(dotnetMonitorInfo);
+                return new ActionResult<DotnetMonitorInfo>(dotnetMonitorInfo);
             }, Logger);
         }
 
@@ -641,7 +633,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             LogFormat? format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
             if (null == format)
             {
-                return Task.FromResult<ActionResult>(this.NotAcceptable());
+                return Task.FromResult(this.NotAcceptable());
             }
 
             // Allow sync I/O on logging routes due to StreamLogger's usage.
@@ -693,60 +685,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return LogFormat.JsonSequence;
             }
             return null;
-        }
-
-        private async Task<ActionResult> Result(
-            string artifactType,
-            string providerName,
-            IArtifactOperation operation,
-            IProcessInfo processInfo,
-            string tags,
-            bool asAttachment = true)
-        {
-            KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
-
-            if (string.IsNullOrEmpty(providerName))
-            {
-                await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType, tags, operation);
-                return new OutputStreamResult(
-                    operation,
-                    asAttachment ? operation.GenerateFileName() : null,
-                    scope);
-            }
-            else
-            {
-                return await SendToEgress(new EgressOperation(
-                    operation,
-                    providerName,
-                    processInfo,
-                    scope,
-                    tags),
-                    limitKey: artifactType);
-            }
-        }
-
-        private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, string tags, IArtifactOperation operation = null)
-        {
-            // While not strictly a Location redirect, use the same header as externally egressed operations for consistency.
-            HttpContext.Response.Headers["Location"] = await RegisterOperation(
-                new HttpResponseEgressOperation(HttpContext, processInfo, tags, operation),
-                limitKey: artifactType);
-        }
-
-        private async Task<string> RegisterOperation(IEgressOperation egressOperation, string limitKey)
-        {
-            // Will throw TooManyRequestsException if there are too many concurrent operations.
-            Guid operationId = await _operationsStore.AddOperation(egressOperation, limitKey);
-            return this.Url.Action(
-                action: nameof(OperationsController.GetOperationStatus),
-                controller: OperationsController.ControllerName, new { operationId = operationId },
-                protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
-        }
-
-        private async Task<ActionResult> SendToEgress(IEgressOperation egressOperation, string limitKey)
-        {
-            string operationUrl = await RegisterOperation(egressOperation, limitKey);
-            return Accepted(operationUrl);
         }
     }
 }

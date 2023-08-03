@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         public ExceptionsController(
             IServiceProvider serviceProvider,
             ILogger<ExceptionsController> logger)
-            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), logger)
+            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<EgressOperationStore>(), logger)
         {
             _options = serviceProvider.GetRequiredService<IOptions<ExceptionsOptions>>();
         }
@@ -41,16 +41,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="pid">Process ID used to identify the target process.</param>
         /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
+        /// <param name="egressProvider">The egress provider to which the exceptions are saved.</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         [HttpGet("exceptions", Name = nameof(GetExceptions))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
+        [EgressValidation]
         public Task<ActionResult> GetExceptions(
             [FromQuery]
             int? pid = null,
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null)
+            string name = null,
+            [FromQuery]
+            string egressProvider = null,
+            [FromQuery]
+            string tags = null)
         {
             if (!_options.Value.GetEnabled())
             {
@@ -67,9 +75,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     .GetRequiredService<IExceptionsOperationFactory>()
                     .Create(format);
 
-                KeyValueLogScope scope = Utilities.CreateArtifactScope(Utilities.ArtifactType_Exceptions, processInfo.EndpointInfo);
-
-                return new OutputStreamResult(operation, fileDownloadName: null, scope);
+                return Result(
+                    Utilities.ArtifactType_Exceptions,
+                    egressProvider,
+                    operation,
+                    processInfo,
+                    tags,
+                    format != ExceptionFormat.PlainText);
             }, processKey, Utilities.ArtifactType_Exceptions);
         }
 
