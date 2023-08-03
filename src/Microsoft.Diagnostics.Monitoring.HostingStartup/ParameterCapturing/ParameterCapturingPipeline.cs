@@ -69,7 +69,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
                 }
 
-                StopCapturing(request.Payload.RequestId);
+                _logger.LogInformation(ParameterCapturingStrings.StopParameterCapturing);
+                _probeManager.StopCapturing();
+                ParameterCapturingEventSource.Log.CapturingStop(request.Payload.RequestId);
+
                 _ = _allRequests.TryRemove(request.Payload.RequestId, out _);
             }
         }
@@ -124,13 +127,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             }
 
             return false;
-        }
-
-        private void StopCapturing(Guid requestId)
-        {
-            _logger.LogInformation(ParameterCapturingStrings.StopParameterCapturing);
-            _probeManager.StopCapturing();
-            ParameterCapturingEventSource.Log.CapturingStop(requestId);
         }
 
         public bool TryComplete()
