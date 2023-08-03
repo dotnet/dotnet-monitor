@@ -16,7 +16,7 @@ protected:
     ComPtr<ICorProfilerInfo12> m_pCorProfilerInfo;
 
 protected:
-    HRESULT IsRuntimeSupported(ICorProfilerInfo12* pCorProfilerInfo, bool& supported);
+    HRESULT IsRuntimeSupported(bool& supported);
 
 public:
     ProfilerBase();

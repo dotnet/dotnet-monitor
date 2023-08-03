@@ -80,7 +80,7 @@ HRESULT MutatingMonitorProfiler::InitializeCommon()
 
     // Logging is initialized and can now be used
     bool supported;
-    IfFailLogRet(ProfilerBase::IsRuntimeSupported(m_pCorProfilerInfo, supported));
+    IfFailLogRet(ProfilerBase::IsRuntimeSupported(supported));
     if (!supported)
     {
         m_pLogger->Log(LogLevel::Debug, _LS("Unsupported runtime."));

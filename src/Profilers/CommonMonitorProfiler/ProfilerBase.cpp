@@ -10,16 +10,14 @@ ProfilerBase::ProfilerBase() :
 {
 }
 
-HRESULT ProfilerBase::IsRuntimeSupported(ICorProfilerInfo12* pCorProfilerInfo, bool& supported)
+HRESULT ProfilerBase::IsRuntimeSupported(bool& supported)
 {
     HRESULT hr;
 
     supported = false;
 
-    ExpectedPtr(pCorProfilerInfo);
-
     COR_PRF_RUNTIME_TYPE runtimeType;
-    IfFailRet(pCorProfilerInfo->GetRuntimeInformation(
+    IfFailRet(m_pCorProfilerInfo->GetRuntimeInformation(
         nullptr, // instance id
         &runtimeType,
         nullptr, nullptr, nullptr, nullptr, // version info
