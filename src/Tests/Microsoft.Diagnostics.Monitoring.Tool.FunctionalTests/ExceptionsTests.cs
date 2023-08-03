@@ -174,7 +174,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 ++retryCounter;
             }
 
-            Assert.NotEqual(retryMaxCount, retryCounter);
+            Assert.NotEmpty(holderStreamString);
 
             return holderStreamString;
         }

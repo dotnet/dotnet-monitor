@@ -56,25 +56,25 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             CliCommand reflectionTypeLoadExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ReflectionTypeLoadException);
             reflectionTypeLoadExceptionCommand.SetAction(ReflectionTypeLoadExceptionAsync);
 
-            CliCommand command = new(TestAppScenarios.Exceptions.Name);
+            CliCommand scenarioCommand = new(TestAppScenarios.Exceptions.Name);
 
-            command.SetAction(ExecuteAsync);
+            scenarioCommand.SetAction(ExecuteAsync);
 
-            command.Subcommands.Add(singleExceptionCommand);
-            command.Subcommands.Add(repeatExceptionCommand);
-            command.Subcommands.Add(asyncExceptionCommand);
-            command.Subcommands.Add(frameworkExceptionCommand);
-            command.Subcommands.Add(customExceptionCommand);
-            command.Subcommands.Add(esotericStackFrameTypesCommand);
-            command.Subcommands.Add(reversePInvokeExceptionCommand);
-            command.Subcommands.Add(dynamicMethodExceptionCommand);
-            command.Subcommands.Add(arrayExceptionCommand);
-            command.Subcommands.Add(innerUnthrownExceptionCommand);
-            command.Subcommands.Add(innerThrownExceptionCommand);
-            command.Subcommands.Add(aggregateExceptionCommand);
-            command.Subcommands.Add(reflectionTypeLoadExceptionCommand);
+            scenarioCommand.Subcommands.Add(singleExceptionCommand);
+            scenarioCommand.Subcommands.Add(repeatExceptionCommand);
+            scenarioCommand.Subcommands.Add(asyncExceptionCommand);
+            scenarioCommand.Subcommands.Add(frameworkExceptionCommand);
+            scenarioCommand.Subcommands.Add(customExceptionCommand);
+            scenarioCommand.Subcommands.Add(esotericStackFrameTypesCommand);
+            scenarioCommand.Subcommands.Add(reversePInvokeExceptionCommand);
+            scenarioCommand.Subcommands.Add(dynamicMethodExceptionCommand);
+            scenarioCommand.Subcommands.Add(arrayExceptionCommand);
+            scenarioCommand.Subcommands.Add(innerUnthrownExceptionCommand);
+            scenarioCommand.Subcommands.Add(innerThrownExceptionCommand);
+            scenarioCommand.Subcommands.Add(aggregateExceptionCommand);
+            scenarioCommand.Subcommands.Add(reflectionTypeLoadExceptionCommand);
 
-            return command;
+            return scenarioCommand;
         }
 
         public static Task<int> ExecuteAsync(ParseResult result, CancellationToken token)

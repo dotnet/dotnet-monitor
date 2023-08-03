@@ -21,16 +21,28 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             switch (moniker)
             {
-                case TargetFrameworkMoniker.Net50:
-                    return "net5.0";
                 case TargetFrameworkMoniker.NetCoreApp31:
                     return "netcoreapp3.1";
+                default:
+                    return "net" + moniker.ToVersionNumber();
+            }
+            throw CreateUnsupportedException(moniker);
+        }
+
+        public static string ToVersionNumber(this TargetFrameworkMoniker moniker)
+        {
+            switch (moniker)
+            {
+                case TargetFrameworkMoniker.Net50:
+                    return "5.0";
+                case TargetFrameworkMoniker.NetCoreApp31:
+                    return "3.1";
                 case TargetFrameworkMoniker.Net60:
-                    return "net6.0";
+                    return "6.0";
                 case TargetFrameworkMoniker.Net70:
-                    return "net7.0";
+                    return "7.0";
                 case TargetFrameworkMoniker.Net80:
-                    return "net8.0";
+                    return "8.0";
             }
             throw CreateUnsupportedException(moniker);
         }

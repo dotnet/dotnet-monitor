@@ -167,6 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
             if (!_adapter.Environment.ContainsKey(ToolIdentifiers.EnvironmentVariables.StartupHooks))
             {
+                // Ensures that the TestStartupHook is loaded early so it helps resolve other test assemblies
                 _adapter.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, TestStartupHookPath);
             }
 

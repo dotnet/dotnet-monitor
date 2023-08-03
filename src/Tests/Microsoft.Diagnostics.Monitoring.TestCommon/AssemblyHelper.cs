@@ -17,11 +17,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             if (tfm != TargetFrameworkMoniker.Current)
             {
-                var testAssemblyVersion = AssemblyName.GetAssemblyName(testAssembly.Location).Version;
-                string currentFolderName = "net" + testAssemblyVersion.Major + "." + testAssemblyVersion.Minor;
+                var currentFolderName = AssemblyName.GetAssemblyName(testAssembly.Location).Version.ToString(2);
 
-                //string currentFolderName = TestDotNetHost.BuiltTargetFrameworkMoniker.ToFolderName();
-                string targetFolderName = tfm.ToFolderName();
+                string targetFolderName = tfm.ToVersionNumber();
 
                 assemblyPath = assemblyPath.Replace(currentFolderName, targetFolderName);
             }
