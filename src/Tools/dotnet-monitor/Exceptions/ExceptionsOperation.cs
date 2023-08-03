@@ -13,6 +13,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {
@@ -26,11 +27,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private const char MethodParameterTypesStart = '(';
         private const char MethodParameterTypesEnd = ')';
 
+        private readonly IEndpointInfo _endpointInfo;
         private readonly ExceptionFormat _format;
         private readonly IExceptionsStore _store;
 
-        public ExceptionsOperation(IExceptionsStore store, ExceptionFormat format)
+        public ExceptionsOperation(IEndpointInfo endpointInfo, IExceptionsStore store, ExceptionFormat format)
         {
+            _endpointInfo = endpointInfo;
             _store = store;
             _format = format;
         }
@@ -68,7 +71,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         public string GenerateFileName()
         {
-            throw new NotSupportedException();
+            string extension = _format == ExceptionFormat.PlainText ? "txt" : "json";
+            return FormattableString.Invariant($"{Utils.GetFileNameTimeStampUtcNow()}_{_endpointInfo.ProcessId}.exceptions.{extension}");
         }
 
         public Task StopAsync(CancellationToken token)

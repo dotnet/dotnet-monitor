@@ -11,16 +11,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
     internal sealed class ExceptionsOperationFactory :
         IExceptionsOperationFactory
     {
+        private IEndpointInfo _endpointInfo;
         private IExceptionsStore _store;
 
-        public ExceptionsOperationFactory(IExceptionsStore store)
+        public ExceptionsOperationFactory(IEndpointInfo endpointInfo, IExceptionsStore store)
         {
+            _endpointInfo = endpointInfo ?? throw new ArgumentNullException(nameof(endpointInfo));
             _store = store ?? throw new ArgumentNullException(nameof(store));
         }
 
         public IArtifactOperation Create(ExceptionFormat format)
         {
-            return new ExceptionsOperation(_store, format);
+            return new ExceptionsOperation(_endpointInfo, _store, format);
         }
     }
 }
