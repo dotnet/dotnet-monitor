@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     string exceptionsString = await GetExceptions(apiClient, appRunner, ExceptionsFormat.PlainText);
 
-                    var exceptionsLines = exceptionsString.Split(new string[] { "\r\n","\n" }, StringSplitOptions.None);
+                    var exceptionsLines = exceptionsString.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
 
                     Assert.True(exceptionsLines.Length >= 4);
                     Assert.Contains("First chance exception at", exceptionsLines[0]);
