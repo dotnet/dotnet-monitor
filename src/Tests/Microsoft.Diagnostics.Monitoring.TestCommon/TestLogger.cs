@@ -5,15 +5,17 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
+namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
+    internal record LogRecordEntry(EventId EventId, string Category, string Message);
+
     internal sealed class LogRecord
     {
-        private readonly List<(EventId EventId, string Message)> _events = new();
+        private readonly List<LogRecordEntry> _events = new();
 
-        public void Add(EventId id, string message) => _events.Add((id, message));
+        public void Add(EventId id, string category, string message) => _events.Add(new LogRecordEntry(id, category, message));
 
-        public IList<(EventId EventId, string Message)> Events => _events;
+        public IList<LogRecordEntry> Events => _events;
     }
 
     internal sealed class TestLoggerProvider : ILoggerProvider
@@ -49,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            _logRecord.Add(eventId, formatter(state, exception));
+            _logRecord.Add(eventId, _categoryName, formatter(state, exception));
         }
     }
 }

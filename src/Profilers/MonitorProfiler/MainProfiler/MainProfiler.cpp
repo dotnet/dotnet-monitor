@@ -163,6 +163,13 @@ HRESULT MainProfiler::InitializeCommon()
     IfFailRet(InitializeEnvironmentHelper());
 
     // Logging is initialized and can now be used
+    bool supported;
+    IfFailLogRet(ProfilerBase::IsRuntimeSupported(supported));
+    if (!supported)
+    {
+        m_pLogger->Log(LogLevel::Debug, _LS("Unsupported runtime."));
+        return CORPROF_E_PROFILER_CANCEL_ACTIVATION;
+    }
 
 #ifdef DOTNETMONITOR_FEATURE_EXCEPTIONS
     _threadDataManager = make_shared<ThreadDataManager>(m_pLogger);

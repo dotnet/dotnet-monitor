@@ -84,7 +84,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 ILogger logger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.UserCode>>()
                     ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
 
-                FunctionProbesManager probeManager = new(new LogEmittingProbes(logger));
+                ILogger systemLogger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.SystemCode>>()
+                    ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
+
+                ParameterCapturingLogger parameterCapturingLogger = new(logger, systemLogger);
+                FunctionProbesManager probeManager = new(new LogEmittingProbes(parameterCapturingLogger));
 
                 ParameterCapturingCallbacks callbacks = new(logger, _eventSource);
                 _pipeline = new ParameterCapturingPipeline(probeManager, callbacks);
