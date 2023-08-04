@@ -329,7 +329,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 if (isServiceScopeValid)
                 {
-                    foreach (IDiagnosticLifetimeService lifetimeService in serviceScope.ServiceProvider.GetServices<IDiagnosticLifetimeService>())
+                    foreach (IDiagnosticLifetimeService lifetimeService in serviceScope.ServiceProvider.GetServices<IDiagnosticLifetimeService>().Reverse())
                     {
                         try
                         {
@@ -342,7 +342,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     }
                 }
 
-                foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
+                foreach (IEndpointInfoSourceCallbacks callback in _callbacks.Reverse())
                 {
                     try
                     {
