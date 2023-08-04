@@ -49,8 +49,8 @@ After creating your [Azure Managed Grafana instance](https://learn.microsoft.com
 
 Navigate to the `Dashboards` page and select `New->Import`. This navigates to the import page where you can load a pre-configured dashboard for .NET metrics. [Dotnet Monitor dashboard (19297)](https://grafana.com/grafana/dashboards/19297-dotnet-monitor-dashboard/) includes the default metrics shared through the Prometheus agent.
 
-![Import to the Grafana dashboard](/grafana-import-dashboard.png "Import to the Grafana dashboard")
+![Import to the Grafana dashboard](./grafana-import-dashboard.png "Import to the Grafana dashboard")
 
 Select a `Folder` for your newly imported dashboard along with the `Managed Prometheus data source` configured earlier.
 
-![Managed Prometheus data source](/grafana-import-dashboard-name-folder-id.png "Managed Prometheus data source")
+![Managed Prometheus data source](./grafana-import-dashboard-name-folder-id.png "Managed Prometheus data source")
