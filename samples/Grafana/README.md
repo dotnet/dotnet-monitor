@@ -1,10 +1,10 @@
 ### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Flocalmachine)
 
-# Configuring Managed Grafana Dashboard in Azure for `dotnet monitor`
+# Configure `dotnet monitor` in an AKS cluster for Managed Grafana
 
 `dotnet monitor` provides snapshots of .NET metrics in the Prometheus exposition format. [Prometheus](https://prometheus.io/docs/introduction/overview/) in turn collects metrics from targets by scraping metrics HTTP endpoints.
 
-This doc provides instructions on customizing metrics scraping for a Kubernetes cluster with the metrics addon in Azure Monitor and how to subsequently renders those default metrics with Grafana.
+This doc provides instructions on customizing metrics scraping for a Kubernetes cluster with the metrics addon in Azure Monitor and how to subsequently renders those metrics with Grafana.
 
 ### Step 1: `dotnet monitor` configuration
 
@@ -46,7 +46,7 @@ This configures the Prometheus agent to check the default namespace for active p
 
 After creating your [Azure Managed Grafana instance](https://learn.microsoft.com/en-us/azure/managed-grafana/quickstart-managed-grafana-portal) you can start designing dashboards based on the .NET metrics exposed via Prometheus.
 
-Navigate to the `Dashboards` page and select `New->Import`. This navigates to the import page where you can load a pre-configured dashboard for .NET metrics. [Dotnet Monitor dashboard (19297)](https://grafana.com/grafana/dashboards/19297-dotnet-monitor-dashboard/) includes the default metrics shared through the Prometheus agent.
+Navigate to the `Dashboards` page and select `New->Import`, this navigates to the import page where you can load a pre-configured dashboard. [Dotnet Monitor dashboard (19297)](https://grafana.com/grafana/dashboards/19297-dotnet-monitor-dashboard/) includes a quick start dashboard with the default metrics shared through the Prometheus agent.
 
 ![Import to the Grafana dashboard](./grafana-import-dashboard.png "Import to the Grafana dashboard")
 
