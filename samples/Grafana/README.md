@@ -26,7 +26,7 @@ annotations:
     prometheus.io/scheme: 'http'
 ```
 
-### Step 3: Apply configmap
+### Step 3: Apply ConfigMap
 
 You can download this [metrics settings config map file](https://github.com/Azure/prometheus-collector/blob/main/otelcollector/configmaps/ama-metrics-settings-configmap.yaml) and change the settings as appropriate. The `podannotationnamespaceregex` setting requires an update to ensure that it matches the namespace configured for your app (check your deployment). If your namespace is blank or undefined `podannotationnamespaceregex` will become 'default' as follows.
 
@@ -34,13 +34,13 @@ You can download this [metrics settings config map file](https://github.com/Azur
 podannotationnamespaceregex = "default"
 ```
 
-Save your configmap and apply/deploy to the kube-system namespace for your cluster as follows (only required once).
+Save your ConfigMap and apply/deploy to the kube-system namespace for your cluster as follows (only required once).
 
 ```shell
 kubectl apply -f .\ama-metrics-settings-configmap.yaml -n kube-system
 ```
 
-This configures the Prometheus agent to check the default namespace for active pods and use the annotations in the pod (step 2) to scrape for Prometheus data, the scraping will occur on an interval defined in the configmap.
+This configures the Prometheus agent to check the default namespace for active pods and use the annotations in the pod (step 2) to scrape for Prometheus data, the scraping will occur on an interval defined in the ConfigMap.
 
 ### Step 4: Configuring Azure Managed Grafana Dashboard
 
