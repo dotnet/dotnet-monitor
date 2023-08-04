@@ -45,10 +45,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// </summary>
         public static void ThrowIfDisposed(ref long state, Type owner)
         {
-            if (DisposeStateDisposed == Interlocked.Read(ref state))
+            if (IsDisposed(ref state))
             {
                 throw new ObjectDisposedException(owner.FullName);
             }
+        }
+
+        public static bool IsDisposed(ref long state)
+        {
+            return DisposeStateDisposed == Interlocked.Read(ref state);
         }
 
         /// <summary>
