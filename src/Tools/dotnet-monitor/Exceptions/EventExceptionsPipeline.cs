@@ -89,7 +89,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     break;
                 case "ExceptionInstanceUnhandled":
                     // TODO: Advertise unhandled exception as necessary
-                    ulong exceptionId = traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionInstancePayloads.ExceptionId);
+                    ulong exceptionId = traceEvent.GetPayload<ulong>(ExceptionEvents.ExceptionInstanceUnhandledPayloads.ExceptionId);
                     break;
                 case "FunctionDescription":
                     _cache.AddFunction(
