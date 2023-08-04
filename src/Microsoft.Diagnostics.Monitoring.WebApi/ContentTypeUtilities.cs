@@ -1,6 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
@@ -40,12 +41,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 _ => throw new InvalidOperationException()
             };
 
-        public static string MapFormatToContentType(Exceptions.ExceptionsFormat exceptionsFormat) =>
+        public static string MapFormatToContentType(ExceptionFormat exceptionsFormat) =>
             exceptionsFormat switch
             {
-                Exceptions.ExceptionsFormat.PlainText => ContentTypes.TextPlain,
-                Exceptions.ExceptionsFormat.JsonSequence => ContentTypes.ApplicationJsonSequence,
-                Exceptions.ExceptionsFormat.NewlineDelimitedJson => ContentTypes.ApplicationNdJson,
+                ExceptionFormat.PlainText => ContentTypes.TextPlain,
+                ExceptionFormat.JsonSequence => ContentTypes.ApplicationJsonSequence,
+                ExceptionFormat.NewlineDelimitedJson => ContentTypes.ApplicationNdJson,
                 _ => throw new InvalidOperationException()
             };
     }

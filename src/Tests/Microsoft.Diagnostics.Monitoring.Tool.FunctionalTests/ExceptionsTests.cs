@@ -8,7 +8,7 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.Exceptions.Name,
                 appValidate: async (appRunner, apiClient) =>
                 {
-                    await GetExceptions(apiClient, appRunner, ExceptionsFormat.PlainText);
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText);
 
                     var exceptionsLines = exceptionsResult.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
 
@@ -106,7 +106,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     DateTime startTime = DateTime.UtcNow.ToLocalTime();
 
-                    await GetExceptions(apiClient, appRunner, ExceptionsFormat.NewlineDelimitedJson);
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.NewlineDelimitedJson);
 
                     DateTime currentTime = DateTime.UtcNow.ToLocalTime();
 
@@ -145,7 +145,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        private async Task GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionsFormat format)
+        private async Task GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionFormat format)
         {
             await appRunner.SendCommandAsync(TestAppScenarios.Exceptions.Commands.Begin);
 
@@ -158,7 +158,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 outputHelper: _outputHelper);
         }
 
-        private async Task CaptureExtensions(ApiClient apiClient, int processId, ExceptionsFormat format)
+        private async Task CaptureExtensions(ApiClient apiClient, int processId, ExceptionFormat format)
         {
             await Task.Delay(500);
 

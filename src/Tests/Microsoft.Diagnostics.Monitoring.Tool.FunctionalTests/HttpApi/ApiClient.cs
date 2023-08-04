@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
@@ -535,7 +534,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
-        public async Task<ResponseStreamHolder> CaptureExceptionsAsync(int processId, ExceptionsFormat format, CancellationToken token)
+        public async Task<ResponseStreamHolder> CaptureExceptionsAsync(int processId, ExceptionFormat format, CancellationToken token)
         {
             string uri = FormattableString.Invariant($"/exceptions?pid={processId}");
             var contentType = ContentTypeUtilities.MapFormatToContentType(format);
