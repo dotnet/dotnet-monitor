@@ -74,6 +74,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
             }
         }
 
+        // Private method for work that happens inside the pipeline's RunAsync
+        // so use callbacks instead of throwing exceptions.
         private bool TryStartCapturing(StartCapturingParametersPayload request)
         {
             try
