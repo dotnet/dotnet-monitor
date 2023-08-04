@@ -4,7 +4,7 @@
 
 `dotnet monitor` provides snapshots of .NET metrics in the Prometheus exposition format. [Prometheus](https://prometheus.io/docs/introduction/overview/) in turn collects metrics from targets by scraping metrics HTTP endpoints.
 
-This doc provides instructions on customizing metrics scraping for a Kubernetes cluster with the metrics addon in Azure Monitor in four steps.
+This doc provides instructions on customizing metrics scraping for a Kubernetes cluster with the metrics addon in Azure Monitor and how to subsequently renders those default metrics with Grafana.
 
 ### Step 1: `dotnet monitor` configuration
 
@@ -16,6 +16,7 @@ Metrics__MetricCount: '1'
 ```
 
 ### Step 2: Include deployment annotations
+You will need to update cluster deployment to scrape certain pods and specify the port, path, and scheme through annotations for the pod.
 
 ```yaml
 annotations:
@@ -27,7 +28,7 @@ annotations:
 
 ### Step 3: Apply Configmap
 
-You can download this [metrics settings config map file](https://github.com/Azure/prometheus-collector/blob/main/otelcollector/configmaps/ama-metrics-settings-configmap.yaml) and change the settings as required. The `podannotationnamespaceregex` setting requires an to ensure that it matches the namespace configured for your app (check your deployment YAML). If your namespace is blank or undefined `podannotationnamespaceregex` will become 'default' as follows.
+You can download this [metrics settings config map file](https://github.com/Azure/prometheus-collector/blob/main/otelcollector/configmaps/ama-metrics-settings-configmap.yaml) and change the settings as appropriate. The `podannotationnamespaceregex` setting requires an update to ensure that it matches the namespace configured for your app (check your deployment). If your namespace is blank or undefined `podannotationnamespaceregex` will become 'default' as follows.
 
 ```yaml
 podannotationnamespaceregex = "default"
@@ -39,7 +40,7 @@ Save your Configmap and apply/deploy the Configmap to the kube-system namespace 
 kubectl apply -f .\ama-metrics-settings-configmap.yaml -n kube-system
 ```
 
-This configures the Prometheus agent to check the default namespace for active pods and use the annotations in the pod to scrape for Prometheus data, the scraping will occur on an interval defined in the Configmap.
+This configures the Prometheus agent to check the default namespace for active pods and use the annotations in the pod (step 2) to scrape for Prometheus data, the scraping will occur on an interval defined in the Configmap.
 
 ### Step 4: Configuring Azure Managed Grafana Dashboard
 
