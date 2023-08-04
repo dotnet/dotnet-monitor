@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
         {
             ArgumentNullException.ThrowIfNull(exception);
 
-            // Do not send via the EventSource unless an listener is active.
+            // Do not send via the EventSource unless a listener is active.
             if (_eventSource.IsEnabled())
             {
                 _eventSource.ExceptionInstanceUnhandled(_idSource.GetId(exception));
