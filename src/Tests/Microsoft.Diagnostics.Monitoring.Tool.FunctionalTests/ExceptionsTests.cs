@@ -15,7 +15,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -29,7 +28,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
     [Collection(DefaultCollectionFixture.Name)]
     public class ExceptionsTests
     {
-        private const string StartupHookAssemblyName = "Microsoft.Diagnostics.Monitoring.StartupHook";
         private const string FrameClassName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario";
         private const string FrameMethodName = "ThrowAndCatchInvalidOperationException";
         private const string FrameParameterType = "System.Boolean";
@@ -38,11 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private const string ExceptionType = "System.InvalidOperationException";
         private const string ExceptionMessage = $"Exception of type '{ExceptionType}' was thrown.";
 
-        private static string RealStartupHookPath =>
-            AssemblyHelper.GetAssemblyArtifactBinPath(
-                Assembly.GetExecutingAssembly(),
-                StartupHookAssemblyName,
-                TargetFrameworkMoniker.Net60);
+        private string exceptionsResult = string.Empty;
 
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
@@ -64,9 +58,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 TestAppScenarios.Exceptions.Name,
                 appValidate: async (appRunner, apiClient) =>
                 {
-                    string exceptionsString = await GetExceptions(apiClient, appRunner, ExceptionsFormat.PlainText);
+                    await GetExceptions(apiClient, appRunner, ExceptionsFormat.PlainText);
 
-                    var exceptionsLines = exceptionsString.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+                    var exceptionsLines = exceptionsResult.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
 
                     Assert.True(exceptionsLines.Length >= 4);
                     Assert.Contains("First chance exception at", exceptionsLines[0]);
@@ -77,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureApp: runner =>
                 {
                     runner.Architecture = targetArchitecture;
-                    runner.CustomStartupHookPath = RealStartupHookPath;
+                    runner.EnableMonitorStartupHook = true;
                 },
                 configureTool: runner =>
                 {
@@ -89,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task ExceptionsWithEnvVarJsonTest(Architecture targetArchitecture)
         {
-            await ExceptionsJsonTest(targetArchitecture, RealStartupHookPath);
+            await ExceptionsJsonTest(targetArchitecture, true);
         }
 
 #if NET8_0_OR_GREATER
@@ -97,11 +91,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task ExceptionsWithoutEnvVarJsonTest(Architecture targetArchitecture)
         {
-            await ExceptionsJsonTest(targetArchitecture, null);
+            await ExceptionsJsonTest(targetArchitecture, false);
         }
 #endif
 
-        private async Task ExceptionsJsonTest(Architecture targetArchitecture, string startupHookPath)
+        private async Task ExceptionsJsonTest(Architecture targetArchitecture, bool enableStartupHook)
         {
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
@@ -112,7 +106,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     DateTime startTime = DateTime.UtcNow.ToLocalTime();
 
-                    string exceptionsResult = await GetExceptions(apiClient, appRunner, ExceptionsFormat.NewlineDelimitedJson);
+                    await GetExceptions(apiClient, appRunner, ExceptionsFormat.NewlineDelimitedJson);
 
                     DateTime currentTime = DateTime.UtcNow.ToLocalTime();
 
@@ -143,7 +137,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureApp: runner =>
                 {
                     runner.Architecture = targetArchitecture;
-                    runner.CustomStartupHookPath = RealStartupHookPath;
+                    runner.EnableMonitorStartupHook = enableStartupHook;
                 },
                 configureTool: runner =>
                 {
@@ -151,32 +145,34 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        private static async Task<string> GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionsFormat format)
+        private async Task GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionsFormat format)
         {
             await appRunner.SendCommandAsync(TestAppScenarios.Exceptions.Commands.Begin);
 
             int processId = await appRunner.ProcessIdTask;
 
-            const int retryMaxCount = 5;
-            string holderStreamString = string.Empty;
-            int retryCounter = 0;
-            while (string.IsNullOrEmpty(holderStreamString) && retryCounter < retryMaxCount)
+            await RetryUtilities.RetryAsync(
+                () => CaptureExtensions(apiClient, processId, format),
+                shouldRetry: (Exception ex) => ex is ArgumentException,
+                maxRetryCount: 5,
+                outputHelper: _outputHelper);
+        }
+
+        private async Task CaptureExtensions(ApiClient apiClient, int processId, ExceptionsFormat format)
+        {
+            await Task.Delay(500);
+
+            ResponseStreamHolder holder = await apiClient.CaptureExceptionsAsync(processId, format);
+
+            using (var reader = new StreamReader(holder.Stream, Encoding.UTF8))
             {
-                await Task.Delay(500);
-
-                ResponseStreamHolder holder = await apiClient.CaptureExceptionsAsync(processId, format);
-
-                using (var reader = new StreamReader(holder.Stream, Encoding.UTF8))
-                {
-                    holderStreamString = reader.ReadToEnd();
-                }
-
-                ++retryCounter;
+                exceptionsResult = reader.ReadToEnd();
             }
 
-            Assert.NotEmpty(holderStreamString);
-
-            return holderStreamString;
+            if (string.IsNullOrEmpty(exceptionsResult))
+            {
+                throw new ArgumentException();
+            }
         }
     }
 }

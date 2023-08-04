@@ -57,11 +57,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public DiagnosticPortConnectionMode ConnectionMode { get; set; } = DiagnosticPortConnectionMode.Listen;
 
         /// <summary>
-        /// Determines what StartupHook path (if any) should be set for DOTNET_STARTUP_HOOKS.
-        /// </summary>
-        public string CustomStartupHookPath { get; set; }
-
-        /// <summary>
         /// Path of the diagnostic port to connect to when <see cref="ConnectionMode"/> is <see cref="DiagnosticPortConnectionMode.Connect"/>.
         /// </summary>
         public string DiagnosticPortPath { get; set; }
@@ -92,6 +87,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public bool SetRuntimeIdentifier { get; set; }
 
         public string ProfilerLogLevel { get; set; }
+
+        public bool EnableMonitorStartupHook { get; set; }
 
         public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current)
         {
@@ -144,11 +141,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             // Enable diagnostics in case it is disabled via inheriting test environment.
             _adapter.Environment.Add("COMPlus_EnableDiagnostics", "1");
 
-            if (!string.IsNullOrEmpty(CustomStartupHookPath))
-            {
-                _adapter.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, CustomStartupHookPath);
-            }
-
             if (ConnectionMode == DiagnosticPortConnectionMode.Connect)
             {
                 if (string.IsNullOrEmpty(DiagnosticPortPath))
@@ -175,6 +167,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             {
                 _adapter.Environment.Add(
                     ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, ProfilerLogLevel);
+            }
+
+            if (EnableMonitorStartupHook)
+            {
+                string startupHookPath = AssemblyHelper.GetAssemblyArtifactBinPath(
+                    Assembly.GetExecutingAssembly(),
+                    "Microsoft.Diagnostics.Monitoring.StartupHook",
+                    TargetFrameworkMoniker.Net60);
+
+                _adapter.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, startupHookPath);
             }
 
             await _adapter.StartAsync(token).ConfigureAwait(false);

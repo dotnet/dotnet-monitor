@@ -86,6 +86,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
+    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.StartupHook\Microsoft.Diagnostics.Monitoring.StartupHook.csproj" />
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj" />
     <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
