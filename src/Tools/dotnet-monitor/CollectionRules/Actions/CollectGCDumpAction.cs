@@ -2,13 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading;
 using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
@@ -40,37 +37,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         private sealed class CollectGCDumpAction :
             CollectionRuleEgressActionBase<CollectGCDumpOptions>
         {
-            private readonly OperationTrackerService _operationTrackerService;
+            private readonly IGCDumpOperationFactory _operationFactory;
 
             public CollectGCDumpAction(IServiceProvider serviceProvider, IProcessInfo processInfo, CollectGCDumpOptions options)
                 : base(serviceProvider, processInfo, options)
             {
-                _operationTrackerService = serviceProvider.GetRequiredService<OperationTrackerService>();
+                _operationFactory = serviceProvider.GetRequiredService<IGCDumpOperationFactory>();
             }
 
             protected override EgressOperation CreateArtifactOperation(TaskCompletionSource<object> startCompletionSource, CollectionRuleMetadata collectionRuleMetadata)
             {
-                string egress = Options.Egress;
-
-                string gcdumpFileName = GCDumpUtilities.GenerateGCDumpFileName(EndpointInfo);
-
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_GCDump, EndpointInfo);
 
-                EgressOperation egressOperation = new EgressOperation(
-                    async (stream, token) =>
-                    {
-                        using IDisposable operationRegistration = _operationTrackerService.Register(EndpointInfo);
-                        startCompletionSource.TrySetResult(null);
-                        await GCDumpUtilities.CaptureGCDumpAsync(EndpointInfo, stream, token);
-                    },
-                    egress,
-                    gcdumpFileName,
-                    EndpointInfo,
-                    ContentTypes.ApplicationOctetStream,
+                return new EgressOperation(
+                    _operationFactory.Create(ProcessInfo.EndpointInfo),
+                    startCompletionSource,
+                    Options.Egress,
+                    ProcessInfo,
                     scope,
+                    tags: null,
                     collectionRuleMetadata);
-
-                return egressOperation;
             }
         }
     }
