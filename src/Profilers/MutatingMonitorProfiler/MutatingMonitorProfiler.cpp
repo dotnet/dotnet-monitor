@@ -79,6 +79,13 @@ HRESULT MutatingMonitorProfiler::InitializeCommon()
     IfFailRet(InitializeEnvironmentHelper());
 
     // Logging is initialized and can now be used
+    bool supported;
+    IfFailLogRet(ProfilerBase::IsRuntimeSupported(supported));
+    if (!supported)
+    {
+        m_pLogger->Log(LogLevel::Debug, _LS("Unsupported runtime."));
+        return CORPROF_E_PROFILER_CANCEL_ACTIVATION;
+    }
 
     // Set product version environment variable to allow discovery of if the profiler
     // as been applied to a target process. Diagnostic tools must use the diagnostic

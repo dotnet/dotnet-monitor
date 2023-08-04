@@ -15,6 +15,9 @@ class ProfilerBase :
 protected:
     ComPtr<ICorProfilerInfo12> m_pCorProfilerInfo;
 
+protected:
+    HRESULT IsRuntimeSupported(bool& supported);
+
 public:
     ProfilerBase();
     ~ProfilerBase() {}
