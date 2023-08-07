@@ -307,7 +307,7 @@ First Available: 7.1
 
 This rule, named "HighHistogramValues", will trigger when the custom histogram's values for the 95th percentile exceed the specified threshold (175) throughout the default sliding window duration (1 minute). If the rule is triggered, logs will be collected and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the logs to the local filesystem). There is a default `ActionCount` limit stating that this rule may only be triggered 5 times.
 
-## Collect Dump - 4xx Response Status (`AspNetResponseStatus` Trigger)
+## Collect Exceptions - 4xx Response Status (`AspNetResponseStatus` Trigger)
 
 <details>
   <summary>JSON</summary>
@@ -326,10 +326,10 @@ This rule, named "HighHistogramValues", will trigger when the custom histogram's
       },
       "Actions": [
         {
-          "Type": "CollectDump",
+          "Type": "CollectExceptions",
           "Settings": {
             "Egress": "artifacts",
-            "Type": "Full"
+            "Format": "NewlineDelimitedJson"
           }
         }
       ],
@@ -349,9 +349,9 @@ This rule, named "HighHistogramValues", will trigger when the custom histogram's
   CollectionRules__BadResponseStatus__Trigger__Type: "AspNetResponseStatus"
   CollectionRules__BadResponseStatus__Trigger__Settings__ResponseCount: "5"
   CollectionRules__BadResponseStatus__Trigger__Settings__StatusCodes__0: "400-499"
-  CollectionRules__BadResponseStatus__Actions__0__Type: "CollectDump"
+  CollectionRules__BadResponseStatus__Actions__0__Type: "CollectExceptions"
   CollectionRules__BadResponseStatus__Actions__0__Settings__Egress: "artifacts"
-  CollectionRules__BadResponseStatus__Actions__0__Settings__Type: "Full"
+  CollectionRules__BadResponseStatus__Actions__0__Settings__Format: "NewlineDelimitedJson"
   CollectionRules__BadResponseStatus__Limits__ActionCount: "3"
   CollectionRules__BadResponseStatus__Limits__ActionCountSlidingWindowDuration: "00:30:00"
   ```
@@ -368,11 +368,11 @@ This rule, named "HighHistogramValues", will trigger when the custom histogram's
   - name: DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Settings__StatusCodes__0
     value: "400-499"
   - name: DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Type
-    value: "CollectDump"
+    value: "CollectExceptions"
   - name: DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Settings__Egress
     value: "artifacts"
-  - name: DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Settings__Type
-    value: "Full"
+  - name: DotnetMonitor_CollectionRules__BadResponseStatus__Actions__0__Settings__Format
+    value: "NewlineDelimitedJson"
   - name: DotnetMonitor_CollectionRules__BadResponseStatus__Limits__ActionCount
     value: "3"
   - name: DotnetMonitor_CollectionRules__BadResponseStatus__Limits__ActionCountSlidingWindowDuration
@@ -382,7 +382,7 @@ This rule, named "HighHistogramValues", will trigger when the custom histogram's
 
 ### Explanation
 
-This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are encountered within the default sliding window duration (1 minute). If the rule is triggered, a Full dump will be collected and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the dump to the local filesystem). There is a limit that states that this may only be triggered at most 3 times within a 30 minute sliding window (to prevent an excessive number of dumps from being collected).
+This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are encountered within the default sliding window duration (1 minute). If the rule is triggered, the recent exceptions from the target process are collected and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the exceptions to the local filesystem). There is a limit that states that this may only be triggered at most 3 times within a 30 minute sliding window (to prevent an excessive number of exceptions from being collected).
 
 ## Collect Logs - High Number of Requests (`AspNetRequestCount` Trigger)
 
