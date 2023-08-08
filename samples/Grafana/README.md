@@ -53,3 +53,9 @@ Navigate to the `Dashboards` page and select `New->Import`, this navigates to th
 Select a `Folder` for your newly imported dashboard along with the `Managed Prometheus data source` configured earlier.
 
 ![Managed Prometheus data source](./grafana-import-dashboard-name-folder-id.png "Managed Prometheus data source")
+
+
+### Additional links
+- [Troubleshoot collection of Prometheus metrics in Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/essentials/prometheus-metrics-troubleshoot)
+- [Customize scraping of Prometheus metrics in Azure Monitor managed service for Prometheus](https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/prometheus-metrics-scrape-configuration#configmaps)
+- [Azure Managed Grafana instance](https://learn.microsoft.com/en-us/azure/managed-grafana/quickstart-managed-grafana-portal)
