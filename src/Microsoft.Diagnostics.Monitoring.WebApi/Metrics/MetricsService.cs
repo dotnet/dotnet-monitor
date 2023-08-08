@@ -58,6 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     using IDisposable monitorListener = _optionsMonitor.OnChange((_, _) => optionsTokenSource.SafeCancel());
 
                     MetricsPipelineSettings counterSettings = MetricsSettingsFactory.CreateSettings(counterOptions, options);
+                    counterSettings.UseSharedSession = pi.EndpointInfo.RuntimeVersion?.Major >= 8;
 
                     _counterPipeline = new MetricsPipeline(client, counterSettings, loggers: new[] { new MetricsLogger(_store.MetricsStore) });
 
