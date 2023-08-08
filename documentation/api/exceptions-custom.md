@@ -1,6 +1,6 @@
 ### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%exceptions-custom)
 
-# Exceptions History - Post
+# Exceptions History - Custom
 
 Captures a history of first chance exceptions that were thrown in the [default process](defaultprocess.md), with the ability to filter which exceptions are included in the response.
 
