@@ -58,8 +58,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
             CliCommand scenarioCommand = new(TestAppScenarios.Exceptions.Name);
 
-            scenarioCommand.SetAction(ExecuteAsync);
-
             scenarioCommand.Subcommands.Add(singleExceptionCommand);
             scenarioCommand.Subcommands.Add(repeatExceptionCommand);
             scenarioCommand.Subcommands.Add(asyncExceptionCommand);
@@ -75,19 +73,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             scenarioCommand.Subcommands.Add(reflectionTypeLoadExceptionCommand);
 
             return scenarioCommand;
-        }
-
-        public static Task<int> ExecuteAsync(ParseResult result, CancellationToken token)
-        {
-            return ScenarioHelpers.RunScenarioAsync(async logger =>
-            {
-                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
-
-                ThrowAndCatchInvalidOperationException();
-
-                return 0;
-
-            }, token);
         }
 
         public static Task<int> SingleExceptionAsync(ParseResult result, CancellationToken token)

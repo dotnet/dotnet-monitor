@@ -16,7 +16,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
@@ -55,12 +54,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _outputHelper,
                 _httpClientFactory,
                 DiagnosticPortConnectionMode.Listen,
-                TestAppScenarios.Exceptions.Name,
+                TestAppScenarios.Exceptions.Name + " " + TestAppScenarios.Exceptions.SubScenarios.SingleException,
                 appValidate: async (appRunner, apiClient) =>
                 {
                     await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText);
 
-                    var exceptionsLines = exceptionsResult.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+                    var exceptionsLines = exceptionsResult.Split(Environment.NewLine, StringSplitOptions.None);
 
                     Assert.True(exceptionsLines.Length >= 4);
                     Assert.Contains("First chance exception at", exceptionsLines[0]);
@@ -101,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _outputHelper,
                 _httpClientFactory,
                 DiagnosticPortConnectionMode.Listen,
-                TestAppScenarios.Exceptions.Name,
+                TestAppScenarios.Exceptions.Name + " " + TestAppScenarios.Exceptions.SubScenarios.SingleException,
                 appValidate: async (appRunner, apiClient) =>
                 {
                     DateTime startTime = DateTime.UtcNow.ToLocalTime();
@@ -156,6 +155,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 shouldRetry: (Exception ex) => ex is ArgumentException,
                 maxRetryCount: 5,
                 outputHelper: _outputHelper);
+
+            await appRunner.SendCommandAsync(TestAppScenarios.Exceptions.Commands.End);
         }
 
         private async Task CaptureExtensions(ApiClient apiClient, int processId, ExceptionFormat format)
@@ -164,7 +165,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             ResponseStreamHolder holder = await apiClient.CaptureExceptionsAsync(processId, format);
 
-            using (var reader = new StreamReader(holder.Stream, Encoding.UTF8))
+            using (var reader = new StreamReader(holder.Stream))
             {
                 exceptionsResult = reader.ReadToEnd();
             }
