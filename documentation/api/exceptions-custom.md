@@ -48,7 +48,7 @@ Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 Accept: text/plain
 {
-    "exclude": [
+    "Exclude": [
         {
             "exceptionType": "System.InvalidOperationException"
         }
@@ -88,7 +88,7 @@ Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 Accept: text/plain
 {
-    "include": [
+    "Include": [
         {
             "methodName": "MyExceptionMethod"
         }
@@ -117,12 +117,12 @@ Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 Accept: application/x-ndjson
 {
-    "include": [
+    "Include": [
         {
             "className": "MyClass"
         }
     ],
-    "exclude": [
+    "Exclude": [
         {
             "methodName": "MyExceptionMethod"
         }
