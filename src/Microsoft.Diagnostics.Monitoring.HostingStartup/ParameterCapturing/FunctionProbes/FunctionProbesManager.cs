@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
-    internal sealed class FunctionProbesManager : IDisposable
+    internal sealed class FunctionProbesManager : IFunctionProbesManager
     {
         [DllImport(ProfilerIdentifiers.MutatingProfiler.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
         private static extern void RequestFunctionProbeRegistration(ulong enterProbeId);
@@ -110,7 +110,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 return;
 
             FunctionProbesStub.Instance = null;
-            StopCapturing();
+            try
+            {
+                StopCapturing();
+            }
+            catch
+            {
+
+            }
         }
     }
 }

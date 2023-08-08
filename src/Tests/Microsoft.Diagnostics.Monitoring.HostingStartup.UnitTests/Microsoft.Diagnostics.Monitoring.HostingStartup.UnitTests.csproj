@@ -5,8 +5,8 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.HostingStartup\Microsoft.Diagnostics.Monitoring.HostingStartup.csproj" />
-      <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.HostingStartup\Microsoft.Diagnostics.Monitoring.HostingStartup.csproj" />
+    <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
+  </ItemGroup>
 </Project>
