@@ -1,15 +1,15 @@
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%exceptions)
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%exceptions-custom)
 
-# Exceptions History - Get
+# Exceptions History - Post
 
-Captures a history of first chance exceptions that were thrown in the [default process](defaultprocess.md).
+Captures a history of first chance exceptions that were thrown in the [default process](defaultprocess.md), with the ability to filter which exceptions are included in the response.
 
 >**Note**: This feature is not enabled by default and requires configuration to be enabled. The [in-process features](./../configuration/in-process-features-configuration.md) must be enabled since the exceptions history feature uses shared libraries loaded into the target application for collecting the exception information.
 
 ## HTTP Route
 
 ```http
-GET /exceptions HTTP/1.1
+POST /exceptions HTTP/1.1
 ```
 
 ## Host Address
@@ -24,6 +24,12 @@ Allowed schemes:
 - `Bearer`
 - `Negotiate` (Windows only, running as unelevated)
 
+## Request Body
+
+A request body of type [ExceptionsConfiguration](definitions.md#exceptionsconfiguration) is required.
+
+The expected content type is `application/json`.
+
 ## Responses
 
 | Name | Type | Description | Content Type |
@@ -37,10 +43,17 @@ Allowed schemes:
 ### Sample Request
 
 ```http
-GET /exceptions HTTP/1.1
+POST /exceptions HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 Accept: text/plain
+{
+    "exclude": [
+        {
+            "exceptionType": "System.InvalidOperationException"
+        }
+    ]
+}
 ```
 
 ### Sample Response
@@ -48,15 +61,6 @@ Accept: text/plain
 ```http
 HTTP/1.1 200 OK
 Content-Type: text/plain
-
-First chance exception at 2023-07-13T21:45:11.8056355Z
-System.InvalidOperationException: Operation is not valid due to the current state of the object.
-   at WebApplication3.Pages.IndexModel+<GetData>d__3.MoveNext()
-   at System.Threading.ExecutionContext.RunInternal(System.Threading.ExecutionContext,System.Threading.ContextCallback,System.Object)
-   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1[System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1+TResult,System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1+TStateMachine].MoveNext(System.Threading.Thread)
-   at System.Runtime.CompilerServices.YieldAwaitable+YieldAwaiter+<>c.<OutputCorrelationEtwEvent>b__6_0(System.Action,System.Threading.Tasks.Task)
-   at System.Threading.ThreadPoolWorkQueue.Dispatch()
-   at System.Threading.PortableThreadPool+WorkerThread.WorkerThreadStart()
 
 First chance exception at 2023-07-13T21:46:18.7530773Z
 System.ObjectDisposedException: Cannot access a disposed object.
@@ -79,10 +83,51 @@ Object name: 'System.Net.Sockets.NetworkStream'.
 ### Sample Request
 
 ```http
-GET /exceptions HTTP/1.1
+POST /exceptions HTTP/1.1
+Host: localhost:52323
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
+Accept: text/plain
+{
+    "include": [
+        {
+            "methodName": "MyExceptionMethod"
+        }
+    ]
+}
+```
+
+### Sample Response
+
+```http
+HTTP/1.1 200 OK
+Content-Type: text/plain
+
+First chance exception at 2023-08-08T14:50:34.1039177Z
+System.InvalidOperationException: There was an invalid operation!
+   at MyApp.MyClass.MyExceptionMethod()
+   at MyApp.MyClass.CallingMethod(System.String)
+   at MyApp.MyClass.Main(System.String[])
+```
+
+### Sample Request
+
+```http
+POST /exceptions HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 Accept: application/x-ndjson
+{
+    "include": [
+        {
+            "className": "MyClass"
+        }
+    ],
+    "exclude": [
+        {
+            "methodName": "MyExceptionMethod"
+        }
+    ],
+}
 ```
 
 ### Sample Response
@@ -91,8 +136,8 @@ Accept: application/x-ndjson
 HTTP/1.1 200 OK
 Content-Type: application/x-ndjson
 
-{"id":2,"timestamp":"2023-07-13T21:45:11.8056355Z","typeName":"System.InvalidOperationException","moduleName":"System.Private.CoreLib.dll","message":"Operation is not valid due to the current state of the object.","innerExceptions":[],"callStack":{"threadId":4768,"threadName":null,"frames":[{"methodName":"MoveNext","parameterTypes":[],"className":"WebApplication3.Pages.IndexModel\u002B\u003CGetData\u003Ed__3","moduleName":"WebApplication3.dll"},{"methodName":"RunInternal","parameterTypes":["System.Threading.ExecutionContext","System.Threading.ContextCallback","System.Object"],"className":"System.Threading.ExecutionContext","moduleName":"System.Private.CoreLib.dll"},{"methodName":"MoveNext","parameterTypes":["System.Threading.Thread"],"className":"System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601[System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTResult,System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTStateMachine]","moduleName":"System.Private.CoreLib.dll"},{"methodName":"\u003COutputCorrelationEtwEvent\u003Eb__6_0","parameterTypes":["System.Action","System.Threading.Tasks.Task"],"className":"System.Runtime.CompilerServices.YieldAwaitable\u002BYieldAwaiter\u002B\u003C\u003Ec","moduleName":"System.Private.CoreLib.dll"},{"methodName":"Dispatch","parameterTypes":[],"className":"System.Threading.ThreadPoolWorkQueue","moduleName":"System.Private.CoreLib.dll"},{"methodName":"WorkerThreadStart","parameterTypes":[],"className":"System.Threading.PortableThreadPool\u002BWorkerThread","moduleName":"System.Private.CoreLib.dll"}]}}
-{"id":3,"timestamp":"2023-07-13T21:46:18.7530773Z","typeName":"System.ObjectDisposedException","moduleName":"System.Private.CoreLib.dll","message":"Cannot access a disposed object.\r\nObject name: \u0027System.Net.Sockets.NetworkStream\u0027.","innerExceptions":[],"callStack":{"threadId":15912,"threadName":null,"frames":[{"methodName":"ThrowObjectDisposedException","parameterTypes":["System.Object"],"className":"System.ThrowHelper","moduleName":"System.Private.CoreLib.dll"},{"methodName":"ThrowIf","parameterTypes":["System.Boolean","System.Object"],"className":"System.ObjectDisposedException","moduleName":"System.Private.CoreLib.dll"},{"methodName":"ReadAsync","parameterTypes":["System.Memory\u00601[[System.Byte, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]][System.Byte]","System.Threading.CancellationToken"],"className":"System.Net.Sockets.NetworkStream","moduleName":"System.Net.Sockets.dll"},{"methodName":"MoveNext","parameterTypes":[],"className":"System.Net.Http.HttpConnection\u002B\u003C\u003CEnsureReadAheadTaskHasStarted\u003Eg__ReadAheadWithZeroByteReadAsync|43_0\u003Ed","moduleName":"System.Net.Http.dll"},{"methodName":"ExecutionContextCallback","parameterTypes":["System.Object"],"className":"System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601[System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTResult,System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTStateMachine]","moduleName":"System.Private.CoreLib.dll"},{"methodName":"RunInternal","parameterTypes":["System.Threading.ExecutionContext","System.Threading.ContextCallback","System.Object"],"className":"System.Threading.ExecutionContext","moduleName":"System.Private.CoreLib.dll"},{"methodName":"MoveNext","parameterTypes":["System.Threading.Thread"],"className":"System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601[System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTResult,System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTStateMachine]","moduleName":"System.Private.CoreLib.dll"},{"methodName":"MoveNext","parameterTypes":[],"className":"System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601[System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTResult,System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTStateMachine]","moduleName":"System.Private.CoreLib.dll"},{"methodName":"\u003C.cctor\u003Eb__176_0","parameterTypes":["System.UInt32","System.UInt32","System.Threading.NativeOverlapped*"],"className":"System.Net.Sockets.SocketAsyncEventArgs\u002B\u003C\u003Ec","moduleName":"System.Net.Sockets.dll"},{"methodName":"Invoke","parameterTypes":["System.Threading.PortableThreadPool\u002BIOCompletionPoller\u002BEvent"],"className":"System.Threading.PortableThreadPool\u002BIOCompletionPoller\u002BCallback","moduleName":"System.Private.CoreLib.dll"},{"methodName":"System.Threading.IThreadPoolWorkItem.Execute","parameterTypes":[],"className":"System.Threading.ThreadPoolTypedWorkItemQueue\u00602[System.Threading.ThreadPoolTypedWorkItemQueue\u00602\u002BT,System.Threading.ThreadPoolTypedWorkItemQueue\u00602\u002BTCallback]","moduleName":"System.Private.CoreLib.dll"},{"methodName":"Dispatch","parameterTypes":[],"className":"System.Threading.ThreadPoolWorkQueue","moduleName":"System.Private.CoreLib.dll"},{"methodName":"WorkerThreadStart","parameterTypes":[],"className":"System.Threading.PortableThreadPool\u002BWorkerThread","moduleName":"System.Private.CoreLib.dll"}]}}
+{"id":4,"timestamp":"2023-08-08T15:42:05.4014435Z","typeName":"System.DivideByZeroException","moduleName":"System.Private.CoreLib.dll","message":"Something was divided by zero!","callStack":{"threadId":30448,"threadName":null,"innerExceptions":[],"frames":[{"methodName":"MyExceptionMethod2","parameterTypes":[],"className":"MyApp.MyClass","moduleName":"MyApp.dll"},{"methodName":"Main","parameterTypes":["System.String[]"],"className":"MyApp.MyClass","moduleName":"MyApp.dll"}]}}
+{"id":6,"timestamp":"2023-08-08T15:42:06.411379Z","typeName":"System.Exception","moduleName":"System.Private.CoreLib.dll","message":"There was an exception!","callStack":{"threadId":30448,"threadName":null,"innerExceptions":[],"frames":[{"methodName":"MyExceptionMethod3","parameterTypes":[],"className":"MyApp.MyClass","moduleName":"MyApp.dll"},{"methodName":"RandomGeneric","parameterTypes":[],"className":"MyApp.MyClass","moduleName":"MyApp.dll"},{"methodName":"Main","parameterTypes":["System.String[]"],"className":"MyApp.MyClass","moduleName":"MyApp.dll"}]}}
 ```
 
 ## Supported Runtimes
