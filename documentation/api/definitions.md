@@ -169,6 +169,26 @@ Object describing the list of event providers, keywords, event levels, and addit
 }
 ```
 
+## ExceptionConfiguration
+
+Object describing attributes of an exception to use for filtering.
+
+| Name | Type | Description |
+|---|---|---|
+| `methodName` | string | The name of the top stack frame's method. |
+| `className` | string | The name of the top stack frame's class. |
+| `moduleName` | string | The name of the top stack frame's module. |
+| `exceptionType` | string | The type of the exception (e.g. "System.ObjectDisposedException"). |
+
+## ExceptionsConfiguration
+
+Object describing which exceptions should be included/excluded.
+
+| Name | Type | Description |
+|---|---|---|
+| `include` | [ExceptionConfiguration[]](#exceptionconfiguration) | The list of exceptions to include in the filter. |
+| `exclude` | [ExceptionConfiguration[]](#exceptionconfiguration) | The list of exceptions to exclude in the filter. |
+
 ## ExceptionInstance
 
 Object describing an exception instance.
