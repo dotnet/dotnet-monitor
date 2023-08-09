@@ -13,6 +13,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -192,6 +193,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
 
                 public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
                 {
+                    EncodingProvider provider = CodePagesEncodingProvider.Instance;
+                    Encoding.RegisterProvider(provider);
+
                     using Utf8JsonWriter writer = new(Console.OpenStandardOutput());
 
                     writer.WriteStartObject();
