@@ -85,7 +85,39 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Exceptions);
         }
 
+<<<<<<< HEAD
         private static ExceptionFormat? ComputeFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
+=======
+        /// <summary>
+        /// Gets the exceptions from the default process.
+        /// </summary>
+        /// <param name="configuration">The exceptions configuration describing which exceptions to capture.</param>
+        [HttpPost("exceptions", Name = nameof(CaptureExceptionsCustom))]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [EgressValidation]
+        public ActionResult CaptureExceptionsCustom(
+            [FromBody]
+            ExceptionsConfiguration configuration)
+        {
+            if (!_inProcessFeatures.IsExceptionsEnabled)
+            {
+                return NotFound();
+            }
+
+            ExceptionsFormat? format = ComputeFormat(Request.GetTypedHeaders().Accept);
+            if (!format.HasValue)
+            {
+                return this.NotAcceptable();
+            }
+
+            IArtifactOperation operation = _operationFactory.Create(_exceptionsStore, format.Value, configuration);
+
+            return new OutputStreamResult(operation);
+        }
+
+        private static ExceptionsFormat? ComputeFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
+>>>>>>> 01d943298 (Some refactoring - temporarily checking in a copy with wildcard, but plan to pull it out.)
         {
             if (acceptedHeaders == null || acceptedHeaders.Count == 0)
             {
