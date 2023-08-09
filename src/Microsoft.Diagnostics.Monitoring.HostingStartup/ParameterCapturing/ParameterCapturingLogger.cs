@@ -58,6 +58,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public void Log(ParameterCaptureMode mode, string format, string[] args)
         {
+            DisposableHelper.ThrowIfDisposed<ParameterCapturingLogger>(ref _disposedState);
+
             if (mode == ParameterCaptureMode.Inline)
             {
                 Log(_userLogger, format, args);
@@ -86,6 +88,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             }
         }
 
+        public void Complete()
+        {
+            //TODO: Should this also be called during shutdown to ensure all messages are logged?
+
+            _messages.CompleteAdding();
+            _thread.Join();
+        }
+
         private static void Log(ILogger logger, string format, string[] args) => logger.Log(LogLevel.Information, format, args);
 
         public void Dispose()
@@ -95,8 +105,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 return;
             }
 
-            _messages.CompleteAdding();
-            _thread.Join();
             _messages.Dispose();
         }
     }

@@ -29,6 +29,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             {
                 logger.Log(ParameterCaptureMode.Inline, inlineMessage, Array.Empty<string>());
                 logger.Log(ParameterCaptureMode.Background, backgroundMessage, Array.Empty<string>());
+
+                logger.Complete();
             }
 
             Assert.Equal(2, logRecord.Events.Count);
