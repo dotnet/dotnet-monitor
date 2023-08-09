@@ -95,13 +95,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 
         private static bool CompareValues(string configurationValue, string actualValue)
         {
-            if (configurationValue.EndsWith('*'))
-            {
-                configurationValue = configurationValue.Remove(configurationValue.Length - 1);
-                return actualValue.Contains(configurationValue, System.StringComparison.CurrentCultureIgnoreCase);
-            }
-
-            return actualValue.Equals(configurationValue, System.StringComparison.CurrentCultureIgnoreCase);
+            return actualValue.Contains(configurationValue, System.StringComparison.CurrentCultureIgnoreCase);
         }
     }
 
