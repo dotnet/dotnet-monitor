@@ -18,16 +18,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public string ModuleName { get; set; }
 
         [JsonIgnore]
-        internal IList<string> TypeArgs { get; set; } = new List<string>();
+        internal IList<string> SimpleGenericArgTypes { get; set; } = new List<string>();
 
         [JsonIgnore]
-        internal IList<string> FullTypeArgs { get; set; } = new List<string>();
+        internal IList<string> FullGenericArgTypes { get; set; } = new List<string>();
 
         [JsonIgnore]
-        internal IList<string> ParameterTypes { get; set; } = new List<string>();
+        internal IList<string> SimpleParameterTypes { get; set; } = new List<string>();
 
         [JsonIgnore]
-        internal IList<string> ParameterFullTypes { get; set; } = new List<string>();
+        internal IList<string> FullParameterTypes { get; set; } = new List<string>();
         //TODO Bring this back once we have a relative il offset value.
         //[JsonPropertyName("offset")]
         //public ulong Offset { get; set; }

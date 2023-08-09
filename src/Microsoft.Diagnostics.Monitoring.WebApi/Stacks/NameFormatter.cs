@@ -25,22 +25,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         private const char GenericStart = '[';
         private const char GenericSeparator = ',';
         private const char GenericEnd = ']';
+        private const char MethodParameterTypesStart = '(';
+        private const char MethodParameterTypesEnd = ')';
 
         internal enum TypeFormat
         {
-            FullName,
-            Name
+            Full,
+            Simple
         }
 
         public static void BuildClassName(StringBuilder builder, NameCache cache, FunctionData functionData)
         {
             if (functionData.ParentClass != 0)
             {
-                BuildClassName(builder, cache, functionData.ParentClass, TypeFormat.FullName);
+                BuildClassName(builder, cache, functionData.ParentClass, TypeFormat.Full);
             }
             else
             {
-                BuildClassName(builder, cache, functionData.ModuleId, functionData.ParentToken, TypeFormat.FullName);
+                BuildClassName(builder, cache, functionData.ModuleId, functionData.ParentToken, TypeFormat.Full);
             }
         }
 
@@ -87,7 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             {
                 string className = tokenData.Name;
 
-                if (typeFormat == TypeFormat.FullName && !string.IsNullOrEmpty(tokenData.Namespace))
+                if (typeFormat == TypeFormat.Full && !string.IsNullOrEmpty(tokenData.Namespace))
                 {
                     className = tokenData.Namespace + DotSeparator + className;
                 }
@@ -112,14 +114,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        public static void BuildGenericTypeNames(StringBuilder builder, NameCache cache, ulong[] parameters, TypeFormat typeFormat = TypeFormat.FullName)
+        public static void BuildGenericTypeNames(StringBuilder builder, NameCache cache, ulong[] parameters, TypeFormat typeFormat = TypeFormat.Full)
         {
             IList<string> typeNames = GetTypeNames(cache, parameters, typeFormat);
 
-            WriteTypeNamesList(builder, typeNames);
+            BuildGenericArgTypes(builder, typeNames);
         }
 
-        public static void WriteTypeNamesList(StringBuilder builder, IList<string> typeNames, char startChar = GenericStart, char endChar = GenericEnd, char separationChar = GenericSeparator)
+        public static void BuildGenericArgTypes(StringBuilder builder, IList<string> typeNames)
+        {
+            WriteTypeNamesList(builder, typeNames, GenericStart, GenericEnd, GenericSeparator);
+        }
+
+        public static void BuildMethodParameterTypes(StringBuilder builder, IList<string> typeNames)
+        {
+            WriteTypeNamesList(builder, typeNames, MethodParameterTypesStart, MethodParameterTypesEnd, GenericSeparator);
+        }
+
+        private static void WriteTypeNamesList(StringBuilder builder, IList<string> typeNames, char startChar, char endChar, char separationChar)
         {
             for (int i = 0; i < typeNames?.Count; i++)
             {

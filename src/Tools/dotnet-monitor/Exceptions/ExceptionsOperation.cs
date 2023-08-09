@@ -24,8 +24,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private static byte[] JsonSequenceRecordSeparator = new byte[] { 0x1E };
 
         private const char GenericSeparator = ',';
-        private const char MethodParameterTypesStart = '(';
-        private const char MethodParameterTypesEnd = ')';
         private const char GenericStart = '[';
         private const char GenericEnd = ']';
 
@@ -129,17 +127,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     writer.WriteStartObject();
 
                     string assembledMethodName = frame.MethodName;
-                    if (frame.FullTypeArgs.Count > 0)
+                    if (frame.FullGenericArgTypes.Count > 0)
                     {
                         builder.Clear();
                         builder.Append(GenericStart);
-                        builder.Append(string.Join(GenericSeparator, frame.FullTypeArgs));
+                        builder.Append(string.Join(GenericSeparator, frame.FullGenericArgTypes));
                         builder.Append(GenericEnd);
                         assembledMethodName += builder.ToString();
                     }
                     writer.WriteString("methodName", assembledMethodName);
                     writer.WriteStartArray("parameterTypes");
-                    foreach (string parameterType in frame.ParameterFullTypes)
+                    foreach (string parameterType in frame.FullParameterTypes)
                     {
                         writer.WriteStringValue(parameterType);
                     }
@@ -237,11 +235,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     await writer.WriteAsync(".");
                     await writer.WriteAsync(frame.MethodName);
 
-                    NameFormatter.WriteTypeNamesList(builder, frame.TypeArgs);
+                    NameFormatter.BuildGenericArgTypes(builder, frame.SimpleGenericArgTypes);
                     await writer.WriteAsync(builder);
                     builder.Clear();
 
-                    NameFormatter.WriteTypeNamesList(builder, frame.ParameterTypes, MethodParameterTypesStart, MethodParameterTypesEnd, GenericSeparator);
+                    NameFormatter.BuildMethodParameterTypes(builder, frame.SimpleParameterTypes);
                     await writer.WriteAsync(builder);
                     builder.Clear();
                 }

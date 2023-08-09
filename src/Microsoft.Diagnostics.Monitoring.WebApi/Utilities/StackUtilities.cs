@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 if (methodNameIncludesGenericParameters)
                 {
                     builder.Append(frameModel.MethodName);
-                    NameFormatter.WriteTypeNamesList(builder, frameModel.FullTypeArgs);
+                    NameFormatter.BuildGenericArgTypes(builder, frameModel.FullGenericArgTypes);
                     frameModel.MethodName = builder.ToString();
                     builder.Clear();
                 }
@@ -72,14 +72,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 if (functionData.TypeArgs.Length > 0)
                 {
-                    frameModel.TypeArgs = NameFormatter.GetTypeNames(cache, functionData.TypeArgs, NameFormatter.TypeFormat.Name);
-                    frameModel.FullTypeArgs = NameFormatter.GetTypeNames(cache, functionData.TypeArgs, NameFormatter.TypeFormat.FullName);
+                    frameModel.SimpleGenericArgTypes = NameFormatter.GetTypeNames(cache, functionData.TypeArgs, NameFormatter.TypeFormat.Simple);
+                    frameModel.FullGenericArgTypes = NameFormatter.GetTypeNames(cache, functionData.TypeArgs, NameFormatter.TypeFormat.Full);
                 }
 
                 if (functionData.ParameterTypes.Length > 0)
                 {
-                    frameModel.ParameterTypes = NameFormatter.GetTypeNames(cache, functionData.ParameterTypes, NameFormatter.TypeFormat.Name);
-                    frameModel.ParameterFullTypes = NameFormatter.GetTypeNames(cache, functionData.ParameterTypes, NameFormatter.TypeFormat.FullName);
+                    frameModel.SimpleParameterTypes = NameFormatter.GetTypeNames(cache, functionData.ParameterTypes, NameFormatter.TypeFormat.Simple);
+                    frameModel.FullParameterTypes = NameFormatter.GetTypeNames(cache, functionData.ParameterTypes, NameFormatter.TypeFormat.Full);
                 }
 
                 builder.Clear();

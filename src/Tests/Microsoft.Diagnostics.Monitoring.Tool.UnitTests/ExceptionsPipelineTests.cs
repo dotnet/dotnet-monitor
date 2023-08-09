@@ -467,8 +467,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(expectedMethodName, stack.Frames[0].MethodName);
             Assert.Equal(expectedModuleName, stack.Frames[0].ModuleName);
             Assert.Equal(expectedClassName, stack.Frames[0].ClassName);
-            Assert.Equal(expectedFullParameterTypes ?? new List<string>(), stack.Frames[0].ParameterFullTypes);
-            Assert.Equal(expectedParameterTypes ?? new List<string>(), stack.Frames[0].ParameterTypes);
+            Assert.Equal(expectedFullParameterTypes ?? new List<string>(), stack.Frames[0].FullParameterTypes);
+            Assert.Equal(expectedParameterTypes ?? new List<string>(), stack.Frames[0].SimpleParameterTypes);
         }
 
         private static void AddStartupHookEnvironmentVariable(AppRunner runner)
@@ -507,7 +507,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     Assert.True(cache.TryGetExceptionGroup(groupId, out ulong exceptionClassId, out _, out _));
 
-                    NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId, NameFormatter.TypeFormat.FullName);
+                    NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId, NameFormatter.TypeFormat.Full);
 
                     if (cache.NameCache.ClassData.TryGetValue(exceptionClassId, out ClassData exceptionClassData))
                     {
