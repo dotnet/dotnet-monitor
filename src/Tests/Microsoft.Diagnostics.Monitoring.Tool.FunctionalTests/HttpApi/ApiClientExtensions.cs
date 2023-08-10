@@ -336,6 +336,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
+        /// GET /exceptions
+        /// </summary>
+        public static Task<ResponseStreamHolder> CaptureExceptionsAsync(this ApiClient client, int processId, ExceptionFormat format)
+        {
+            return client.CaptureExceptionsAsync(processId, format, TestTimeouts.HttpApi);
+        }
+
+        /// <summary>
+        /// GET /exceptions
+        /// </summary>
+        public static async Task<ResponseStreamHolder> CaptureExceptionsAsync(this ApiClient client, int processId, ExceptionFormat format, TimeSpan timeout)
+        {
+            using CancellationTokenSource timeoutSource = new(timeout);
+            return await client.CaptureExceptionsAsync(processId, format, timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// GET /stacks
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureStacksAsync(this ApiClient client, int pid, WebApi.StackFormat format)
