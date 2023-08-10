@@ -15,11 +15,10 @@
     <!-- Set TEST_DOTNET_ROOT to same as DOTNET_ROOT (which is provided by the dotnet cli correlation payload) -->
     <HelixWorkItemPreCommand Include="export TEST_DOTNET_ROOT=${DOTNET_ROOT}"
                              Condition="'$(IsHelixPosixShell)' == 'true'" />
+    <!-- Workaround for https://github.com/dotnet/dotnet-buildtools-prereqs-docker/issues/909 -->
     <HelixWorkItemPreCommand Include="export LANG=en_US.UTF-8"
-                             Condition="'$(IsHelixPosixShell)' == 'true'" />
+                             Condition="$([MSBuild]::IsOSPlatform(Linux)) and '$(IsHelixPosixShell)' == 'true'" />
     <HelixWorkItemPreCommand Include="SET TEST_DOTNET_ROOT=%DOTNET_ROOT%"
-                             Condition="'$(IsHelixPosixShell)' != 'true'" />
-    <HelixWorkItemPreCommand Include="SET LANG=en_US.UTF-8"
                              Condition="'$(IsHelixPosixShell)' != 'true'" />
   </ItemGroup>
 
