@@ -57,7 +57,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             reflectionTypeLoadExceptionCommand.SetAction(ReflectionTypeLoadExceptionAsync);
 
             CliCommand scenarioCommand = new(TestAppScenarios.Exceptions.Name);
-
             scenarioCommand.Subcommands.Add(singleExceptionCommand);
             scenarioCommand.Subcommands.Add(repeatExceptionCommand);
             scenarioCommand.Subcommands.Add(asyncExceptionCommand);
@@ -71,7 +70,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             scenarioCommand.Subcommands.Add(innerThrownExceptionCommand);
             scenarioCommand.Subcommands.Add(aggregateExceptionCommand);
             scenarioCommand.Subcommands.Add(reflectionTypeLoadExceptionCommand);
-
             return scenarioCommand;
         }
 
