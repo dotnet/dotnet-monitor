@@ -1261,6 +1261,7 @@
           "Operations"
         ],
         "summary": "Gets the operations list for the specified process (or all processes if left unspecified).",
+        "operationId": "GetOperations",
         "parameters": [
           {
             "name": "pid",
@@ -1322,6 +1323,7 @@
         "tags": [
           "Operations"
         ],
+        "operationId": "GetOperationStatus",
         "parameters": [
           {
             "name": "operationId",
@@ -1363,6 +1365,7 @@
         "tags": [
           "Operations"
         ],
+        "operationId": "CancelOperation",
         "parameters": [
           {
             "name": "operationId",
