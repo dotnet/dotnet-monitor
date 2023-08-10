@@ -65,12 +65,9 @@ HRESULT ProbeInstrumentation::InitBackgroundService()
     m_probeManagementThread = thread(&ProbeInstrumentation::WorkerThread, this);
     //
     // Create a dedicated thread for managed callbacks.
-    // Performing the callbacks will taint the calling thread,
-    // preventing it from using certain ICorProfiler APIs marked as "unsafe".
-    // 
-    // The unsafe ICorProfiler APIs will believe our thread is calling them asynchronously,
-    // failing the request with CORPROF_E_UNSUPPORTED_CALL_SEQUENCE,
-    // even if our thread has already been initialized with ICorProfiler.
+    // Performing the callbacks will taint the calling thread preventing it
+    // from using certain ICorProfiler APIs marked as unsafe.
+    // Those functions will fail with CORPROF_E_UNSUPPORTED_CALL_SEQUENCE.
     //
     m_managedCallbackThread = thread(&ProbeInstrumentation::ManagedCallbackThread, this);
     return S_OK;
