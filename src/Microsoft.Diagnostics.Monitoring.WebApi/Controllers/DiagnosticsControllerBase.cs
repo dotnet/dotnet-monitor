@@ -98,6 +98,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
+        private protected async Task<ActionResult> InProcessResult(
+            string artifactType,
+            IProcessInfo processInfo,
+            IInProcessOperation operation,
+            string tags)
+        {
+            KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
+            string location = await RegisterOperation(
+                new InProcessEgressOperation(processInfo, scope, tags, operation),
+                limitKey: artifactType);
+
+            return Accepted(location);
+        }
+
         private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, string tags, IArtifactOperation operation = null)
         {
             // While not strictly a Location redirect, use the same header as externally egressed operations for consistency.

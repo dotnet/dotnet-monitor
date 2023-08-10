@@ -354,8 +354,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureHostingStartup(this IServiceCollection services)
         {
-            services.AddSingleton<HostingStartupService>();
-            services.AddSingleton<IEndpointInfoSourceCallbacks, HostingStartupEndpointInfoSourceCallbacks>();
+            services.AddScoped<HostingStartupService>();
+            services.AddScopedForwarder<IDiagnosticLifetimeService, HostingStartupService>();
             return services;
         }
 

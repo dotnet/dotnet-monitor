@@ -15,29 +15,33 @@ using System.Threading.Tasks;
 namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
 {
     internal sealed class HostingStartupService
+        : IDiagnosticLifetimeService
     {
         // Intent is to ship a single TFM of the hosting startup, which should be the lowest supported version.
         private const string HostingStartupFileName = "Microsoft.Diagnostics.Monitoring.HostingStartup.dll";
         private const string HostingStartupTargetFramework = "net6.0";
 
-        private readonly StartupHookEndpointInfoSourceCallbacks _startupHookEndpointInfoSourceCallbacks;
+        private readonly IEndpointInfo _endpointInfo;
+        private readonly StartupHookService _startupHookService;
         private readonly IInProcessFeatures _inProcessFeatures;
         private readonly ISharedLibraryService _sharedLibraryService;
         private readonly ILogger<HostingStartupService> _logger;
 
         public HostingStartupService(
-            StartupHookEndpointInfoSourceCallbacks startupHookEndpointInfoSourceCallbacks,
+            IEndpointInfo endpointInfo,
+            StartupHookService startupHookService,
             ISharedLibraryService sharedLibraryService,
             IInProcessFeatures inProcessFeatures,
             ILogger<HostingStartupService> logger)
         {
-            _startupHookEndpointInfoSourceCallbacks = startupHookEndpointInfoSourceCallbacks;
+            _endpointInfo = endpointInfo;
+            _startupHookService = startupHookService;
             _inProcessFeatures = inProcessFeatures;
             _sharedLibraryService = sharedLibraryService;
             _logger = logger;
         }
 
-        public async Task ApplyHostingStartup(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
+        public async ValueTask StartAsync(CancellationToken cancellationToken)
         {
             if (!_inProcessFeatures.IsHostingStartupRequired)
             {
@@ -45,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
             }
 
             // Hosting startup is only supported on .NET 6+
-            if (endpointInfo.RuntimeVersion == null || endpointInfo.RuntimeVersion.Major < 6)
+            if (_endpointInfo.RuntimeVersion == null || _endpointInfo.RuntimeVersion.Major < 6)
             {
                 return;
             }
@@ -53,8 +57,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
             try
             {
                 // Hosting startup requires the startup hook
-                _ = _startupHookEndpointInfoSourceCallbacks.ApplyStartupState.TryGetValue(endpointInfo.RuntimeInstanceCookie, out bool isStartupHookApplied);
-                if (!isStartupHookApplied)
+                if (!await _startupHookService.CheckHasStartupHookAsync(cancellationToken))
                 {
                     return;
                 }
@@ -68,7 +71,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
                     throw new FileNotFoundException(Strings.ErrorMessage_UnableToFindHostingStartupAssembly, hostingStartupLibraryFileInfo.Name);
                 }
 
-                DiagnosticsClient client = new DiagnosticsClient(endpointInfo.Endpoint);
+                DiagnosticsClient client = new DiagnosticsClient(_endpointInfo.Endpoint);
                 await client.SetEnvironmentVariableAsync(
                     StartupHookIdentifiers.EnvironmentVariables.HostingStartupPath,
                     hostingStartupLibraryFileInfo.PhysicalPath,
@@ -78,6 +81,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
             {
                 _logger.UnableToApplyHostingStartup(ex);
             }
+        }
+
+        public ValueTask StopAsync(CancellationToken cancellationToken)
+        {
+            return ValueTask.CompletedTask;
         }
     }
 }
