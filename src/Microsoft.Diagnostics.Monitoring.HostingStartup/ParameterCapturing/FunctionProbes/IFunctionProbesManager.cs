@@ -4,13 +4,18 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
     internal interface IFunctionProbesManager : IDisposable
     {
-        public void StartCapturing(IList<MethodInfo> methods);
+        public Task StartCapturingAsync(IList<MethodInfo> methods, CancellationToken token);
 
-        public void StopCapturing();
+        public Task StopCapturingAsync(CancellationToken token);
+
+
+        public event EventHandler<ulong> OnProbeFault;
     }
 }

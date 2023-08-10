@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ErrorMessage_ProbeStateMismatchFormatString" xml:space="preserve">
+    <value>Mismatch probe state. Expected '{0}', was '{1}'.</value>
+  </data>
   <data name="FeatureUnsupported_NoLogger" xml:space="preserve">
     <value>Unable to create an ILogger instance in the target process.</value>
   </data>

@@ -50,8 +50,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
             while (!stoppingToken.IsCancellationRequested)
             {
                 CapturingRequest request = await _requestQueue.Reader.ReadAsync(stoppingToken);
-                if (!TryStartCapturing(request.Payload))
+
+                void onFault(object? sender, ulong uniquifier)
                 {
+                    _ = request.StopRequest.TrySetResult();
+                }
+                _probeManager.OnProbeFault += onFault;
+
+                if (!await TryStartCapturingAsync(request.Payload, stoppingToken).ConfigureAwait(false))
+                {
+                    _probeManager.OnProbeFault -= onFault;
                     continue;
                 }
 
@@ -67,7 +75,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
 
                 }
 
-                _probeManager.StopCapturing();
+                _probeManager.OnProbeFault -= onFault;
+                await _probeManager.StopCapturingAsync(stoppingToken).ConfigureAwait(false);
 
                 _callbacks.CapturingStop(request.Payload.RequestId);
                 _ = _allRequests.TryRemove(request.Payload.RequestId, out _);
@@ -76,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
 
         // Private method for work that happens inside the pipeline's RunAsync
         // so use callbacks instead of throwing exceptions.
-        private bool TryStartCapturing(StartCapturingParametersPayload request)
+        private async Task<bool> TryStartCapturingAsync(StartCapturingParametersPayload request, CancellationToken token)
         {
             try
             {
@@ -103,7 +112,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
                     throw ex;
                 }
 
-                _probeManager.StartCapturing(methods);
+                await _probeManager.StartCapturingAsync(methods, token).ConfigureAwait(false);
                 _callbacks.CapturingStart(request, methods);
 
                 return true;

@@ -62,6 +62,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mismatch probe state. Expected &apos;{0}&apos;, was &apos;{1}&apos;..
+        /// </summary>
+        internal static string ErrorMessage_ProbeStateMismatchFormatString {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ProbeStateMismatchFormatString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to create an ILogger instance in the target process..
         /// </summary>
         internal static string FeatureUnsupported_NoLogger {

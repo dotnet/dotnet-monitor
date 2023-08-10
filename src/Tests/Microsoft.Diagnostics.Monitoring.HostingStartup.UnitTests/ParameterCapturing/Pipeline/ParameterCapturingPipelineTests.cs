@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pipeline;
 using Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher.Models;
@@ -22,20 +23,29 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         private readonly Action<IList<MethodInfo>> _onStart;
         private readonly Action _onStop;
 
+        public event EventHandler<ulong> OnProbeFault;
+
         public TestFunctionProbesManager(Action<IList<MethodInfo>> onStart = null, Action onStop = null)
         {
             _onStart = onStart;
             _onStop = onStop;
         }
 
-        public void StartCapturing(IList<MethodInfo> methods)
+        public void TriggerFault(ulong uniquifier)
         {
-            _onStart?.Invoke(methods);
+            OnProbeFault?.Invoke(this, uniquifier);
         }
 
-        public void StopCapturing()
+        public Task StartCapturingAsync(IList<MethodInfo> methods, CancellationToken token)
+        {
+            _onStart?.Invoke(methods);
+            return Task.CompletedTask;
+        }
+
+        public Task StopCapturingAsync(CancellationToken token)
         {
             _onStop?.Invoke();
+            return Task.CompletedTask;
         }
 
         public void Dispose()
@@ -258,6 +268,51 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
             // Act
             pipeline.SubmitRequest(payload);
+
+            // Assert
+            Guid stoppedRequest = await onStopCallbackSource.Task;
+            Assert.Equal(payload.RequestId, stoppedRequest);
+        }
+
+        [Fact]
+        public async Task Request_StopsAndNotifiesAfterFault()
+        {
+            // Arrange
+            using CancellationTokenSource cts = new();
+            cts.CancelAfter(CommonTestTimeouts.GeneralTimeout);
+
+            TaskCompletionSource<Guid> onStopCallbackSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            TaskCompletionSource<(Guid, IList<MethodInfo>)> onStartCallbackSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            using IDisposable registration = cts.Token.Register(() =>
+            {
+                _ = onStartCallbackSource.TrySetCanceled(cts.Token);
+                _ = onStopCallbackSource.TrySetCanceled(cts.Token);
+            });
+
+            TestFunctionProbesManager probeManager = new();
+
+            TestParameterCapturingCallbacks callbacks = new(
+                onCapturingStart: (payload, methods) =>
+                {
+                    onStartCallbackSource.TrySetResult((payload.RequestId, methods));
+                },
+                onCapturingStop: (requestId) =>
+                {
+                    onStopCallbackSource.TrySetResult(requestId);
+                });
+
+            ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
+            StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan);
+
+            Task pipelineTask = pipeline.RunAsync(cts.Token);
+            pipeline.SubmitRequest(payload);
+            (Guid startedRequest, IList<MethodInfo> methods) = await onStartCallbackSource.Task;
+            Assert.Equal(payload.RequestId, startedRequest);
+            MethodInfo instrumentedMethod = Assert.Single(methods);
+
+            // Act
+            probeManager.TriggerFault(instrumentedMethod.GetFunctionId());
 
             // Assert
             Guid stoppedRequest = await onStopCallbackSource.Task;

@@ -14,6 +14,22 @@ using namespace std;
 #define DLLEXPORT
 #endif
 
+typedef void (STDMETHODCALLTYPE *ProbeRegistrationCallback)(HRESULT);
+typedef void (STDMETHODCALLTYPE *ProbeInstallationCallback)(HRESULT);
+typedef void (STDMETHODCALLTYPE *ProbeUninstallationCallback)(HRESULT);
+typedef void (STDMETHODCALLTYPE *ProbeFaultCallback)(ULONG64);
+
+typedef struct _PROBE_MANAGEMENT_CALLBACKS
+{
+    ProbeRegistrationCallback pProbeRegistrationCallback;
+    ProbeInstallationCallback pProbeInstallationCallback;
+    ProbeUninstallationCallback pProbeUninstallationCallback;
+    ProbeFaultCallback pProbeFaultCallback;
+} PROBE_MANAGEMENT_CALLBACKS;
+
+mutex g_probeManagementCallbacksMutex; // guards g_probeManagementCallbacks
+PROBE_MANAGEMENT_CALLBACKS g_probeManagementCallbacks = {};
+
 BlockingQueue<PROBE_WORKER_PAYLOAD> g_probeManagementQueue;
 
 ProbeInstrumentation::ProbeInstrumentation(const shared_ptr<ILogger>& logger, ICorProfilerInfo12* profilerInfo) :
@@ -47,10 +63,20 @@ HRESULT ProbeInstrumentation::RegisterFunctionProbe(FunctionID enterProbeId)
 HRESULT ProbeInstrumentation::InitBackgroundService()
 {
     m_probeManagementThread = thread(&ProbeInstrumentation::WorkerThread, this);
+    //
+    // Create a dedicated thread for managed callbacks.
+    // Performing the callbacks will taint the calling thread,
+    // preventing it from using certain ICorProfiler APIs marked as "unsafe".
+    // 
+    // The unsafe ICorProfiler APIs will believe our thread is calling them asynchronously,
+    // failing the request with CORPROF_E_UNSUPPORTED_CALL_SEQUENCE,
+    // even if our thread has already been initialized with ICorProfiler.
+    //
+    m_managedCallbackThread = thread(&ProbeInstrumentation::ManagedCallbackThread, this);
     return S_OK;
 }
 
-void ProbeInstrumentation::WorkerThread()
+void ProbeInstrumentation::ManagedCallbackThread()
 {
     HRESULT hr = m_pCorProfilerInfo->InitializeCurrentThread();
     if (FAILED(hr))
@@ -61,6 +87,75 @@ void ProbeInstrumentation::WorkerThread()
 
     while (true)
     {
+        MANAGED_CALLBACK_REQUEST request;
+        hr = m_managedCallbackQueue.BlockingDequeue(request);
+        if (hr != S_OK)
+        {
+            break;
+        }
+
+        switch (request.instruction)
+        {
+        case ProbeWorkerInstruction::REGISTER_PROBE:
+            {
+                lock_guard<mutex> lock(g_probeManagementCallbacksMutex);
+                if (g_probeManagementCallbacks.pProbeRegistrationCallback != nullptr)
+                {
+                    g_probeManagementCallbacks.pProbeRegistrationCallback(request.payload.hr);
+                }
+            }
+            break;
+
+        case ProbeWorkerInstruction::INSTALL_PROBES:
+            {
+                lock_guard<mutex> lock(g_probeManagementCallbacksMutex);
+                if (g_probeManagementCallbacks.pProbeInstallationCallback != nullptr)
+                {
+                    g_probeManagementCallbacks.pProbeInstallationCallback(request.payload.hr);
+                }
+            }
+            break;
+
+        case ProbeWorkerInstruction::FAULTING_PROBE:
+            {
+                lock_guard<mutex> lock(g_probeManagementCallbacksMutex);
+                if (g_probeManagementCallbacks.pProbeFaultCallback != nullptr)
+                {
+                    g_probeManagementCallbacks.pProbeFaultCallback(static_cast<ULONG64>(request.payload.functionId));
+                }
+            }
+            break;
+
+        case ProbeWorkerInstruction::UNINSTALL_PROBES:
+            {
+                lock_guard<mutex> lock(g_probeManagementCallbacksMutex);
+                if (g_probeManagementCallbacks.pProbeUninstallationCallback != nullptr)
+                {
+                    g_probeManagementCallbacks.pProbeUninstallationCallback(request.payload.hr);
+                }
+            }
+            break;
+
+        default:
+            m_pLogger->Log(LogLevel::Error, _LS("Unknown message"));
+            break;
+        }
+    }
+}
+
+
+void ProbeInstrumentation::WorkerThread()
+{
+    HRESULT hr = m_pCorProfilerInfo->InitializeCurrentThread();
+    if (FAILED(hr))
+    {
+        m_pLogger->Log(LogLevel::Error, _LS("Unable to initialize thread: 0x%08x"), hr);
+        return;
+    }
+
+    MANAGED_CALLBACK_REQUEST callbackRequest = {};
+    while (true)
+    {
         PROBE_WORKER_PAYLOAD payload;
         hr = g_probeManagementQueue.BlockingDequeue(payload);
         if (hr != S_OK)
@@ -68,6 +163,7 @@ void ProbeInstrumentation::WorkerThread()
             break;
         }
 
+        callbackRequest.instruction = payload.instruction;
         switch (payload.instruction)
         {
         case ProbeWorkerInstruction::REGISTER_PROBE:
@@ -76,6 +172,8 @@ void ProbeInstrumentation::WorkerThread()
             {
                 m_pLogger->Log(LogLevel::Error, _LS("Failed to register function probe: 0x%08x"), hr);
             }
+            callbackRequest.payload.hr = hr;
+            m_managedCallbackQueue.Enqueue(callbackRequest);
             break;
 
         case ProbeWorkerInstruction::INSTALL_PROBES:
@@ -84,11 +182,15 @@ void ProbeInstrumentation::WorkerThread()
             {
                 m_pLogger->Log(LogLevel::Error, _LS("Failed to install probes: 0x%08x"), hr);
             }
+            callbackRequest.payload.hr = hr;
+            m_managedCallbackQueue.Enqueue(callbackRequest);
             break;
 
         case ProbeWorkerInstruction::FAULTING_PROBE:
             m_pLogger->Log(LogLevel::Error, _LS("Function probe faulting in function: 0x%08x"), payload.functionId);
-            __fallthrough;
+            callbackRequest.payload.functionId = payload.functionId;
+            m_managedCallbackQueue.Enqueue(callbackRequest);
+            break;
 
         case ProbeWorkerInstruction::UNINSTALL_PROBES:
             hr = UninstallProbes();
@@ -96,6 +198,8 @@ void ProbeInstrumentation::WorkerThread()
             {
                 m_pLogger->Log(LogLevel::Error, _LS("Failed to uninstall probes: 0x%08x"), hr);
             }
+            callbackRequest.payload.hr = hr;
+            m_managedCallbackQueue.Enqueue(callbackRequest);
             break;
 
         default:
@@ -113,15 +217,13 @@ void ProbeInstrumentation::DisableIncomingRequests()
 void ProbeInstrumentation::ShutdownBackgroundService()
 {
     DisableIncomingRequests();
+    m_managedCallbackQueue.Complete();
+    m_probeManagementThread.join();
     m_probeManagementThread.join();
 }
 
 void STDMETHODCALLTYPE ProbeInstrumentation::OnFunctionProbeFault(ULONG64 uniquifier)
 {
-    //
-    // Faulting behavior: When any function probe faults, uninstall all probes.
-    //
-
     PROBE_WORKER_PAYLOAD payload = {};
     payload.instruction = ProbeWorkerInstruction::FAULTING_PROBE;
 
@@ -252,7 +354,7 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
 
         if (req.functionId == m_probeFunctionId)
         {
-            return E_FAIL;
+            return E_INVALIDARG;
         }
 
         // For now just use the function id as the uniquifier.
@@ -390,5 +492,52 @@ HRESULT STDMETHODCALLTYPE ProbeInstrumentation::GetReJITParameters(ModuleID modu
         return hr;
     }
 
+    return S_OK;
+}
+
+STDAPI DLLEXPORT RegisterFunctionProbeCallbacks(
+    ProbeRegistrationCallback pRegistrationCallback,
+    ProbeInstallationCallback pInstallationCallback,
+    ProbeUninstallationCallback pUninstallationCallback,
+    ProbeFaultCallback pFaultCallback)
+{
+    ExpectedPtr(pRegistrationCallback);
+    ExpectedPtr(pInstallationCallback);
+    ExpectedPtr(pUninstallationCallback);
+    ExpectedPtr(pFaultCallback);
+
+    //
+    // Note: Require locking to access probe callbacks as it is
+    // used on another thread (in ManagedCallbackThread).
+    //
+    // A lock-free approach could be used to safely update and observe the value of the callback,
+    // however that would introduce the edge case where the provided callback is unregistered
+    // right before it is invoked.
+    // This means that the unregistered callback would still be invoked, leading to potential issues
+    // such as calling into an instanced method that has been disposed.
+    //
+    // For simplicitly just use locking for now as it prevents the above edge case.
+    //
+    lock_guard<mutex> lock(g_probeManagementCallbacksMutex);
+
+    // Just check one of the callbacks to see if they're already set,
+    // a mixture of set and unset callbacks is not supported.
+    if (g_probeManagementCallbacks.pProbeRegistrationCallback != nullptr)
+    {
+        return E_FAIL;
+    }
+   
+    g_probeManagementCallbacks.pProbeRegistrationCallback = pRegistrationCallback;
+    g_probeManagementCallbacks.pProbeInstallationCallback = pInstallationCallback;
+    g_probeManagementCallbacks.pProbeUninstallationCallback = pUninstallationCallback;
+    g_probeManagementCallbacks.pProbeFaultCallback = pFaultCallback;
+
+    return S_OK;
+}
+
+STDAPI DLLEXPORT UnregisterFunctionProbeCallbacks()
+{
+    lock_guard<mutex> lock(g_probeManagementCallbacksMutex);
+    g_probeManagementCallbacks = {};
     return S_OK;
 }

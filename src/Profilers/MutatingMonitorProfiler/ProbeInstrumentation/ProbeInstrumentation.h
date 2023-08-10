@@ -11,6 +11,7 @@
 #include "CallbackDefinitions.h"
 #include "Logging/Logger.h"
 #include "CommonUtilities/PairHash.h"
+#include "CommonUtilities/BlockingQueue.h"
 
 #include <unordered_map>
 #include <vector>
@@ -41,6 +42,23 @@ typedef struct _PROBE_WORKER_PAYLOAD
     std::vector<UNPROCESSED_INSTRUMENTATION_REQUEST> requests;
 } PROBE_WORKER_PAYLOAD;
 
+enum class ManagedCallbackType
+{
+    REGISTER_PROBE,
+    INSTALL_PROBES,
+    UNINSTALL_PROBES,
+    FAULTING_PROBE
+};
+
+typedef struct _MANAGED_CALLBACK_REQUEST
+{
+    ProbeWorkerInstruction instruction;
+    union {
+        HRESULT hr;
+        FunctionID functionId;
+    } payload;
+} MANAGED_CALLBACK_REQUEST;
+
 class ProbeInstrumentation
 {
     private:
@@ -51,6 +69,9 @@ class ProbeInstrumentation
         std::unique_ptr<AssemblyProbePrep> m_pAssemblyProbePrep;
 
         /* Probe management */
+        std::thread m_managedCallbackThread;
+        BlockingQueue<MANAGED_CALLBACK_REQUEST> m_managedCallbackQueue;
+
         std::thread m_probeManagementThread;
         std::unordered_map<std::pair<ModuleID, mdMethodDef>, INSTRUMENTATION_REQUEST, PairHash<ModuleID, mdMethodDef>> m_activeInstrumentationRequests;
         std::mutex m_instrumentationProcessingMutex;
@@ -58,6 +79,7 @@ class ProbeInstrumentation
 
     private:
         void WorkerThread();
+        void ManagedCallbackThread();
         HRESULT RegisterFunctionProbe(FunctionID enterProbeId);
         HRESULT InstallProbes(std::vector<UNPROCESSED_INSTRUMENTATION_REQUEST>& requests);
         HRESULT UninstallProbes();
