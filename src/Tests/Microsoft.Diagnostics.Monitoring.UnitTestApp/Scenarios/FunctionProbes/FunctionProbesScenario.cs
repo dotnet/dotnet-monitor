@@ -234,10 +234,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
             await probeManager.StartCapturingAsync(new[] { method }, token);
 
-            TaskCompletionSource<ulong> faultingUniquifierSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-            void onFault(object caller, ulong uniquifier)
+            TaskCompletionSource<InstrumentedMethod> faultingMethodSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            void onFault(object caller, InstrumentedMethod faultingMethod)
             {
-                _ = faultingUniquifierSource.TrySetResult(uniquifier);
+                _ = faultingMethodSource.TrySetResult(faultingMethod);
             }
             probeManager.OnProbeFault += onFault;
 
@@ -246,8 +246,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             // Faults are handled asynchronously, so wait for the event to propagate
             try
             {
-                ulong faultingUniquifier = await faultingUniquifierSource.Task.WaitAsync(token);
-                Assert.Equal(method.GetFunctionId(), faultingUniquifier);
+                InstrumentedMethod faultingMethod = await faultingMethodSource.Task.WaitAsync(token);
+                Assert.Equal(method.GetFunctionId(), faultingMethod.FunctionId);
             }
             finally
             {

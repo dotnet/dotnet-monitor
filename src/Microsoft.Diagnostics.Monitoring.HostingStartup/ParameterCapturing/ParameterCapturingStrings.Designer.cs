@@ -134,6 +134,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parameter capturing encountered an internal exception when processing &apos;{method}&apos;, stopping..
+        /// </summary>
+        internal static string StoppingParameterCapturingDueToProbeFault {
+            get {
+                return ResourceManager.GetString("StoppingParameterCapturingDueToProbeFault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to this.
         /// </summary>
         internal static string ThisParameterName {

@@ -141,6 +141,9 @@
   <data name="StopParameterCapturing" xml:space="preserve">
     <value>Stopped parameter capturing.</value>
   </data>
+  <data name="StoppingParameterCapturingDueToProbeFault" xml:space="preserve">
+    <value>Parameter capturing encountered an internal exception when processing '{method}', stopping.</value>
+  </data>
   <data name="ThisParameterName" xml:space="preserve">
     <value>this</value>
   </data>

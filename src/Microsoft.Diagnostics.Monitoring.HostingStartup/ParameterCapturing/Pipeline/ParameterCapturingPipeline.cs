@@ -51,15 +51,23 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
             {
                 CapturingRequest request = await _requestQueue.Reader.ReadAsync(stoppingToken);
 
-                void onFault(object? sender, ulong uniquifier)
+                void onFault(object? sender, InstrumentedMethod faultingMethod)
                 {
-                    _ = request.StopRequest.TrySetResult();
+                    _callbacks.ProbeFault(request.Payload.RequestId, faultingMethod);
                 }
-                _probeManager.OnProbeFault += onFault;
 
+                using ScopeGuard sg = new(
+                    initialize: () =>
+                    {
+                        _probeManager.OnProbeFault += onFault;
+                    },
+                    uninitialize: () =>
+                    {
+                        _probeManager.OnProbeFault -= onFault;
+                    });
+                
                 if (!await TryStartCapturingAsync(request.Payload, stoppingToken).ConfigureAwait(false))
                 {
-                    _probeManager.OnProbeFault -= onFault;
                     continue;
                 }
 
@@ -75,7 +83,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
 
                 }
 
-                _probeManager.OnProbeFault -= onFault;
                 await _probeManager.StopCapturingAsync(stoppingToken).ConfigureAwait(false);
 
                 _callbacks.CapturingStop(request.Payload.RequestId);

@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         private readonly Action<IList<MethodInfo>> _onStart;
         private readonly Action _onStop;
 
-        public event EventHandler<ulong> OnProbeFault;
+        public event EventHandler<InstrumentedMethod> OnProbeFault;
 
         public TestFunctionProbesManager(Action<IList<MethodInfo>> onStart = null, Action onStop = null)
         {
@@ -33,7 +33,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
         public void TriggerFault(ulong uniquifier)
         {
-            OnProbeFault?.Invoke(this, uniquifier);
+            var methodCache = FunctionProbesStub.InstrumentedMethodCache;
+            if (methodCache == null ||
+                !methodCache.TryGetValue(uniquifier, out InstrumentedMethod instrumentedMethod))
+            {
+                throw new ArgumentException(nameof(uniquifier));
+            }
+
+            OnProbeFault?.Invoke(this, instrumentedMethod);
         }
 
         public Task StartCapturingAsync(IList<MethodInfo> methods, CancellationToken token)
@@ -58,15 +65,18 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         private readonly Action<StartCapturingParametersPayload, IList<MethodInfo>> _onCapturingStart;
         private readonly Action<Guid> _onCapturingStop;
         private readonly Action<Guid, ParameterCapturingEvents.CapturingFailedReason, string> _onCapturingFailed;
+        private readonly Action<Guid, InstrumentedMethod> _onProbeFault;
 
         public TestParameterCapturingCallbacks(
             Action<StartCapturingParametersPayload, IList<MethodInfo>> onCapturingStart = null,
             Action<Guid> onCapturingStop = null,
-            Action<Guid, ParameterCapturingEvents.CapturingFailedReason, string> onCapturingFailed = null)
+            Action<Guid, ParameterCapturingEvents.CapturingFailedReason, string> onCapturingFailed = null,
+            Action<Guid, InstrumentedMethod> onProbeFault = null)
         {
             _onCapturingStart = onCapturingStart;
             _onCapturingStop = onCapturingStop;
             _onCapturingFailed = onCapturingFailed;
+            _onProbeFault = onProbeFault;
         }
 
         public void CapturingStart(StartCapturingParametersPayload request, IList<MethodInfo> methods)
@@ -74,14 +84,19 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             _onCapturingStart?.Invoke(request, methods);
         }
 
-        public void CapturingStop(Guid RequestId)
+        public void CapturingStop(Guid requestId)
         {
-            _onCapturingStop?.Invoke(RequestId);
+            _onCapturingStop?.Invoke(requestId);
         }
 
-        public void FailedToCapture(Guid RequestId, ParameterCapturingEvents.CapturingFailedReason Reason, string Details)
+        public void FailedToCapture(Guid requestId, ParameterCapturingEvents.CapturingFailedReason reason, string details)
         {
-            _onCapturingFailed?.Invoke(RequestId, Reason, Details);
+            _onCapturingFailed?.Invoke(requestId, reason, details);
+        }
+
+        public void ProbeFault(Guid requestId, InstrumentedMethod faultingMethod)
+        {
+            _onProbeFault?.Invoke(requestId, faultingMethod);
         }
     }
 
@@ -275,19 +290,19 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Fact]
-        public async Task Request_StopsAndNotifiesAfterFault()
+        public async Task ProbeFault_DoesNotify()
         {
             // Arrange
             using CancellationTokenSource cts = new();
             cts.CancelAfter(CommonTestTimeouts.GeneralTimeout);
 
-            TaskCompletionSource<Guid> onStopCallbackSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
             TaskCompletionSource<(Guid, IList<MethodInfo>)> onStartCallbackSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            TaskCompletionSource<(Guid, InstrumentedMethod)> onProbeFaultCallbackSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
             using IDisposable registration = cts.Token.Register(() =>
             {
                 _ = onStartCallbackSource.TrySetCanceled(cts.Token);
-                _ = onStopCallbackSource.TrySetCanceled(cts.Token);
+                _ = onProbeFaultCallbackSource.TrySetCanceled(cts.Token);
             });
 
             TestFunctionProbesManager probeManager = new();
@@ -297,9 +312,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 {
                     onStartCallbackSource.TrySetResult((payload.RequestId, methods));
                 },
-                onCapturingStop: (requestId) =>
+                onProbeFault: (requestId, faultingMethod) =>
                 {
-                    onStopCallbackSource.TrySetResult(requestId);
+                    onProbeFaultCallbackSource.TrySetResult((requestId, faultingMethod));
                 });
 
             ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
@@ -315,8 +330,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             probeManager.TriggerFault(instrumentedMethod.GetFunctionId());
 
             // Assert
-            Guid stoppedRequest = await onStopCallbackSource.Task;
-            Assert.Equal(payload.RequestId, stoppedRequest);
+            (Guid faultingRequest, InstrumentedMethod faultingMethod) = await onProbeFaultCallbackSource.Task;
+            Assert.Equal(payload.RequestId, faultingRequest);
+            Assert.Equal(instrumentedMethod.GetFunctionId(), faultingMethod.FunctionId);
         }
 
         [Fact]

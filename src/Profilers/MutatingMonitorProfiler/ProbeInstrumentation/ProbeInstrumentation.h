@@ -53,7 +53,8 @@ enum class ManagedCallbackType
 typedef struct _MANAGED_CALLBACK_REQUEST
 {
     ProbeWorkerInstruction instruction;
-    union {
+    union
+    {
         HRESULT hr;
         FunctionID functionId;
     } payload;

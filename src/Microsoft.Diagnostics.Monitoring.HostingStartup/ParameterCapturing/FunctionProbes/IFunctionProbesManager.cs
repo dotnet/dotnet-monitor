@@ -16,6 +16,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         public Task StopCapturingAsync(CancellationToken token);
 
 
-        public event EventHandler<ulong> OnProbeFault;
+        public event EventHandler<InstrumentedMethod> OnProbeFault;
     }
 }

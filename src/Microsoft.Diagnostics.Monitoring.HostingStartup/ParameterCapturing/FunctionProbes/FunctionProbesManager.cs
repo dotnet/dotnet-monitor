@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private long _disposedState;
 
-        public event EventHandler<ulong>? OnProbeFault;
+        public event EventHandler<InstrumentedMethod>? OnProbeFault;
 
         public FunctionProbesManager(IFunctionProbes probes)
         {
@@ -96,7 +96,19 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private void OnFault(ulong uniquifier)
         {
-            OnProbeFault?.Invoke(this, uniquifier);
+            var methodCache = FunctionProbesStub.InstrumentedMethodCache;
+            if (methodCache == null ||
+                !methodCache.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod))
+            {
+                //
+                // The probe fault occured in a method that is no longer actively instrumented, ignore.
+                // This can happen when we request uninstallation of function probes and there's still a thread
+                // actively in one of the instrumented methods and it happens to fault.
+                //
+                return;
+            }
+
+            OnProbeFault?.Invoke(this, instrumentedMethod);
         }
         
         private void TransitionStateFromHr(TaskCompletionSource? taskCompletionSource, int hresult, long expectedState, long succeededState, long failedState)
