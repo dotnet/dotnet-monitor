@@ -13,12 +13,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
     {
         protected void RaiseException(Exception ex, DateTime timestamp, string? activityId, ActivityIdFormat format)
         {
-            Exception?.Invoke(this, new ExceptionEventArgs(ex, timestamp, activityId, format));
+            ExceptionAvailable?.Invoke(this, new ExceptionAvailableEventArgs(ex, timestamp, activityId, format));
         }
 
         /// <summary>
         /// Event that is raised each time an exception is made available.
         /// </summary>
-        public event EventHandler<ExceptionEventArgs>? Exception;
+        public event EventHandler<ExceptionAvailableEventArgs>? ExceptionAvailable;
     }
 }

@@ -29,10 +29,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline
         {
             DisposableHelper.ThrowIfDisposed<ExceptionPipeline>(ref _disposedState);
 
-            _exceptionSource.Exception += ExceptionSource_Exception;
+            _exceptionSource.ExceptionAvailable += ExceptionSource_ExceptionAvailable;
         }
 
-        private void ExceptionSource_Exception(object? sender, ExceptionEventArgs args)
+        private void ExceptionSource_ExceptionAvailable(object? sender, ExceptionAvailableEventArgs args)
         {
             // DESIGN: While async patterns are typically favored over synchronous patterns,
             // this is intentionally synchronous. Use cases for making this asynchronous typically
@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline
             if (!DisposableHelper.CanDispose(ref _disposedState))
                 return;
 
-            _exceptionSource.Exception -= ExceptionSource_Exception;
+            _exceptionSource.ExceptionAvailable -= ExceptionSource_ExceptionAvailable;
         }
     }
 }

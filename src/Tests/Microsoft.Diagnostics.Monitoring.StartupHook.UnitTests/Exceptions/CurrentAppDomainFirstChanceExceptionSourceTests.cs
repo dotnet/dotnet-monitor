@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
     {
         private readonly Thread _thisThread = Thread.CurrentThread;
 
-        private EventHandler<ExceptionEventArgs> CreateHandler(List<Exception> reportedExceptions)
+        private EventHandler<ExceptionAvailableEventArgs> CreateHandler(List<Exception> reportedExceptions)
         {
             return (sender, args) =>
             {
@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             Exception thrownException = new();
             using (CurrentAppDomainFirstChanceExceptionSource source = new())
             {
-                source.Exception += CreateHandler(reportedExceptions);
+                source.ExceptionAvailable += CreateHandler(reportedExceptions);
                 try
                 {
                     throw thrownException;
@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 
             using (CurrentAppDomainFirstChanceExceptionSource source = new())
             {
-                source.Exception += CreateHandler(reportedExceptions);
+                source.ExceptionAvailable += CreateHandler(reportedExceptions);
             }
 
             try
@@ -72,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
         public void CurrentAppDomainFirstChanceExceptionSource_ReentrancyPrevented()
         {
             bool handled = false;
-            EventHandler<ExceptionEventArgs> handler = (sender, args) =>
+            EventHandler<ExceptionAvailableEventArgs> handler = (sender, args) =>
             {
                 if (Thread.CurrentThread == _thisThread)
                 {
@@ -86,7 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             Exception thrownException = new();
             using (CurrentAppDomainFirstChanceExceptionSource source = new())
             {
-                source.Exception += handler;
+                source.ExceptionAvailable += handler;
                 try
                 {
                     throw thrownException;
