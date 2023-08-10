@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Method &apos;{0}&apos; is unsupported, it does not have a FunctionID..
+        ///   Looks up a localized string similar to Method &apos;{0}&apos; is unsupported, it does not have a function id..
         /// </summary>
         internal static string ErrorMessage_FunctionDoesNotHaveIdFormatString {
             get {

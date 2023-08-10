@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ErrorMessage_FunctionDoesNotHaveIdFormatString" xml:space="preserve">
-    <value>Method '{0}' is unsupported, it does not have a FunctionID.</value>
+    <value>Method '{0}' is unsupported, it does not have a function id.</value>
   </data>
   <data name="ErrorMessage_ProbeStateMismatchFormatString" xml:space="preserve">
     <value>Mismatch probe state. Expected '{0}', was '{1}'.</value>
