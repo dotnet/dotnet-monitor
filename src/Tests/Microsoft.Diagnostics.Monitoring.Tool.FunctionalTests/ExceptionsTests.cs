@@ -157,9 +157,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 outputHelper: _outputHelper);
 
             await appRunner.SendCommandAsync(TestAppScenarios.Exceptions.Commands.End);
-
-            _outputHelper.WriteLine("ExceptionsResult Value (Testing Purposes Only): ");
-            _outputHelper.WriteLine(exceptionsResult);
         }
 
         private async Task CaptureExtensions(ApiClient apiClient, int processId, ExceptionFormat format)

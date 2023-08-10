@@ -192,57 +192,50 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
 
                 public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
                 {
-                    try
+                    using Utf8JsonWriter writer = new(Console.OpenStandardOutput());
+
+                    writer.WriteStartObject();
+
+                    writer.WriteNumber("EventId", eventId.Id);
+                    writer.WriteString("Level", logLevel.ToString("G"));
+                    writer.WriteString("Category", _categoryName);
+                    writer.WriteString("Message", formatter(state, exception));
+
+                    if (null != state)
                     {
-                        using Utf8JsonWriter writer = new(Console.OpenStandardOutput());
+                        writer.WriteStartObject("State");
+                        writer.WriteString("Message", state.ToString());
 
-                        writer.WriteStartObject();
-
-                        writer.WriteNumber("EventId", eventId.Id);
-                        writer.WriteString("Level", logLevel.ToString("G"));
-                        writer.WriteString("Category", _categoryName);
-                        writer.WriteString("Message", formatter(state, exception));
-
-                        if (null != state)
+                        if ((object)state is IReadOnlyCollection<KeyValuePair<string, object>> readOnlyCollection)
                         {
-                            writer.WriteStartObject("State");
-                            writer.WriteString("Message", state.ToString());
-
-                            if ((object)state is IReadOnlyCollection<KeyValuePair<string, object>> readOnlyCollection)
+                            foreach (KeyValuePair<string, object> item in readOnlyCollection)
                             {
-                                foreach (KeyValuePair<string, object> item in readOnlyCollection)
+                                if (item.Value is string stringValue)
                                 {
-                                    if (item.Value is string stringValue)
-                                    {
-                                        writer.WriteString(item.Key, stringValue);
-                                    }
-                                    else if (item.Value is Enum enumValue)
-                                    {
-                                        writer.WriteString(item.Key, enumValue.ToString("G"));
-                                    }
-                                    else if (item.Value is bool booleanValue)
-                                    {
-                                        writer.WriteBoolean(item.Key, booleanValue);
-                                    }
-                                    else
-                                    {
-                                        writer.WriteString(item.Key, "[UNHANDLED]");
-                                    }
+                                    writer.WriteString(item.Key, stringValue);
+                                }
+                                else if (item.Value is Enum enumValue)
+                                {
+                                    writer.WriteString(item.Key, enumValue.ToString("G"));
+                                }
+                                else if (item.Value is bool booleanValue)
+                                {
+                                    writer.WriteBoolean(item.Key, booleanValue);
+                                }
+                                else
+                                {
+                                    writer.WriteString(item.Key, "[UNHANDLED]");
                                 }
                             }
-                            writer.WriteEndObject();
                         }
-
                         writer.WriteEndObject();
-
-                        writer.Flush();
-
-                        Console.WriteLine();
                     }
-                    catch (Exception ex)
-                    {
-                        throw new Exception($"This was caught in ScenarioHelpers: {logLevel} | {eventId} | {state} | {exception} | {formatter} |", ex);
-                    }
+
+                    writer.WriteEndObject();
+
+                    writer.Flush();
+
+                    Console.WriteLine();
                 }
             }
         }
