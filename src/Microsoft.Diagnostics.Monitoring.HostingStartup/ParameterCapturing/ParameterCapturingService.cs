@@ -96,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         public void ProbeFault(Guid requestId, InstrumentedMethod faultingMethod)
         {
             // TODO: Report back this fault on ParameterCapturingEventSource. 
-            _logger?.LogInformation(ParameterCapturingStrings.StoppingParameterCapturingDueToProbeFault, faultingMethod.MethodWithParametersTemplateString);
+            _logger?.LogWarning(ParameterCapturingStrings.StoppingParameterCapturingDueToProbeFault, faultingMethod.MethodWithParametersTemplateString);
 
             try
             {

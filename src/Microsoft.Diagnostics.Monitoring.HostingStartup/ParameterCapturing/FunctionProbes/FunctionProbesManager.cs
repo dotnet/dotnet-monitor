@@ -203,7 +203,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                     ulong functionId = method.GetFunctionId();
                     if (functionId == 0)
                     {
-                        throw new NotSupportedException(method.Name);
+                        throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, ParameterCapturingStrings.ErrorMessage_FunctionDoesNotHaveIdFormatString, method.Name));
                     }
 
                     uint[] methodBoxingTokens = BoxingTokens.GetBoxingTokens(method);
