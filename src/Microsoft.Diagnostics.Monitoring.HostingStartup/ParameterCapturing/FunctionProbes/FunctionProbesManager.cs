@@ -101,7 +101,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 !methodCache.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod))
             {
                 //
-                // The probe fault occured in a method that is no longer actively instrumented, ignore.
+                // The probe fault occurred in a method that is no longer actively instrumented, ignore.
                 // This can happen when we request uninstallation of function probes and there's still a thread
                 // actively in one of the instrumented methods and it happens to fault.
                 //
