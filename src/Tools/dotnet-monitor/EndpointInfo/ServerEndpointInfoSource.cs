@@ -21,7 +21,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// <summary>
     /// Aggregates diagnostic endpoints that are established at a transport path via a reversed server.
     /// </summary>
-    internal sealed class ServerEndpointInfoSource : BackgroundService, IEndpointInfoSourceInternal
+    internal sealed class ServerEndpointInfoSource :
+        BackgroundService,
+        IEndpointInfoSourceInternal,
+        IAsyncDisposable
     {
         // The number of items that the pending removal channel will hold before forcing
         // the writer to wait for capacity to be available.
@@ -50,6 +53,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private readonly OperationTrackerService _operationTrackerService;
         private readonly ILogger<ServerEndpointInfoSource> _logger;
 
+        private long _disposalState;
+
         /// <summary>
         /// Constructs a <see cref="ServerEndpointInfoSource"/> that aggregates diagnostic endpoints
         /// from a reversed diagnostics server at path specified by <paramref name="portOptions"/>.
@@ -77,11 +82,45 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _pendingRemovalWriter = pendingRemovalChannel.Writer;
         }
 
-        public override void Dispose()
+        public async ValueTask DisposeAsync()
         {
-            base.Dispose();
+            if (!DisposableHelper.CanDispose(ref _disposalState))
+                return;
+
+            // Makes sure the background task is canceled.
+            Dispose();
 
             _pendingRemovalWriter.TryComplete();
+
+            // Wait for background services to complete.
+            await ExecuteTask.SafeAwait().WaitAsync(CancellationToken.None);
+
+            List<AsyncServiceScope> serviceScopes;
+
+            await _activeEndpointsSemaphore.WaitAsync(CancellationToken.None);
+            try
+            {
+                serviceScopes = new List<AsyncServiceScope>(_activeEndpointServiceScopes.Values);
+                _activeEndpointServiceScopes.Clear();
+            }
+            finally
+            {
+                _activeEndpointsSemaphore.Release();
+            }
+
+            // Only dispose services and not notify of connection disconnects. Don't want services to spend
+            // time saving off state, completing sessions, etc but they should aggressively (yet correctly)
+            // stop their operations at this point.
+            foreach (AsyncServiceScope serviceScope in serviceScopes)
+            {
+                try
+                {
+                    await serviceScope.DisposeAsync();
+                }
+                catch
+                {
+                }
+            }
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -275,9 +314,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 List<Exception> exceptions = new();
 
-                if (_activeEndpointServiceScopes.TryGetValue(endpoint.RuntimeInstanceCookie, out AsyncServiceScope stopScope))
+                AsyncServiceScope serviceScope;
+                bool isServiceScopeValid = false;
+
+                await _activeEndpointsSemaphore.WaitAsync(token);
+                try
                 {
-                    foreach (IDiagnosticLifetimeService lifetimeService in stopScope.ServiceProvider.GetServices<IDiagnosticLifetimeService>())
+                    isServiceScopeValid = _activeEndpointServiceScopes.Remove(endpoint.RuntimeInstanceCookie, out serviceScope);
+                }
+                finally
+                {
+                    _activeEndpointsSemaphore.Release();
+                }
+
+                if (isServiceScopeValid)
+                {
+                    foreach (IDiagnosticLifetimeService lifetimeService in serviceScope.ServiceProvider.GetServices<IDiagnosticLifetimeService>().Reverse())
                     {
                         try
                         {
@@ -290,7 +342,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     }
                 }
 
-                foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
+                foreach (IEndpointInfoSourceCallbacks callback in _callbacks.Reverse())
                 {
                     try
                     {
@@ -302,11 +354,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     }
                 }
 
-                if (_activeEndpointServiceScopes.Remove(endpoint.RuntimeInstanceCookie, out AsyncServiceScope disposeScope))
+                if (isServiceScopeValid)
                 {
                     try
                     {
-                        await disposeScope.DisposeAsync();
+                        await serviceScope.DisposeAsync();
                     }
                     catch (Exception ex)
                     {

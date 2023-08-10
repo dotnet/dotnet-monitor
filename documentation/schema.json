@@ -804,6 +804,16 @@
         {
           "properties": {
             "Type": {
+              "const": "CollectExceptions"
+            },
+            "Settings": {
+              "$ref": "#/definitions/CollectExceptionsOptions"
+            }
+          }
+        },
+        {
+          "properties": {
+            "Type": {
               "const": "CollectGCDump"
             },
             "Settings": {
@@ -1074,6 +1084,17 @@
           ],
           "description": "Enables or disables the exceptions feature. By default, this feature is enabled if in-process features are enabled.",
           "default": true
+        },
+        "TopLevelLimit": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The number of top-level exceptions to keep in the cache before automatically removing older exceptions. A top-level exception is one that is not an inner exception of another exception.",
+          "format": "int32",
+          "default": 20,
+          "maximum": 2147483647.0,
+          "minimum": 1.0
         }
       }
     },
@@ -1557,6 +1578,7 @@
       "type": "string",
       "enum": [
         "CollectDump",
+        "CollectExceptions",
         "CollectGCDump",
         "CollectLiveMetrics",
         "CollectLogs",
@@ -1586,7 +1608,7 @@
         },
         "Egress": {
           "type": "string",
-          "description": "The name of the egress provider to which the dump is egressed.",
+          "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
         }
       }
@@ -1607,13 +1629,50 @@
         "Triage"
       ]
     },
+    "CollectExceptionsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Egress": {
+          "type": "string",
+          "description": "The name of the egress provider to which the artifact is egressed.",
+          "minLength": 1
+        },
+        "Format": {
+          "description": "The format used to display the exceptions.",
+          "default": "PlainText",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ExceptionFormat"
+            }
+          ]
+        }
+      }
+    },
+    "ExceptionFormat": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "NewlineDelimitedJson",
+        "PlainText",
+        "JsonSequence"
+      ],
+      "enum": [
+        "NewlineDelimitedJson",
+        "PlainText",
+        "JsonSequence"
+      ]
+    },
     "CollectGCDumpOptions": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "Egress": {
           "type": "string",
-          "description": "The name of the egress provider to which the GC dump is egressed.",
+          "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
         }
       }
@@ -1655,13 +1714,13 @@
             "null",
             "string"
           ],
-          "description": "The duration of time in which live metrics are collected.",
+          "description": "The duration of time in which the artifact is collected.",
           "format": "duration",
           "default": "00:00:30"
         },
         "Egress": {
           "type": "string",
-          "description": "The name of the egress provider to which the live metrics are egressed.",
+          "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
         }
       }
@@ -1756,13 +1815,13 @@
             "null",
             "string"
           ],
-          "description": "The duration of time in which logs are collected.",
+          "description": "The duration of time in which the artifact is collected.",
           "format": "duration",
           "default": "00:00:30"
         },
         "Egress": {
           "type": "string",
-          "description": "The name of the egress provider to which the logs are egressed.",
+          "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
         },
         "Format": {
@@ -1799,7 +1858,7 @@
       "properties": {
         "Egress": {
           "type": "string",
-          "description": "The name of the egress provider to which the call stacks are egressed.",
+          "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
         },
         "Format": {
@@ -1879,13 +1938,13 @@
             "null",
             "string"
           ],
-          "description": "The duration of time in which trace events are collected.",
+          "description": "The duration of time in which the artifact is collected.",
           "format": "duration",
           "default": "00:00:30"
         },
         "Egress": {
           "type": "string",
-          "description": "The name of the egress provider to which the trace is egressed.",
+          "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
         },
         "StoppingEvent": {

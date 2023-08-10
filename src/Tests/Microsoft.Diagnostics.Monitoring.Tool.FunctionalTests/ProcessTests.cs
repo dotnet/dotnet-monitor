@@ -19,6 +19,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
@@ -69,14 +70,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 },
                 postAppValidate: async (client, processId) =>
                 {
-                    // GET /processes and filter to just the single process
-                    IEnumerable<ProcessIdentifier> identifiers = await client.GetProcessesWithRetryAsync(
-                        _outputHelper,
-                        new[] { processId });
+                    await RetryUtilities.RetryAsync(
+                        func: async () =>
+                        {
+                            await Task.Delay(500);
+                            // GET /processes and filter to just the single process
+                            IEnumerable<ProcessIdentifier> identifiers = await client.GetProcessesWithRetryAsync(
+                                _outputHelper,
+                                new[] { processId });
 
-                    // Verify app is no longer reported
-                    Assert.NotNull(identifiers);
-                    Assert.Empty(identifiers);
+                            // Verify app is no longer reported
+                            Assert.NotNull(identifiers);
+                            Assert.Empty(identifiers);
+                        },
+                        shouldRetry: (Exception ex) => ex is XunitException,
+                        outputHelper: _outputHelper);
+
                 },
                 configureApp: runner =>
                 {

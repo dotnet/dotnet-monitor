@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
-        [HttpGet]
+        [HttpGet(Name = nameof(GetOperations))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(IEnumerable<Models.OperationSummary>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<Models.OperationSummary>> GetOperations(
@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, _logger);
         }
 
-        [HttpGet("{operationId}")]
+        [HttpGet("{operationId}", Name = nameof(GetOperationStatus))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(Models.OperationStatus), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(Models.OperationStatus), StatusCodes.Status200OK)]
@@ -71,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, _logger);
         }
 
-        [HttpDelete("{operationId}")]
+        [HttpDelete("{operationId}", Name = nameof(CancelOperation))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]

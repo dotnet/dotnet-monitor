@@ -3,28 +3,16 @@
 
 using System;
 using System.Diagnostics;
-using System.Runtime.ExceptionServices;
 using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 {
-    /// <summary>
-    /// Produces first chance exceptions from the current app domain.
-    /// </summary>
-    internal sealed class CurrentAppDomainExceptionSource :
-        ExceptionSourceBase,
-        IDisposable
+    internal abstract class GuardedExceptionSourceBase :
+        ExceptionSourceBase
     {
         private readonly ThreadLocal<bool> _handlingException = new();
 
-        private long _disposedState;
-
-        public CurrentAppDomainExceptionSource()
-        {
-            AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
-        }
-
-        private void CurrentDomain_FirstChanceException(object? sender, FirstChanceExceptionEventArgs e)
+        protected void RaiseExceptionGuarded(Exception exception)
         {
             DateTime timestamp = DateTime.UtcNow;
 
@@ -41,7 +29,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             {
                 _handlingException.Value = true;
 
-                RaiseExceptionThrown(e.Exception,
+                RaiseException(
+                    exception,
                     timestamp,
                     Activity.Current?.Id,
                     Activity.Current?.IdFormat ?? ActivityIdFormat.Unknown);
@@ -54,14 +43,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             {
                 _handlingException.Value = false;
             }
-        }
-
-        public void Dispose()
-        {
-            if (!DisposableHelper.CanDispose(ref _disposedState))
-                return;
-
-            AppDomain.CurrentDomain.FirstChanceException -= CurrentDomain_FirstChanceException;
         }
     }
 }

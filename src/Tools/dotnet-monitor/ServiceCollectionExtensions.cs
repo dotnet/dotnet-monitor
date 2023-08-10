@@ -135,6 +135,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureCollectionRules(this IServiceCollection services)
         {
             services.RegisterCollectionRuleAction<CollectDumpActionFactory, CollectDumpOptions>(KnownCollectionRuleActions.CollectDump);
+            services.RegisterCollectionRuleAction<CollectExceptionsActionFactory, CollectExceptionsOptions>(KnownCollectionRuleActions.CollectExceptions);
             services.RegisterCollectionRuleAction<CollectGCDumpActionFactory, CollectGCDumpOptions>(KnownCollectionRuleActions.CollectGCDump);
             services.RegisterCollectionRuleAction<CollectLiveMetricsActionFactory, CollectLiveMetricsOptions>(KnownCollectionRuleActions.CollectLiveMetrics);
             services.RegisterCollectionRuleAction<CollectLogsActionFactory, CollectLogsOptions>(KnownCollectionRuleActions.CollectLogs);
@@ -345,11 +346,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureExceptions(this IServiceCollection services)
         {
-            services.AddSingleton<IExceptionsOperationFactory, ExceptionsOperationFactory>();
-            // The exceptions store for the default process; long term, create a store for each process
-            // that wants to participate in exception collection.
-            services.AddSingleton<IExceptionsStore, ExceptionsStore>();
-            services.AddHostedService<ExceptionsService>();
+            services.AddTransient<IExceptionsOperationFactory, ExceptionsOperationFactory>();
+            services.AddScoped<IExceptionsStore, ConfiguredExceptionsStore>();
+            services.AddScoped<IDiagnosticLifetimeService, ExceptionsService>();
             return services;
         }
 
@@ -362,9 +361,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureStartupHook(this IServiceCollection services)
         {
-            services.AddSingleton<StartupHookValidator>();
-            services.AddSingleton<StartupHookEndpointInfoSourceCallbacks>();
-            services.AddSingletonForwarder<IEndpointInfoSourceCallbacks, StartupHookEndpointInfoSourceCallbacks>();
+            services.AddTransient<StartupHookValidator>();
+            services.AddScoped<StartupHookService>();
+            services.AddScopedForwarder<IDiagnosticLifetimeService, StartupHookService>();
             return services;
         }
 

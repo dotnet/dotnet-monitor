@@ -16,6 +16,7 @@ pr:
     - .gitignore
     - cspell.json
     - eng/actions
+    - samples
     - '**.md'
 
 schedules:
