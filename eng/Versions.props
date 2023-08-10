@@ -70,7 +70,7 @@
     <MicrosoftDiagnosticsMonitoringVersion>7.0.0-preview.23408.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>7.0.0-preview.23408.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/installer references -->
-    <MicrosoftDotnetSdkInternalVersion>8.0.100-rc.1.23408.31</MicrosoftDotnetSdkInternalVersion>
+    <MicrosoftDotnetSdkInternalVersion>8.0.100-rc.1.23409.22</MicrosoftDotnetSdkInternalVersion>
     <!-- dotnet/roslyn-analyzers -->
     <MicrosoftCodeAnalysisNetAnalyzersVersion>8.0.0-preview.23407.1</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
