@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -42,7 +43,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Exceptions, EndpointInfo);
 
-            IArtifactOperation operation = _operationFactory.Create(Options.GetFormat());
+            IArtifactOperation operation = _operationFactory.Create(Options.GetFormat(), new ExceptionsConfiguration());
 
             EgressOperation egressOperation = new EgressOperation(
                 operation,
