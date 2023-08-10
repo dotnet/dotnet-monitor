@@ -1,6 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -23,79 +25,80 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
         [JsonPropertyName("exclude")]
         public List<ExceptionConfiguration> Exclude { get; set; } = new();
 
+        private static bool CheckConfiguration(IExceptionInstance exception, List<ExceptionConfiguration> filterList, Func<ExceptionConfiguration, CallStackFrame, bool> evaluateFilterList)
+        {
+            var topFrame = exception.CallStack.Frames.Any() ? exception.CallStack.Frames.First() : null;
+
+            foreach (var configuration in filterList)
+            {
+                if (evaluateFilterList(configuration, topFrame))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         internal bool ShouldInclude(IExceptionInstance exception)
         {
-            var topFrame = exception.CallStack.Frames.Count > 0 ? exception.CallStack.Frames.First() : null; // is this safe?
-
-            foreach (var configuration in Include)
+            Func<ExceptionConfiguration, CallStackFrame, bool> evaluateFilterList = (configuration, topFrame) =>
             {
                 bool include = true;
                 if (topFrame != null)
                 {
-                    include = include ? CompareIncludeValues(configuration.MethodName, topFrame.MethodName) : include;
-                    include = include ? CompareIncludeValues(configuration.ModuleName, topFrame.ModuleName) : include;
-                    include = include ? CompareIncludeValues(configuration.ClassName, topFrame.ClassName) : include;
+                    CompareIncludeValues(configuration.MethodName, topFrame.MethodName, ref include);
+                    CompareIncludeValues(configuration.ModuleName, topFrame.ModuleName, ref include);
+                    CompareIncludeValues(configuration.ClassName, topFrame.ClassName, ref include);
                 }
 
-                include = include ? CompareIncludeValues(configuration.ExceptionType, exception.TypeName) : include;
+                CompareIncludeValues(configuration.ExceptionType, exception.TypeName, ref include);
 
-                if (include)
-                {
-                    return true;
-                }
-            }
+                return include;
+            };
 
-            return false;
+            return CheckConfiguration(exception, Include, evaluateFilterList);
         }
 
         internal bool ShouldExclude(IExceptionInstance exception)
         {
-            var topFrame = exception.CallStack.Frames.Any() ? exception.CallStack.Frames.First() : null;
-
-            foreach (var configuration in Exclude)
+            Func<ExceptionConfiguration, CallStackFrame, bool> evaluateFilterList = (configuration, topFrame) =>
             {
                 bool exclude = false;
                 if (topFrame != null)
                 {
-                    exclude = exclude ? exclude : CompareExcludeValues(configuration.MethodName, topFrame.MethodName);
-                    exclude = exclude ? exclude : CompareExcludeValues(configuration.ModuleName, topFrame.ModuleName);
-                    exclude = exclude ? exclude : CompareExcludeValues(configuration.ClassName, topFrame.ClassName);
+                    CompareExcludeValues(configuration.MethodName, topFrame.MethodName, ref exclude);
+                    CompareExcludeValues(configuration.ModuleName, topFrame.ModuleName, ref exclude);
+                    CompareExcludeValues(configuration.ClassName, topFrame.ClassName, ref exclude);
                 }
 
-                exclude = exclude ? exclude : CompareExcludeValues(configuration.ExceptionType, exception.TypeName);
+                CompareExcludeValues(configuration.ExceptionType, exception.TypeName, ref exclude);
 
-                if (exclude)
-                {
-                    return true;
-                }
-            }
+                return exclude;
+            };
 
-            return false;
+            return CheckConfiguration(exception, Exclude, evaluateFilterList);
         }
 
-        private static bool CompareIncludeValues(string configurationValue, string actualValue)
+        private static void CompareIncludeValues(string configurationValue, string actualValue, ref bool include)
         {
-            if (!string.IsNullOrEmpty(configurationValue))
+            if (include && !string.IsNullOrEmpty(configurationValue))
             {
-                return CompareValues(configurationValue, actualValue);
+                include = CompareValues(configurationValue, actualValue);
             }
-
-            return true;
         }
 
-        private static bool CompareExcludeValues(string configurationValue, string actualValue)
+        private static void CompareExcludeValues(string configurationValue, string actualValue, ref bool exclude)
         {
-            if (!string.IsNullOrEmpty(configurationValue))
+            if (!exclude && !string.IsNullOrEmpty(configurationValue))
             {
-                return CompareValues(configurationValue, actualValue);
+                exclude = CompareValues(configurationValue, actualValue);
             }
-
-            return false;
         }
 
         private static bool CompareValues(string configurationValue, string actualValue)
         {
-            return actualValue.Contains(configurationValue, System.StringComparison.CurrentCultureIgnoreCase);
+            return actualValue.Contains(configurationValue, StringComparison.CurrentCultureIgnoreCase);
         }
     }
 
