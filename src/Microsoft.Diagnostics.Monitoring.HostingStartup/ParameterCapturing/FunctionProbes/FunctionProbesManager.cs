@@ -155,7 +155,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private void StopCapturingCore()
         {
-            if (_probeState != ProbeStateUninstalled)
+            if (_probeState == ProbeStateUninstalled)
             {
                 return;
             }
