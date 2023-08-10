@@ -31,16 +31,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             _onStop = onStop;
         }
 
-        public void TriggerFault(ulong uniquifier)
+        public void TriggerFault(MethodInfo method)
         {
-            var methodCache = FunctionProbesStub.InstrumentedMethodCache;
-            if (methodCache == null ||
-                !methodCache.TryGetValue(uniquifier, out InstrumentedMethod instrumentedMethod))
-            {
-                throw new ArgumentException(nameof(uniquifier));
-            }
-
-            OnProbeFault?.Invoke(this, instrumentedMethod);
+            InstrumentedMethod faultingMethod = new(method, BoxingTokens.GetBoxingTokens(method));
+            OnProbeFault?.Invoke(this, faultingMethod);
         }
 
         public Task StartCapturingAsync(IList<MethodInfo> methods, CancellationToken token)
@@ -327,7 +321,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             MethodInfo instrumentedMethod = Assert.Single(methods);
 
             // Act
-            probeManager.TriggerFault(instrumentedMethod.GetFunctionId());
+            probeManager.TriggerFault(instrumentedMethod);
 
             // Assert
             (Guid faultingRequest, InstrumentedMethod faultingMethod) = await onProbeFaultCallbackSource.Task;
