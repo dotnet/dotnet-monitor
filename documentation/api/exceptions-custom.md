@@ -129,6 +129,38 @@ System.InvalidOperationException: There was an invalid operation!
 POST /exceptions HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
+Accept: text/plain
+{
+    "Include": [
+        {
+            "methodName": "MyExceptionMethod",
+            "className": "MyClass"
+            "moduleName": "MyApp.dll"
+            "exceptionType": "System.InvalidOperationException"
+        }
+    ]
+}
+```
+
+### Sample Response
+
+```http
+HTTP/1.1 200 OK
+Content-Type: text/plain
+
+First chance exception at 2023-08-08T14:50:34.1039177Z
+System.InvalidOperationException: There was an invalid operation!
+   at MyApp.MyClass.MyExceptionMethod()
+   at MyApp.MyClass.CallingMethod(System.String)
+   at MyApp.MyClass.Main(System.String[])
+```
+
+### Sample Request
+
+```http
+POST /exceptions HTTP/1.1
+Host: localhost:52323
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 Accept: application/x-ndjson
 {
     "Include": [
