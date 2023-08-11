@@ -337,7 +337,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// POST /exceptions
+        /// GET or POST /exceptions
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureExceptionsAsync(this ApiClient client, ExceptionsConfiguration configuration, int processId, ExceptionFormat format)
         {

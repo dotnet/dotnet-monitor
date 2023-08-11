@@ -159,9 +159,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 FilteringExceptionsScenario,
                 appValidate: async (appRunner, apiClient) =>
                 {
-                    ExceptionsConfiguration configuration = new();
-
-                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, new ExceptionsConfiguration());
 
                     ValidateMultipleExceptionsText(3, new() { CustomGenericsException, SystemInvalidOperationException, SystemArgumentNullException });
                 },
@@ -214,8 +212,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task Exceptions_FilterExcludeDetailed(Architecture targetArchitecture)
         {
-            // Double check logic for inclusion/exclusion is correct -> not sure if we correctly handle when a
-            // class AND method are provided that we're not treating those independently (needs both to match, not any of them)
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,

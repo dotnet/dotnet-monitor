@@ -94,7 +94,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="egressProvider">The egress provider to which the exceptions are saved.</param>
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
-        /// <param name="configuration">The exceptions configuration describing which exceptions to capture.</param>
+        /// <param name="configuration">The exceptions configuration describing which exceptions to include in the response.</param>
         [HttpPost("exceptions", Name = nameof(CaptureExceptionsCustom))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]

@@ -535,9 +535,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// POST /exceptions
-        /// </summary>
         public async Task<ResponseStreamHolder> CaptureExceptionsAsync(HttpMethod method, ExceptionsConfiguration configuration, int processId, ExceptionFormat format, TimeSpan timeout)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
