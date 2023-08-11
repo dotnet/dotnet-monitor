@@ -171,7 +171,7 @@ Object describing the list of event providers, keywords, event levels, and addit
 
 ## ExceptionConfiguration
 
-Object describing attributes of an exception to use for filtering.
+Object describing attributes of an exception to use for filtering. To be filtered, an exception must match **all** provided fields (e.g. if `className` and `exceptionType` are provided, the top frame of the exception's call stack must have that class name and the exception must be that type).
 
 | Name | Type | Description |
 |---|---|---|
@@ -182,7 +182,7 @@ Object describing attributes of an exception to use for filtering.
 
 ## ExceptionsConfiguration
 
-Object describing which exceptions should be included/excluded.
+Object describing which exceptions should be included/excluded. To be filtered, an exception must match **any** of the `ExceptionConfiguration` in the list (e.g. if `include` is a list of three `ExceptionConfiguration`, exceptions must only match one of the three to be included).
 
 | Name | Type | Description |
 |---|---|---|
