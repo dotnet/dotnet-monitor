@@ -29,10 +29,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline
         {
             DisposableHelper.ThrowIfDisposed<ExceptionPipeline>(ref _disposedState);
 
-            _exceptionSource.ExceptionThrown += ExceptionSource_ExceptionThrown;
+            _exceptionSource.ExceptionAvailable += ExceptionSource_ExceptionAvailable;
         }
 
-        private void ExceptionSource_ExceptionThrown(object? sender, ExceptionEventArgs args)
+        private void ExceptionSource_ExceptionAvailable(object? sender, ExceptionAvailableEventArgs args)
         {
             // DESIGN: While async patterns are typically favored over synchronous patterns,
             // this is intentionally synchronous. Use cases for making this asynchronous typically
@@ -40,15 +40,21 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline
             // (e.g. EventSource provides events but diagnostic pipe events are queued and asynchronously emitted).
             // Synchronous execution is required for scenarios where the exception needs to be held
             // at the site of where it is thrown before allowing it to unwind (e.g. capturing a dump of the exception).
-            _exceptionHandler.Invoke(args.Exception, new ExceptionPipelineExceptionContext(args.Timestamp, args.ActivityId, args.ActivityIdFormat));
+            _exceptionHandler.Invoke(
+                args.Exception,
+                new ExceptionPipelineExceptionContext(
+                    args.Timestamp,
+                    args.ActivityId,
+                    args.ActivityIdFormat));
         }
+
 
         public void Dispose()
         {
             if (!DisposableHelper.CanDispose(ref _disposedState))
                 return;
 
-            _exceptionSource.ExceptionThrown -= ExceptionSource_ExceptionThrown;
+            _exceptionSource.ExceptionAvailable -= ExceptionSource_ExceptionAvailable;
         }
     }
 }

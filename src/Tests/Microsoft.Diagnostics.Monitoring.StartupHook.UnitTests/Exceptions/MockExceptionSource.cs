@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 
         public void ProvideException(Exception exception)
         {
-            RaiseExceptionThrown(exception, DateTime.UtcNow, Guid.Empty.ToString(), ActivityIdFormat.Unknown);
+            RaiseException(exception, DateTime.UtcNow, Guid.Empty.ToString(), ActivityIdFormat.Unknown);
         }
     }
 }

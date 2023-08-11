@@ -7,30 +7,31 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Threading;
+using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
 {
     internal sealed class ExceptionEventsPipelineStep
     {
-        private static readonly object ExceptionIdKey = new object();
-
-        private readonly ExceptionsEventSource _eventSource = new();
+        private readonly ExceptionsEventSource _eventSource;
         private readonly ExceptionGroupIdentifierCache _identifierCache;
+        private readonly ExceptionIdSource _idSource;
         private readonly ExceptionPipelineDelegate _next;
 
-        private ulong _nextExceptionId = 1;
-
-        public ExceptionEventsPipelineStep(ExceptionPipelineDelegate next)
+        public ExceptionEventsPipelineStep(ExceptionPipelineDelegate next, ExceptionsEventSource eventSource, ExceptionIdSource idSource)
         {
             ArgumentNullException.ThrowIfNull(next);
+            ArgumentNullException.ThrowIfNull(eventSource);
+            ArgumentNullException.ThrowIfNull(idSource);
 
             List<ExceptionGroupIdentifierCacheCallback> callbacks = new(1)
             {
-                new ExceptionsEventSourceIdentifierCacheCallback(_eventSource)
+                new ExceptionsEventSourceIdentifierCacheCallback(eventSource)
             };
 
+            _eventSource = eventSource;
             _identifierCache = new ExceptionGroupIdentifierCache(callbacks);
+            _idSource = idSource;
             _next = next;
         }
 
@@ -54,7 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
                 ulong[] frameIds = _identifierCache.GetOrAdd(stackFrames);
 
                 _eventSource.ExceptionInstance(
-                    GetExceptionId(exception),
+                    _idSource.GetId(exception),
                     groupId,
                     exception.Message,
                     frameIds,
@@ -81,7 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             // stack. In the case of observing the exception from the FirstChanceException event,
             // there is only one frame on the stack (the throwing frame). In order to get the
             // full call stack of the exception, get the current call stack of the thread and
-            // filter out the call frames that are "above" the exceptions's throwing frame.
+            // filter out the call frames that are "above" the exception's throwing frame.
             StackFrame? throwingFrame = null;
             foreach (StackFrame stackFrame in exceptionStackTrace.GetFrames())
             {
@@ -104,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             {
                 StackFrame threadStackFrame = threadStackFrames[index];
                 if (throwingFrame.GetMethod() == threadStackFrame.GetMethod() &&
-                    throwingFrame.GetILOffset() == threadStackFrame.GetILOffset())
+                    GetFrameOffset(throwingFrame) == GetFrameOffset(threadStackFrame))
                 {
                     break;
                 }
@@ -116,43 +117,23 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             {
                 return threadStackFrames.Slice(index);
             }
+
             return ReadOnlySpan<StackFrame>.Empty;
         }
 
-        private ulong GetExceptionId(Exception? exception)
+        // Workaround for https://github.com/dotnet/runtime/issues/89834
+        // The IL and native offsets seem to be correct for StackFrame for the current
+        // thread, but the StackFrame from the exception is giving incorrect values.
+        // Use helper function to make the same offsets together.
+        private static int GetFrameOffset(StackFrame frame)
         {
-            if (null == exception)
-                return 0;
-
-            if (TryGetExceptionId(exception, out ulong exceptionId))
-                return exceptionId;
-
-            lock (exception.Data)
+            if (RuntimeInformation.ProcessArchitecture == Architecture.X64)
             {
-                if (TryGetExceptionId(exception, out exceptionId))
-                    return exceptionId;
-
-                exceptionId = Interlocked.Increment(ref _nextExceptionId);
-
-                exception.Data[ExceptionIdKey] = exceptionId;
+                return frame.GetNativeOffset();
             }
-
-            return exceptionId;
-
-            static bool TryGetExceptionId(Exception exception, out ulong exceptionId)
+            else
             {
-                if (exception.Data.Contains(ExceptionIdKey))
-                {
-                    // The ExceptionIdKey data should only ever have a ulong
-                    if (exception.Data[ExceptionIdKey] is ulong exceptionIdCandidate)
-                    {
-                        exceptionId = exceptionIdCandidate;
-                        return true;
-                    }
-                }
-
-                exceptionId = default;
-                return false;
+                return frame.GetILOffset();
             }
         }
 
@@ -165,7 +146,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
                 ulong[] exceptionIds = new ulong[aggregateException.InnerExceptions.Count];
                 for (int i = 0; i < aggregateException.InnerExceptions.Count; i++)
                 {
-                    exceptionIds[i] = GetExceptionId(aggregateException.InnerExceptions[i]);
+                    exceptionIds[i] = _idSource.GetId(aggregateException.InnerExceptions[i]);
                 }
                 return exceptionIds;
             }
@@ -178,14 +159,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
                     Exception? loaderException = reflectionTypeLoadException.LoaderExceptions[i];
                     if (null != loaderException)
                     {
-                        exceptionIds[i] = GetExceptionId(loaderException);
+                        exceptionIds[i] = _idSource.GetId(loaderException);
                     }
                 }
                 return exceptionIds;
             }
             else if (null != exception.InnerException)
             {
-                return new ulong[] { GetExceptionId(exception.InnerException) };
+                return new ulong[] { _idSource.GetId(exception.InnerException) };
             }
             return Array.Empty<ulong>();
         }

@@ -2,13 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading;
 using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
@@ -40,37 +37,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     internal sealed class CollectStacksAction :
         CollectionRuleEgressActionBase<CollectStacksOptions>
     {
-        private readonly ProfilerChannel _profilerChannel;
+        private readonly IStacksOperationFactory _operationFactory;
 
         public CollectStacksAction(IServiceProvider serviceProvider, IProcessInfo processInfo, CollectStacksOptions options)
             : base(serviceProvider, processInfo, options)
         {
-            _profilerChannel = serviceProvider.GetRequiredService<ProfilerChannel>();
+            _operationFactory = serviceProvider.GetRequiredService<IStacksOperationFactory>();
         }
 
         protected override EgressOperation CreateArtifactOperation(TaskCompletionSource<object> startCompletionSource, CollectionRuleMetadata collectionRuleMetadata)
         {
-            bool isPlainText = Options.GetFormat() == CallStackFormat.PlainText;
-
-            string fileName = StackUtilities.GenerateStacksFilename(EndpointInfo, isPlainText);
-
             KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Stacks, EndpointInfo);
+
+            IArtifactOperation stacksOperation = _operationFactory.Create(EndpointInfo, MapCallStackFormat(Options.GetFormat()));
+
             EgressOperation egressOperation = new EgressOperation(
-                async (outputStream, token) =>
-                {
-                    await StackUtilities.CollectStacksAsync(startCompletionSource, EndpointInfo, _profilerChannel, MapCallstackFormat(Options.GetFormat()), outputStream, token);
-                },
+                stacksOperation,
+                startCompletionSource,
                 Options.Egress,
-                fileName,
-                EndpointInfo,
-                ContentTypes.ApplicationOctetStream,
+                ProcessInfo,
                 scope,
-                collectionRuleMetadata);
+                tags: null,
+                collectionRuleMetadata: collectionRuleMetadata);
 
             return egressOperation;
         }
 
-        private static StackFormat MapCallstackFormat(CallStackFormat format) =>
+        private static StackFormat MapCallStackFormat(CallStackFormat format) =>
             format switch
             {
                 CallStackFormat.Json => StackFormat.Json,

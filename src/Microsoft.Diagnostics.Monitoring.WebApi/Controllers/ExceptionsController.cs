@@ -5,13 +5,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.Options;
-using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
@@ -21,46 +22,70 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     [Authorize(Policy = AuthConstants.PolicyName)]
     [ProducesErrorResponseType(typeof(ValidationProblemDetails))]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    public sealed class ExceptionsController : ControllerBase
+    public sealed class ExceptionsController :
+        DiagnosticsControllerBase
     {
-        private readonly IExceptionsStore _exceptionsStore;
-        private readonly IOptions<ExceptionsOptions> _exceptionsOptions;
-        private readonly IExceptionsOperationFactory _operationFactory;
+        private readonly IOptions<ExceptionsOptions> _options;
 
-        public ExceptionsController(IServiceProvider serviceProvider)
+        public ExceptionsController(
+            IServiceProvider serviceProvider,
+            ILogger<ExceptionsController> logger)
+            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<EgressOperationStore>(), logger)
         {
-            // The exceptions store for the default process
-            _exceptionsStore = serviceProvider.GetRequiredService<IExceptionsStore>();
-            _exceptionsOptions = serviceProvider.GetRequiredService<IOptions<ExceptionsOptions>>();
-            _operationFactory = serviceProvider.GetRequiredService<IExceptionsOperationFactory>();
+            _options = serviceProvider.GetRequiredService<IOptions<ExceptionsOptions>>();
         }
 
         /// <summary>
-        /// Gets the exceptions from the default process.
+        /// Gets the exceptions from the target process.
         /// </summary>
+        /// <param name="pid">Process ID used to identify the target process.</param>
+        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
+        /// <param name="name">Process name used to identify the target process.</param>
+        /// <param name="egressProvider">The egress provider to which the exceptions are saved.</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         [HttpGet("exceptions", Name = nameof(GetExceptions))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [EgressValidation]
-        public ActionResult GetExceptions()
+        public Task<ActionResult> GetExceptions(
+            [FromQuery]
+            int? pid = null,
+            [FromQuery]
+            Guid? uid = null,
+            [FromQuery]
+            string name = null,
+            [FromQuery]
+            string egressProvider = null,
+            [FromQuery]
+            string tags = null)
         {
-            if (!_exceptionsOptions.Value.GetEnabled())
+            if (!_options.Value.GetEnabled())
             {
-                return NotFound();
+                return Task.FromResult<ActionResult>(NotFound());
             }
 
-            ExceptionsFormat? format = ComputeFormat(Request.GetTypedHeaders().Accept);
-            if (!format.HasValue)
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
+
+            return InvokeForProcess(processInfo =>
             {
-                return this.NotAcceptable();
-            }
+                ExceptionFormat format = ComputeFormat(Request.GetTypedHeaders().Accept) ?? ExceptionFormat.PlainText;
 
-            IArtifactOperation operation = _operationFactory.Create(_exceptionsStore, format.Value);
+                IArtifactOperation operation = processInfo.EndpointInfo.ServiceProvider
+                    .GetRequiredService<IExceptionsOperationFactory>()
+                    .Create(format);
 
-            return new OutputStreamResult(operation);
+                return Result(
+                    Utilities.ArtifactType_Exceptions,
+                    egressProvider,
+                    operation,
+                    processInfo,
+                    tags,
+                    format != ExceptionFormat.PlainText);
+            }, processKey, Utilities.ArtifactType_Exceptions);
         }
 
-        private static ExceptionsFormat? ComputeFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
+        private static ExceptionFormat? ComputeFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
         {
             if (acceptedHeaders == null || acceptedHeaders.Count == 0)
             {
@@ -69,27 +94,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             if (acceptedHeaders.Contains(ContentTypeUtilities.TextPlainHeader))
             {
-                return ExceptionsFormat.PlainText;
+                return ExceptionFormat.PlainText;
             }
             if (acceptedHeaders.Contains(ContentTypeUtilities.NdJsonHeader))
             {
-                return ExceptionsFormat.NewlineDelimitedJson;
+                return ExceptionFormat.NewlineDelimitedJson;
             }
             if (acceptedHeaders.Contains(ContentTypeUtilities.JsonSequenceHeader))
             {
-                return ExceptionsFormat.JsonSequence;
+                return ExceptionFormat.JsonSequence;
             }
             if (acceptedHeaders.Any(ContentTypeUtilities.TextPlainHeader.IsSubsetOf))
             {
-                return ExceptionsFormat.PlainText;
+                return ExceptionFormat.PlainText;
             }
             if (acceptedHeaders.Any(ContentTypeUtilities.NdJsonHeader.IsSubsetOf))
             {
-                return ExceptionsFormat.NewlineDelimitedJson;
+                return ExceptionFormat.NewlineDelimitedJson;
             }
             if (acceptedHeaders.Any(ContentTypeUtilities.JsonSequenceHeader.IsSubsetOf))
             {
-                return ExceptionsFormat.JsonSequence;
+                return ExceptionFormat.JsonSequence;
             }
             return null;
         }

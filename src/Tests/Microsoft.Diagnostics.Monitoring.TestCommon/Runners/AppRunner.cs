@@ -26,6 +26,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         private readonly string _appPath;
 
+        private readonly string _startupHookPath;
+
         private readonly ITestOutputHelper _outputHelper;
 
         private readonly TaskCompletionSource<string> _readySource =
@@ -106,6 +108,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 "Microsoft.Diagnostics.Monitoring.UnitTestApp",
                 tfm);
 
+            _startupHookPath = AssemblyHelper.GetAssemblyArtifactBinPath(
+                testAssembly,
+                "Microsoft.Diagnostics.Monitoring.StartupHook",
+                TargetFrameworkMoniker.Net60);
+
             _waitingForEnvironmentVariables = new Dictionary<string, TaskCompletionSource<string>>();
 
             _adapter = new LoggingRunnerAdapter(_outputHelper, _runner);
@@ -179,12 +186,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
             if (EnableMonitorStartupHook)
             {
-                string startupHookPath = AssemblyHelper.GetAssemblyArtifactBinPath(
-                    Assembly.GetExecutingAssembly(),
-                    "Microsoft.Diagnostics.Monitoring.StartupHook",
-                    TargetFrameworkMoniker.Net60);
-
-                _adapter.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, startupHookPath);
+                _adapter.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, _startupHookPath);
             }
 
             await _adapter.StartAsync(token).ConfigureAwait(false);

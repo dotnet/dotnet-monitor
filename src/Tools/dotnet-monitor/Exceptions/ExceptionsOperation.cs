@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
@@ -12,6 +13,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {
@@ -25,20 +27,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private const char MethodParameterTypesStart = '(';
         private const char MethodParameterTypesEnd = ')';
 
-        private readonly ExceptionsFormat _format;
+        private readonly IEndpointInfo _endpointInfo;
+        private readonly ExceptionFormat _format;
         private readonly IExceptionsStore _store;
 
-        public ExceptionsOperation(IExceptionsStore store, ExceptionsFormat format)
+        public ExceptionsOperation(IEndpointInfo endpointInfo, IExceptionsStore store, ExceptionFormat format)
         {
+            _endpointInfo = endpointInfo;
             _store = store;
             _format = format;
         }
 
         public string ContentType => _format switch
         {
-            ExceptionsFormat.PlainText => ContentTypes.TextPlain,
-            ExceptionsFormat.NewlineDelimitedJson => ContentTypes.ApplicationNdJson,
-            ExceptionsFormat.JsonSequence => ContentTypes.ApplicationJsonSequence,
+            ExceptionFormat.PlainText => ContentTypes.TextPlain,
+            ExceptionFormat.NewlineDelimitedJson => ContentTypes.ApplicationNdJson,
+            ExceptionFormat.JsonSequence => ContentTypes.ApplicationJsonSequence,
             _ => ContentTypes.TextPlain
         };
 
@@ -53,11 +57,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
             switch (_format)
             {
-                case ExceptionsFormat.JsonSequence:
-                case ExceptionsFormat.NewlineDelimitedJson:
+                case ExceptionFormat.JsonSequence:
+                case ExceptionFormat.NewlineDelimitedJson:
                     await WriteJson(outputStream, exceptions, token);
                     break;
-                case ExceptionsFormat.PlainText:
+                case ExceptionFormat.PlainText:
                     await WriteText(outputStream, exceptions, token);
                     break;
                 default:
@@ -67,7 +71,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         public string GenerateFileName()
         {
-            throw new NotSupportedException();
+            string extension = _format == ExceptionFormat.PlainText ? "txt" : "json";
+            return FormattableString.Invariant($"{Utils.GetFileNameTimeStampUtcNow()}_{_endpointInfo.ProcessId}.exceptions.{extension}");
         }
 
         public Task StopAsync(CancellationToken token)
@@ -85,7 +90,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private async Task WriteJsonInstance(Stream stream, IExceptionInstance instance, CancellationToken token)
         {
-            if (_format == ExceptionsFormat.JsonSequence)
+            if (_format == ExceptionFormat.JsonSequence)
             {
                 await stream.WriteAsync(JsonSequenceRecordSeparator, token);
             }

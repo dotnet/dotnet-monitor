@@ -1249,8 +1249,52 @@
         "tags": [
           "Exceptions"
         ],
-        "summary": "Gets the exceptions from the default process.",
+        "summary": "Gets the exceptions from the target process.",
         "operationId": "GetExceptions",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "egressProvider",
+            "in": "query",
+            "description": "The egress provider to which the exceptions are saved.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
@@ -1274,6 +1318,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Accepted"
           }
         }
       }
@@ -1308,6 +1355,7 @@
           "Operations"
         ],
         "summary": "Gets the operations list for the specified process (or all processes if left unspecified).",
+        "operationId": "GetOperations",
         "parameters": [
           {
             "name": "pid",
@@ -1369,6 +1417,7 @@
         "tags": [
           "Operations"
         ],
+        "operationId": "GetOperationStatus",
         "parameters": [
           {
             "name": "operationId",
@@ -1410,6 +1459,7 @@
         "tags": [
           "Operations"
         ],
+        "operationId": "CancelOperation",
         "parameters": [
           {
             "name": "operationId",
