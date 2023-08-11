@@ -2,7 +2,7 @@
 
 # Exceptions History - Custom
 
-Captures a history of first chance exceptions that were thrown in the [default process](defaultprocess.md), with the ability to filter which exceptions are included in the response.
+Captures a history of first chance exceptions that were thrown in the specified process, with the ability to filter which exceptions are included in the response.
 
 >**Note**: This feature is not enabled by default and requires configuration to be enabled. The [in-process features](./../configuration/in-process-features-configuration.md) must be enabled since the exceptions history feature uses shared libraries loaded into the target application for collecting the exception information.
 
@@ -15,6 +15,20 @@ POST /exceptions HTTP/1.1
 ## Host Address
 
 The default host address for these routes is `https://localhost:52323`. This route is only available on the addresses configured via the `--urls` command line parameter and the `DOTNETMONITOR_URLS` environment variable.
+
+## URI Parameters
+
+| Name | In | Required | Type | Description |
+|---|---|---|---|---|
+| `pid` | query | false | int | The ID of the process. |
+| `uid` | query | false | guid | A value that uniquely identifies a runtime instance within a process. |
+| `name` | query | false | string | The name of the process. |
+| `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected exceptions. When not specified, the exceptions are written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
+| `tags` | query | false | string | (7.1+) A comma-separated list of user-readable identifiers for the operation. |
+
+See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
+
+If none of `pid`, `uid`, or `name` are specified, exceptions from the [default process](defaultprocess.md) will be captured. Attempting to capture exceptions from the default process when the default process cannot be resolved will fail.
 
 ## Authentication
 
