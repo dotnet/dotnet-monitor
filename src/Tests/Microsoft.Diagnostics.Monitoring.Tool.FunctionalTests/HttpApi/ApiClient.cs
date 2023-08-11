@@ -9,7 +9,6 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -539,14 +538,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// <summary>
         /// POST /exceptions
         /// </summary>
-        public async Task<ResponseStreamHolder> CaptureExceptionsAsync(ExceptionsConfiguration configuration, int processId, ExceptionFormat format, TimeSpan timeout)
+        public async Task<ResponseStreamHolder> CaptureExceptionsAsync(HttpMethod method, ExceptionsConfiguration configuration, int processId, ExceptionFormat format, TimeSpan timeout)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
 
             string json = JsonSerializer.Serialize(configuration, DefaultJsonSerializeOptions);
 
             return await CaptureExceptionsAsync(
-                HttpMethod.Post,
+                method,
                 new StringContent(json, Encoding.UTF8, ContentTypes.ApplicationJson),
                 processId,
                 format,

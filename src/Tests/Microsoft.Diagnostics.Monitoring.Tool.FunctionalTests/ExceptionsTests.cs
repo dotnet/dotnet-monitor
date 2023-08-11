@@ -33,9 +33,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private const string FrameParameterType = "System.Boolean";
         private const string FrameModuleName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll";
         private const string ModuleName = "System.Private.CoreLib.dll";
-        private const string ExceptionType = "System.InvalidOperationException";
-        private const string ExceptionMessage = $"Exception of type '{ExceptionType}' was thrown.";
+        private const string SystemInvalidOperationException = "System.InvalidOperationException";
+        private const string ExceptionMessage = $"Exception of type '{SystemInvalidOperationException}' was thrown.";
         private const string FirstChanceExceptionMessage = "First chance exception at";
+        private const string CustomGenericsException = "CustomGenericsException";
+        private const string SystemArgumentNullException = "System.ArgumentNullException";
 
         private string exceptionsResult = string.Empty;
 
@@ -65,7 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     Assert.True(exceptionsLines.Length >= 4);
                     Assert.Contains("First chance exception at", exceptionsLines[0]);
-                    Assert.Equal($"{ExceptionType}: {ExceptionMessage}", exceptionsLines[1]);
+                    Assert.Equal($"{SystemInvalidOperationException}: {ExceptionMessage}", exceptionsLines[1]);
                     Assert.Equal($"   at {FrameClassName}.{FrameMethodName}({FrameParameterType},{FrameParameterType})", exceptionsLines[2]);
                     Assert.Equal($"   at {FrameClassName}.{FrameMethodName}()", exceptionsLines[3]);
                 },
@@ -114,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     var exceptionsDict = JsonSerializer.Deserialize<Dictionary<string, object>>(exceptionsResult);
 
                     Assert.Equal("2", exceptionsDict["id"].ToString());
-                    Assert.Equal(ExceptionType, exceptionsDict["typeName"].ToString());
+                    Assert.Equal(SystemInvalidOperationException, exceptionsDict["typeName"].ToString());
 
                     var timestamp = DateTime.Parse(exceptionsDict["timestamp"].ToString());
                     Assert.True(startTime < timestamp);
@@ -159,15 +161,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
 
-                    await PostExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
 
                     var exceptions = exceptionsResult.Split(new[] { FirstChanceExceptionMessage }, StringSplitOptions.RemoveEmptyEntries);
 
                     Assert.Equal(3, exceptions.Length);
 
-                    Assert.Contains("CustomGenericsException", exceptionsResult);
-                    Assert.Contains("System.InvalidOperationException", exceptionsResult);
-                    Assert.Contains("System.ArgumentNullException", exceptionsResult);
+                    Assert.Contains(CustomGenericsException, exceptionsResult);
+                    Assert.Contains(SystemInvalidOperationException, exceptionsResult);
+                    Assert.Contains(SystemArgumentNullException, exceptionsResult);
                 },
                 configureApp: runner =>
                 {
@@ -195,18 +197,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     configuration.Exclude.Add(
                         new()
                         {
-                            ExceptionType = "System.ArgumentNullException"
+                            ExceptionType = SystemArgumentNullException
                         }
                     );
 
-                    await PostExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
 
                     var exceptions = exceptionsResult.Split(new[] { FirstChanceExceptionMessage }, StringSplitOptions.RemoveEmptyEntries);
 
                     Assert.Equal(2, exceptions.Length);
 
-                    Assert.Contains("CustomGenericsException", exceptionsResult);
-                    Assert.Contains("System.InvalidOperationException", exceptionsResult);
+                    Assert.Contains(CustomGenericsException, exceptionsResult);
+                    Assert.Contains(SystemInvalidOperationException, exceptionsResult);
                 },
                 configureApp: runner =>
                 {
@@ -236,21 +238,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     configuration.Exclude.Add(
                         new()
                         {
-                            ExceptionType = "System.InvalidOperationException",
+                            ExceptionType = SystemInvalidOperationException,
                             MethodName = "ThrowAndCatchInvalidOperationException",
-                            ClassName = "ExceptionsScenario",
-                            ModuleName = "UnitTestApp" // these are likely not the full names?
+                            ClassName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario",
+                            ModuleName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll"
                         }
                     );
 
-                    await PostExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
 
                     var exceptions = exceptionsResult.Split(new[] { FirstChanceExceptionMessage }, StringSplitOptions.RemoveEmptyEntries);
 
                     Assert.Equal(2, exceptions.Length);
 
-                    Assert.Contains("CustomGenericsException", exceptionsResult);
-                    Assert.Contains("System.ArgumentNullException", exceptionsResult);
+                    Assert.Contains(CustomGenericsException, exceptionsResult);
+                    Assert.Contains(SystemArgumentNullException, exceptionsResult);
                 },
                 configureApp: runner =>
                 {
@@ -278,17 +280,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     configuration.Exclude.Add(
                         new()
                         {
-                            ExceptionType = "System.ArgumentNullException"
+                            ExceptionType = SystemArgumentNullException
                         }
                     );
                     configuration.Exclude.Add(
                         new()
                         {
-                            ExceptionType = "CustomGenericsException"
+                            ExceptionType = CustomGenericsException
                         }
                     );
 
-                    await PostExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
 
                     var exceptions = exceptionsResult.Split(new[] { FirstChanceExceptionMessage }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -296,7 +298,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     Assert.True(exceptionsLines.Length >= 4);
                     Assert.Contains(FirstChanceExceptionMessage, exceptionsLines[0]);
-                    Assert.Equal($"{ExceptionType}: {ExceptionMessage}", exceptionsLines[1]);
+                    Assert.Equal($"{SystemInvalidOperationException}: {ExceptionMessage}", exceptionsLines[1]);
                     Assert.Equal($"   at {FrameClassName}.{FrameMethodName}({FrameParameterType},{FrameParameterType})", exceptionsLines[2]);
                     Assert.Equal($"   at {FrameClassName}.{FrameMethodName}()", exceptionsLines[3]);
                 },
@@ -326,17 +328,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     configuration.Include.Add(
                         new()
                         {
-                            ExceptionType = "System.InvalidOperationException"
+                            ExceptionType = SystemInvalidOperationException
                         }
                     );
 
-                    await PostExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
 
                     var exceptionsLines = exceptionsResult.Split(Environment.NewLine, StringSplitOptions.None);
 
                     Assert.True(exceptionsLines.Length >= 4);
                     Assert.Contains(FirstChanceExceptionMessage, exceptionsLines[0]);
-                    Assert.Equal($"{ExceptionType}: {ExceptionMessage}", exceptionsLines[1]);
+                    Assert.Equal($"{SystemInvalidOperationException}: {ExceptionMessage}", exceptionsLines[1]);
                     Assert.Equal($"   at {FrameClassName}.{FrameMethodName}({FrameParameterType},{FrameParameterType})", exceptionsLines[2]);
                     Assert.Equal($"   at {FrameClassName}.{FrameMethodName}()", exceptionsLines[3]);
                 },
@@ -373,18 +375,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     configuration.Include.Add(
                         new()
                         {
-                            ExceptionType = "CustomGenericsException"
+                            ExceptionType = CustomGenericsException
                         }
                     );
 
-                    await PostExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
 
                     var exceptions = exceptionsResult.Split(new[] { FirstChanceExceptionMessage }, StringSplitOptions.RemoveEmptyEntries);
 
                     Assert.Equal(2, exceptions.Length);
 
-                    Assert.Contains("CustomGenericsException", exceptionsResult);
-                    Assert.Contains("System.InvalidOperationException", exceptionsResult);
+                    Assert.Contains(CustomGenericsException, exceptionsResult);
+                    Assert.Contains(SystemInvalidOperationException, exceptionsResult);
                 },
                 configureApp: runner =>
                 {
@@ -413,20 +415,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     configuration.Include.Add(
                         new()
                         {
-                            ExceptionType = "System.InvalidOperationException",
+                            ExceptionType = SystemInvalidOperationException,
                             MethodName = "ThrowAndCatchInvalidOperationException",
                             ClassName = "ExceptionsScenario",
-                            ModuleName = "UnitTestApp" // these are likely not the full names?
+                            ModuleName = "UnitTestApp"
                         }
                     );
 
-                    await PostExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
 
                     var exceptionsLines = exceptionsResult.Split(Environment.NewLine, StringSplitOptions.None);
 
                     Assert.True(exceptionsLines.Length >= 4);
                     Assert.Contains(FirstChanceExceptionMessage, exceptionsLines[0]);
-                    Assert.Equal($"{ExceptionType}: {ExceptionMessage}", exceptionsLines[1]);
+                    Assert.Equal($"{SystemInvalidOperationException}: {ExceptionMessage}", exceptionsLines[1]);
                     Assert.Equal($"   at {FrameClassName}.{FrameMethodName}({FrameParameterType},{FrameParameterType})", exceptionsLines[2]);
                     Assert.Equal($"   at {FrameClassName}.{FrameMethodName}()", exceptionsLines[3]);
                 },
@@ -441,14 +443,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        private async Task GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionFormat format)
+        private async Task GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionFormat format, ExceptionsConfiguration configuration = null)
         {
             await appRunner.SendCommandAsync(TestAppScenarios.Exceptions.Commands.Begin);
 
             int processId = await appRunner.ProcessIdTask;
 
             await RetryUtilities.RetryAsync(
-                () => CaptureExtensions(apiClient, processId, format),
+                () => CaptureExtensions(apiClient, processId, format, configuration),
                 shouldRetry: (Exception ex) => ex is ArgumentException,
                 maxRetryCount: 5,
                 outputHelper: _outputHelper);
@@ -456,40 +458,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await appRunner.SendCommandAsync(TestAppScenarios.Exceptions.Commands.End);
         }
 
-        private async Task PostExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionFormat format, ExceptionsConfiguration configuration)
-        {
-            await appRunner.SendCommandAsync(TestAppScenarios.Exceptions.Commands.Begin);
-
-            int processId = await appRunner.ProcessIdTask;
-
-            await RetryUtilities.RetryAsync(
-                () => CaptureExtensions2(apiClient, processId, format, configuration),
-                shouldRetry: (Exception ex) => ex is ArgumentException,
-                maxRetryCount: 5,
-                outputHelper: _outputHelper);
-
-            await appRunner.SendCommandAsync(TestAppScenarios.Exceptions.Commands.End);
-        }
-
-
-        private async Task CaptureExtensions(ApiClient apiClient, int processId, ExceptionFormat format)
-        {
-            await Task.Delay(500);
-
-            ResponseStreamHolder holder = await apiClient.CaptureExceptionsAsync(processId, format);
-
-            using (var reader = new StreamReader(holder.Stream))
-            {
-                exceptionsResult = reader.ReadToEnd();
-            }
-
-            if (string.IsNullOrEmpty(exceptionsResult))
-            {
-                throw new ArgumentException();
-            }
-        }
-
-        private async Task CaptureExtensions2(ApiClient apiClient, int processId, ExceptionFormat format, ExceptionsConfiguration configuration)
+        private async Task CaptureExtensions(ApiClient apiClient, int processId, ExceptionFormat format, ExceptionsConfiguration configuration)
         {
             await Task.Delay(500);
 
