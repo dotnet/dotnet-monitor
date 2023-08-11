@@ -1229,6 +1229,102 @@
             "description": "Accepted"
           }
         }
+      },
+      "post": {
+        "tags": [
+          "Exceptions"
+        ],
+        "summary": "Gets the exceptions from the target process.",
+        "operationId": "CaptureExceptionsCustom",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "egressProvider",
+            "in": "query",
+            "description": "The egress provider to which the exceptions are saved.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The exceptions configuration describing which exceptions to include in the response.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExceptionsConfiguration"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExceptionsConfiguration"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExceptionsConfiguration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json-seq": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/metrics": {
@@ -1620,6 +1716,54 @@
             "additionalProperties": {
               "type": "string"
             },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ExceptionConfiguration": {
+        "type": "object",
+        "properties": {
+          "methodName": {
+            "type": "string",
+            "description": "The name of the top stack frame's method.",
+            "nullable": true
+          },
+          "exceptionType": {
+            "type": "string",
+            "description": "The type of the exception",
+            "nullable": true
+          },
+          "className": {
+            "type": "string",
+            "description": "The name of the top stack frame's class.",
+            "nullable": true
+          },
+          "moduleName": {
+            "type": "string",
+            "description": "The name of the top stack frame's module.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ExceptionsConfiguration": {
+        "type": "object",
+        "properties": {
+          "include": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExceptionConfiguration"
+            },
+            "description": "The list of exception configurations that determine which exceptions should be shown.\r\nEach configuration is a logical OR, so if any of the configurations match, the exception is shown.",
+            "nullable": true
+          },
+          "exclude": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExceptionConfiguration"
+            },
+            "description": "The list of exception configurations that determine which exceptions should be shown.\r\nEach configuration is a logical OR, so if any of the configurations match, the exception isn't shown.",
             "nullable": true
           }
         },
