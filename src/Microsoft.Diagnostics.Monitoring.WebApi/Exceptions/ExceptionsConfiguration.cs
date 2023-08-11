@@ -65,25 +65,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
             Func<ExceptionConfiguration, CallStackFrame, bool> evaluateFilterList = (configuration, topFrame) =>
             {
                 bool? exclude = null;
-                bool? returnValue;
                 if (topFrame != null)
                 {
-                    returnValue = CompareExcludeValues(configuration.MethodName, topFrame.MethodName, exclude);
-                    exclude = returnValue ?? exclude;
-
-                    returnValue = CompareExcludeValues(configuration.ModuleName, topFrame.ModuleName, exclude);
-                    exclude = returnValue ?? exclude;
-
-                    returnValue = CompareExcludeValues(configuration.ClassName, topFrame.ClassName, exclude);
-                    exclude = returnValue ?? exclude;
-
-                    returnValue = CompareExcludeValues(configuration.ExceptionType, exception.TypeName, exclude);
-                    exclude = returnValue ?? exclude;
+                    CompareExcludeValues(configuration.MethodName, topFrame.MethodName, ref exclude);
+                    CompareExcludeValues(configuration.ModuleName, topFrame.ModuleName, ref exclude);
+                    CompareExcludeValues(configuration.ClassName, topFrame.ClassName, ref exclude);
+                    CompareExcludeValues(configuration.ExceptionType, exception.TypeName, ref exclude);
                 }
                 else
                 {
-                    returnValue = CompareExcludeValues(configuration.ExceptionType, exception.TypeName, exclude);
-                    exclude = returnValue ?? exclude;
+                    CompareExcludeValues(configuration.ExceptionType, exception.TypeName, ref exclude);
                 }
 
                 return exclude ?? false;
@@ -100,15 +91,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
             }
         }
 
-        private static bool? CompareExcludeValues(string configurationValue, string actualValue, bool? excludeVal)
+        private static void CompareExcludeValues(string configurationValue, string actualValue, ref bool? exclude)
         {
-            if ((excludeVal != false) && !string.IsNullOrEmpty(configurationValue))
+            if (exclude != false && !string.IsNullOrEmpty(configurationValue))
             {
-                return CompareValues(configurationValue, actualValue);
-            }
-            else
-            {
-                return null;
+                exclude = CompareValues(configurationValue, actualValue);
             }
         }
 

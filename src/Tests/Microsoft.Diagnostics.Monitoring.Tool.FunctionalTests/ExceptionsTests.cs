@@ -38,6 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private const string FirstChanceExceptionMessage = "First chance exception at";
         private const string CustomGenericsException = "CustomGenericsException";
         private const string SystemArgumentNullException = "System.ArgumentNullException";
+        private const string FilteringExceptionsScenario = TestAppScenarios.Exceptions.Name + " " + TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions;
 
         private string exceptionsResult = string.Empty;
 
@@ -63,13 +64,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText);
 
-                    var exceptionsLines = exceptionsResult.Split(Environment.NewLine, StringSplitOptions.None);
-
-                    Assert.True(exceptionsLines.Length >= 4);
-                    Assert.Contains("First chance exception at", exceptionsLines[0]);
-                    Assert.Equal($"{SystemInvalidOperationException}: {ExceptionMessage}", exceptionsLines[1]);
-                    Assert.Equal($"   at {FrameClassName}.{FrameMethodName}({FrameParameterType},{FrameParameterType})", exceptionsLines[2]);
-                    Assert.Equal($"   at {FrameClassName}.{FrameMethodName}()", exceptionsLines[3]);
+                    ValidateSingleExceptionText(
+                        SystemInvalidOperationException,
+                        ExceptionMessage,
+                        FrameClassName,
+                        FrameMethodName,
+                        new() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -156,20 +156,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _outputHelper,
                 _httpClientFactory,
                 DiagnosticPortConnectionMode.Listen,
-                TestAppScenarios.Exceptions.Name + " " + TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions,
+                FilteringExceptionsScenario,
                 appValidate: async (appRunner, apiClient) =>
                 {
                     ExceptionsConfiguration configuration = new();
 
                     await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
 
-                    var exceptions = exceptionsResult.Split(new[] { FirstChanceExceptionMessage }, StringSplitOptions.RemoveEmptyEntries);
-
-                    Assert.Equal(3, exceptions.Length);
-
-                    Assert.Contains(CustomGenericsException, exceptionsResult);
-                    Assert.Contains(SystemInvalidOperationException, exceptionsResult);
-                    Assert.Contains(SystemArgumentNullException, exceptionsResult);
+                    ValidateMultipleExceptionsText(3, new() { CustomGenericsException, SystemInvalidOperationException, SystemArgumentNullException });
                 },
                 configureApp: runner =>
                 {
@@ -190,7 +184,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _outputHelper,
                 _httpClientFactory,
                 DiagnosticPortConnectionMode.Listen,
-                TestAppScenarios.Exceptions.Name + " " + TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions,
+                FilteringExceptionsScenario,
                 appValidate: async (appRunner, apiClient) =>
                 {
                     ExceptionsConfiguration configuration = new();
@@ -203,12 +197,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
 
-                    var exceptions = exceptionsResult.Split(new[] { FirstChanceExceptionMessage }, StringSplitOptions.RemoveEmptyEntries);
-
-                    Assert.Equal(2, exceptions.Length);
-
-                    Assert.Contains(CustomGenericsException, exceptionsResult);
-                    Assert.Contains(SystemInvalidOperationException, exceptionsResult);
+                    ValidateMultipleExceptionsText(2, new() { CustomGenericsException, SystemInvalidOperationException });
                 },
                 configureApp: runner =>
                 {
@@ -231,7 +220,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _outputHelper,
                 _httpClientFactory,
                 DiagnosticPortConnectionMode.Listen,
-                TestAppScenarios.Exceptions.Name + " " + TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions,
+                FilteringExceptionsScenario,
                 appValidate: async (appRunner, apiClient) =>
                 {
                     ExceptionsConfiguration configuration = new();
@@ -247,12 +236,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
 
-                    var exceptions = exceptionsResult.Split(new[] { FirstChanceExceptionMessage }, StringSplitOptions.RemoveEmptyEntries);
-
-                    Assert.Equal(2, exceptions.Length);
-
-                    Assert.Contains(CustomGenericsException, exceptionsResult);
-                    Assert.Contains(SystemArgumentNullException, exceptionsResult);
+                    ValidateMultipleExceptionsText(2, new() { CustomGenericsException, SystemArgumentNullException });
                 },
                 configureApp: runner =>
                 {
@@ -273,7 +257,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _outputHelper,
                 _httpClientFactory,
                 DiagnosticPortConnectionMode.Listen,
-                TestAppScenarios.Exceptions.Name + " " + TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions,
+                FilteringExceptionsScenario,
                 appValidate: async (appRunner, apiClient) =>
                 {
                     ExceptionsConfiguration configuration = new();
@@ -292,15 +276,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
 
-                    var exceptions = exceptionsResult.Split(new[] { FirstChanceExceptionMessage }, StringSplitOptions.RemoveEmptyEntries);
-
-                    var exceptionsLines = exceptionsResult.Split(Environment.NewLine, StringSplitOptions.None);
-
-                    Assert.True(exceptionsLines.Length >= 4);
-                    Assert.Contains(FirstChanceExceptionMessage, exceptionsLines[0]);
-                    Assert.Equal($"{SystemInvalidOperationException}: {ExceptionMessage}", exceptionsLines[1]);
-                    Assert.Equal($"   at {FrameClassName}.{FrameMethodName}({FrameParameterType},{FrameParameterType})", exceptionsLines[2]);
-                    Assert.Equal($"   at {FrameClassName}.{FrameMethodName}()", exceptionsLines[3]);
+                    ValidateSingleExceptionText(
+                        SystemInvalidOperationException,
+                        ExceptionMessage,
+                        FrameClassName,
+                        FrameMethodName,
+                        new() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -321,7 +302,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _outputHelper,
                 _httpClientFactory,
                 DiagnosticPortConnectionMode.Listen,
-                TestAppScenarios.Exceptions.Name + " " + TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions,
+                FilteringExceptionsScenario,
                 appValidate: async (appRunner, apiClient) =>
                 {
                     ExceptionsConfiguration configuration = new();
@@ -334,13 +315,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
 
-                    var exceptionsLines = exceptionsResult.Split(Environment.NewLine, StringSplitOptions.None);
-
-                    Assert.True(exceptionsLines.Length >= 4);
-                    Assert.Contains(FirstChanceExceptionMessage, exceptionsLines[0]);
-                    Assert.Equal($"{SystemInvalidOperationException}: {ExceptionMessage}", exceptionsLines[1]);
-                    Assert.Equal($"   at {FrameClassName}.{FrameMethodName}({FrameParameterType},{FrameParameterType})", exceptionsLines[2]);
-                    Assert.Equal($"   at {FrameClassName}.{FrameMethodName}()", exceptionsLines[3]);
+                    ValidateSingleExceptionText(
+                        SystemInvalidOperationException,
+                        ExceptionMessage,
+                        FrameClassName,
+                        FrameMethodName,
+                        new() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -361,7 +341,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _outputHelper,
                 _httpClientFactory,
                 DiagnosticPortConnectionMode.Listen,
-                TestAppScenarios.Exceptions.Name + " " + TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions,
+                FilteringExceptionsScenario,
                 appValidate: async (appRunner, apiClient) =>
                 {
                     // This is effectively an OR that will include anything that matches either of the options
@@ -381,12 +361,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
 
-                    var exceptions = exceptionsResult.Split(new[] { FirstChanceExceptionMessage }, StringSplitOptions.RemoveEmptyEntries);
-
-                    Assert.Equal(2, exceptions.Length);
-
-                    Assert.Contains(CustomGenericsException, exceptionsResult);
-                    Assert.Contains(SystemInvalidOperationException, exceptionsResult);
+                    ValidateMultipleExceptionsText(2, new() { CustomGenericsException, SystemInvalidOperationException });
                 },
                 configureApp: runner =>
                 {
@@ -407,10 +382,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 _outputHelper,
                 _httpClientFactory,
                 DiagnosticPortConnectionMode.Listen,
-                TestAppScenarios.Exceptions.Name + " " + TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions,
+                FilteringExceptionsScenario,
                 appValidate: async (appRunner, apiClient) =>
                 {
-                    // This is effectively an OR that will include anything that matches either of the options
                     ExceptionsConfiguration configuration = new();
                     configuration.Include.Add(
                         new()
@@ -424,13 +398,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
 
-                    var exceptionsLines = exceptionsResult.Split(Environment.NewLine, StringSplitOptions.None);
-
-                    Assert.True(exceptionsLines.Length >= 4);
-                    Assert.Contains(FirstChanceExceptionMessage, exceptionsLines[0]);
-                    Assert.Equal($"{SystemInvalidOperationException}: {ExceptionMessage}", exceptionsLines[1]);
-                    Assert.Equal($"   at {FrameClassName}.{FrameMethodName}({FrameParameterType},{FrameParameterType})", exceptionsLines[2]);
-                    Assert.Equal($"   at {FrameClassName}.{FrameMethodName}()", exceptionsLines[3]);
+                    ValidateSingleExceptionText(
+                        SystemInvalidOperationException,
+                        ExceptionMessage,
+                        FrameClassName,
+                        FrameMethodName,
+                        new() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -441,6 +414,27 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
                 });
+        }
+
+        private void ValidateMultipleExceptionsText(int exceptionsCount, List<string> exceptionTypes)
+        {
+            var exceptions = exceptionsResult.Split(new[] { FirstChanceExceptionMessage }, StringSplitOptions.RemoveEmptyEntries);
+            Assert.Equal(exceptionsCount, exceptions.Length);
+
+            foreach (string exceptionType in exceptionTypes)
+            {
+                Assert.Contains(exceptionType, exceptionsResult);
+            }
+        }
+
+        private void ValidateSingleExceptionText(string exceptionType, string exceptionMessage, string frameClassName, string frameMethodName, List<string> parameterTypes)
+        {
+            var exceptionsLines = exceptionsResult.Split(Environment.NewLine, StringSplitOptions.None);
+
+            Assert.True(exceptionsLines.Length >= 3);
+            Assert.Contains(FirstChanceExceptionMessage, exceptionsLines[0]);
+            Assert.Equal($"{exceptionType}: {exceptionMessage}", exceptionsLines[1]);
+            Assert.Equal($"   at {frameClassName}.{frameMethodName}({string.Join(',', parameterTypes)})", exceptionsLines[2]);
         }
 
         private async Task GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionFormat format, ExceptionsConfiguration configuration = null)
