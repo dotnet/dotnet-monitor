@@ -133,6 +133,45 @@ Accept: text/plain
 {
     "Include": [
         {
+            "methodName": "MyExceptionMethod1"
+        },
+        {
+            "methodName": "MyExceptionMethod2"
+        }
+    ]
+}
+```
+
+### Sample Response
+
+```http
+HTTP/1.1 200 OK
+Content-Type: text/plain
+
+First chance exception at 2023-08-08T14:50:34.1039177Z
+System.InvalidOperationException: There was an invalid operation!
+   at MyApp.MyClass.MyExceptionMethod1()
+   at MyApp.MyClass.CallingMethod(System.String)
+   at MyApp.MyClass.Main(System.String[])
+
+First chance exception at 2023-08-08T14:50:34.1039177Z
+System.DivideByZeroException: You tried to divide by zero!
+   at MyApp.MyClass.MyExceptionMethod2()
+   at MyApp.MyClass.CallingMethod(System.String)
+   at MyApp.MyClass.Main(System.String[])
+```
+
+
+### Sample Request
+
+```http
+POST /exceptions HTTP/1.1
+Host: localhost:52323
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
+Accept: text/plain
+{
+    "Include": [
+        {
             "methodName": "MyExceptionMethod",
             "className": "MyClass"
             "moduleName": "MyApp.dll"
@@ -183,7 +222,7 @@ HTTP/1.1 200 OK
 Content-Type: application/x-ndjson
 
 {"id":4,"timestamp":"2023-08-08T15:42:05.4014435Z","typeName":"System.DivideByZeroException","moduleName":"System.Private.CoreLib.dll","message":"Something was divided by zero!","callStack":{"threadId":30448,"threadName":null,"innerExceptions":[],"frames":[{"methodName":"MyExceptionMethod2","parameterTypes":[],"className":"MyApp.MyClass","moduleName":"MyApp.dll"},{"methodName":"Main","parameterTypes":["System.String[]"],"className":"MyApp.MyClass","moduleName":"MyApp.dll"}]}}
-{"id":6,"timestamp":"2023-08-08T15:42:06.411379Z","typeName":"System.Exception","moduleName":"System.Private.CoreLib.dll","message":"There was an exception!","callStack":{"threadId":30448,"threadName":null,"innerExceptions":[],"frames":[{"methodName":"MyExceptionMethod3","parameterTypes":[],"className":"MyApp.MyClass","moduleName":"MyApp.dll"},{"methodName":"RandomGeneric","parameterTypes":[],"className":"MyApp.MyClass","moduleName":"MyApp.dll"},{"methodName":"Main","parameterTypes":["System.String[]"],"className":"MyApp.MyClass","moduleName":"MyApp.dll"}]}}
+{"id":6,"timestamp":"2023-08-08T15:42:06.411379Z","typeName":"System.Exception","moduleName":"System.Private.CoreLib.dll","message":"There was an exception!","callStack":{"threadId":30448,"threadName":null,"innerExceptions":[],"frames":[{"methodName":"MyExceptionMethod3","parameterTypes":[],"className":"MyApp.MyClass","moduleName":"MyApp.dll"},{"methodName":"MyExceptionMethod4","parameterTypes":[],"className":"MyApp.MyClass","moduleName":"MyApp.dll"},{"methodName":"Main","parameterTypes":["System.String[]"],"className":"MyApp.MyClass","moduleName":"MyApp.dll"}]}}
 ```
 
 ## Supported Runtimes

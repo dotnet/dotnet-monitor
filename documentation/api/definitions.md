@@ -182,12 +182,12 @@ Object describing attributes of an exception to use for filtering. To be filtere
 
 ## ExceptionsConfiguration
 
-Object describing which exceptions should be included/excluded. To be filtered, an exception must match **any** of the `ExceptionConfiguration` in the list (e.g. if `include` is a list of three `ExceptionConfiguration`, exceptions must only match one of the three to be included).
+Object describing which exceptions should be included/excluded. To be filtered, an exception must match **any** of the `ExceptionConfiguration` in the list (e.g. if `include` is a list of three `ExceptionConfiguration`, exceptions only need to match one of the three in order to be included).
 
 | Name | Type | Description |
 |---|---|---|
-| `include` | [ExceptionConfiguration[]](#exceptionconfiguration) | The list of exceptions to include in the filter. |
-| `exclude` | [ExceptionConfiguration[]](#exceptionconfiguration) | The list of exceptions to exclude in the filter. |
+| `include` | [ExceptionConfiguration[]](#exceptionconfiguration) | The list of exceptions to include in the filter - anything not listed in the filter will not be included in the results. |
+| `exclude` | [ExceptionConfiguration[]](#exceptionconfiguration) | The list of exceptions to exclude in the filter - anything not listed in the filter will be included in the results. |
 
 ## ExceptionInstance
 
