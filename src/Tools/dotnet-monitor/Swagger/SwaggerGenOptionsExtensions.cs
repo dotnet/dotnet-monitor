@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
             options.IncludeXmlComments(() => new XPathDocument(Assembly.GetExecutingAssembly().GetManifestResourceStream(documentationFile)));
 
             // Make sure TimeSpan is represented as a string instead of a full object type
-            options.MapType<TimeSpan>(() => new OpenApiSchema() { Type = "string", Format = "time-span", Example = new OpenApiString("00:00:00") });
+            options.MapType<TimeSpan>(() => new OpenApiSchema() { Type = "string", Format = "time-span", Example = new OpenApiString("00:00:30") });
         }
 
         public static void AddBearerTokenAuthOption(this SwaggerGenOptions options, string securityDefinitionName)

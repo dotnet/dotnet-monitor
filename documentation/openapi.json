@@ -1443,21 +1443,21 @@
             "description": "The sliding window duration in which the actionCountLimit is the maximum number of occurrences (as defined by Limits).",
             "format": "time-span",
             "nullable": true,
-            "example": "00:00:00"
+            "example": "00:00:30"
           },
           "slidingWindowDurationCountdown": {
             "type": "string",
             "description": "The amount of time that needs to pass before the slidingWindowOccurrences drops below the actionCountLimit",
             "format": "time-span",
             "nullable": true,
-            "example": "00:00:00"
+            "example": "00:00:30"
           },
           "ruleFinishedCountdown": {
             "type": "string",
             "description": "The amount of time that needs to pass before the rule is finished",
             "format": "time-span",
             "nullable": true,
-            "example": "00:00:00"
+            "example": "00:00:30"
           }
         },
         "additionalProperties": false
