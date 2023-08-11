@@ -20,6 +20,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             CliCommand singleExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.SingleException);
             singleExceptionCommand.SetAction(SingleExceptionAsync);
 
+            CliCommand filteringExceptionsCommand = new(TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions);
+            filteringExceptionsCommand.SetAction(FilteringExceptionsAsync);
+
             CliCommand repeatExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.RepeatException);
             repeatExceptionCommand.SetAction(RepeatExceptionAsync);
 
@@ -58,6 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
             CliCommand scenarioCommand = new(TestAppScenarios.Exceptions.Name);
             scenarioCommand.Subcommands.Add(singleExceptionCommand);
+            scenarioCommand.Subcommands.Add(filteringExceptionsCommand);
             scenarioCommand.Subcommands.Add(repeatExceptionCommand);
             scenarioCommand.Subcommands.Add(asyncExceptionCommand);
             scenarioCommand.Subcommands.Add(frameworkExceptionCommand);
@@ -80,6 +84,22 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
 
                 ThrowAndCatchInvalidOperationException();
+
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
+
+                return 0;
+            }, token);
+        }
+
+        public static Task<int> FilteringExceptionsAsync(ParseResult result, CancellationToken token)
+        {
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
+
+                ThrowAndCatchInvalidOperationException();
+                ThrowAndCatchCustomException();
+                ThrowAndCatchArgumentNullExceptionFromFramework();
 
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
 

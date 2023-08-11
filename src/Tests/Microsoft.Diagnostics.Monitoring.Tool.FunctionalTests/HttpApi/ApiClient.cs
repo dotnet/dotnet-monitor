@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -534,12 +536,30 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
-        public async Task<ResponseStreamHolder> CaptureExceptionsAsync(int processId, ExceptionFormat format, CancellationToken token)
+        /// <summary>
+        /// POST /exceptions
+        /// </summary>
+        public async Task<ResponseStreamHolder> CaptureExceptionsAsync(ExceptionsConfiguration configuration, int processId, ExceptionFormat format, TimeSpan timeout)
+        {
+            using CancellationTokenSource timeoutSource = new(timeout);
+
+            string json = JsonSerializer.Serialize(configuration, DefaultJsonSerializeOptions);
+
+            return await CaptureExceptionsAsync(
+                HttpMethod.Post,
+                new StringContent(json, Encoding.UTF8, ContentTypes.ApplicationJson),
+                processId,
+                format,
+                timeoutSource.Token);
+        }
+
+        public async Task<ResponseStreamHolder> CaptureExceptionsAsync(HttpMethod method, HttpContent content, int processId, ExceptionFormat format, CancellationToken token)
         {
             string uri = FormattableString.Invariant($"/exceptions?pid={processId}");
             var contentType = ContentTypeUtilities.MapFormatToContentType(format);
-            using HttpRequestMessage request = new(HttpMethod.Get, uri);
+            using HttpRequestMessage request = new(method, uri);
             request.Headers.Add(HeaderNames.Accept, contentType);
+            request.Content = content;
 
             using DisposableBox<HttpResponseMessage> responseBox = new(
                 await SendAndLogAsync(

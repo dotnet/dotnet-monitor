@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
 using System;
@@ -349,7 +350,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         public static async Task<ResponseStreamHolder> CaptureExceptionsAsync(this ApiClient client, int processId, ExceptionFormat format, TimeSpan timeout)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
-            return await client.CaptureExceptionsAsync(processId, format, timeoutSource.Token).ConfigureAwait(false);
+            return await client.CaptureExceptionsAsync(HttpMethod.Get, null, processId, format, timeoutSource.Token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// POST /exceptions
+        /// </summary>
+        public static Task<ResponseStreamHolder> CaptureExceptionsAsync(this ApiClient client, ExceptionsConfiguration configuration, int processId, ExceptionFormat format)
+        {
+            return client.CaptureExceptionsAsync(configuration, processId, format, TestTimeouts.HttpApi);
         }
 
         /// <summary>
