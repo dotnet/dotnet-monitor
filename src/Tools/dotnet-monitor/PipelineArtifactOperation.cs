@@ -92,6 +92,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         protected IEndpointInfo EndpointInfo { get; }
 
         protected ILogger Logger { get; }
-
     }
 }

@@ -33,7 +33,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-
         public ExceptionsOperation(IEndpointInfo endpointInfo, IExceptionsStore store, ExceptionFormat format)
         {
             _endpointInfo = endpointInfo;
