@@ -125,7 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     OperationResponse response = await apiClient.EgressTraceAsync(processId, durationSeconds: -1, FileProviderName);
                     Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
-                    OperationStatusResponse operationResult = await apiClient.GetOperationStatus(response.OperationUri);
+                    OperationStatusResponse operationResult = await apiClient.PollOperationToRunning(response.OperationUri);
                     Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
                     Assert.Equal(OperationState.Running, operationResult.OperationStatus.Status);
                     Assert.True(operationResult.OperationStatus.IsStoppable);
