@@ -77,11 +77,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             try
             {
-                while (!DisposableHelper.IsDisposed(ref _disposedState))
+                while (_messages.TryTake(out (string format, string[] args) entry, Timeout.InfiniteTimeSpan))
                 {
-                    (string format, string[] args) = _messages.Take();
-                    Log(_systemLogger, format, args);
+                    Log(_systemLogger, entry.format, entry.args);
                 }
+            }
+            catch (ObjectDisposedException)
+            {
             }
             catch
             {
@@ -90,8 +92,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public void Complete()
         {
-            //TODO: Should this also be called during shutdown to ensure all messages are logged?
-
+            // NOTE We currently do not wait for the background thread in production code
             _messages.CompleteAdding();
             _thread.Join();
         }
@@ -104,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             {
                 return;
             }
-
+            _messages.CompleteAdding();
             _messages.Dispose();
         }
     }
