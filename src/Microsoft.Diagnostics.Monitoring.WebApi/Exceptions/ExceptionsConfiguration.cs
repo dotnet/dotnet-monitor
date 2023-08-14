@@ -25,6 +25,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
         [JsonPropertyName("exclude")]
         public List<ExceptionConfiguration> Exclude { get; set; } = new();
 
+        /// <summary>
+        /// By default, filters will check for a namespace.name match or a name match for ease-of-use.
+        /// This toggle allows users to limit the filter to only check for an exact namespace.name match.
+        /// </summary>
+        [JsonPropertyName("allowSimplifiedNames")]
+        public bool AllowSimplifiedNames { get; set; } = true;
+
         private static bool CheckConfiguration(IExceptionInstance exception, List<ExceptionConfiguration> filterList, Func<ExceptionConfiguration, CallStackFrame, bool> evaluateFilterList)
         {
             var topFrame = exception.CallStack.Frames.Any() ? exception.CallStack.Frames.First() : null;
@@ -83,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
             return CheckConfiguration(exception, Exclude, evaluateFilterList);
         }
 
-        private static void CompareIncludeValues(string configurationValue, string actualValue, ref bool include)
+        private void CompareIncludeValues(string configurationValue, string actualValue, ref bool include)
         {
             if (include && !string.IsNullOrEmpty(configurationValue))
             {
@@ -91,7 +98,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
             }
         }
 
-        private static void CompareExcludeValues(string configurationValue, string actualValue, ref bool? exclude)
+        private void CompareExcludeValues(string configurationValue, string actualValue, ref bool? exclude)
         {
             if (exclude != false && !string.IsNullOrEmpty(configurationValue))
             {
@@ -99,9 +106,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
             }
         }
 
-        private static bool CompareValues(string configurationValue, string actualValue)
+        private bool CompareValues(string configurationValue, string actualValue)
         {
-            return actualValue.Contains(configurationValue, StringComparison.CurrentCultureIgnoreCase);
+            if (AllowSimplifiedNames)
+            {
+                var lastPeriodIndex = actualValue.LastIndexOf('.');
+                if (lastPeriodIndex != -1 && actualValue.Substring(lastPeriodIndex + 1).Equals(configurationValue, StringComparison.Ordinal))
+                {
+                     return true;
+                }
+            }
+
+            return actualValue.Equals(configurationValue, StringComparison.Ordinal);
         }
     }
 
