@@ -493,5 +493,28 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
             return operationResult;
         }
+
+        public static Task<OperationStatusResponse> PollOperationToRunning(this ApiClient apiClient, Uri operationUrl)
+        {
+            return apiClient.PollOperationToRunning(operationUrl, TestTimeouts.OperationTimeout);
+        }
+
+
+        public static async Task<OperationStatusResponse> PollOperationToRunning(this ApiClient apiClient, Uri operationUrl, TimeSpan timeout)
+        {
+            OperationStatusResponse operationResult = await apiClient.GetOperationStatus(operationUrl).ConfigureAwait(false);
+            Assert.True(operationResult.StatusCode == HttpStatusCode.OK || operationResult.StatusCode == HttpStatusCode.Created);
+
+            using CancellationTokenSource cancellationTokenSource = new(timeout);
+            while (operationResult.OperationStatus.Status == OperationState.Starting)
+            {
+                cancellationTokenSource.Token.ThrowIfCancellationRequested();
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellationTokenSource.Token).ConfigureAwait(false);
+                operationResult = await apiClient.GetOperationStatus(operationUrl).ConfigureAwait(false);
+            }
+
+            return operationResult;
+        }
+
     }
 }

@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             _egress = (service, token) => service.EgressAsync(
                 endpointName,
-                (Stream stream, CancellationToken token) => operation.ExecuteAsync(stream, token),
+                operation.ExecuteAsync,
                 operation.GenerateFileName(),
                 operation.ContentType,
                 processInfo.EndpointInfo,
