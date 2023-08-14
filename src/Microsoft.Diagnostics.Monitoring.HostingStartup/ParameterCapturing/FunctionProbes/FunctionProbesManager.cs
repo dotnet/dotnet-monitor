@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             uint count,
             [MarshalAs(UnmanagedType.LPArray)] uint[] boxingTokens,
             [MarshalAs(UnmanagedType.LPArray)] uint[] boxingTokenCounts);
-       
+
         private readonly object _requestLocker = new();
         private long _disposedState;
         private bool _isCapturing;

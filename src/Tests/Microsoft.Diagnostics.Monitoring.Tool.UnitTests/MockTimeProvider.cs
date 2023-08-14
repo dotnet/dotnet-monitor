@@ -3,7 +3,6 @@
 
 using System;
 #if !NET8_0_OR_GREATER
-using Microsoft.Diagnostics.Tools.Monitor;
 #endif
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests

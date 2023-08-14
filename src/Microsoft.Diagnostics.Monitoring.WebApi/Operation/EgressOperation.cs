@@ -102,9 +102,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static ILogger<EgressOperation> CreateLogger(IServiceProvider serviceProvider)
         {
-           return serviceProvider
-            .GetRequiredService<ILoggerFactory>()
-            .CreateLogger<EgressOperation>();
+            return serviceProvider
+             .GetRequiredService<ILoggerFactory>()
+             .CreateLogger<EgressOperation>();
         }
     }
 }

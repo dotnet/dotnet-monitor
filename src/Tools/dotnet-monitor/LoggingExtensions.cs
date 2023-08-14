@@ -976,7 +976,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _endpointRemovalFailed(logger, processId, ex);
         }
 
-                public static void UnableToApplyHostingStartup(this ILogger logger, Exception ex)
+        public static void UnableToApplyHostingStartup(this ILogger logger, Exception ex)
         {
             _unableToApplyHostingStartup(logger, ex);
         }
