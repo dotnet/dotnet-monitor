@@ -1,14 +1,14 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using Microsoft.Diagnostics.Monitoring.Extension.Common;
+using Microsoft.Diagnostics.Monitoring.Tool.UnitTests;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.CommandLine;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp

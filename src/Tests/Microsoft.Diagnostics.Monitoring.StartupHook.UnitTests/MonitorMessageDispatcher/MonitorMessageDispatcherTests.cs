@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             public override bool Equals(object? obj)
             {
                 return obj is SamplePayload payload && Equals(payload);
-                       
+
             }
 
             public bool Equals(SamplePayload other)

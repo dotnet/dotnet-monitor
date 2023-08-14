@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 
-using System.Runtime.InteropServices;
-using System;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
+using System;
+using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 {

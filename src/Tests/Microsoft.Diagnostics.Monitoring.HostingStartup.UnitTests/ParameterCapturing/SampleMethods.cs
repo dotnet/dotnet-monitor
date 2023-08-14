@@ -49,7 +49,7 @@ namespace SampleMethods
     internal sealed class TestAmbiguousGenericSignatures<T1>
     {
         public void AmbiguousMethod<T2>(T1 t, T2 t2) { }
-        public void AmbiguousMethod<T2, T3>(T1 t, T2 t2, T3  t3) { }
+        public void AmbiguousMethod<T2, T3>(T1 t, T2 t2, T3 t3) { }
     }
 
     internal static class StaticTestMethodSignatures
@@ -67,7 +67,7 @@ namespace SampleMethods
 
         public static void Arrays(int[] intArray, bool[,] multidimensionalArray) { }
 
-        public static async Task AsyncMethod(int delay) { await Task.Delay(delay);  }
+        public static async Task AsyncMethod(int delay) { await Task.Delay(delay); }
 
         public static void BuiltInReferenceTypes(object arg1, string arg2, dynamic arg3) { }
 
@@ -116,7 +116,8 @@ namespace SampleMethods
             long arg9,
             ulong arg10,
             float arg11,
-            double arg12) { }
+            double arg12)
+        { }
 
         public static void NativeIntegers(IntPtr intPtr, UIntPtr uintPtr) { }
 

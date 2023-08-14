@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Diagnostics.Monitoring.HostingStartup;
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
-using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
+using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
 
 [assembly: HostingStartup(typeof(HostingStartup))]

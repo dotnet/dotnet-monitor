@@ -56,52 +56,52 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             switch (traceEvent.EventName)
             {
                 case "Capturing/Start":
-                {
-                    Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
-                    Settings.OnStartedCapturing.Invoke(this, requestId);
-                    break;
-                }
+                    {
+                        Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
+                        Settings.OnStartedCapturing.Invoke(this, requestId);
+                        break;
+                    }
                 case "Capturing/Stop":
-                {
-                    Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
-                    Settings.OnStoppedCapturing.Invoke(this, requestId);
-                    break;
-                }
+                    {
+                        Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
+                        Settings.OnStoppedCapturing.Invoke(this, requestId);
+                        break;
+                    }
                 case "UnknownRequestId":
-                {
-                    Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.UnknownRequestIdPayload.RequestId);
-                    Settings.OnUnknownRequestId.Invoke(this, requestId);
-                    break;
-                }
+                    {
+                        Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.UnknownRequestIdPayload.RequestId);
+                        Settings.OnUnknownRequestId.Invoke(this, requestId);
+                        break;
+                    }
                 case "FailedToCapture":
-                {
-                    Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturingFailedPayloads.RequestId);
-                    ParameterCapturingEvents.CapturingFailedReason reason = traceEvent.GetPayload<ParameterCapturingEvents.CapturingFailedReason>(ParameterCapturingEvents.CapturingFailedPayloads.Reason);
-                    string details = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturingFailedPayloads.Details);
+                    {
+                        Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturingFailedPayloads.RequestId);
+                        ParameterCapturingEvents.CapturingFailedReason reason = traceEvent.GetPayload<ParameterCapturingEvents.CapturingFailedReason>(ParameterCapturingEvents.CapturingFailedPayloads.Reason);
+                        string details = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturingFailedPayloads.Details);
 
-                    Settings.OnCapturingFailed.Invoke(this, new CapturingFailedArgs()
-                    {
-                        RequestId = requestId,
-                        Reason = reason,
-                        Details = details
-                    });
-                    break;
-                }
+                        Settings.OnCapturingFailed.Invoke(this, new CapturingFailedArgs()
+                        {
+                            RequestId = requestId,
+                            Reason = reason,
+                            Details = details
+                        });
+                        break;
+                    }
                 case "ServiceStateUpdate":
-                {
-                    ParameterCapturingEvents.ServiceState state = traceEvent.GetPayload<ParameterCapturingEvents.ServiceState>(ParameterCapturingEvents.ServiceStatePayload.State);
-                    string details = traceEvent.GetPayload<string>(ParameterCapturingEvents.ServiceStatePayload.Details);
-                    Settings.OnServiceStateUpdate.Invoke(this, new ServiceStateUpdateArgs()
                     {
-                        ServiceState = state,
-                        Details = details
-                    });
-                    break;
-                }
+                        ParameterCapturingEvents.ServiceState state = traceEvent.GetPayload<ParameterCapturingEvents.ServiceState>(ParameterCapturingEvents.ServiceStatePayload.State);
+                        string details = traceEvent.GetPayload<string>(ParameterCapturingEvents.ServiceStatePayload.Details);
+                        Settings.OnServiceStateUpdate.Invoke(this, new ServiceStateUpdateArgs()
+                        {
+                            ServiceState = state,
+                            Details = details
+                        });
+                        break;
+                    }
                 case "Flush":
                     break;
 #if DEBUG
-                 default:
+                default:
                     throw new NotSupportedException("Unhandled event: " + traceEvent.EventName);
 #endif
             }

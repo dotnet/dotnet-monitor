@@ -3,10 +3,10 @@
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using System.Reflection;
-using System;
-using Xunit;
 using SampleMethods;
+using System;
+using System.Reflection;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing
