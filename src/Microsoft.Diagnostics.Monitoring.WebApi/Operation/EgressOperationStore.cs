@@ -150,7 +150,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-
         public void CancelOperation(Guid operationId)
         {
             lock (_requests)
