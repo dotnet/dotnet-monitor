@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.False(string.IsNullOrEmpty(instance.Message));
                     Assert.True(instance.Timestamp > baselineTimestamp);
 
-                    ValidateStack(instance, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario", new List<string>() { "System.Boolean", "System.Boolean" });
+                    ValidateStack(instance, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario", new List<string>() { "System.Boolean", "System.Boolean" }, new List<string>() { "Boolean", "Boolean" });
                 });
         }
 
@@ -89,8 +89,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.True(instance2.Timestamp > baselineTimestamp);
                     Assert.NotEqual(instance1.Timestamp, instance2.Timestamp);
 
-                    ValidateStack(instance1, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario", new List<string>() { "System.Boolean", "System.Boolean" });
-                    ValidateStack(instance2, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario", new List<string>() { "System.Boolean", "System.Boolean" });
+                    ValidateStack(instance1, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario", new List<string>() { "System.Boolean", "System.Boolean" }, new List<string>() { "Boolean", "Boolean" });
+                    ValidateStack(instance2, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario", new List<string>() { "System.Boolean", "System.Boolean" }, new List<string>() { "Boolean", "Boolean" });
                 });
         }
 
@@ -111,7 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(typeof(TaskCanceledException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
 
-                    ValidateStack(instance, "ThrowForNonSuccess", "System.Private.CoreLib.dll", "System.Runtime.CompilerServices.TaskAwaiter", new List<string>() { "System.Threading.Tasks.Task" });
+                    ValidateStack(instance, "ThrowForNonSuccess", "System.Private.CoreLib.dll", "System.Runtime.CompilerServices.TaskAwaiter", new List<string>() { "System.Threading.Tasks.Task" }, new List<string>() { "Task" });
                 });
         }
 
@@ -132,7 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(typeof(ArgumentNullException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
 
-                    ValidateStack(instance, "Throw", "System.Private.CoreLib.dll", "System.ArgumentNullException", new List<string>() { "System.String" });
+                    ValidateStack(instance, "Throw", "System.Private.CoreLib.dll", "System.ArgumentNullException", new List<string>() { "System.String" }, new List<string>() { "String" });
                 });
         }
 
@@ -174,7 +174,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(typeof(FormatException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
 
-                    ValidateStack(instance, "ThrowAndCatchEsotericStackFrameTypes", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario", new List<string>() { "System.Int32&", "System.Int32&" });
+                    ValidateStack(instance, "ThrowAndCatchEsotericStackFrameTypes", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario", new List<string>() { "System.Int32&", "System.Int32&" }, new List<string>() { "Int32&", "Int32&" });
                 });
         }
 
@@ -196,7 +196,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(typeof(InvalidOperationException).FullName, instance.TypeName);
                     Assert.False(string.IsNullOrEmpty(instance.Message));
 
-                    ValidateStack(instance, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario", new List<string>() { "System.Boolean", "System.Boolean" });
+                    ValidateStack(instance, "ThrowAndCatchInvalidOperationException", "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll", "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario", new List<string>() { "System.Boolean", "System.Boolean" }, new List<string>() { "Boolean", "Boolean" });
                 },
                 architecture);
         }
@@ -460,7 +460,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
-        private static void ValidateStack(IExceptionInstance instance, string expectedMethodName, string expectedModuleName, string expectedClassName, IList<string> expectedParameterTypes = null)
+        private static void ValidateStack(IExceptionInstance instance, string expectedMethodName, string expectedModuleName, string expectedClassName, IList<string> expectedFullParameterTypes = null, IList<string> expectedParameterTypes = null)
         {
             CallStack stack = instance.CallStack;
             Assert.NotEmpty(stack.Frames);
@@ -468,7 +468,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(expectedMethodName, stack.Frames[0].MethodName);
             Assert.Equal(expectedModuleName, stack.Frames[0].ModuleName);
             Assert.Equal(expectedClassName, stack.Frames[0].ClassName);
-            Assert.Equal(expectedParameterTypes ?? new List<string>(), stack.Frames[0].ParameterTypes);
+            Assert.Equal(expectedFullParameterTypes ?? new List<string>(), stack.Frames[0].FullParameterTypes);
+            Assert.Equal(expectedParameterTypes ?? new List<string>(), stack.Frames[0].SimpleParameterTypes);
         }
 
         private static void AddStartupHookEnvironmentVariable(AppRunner runner)
@@ -507,7 +508,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     Assert.True(cache.TryGetExceptionGroup(groupId, out ulong exceptionClassId, out _, out _));
 
-                    NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId);
+                    NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId, NameFormatter.TypeFormat.Full);
 
                     if (cache.NameCache.ClassData.TryGetValue(exceptionClassId, out ClassData exceptionClassData))
                     {

@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -71,7 +70,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             (ModuleScopedToken scopedToken, TokenData data) = Assert.Single(callback.NameCache.TokenData);
             Assert.Equal(moduleId, scopedToken.ModuleId);
             Assert.Equal(classData.Token, scopedToken.Token);
-            Assert.Equal(ex.GetType().FullName, data.Name);
+            Assert.Equal(ex.GetType().Name, data.Name);
+            Assert.Equal(ex.GetType().Namespace, data.Namespace);
             Assert.Equal(InvalidId, data.OuterToken);
 
             // Validate exception ID registration
@@ -207,9 +207,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
         {
             Assert.True(cache.TokenData.TryGetValue(new ModuleScopedToken(moduleId, token), out TokenData? tokenData));
             Assert.NotNull(tokenData);
-            string? expectedTypeName = null == expectedType.DeclaringType ?
-                expectedType.FullName : expectedType.Name;
+            string? expectedTypeName = expectedType.Name;
+            string? expectedNamespace = (null == expectedType.DeclaringType) ? expectedType.Namespace : string.Empty;
             Assert.Equal(expectedTypeName, tokenData.Name);
+            Assert.Equal(expectedNamespace, tokenData.Namespace);
             return tokenData.OuterToken;
         }
 

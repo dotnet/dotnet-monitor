@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 NameFormatter.BuildClassName(builder, cache, functionData);
                 builder.Append(ClassSeparator);
                 builder.Append(functionData.Name);
-                NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
+                NameFormatter.BuildGenericTypeNames(builder, cache, functionData.TypeArgs, NameFormatter.TypeFormat.Simple);
             }
             else
             {

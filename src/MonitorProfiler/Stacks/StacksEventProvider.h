@@ -49,8 +49,8 @@ class StacksEventProvider
         const WCHAR* ClassPayloads[5] = { _T("ClassId"), _T("ModuleId"), _T("Token"), _T("Flags"), _T("TypeArgs") };
         std::unique_ptr<ProfilerEvent<UINT64, UINT64, UINT32, UINT32, std::vector<UINT64>>> _classEvent;
 
-        const WCHAR* TokenPayloads[4] = { _T("ModuleId"), _T("Token"), _T("OuterToken"), _T("Name") };
-        std::unique_ptr<ProfilerEvent<UINT64, UINT32, UINT32, tstring>> _tokenEvent;
+        const WCHAR* TokenPayloads[5] = { _T("ModuleId"), _T("Token"), _T("OuterToken"), _T("Name"), _T("Namespace") };
+        std::unique_ptr<ProfilerEvent<UINT64, UINT32, UINT32, tstring, tstring>> _tokenEvent;
 
         const WCHAR* ModulePayloads[2] = { _T("ModuleId"), _T("Name") };
         std::unique_ptr<ProfilerEvent<UINT64, tstring>> _moduleEvent;

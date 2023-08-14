@@ -27,7 +27,7 @@ public:
     void AddModuleData(ModuleID moduleId, tstring&& name);
     void AddFunctionData(ModuleID moduleId, FunctionID id, tstring&& name, ClassID parent, mdTypeDef parentToken, ClassID* typeArgs, int typeArgsCount);
     void AddClassData(ModuleID moduleId, ClassID id, mdTypeDef typeDef, ClassFlags flags, ClassID* typeArgs, int typeArgsCount);
-    void AddTokenData(ModuleID moduleId, mdTypeDef typeDef, mdTypeDef outerToken, tstring&& name);
+    void AddTokenData(ModuleID moduleId, mdTypeDef typeDef, mdTypeDef outerToken, tstring&& name, tstring&& Namespace);
 
     HRESULT GetFullyQualifiedName(FunctionID id, tstring& name);
     HRESULT GetFullyQualifiedClassName(ClassID classId, tstring& name);

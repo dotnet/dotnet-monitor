@@ -20,15 +20,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
     internal static class StackUtilities
     {
-        public static Models.CallStack TranslateCallStackToModel(CallStack stack, NameCache cache)
+        public static Models.CallStack TranslateCallStackToModel(CallStack stack, NameCache cache, bool methodNameIncludesGenericParameters = true)
         {
             Models.CallStack stackModel = new Models.CallStack();
             stackModel.ThreadId = stack.ThreadId;
             stackModel.ThreadName = stack.ThreadName;
 
+            StringBuilder builder = new();
             foreach (CallStackFrame frame in stack.Frames)
             {
-                stackModel.Frames.Add(CreateFrameModel(frame, cache));
+                var frameModel = CreateFrameModel(frame, cache);
+                if (methodNameIncludesGenericParameters)
+                {
+                    builder.Append(frameModel.MethodName);
+                    NameFormatter.BuildGenericArgTypes(builder, frameModel.FullGenericArgTypes);
+                    frameModel.MethodName = builder.ToString();
+                    builder.Clear();
+                }
+                stackModel.Frames.Add(frameModel);
             }
 
             return stackModel;
@@ -59,17 +68,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 builder.Clear();
                 builder.Append(functionData.Name);
 
+                frameModel.MethodName = builder.ToString();
+
                 if (functionData.TypeArgs.Length > 0)
                 {
-                    NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
+                    frameModel.SimpleGenericArgTypes = NameFormatter.GetTypeNames(cache, functionData.TypeArgs, NameFormatter.TypeFormat.Simple);
+                    frameModel.FullGenericArgTypes = NameFormatter.GetTypeNames(cache, functionData.TypeArgs, NameFormatter.TypeFormat.Full);
                 }
-
-                frameModel.MethodName = builder.ToString();
 
                 if (functionData.ParameterTypes.Length > 0)
                 {
-                    builder.Clear();
-                    frameModel.ParameterTypes = NameFormatter.GetMethodParameterTypes(builder, cache, functionData.ParameterTypes);
+                    frameModel.SimpleParameterTypes = NameFormatter.GetTypeNames(cache, functionData.ParameterTypes, NameFormatter.TypeFormat.Simple);
+                    frameModel.FullParameterTypes = NameFormatter.GetTypeNames(cache, functionData.ParameterTypes, NameFormatter.TypeFormat.Full);
                 }
 
                 builder.Clear();
