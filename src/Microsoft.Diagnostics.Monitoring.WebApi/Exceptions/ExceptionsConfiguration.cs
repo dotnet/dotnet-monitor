@@ -113,7 +113,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
                 var lastPeriodIndex = actualValue.LastIndexOf('.');
                 if (lastPeriodIndex != -1 && actualValue.Substring(lastPeriodIndex + 1).Equals(configurationValue, StringComparison.Ordinal))
                 {
-                     return true;
+                    return true;
                 }
             }
 
