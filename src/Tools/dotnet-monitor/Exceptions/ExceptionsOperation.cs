@@ -10,10 +10,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
+using NameFormatter = Microsoft.Diagnostics.Monitoring.WebApi.Stacks.NameFormatter;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {
@@ -24,8 +26,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private static byte[] JsonSequenceRecordSeparator = new byte[] { 0x1E };
 
         private const char GenericSeparator = ',';
-        private const char MethodParameterTypesStart = '(';
-        private const char MethodParameterTypesEnd = ')';
+        private const char GenericStart = '[';
+        private const char GenericEnd = ']';
 
         private readonly ExceptionsConfigurationSettings _configuration;
         private readonly IEndpointInfo _endpointInfo;
@@ -177,19 +179,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                     writer.WriteStartArray("frames");
 
-                    foreach (var frame in instance.CallStack.Frames)
-                    {
-                        writer.WriteStartObject();
+                StringBuilder builder = new StringBuilder();
 
-                        writer.WriteString("methodName", frame.MethodName);
-                        writer.WriteStartArray("parameterTypes");
-                        foreach (string parameterType in frame.ParameterTypes)
-                        {
-                            writer.WriteStringValue(parameterType);
-                        }
-                        writer.WriteEndArray(); // end parameterTypes
-                        writer.WriteString("typeName", frame.TypeName);
-                        writer.WriteString("moduleName", frame.ModuleName);
+                foreach (var frame in instance.CallStack.Frames)
+                {
+                    writer.WriteStartObject();
+
+                    string assembledMethodName = frame.MethodName;
+                    if (frame.FullGenericArgTypes.Count > 0)
+                    {
+                        builder.Clear();
+                        builder.Append(GenericStart);
+                        builder.Append(string.Join(GenericSeparator, frame.FullGenericArgTypes));
+                        builder.Append(GenericEnd);
+                        assembledMethodName += builder.ToString();
+                    }
+                    writer.WriteString("methodName", assembledMethodName);
+                    writer.WriteStartArray("parameterTypes");
+                    foreach (string parameterType in frame.FullParameterTypes)
+                    {
+                        writer.WriteStringValue(parameterType);
+                    }
+                    writer.WriteEndArray(); // end parameterTypes
+                    writer.WriteString("typeName", frame.TypeName);
+                    writer.WriteString("moduleName", frame.ModuleName);
 
                         writer.WriteEndObject();
                     }
@@ -291,6 +304,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 }
             }
 
+            StringBuilder builder = new();
             if (null != currentInstance.CallStack)
             {
                 foreach (CallStackFrame frame in currentInstance.CallStack.Frames)
@@ -300,18 +314,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     await writer.WriteAsync(frame.TypeName);
                     await writer.WriteAsync(".");
                     await writer.WriteAsync(frame.MethodName);
-                    await writer.WriteAsync(MethodParameterTypesStart);
 
-                    for (int i = 0; i < frame.ParameterTypes.Count; i++)
-                    {
-                        await writer.WriteAsync(frame.ParameterTypes[i]);
+                    NameFormatter.BuildGenericArgTypes(builder, frame.SimpleGenericArgTypes);
+                    await writer.WriteAsync(builder);
+                    builder.Clear();
 
-                        if (i < frame.ParameterTypes.Count - 1)
-                        {
-                            await writer.WriteAsync(GenericSeparator);
-                        }
-                    }
-                    await writer.WriteAsync(MethodParameterTypesEnd);
+                    NameFormatter.BuildMethodParameterTypes(builder, frame.SimpleParameterTypes);
+                    await writer.WriteAsync(builder);
+                    builder.Clear();
                 }
             }
 
