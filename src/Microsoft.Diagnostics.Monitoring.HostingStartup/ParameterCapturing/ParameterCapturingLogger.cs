@@ -58,6 +58,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public void Log(ParameterCaptureMode mode, string format, string[] args)
         {
+            DisposableHelper.ThrowIfDisposed<ParameterCapturingLogger>(ref _disposedState);
+
             if (mode == ParameterCaptureMode.Inline)
             {
                 Log(_userLogger, format, args);
@@ -75,15 +77,24 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             try
             {
-                while (!DisposableHelper.IsDisposed(ref _disposedState))
+                while (_messages.TryTake(out (string format, string[] args) entry, Timeout.InfiniteTimeSpan))
                 {
-                    (string format, string[] args) = _messages.Take();
-                    Log(_systemLogger, format, args);
+                    Log(_systemLogger, entry.format, entry.args);
                 }
+            }
+            catch (ObjectDisposedException)
+            {
             }
             catch
             {
             }
+        }
+
+        public void Complete()
+        {
+            // NOTE We currently do not wait for the background thread in production code
+            _messages.CompleteAdding();
+            _thread.Join();
         }
 
         private static void Log(ILogger logger, string format, string[] args) => logger.Log(LogLevel.Information, format, args);
@@ -94,9 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             {
                 return;
             }
-
             _messages.CompleteAdding();
-            _thread.Join();
             _messages.Dispose();
         }
     }

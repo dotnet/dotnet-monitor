@@ -64,6 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private readonly ParameterCapturingEventSource _eventSource = new();
         private readonly ParameterCapturingPipeline? _pipeline;
+        private readonly ParameterCapturingLogger? _parameterCapturingLogger;
 
         public ParameterCapturingService(IServiceProvider services)
         {
@@ -87,8 +88,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 ILogger systemLogger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.SystemCode>>()
                     ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
 
-                ParameterCapturingLogger parameterCapturingLogger = new(logger, systemLogger);
-                FunctionProbesManager probeManager = new(new LogEmittingProbes(parameterCapturingLogger));
+                _parameterCapturingLogger = new(logger, systemLogger);
+                FunctionProbesManager probeManager = new(new LogEmittingProbes(_parameterCapturingLogger));
 
                 ParameterCapturingCallbacks callbacks = new(logger, _eventSource);
                 _pipeline = new ParameterCapturingPipeline(probeManager, callbacks);
@@ -213,6 +214,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             SharedInternals.MessageDispatcher?.UnregisterCallback(IpcCommand.StopCapturingParameters);
 
             _pipeline?.Dispose();
+            _parameterCapturingLogger?.Dispose();
 
             base.Dispose();
         }
