@@ -78,7 +78,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public Task Started => _startCompletionSource.Task;
 
-
         protected abstract T CreatePipeline(Stream outputStream);
 
         /// <summary>
