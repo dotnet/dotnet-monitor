@@ -5,10 +5,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    /// <summary>
-    /// Represents an operation that can produce a diagnostic
-    /// artifact to the provided output stream.
-    /// </summary>
     internal interface IStartable
     {
         Task Started { get; }
