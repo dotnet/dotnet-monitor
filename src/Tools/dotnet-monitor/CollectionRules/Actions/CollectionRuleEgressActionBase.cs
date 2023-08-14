@@ -24,12 +24,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             EgressOperationStore = ServiceProvider.GetRequiredService<EgressOperationStore>();
         }
 
-        protected abstract EgressOperation CreateArtifactOperation(TaskCompletionSource<object> startCompletionSource,
-                CollectionRuleMetadata collectionRuleMetadata);
+        protected abstract EgressOperation CreateArtifactOperation(CollectionRuleMetadata collectionRuleMetadata);
 
-        protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(TaskCompletionSource<object> startCompletionSource, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
+        protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
-            EgressOperation egressOperation = CreateArtifactOperation(startCompletionSource, collectionRuleMetadata);
+            EgressOperation egressOperation = CreateArtifactOperation(collectionRuleMetadata);
 
             ExecutionResult<EgressResult> result = await EgressOperationStore.ExecuteOperation(egressOperation);
             if (null != result.Exception)

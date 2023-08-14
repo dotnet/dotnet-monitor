@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal interface IEgressOperation
+    internal interface IEgressOperation : IStartable
     {
         public bool IsStoppable { get; }
 

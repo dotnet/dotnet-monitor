@@ -4,11 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-#if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.TestCommon
-#else
-namespace Microsoft.Diagnostics.Tools.Monitor
-#endif
+namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class TaskCompletionSourceExtensions
     {
@@ -27,6 +23,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             using (token.Register(source => ((TaskCompletionSource<T>)source).TrySetCanceled(token), source))
             {
                 return await source.Task.ConfigureAwait(false);
+            }
+        }
+
+        public static async Task WithCancellation(this TaskCompletionSource source, CancellationToken token)
+        {
+            using (token.Register(source => ((TaskCompletionSource)source).TrySetCanceled(token), source))
+            {
+                await source.Task.ConfigureAwait(false);
             }
         }
     }

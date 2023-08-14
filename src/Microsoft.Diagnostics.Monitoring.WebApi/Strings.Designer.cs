@@ -178,6 +178,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Operation is not starting..
+        /// </summary>
+        internal static string ErrorMessage_OperationNotStarting {
+            get {
+                return ResourceManager.GetString("ErrorMessage_OperationNotStarting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to enumerate processes..
         /// </summary>
         internal static string ErrorMessage_ProcessEnumerationFailed {

@@ -31,6 +31,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private readonly ExceptionFormat _format;
         private readonly IExceptionsStore _store;
 
+        private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+
         public ExceptionsOperation(IEndpointInfo endpointInfo, IExceptionsStore store, ExceptionFormat format)
         {
             _endpointInfo = endpointInfo;
@@ -48,10 +51,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         public bool IsStoppable => false;
 
-        public async Task ExecuteAsync(Stream outputStream, TaskCompletionSource<object> startCompletionSource, CancellationToken token)
-        {
-            startCompletionSource?.TrySetResult(null);
+        public Task Started => _startCompletionSource.Task;
 
+        public async Task ExecuteAsync(Stream outputStream, CancellationToken token)
+        {
+            _startCompletionSource.TrySetResult();
 
             IReadOnlyList<IExceptionInstance> exceptions = _store.GetSnapshot();
 

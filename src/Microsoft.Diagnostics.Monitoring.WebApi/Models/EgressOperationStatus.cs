@@ -68,6 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum OperationState
     {
+        Starting,
         Running,
         Succeeded,
         Failed,

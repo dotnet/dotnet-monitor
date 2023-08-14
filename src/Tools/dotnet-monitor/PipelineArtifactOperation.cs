@@ -16,6 +16,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         where T : Pipeline
     {
         private readonly string _artifactType;
+        private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         private Func<CancellationToken, Task> _stopFunc;
 
@@ -32,8 +33,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             Register = register;
         }
 
-        public async Task ExecuteAsync(Stream outputStream, TaskCompletionSource<object> startCompletionSource, CancellationToken token)
+        public async Task ExecuteAsync(Stream outputStream, CancellationToken token)
         {
+            using IDisposable _ = token.Register(() => _startCompletionSource.TrySetCanceled(token));
+
             await using T pipeline = CreatePipeline(outputStream);
 
             _stopFunc = pipeline.StopAsync;
@@ -45,7 +48,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             Logger.StartCollectArtifact(_artifactType);
 
             // Signal that the artifact operation has started
-            startCompletionSource?.TrySetResult(null);
+            _startCompletionSource.TrySetResult();
 
             await runTask;
         }
@@ -73,6 +76,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public bool Register { get; }
 
+        public Task Started => _startCompletionSource.Task;
+
+
         protected abstract T CreatePipeline(Stream outputStream);
 
         /// <summary>
@@ -86,5 +92,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         protected IEndpointInfo EndpointInfo { get; }
 
         protected ILogger Logger { get; }
+
     }
 }

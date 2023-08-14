@@ -53,7 +53,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
-                TaskCompletionSource<object> startCompletionSource,
                 CollectionRuleMetadata collectionRuleMetadata,
                 CancellationToken token)
             {
@@ -73,7 +72,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                         throw new CollectionRuleActionException(innerEx);
                     }
 
-                    if (!startCompletionSource.TrySetResult(null))
+                    if (!_startCompletionSource.TrySetResult())
                     {
                         throw new InvalidOperationException();
                     }

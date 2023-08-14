@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 get
                 {
-                    return State == Models.OperationState.Running && EgressRequest.EgressOperation.IsStoppable;
+                    return (State == Models.OperationState.Starting || State == Models.OperationState.Running) && EgressRequest.EgressOperation.IsStoppable;
                 }
             }
 
@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             var request = new EgressRequest(operationId, egressOperation, limitTracker);
             var egressEntry = new EgressEntry
             {
-                State = Models.OperationState.Running,
+                State = Models.OperationState.Starting,
                 EgressRequest = request,
                 OperationId = operationId,
                 Tags = request.EgressOperation.Tags
@@ -110,7 +110,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
 
-                if (entry.State != Models.OperationState.Running)
+                if (entry.State != Models.OperationState.Starting &&
+                    entry.State != Models.OperationState.Running)
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
                 }
@@ -131,6 +132,25 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
+        public void MarkOperationAsRunning(Guid operationId)
+        {
+            lock (_requests)
+            {
+                if (!_requests.TryGetValue(operationId, out EgressEntry entry))
+                {
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
+                }
+
+                if (entry.State != Models.OperationState.Starting)
+                {
+                    throw new InvalidOperationException(Strings.ErrorMessage_OperationNotStarting);
+                }
+
+                entry.State = Models.OperationState.Running;
+            }
+        }
+
+
         public void CancelOperation(Guid operationId)
         {
             lock (_requests)
@@ -140,7 +160,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
 
-                if (entry.State != Models.OperationState.Running &&
+                if (entry.State != Models.OperationState.Starting &&
+                    entry.State != Models.OperationState.Running &&
                     entry.State != Models.OperationState.Stopping)
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);
@@ -163,7 +184,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
 
-                if (entry.State != Models.OperationState.Running &&
+                if (entry.State != Models.OperationState.Starting &&
+                    entry.State != Models.OperationState.Running &&
                     entry.State != Models.OperationState.Stopping)
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotRunning);

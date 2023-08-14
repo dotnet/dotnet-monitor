@@ -20,6 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private readonly DumpType _dumpType;
         private readonly IEndpointInfo _endpointInfo;
         private readonly ILogger _logger;
+        private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         public DumpOperation(IEndpointInfo endpointInfo, IDumpService dumpService, DumpType dumpType, ILogger logger)
         {
@@ -36,9 +37,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 FormattableString.Invariant($"core_{Utils.GetFileNameTimeStampUtcNow()}");
         }
 
-        public async Task ExecuteAsync(Stream outputStream, TaskCompletionSource<object> startCompletionSource, CancellationToken token)
+        public async Task ExecuteAsync(Stream outputStream, CancellationToken token)
         {
-            startCompletionSource?.TrySetResult(null);
+            _startCompletionSource.TrySetResult();
 
             using Stream dumpStream = await _dumpService.DumpAsync(_endpointInfo, _dumpType, token);
 
@@ -53,5 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public string ContentType => ContentTypes.ApplicationOctetStream;
 
         public bool IsStoppable => false;
+
+        public Task Started => _startCompletionSource.Task;
     }
 }

@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
             }
 
-            protected override EgressOperation CreateArtifactOperation(TaskCompletionSource<object> startCompletionSource, CollectionRuleMetadata collectionRuleMetadata)
+            protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata collectionRuleMetadata)
             {
                 TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectLogsOptionsDefaults.Duration));
                 bool useAppFilters = Options.UseAppFilters.GetValueOrDefault(CollectLogsOptionsDefaults.UseAppFilters);
@@ -76,7 +76,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 EgressOperation egressOperation = new EgressOperation(
                     operation,
-                    startCompletionSource,
                     egressProvider,
                     ProcessInfo,
                     scope,
