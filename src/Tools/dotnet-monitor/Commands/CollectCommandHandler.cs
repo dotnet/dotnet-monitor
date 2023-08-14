@@ -107,6 +107,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 
                 services.ConfigureGlobalCounter(context.Configuration);
 
+                services.ConfigureExceptionsConfiguration(context.Configuration);
+
                 services.ConfigureCollectionRuleDefaults(context.Configuration);
 
                 services.ConfigureTemplates(context.Configuration);
