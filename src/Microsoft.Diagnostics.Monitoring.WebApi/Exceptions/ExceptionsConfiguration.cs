@@ -145,7 +145,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
             {
                 if (simpleValue.Equals(configurationValue, StringComparison.Ordinal))
                 {
-                     return true;
+                    return true;
                 }
             }
 
