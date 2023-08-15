@@ -69,12 +69,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     Dictionary<string, string> envBlock = await client.GetProcessEnvironmentAsync(token);
                     if (!envBlock.TryGetValue(Options.Name, out string value))
                     {
-                        InvalidOperationException innerEx =
-                            new InvalidOperationException(
+                        throw new InvalidOperationException(
                                 string.Format(
                                     Strings.ErrorMessage_NoEnvironmentVariable,
                                     Options.Name));
-                        throw new CollectionRuleActionException(innerEx);
                     }
 
                     if (!_startCompletionSource.TrySetResult())
@@ -92,8 +90,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 }
                 catch (Exception ex)
                 {
-                    _ = _startCompletionSource.TrySetException(ex);
-                    throw new CollectionRuleActionException(ex);
+                    CollectionRuleActionException collectionRuleActionException = new(ex);
+                    _ = _startCompletionSource.TrySetException(collectionRuleActionException);
+                    throw collectionRuleActionException;
                 }
             }
         }

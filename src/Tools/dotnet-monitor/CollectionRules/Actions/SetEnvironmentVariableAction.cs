@@ -76,8 +76,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 }
                 catch (Exception ex)
                 {
-                    _ = _startCompletionSource.TrySetException(ex);
-                    throw new CollectionRuleActionException(ex);
+                    CollectionRuleActionException collectionRuleActionException = new(ex);
+                    _ = _startCompletionSource.TrySetException(collectionRuleActionException);
+                    throw collectionRuleActionException;
                 }
             }
         }
