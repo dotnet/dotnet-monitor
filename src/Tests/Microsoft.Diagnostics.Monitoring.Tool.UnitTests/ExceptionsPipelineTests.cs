@@ -34,6 +34,43 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             "Microsoft.Diagnostics.Monitoring.StartupHook",
             TargetFrameworkMoniker.Net60);
 
+        private static ExceptionConfiguration simpleInvalidOperationException = new()
+        {
+            ClassName = "ExceptionsScenario",
+            ExceptionType = nameof(InvalidOperationException),
+            ModuleName = "UnitTestApp",
+            MethodName = "ThrowAndCatchInvalidOperationException"
+        };
+
+        private static ExceptionConfiguration simpleArgumentNullException = new()
+        {
+            ClassName = "ArgumentNullException",
+            ExceptionType = nameof(ArgumentNullException),
+            ModuleName = "CoreLib",
+            MethodName = "Throw"
+        };
+
+        private static ExceptionConfiguration fullInvalidOperationException = new()
+        {
+            ClassName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario",
+            ExceptionType = typeof(InvalidOperationException).FullName,
+            ModuleName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll",
+            MethodName = "ThrowAndCatchInvalidOperationException"
+        };
+
+        private static ExceptionConfiguration fullArgumentNullException = new()
+        {
+            ClassName = "System.ArgumentNullException",
+            ExceptionType = typeof(ArgumentNullException).FullName,
+            ModuleName = "System.Private.CoreLib.dll",
+            MethodName = "Throw"
+        };
+
+        private Func<ExceptionsConfiguration, IExceptionInstance, bool> includeFunc = (configuration, instance) => configuration.ShouldInclude(instance);
+        private Func<ExceptionsConfiguration, IExceptionInstance, bool> excludeFunc = (configuration, instance) => configuration.ShouldExclude(instance);
+
+        private const string CustomGenericsException = "CustomGenericsException";
+
         public ExceptionsPipelineTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
@@ -419,6 +456,165 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(0UL, outerInstance.InnerExceptionIds[1]); // Second loaded exception is null
                     Assert.Equal(inner2Instance.Id, outerInstance.InnerExceptionIds[2]);
                 });
+        }
+
+        /// <summary>
+        /// Tests the Include filter when a single ExceptionConfiguration is provided.
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_IncludeSingle()
+        {
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.SingleException,
+                expectedInstanceCount: 1,
+                validate: instances =>
+                {
+                    IExceptionInstance instance = Assert.Single(instances);
+
+                    ExceptionsConfiguration full = new ExceptionsConfiguration()
+                    {
+                        AllowSimplifiedNames = false,
+                        Include = new() { fullInvalidOperationException }
+                    };
+                    Assert.True(full.ShouldInclude(instance));
+
+                    ExceptionsConfiguration simpleDisallowSimplifiedNames = new ExceptionsConfiguration()
+                    {
+                        AllowSimplifiedNames = false,
+                        Include = new() { simpleInvalidOperationException }
+                    };
+                    Assert.False(simpleDisallowSimplifiedNames.ShouldInclude(instance));
+
+                    ExceptionsConfiguration simpleAllowSimplifiedNames = new ExceptionsConfiguration()
+                    {
+                        AllowSimplifiedNames = true,
+                        Include = new() { simpleInvalidOperationException }
+                    };
+                    Assert.True(simpleAllowSimplifiedNames.ShouldInclude(instance));
+                });
+        }
+
+        /// <summary>
+        /// Tests the Include filter when multiple ExceptionConfigurations are provided.
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_IncludeMultiple()
+        {
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions,
+                expectedInstanceCount: 3,
+                validate: instances =>
+                {
+                    var expectedIncludeInstancesList = instances.Where(instance => !instance.TypeName.Contains(CustomGenericsException)).ToList();
+                    var expectedNotIncludeInstancesList = instances.Where(instance => instance.TypeName.Contains(CustomGenericsException)).ToList();
+
+                    ExceptionsConfiguration full = new ExceptionsConfiguration()
+                    {
+                        AllowSimplifiedNames = false,
+                        Include = new() { fullInvalidOperationException, fullArgumentNullException }
+                    };
+                    ValidateFilter(full, true, expectedIncludeInstancesList, includeFunc);
+                    ValidateFilter(full, false, expectedNotIncludeInstancesList, includeFunc);
+
+                    ExceptionsConfiguration simpleDisallowSimplifiedNames = new ExceptionsConfiguration()
+                    {
+                        AllowSimplifiedNames = false,
+                        Include = new() { simpleInvalidOperationException, simpleArgumentNullException }
+                    };
+                    ValidateFilter(simpleDisallowSimplifiedNames, false, instances, includeFunc);
+
+                    ExceptionsConfiguration simpleAllowSimplifiedNames = new ExceptionsConfiguration()
+                    {
+                        AllowSimplifiedNames = true,
+                        Include = new() { simpleInvalidOperationException, simpleArgumentNullException }
+                    };
+
+                    ValidateFilter(simpleAllowSimplifiedNames, true, expectedIncludeInstancesList, includeFunc);
+                    ValidateFilter(simpleAllowSimplifiedNames, false, expectedNotIncludeInstancesList, includeFunc);
+                });
+        }
+
+        /// <summary>
+        /// Tests the Exclude filter when multiple ExceptionConfigurations are provided.
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_ExcludeMultiple()
+        {
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions,
+                expectedInstanceCount: 3,
+                validate: instances =>
+                {
+                    var expectedExcludeInstancesList = instances.Where(instance => !instance.TypeName.Contains(CustomGenericsException)).ToList();
+                    var expectedNotExcludeInstancesList = instances.Where(instance => instance.TypeName.Contains(CustomGenericsException)).ToList();
+
+                    ExceptionsConfiguration full = new ExceptionsConfiguration()
+                    {
+                        AllowSimplifiedNames = false,
+                        Exclude = new() { fullInvalidOperationException, fullArgumentNullException }
+                    };
+                    ValidateFilter(full, true, expectedExcludeInstancesList, excludeFunc);
+                    ValidateFilter(full, false, expectedNotExcludeInstancesList, excludeFunc);
+
+                    ExceptionsConfiguration simpleDisallowSimplifiedNames = new ExceptionsConfiguration()
+                    {
+                        AllowSimplifiedNames = false,
+                        Exclude = new() { simpleInvalidOperationException, simpleArgumentNullException }
+                    };
+                    ValidateFilter(simpleDisallowSimplifiedNames, false, instances, excludeFunc);
+
+                    ExceptionsConfiguration simpleAllowSimplifiedNames = new ExceptionsConfiguration()
+                    {
+                        AllowSimplifiedNames = true,
+                        Exclude = new() { simpleInvalidOperationException, simpleArgumentNullException }
+                    };
+                    ValidateFilter(simpleAllowSimplifiedNames, true, expectedExcludeInstancesList, excludeFunc);
+                    ValidateFilter(simpleAllowSimplifiedNames, false, expectedNotExcludeInstancesList, excludeFunc);
+                });
+        }
+
+        /// <summary>
+        /// Tests the Exclude filter when a single ExceptionConfiguration is provided.
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_ExcludeBasic()
+        {
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.SingleException,
+                expectedInstanceCount: 1,
+                validate: instances =>
+                {
+                    IExceptionInstance instance = Assert.Single(instances);
+
+                    ExceptionsConfiguration full = new ExceptionsConfiguration()
+                    {
+                        AllowSimplifiedNames = false,
+                        Exclude = new() { fullInvalidOperationException }
+                    };
+                    Assert.True(full.ShouldExclude(instance));
+
+                    ExceptionsConfiguration simpleDisallowSimplifiedNames = new ExceptionsConfiguration()
+                    {
+                        AllowSimplifiedNames = false,
+                        Exclude = new() { simpleInvalidOperationException }
+                    };
+                    Assert.False(simpleDisallowSimplifiedNames.ShouldExclude(instance));
+
+                    ExceptionsConfiguration simpleAllowSimplifiedNames = new ExceptionsConfiguration()
+                    {
+                        AllowSimplifiedNames = true,
+                        Exclude = new() { simpleInvalidOperationException }
+                    };
+                    Assert.True(simpleAllowSimplifiedNames.ShouldExclude(instance));
+                });
+        }
+
+        private static void ValidateFilter(ExceptionsConfiguration configuration, bool expectedResult, IEnumerable<IExceptionInstance> instances, Func<ExceptionsConfiguration, IExceptionInstance, bool> shouldFilter)
+        {
+            foreach (var instance in instances)
+            {
+                Assert.Equal(expectedResult, shouldFilter(configuration, instance));
+            }
         }
 
         private async Task Execute(

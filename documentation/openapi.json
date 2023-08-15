@@ -1768,6 +1768,10 @@
             },
             "description": "The list of exception configurations that determine which exceptions should be shown.\r\nEach configuration is a logical OR, so if any of the configurations match, the exception isn't shown.",
             "nullable": true
+          },
+          "allowSimplifiedNames": {
+            "type": "boolean",
+            "description": "By default, filters will check for a namespace.name match or a name match for ease-of-use.\r\nThis toggle allows users to limit the filter to only check for an exact namespace.name match."
           }
         },
         "additionalProperties": false
