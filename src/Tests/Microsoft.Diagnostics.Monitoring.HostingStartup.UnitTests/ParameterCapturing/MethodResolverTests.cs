@@ -146,7 +146,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             // Assert
             Assert.Equal(2, methods.Count);
 
-            // The ids should be different as well.
             ulong funcId1 = methods[0].GetFunctionId();
             ulong funcId2 = methods[1].GetFunctionId();
             Assert.NotEqual(funcId1, funcId2);
