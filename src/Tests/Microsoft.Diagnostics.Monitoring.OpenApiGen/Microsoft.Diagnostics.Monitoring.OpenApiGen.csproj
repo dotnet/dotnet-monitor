@@ -8,5 +8,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj" />
   </ItemGroup>
-
+ 
 </Project>

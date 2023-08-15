@@ -56,7 +56,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
                 {
                     CompareIncludeValues(configuration.MethodName, GetSimplifiedName(topFrame.MethodName), topFrame.MethodName, ref include);
                     CompareIncludeValues(configuration.ModuleName, GetSimplifiedModuleName(topFrame.ModuleName), topFrame.ModuleName, ref include);
-                    CompareIncludeValues(configuration.ClassName, GetSimplifiedClassName(topFrame.ClassName), topFrame.ClassName, ref include);
+                    CompareIncludeValues(configuration.ClassName, GetSimplifiedName(topFrame.ClassName), topFrame.ClassName, ref include);
                 }
 
                 CompareIncludeValues(configuration.ExceptionType, GetSimplifiedName(exception.TypeName), exception.TypeName, ref include);
@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
                 {
                     CompareExcludeValues(configuration.MethodName, GetSimplifiedName(topFrame.MethodName), topFrame.MethodName, ref exclude);
                     CompareExcludeValues(configuration.ModuleName, GetSimplifiedModuleName(topFrame.ModuleName), topFrame.ModuleName, ref exclude);
-                    CompareExcludeValues(configuration.ClassName, GetSimplifiedClassName(topFrame.ClassName), topFrame.ClassName, ref exclude);
+                    CompareExcludeValues(configuration.ClassName, GetSimplifiedName(topFrame.ClassName), topFrame.ClassName, ref exclude);
                     CompareExcludeValues(configuration.ExceptionType, GetSimplifiedName(exception.TypeName), exception.TypeName, ref exclude);
                 }
                 else
@@ -92,6 +92,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 
         private static string GetSimplifiedName(string name)
         {
+            var nestedIndex = name.LastIndexOf('+');
+            if (nestedIndex != -1 && nestedIndex != name.Length - 1)
+            {
+                name = name.Substring(nestedIndex + 1);
+            }
+
+            var genericsIndex = name.LastIndexOf('`');
+            if (genericsIndex != -1)
+            {
+                name = name.Substring(0, genericsIndex);
+            }
+
             var lastPeriodIndex = name.LastIndexOf('.');
             if (lastPeriodIndex != -1 && lastPeriodIndex != name.Length - 1)
             {
@@ -110,17 +122,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
             }
 
             return moduleName;
-        }
-
-        private static string GetSimplifiedClassName(string className)
-        {
-            var nestedIndex = className.LastIndexOf('+');
-            if (nestedIndex != -1)
-            {
-                return GetSimplifiedName(className.Substring(nestedIndex));
-            }
-
-            return GetSimplifiedName(className);
         }
 
         private void CompareIncludeValues(string configurationValue, string simpleValue, string fullValue, ref bool include)
