@@ -50,6 +50,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 try
                 {
+                    using IDisposable _ = token.Register(() => _startCompletionSource.TrySetCanceled(token));
+
                     string path = Options.Path;
                     string arguments = Options.Arguments;
                     bool IgnoreExitCode = Options.IgnoreExitCode.GetValueOrDefault(ExecuteOptionsDefaults.IgnoreExitCode);
@@ -94,14 +96,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 }
                 catch (Exception ex)
                 {
-                    if (token.IsCancellationRequested)
-                    {
-                        _ = _startCompletionSource.TrySetCanceled(token);
-                    }
-                    else
-                    {
-                        _ = _startCompletionSource.TrySetException(ex);
-                    }
+                    _ = _startCompletionSource.TrySetException(ex);
                     throw new CollectionRuleActionException(ex);
                 }
             }

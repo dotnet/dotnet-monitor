@@ -35,22 +35,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public async Task ExecuteAsync(Stream outputStream, CancellationToken token)
         {
-            using IDisposable _ = token.Register(() => _startCompletionSource.TrySetCanceled(token));
+            try
+            {
+                using IDisposable _ = token.Register(() => _startCompletionSource.TrySetCanceled(token));
 
-            await using T pipeline = CreatePipeline(outputStream);
+                await using T pipeline = CreatePipeline(outputStream);
 
-            _stopFunc = pipeline.StopAsync;
+                _stopFunc = pipeline.StopAsync;
 
-            using IDisposable trackerRegistration = Register ? OperationTrackerService.Register(EndpointInfo) : null;
+                using IDisposable trackerRegistration = Register ? OperationTrackerService.Register(EndpointInfo) : null;
 
-            Task runTask = await StartPipelineAsync(pipeline, token);
+                Task runTask = await StartPipelineAsync(pipeline, token);
 
-            Logger.StartCollectArtifact(_artifactType);
+                Logger.StartCollectArtifact(_artifactType);
 
-            // Signal that the artifact operation has started
-            _startCompletionSource.TrySetResult();
+                // Signal that the artifact operation has started
+                _startCompletionSource.TrySetResult();
 
-            await runTask;
+                await runTask;
+            }
+            catch (Exception ex)
+            {
+                _ = _startCompletionSource.TrySetException(ex);
+                throw;
+            }
         }
 
         public async Task StopAsync(CancellationToken token)

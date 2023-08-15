@@ -61,6 +61,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 try
                 {
+                    using IDisposable _ = token.Register(() => _startCompletionSource.TrySetCanceled(token));
+
                     DiagnosticsClient client = new DiagnosticsClient(EndpointInfo.Endpoint);
 
                     _logger.GettingEnvironmentVariable(_options.Name, EndpointInfo.ProcessId);
@@ -90,14 +92,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 }
                 catch (Exception ex)
                 {
-                    if (token.IsCancellationRequested)
-                    {
-                        _ = _startCompletionSource.TrySetCanceled(token);
-                    }
-                    else
-                    {
-                        _ = _startCompletionSource.TrySetException(ex);
-                    }
+                    _ = _startCompletionSource.TrySetException(ex);
                     throw new CollectionRuleActionException(ex);
                 }
             }
