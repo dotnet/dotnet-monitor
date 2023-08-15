@@ -7,7 +7,9 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using SampleMethods;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -125,6 +127,28 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
             // Assert
             Assert.Equal(2, methods.Count);
+        }
+
+        [Fact]
+        public void DoesResolve_CustomAssemblyLoadContext()
+        {
+            // Arrange
+            AssemblyLoadContext customContext = new("Custom context", isCollectible: true);
+            Assembly loadedAssembly = customContext.LoadFromAssemblyPath(@"C:\Users\joschmit\work\buggy-demo-code\src\BuggyDemoWeb\bin\Release\net6.0\BuggyDemoWeb.dll");
+            Assert.NotNull(loadedAssembly);
+
+            MethodResolver resolver = new();
+            MethodDescription description = new()
+            {
+                AssemblyName = loadedAssembly.GetName().Name,
+                TypeName = "BuggyDemoWeb.Program",
+                MethodName = "Main",
+            };
+            // Act
+            List<MethodInfo> methods = resolver.ResolveMethodDescription(description);
+
+            // Assert
+            Assert.Single(methods);
         }
 
 
