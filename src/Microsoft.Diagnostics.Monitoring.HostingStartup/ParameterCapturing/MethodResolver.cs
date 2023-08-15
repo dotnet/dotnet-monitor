@@ -31,7 +31,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     continue;
                 }
 
-                if (!_nameToAssemblies.TryGetValue(assemblySimpleName, out List<Assembly>? assemblyList))
+                if (_nameToAssemblies.TryGetValue(assemblySimpleName, out List<Assembly>? assemblyList))
+                {
+                    assemblyList.Add(assembly);
+                }
+                else
                 {
                     _nameToAssemblies[assemblySimpleName] = new List<Assembly>()
                     {

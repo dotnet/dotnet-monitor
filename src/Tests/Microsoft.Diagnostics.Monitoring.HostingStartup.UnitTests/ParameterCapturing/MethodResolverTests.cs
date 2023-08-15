@@ -130,25 +130,26 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Fact]
-        public void DoesResolve_CustomAssemblyLoadContext()
+        public void ResolveMethodDescription_CustomAssemblyLoadContext()
         {
             // Arrange
-            AssemblyLoadContext customContext = new("Custom context", isCollectible: true);
-            Assembly loadedAssembly = customContext.LoadFromAssemblyPath(@"C:\Users\joschmit\work\buggy-demo-code\src\BuggyDemoWeb\bin\Release\net6.0\BuggyDemoWeb.dll");
+            AssemblyLoadContext customContext = new("Custom context", isCollectible: false);
+            Assembly loadedAssembly = customContext.LoadFromAssemblyPath(typeof(MethodResolverTests).Assembly.Location);
             Assert.NotNull(loadedAssembly);
 
             MethodResolver resolver = new();
-            MethodDescription description = new()
-            {
-                AssemblyName = loadedAssembly.GetName().Name,
-                TypeName = "BuggyDemoWeb.Program",
-                MethodName = "Main",
-            };
+            MethodDescription description = GetMethodDescription(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.InParam));
+
             // Act
             List<MethodInfo> methods = resolver.ResolveMethodDescription(description);
 
             // Assert
-            Assert.Single(methods);
+            Assert.Equal(2, methods.Count);
+
+            // The ids should be different as well.
+            ulong funcId1 = methods[0].GetFunctionId();
+            ulong funcId2 = methods[1].GetFunctionId();
+            Assert.NotEqual(funcId1, funcId2);
         }
 
 
