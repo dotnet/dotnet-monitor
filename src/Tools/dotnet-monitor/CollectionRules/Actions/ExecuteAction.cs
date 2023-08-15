@@ -96,7 +96,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 {
                     if (token.IsCancellationRequested)
                     {
-                        _startCompletionSource.TrySetCanceled(token);
+                        _ = _startCompletionSource.TrySetCanceled(token);
                     }
                     else
                     {
