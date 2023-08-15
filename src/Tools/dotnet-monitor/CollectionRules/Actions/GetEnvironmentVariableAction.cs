@@ -44,6 +44,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             private readonly ILogger _logger;
             private readonly GetEnvironmentVariableOptions _options;
+            private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            public override Task Started => _startCompletionSource.Task;
 
             public GetEnvironmentVariableAction(ILogger logger, IProcessInfo processInfo, GetEnvironmentVariableOptions options)
                 : base(processInfo, options)
@@ -87,6 +90,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 }
                 catch (Exception ex)
                 {
+                    if (token.IsCancellationRequested)
+                    {
+                        _startCompletionSource.TrySetCanceled(token);
+                    }
+                    else
+                    {
+                        _ = _startCompletionSource.TrySetException(ex);
+                    }
                     throw new CollectionRuleActionException(ex);
                 }
             }

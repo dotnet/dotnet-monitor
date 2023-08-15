@@ -35,6 +35,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         internal sealed class ExecuteAction :
             CollectionRuleActionBase<ExecuteOptions>
         {
+            private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            public override Task Started => _startCompletionSource.Task;
+
             public ExecuteAction(IProcessInfo processInfo, ExecuteOptions options)
                 : base(processInfo, options)
             {
@@ -44,53 +48,69 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 CollectionRuleMetadata collectionRuleMetadata,
                 CancellationToken token)
             {
-                string path = Options.Path;
-                string arguments = Options.Arguments;
-                bool IgnoreExitCode = Options.IgnoreExitCode.GetValueOrDefault(ExecuteOptionsDefaults.IgnoreExitCode);
-
-                ValidateFilePath(path);
-
-                // May want to capture stdout and stderr and return as part of the result in the future
-                using Process process = new Process();
-
-                process.StartInfo = new ProcessStartInfo(path, arguments);
-                process.StartInfo.RedirectStandardOutput = true;
-
-                process.EnableRaisingEvents = true;
-
-                // Signaled when process exits
-                using EventTaskSource<EventHandler> exitedSource = new(
-                    complete => (s, e) => complete(),
-                    handler => process.Exited += handler,
-                    handler => process.Exited -= handler,
-                    token);
-
-                if (!process.Start())
+                try
                 {
-                    throw new CollectionRuleActionException(new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnableToStartProcess, process.StartInfo.FileName, process.StartInfo.Arguments)));
-                }
+                    string path = Options.Path;
+                    string arguments = Options.Arguments;
+                    bool IgnoreExitCode = Options.IgnoreExitCode.GetValueOrDefault(ExecuteOptionsDefaults.IgnoreExitCode);
 
-                _startCompletionSource.TrySetResult();
+                    ValidateFilePath(path);
 
-                // Wait for process to exit; cancellation is handled by the exitedSource
-                await exitedSource.Task.ConfigureAwait(false);
+                    // May want to capture stdout and stderr and return as part of the result in the future
+                    using Process process = new Process();
 
-                ValidateExitCode(IgnoreExitCode, process.ExitCode);
+                    process.StartInfo = new ProcessStartInfo(path, arguments);
+                    process.StartInfo.RedirectStandardOutput = true;
 
-                return new CollectionRuleActionResult()
-                {
-                    OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
+                    process.EnableRaisingEvents = true;
+
+                    // Signaled when process exits
+                    using EventTaskSource<EventHandler> exitedSource = new(
+                        complete => (s, e) => complete(),
+                        handler => process.Exited += handler,
+                        handler => process.Exited -= handler,
+                        token);
+
+                    if (!process.Start())
                     {
-                        { "ExitCode", process.ExitCode.ToString(CultureInfo.InvariantCulture) }
+                        throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnableToStartProcess, process.StartInfo.FileName, process.StartInfo.Arguments));
                     }
-                };
+
+                    _startCompletionSource.TrySetResult();
+
+                    // Wait for process to exit; cancellation is handled by the exitedSource
+                    await exitedSource.Task.ConfigureAwait(false);
+
+                    ValidateExitCode(IgnoreExitCode, process.ExitCode);
+
+                    return new CollectionRuleActionResult()
+                    {
+                        OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
+                        {
+                            { "ExitCode", process.ExitCode.ToString(CultureInfo.InvariantCulture) }
+                        }
+                    };
+
+                }
+                catch (Exception ex)
+                {
+                    if (token.IsCancellationRequested)
+                    {
+                        _startCompletionSource.TrySetCanceled(token);
+                    }
+                    else
+                    {
+                        _ = _startCompletionSource.TrySetException(ex);
+                    }
+                    throw new CollectionRuleActionException(ex);
+                }
             }
 
             internal static void ValidateFilePath(string path)
             {
                 if (!File.Exists(path))
                 {
-                    throw new CollectionRuleActionException(new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_FileNotFound, path)));
+                    throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_FileNotFound, path));
                 }
             }
 
@@ -98,7 +118,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 if (!ignoreExitCode && exitCode != 0)
                 {
-                    throw new CollectionRuleActionException(new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_NonzeroExitCode, exitCode.ToString(CultureInfo.InvariantCulture))));
+                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_NonzeroExitCode, exitCode.ToString(CultureInfo.InvariantCulture)));
                 }
             }
         }

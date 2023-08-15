@@ -13,7 +13,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         IAsyncDisposable
     {
         private readonly CancellationTokenSource _disposalTokenSource = new();
-        protected readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         private Task<CollectionRuleActionResult> _completionTask;
         private long _disposedState;
@@ -24,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         protected TOptions Options { get; }
 
-        public Task Started => _startCompletionSource.Task;
+        public abstract Task Started { get; }
 
         protected CollectionRuleActionBase(IProcessInfo processInfo, TOptions options)
         {
@@ -56,9 +55,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ThrowIfDisposed();
 
             CancellationToken disposalToken = _disposalTokenSource.Token;
-            _completionTask = Task.Run(() => ExecuteAsync(collectionRuleMetadata, disposalToken), disposalToken);
+            _completionTask = Task.Run(() => ExecuteCoreAsync(collectionRuleMetadata, disposalToken), disposalToken);
 
-            await _startCompletionSource.WithCancellation(token);
+            await Started.WithCancellation(token);
         }
 
         public async Task StartAsync(CancellationToken token)
@@ -71,33 +70,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ThrowIfDisposed();
 
             return await _completionTask.WithCancellation(token);
-        }
-
-        private async Task<CollectionRuleActionResult> ExecuteAsync(
-            CollectionRuleMetadata collectionRuleMetadata,
-            CancellationToken token)
-        {
-            try
-            {
-                return await ExecuteCoreAsync(collectionRuleMetadata, token);
-            }
-            catch (Exception ex) when (TrySetExceptionReturnFalse(_startCompletionSource, ex, token))
-            {
-                throw;
-            }
-        }
-
-        private static bool TrySetExceptionReturnFalse(TaskCompletionSource source, Exception ex, CancellationToken token)
-        {
-            if (ex is OperationCanceledException)
-            {
-                source.TrySetCanceled(token);
-            }
-            else
-            {
-                source.TrySetException(ex);
-            }
-            return false;
         }
 
         protected void ThrowIfDisposed()
