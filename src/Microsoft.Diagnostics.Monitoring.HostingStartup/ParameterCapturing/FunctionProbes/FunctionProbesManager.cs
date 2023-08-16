@@ -307,7 +307,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             {
             }
 
-            // We only need to trigger a probe uninstallation if they're succesfully installed.
+            // We only need to trigger a probe uninstallation if they're successfully installed.
             // If the probes are in the middle of Installation on Dispose, StartAsync will
             // take care of triggering an uninstallation.
             if (_probeState == ProbeStateInstalled)
