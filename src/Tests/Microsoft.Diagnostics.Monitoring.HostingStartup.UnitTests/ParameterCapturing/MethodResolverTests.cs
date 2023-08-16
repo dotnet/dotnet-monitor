@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -133,12 +134,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public void ResolveMethodDescription_CustomAssemblyLoadContext()
         {
             // Arrange
-            AssemblyLoadContext customContext = new("Custom context", isCollectible: false);
-            Assembly loadedAssembly = customContext.LoadFromAssemblyPath(typeof(MethodResolverTests).Assembly.Location);
-            Assert.NotNull(loadedAssembly);
+            AssemblyLoadContext customContext = new("Custom context", isCollectible: true);
+            // Load an assembly that's already loaded (but not our own assembly as that'll impact other tests in this class).
+            Assembly duplicateHostingStartupAssembly = customContext.LoadFromAssemblyPath(typeof(BoxingTokens).Assembly.Location);
+            Assert.NotNull(duplicateHostingStartupAssembly);
 
             MethodResolver resolver = new();
-            MethodDescription description = GetMethodDescription(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.InParam));
+            MethodDescription description = GetMethodDescription(typeof(BoxingTokens), nameof(BoxingTokens.GetBoxingTokens));
 
             // Act
             List<MethodInfo> methods = resolver.ResolveMethodDescription(description);
