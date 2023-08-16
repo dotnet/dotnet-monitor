@@ -195,7 +195,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 return;
             }
 
-            _probeState = ProbeStateUninstalling;
             FunctionProbesStub.InstrumentedMethodCache = null;
             RequestFunctionProbeUninstallation();
         }
@@ -265,19 +264,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(_disposalTokenSource.Token, token);
             using IDisposable _ = cts.Token.Register(() =>
             {
-                if (!_installationTaskSource.TrySetCanceled(cts.Token))
-                {
-                    return;
-                }
-
-                try
-                {
-                    StopCapturingCore();
-                }
-                catch
-                {
-
-                }
+                _installationTaskSource.TrySetCanceled(cts.Token);
             });
 
             await _installationTaskSource.Task.ConfigureAwait(false);
@@ -302,23 +289,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             try
             {
                 UnregisterFunctionProbeCallbacks();
+                StopCapturingCore();
             }
             catch
             {
-            }
-
-            // We only need to trigger a probe uninstallation if they're successfully installed.
-            // If the probes are in the middle of Installation on Dispose, StartCapturingAsync will
-            // take care of triggering an uninstallation.
-            if (_probeState == ProbeStateInstalled)
-            {
-                try
-                {
-                    StopCapturingCore();
-                }
-                catch
-                {
-                }
             }
         }
     }
