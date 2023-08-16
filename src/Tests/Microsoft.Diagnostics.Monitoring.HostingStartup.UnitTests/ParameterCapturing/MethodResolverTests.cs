@@ -7,10 +7,8 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using SampleMethods;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
-using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -134,7 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public void ResolveMethodDescription_CustomAssemblyLoadContext()
         {
             // Arrange
-            AssemblyLoadContext customContext = new("Custom context", isCollectible: true);
+            AssemblyLoadContext customContext = new("Custom context", isCollectible: false);
             // Load an assembly that's already loaded (but not our own assembly as that'll impact other tests in this class).
             Assembly duplicateHostingStartupAssembly = customContext.LoadFromAssemblyPath(typeof(BoxingTokens).Assembly.Location);
             Assert.NotNull(duplicateHostingStartupAssembly);
