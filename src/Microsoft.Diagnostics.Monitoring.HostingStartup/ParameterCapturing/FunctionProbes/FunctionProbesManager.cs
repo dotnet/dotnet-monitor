@@ -138,16 +138,18 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             InvalidOperationException ex = new(string.Format(CultureInfo.InvariantCulture, ParameterCapturingStrings.ErrorMessage_ProbeStateMismatchFormatString, expected, _probeState));
 
             _probeState = ProbeStateUnrecoverable;
+            _ = _probeRegistrationTaskSource.TrySetException(ex);
             _ = _installationTaskSource?.TrySetException(ex);
             _ = _uninstallationTaskSource?.TrySetException(ex);
-            _ = _probeRegistrationTaskSource?.TrySetException(ex);
         }
 
         public async Task StopCapturingAsync(CancellationToken token)
         {
+            DisposableHelper.ThrowIfDisposed<FunctionProbesManager>(ref _disposedState);
+
             if (ProbeStateInstalled != Interlocked.CompareExchange(ref _probeState, ProbeStateUninstalling, ProbeStateInstalled))
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, ParameterCapturingStrings.ErrorMessage_ProbeStateMismatchFormatString, ProbeStateInstalled, _probeState));
             }
 
             _uninstallationTaskSource = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -179,6 +181,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         public async Task StartCapturingAsync(IList<MethodInfo> methods, CancellationToken token)
         {
+            DisposableHelper.ThrowIfDisposed<FunctionProbesManager>(ref _disposedState);
+
             if (methods.Count == 0)
             {
                 throw new ArgumentException(nameof(methods));
@@ -188,7 +192,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
             if (ProbeStateUninstalled != Interlocked.CompareExchange(ref _probeState, ProbeStateInstalling, ProbeStateUninstalled))
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, ParameterCapturingStrings.ErrorMessage_ProbeStateMismatchFormatString, ProbeStateUninstalled, _probeState));
             }
 
             try
@@ -245,6 +249,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
             FunctionProbesStub.Instance = null;
 
+            _ = _probeRegistrationTaskSource.TrySetCanceled();
             _ = _installationTaskSource?.TrySetCanceled();
             _ = _uninstallationTaskSource?.TrySetCanceled();
 

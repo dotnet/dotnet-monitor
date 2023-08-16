@@ -56,37 +56,36 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
                     _callbacks.ProbeFault(request.Payload.RequestId, faultingMethod);
                 }
 
-                using ScopeGuard sg = new(
-                    initialize: () =>
-                    {
-                        _probeManager.OnProbeFault += onFault;
-                    },
-                    uninitialize: () =>
-                    {
-                        _probeManager.OnProbeFault -= onFault;
-                    });
-                
-                if (!await TryStartCapturingAsync(request.Payload, stoppingToken).ConfigureAwait(false))
-                {
-                    continue;
-                }
-
-                using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-                cts.CancelAfter(request.Payload.Duration);
-
                 try
                 {
-                    await request.StopRequest.Task.WaitAsync(cts.Token).ConfigureAwait(false);
+                    _probeManager.OnProbeFault += onFault;
+
+                    if (!await TryStartCapturingAsync(request.Payload, stoppingToken).ConfigureAwait(false))
+                    {
+                        continue;
+                    }
+
+                    using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+                    cts.CancelAfter(request.Payload.Duration);
+
+                    try
+                    {
+                        await request.StopRequest.Task.WaitAsync(cts.Token).ConfigureAwait(false);
+                    }
+                    catch (OperationCanceledException)
+                    {
+
+                    }
+
+                    await _probeManager.StopCapturingAsync(stoppingToken).ConfigureAwait(false);
+
+                    _callbacks.CapturingStop(request.Payload.RequestId);
+                    _ = _allRequests.TryRemove(request.Payload.RequestId, out _);
                 }
-                catch (OperationCanceledException)
+                finally
                 {
-
+                    _probeManager.OnProbeFault -= onFault;
                 }
-
-                await _probeManager.StopCapturingAsync(stoppingToken).ConfigureAwait(false);
-
-                _callbacks.CapturingStop(request.Payload.RequestId);
-                _ = _allRequests.TryRemove(request.Payload.RequestId, out _);
             }
         }
 
