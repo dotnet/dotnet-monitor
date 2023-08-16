@@ -21,6 +21,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
             string activityId,
             ActivityIdFormat activityIdFormat);
 
+        void RemoveExceptionInstance(ulong exceptionId);
+
         IReadOnlyList<IExceptionInstance> GetSnapshot();
     }
 }

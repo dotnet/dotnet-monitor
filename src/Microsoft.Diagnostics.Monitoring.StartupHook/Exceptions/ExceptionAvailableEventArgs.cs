@@ -6,9 +6,9 @@ using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 {
-    internal sealed class ExceptionEventArgs : EventArgs
+    internal sealed class ExceptionAvailableEventArgs : EventArgs
     {
-        public ExceptionEventArgs(Exception exception, DateTime timestamp, string? activityId, ActivityIdFormat activityIdFormat)
+        public ExceptionAvailableEventArgs(Exception exception, DateTime timestamp, string? activityId, ActivityIdFormat activityIdFormat)
         {
             Exception = exception;
             Timestamp = timestamp;

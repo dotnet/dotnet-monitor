@@ -44,14 +44,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _operation = operation;
         }
 
-        // TODO Remove this constructor once Callstacks and GCDumps move to IArtifactOperation implementations
-        public EgressOperation(Func<Stream, CancellationToken, Task> action, string endpointName, string artifactName, IEndpointInfo source, string contentType, KeyValueLogScope scope, CollectionRuleMetadata collectionRuleMetadata)
-        {
-            _egress = (service, token) => service.EgressAsync(endpointName, action, artifactName, contentType, source, collectionRuleMetadata, token);
-            EgressProviderName = endpointName;
-            _scope = scope;
-        }
-
         public async Task<ExecutionResult<EgressResult>> ExecuteAsync(IServiceProvider serviceProvider, CancellationToken token)
         {
             ILogger<EgressOperation> logger = CreateLogger(serviceProvider);
@@ -110,9 +102,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static ILogger<EgressOperation> CreateLogger(IServiceProvider serviceProvider)
         {
-           return serviceProvider
-            .GetRequiredService<ILoggerFactory>()
-            .CreateLogger<EgressOperation>();
+            return serviceProvider
+             .GetRequiredService<ILoggerFactory>()
+             .CreateLogger<EgressOperation>();
         }
     }
 }

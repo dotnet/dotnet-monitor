@@ -21,6 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             public const int TokenDescription = 6;
             public const int Flush = 7;
             public const int StackFrameDescription = 8;
+            public const int ExceptionInstanceUnhandled = 9;
         }
 
         public static class ExceptionInstancePayloads
@@ -35,6 +36,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             public const int ActivityIdFormat = 7;
         }
 
+        public static class ExceptionInstanceUnhandledPayloads
+        {
+            public const int ExceptionId = 0;
+        }
+
         public static class ExceptionGroupPayloads
         {
             public const int ExceptionGroupId = 0;
@@ -43,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             public const int ILOffset = 3;
         }
 
-        public static class  StackFrameIdentifierPayloads
+        public static class StackFrameIdentifierPayloads
         {
             public const int StackFrameId = 0;
             public const int FunctionId = 1;

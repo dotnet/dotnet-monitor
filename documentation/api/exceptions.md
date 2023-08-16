@@ -10,12 +10,28 @@ Captures a history of first chance exceptions that were thrown in the [default p
 ## HTTP Route
 
 ```http
-GET /exceptions HTTP/1.1
+GET /exceptions?pid={pid}&uid={uid}&name={name}&egressProvider={egressProvider}&tags={tags} HTTP/1.1
 ```
+
+> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 
 The default host address for these routes is `https://localhost:52323`. This route is only available on the addresses configured via the `--urls` command line parameter and the `DOTNETMONITOR_URLS` environment variable.
+
+## URI Parameters
+
+| Name | In | Required | Type | Description |
+|---|---|---|---|---|
+| `pid` | query | false | int | The ID of the process. |
+| `uid` | query | false | guid | A value that uniquely identifies a runtime instance within a process. |
+| `name` | query | false | string | The name of the process. |
+| `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected exceptions. When not specified, the exceptions are written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
+| `tags` | query | false | string | (7.1+) A comma-separated list of user-readable identifiers for the operation. |
+
+See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
+
+If none of `pid`, `uid`, or `name` are specified, exceptions from the [default process](defaultprocess.md) will be captured. Attempting to capture exceptions from the default process when the default process cannot be resolved will fail.
 
 ## Authentication
 
@@ -29,16 +45,30 @@ Allowed schemes:
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | [ExceptionInstance](definitions.md#exceptioninstance)[] | JSON representation of first chance exceptions from the default process. | `application/x-ndjson` |
-| 200 OK | text | Text representation of first chance exceptions from the default process. | `text/plain` |
+| 200 OK | [ExceptionInstance](definitions.md#exceptioninstance)[] | Newline-delimited JSON representation of first chance exceptions from the target process. | `application/x-ndjson` |
+| 200 OK | [ExceptionInstance](definitions.md#exceptioninstance)[] | Separator-delimited JSON representation of first chance exceptions from the target process. | `application/json-seq` |
+| 200 OK | text | Text representation of first chance exceptions from the target process. | `text/plain` |
+| 202 Accepted | | When an egress provider is specified. | |
+| 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 
 ## Examples
 
 ### Sample Request
 
+Collect exceptions from a specific process in plain text format:
+
 ```http
-GET /exceptions HTTP/1.1
+GET /exceptions?pid=21632 HTTP/1.1
+Host: localhost:52323
+Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
+Accept: text/plain
+```
+
+or
+
+```http
+GET /exceptions?uid=cd4da319-fa9e-4987-ac4e-e57b2aac248b HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 Accept: text/plain
@@ -78,6 +108,8 @@ Object name: 'System.Net.Sockets.NetworkStream'.
 ```
 
 ### Sample Request
+
+Collect exceptions from the default process in newline-delimited JSON format:
 
 ```http
 GET /exceptions HTTP/1.1

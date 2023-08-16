@@ -54,7 +54,7 @@ HRESULT ProbeInstrumentation::RegisterFunctionProbe(FunctionID enterProbeId)
     m_pAssemblyProbePrep.reset(new (nothrow) AssemblyProbePrep(m_pCorProfilerInfo, enterProbeId));
     IfNullRet(m_pAssemblyProbePrep);
 
-    // JSFIX: Validate the probe's signature before pinning it.
+    // Consider: Validate the probe's signature before pinning it.
     m_probeFunctionId = enterProbeId;
 
     return S_OK;

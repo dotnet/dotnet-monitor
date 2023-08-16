@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 
-using System.Runtime.InteropServices;
-using System;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
+using System;
+using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 {
@@ -15,17 +15,20 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
         public delegate int ProfilerMessageCallback(IpcCommand command, IntPtr nativeBuffer, long bufferSize);
 
         [DllImport(ProfilerIdentifiers.NotifyOnlyProfiler.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
-        private static extern void RegisterMonitorMessageCallback(ProfilerMessageCallback callback);
+        private static extern void RegisterMonitorMessageCallback(IntPtr callback);
 
         [DllImport(ProfilerIdentifiers.NotifyOnlyProfiler.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
         private static extern void UnregisterMonitorMessageCallback();
+
+        private readonly ProfilerMessageCallback _messageCallbackDelegate;
 
         private long _disposedState;
 
         public ProfilerMessageSource()
         {
             ProfilerResolver.InitializeResolver<ProfilerMessageSource>();
-            RegisterMonitorMessageCallback(OnProfilerMessage);
+            _messageCallbackDelegate = OnProfilerMessage;
+            RegisterMonitorMessageCallback(Marshal.GetFunctionPointerForDelegate(_messageCallbackDelegate));
         }
 
         private void RaiseMonitorMessage(MonitorMessageArgs e)

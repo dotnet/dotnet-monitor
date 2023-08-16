@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
@@ -19,15 +20,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
     {
         private const int ChannelCapacity = 1000;
 
+        private readonly ExceptionsStoreCallback _callback;
         private readonly Channel<ExceptionInstanceEntry> _channel;
         private readonly CancellationTokenSource _disposalSource = new();
-        private readonly List<ExceptionInstance> _instances = new();
+        private readonly KeyedCollection<ulong, ExceptionInstance> _instances = new ExceptionInstanceCollection();
         private readonly Task _processingTask;
 
         private long _disposalState;
 
-        public ExceptionsStore()
+        public ExceptionsStore(ExceptionsStoreCallback callback)
         {
+            _callback = callback;
             _channel = CreateChannel();
             _processingTask = ProcessEntriesAsync(_disposalSource.Token);
         }
@@ -61,6 +64,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             ExceptionInstanceEntry entry = new(cache, exceptionId, groupId, message, timestamp, stackFrameIds, threadId, innerExceptionIds, activityId, activityIdFormat);
             // This should never fail to write because the behavior is to drop the oldest.
             _channel.Writer.TryWrite(entry);
+        }
+
+        public void RemoveExceptionInstance(ulong exceptionId)
+        {
+            lock (_instances)
+            {
+                _instances.Remove(exceptionId);
+            }
         }
 
         public IReadOnlyList<IExceptionInstance> GetSnapshot()
@@ -118,19 +129,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                     CallStackModel callStack = GenerateCallStack(entry.StackFrameIds, entry.Cache, entry.ThreadId);
 
+                    ExceptionInstance instance = new(
+                        entry.ExceptionId,
+                        exceptionTypeName,
+                        moduleName,
+                        entry.Message,
+                        entry.Timestamp,
+                        callStack,
+                        entry.InnerExceptionIds,
+                        entry.ActivityId,
+                        entry.ActivityIdFormat);
+
+                    _callback?.BeforeAdd(instance);
+
                     lock (_instances)
                     {
-                        _instances.Add(new ExceptionInstance(
-                            entry.ExceptionId,
-                            exceptionTypeName,
-                            moduleName,
-                            entry.Message,
-                            entry.Timestamp,
-                            callStack,
-                            entry.InnerExceptionIds,
-                            entry.ActivityId,
-                            entry.ActivityIdFormat));
+                        _instances.Add(instance);
                     }
+
+                    _callback?.AfterAdd(instance);
                 }
 
                 shouldReadEntry = await _channel.Reader.WaitToReadAsync(token);
@@ -204,6 +221,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             public string ActivityId { get; }
 
             public ActivityIdFormat ActivityIdFormat { get; }
+        }
+
+        private sealed class ExceptionInstanceCollection :
+            KeyedCollection<ulong, ExceptionInstance>
+        {
+            protected override ulong GetKeyForItem(ExceptionInstance item)
+            {
+                return item.Id;
+            }
         }
     }
 }

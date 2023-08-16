@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 
-using System.IO;
 using System;
-using System.Text.Json;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 {

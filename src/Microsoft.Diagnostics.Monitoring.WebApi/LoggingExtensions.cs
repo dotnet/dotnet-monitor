@@ -116,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 eventId: new EventId(18, "GeneratedInProcessArtifact"),
                 logLevel: LogLevel.Information,
                 formatString: Strings.Message_GeneratedInProcessArtifact);
-        
+
         public static void RequestFailed(this ILogger logger, Exception ex)
         {
             _requestFailed(logger, ex);

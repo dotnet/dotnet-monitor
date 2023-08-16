@@ -5,10 +5,7 @@ using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing
@@ -29,6 +26,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             {
                 logger.Log(ParameterCaptureMode.Inline, inlineMessage, Array.Empty<string>());
                 logger.Log(ParameterCaptureMode.Background, backgroundMessage, Array.Empty<string>());
+
+                // Force the logger to drain the background queue before we dispose it.
+                logger.Complete();
             }
 
             Assert.Equal(2, logRecord.Events.Count);

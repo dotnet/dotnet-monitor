@@ -28,6 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private readonly ParameterCapturingEventSource _eventSource = new();
         private readonly ParameterCapturingPipeline? _pipeline;
+        private readonly ParameterCapturingLogger? _parameterCapturingLogger;
 
         private readonly ILogger? _logger;
 
@@ -47,14 +48,17 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     IpcCommand.StopCapturingParameters,
                     OnStopMessage);
 
-                _logger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.UserCode>>()
+                ILogger serviceLogger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.Service>>()
+                    ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
+
+                ILogger userLogger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.UserCode>>()
                     ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
 
                 ILogger systemLogger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.SystemCode>>()
                     ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
 
-                ParameterCapturingLogger parameterCapturingLogger = new(_logger, systemLogger);
-                FunctionProbesManager probeManager = new(new LogEmittingProbes(parameterCapturingLogger));
+                _parameterCapturingLogger = new(userLogger, systemLogger);
+                FunctionProbesManager probeManager = new(new LogEmittingProbes(_parameterCapturingLogger));
 
                 _pipeline = new ParameterCapturingPipeline(probeManager, this);
             }
@@ -219,6 +223,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             SharedInternals.MessageDispatcher?.UnregisterCallback(IpcCommand.StopCapturingParameters);
 
             _pipeline?.Dispose();
+            _parameterCapturingLogger?.Dispose();
 
             base.Dispose();
         }
