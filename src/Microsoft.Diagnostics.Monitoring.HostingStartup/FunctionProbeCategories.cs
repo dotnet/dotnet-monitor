@@ -15,6 +15,10 @@ namespace DotnetMonitor.ParameterCapture
     internal sealed class SystemCode
     {
     }
+
+    internal sealed class Service
+    {
+    }
 }
 
 
