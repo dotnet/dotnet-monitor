@@ -215,7 +215,7 @@ void ProbeInstrumentation::ShutdownBackgroundService()
 {
     DisableIncomingRequests();
     m_managedCallbackQueue.Complete();
-    m_probeManagementThread.join();
+    m_managedCallbackThread.join();
     m_probeManagementThread.join();
 }
 
