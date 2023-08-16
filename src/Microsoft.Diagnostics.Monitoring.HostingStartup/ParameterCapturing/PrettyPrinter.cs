@@ -10,11 +10,66 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     internal static class PrettyPrinter
     {
+        private static class Tokens
+        {
+            private static class Internal
+            {
+                public const string Prefix = "<";
+                public const string Postfix = ">";
+            }
+
+            public static class Types
+            {
+                public const char ArityDelimiter = '`';
+                public const char Separator = '.';
+                public const string Unknown = Internal.Prefix + "unknown" + Internal.Postfix;
+            }
+
+            public static class Parameters
+            {
+                public const char Start = '(';
+                public const string Separator = ", ";
+                public const string NameValueSeparator = ": ";
+                public const char End = ')';
+
+                public static class Modifiers
+                {
+                    public const char Separator = ' ';
+                    public const string RefOrRefLike = "ref";
+                    public const string In = "in";
+                    public const string Out = "out";
+                }
+
+                public static class Names
+                {
+                    public const string ImplicitThis = "this";
+                    public const string Unknown = Internal.Prefix + "unknown" + Internal.Postfix;
+                }
+
+                public static class Values
+                {
+                    public const string Null = "null";
+                    public const string Unsupported = Internal.Prefix + "unsupported" + Internal.Postfix;
+                    public const string Exception = Internal.Prefix + "exception_thrown" + Internal.Postfix;
+
+                    public const char WrappedStart = '\'';
+                    public const char WrappedEnd = '\'';
+                }
+            }
+
+            public static class Generics
+            {
+                public const char Start = '<';
+                public const string Separator = ", ";
+                public const char End = '>';
+            }
+        }
+
         public static string FormatObject(object value)
         {
             if (value == null)
             {
-                return ParameterCapturingStrings.NullArgumentValue;
+                return Tokens.Parameters.Values.Null;
             }
 
             try
@@ -43,11 +98,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     doWrapValue = true;
                 }
 
-                return doWrapValue ? string.Concat('\'', serializedValue, '\'') : serializedValue;
+                return doWrapValue ? string.Concat(Tokens.Parameters.Values.WrappedStart, serializedValue, Tokens.Parameters.Values.WrappedEnd) : serializedValue;
             }
             catch
             {
-                return ParameterCapturingStrings.UnknownArgumentValue;
+                return Tokens.Parameters.Values.Exception;
             }
         }
 
@@ -57,21 +112,20 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             // Declaring type name
             // For a generic declaring type, trim the arity information and replace it with the known generic argument names.
-            const char arityDelimiter = '`';
-            string declaringTypeName = method.DeclaringType?.FullName?.Split(arityDelimiter)?[0] ?? string.Empty;
+            string declaringTypeName = method.DeclaringType?.FullName?.Split(Tokens.Types.ArityDelimiter)?[0] ?? Tokens.Types.Unknown;
             fmtStringBuilder.Append(declaringTypeName);
             EmitGenericArguments(fmtStringBuilder, method.DeclaringType?.GetGenericArguments());
 
             // Method name
             if (fmtStringBuilder.Length != 0)
             {
-                fmtStringBuilder.Append('.');
+                fmtStringBuilder.Append(Tokens.Types.Separator);
             }
             fmtStringBuilder.Append(method.Name);
             EmitGenericArguments(fmtStringBuilder, method.GetGenericArguments());
 
             // Method parameters
-            fmtStringBuilder.Append('(');
+            fmtStringBuilder.Append(Tokens.Parameters.Start);
 
             int parameterIndex = 0;
             ParameterInfo[] explicitParameters = method.GetParameters();
@@ -88,7 +142,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 EmitParameter(
                     fmtStringBuilder,
                     method.DeclaringType,
-                    ParameterCapturingStrings.ThisParameterName,
+                    Tokens.Parameters.Names.ImplicitThis,
                     supportedParameters[parameterIndex]);
                 parameterIndex++;
             }
@@ -97,10 +151,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             {
                 if (parameterIndex != 0)
                 {
-                    fmtStringBuilder.Append(", ");
+                    fmtStringBuilder.Append(Tokens.Parameters.Separator);
                 }
 
-                string name = paramInfo.Name ?? string.Format(CultureInfo.InvariantCulture, ParameterCapturingStrings.UnknownParameterNameFormatString, parameterIndex);
+                string name = paramInfo.Name ?? Tokens.Parameters.Names.Unknown;
                 EmitParameter(
                     fmtStringBuilder,
                     paramInfo.ParameterType,
@@ -111,7 +165,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 parameterIndex++;
             }
 
-            fmtStringBuilder.Append(')');
+            fmtStringBuilder.Append(Tokens.Parameters.End);
 
             return fmtStringBuilder.ToString();
         }
@@ -124,35 +178,33 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             // Modifiers
             if (paramInfo?.IsIn == true)
             {
-                stringBuilder.Append(ParameterCapturingStrings.ParameterModifier_In);
-                stringBuilder.Append(' ');
+                stringBuilder.Append(Tokens.Parameters.Modifiers.In);
+                stringBuilder.Append(Tokens.Parameters.Modifiers.Separator);
             }
             else if (paramInfo?.IsOut == true)
             {
-                stringBuilder.Append(ParameterCapturingStrings.ParameterModifier_Out);
-                stringBuilder.Append(' ');
+                stringBuilder.Append(Tokens.Parameters.Modifiers.Out);
+                stringBuilder.Append(Tokens.Parameters.Modifiers.Separator);
             }
             else if (type?.IsByRef == true ||
                     type?.IsByRefLike == true)
             {
-                stringBuilder.Append(ParameterCapturingStrings.ParameterModifier_RefOrRefLike);
-                stringBuilder.Append(' ');
+                stringBuilder.Append(Tokens.Parameters.Modifiers.RefOrRefLike);
+                stringBuilder.Append(Tokens.Parameters.Modifiers.Separator);
             }
 
             // Name
             stringBuilder.Append(name);
-            stringBuilder.Append(": ");
+            stringBuilder.Append(Tokens.Parameters.NameValueSeparator);
 
             // Value (format item or unsupported)
             if (isSupported)
             {
-                stringBuilder.Append('{');
-                stringBuilder.Append(name);
-                stringBuilder.Append('}');
+                EmitFormatItem(stringBuilder, name);
             }
             else
             {
-                EmitReservedPlaceholder(stringBuilder, ParameterCapturingStrings.UnsupportedParameter);
+                stringBuilder.Append(Tokens.Parameters.Values.Unsupported);
             }
         }
 
@@ -163,24 +215,24 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 return;
             }
 
-            stringBuilder.Append('<');
+            stringBuilder.Append(Tokens.Generics.Start);
             for (int i = 0; i < genericArgs.Length; i++)
             {
                 if (i != 0)
                 {
-                    stringBuilder.Append(", ");
+                    stringBuilder.Append(Tokens.Generics.Separator);
                 }
 
                 stringBuilder.Append(genericArgs[i].Name);
             }
-            stringBuilder.Append('>');
+            stringBuilder.Append(Tokens.Generics.End);
         }
 
-        private static void EmitReservedPlaceholder(StringBuilder stringBuilder, string value)
+        private static void EmitFormatItem(StringBuilder stringBuilder, string name)
         {
-            stringBuilder.Append("{{");
-            stringBuilder.Append(value);
-            stringBuilder.Append("}}");
+            stringBuilder.Append('{');
+            stringBuilder.Append(name);
+            stringBuilder.Append('}');
         }
     }
 }

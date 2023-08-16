@@ -71,42 +71,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to null.
-        /// </summary>
-        internal static string NullArgumentValue {
-            get {
-                return ResourceManager.GetString("NullArgumentValue", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to in.
-        /// </summary>
-        internal static string ParameterModifier_In {
-            get {
-                return ResourceManager.GetString("ParameterModifier_In", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to out.
-        /// </summary>
-        internal static string ParameterModifier_Out {
-            get {
-                return ResourceManager.GetString("ParameterModifier_Out", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ref.
-        /// </summary>
-        internal static string ParameterModifier_RefOrRefLike {
-            get {
-                return ResourceManager.GetString("ParameterModifier_RefOrRefLike", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Started parameter capturing for {duration} on {numberOfMethods} method(s)..
         /// </summary>
         internal static string StartParameterCapturingFormatString {
@@ -125,15 +89,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to this.
-        /// </summary>
-        internal static string ThisParameterName {
-            get {
-                return ResourceManager.GetString("ThisParameterName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Too many requests.
         /// </summary>
         internal static string TooManyRequestsErrorMessage {
@@ -143,38 +98,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to unknown.
-        /// </summary>
-        internal static string UnknownArgumentValue {
-            get {
-                return ResourceManager.GetString("UnknownArgumentValue", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;unknown_name_at_position_{0}&gt;.
-        /// </summary>
-        internal static string UnknownParameterNameFormatString {
-            get {
-                return ResourceManager.GetString("UnknownParameterNameFormatString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to resolve one or more methods: {0}.
         /// </summary>
         internal static string UnresolvedMethodsFormatString {
             get {
                 return ResourceManager.GetString("UnresolvedMethodsFormatString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to unsupported.
-        /// </summary>
-        internal static string UnsupportedParameter {
-            get {
-                return ResourceManager.GetString("UnsupportedParameter", resourceCulture);
             }
         }
     }
