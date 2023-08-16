@@ -42,14 +42,6 @@ typedef struct _PROBE_WORKER_PAYLOAD
     std::vector<UNPROCESSED_INSTRUMENTATION_REQUEST> requests;
 } PROBE_WORKER_PAYLOAD;
 
-enum class ManagedCallbackType
-{
-    REGISTER_PROBE,
-    INSTALL_PROBES,
-    UNINSTALL_PROBES,
-    FAULTING_PROBE
-};
-
 typedef struct _MANAGED_CALLBACK_REQUEST
 {
     ProbeWorkerInstruction instruction;
