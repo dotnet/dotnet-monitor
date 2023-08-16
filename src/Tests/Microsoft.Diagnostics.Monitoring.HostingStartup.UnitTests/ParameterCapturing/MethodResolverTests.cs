@@ -8,6 +8,7 @@ using SampleMethods;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.Loader;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -125,6 +126,30 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
             // Assert
             Assert.Equal(2, methods.Count);
+        }
+
+        [Fact]
+        public void ResolveMethodDescription_CustomAssemblyLoadContext()
+        {
+            // Arrange
+            AssemblyLoadContext customContext = new("Custom context", isCollectible: false);
+            // Load an assembly that's already loaded (but not our own assembly as that'll impact other tests in this class).
+            Assembly duplicateHostingStartupAssembly = customContext.LoadFromAssemblyPath(typeof(BoxingTokens).Assembly.Location);
+            Assert.NotNull(duplicateHostingStartupAssembly);
+
+            MethodResolver resolver = new();
+            MethodDescription description = GetMethodDescription(typeof(BoxingTokens), nameof(BoxingTokens.GetBoxingTokens));
+
+            // Act
+            List<MethodInfo> methods = resolver.ResolveMethodDescription(description);
+
+            // Assert
+            Assert.Equal(2, methods.Count);
+
+            MethodInfo method1 = methods[0];
+            MethodInfo method2 = methods[1];
+            Assert.NotEqual(method1.Module.Assembly, method2.Module.Assembly);
+            Assert.NotEqual(method1.GetFunctionId(), method2.GetFunctionId());
         }
 
 
