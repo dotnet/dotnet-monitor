@@ -264,6 +264,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(_disposalTokenSource.Token, token);
             using IDisposable _ = cts.Token.Register(() =>
             {
+                // On cancellation, simply stop anyone waiting on it.
+                // The actual installation process isn't trivial to stop at this point.
                 _installationTaskSource.TrySetCanceled(cts.Token);
             });
 
