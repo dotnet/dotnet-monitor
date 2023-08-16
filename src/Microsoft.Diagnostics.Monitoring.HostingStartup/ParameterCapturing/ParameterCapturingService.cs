@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     IpcCommand.StopCapturingParameters,
                     OnStopMessage);
 
-                ILogger serviceLogger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.Service>>()
+                _logger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.Service>>()
                     ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
 
                 ILogger userLogger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.UserCode>>()
