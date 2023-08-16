@@ -20,12 +20,15 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
         [DllImport(ProfilerIdentifiers.NotifyOnlyProfiler.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
         private static extern void UnregisterMonitorMessageCallback();
 
+        private readonly ProfilerMessageCallback _messageCallbackDelegate;
+
         private long _disposedState;
 
         public ProfilerMessageSource()
         {
             ProfilerResolver.InitializeResolver<ProfilerMessageSource>();
-            RegisterMonitorMessageCallback(Marshal.GetFunctionPointerForDelegate(OnProfilerMessage));
+            _messageCallbackDelegate = OnProfilerMessage;
+            RegisterMonitorMessageCallback(Marshal.GetFunctionPointerForDelegate(_messageCallbackDelegate));
         }
 
         private void RaiseMonitorMessage(MonitorMessageArgs e)
