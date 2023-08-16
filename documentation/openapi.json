@@ -1442,13 +1442,25 @@
             "format": "int32"
           },
           "actionCountSlidingWindowDurationLimit": {
-            "$ref": "#/components/schemas/TimeSpan"
+            "type": "string",
+            "description": "The sliding window duration in which the actionCountLimit is the maximum number of occurrences (as defined by Limits).",
+            "format": "time-span",
+            "nullable": true,
+            "example": "00:00:30"
           },
           "slidingWindowDurationCountdown": {
-            "$ref": "#/components/schemas/TimeSpan"
+            "type": "string",
+            "description": "The amount of time that needs to pass before the slidingWindowOccurrences drops below the actionCountLimit",
+            "format": "time-span",
+            "nullable": true,
+            "example": "00:00:30"
           },
           "ruleFinishedCountdown": {
-            "$ref": "#/components/schemas/TimeSpan"
+            "type": "string",
+            "description": "The amount of time that needs to pass before the rule is finished",
+            "format": "time-span",
+            "nullable": true,
+            "example": "00:00:30"
           }
         },
         "additionalProperties": false
@@ -1860,66 +1872,6 @@
           "processArchitecture": {
             "type": "string",
             "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "TimeSpan": {
-        "type": "object",
-        "properties": {
-          "ticks": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "days": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "hours": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "milliseconds": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "minutes": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "seconds": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "totalDays": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalHours": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalMilliseconds": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalMinutes": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalSeconds": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
           }
         },
         "additionalProperties": false
