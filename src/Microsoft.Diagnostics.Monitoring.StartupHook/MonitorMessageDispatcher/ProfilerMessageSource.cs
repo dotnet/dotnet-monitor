@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
         public delegate int ProfilerMessageCallback(IpcCommand command, IntPtr nativeBuffer, long bufferSize);
 
         [DllImport(ProfilerIdentifiers.NotifyOnlyProfiler.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
-        private static extern void RegisterMonitorMessageCallback(ProfilerMessageCallback callback);
+        private static extern void RegisterMonitorMessageCallback(IntPtr callback);
 
         [DllImport(ProfilerIdentifiers.NotifyOnlyProfiler.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
         private static extern void UnregisterMonitorMessageCallback();
@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
         public ProfilerMessageSource()
         {
             ProfilerResolver.InitializeResolver<ProfilerMessageSource>();
-            RegisterMonitorMessageCallback(OnProfilerMessage);
+            RegisterMonitorMessageCallback(Marshal.GetFunctionPointerForDelegate(OnProfilerMessage));
         }
 
         private void RaiseMonitorMessage(MonitorMessageArgs e)
