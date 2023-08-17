@@ -23,6 +23,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
         [DefaultValue(ExceptionsOptionsDefaults.TopLevelLimit)]
         public int? TopLevelLimit { get; set; }
 
-        public ExceptionsConfiguration CollectionFiltering { get; set; }
+        public ExceptionsConfiguration Filters { get; set; }
     }
 }

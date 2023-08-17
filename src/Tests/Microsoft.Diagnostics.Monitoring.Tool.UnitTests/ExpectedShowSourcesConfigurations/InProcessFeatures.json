@@ -1,7 +1,7 @@
 {
   "Enabled": "True" /*JsonConfigurationProvider for 'settings.json' (Optional)*/,
   "Exceptions": {
-    "CollectionFiltering": {
+    "Filters": {
       "Include": [
         {
           "ExceptionType": "System.ArgumentNullException" /*JsonConfigurationProvider for 'settings.json' (Optional)*/

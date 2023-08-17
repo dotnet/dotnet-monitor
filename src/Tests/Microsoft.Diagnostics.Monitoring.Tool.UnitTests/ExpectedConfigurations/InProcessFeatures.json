@@ -1,7 +1,7 @@
 {
   "Enabled": "True",
   "Exceptions": {
-    "CollectionFiltering": {
+    "Filters": {
       "Include": [
         {
           "ExceptionType": "System.ArgumentNullException"

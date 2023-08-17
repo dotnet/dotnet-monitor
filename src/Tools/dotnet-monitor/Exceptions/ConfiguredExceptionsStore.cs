@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private readonly ExceptionsStore _store;
 
         public ConfiguredExceptionsStore(IOptions<ExceptionsOptions> options)
-            : this(options.Value.GetTopLevelLimit(), options.Value.CollectionFiltering ?? new(), callback: null)
+            : this(options.Value.GetTopLevelLimit(), options.Value.Filters ?? new(), callback: null)
         {
         }
 
