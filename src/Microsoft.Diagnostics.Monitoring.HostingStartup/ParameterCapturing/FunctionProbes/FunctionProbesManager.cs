@@ -200,7 +200,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             {
                 using IDisposable _ = cts.Token.Register(() =>
                 {
-                    _uninstallationTaskSource?.TrySetCanceled(cts.Token);
+                    _uninstallationTaskSource.TrySetCanceled(cts.Token);
                 });
                 await _uninstallationTaskSource.Task.ConfigureAwait(false);
             }
@@ -305,7 +305,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                         }
                     }
 
-                    _installationTaskSource?.TrySetCanceled(cts.Token);
+                    _installationTaskSource.TrySetCanceled(cts.Token);
                 });
 
                 await _installationTaskSource.Task.ConfigureAwait(false);
