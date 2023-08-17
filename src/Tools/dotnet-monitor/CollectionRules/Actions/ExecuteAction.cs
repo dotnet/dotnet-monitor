@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System;
 using System.Collections.Generic;
@@ -35,10 +34,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         internal sealed class ExecuteAction :
             CollectionRuleActionBase<ExecuteOptions>
         {
-            private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            public override Task Started => _startCompletionSource.Task;
-
             public ExecuteAction(IProcessInfo processInfo, ExecuteOptions options)
                 : base(processInfo, options)
             {
@@ -48,58 +43,49 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 CollectionRuleMetadata collectionRuleMetadata,
                 CancellationToken token)
             {
-                try
+                string path = Options.Path;
+                string arguments = Options.Arguments;
+                bool IgnoreExitCode = Options.IgnoreExitCode.GetValueOrDefault(ExecuteOptionsDefaults.IgnoreExitCode);
+
+                ValidateFilePath(path);
+
+                // May want to capture stdout and stderr and return as part of the result in the future
+                using Process process = new Process();
+
+                process.StartInfo = new ProcessStartInfo(path, arguments);
+                process.StartInfo.RedirectStandardOutput = true;
+
+                process.EnableRaisingEvents = true;
+
+                // Signaled when process exits
+                using EventTaskSource<EventHandler> exitedSource = new(
+                    complete => (s, e) => complete(),
+                    handler => process.Exited += handler,
+                    handler => process.Exited -= handler,
+                    token);
+
+                if (!process.Start())
                 {
-                    using IDisposable _ = token.Register(() => _startCompletionSource.TrySetCanceled(token));
+                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnableToStartProcess, process.StartInfo.FileName, process.StartInfo.Arguments));
+                }
 
-                    string path = Options.Path;
-                    string arguments = Options.Arguments;
-                    bool IgnoreExitCode = Options.IgnoreExitCode.GetValueOrDefault(ExecuteOptionsDefaults.IgnoreExitCode);
+                if (!TrySetStarted())
+                {
+                    throw new InvalidOperationException();
+                }
 
-                    ValidateFilePath(path);
+                // Wait for process to exit; cancellation is handled by the exitedSource
+                await exitedSource.Task.ConfigureAwait(false);
 
-                    // May want to capture stdout and stderr and return as part of the result in the future
-                    using Process process = new Process();
+                ValidateExitCode(IgnoreExitCode, process.ExitCode);
 
-                    process.StartInfo = new ProcessStartInfo(path, arguments);
-                    process.StartInfo.RedirectStandardOutput = true;
-
-                    process.EnableRaisingEvents = true;
-
-                    // Signaled when process exits
-                    using EventTaskSource<EventHandler> exitedSource = new(
-                        complete => (s, e) => complete(),
-                        handler => process.Exited += handler,
-                        handler => process.Exited -= handler,
-                        token);
-
-                    if (!process.Start())
-                    {
-                        throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnableToStartProcess, process.StartInfo.FileName, process.StartInfo.Arguments));
-                    }
-
-                    _startCompletionSource.TrySetResult();
-
-                    // Wait for process to exit; cancellation is handled by the exitedSource
-                    await exitedSource.Task.ConfigureAwait(false);
-
-                    ValidateExitCode(IgnoreExitCode, process.ExitCode);
-
-                    return new CollectionRuleActionResult()
-                    {
-                        OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
+                return new CollectionRuleActionResult()
+                {
+                    OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
                         {
                             { "ExitCode", process.ExitCode.ToString(CultureInfo.InvariantCulture) }
                         }
-                    };
-
-                }
-                catch (Exception ex)
-                {
-                    CollectionRuleActionException collectionRuleActionException = new(ex);
-                    _ = _startCompletionSource.TrySetException(collectionRuleActionException);
-                    throw collectionRuleActionException;
-                }
+                };
             }
 
             internal static void ValidateFilePath(string path)

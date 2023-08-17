@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Logging;
 using System;
@@ -43,9 +42,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             private readonly ILogger _logger;
             private readonly SetEnvironmentVariableOptions _options;
-            private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            public override Task Started => _startCompletionSource.Task;
 
             public SetEnvironmentVariableAction(ILogger logger, IProcessInfo processInfo, SetEnvironmentVariableOptions options)
                 : base(processInfo, options)
@@ -58,28 +54,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 CollectionRuleMetadata collectionRuleMetadata,
                 CancellationToken token)
             {
-                try
+                DiagnosticsClient client = new DiagnosticsClient(EndpointInfo.Endpoint);
+
+                _logger.SettingEnvironmentVariable(_options.Name, EndpointInfo.ProcessId);
+                await client.SetEnvironmentVariableAsync(_options.Name, _options.Value, token);
+
+                if (!TrySetStarted())
                 {
-                    using IDisposable _ = token.Register(() => _startCompletionSource.TrySetCanceled(token));
-
-                    DiagnosticsClient client = new DiagnosticsClient(EndpointInfo.Endpoint);
-
-                    _logger.SettingEnvironmentVariable(_options.Name, EndpointInfo.ProcessId);
-                    await client.SetEnvironmentVariableAsync(_options.Name, _options.Value, token);
-
-                    if (!_startCompletionSource.TrySetResult())
-                    {
-                        throw new InvalidOperationException();
-                    }
-
-                    return new CollectionRuleActionResult();
+                    throw new InvalidOperationException();
                 }
-                catch (Exception ex)
-                {
-                    CollectionRuleActionException collectionRuleActionException = new(ex);
-                    _ = _startCompletionSource.TrySetException(collectionRuleActionException);
-                    throw collectionRuleActionException;
-                }
+
+                return new CollectionRuleActionResult();
             }
         }
     }

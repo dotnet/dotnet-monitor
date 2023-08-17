@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         IAsyncDisposable
     {
         private readonly CancellationTokenSource _disposalTokenSource = new();
+        private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         private Task<CollectionRuleActionResult> _completionTask;
         private long _disposedState;
@@ -23,7 +25,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         protected TOptions Options { get; }
 
-        public abstract Task Started { get; }
+
+        public Task Started => _startCompletionSource.Task;
 
         protected CollectionRuleActionBase(IProcessInfo processInfo, TOptions options)
         {
@@ -55,9 +58,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ThrowIfDisposed();
 
             CancellationToken disposalToken = _disposalTokenSource.Token;
-            _completionTask = Task.Run(() => ExecuteCoreAsync(collectionRuleMetadata, disposalToken), disposalToken);
+            _completionTask = Task.Run(() => ExecuteAsync(collectionRuleMetadata, disposalToken), disposalToken);
 
-            await Started.WithCancellation(token);
+            await _startCompletionSource.WithCancellation(token);
         }
 
         public async Task StartAsync(CancellationToken token)
@@ -70,6 +73,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ThrowIfDisposed();
 
             return await _completionTask.WithCancellation(token);
+        }
+
+        protected bool TrySetStarted()
+        {
+            return _startCompletionSource.TrySetResult();
+        }
+
+
+        private async Task<CollectionRuleActionResult> ExecuteAsync(
+            CollectionRuleMetadata collectionRuleMetadata,
+            CancellationToken token)
+        {
+            try
+            {
+                return await ExecuteCoreAsync(collectionRuleMetadata, token);
+            }
+            catch (OperationCanceledException)
+            {
+                _startCompletionSource.TrySetCanceled(token);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                CollectionRuleActionException collectionRuleActionException = new(ex);
+                _startCompletionSource.TrySetException(collectionRuleActionException);
+                throw collectionRuleActionException;
+            }
         }
 
         protected void ThrowIfDisposed()

@@ -494,13 +494,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return operationResult;
         }
 
-        public static Task<OperationStatusResponse> PollOperationToRunning(this ApiClient apiClient, Uri operationUrl)
+        public static Task<OperationStatusResponse> WaitForOperationToStart(this ApiClient apiClient, Uri operationUrl)
         {
-            return apiClient.PollOperationToRunning(operationUrl, TestTimeouts.OperationTimeout);
+            return apiClient.WaitForOperationToStart(operationUrl, TestTimeouts.OperationTimeout);
         }
 
 
-        public static async Task<OperationStatusResponse> PollOperationToRunning(this ApiClient apiClient, Uri operationUrl, TimeSpan timeout)
+        public static async Task<OperationStatusResponse> WaitForOperationToStart(this ApiClient apiClient, Uri operationUrl, TimeSpan timeout)
         {
             OperationStatusResponse operationResult = await apiClient.GetOperationStatus(operationUrl).ConfigureAwait(false);
             Assert.True(operationResult.StatusCode == HttpStatusCode.OK || operationResult.StatusCode == HttpStatusCode.Created);
