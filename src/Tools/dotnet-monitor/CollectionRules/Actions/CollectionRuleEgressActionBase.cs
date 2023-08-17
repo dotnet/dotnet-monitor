@@ -30,14 +30,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
             EgressOperation egressOperation = CreateArtifactOperation(collectionRuleMetadata);
-            _ = egressOperation.Started.ContinueWith(completedTask =>
-            {
-                // Any failures with starting the operation should be captured by the below ExecuteOperation call.
-                _ = TrySetStarted();
-            }, CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            Task<ExecutionResult<EgressResult>> executeTask = EgressOperationStore.ExecuteOperation(egressOperation);
 
-            ExecutionResult<EgressResult> result = await EgressOperationStore.ExecuteOperation(egressOperation);
+            await egressOperation.Started.WaitAsync(token).ConfigureAwait(false);
+            TrySetStarted();
 
+            ExecutionResult<EgressResult> result = await executeTask.WaitAsync(token).ConfigureAwait(false);
             if (null != result.Exception)
             {
                 throw new CollectionRuleActionException(result.Exception);
