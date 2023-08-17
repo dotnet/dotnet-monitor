@@ -74,6 +74,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
             _disposalToken = _disposalTokenSource.Token;
 
+            //
+            // CONSIDER:
+            // Use UnmanagedCallersOnlyAttribute for the callbacks
+            // and use the address-of operator to get a function pointer
+            // to give to the profiler.
+            //
+
             _onRegistrationDelegate = OnRegistration;
             _onInstallationDelegate = OnInstallation;
             _onUninstallationDelegate = OnUninstallation;
@@ -165,6 +172,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         public async Task StopCapturingAsync(CancellationToken token)
         {
+            //
+            // NOTE: Do not await anything until after StopCapturingCore is called
+            // to ensure deterministic cancellation behavior.
+            //
             DisposableHelper.ThrowIfDisposed<FunctionProbesManager>(ref _disposedState);
 
             if (ProbeStateInstalled != Interlocked.CompareExchange(ref _probeState, ProbeStateUninstalling, ProbeStateInstalled))
@@ -185,11 +196,18 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             }
 
             using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(_disposalToken, token);
-            using IDisposable _ = cts.Token.Register(() =>
+            try
             {
-                _uninstallationTaskSource.TrySetCanceled(cts.Token);
-            });
-            await _uninstallationTaskSource.Task.ConfigureAwait(false);
+                using IDisposable _ = cts.Token.Register(() =>
+                {
+                    _uninstallationTaskSource?.TrySetCanceled(cts.Token);
+                });
+                await _uninstallationTaskSource.Task.ConfigureAwait(false);
+            }
+            finally
+            {
+                _uninstallationTaskSource = null;
+            }
         }
 
         private void StopCapturingCore()
@@ -266,29 +284,36 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             }
 
             using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(_disposalToken, token);
-            using IDisposable _ = cts.Token.Register(() =>
+            try
             {
-                //
-                // We need to uninstall the probes ourselves here if dispose has happened  otherwise the probes could be left in an installed state.
-                //
-                // NOTE: It's possible that StopCapturingCore could be called twice by doing this - once by Dispose and once by us, this is OK
-                // as the native layer will gracefully handle multiple RequestFunctionProbeUninstallation calls.
-                //
-                if (_disposalToken.IsCancellationRequested)
+                using IDisposable _ = cts.Token.Register(() =>
                 {
-                    try
+                    //
+                    // We need to uninstall the probes ourselves here if dispose has happened  otherwise the probes could be left in an installed state.
+                    //
+                    // NOTE: It's possible that StopCapturingCore could be called twice by doing this - once by Dispose and once by us, this is OK
+                    // as the native layer will gracefully handle multiple RequestFunctionProbeUninstallation calls.
+                    //
+                    if (_disposalToken.IsCancellationRequested)
                     {
-                        StopCapturingCore();
+                        try
+                        {
+                            StopCapturingCore();
+                        }
+                        catch
+                        {
+                        }
                     }
-                    catch
-                    {
-                    }
-                }
 
-                _installationTaskSource.TrySetCanceled(cts.Token);
-            });
+                    _installationTaskSource?.TrySetCanceled(cts.Token);
+                });
 
-            await _installationTaskSource.Task.ConfigureAwait(false);
+                await _installationTaskSource.Task.ConfigureAwait(false);
+            }
+            finally
+            {
+                _installationTaskSource = null;
+            }
         }
 
         public void Dispose()

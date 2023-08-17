@@ -77,6 +77,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
 
                     }
 
+                    //
+                    // NOTE:
+                    // StopCapturingAsync will request a stop regardless of if the stoppingToken is set.
+                    // While we don't support the host & services reloading, the above behavior will ensure
+                    // that we don't leave the app in a potentially bad state on a reload.
+                    //
+                    // See: https://github.com/dotnet/dotnet-monitor/issues/5170
+                    //
                     await _probeManager.StopCapturingAsync(stoppingToken).ConfigureAwait(false);
 
                     _callbacks.CapturingStop(request.Payload.RequestId);
