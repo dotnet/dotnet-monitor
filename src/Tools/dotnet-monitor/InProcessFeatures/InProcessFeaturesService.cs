@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
             try
             {
                 DiagnosticsClient client = new DiagnosticsClient(endpointInfo.Endpoint);
-                if (_parameterCapturingOptions.GetEnabled() && CaptureParametersOperation.DoesEndpointRuntimeSupportParameterCapturing(endpointInfo))
+                if (_parameterCapturingOptions.GetEnabled() && CaptureParametersOperation.IsEndpointRuntimeSupported(endpointInfo))
                 {
                     await client.SetEnvironmentVariableAsync(
                         InProcessFeaturesIdentifiers.EnvironmentVariables.EnableParameterCapturing,
