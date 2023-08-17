@@ -62,6 +62,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         private TaskCompletionSource? _uninstallationTaskSource;
 
         private readonly CancellationTokenSource _disposalTokenSource = new();
+        private readonly CancellationToken _disposalToken;
+
         private long _disposedState;
 
         public event EventHandler<InstrumentedMethod>? OnProbeFault;
@@ -69,6 +71,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         public FunctionProbesManager(IFunctionProbes probes)
         {
             ProfilerResolver.InitializeResolver<FunctionProbesManager>();
+
+            _disposalToken = _disposalTokenSource.Token;
 
             _onRegistrationDelegate = OnRegistration;
             _onInstallationDelegate = OnInstallation;
@@ -180,7 +184,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 throw;
             }
 
-            using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(_disposalTokenSource.Token, token);
+            using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(_disposalToken, token);
             using IDisposable _ = cts.Token.Register(() =>
             {
                 _uninstallationTaskSource.TrySetCanceled(cts.Token);
@@ -261,11 +265,26 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 throw;
             }
 
-            using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(_disposalTokenSource.Token, token);
+            using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(_disposalToken, token);
             using IDisposable _ = cts.Token.Register(() =>
             {
-                // On cancellation, simply stop anyone waiting on it.
-                // The actual installation process isn't trivial to stop at this point.
+                //
+                // We need to uninstall the probes ourselves here if dispose has happened  otherwise the probes could be left in an installed state.
+                //
+                // NOTE: It's possible that StopCapturingCore could be called twice by doing this - once by Dispose and once by us, this is OK
+                // as the native layer will gracefully handle multiple RequestFunctionProbeUninstallation calls.
+                //
+                if (_disposalToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        StopCapturingCore();
+                    }
+                    catch
+                    {
+                    }
+                }
+
                 _installationTaskSource.TrySetCanceled(cts.Token);
             });
 
