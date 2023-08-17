@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -30,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
             try
             {
                 DiagnosticsClient client = new DiagnosticsClient(endpointInfo.Endpoint);
-                if (_parameterCapturingOptions.GetEnabled())
+                if (_parameterCapturingOptions.GetEnabled() && CaptureParametersOperation.DoesEndpointRuntimeSupportParameterCapturing(endpointInfo))
                 {
                     await client.SetEnvironmentVariableAsync(
                         InProcessFeaturesIdentifiers.EnvironmentVariables.EnableParameterCapturing,
