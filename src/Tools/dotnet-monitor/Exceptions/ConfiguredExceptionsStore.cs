@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Extensions.Options;
 using System;
@@ -19,18 +18,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private readonly ExceptionsStore _store;
 
         public ConfiguredExceptionsStore(IOptions<ExceptionsOptions> options)
-            : this(options.Value.GetTopLevelLimit(), callback: null)
+            : this(options.Value.GetTopLevelLimit(), options.Value.CollectionFiltering ?? new(), callback: null)
         {
         }
 
-        internal ConfiguredExceptionsStore(int topLevelLimit, ExceptionsStoreCallback callback = null)
+        internal ConfiguredExceptionsStore(int topLevelLimit, ExceptionsConfiguration configuration, ExceptionsStoreCallback callback = null)
         {
             if (topLevelLimit <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(topLevelLimit));
             }
 
-            _store = new ExceptionsStore(new Callback(this, topLevelLimit, callback));
+            _store = new ExceptionsStore(new Callback(this, topLevelLimit, callback), configuration);
         }
 
         public ValueTask DisposeAsync()

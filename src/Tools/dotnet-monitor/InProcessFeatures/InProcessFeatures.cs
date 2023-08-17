@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Extensions.Options;
 namespace Microsoft.Diagnostics.Tools.Monitor
 {

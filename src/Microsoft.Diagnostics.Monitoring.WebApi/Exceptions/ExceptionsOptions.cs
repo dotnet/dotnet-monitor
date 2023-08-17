@@ -1,11 +1,11 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.Options;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Microsoft.Diagnostics.Monitoring.Options
+namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 {
     internal sealed class ExceptionsOptions :
         IInProcessFeatureOptions
@@ -23,6 +23,6 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         [DefaultValue(ExceptionsOptionsDefaults.TopLevelLimit)]
         public int? TopLevelLimit { get; set; }
 
-        public ExceptionsConfiguration Exceptions { get; set; }
+        public ExceptionsConfiguration CollectionFiltering { get; set; }
     }
 }

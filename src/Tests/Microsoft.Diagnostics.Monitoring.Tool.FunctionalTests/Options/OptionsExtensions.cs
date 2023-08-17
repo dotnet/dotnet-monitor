@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
@@ -85,6 +86,19 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         public static RootOptions EnableInProcessFeatures(this RootOptions options)
         {
             options.GetOrCreateInProcessFeaturesOptions().Enabled = true;
+
+            return options;
+        }
+
+        public static RootOptions SetExceptionFiltering(this RootOptions options, ExceptionsConfiguration configuration)
+        {
+            options.EnableInProcessFeatures();
+
+            options.InProcessFeatures.Exceptions = new()
+            {
+                CollectionFiltering = configuration,
+                Enabled = true
+            };
 
             return options;
         }

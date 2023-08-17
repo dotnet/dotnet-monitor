@@ -56,11 +56,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         }
 
-        public static IServiceCollection ConfigureExceptionsConfiguration(this IServiceCollection services, IConfiguration configuration)
-        {
-            return ConfigureOptions<ExceptionsConfiguration>(services, configuration, ConfigurationKeys.Exceptions);
-        }
-
         public static IServiceCollection ConfigureCollectionRuleDefaults(this IServiceCollection services, IConfiguration configuration)
         {
             return ConfigureOptions<CollectionRuleDefaultsOptions>(services, configuration, ConfigurationKeys.CollectionRuleDefaults);

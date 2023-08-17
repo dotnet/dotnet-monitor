@@ -25,14 +25,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private readonly CancellationTokenSource _disposalSource = new();
         private readonly KeyedCollection<ulong, ExceptionInstance> _instances = new ExceptionInstanceCollection();
         private readonly Task _processingTask;
+        private ExceptionsConfiguration _configuration;
 
         private long _disposalState;
 
-        public ExceptionsStore(ExceptionsStoreCallback callback)
+        public ExceptionsStore(ExceptionsStoreCallback callback, ExceptionsConfiguration configuration)
         {
             _callback = callback;
             _channel = CreateChannel();
             _processingTask = ProcessEntriesAsync(_disposalSource.Token);
+            _configuration = configuration;
         }
 
         public async ValueTask DisposeAsync()
@@ -140,14 +142,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         entry.ActivityId,
                         entry.ActivityIdFormat);
 
-                    _callback?.BeforeAdd(instance);
-
-                    lock (_instances)
+                    if (ExceptionsOperation.FilterException(_configuration, instance))
                     {
-                        _instances.Add(instance);
-                    }
+                        _callback?.BeforeAdd(instance);
 
-                    _callback?.AfterAdd(instance);
+                        lock (_instances)
+                        {
+                            _instances.Add(instance);
+                        }
+
+                        _callback?.AfterAdd(instance);
+                    }
                 }
 
                 shouldReadEntry = await _channel.Reader.WaitToReadAsync(token);
