@@ -17,7 +17,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
         protected EgressOperationStore EgressOperationStore { get; }
 
-
         protected CollectionRuleEgressActionBase(IServiceProvider serviceProvider, IProcessInfo processInfo, TOptions options)
             : base(processInfo, options)
         {
