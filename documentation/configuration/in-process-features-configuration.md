@@ -187,3 +187,66 @@ Similarly, the exceptions history feature can be individually disabled by settin
     value: "false"
   ```
 </details>
+
+### Filtering
+
+Which exceptions are collected and stored can be filtered via [configuration](NEED LINK). This can be useful for noisy exceptions that are not useful to capture - an example of this may be disregarding any `TaskCanceledException` that the target application produces.
+
+Note that this is different than [real-time filtering](NEED THIS LINK), which does **not** restrict the collection of exceptions and is solely responsible for determining which exceptions are displayed when invoking the `/exceptions` endpoint.
+
+In this example, a user is choosing to only collect exceptions where the top frame's class is `MyClassName`, and exceptions of types `TaskCanceledException` or `OperationCanceledException` will not be collected.
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "InProcessFeatures": {
+      "Exceptions": {
+        "Enabled": true,
+        "Filters": {
+          "Include": [
+            {
+              "ClassName": "MyClassName"
+            }
+          ],
+          "Exclude": [
+            {
+              "ExceptionType": "TaskCanceledException"
+            },
+            {
+              "ExceptionType": "OperationCanceledException"
+            }
+          ]
+        }
+      }
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  InProcessFeatures__Exceptions__Enabled: "true"
+  InProcessFeatures__Exceptions__Filters__Include__0__ClassName: "MyClassName"
+  InProcessFeatures__Exceptions__Filters__Exclude__0__ExceptionType: "TaskCanceledException"
+  InProcessFeatures__Exceptions__Filters__Exclude__1__ExceptionType: "OperationCanceledException"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_InProcessFeatures__Exceptions__Enabled
+    value: "true"
+  - name: DotnetMonitor_InProcessFeatures__Exceptions__Filters__Include__0__ClassName
+    value: "MyClassName"
+  - name: DotnetMonitor_InProcessFeatures__Exceptions__Filters__Exclude__0__ExceptionType
+    value: "TaskCanceledException"
+  - name: DotnetMonitor_InProcessFeatures__Exceptions__Filters__Exclude__1__ExceptionType
+    value: "OperationCanceledException"
+  ```
+</details>
