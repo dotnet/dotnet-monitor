@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ConfiguredExceptionsStore_Creation()
         {
-            await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(7);
+            await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(7, new ExceptionsConfiguration());
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public void ConfiguredExceptionsStore_LimitZero_ThrowsException()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new ConfiguredExceptionsStore(0));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new ConfiguredExceptionsStore(0, new ExceptionsConfiguration()));
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ulong ExpectedId = 1;
 
             ThresholdCallback callback = new(ExpectedCount);
-            await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(TopLevelLimit, callback);
+            await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(TopLevelLimit, new ExceptionsConfiguration(), callback);
 
             IExceptionsNameCache cache = CreateCache();
 
@@ -74,7 +74,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ulong OuterExceptionId = 2;
 
             ThresholdCallback callback = new(ExpectedCount);
-            await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(TopLevelLimit, callback);
+            await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(TopLevelLimit, new ExceptionsConfiguration(), callback);
 
             IExceptionsNameCache cache = CreateCache();
 
@@ -111,7 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ulong OuterException2Id = 2;
 
             ThresholdCallback callback = new(ExpectedCount);
-            await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(TopLevelLimit, callback);
+            await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(TopLevelLimit, new ExceptionsConfiguration(), callback);
 
             IExceptionsNameCache cache = CreateCache();
 
@@ -145,7 +145,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ulong OuterException2Id = 4;
 
             ThresholdCallback callback = new(ExpectedInstanceCount);
-            await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(TopLevelLimit, callback);
+            await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(TopLevelLimit, new ExceptionsConfiguration(), callback);
 
             IExceptionsNameCache cache = CreateCache();
 
@@ -186,7 +186,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ulong OuterException2Id = 3;
 
             ThresholdCallback callback = new(ExpectedInstanceCount);
-            await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(TopLevelLimit, callback);
+            await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(TopLevelLimit, new ExceptionsConfiguration(), callback);
 
             IExceptionsNameCache cache = CreateCache();
 
@@ -226,7 +226,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             ulong OuterException3Id = 3;
 
             ThresholdCallback callback = new(ExpectedInstanceCount);
-            await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(TopLevelLimit, callback);
+            await using ConfiguredExceptionsStore store = new ConfiguredExceptionsStore(TopLevelLimit, new ExceptionsConfiguration(), callback);
 
             IExceptionsNameCache cache = CreateCache();
 
