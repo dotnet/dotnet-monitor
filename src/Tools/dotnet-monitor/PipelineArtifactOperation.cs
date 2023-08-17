@@ -16,6 +16,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         where T : Pipeline
     {
         private readonly string _artifactType;
+        private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         private Func<CancellationToken, Task> _stopFunc;
 
@@ -32,22 +33,32 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             Register = register;
         }
 
-        public async Task ExecuteAsync(Stream outputStream, TaskCompletionSource<object> startCompletionSource, CancellationToken token)
+        public async Task ExecuteAsync(Stream outputStream, CancellationToken token)
         {
-            await using T pipeline = CreatePipeline(outputStream);
+            try
+            {
+                using IDisposable _ = token.Register(() => _startCompletionSource.TrySetCanceled(token));
 
-            _stopFunc = pipeline.StopAsync;
+                await using T pipeline = CreatePipeline(outputStream);
 
-            using IDisposable trackerRegistration = Register ? OperationTrackerService.Register(EndpointInfo) : null;
+                _stopFunc = pipeline.StopAsync;
 
-            Task runTask = await StartPipelineAsync(pipeline, token);
+                using IDisposable trackerRegistration = Register ? OperationTrackerService.Register(EndpointInfo) : null;
 
-            Logger.StartCollectArtifact(_artifactType);
+                Task runTask = await StartPipelineAsync(pipeline, token);
 
-            // Signal that the artifact operation has started
-            startCompletionSource?.TrySetResult(null);
+                Logger.StartCollectArtifact(_artifactType);
 
-            await runTask;
+                // Signal that the artifact operation has started
+                _startCompletionSource.TrySetResult();
+
+                await runTask;
+            }
+            catch (Exception ex)
+            {
+                _ = _startCompletionSource.TrySetException(ex);
+                throw;
+            }
         }
 
         public async Task StopAsync(CancellationToken token)
@@ -72,6 +83,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public bool IsStoppable { get; }
 
         public bool Register { get; }
+
+        public Task Started => _startCompletionSource.Task;
 
         protected abstract T CreatePipeline(Stream outputStream);
 

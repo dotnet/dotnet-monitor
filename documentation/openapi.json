@@ -1711,6 +1711,7 @@
       },
       "OperationState": {
         "enum": [
+          "Starting",
           "Running",
           "Succeeded",
           "Failed",

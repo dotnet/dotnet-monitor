@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Logging;
 using System;
@@ -45,6 +44,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             private readonly ILogger _logger;
             private readonly GetEnvironmentVariableOptions _options;
 
+
             public GetEnvironmentVariableAction(ILogger logger, IProcessInfo processInfo, GetEnvironmentVariableOptions options)
                 : base(processInfo, options)
             {
@@ -53,43 +53,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
-                TaskCompletionSource<object> startCompletionSource,
                 CollectionRuleMetadata collectionRuleMetadata,
                 CancellationToken token)
             {
-                try
+                DiagnosticsClient client = new DiagnosticsClient(EndpointInfo.Endpoint);
+
+                _logger.GettingEnvironmentVariable(_options.Name, EndpointInfo.ProcessId);
+                Dictionary<string, string> envBlock = await client.GetProcessEnvironmentAsync(token);
+                if (!envBlock.TryGetValue(Options.Name, out string value))
                 {
-                    DiagnosticsClient client = new DiagnosticsClient(EndpointInfo.Endpoint);
+                    throw new InvalidOperationException(
+                            string.Format(
+                                Strings.ErrorMessage_NoEnvironmentVariable,
+                                Options.Name));
+                }
 
-                    _logger.GettingEnvironmentVariable(_options.Name, EndpointInfo.ProcessId);
-                    Dictionary<string, string> envBlock = await client.GetProcessEnvironmentAsync(token);
-                    if (!envBlock.TryGetValue(Options.Name, out string value))
-                    {
-                        InvalidOperationException innerEx =
-                            new InvalidOperationException(
-                                string.Format(
-                                    Strings.ErrorMessage_NoEnvironmentVariable,
-                                    Options.Name));
-                        throw new CollectionRuleActionException(innerEx);
-                    }
+                if (!TrySetStarted())
+                {
+                    throw new InvalidOperationException();
+                }
 
-                    if (!startCompletionSource.TrySetResult(null))
-                    {
-                        throw new InvalidOperationException();
-                    }
-
-                    return new CollectionRuleActionResult()
-                    {
-                        OutputValues = new Dictionary<string, string>()
+                return new CollectionRuleActionResult()
+                {
+                    OutputValues = new Dictionary<string, string>()
                         {
                             { CollectionRuleActionConstants.EnvironmentVariableValueName, value ?? string.Empty }
                         }
-                    };
-                }
-                catch (Exception ex)
-                {
-                    throw new CollectionRuleActionException(ex);
-                }
+                };
             }
         }
     }
