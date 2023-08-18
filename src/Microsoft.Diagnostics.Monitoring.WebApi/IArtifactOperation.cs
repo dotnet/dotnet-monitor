@@ -11,18 +11,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// Represents an operation that can produce a diagnostic
     /// artifact to the provided output stream.
     /// </summary>
-    internal interface IArtifactOperation
+    internal interface IArtifactOperation : IStartable
     {
         /// <summary>
         /// Produces a diagnostic artifact to the output stream.
         /// </summary>
         /// <param name="outputStream">The stream to which the diagnostic artifact is written.</param>
-        /// <param name="startCompletionSource">A completion source that is signaled when the operation has started.</param>
         /// <param name="token">A token used to cancel the operation.</param>
         /// <returns></returns>
         Task ExecuteAsync(
             Stream outputStream,
-            TaskCompletionSource<object> startCompletionSource,
             CancellationToken token);
 
         /// <summary>

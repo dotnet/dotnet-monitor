@@ -21,11 +21,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
     internal sealed class PassThroughAction : ICollectionRuleAction
     {
         private readonly PassThroughOptions _options;
+        private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         public PassThroughAction(PassThroughOptions options)
         {
             _options = options;
         }
+
+        public Task Started => _startCompletionSource.Task;
 
         public Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
@@ -34,6 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         public Task StartAsync(CancellationToken token)
         {
+            _startCompletionSource.TrySetResult();
             return Task.CompletedTask;
         }
 
