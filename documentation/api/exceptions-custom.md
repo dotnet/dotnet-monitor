@@ -173,7 +173,7 @@ Accept: text/plain
     "Include": [
         {
             "methodName": "MyExceptionMethod",
-            "className": "MyClass"
+            "className": "MyApp.MyClass"
             "moduleName": "MyApp.dll"
             "exceptionType": "System.InvalidOperationException"
         }

@@ -25,16 +25,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
         [JsonPropertyName("exclude")]
         public List<ExceptionConfiguration> Exclude { get; set; } = new();
 
-        /// <summary>
-        /// By default, filters will check for a namespace.name match or a name match for ease-of-use.
-        /// This toggle allows users to limit the filter to only check for an exact namespace.name match.
-        /// </summary>
-        [JsonPropertyName("allowSimplifiedNames")]
-        public bool AllowSimplifiedNames { get; set; } = true;
-
         private static bool CheckConfiguration(IExceptionInstance exception, List<ExceptionConfiguration> filterList, Func<ExceptionConfiguration, CallStackFrame, bool> evaluateFilterList)
         {
-            var topFrame = exception.CallStack.Frames.Any() ? exception.CallStack.Frames.First() : null;
+            var topFrame = exception.CallStack.Frames.FirstOrDefault();
 
             foreach (var configuration in filterList)
             {
@@ -54,12 +47,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
                 bool include = true;
                 if (topFrame != null)
                 {
-                    CompareIncludeValues(configuration.MethodName, GetSimplifiedName(topFrame.MethodName), topFrame.MethodName, ref include);
-                    CompareIncludeValues(configuration.ModuleName, GetSimplifiedModuleName(topFrame.ModuleName), topFrame.ModuleName, ref include);
-                    CompareIncludeValues(configuration.ClassName, GetSimplifiedName(topFrame.ClassName), topFrame.ClassName, ref include);
+                    CompareIncludeValues(configuration.MethodName, topFrame.MethodName, ref include);
+                    CompareIncludeValues(configuration.ModuleName, topFrame.ModuleName, ref include);
+                    CompareIncludeValues(configuration.ClassName, topFrame.ClassName, ref include);
                 }
 
-                CompareIncludeValues(configuration.ExceptionType, GetSimplifiedName(exception.TypeName), exception.TypeName, ref include);
+                CompareIncludeValues(configuration.ExceptionType, exception.TypeName, ref include);
 
                 return include;
             };
@@ -74,14 +67,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
                 bool? exclude = null;
                 if (topFrame != null)
                 {
-                    CompareExcludeValues(configuration.MethodName, GetSimplifiedName(topFrame.MethodName), topFrame.MethodName, ref exclude);
-                    CompareExcludeValues(configuration.ModuleName, GetSimplifiedModuleName(topFrame.ModuleName), topFrame.ModuleName, ref exclude);
-                    CompareExcludeValues(configuration.ClassName, GetSimplifiedName(topFrame.ClassName), topFrame.ClassName, ref exclude);
-                    CompareExcludeValues(configuration.ExceptionType, GetSimplifiedName(exception.TypeName), exception.TypeName, ref exclude);
+                    CompareExcludeValues(configuration.MethodName, topFrame.MethodName, ref exclude);
+                    CompareExcludeValues(configuration.ModuleName, topFrame.ModuleName, ref exclude);
+                    CompareExcludeValues(configuration.ClassName, topFrame.ClassName, ref exclude);
+                    CompareExcludeValues(configuration.ExceptionType, exception.TypeName, ref exclude);
                 }
                 else
                 {
-                    CompareExcludeValues(configuration.ExceptionType, GetSimplifiedName(exception.TypeName), exception.TypeName, ref exclude);
+                    CompareExcludeValues(configuration.ExceptionType, exception.TypeName, ref exclude);
                 }
 
                 return exclude ?? false;
@@ -90,67 +83,25 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
             return CheckConfiguration(exception, Exclude, evaluateFilterList);
         }
 
-        private static string GetSimplifiedName(string name)
-        {
-            var nestedIndex = name.LastIndexOf('+');
-            if (nestedIndex != -1 && nestedIndex != name.Length - 1)
-            {
-                name = name.Substring(nestedIndex + 1);
-            }
-
-            var genericsIndex = name.LastIndexOf('`');
-            if (genericsIndex != -1)
-            {
-                name = name.Substring(0, genericsIndex);
-            }
-
-            var lastPeriodIndex = name.LastIndexOf('.');
-            if (lastPeriodIndex != -1 && lastPeriodIndex != name.Length - 1)
-            {
-                return name.Substring(lastPeriodIndex + 1);
-            }
-
-            return name;
-        }
-
-        private static string GetSimplifiedModuleName(string moduleName)
-        {
-            var lastTypeSeparatorIndex = moduleName.LastIndexOf('.');
-            if (lastTypeSeparatorIndex != -1)
-            {
-                return GetSimplifiedName(moduleName.Substring(0, lastTypeSeparatorIndex)); // Do we always know there will be a . suffix?
-            }
-
-            return moduleName;
-        }
-
-        private void CompareIncludeValues(string configurationValue, string simpleValue, string fullValue, ref bool include)
+        private static void CompareIncludeValues(string configurationValue, string actualValue, ref bool include)
         {
             if (include && !string.IsNullOrEmpty(configurationValue))
             {
-                include = CompareValues(configurationValue, simpleValue, fullValue);
+                include = CompareValues(configurationValue, actualValue);
             }
         }
 
-        private void CompareExcludeValues(string configurationValue, string simpleValue, string fullValue, ref bool? exclude)
+        private static void CompareExcludeValues(string configurationValue, string actualValue, ref bool? exclude)
         {
             if (exclude != false && !string.IsNullOrEmpty(configurationValue))
             {
-                exclude = CompareValues(configurationValue, simpleValue, fullValue);
+                exclude = CompareValues(configurationValue, actualValue);
             }
         }
 
-        private bool CompareValues(string configurationValue, string simpleValue, string fullValue)
+        private static bool CompareValues(string configurationValue, string actualValue)
         {
-            if (AllowSimplifiedNames)
-            {
-                if (simpleValue.Equals(configurationValue, StringComparison.Ordinal))
-                {
-                    return true;
-                }
-            }
-
-            return fullValue.Equals(configurationValue, StringComparison.Ordinal);
+            return actualValue.Equals(configurationValue, StringComparison.Ordinal);
         }
     }
 

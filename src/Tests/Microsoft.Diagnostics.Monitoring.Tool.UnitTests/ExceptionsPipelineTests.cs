@@ -473,24 +473,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     ExceptionsConfiguration full = new ExceptionsConfiguration()
                     {
-                        AllowSimplifiedNames = false,
                         Include = new() { fullInvalidOperationException }
                     };
                     Assert.True(full.ShouldInclude(instance));
 
-                    ExceptionsConfiguration simpleDisallowSimplifiedNames = new ExceptionsConfiguration()
+                    ExceptionsConfiguration simple = new ExceptionsConfiguration()
                     {
-                        AllowSimplifiedNames = false,
                         Include = new() { simpleInvalidOperationException }
                     };
-                    Assert.False(simpleDisallowSimplifiedNames.ShouldInclude(instance));
-
-                    ExceptionsConfiguration simpleAllowSimplifiedNames = new ExceptionsConfiguration()
-                    {
-                        AllowSimplifiedNames = true,
-                        Include = new() { simpleInvalidOperationException }
-                    };
-                    Assert.True(simpleAllowSimplifiedNames.ShouldInclude(instance));
+                    Assert.False(simple.ShouldInclude(instance));
                 });
         }
 
@@ -510,27 +501,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     ExceptionsConfiguration full = new ExceptionsConfiguration()
                     {
-                        AllowSimplifiedNames = false,
                         Include = new() { fullInvalidOperationException, fullArgumentNullException }
                     };
                     ValidateFilter(full, true, expectedIncludeInstancesList, includeFunc);
                     ValidateFilter(full, false, expectedNotIncludeInstancesList, includeFunc);
 
-                    ExceptionsConfiguration simpleDisallowSimplifiedNames = new ExceptionsConfiguration()
+                    ExceptionsConfiguration simple = new ExceptionsConfiguration()
                     {
-                        AllowSimplifiedNames = false,
                         Include = new() { simpleInvalidOperationException, simpleArgumentNullException }
                     };
-                    ValidateFilter(simpleDisallowSimplifiedNames, false, instances, includeFunc);
-
-                    ExceptionsConfiguration simpleAllowSimplifiedNames = new ExceptionsConfiguration()
-                    {
-                        AllowSimplifiedNames = true,
-                        Include = new() { simpleInvalidOperationException, simpleArgumentNullException }
-                    };
-
-                    ValidateFilter(simpleAllowSimplifiedNames, true, expectedIncludeInstancesList, includeFunc);
-                    ValidateFilter(simpleAllowSimplifiedNames, false, expectedNotIncludeInstancesList, includeFunc);
+                    ValidateFilter(simple, false, instances, includeFunc);
                 });
         }
 
@@ -550,26 +530,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     ExceptionsConfiguration full = new ExceptionsConfiguration()
                     {
-                        AllowSimplifiedNames = false,
                         Exclude = new() { fullInvalidOperationException, fullArgumentNullException }
                     };
                     ValidateFilter(full, true, expectedExcludeInstancesList, excludeFunc);
                     ValidateFilter(full, false, expectedNotExcludeInstancesList, excludeFunc);
 
-                    ExceptionsConfiguration simpleDisallowSimplifiedNames = new ExceptionsConfiguration()
+                    ExceptionsConfiguration simple = new ExceptionsConfiguration()
                     {
-                        AllowSimplifiedNames = false,
                         Exclude = new() { simpleInvalidOperationException, simpleArgumentNullException }
                     };
-                    ValidateFilter(simpleDisallowSimplifiedNames, false, instances, excludeFunc);
-
-                    ExceptionsConfiguration simpleAllowSimplifiedNames = new ExceptionsConfiguration()
-                    {
-                        AllowSimplifiedNames = true,
-                        Exclude = new() { simpleInvalidOperationException, simpleArgumentNullException }
-                    };
-                    ValidateFilter(simpleAllowSimplifiedNames, true, expectedExcludeInstancesList, excludeFunc);
-                    ValidateFilter(simpleAllowSimplifiedNames, false, expectedNotExcludeInstancesList, excludeFunc);
+                    ValidateFilter(simple, false, instances, excludeFunc);
                 });
         }
 
@@ -588,24 +558,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                     ExceptionsConfiguration full = new ExceptionsConfiguration()
                     {
-                        AllowSimplifiedNames = false,
                         Exclude = new() { fullInvalidOperationException }
                     };
                     Assert.True(full.ShouldExclude(instance));
 
-                    ExceptionsConfiguration simpleDisallowSimplifiedNames = new ExceptionsConfiguration()
+                    ExceptionsConfiguration simple = new ExceptionsConfiguration()
                     {
-                        AllowSimplifiedNames = false,
                         Exclude = new() { simpleInvalidOperationException }
                     };
-                    Assert.False(simpleDisallowSimplifiedNames.ShouldExclude(instance));
-
-                    ExceptionsConfiguration simpleAllowSimplifiedNames = new ExceptionsConfiguration()
-                    {
-                        AllowSimplifiedNames = true,
-                        Exclude = new() { simpleInvalidOperationException }
-                    };
-                    Assert.True(simpleAllowSimplifiedNames.ShouldExclude(instance));
+                    Assert.False(simple.ShouldExclude(instance));
                 });
         }
 

@@ -224,9 +224,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         new()
                         {
                             ExceptionType = SystemInvalidOperationException,
-                            MethodName = "ThrowAndCatchInvalidOperationException",
-                            ClassName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario",
-                            ModuleName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll"
+                            MethodName = FrameMethodName,
+                            ClassName = FrameClassName,
+                            ModuleName = FrameModuleName
                         }
                     );
 
@@ -345,7 +345,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     configuration.Include.Add(
                         new()
                         {
-                            MethodName = "ThrowAndCatchInvalidOperationException"
+                            MethodName = FrameMethodName
                         }
                     );
                     configuration.Include.Add(
@@ -386,9 +386,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         new()
                         {
                             ExceptionType = SystemInvalidOperationException,
-                            MethodName = "ThrowAndCatchInvalidOperationException",
-                            ClassName = "ExceptionsScenario",
-                            ModuleName = "UnitTestApp"
+                            MethodName = FrameMethodName,
+                            ClassName = FrameClassName,
+                            ModuleName = FrameModuleName
                         }
                     );
 
