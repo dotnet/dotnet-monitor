@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private const string SystemInvalidOperationException = "System.InvalidOperationException";
         private const string ExceptionMessage = $"Exception of type '{SystemInvalidOperationException}' was thrown.";
         private const string FirstChanceExceptionMessage = "First chance exception at";
-        private const string CustomGenericsException = "CustomGenericsException";
+        private const string CustomGenericsException = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomGenericsException`2[System.Int32,System.String]";
         private const string SystemArgumentNullException = "System.ArgumentNullException";
         private const string FilteringExceptionsScenario = TestAppScenarios.Exceptions.Name + " " + TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions;
 

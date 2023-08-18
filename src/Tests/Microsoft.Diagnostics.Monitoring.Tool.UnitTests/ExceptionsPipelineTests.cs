@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private Func<ExceptionsConfiguration, IExceptionInstance, bool> includeFunc = (configuration, instance) => configuration.ShouldInclude(instance);
         private Func<ExceptionsConfiguration, IExceptionInstance, bool> excludeFunc = (configuration, instance) => configuration.ShouldExclude(instance);
 
-        private const string CustomGenericsException = "CustomGenericsException";
+        private const string CustomGenericsException = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomGenericsException`2[System.Int32,System.String]";
 
         public ExceptionsPipelineTests(ITestOutputHelper outputHelper)
         {
@@ -496,8 +496,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 expectedInstanceCount: 3,
                 validate: instances =>
                 {
-                    var expectedIncludeInstancesList = instances.Where(instance => !instance.TypeName.Contains(CustomGenericsException)).ToList();
-                    var expectedNotIncludeInstancesList = instances.Where(instance => instance.TypeName.Contains(CustomGenericsException)).ToList();
+                    var expectedIncludeInstancesList = instances.Where(instance => !instance.TypeName.Equals(CustomGenericsException)).ToList();
+                    var expectedNotIncludeInstancesList = instances.Where(instance => instance.TypeName.Equals(CustomGenericsException)).ToList();
 
                     ExceptionsConfiguration full = new ExceptionsConfiguration()
                     {
@@ -525,8 +525,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 expectedInstanceCount: 3,
                 validate: instances =>
                 {
-                    var expectedExcludeInstancesList = instances.Where(instance => !instance.TypeName.Contains(CustomGenericsException)).ToList();
-                    var expectedNotExcludeInstancesList = instances.Where(instance => instance.TypeName.Contains(CustomGenericsException)).ToList();
+                    var expectedExcludeInstancesList = instances.Where(instance => !instance.TypeName.Equals(CustomGenericsException)).ToList();
+                    var expectedNotExcludeInstancesList = instances.Where(instance => instance.TypeName.Equals(CustomGenericsException)).ToList();
 
                     ExceptionsConfiguration full = new ExceptionsConfiguration()
                     {
