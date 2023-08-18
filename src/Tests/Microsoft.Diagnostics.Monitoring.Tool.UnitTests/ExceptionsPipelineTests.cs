@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             "Microsoft.Diagnostics.Monitoring.StartupHook",
             TargetFrameworkMoniker.Net60);
 
-        private static ExceptionConfiguration simpleInvalidOperationException = new()
+        private static ExceptionFilter simpleInvalidOperationException = new()
         {
             ClassName = "ExceptionsScenario",
             ExceptionType = nameof(InvalidOperationException),
@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             MethodName = "ThrowAndCatchInvalidOperationException"
         };
 
-        private static ExceptionConfiguration simpleArgumentNullException = new()
+        private static ExceptionFilter simpleArgumentNullException = new()
         {
             ClassName = "ArgumentNullException",
             ExceptionType = nameof(ArgumentNullException),
@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             MethodName = "Throw"
         };
 
-        private static ExceptionConfiguration fullInvalidOperationException = new()
+        private static ExceptionFilter fullInvalidOperationException = new()
         {
             ClassName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario",
             ExceptionType = typeof(InvalidOperationException).FullName,
@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             MethodName = "ThrowAndCatchInvalidOperationException"
         };
 
-        private static ExceptionConfiguration fullArgumentNullException = new()
+        private static ExceptionFilter fullArgumentNullException = new()
         {
             ClassName = "System.ArgumentNullException",
             ExceptionType = typeof(ArgumentNullException).FullName,
