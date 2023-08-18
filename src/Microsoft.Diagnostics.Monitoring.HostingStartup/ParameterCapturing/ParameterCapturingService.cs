@@ -19,44 +19,8 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
-    internal sealed class ParameterCapturingService : BackgroundService, IDisposable
+    internal sealed class ParameterCapturingService : BackgroundService, IParameterCapturingPipelineCallbacks, IDisposable
     {
-        private sealed class ParameterCapturingCallbacks : IParameterCapturingPipelineCallbacks
-        {
-            private readonly ILogger _logger;
-            private readonly ParameterCapturingEventSource _eventSource;
-
-            public ParameterCapturingCallbacks(ILogger logger, ParameterCapturingEventSource eventSource)
-            {
-                _logger = logger;
-                _eventSource = eventSource;
-            }
-
-            public void CapturingStart(StartCapturingParametersPayload request, IList<MethodInfo> methods)
-            {
-                _eventSource.CapturingStart(request.RequestId);
-                _logger?.LogInformation(
-                    ParameterCapturingStrings.StartParameterCapturingFormatString,
-                    request.Duration,
-                    methods.Count);
-            }
-
-            public void CapturingStop(Guid RequestId)
-            {
-                _eventSource.CapturingStop(RequestId);
-                _logger?.LogInformation(ParameterCapturingStrings.StopParameterCapturing);
-            }
-
-            public void FailedToCapture(Guid RequestId, ParameterCapturingEvents.CapturingFailedReason Reason, string Details)
-            {
-                _eventSource.FailedToCapture(RequestId, Reason, Details);
-                if (Reason == ParameterCapturingEvents.CapturingFailedReason.UnresolvedMethods)
-                {
-                    _logger?.LogWarning(Details);
-                }
-            }
-        }
-
         private long _disposedState;
 
         private ParameterCapturingEvents.ServiceState _serviceState;
@@ -65,6 +29,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         private readonly ParameterCapturingEventSource _eventSource = new();
         private readonly ParameterCapturingPipeline? _pipeline;
         private readonly ParameterCapturingLogger? _parameterCapturingLogger;
+
+        private readonly ILogger? _logger;
 
         public ParameterCapturingService(IServiceProvider services)
         {
@@ -82,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     IpcCommand.StopCapturingParameters,
                     OnStopMessage);
 
-                ILogger serviceLogger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.Service>>()
+                _logger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.Service>>()
                     ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
 
                 ILogger userLogger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.UserCode>>()
@@ -94,8 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 _parameterCapturingLogger = new(userLogger, systemLogger);
                 FunctionProbesManager probeManager = new(new LogEmittingProbes(_parameterCapturingLogger));
 
-                ParameterCapturingCallbacks callbacks = new(serviceLogger, _eventSource);
-                _pipeline = new ParameterCapturingPipeline(probeManager, callbacks);
+                _pipeline = new ParameterCapturingPipeline(probeManager, this);
             }
             catch (NotSupportedException ex)
             {
@@ -106,6 +71,47 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 UnrecoverableError(ex);
             }
         }
+
+        #region IParameterCapturingPipelineCallbacks
+        public void CapturingStart(StartCapturingParametersPayload request, IList<MethodInfo> methods)
+        {
+            _eventSource.CapturingStart(request.RequestId);
+            _logger?.LogInformation(
+                ParameterCapturingStrings.StartParameterCapturingFormatString,
+                request.Duration,
+                methods.Count);
+        }
+
+        public void CapturingStop(Guid requestId)
+        {
+            _eventSource.CapturingStop(requestId);
+            _logger?.LogInformation(ParameterCapturingStrings.StopParameterCapturing);
+        }
+
+        public void FailedToCapture(Guid requestId, ParameterCapturingEvents.CapturingFailedReason reason, string details)
+        {
+            _eventSource.FailedToCapture(requestId, reason, details);
+            if (reason == ParameterCapturingEvents.CapturingFailedReason.UnresolvedMethods)
+            {
+                _logger?.LogWarning(details);
+            }
+        }
+
+        public void ProbeFault(Guid requestId, InstrumentedMethod faultingMethod)
+        {
+            // TODO: Report back this fault on ParameterCapturingEventSource. 
+            _logger?.LogWarning(ParameterCapturingStrings.StoppingParameterCapturingDueToProbeFault, faultingMethod.MethodWithParametersTemplateString);
+
+            try
+            {
+                _pipeline?.RequestStop(requestId);
+            }
+            catch
+            {
+
+            }
+        }
+        #endregion
 
         private bool IsAvailable()
         {

@@ -19,6 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public InstrumentedMethod(MethodInfo method, uint[] boxingTokens)
         {
+            FunctionId = method.GetFunctionId();
             SupportedParameters = BoxingTokens.AreParametersSupported(boxingTokens);
             MethodWithParametersTemplateString = PrettyPrinter.ConstructTemplateStringFromMethod(method, SupportedParameters);
             foreach (bool isParameterSupported in SupportedParameters)
@@ -67,5 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         /// The number of format items equals NumberOfSupportedParameters.
         /// </summary>
         public string MethodWithParametersTemplateString { get; }
+
+        public ulong FunctionId { get; }
     }
 }
