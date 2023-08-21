@@ -20,8 +20,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             CliCommand singleExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.SingleException);
             singleExceptionCommand.SetAction(SingleExceptionAsync);
 
-            CliCommand filteringExceptionsCommand = new(TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions);
-            filteringExceptionsCommand.SetAction(FilteringExceptionsAsync);
+            CliCommand multipleExceptionsCommand = new(TestAppScenarios.Exceptions.SubScenarios.MultipleExceptions);
+            multipleExceptionsCommand.SetAction(MultipleExceptionsAsync);
 
             CliCommand repeatExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.RepeatException);
             repeatExceptionCommand.SetAction(RepeatExceptionAsync);
@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
             CliCommand scenarioCommand = new(TestAppScenarios.Exceptions.Name);
             scenarioCommand.Subcommands.Add(singleExceptionCommand);
-            scenarioCommand.Subcommands.Add(filteringExceptionsCommand);
+            scenarioCommand.Subcommands.Add(multipleExceptionsCommand);
             scenarioCommand.Subcommands.Add(repeatExceptionCommand);
             scenarioCommand.Subcommands.Add(asyncExceptionCommand);
             scenarioCommand.Subcommands.Add(frameworkExceptionCommand);
@@ -91,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             }, token);
         }
 
-        public static Task<int> FilteringExceptionsAsync(ParseResult result, CancellationToken token)
+        public static Task<int> MultipleExceptionsAsync(ParseResult result, CancellationToken token)
         {
             return ScenarioHelpers.RunScenarioAsync(async logger =>
             {

@@ -7,7 +7,6 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
@@ -43,7 +42,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Exceptions, EndpointInfo);
 
-            IArtifactOperation operation = _operationFactory.Create(Options.GetFormat(), new ExceptionsConfiguration());
+            IArtifactOperation operation = _operationFactory.Create(Options.GetFormat(), new ExceptionsConfigurationSettings());
 
             EgressOperation egressOperation = new EgressOperation(
                 operation,

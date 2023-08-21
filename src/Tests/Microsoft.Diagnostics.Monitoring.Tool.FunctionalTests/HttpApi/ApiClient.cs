@@ -535,18 +535,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
-        public async Task<ResponseStreamHolder> CaptureExceptionsAsync(HttpMethod method, ExceptionsConfiguration configuration, int processId, ExceptionFormat format, TimeSpan timeout)
+        public async Task<ResponseStreamHolder> CaptureExceptionsAsync(ExceptionsConfiguration configuration, int processId, ExceptionFormat format, CancellationToken token)
         {
-            using CancellationTokenSource timeoutSource = new(timeout);
-
             string json = JsonSerializer.Serialize(configuration, DefaultJsonSerializeOptions);
 
             return await CaptureExceptionsAsync(
-                method,
+                HttpMethod.Post,
                 new StringContent(json, Encoding.UTF8, ContentTypes.ApplicationJson),
                 processId,
                 format,
-                timeoutSource.Token);
+                token);
+        }
+
+        public async Task<ResponseStreamHolder> CaptureExceptionsAsync(int processId, ExceptionFormat format, CancellationToken token)
+        {
+            return await CaptureExceptionsAsync(HttpMethod.Get, null, processId, format, token);
         }
 
         public async Task<ResponseStreamHolder> CaptureExceptionsAsync(HttpMethod method, HttpContent content, int processId, ExceptionFormat format, CancellationToken token)

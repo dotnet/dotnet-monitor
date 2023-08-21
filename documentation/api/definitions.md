@@ -169,7 +169,7 @@ Object describing the list of event providers, keywords, event levels, and addit
 }
 ```
 
-## ExceptionConfiguration
+## ExceptionFilter
 
 Object describing attributes of an exception to use for filtering. To be filtered, an exception must match **all** provided fields (e.g. if `className` and `exceptionType` are provided, the top frame of the exception's call stack must have that class name and the exception must be that type).
 
@@ -186,8 +186,8 @@ Object describing which exceptions should be included/excluded. To be filtered, 
 
 | Name | Type | Description |
 |---|---|---|
-| `include` | [ExceptionConfiguration[]](#exceptionconfiguration) | The list of exceptions to include in the filter - anything not listed in the filter will not be included in the results. |
-| `exclude` | [ExceptionConfiguration[]](#exceptionconfiguration) | The list of exceptions to exclude in the filter - anything not listed in the filter will be included in the results. |
+| `include` | [ExceptionFilter[]](#exceptionfilter) | The list of exceptions to include in the filter - anything not listed in the filter will not be included in the results. |
+| `exclude` | [ExceptionFilter[]](#exceptionfilter) | The list of exceptions to exclude in the filter - anything not listed in the filter will be included in the results. |
 
 ## ExceptionInstance
 

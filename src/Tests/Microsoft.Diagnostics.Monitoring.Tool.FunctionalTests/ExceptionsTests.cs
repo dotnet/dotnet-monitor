@@ -9,7 +9,7 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private const string FirstChanceExceptionMessage = "First chance exception at";
         private const string CustomGenericsException = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomGenericsException`2[System.Int32,System.String]";
         private const string SystemArgumentNullException = "System.ArgumentNullException";
-        private const string FilteringExceptionsScenario = TestAppScenarios.Exceptions.Name + " " + TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions;
+        private const string FilteringExceptionsScenario = TestAppScenarios.Exceptions.Name + " " + TestAppScenarios.Exceptions.SubScenarios.MultipleExceptions;
 
         private string exceptionsResult = string.Empty;
 
@@ -452,7 +452,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         {
             await Task.Delay(500);
 
-            ResponseStreamHolder holder = await apiClient.CaptureExceptionsAsync(configuration, processId, format);
+            ResponseStreamHolder holder;
+            if (configuration != null)
+            {
+                holder = await apiClient.CaptureExceptionsAsync(configuration, processId, format);
+            }
+            else
+            {
+                holder = await apiClient.CaptureExceptionsAsync(processId, format);
+            }
 
             using (var reader = new StreamReader(holder.Stream))
             {

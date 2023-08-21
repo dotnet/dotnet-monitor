@@ -5,27 +5,16 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 {
-    public class ExceptionsConfiguration
+    internal sealed class ExceptionsConfigurationSettings
     {
-        /// <summary>
-        /// The list of exception configurations that determine which exceptions should be shown.
-        /// Each configuration is a logical OR, so if any of the configurations match, the exception is shown.
-        /// </summary>
-        [JsonPropertyName("include")]
-        public List<ExceptionFilter> Include { get; set; } = new();
+        public List<ExceptionFilterSettings> Include { get; set; } = new();
 
-        /// <summary>
-        /// The list of exception configurations that determine which exceptions should be shown.
-        /// Each configuration is a logical OR, so if any of the configurations match, the exception isn't shown.
-        /// </summary>
-        [JsonPropertyName("exclude")]
-        public List<ExceptionFilter> Exclude { get; set; } = new();
+        public List<ExceptionFilterSettings> Exclude { get; set; } = new();
 
-        private static bool CheckConfiguration(IExceptionInstance exception, List<ExceptionFilter> filterList, Func<ExceptionFilter, CallStackFrame, bool> evaluateFilterList)
+        private static bool CheckConfiguration(IExceptionInstance exception, List<ExceptionFilterSettings> filterList, Func<ExceptionFilterSettings, CallStackFrame, bool> evaluateFilterList)
         {
             var topFrame = exception.CallStack.Frames.FirstOrDefault();
 
@@ -42,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 
         internal bool ShouldInclude(IExceptionInstance exception)
         {
-            Func<ExceptionFilter, CallStackFrame, bool> evaluateFilterList = (configuration, topFrame) =>
+            Func<ExceptionFilterSettings, CallStackFrame, bool> evaluateFilterList = (configuration, topFrame) =>
             {
                 bool include = true;
                 if (topFrame != null)
@@ -62,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 
         internal bool ShouldExclude(IExceptionInstance exception)
         {
-            Func<ExceptionFilter, CallStackFrame, bool> evaluateFilterList = (configuration, topFrame) =>
+            Func<ExceptionFilterSettings, CallStackFrame, bool> evaluateFilterList = (configuration, topFrame) =>
             {
                 bool? exclude = null;
                 if (topFrame != null)
@@ -105,30 +94,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
         }
     }
 
-    public class ExceptionFilter
+    internal sealed class ExceptionFilterSettings
     {
-        /// <summary>
-        /// The name of the top stack frame's method.
-        /// </summary>
-        [JsonPropertyName("methodName")]
         public string MethodName { get; set; }
 
-        /// <summary>
-        /// The type of the exception
-        /// </summary>
-        [JsonPropertyName("exceptionType")]
         public string ExceptionType { get; set; }
 
-        /// <summary>
-        /// The name of the top stack frame's class.
-        /// </summary>
-        [JsonPropertyName("className")]
         public string ClassName { get; set; }
 
-        /// <summary>
-        /// The name of the top stack frame's module.
-        /// </summary>
-        [JsonPropertyName("moduleName")]
         public string ModuleName { get; set; }
     }
 }

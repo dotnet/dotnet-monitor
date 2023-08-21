@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             "Microsoft.Diagnostics.Monitoring.StartupHook",
             TargetFrameworkMoniker.Net60);
 
-        private static ExceptionFilter simpleInvalidOperationException = new()
+        private static readonly ExceptionFilterSettings SimpleInvalidOperationException = new()
         {
             ClassName = "ExceptionsScenario",
             ExceptionType = nameof(InvalidOperationException),
@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             MethodName = "ThrowAndCatchInvalidOperationException"
         };
 
-        private static ExceptionFilter simpleArgumentNullException = new()
+        private static readonly ExceptionFilterSettings SimpleArgumentNullException = new()
         {
             ClassName = "ArgumentNullException",
             ExceptionType = nameof(ArgumentNullException),
@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             MethodName = "Throw"
         };
 
-        private static ExceptionFilter fullInvalidOperationException = new()
+        private static readonly ExceptionFilterSettings FullInvalidOperationException = new()
         {
             ClassName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario",
             ExceptionType = typeof(InvalidOperationException).FullName,
@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             MethodName = "ThrowAndCatchInvalidOperationException"
         };
 
-        private static ExceptionFilter fullArgumentNullException = new()
+        private static readonly ExceptionFilterSettings FullArgumentNullException = new()
         {
             ClassName = "System.ArgumentNullException",
             ExceptionType = typeof(ArgumentNullException).FullName,
@@ -66,8 +66,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             MethodName = "Throw"
         };
 
-        private Func<ExceptionsConfiguration, IExceptionInstance, bool> includeFunc = (configuration, instance) => configuration.ShouldInclude(instance);
-        private Func<ExceptionsConfiguration, IExceptionInstance, bool> excludeFunc = (configuration, instance) => configuration.ShouldExclude(instance);
+        private Func<ExceptionsConfigurationSettings, IExceptionInstance, bool> IncludeFunc = (configuration, instance) => configuration.ShouldInclude(instance);
+        private Func<ExceptionsConfigurationSettings, IExceptionInstance, bool> ExcludeFunc = (configuration, instance) => configuration.ShouldExclude(instance);
 
         private const string CustomGenericsException = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomGenericsException`2[System.Int32,System.String]";
 
@@ -471,17 +471,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     IExceptionInstance instance = Assert.Single(instances);
 
-                    ExceptionsConfiguration full = new ExceptionsConfiguration()
+                    ExceptionsConfigurationSettings full = new()
                     {
-                        Include = new() { fullInvalidOperationException }
+                        Include = new() { FullInvalidOperationException }
                     };
-                    Assert.True(full.ShouldInclude(instance));
+                    Assert.True(full.ShouldInclude(instance), $"Incorrectly filtered exception: {GetExceptionDetails(instance)}");
 
-                    ExceptionsConfiguration simple = new ExceptionsConfiguration()
+                    ExceptionsConfigurationSettings simple = new()
                     {
-                        Include = new() { simpleInvalidOperationException }
+                        Include = new() { SimpleInvalidOperationException }
                     };
-                    Assert.False(simple.ShouldInclude(instance));
+                    Assert.False(simple.ShouldInclude(instance), $"Incorrectly filtered exception: {GetExceptionDetails(instance)}");
                 });
         }
 
@@ -492,25 +492,25 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public Task EventExceptionsPipeline_IncludeMultiple()
         {
             return Execute(
-                TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions,
+                TestAppScenarios.Exceptions.SubScenarios.MultipleExceptions,
                 expectedInstanceCount: 3,
                 validate: instances =>
                 {
                     var expectedIncludeInstancesList = instances.Where(instance => !instance.TypeName.Equals(CustomGenericsException)).ToList();
                     var expectedNotIncludeInstancesList = instances.Where(instance => instance.TypeName.Equals(CustomGenericsException)).ToList();
 
-                    ExceptionsConfiguration full = new ExceptionsConfiguration()
+                    ExceptionsConfigurationSettings full = new()
                     {
-                        Include = new() { fullInvalidOperationException, fullArgumentNullException }
+                        Include = new() { FullInvalidOperationException, FullArgumentNullException }
                     };
-                    ValidateFilter(full, true, expectedIncludeInstancesList, includeFunc);
-                    ValidateFilter(full, false, expectedNotIncludeInstancesList, includeFunc);
+                    ValidateFilter(full, true, expectedIncludeInstancesList, IncludeFunc);
+                    ValidateFilter(full, false, expectedNotIncludeInstancesList, IncludeFunc);
 
-                    ExceptionsConfiguration simple = new ExceptionsConfiguration()
+                    ExceptionsConfigurationSettings simple = new()
                     {
-                        Include = new() { simpleInvalidOperationException, simpleArgumentNullException }
+                        Include = new() { SimpleInvalidOperationException, SimpleArgumentNullException }
                     };
-                    ValidateFilter(simple, false, instances, includeFunc);
+                    ValidateFilter(simple, false, instances, IncludeFunc);
                 });
         }
 
@@ -521,25 +521,25 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         public Task EventExceptionsPipeline_ExcludeMultiple()
         {
             return Execute(
-                TestAppScenarios.Exceptions.SubScenarios.FilteringExceptions,
+                TestAppScenarios.Exceptions.SubScenarios.MultipleExceptions,
                 expectedInstanceCount: 3,
                 validate: instances =>
                 {
                     var expectedExcludeInstancesList = instances.Where(instance => !instance.TypeName.Equals(CustomGenericsException)).ToList();
                     var expectedNotExcludeInstancesList = instances.Where(instance => instance.TypeName.Equals(CustomGenericsException)).ToList();
 
-                    ExceptionsConfiguration full = new ExceptionsConfiguration()
+                    ExceptionsConfigurationSettings full = new()
                     {
-                        Exclude = new() { fullInvalidOperationException, fullArgumentNullException }
+                        Exclude = new() { FullInvalidOperationException, FullArgumentNullException }
                     };
-                    ValidateFilter(full, true, expectedExcludeInstancesList, excludeFunc);
-                    ValidateFilter(full, false, expectedNotExcludeInstancesList, excludeFunc);
+                    ValidateFilter(full, true, expectedExcludeInstancesList, ExcludeFunc);
+                    ValidateFilter(full, false, expectedNotExcludeInstancesList, ExcludeFunc);
 
-                    ExceptionsConfiguration simple = new ExceptionsConfiguration()
+                    ExceptionsConfigurationSettings simple = new()
                     {
-                        Exclude = new() { simpleInvalidOperationException, simpleArgumentNullException }
+                        Exclude = new() { SimpleInvalidOperationException, SimpleArgumentNullException }
                     };
-                    ValidateFilter(simple, false, instances, excludeFunc);
+                    ValidateFilter(simple, false, instances, ExcludeFunc);
                 });
         }
 
@@ -556,25 +556,46 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     IExceptionInstance instance = Assert.Single(instances);
 
-                    ExceptionsConfiguration full = new ExceptionsConfiguration()
+                    ExceptionsConfigurationSettings full = new()
                     {
-                        Exclude = new() { fullInvalidOperationException }
+                        Exclude = new() { FullInvalidOperationException }
                     };
-                    Assert.True(full.ShouldExclude(instance));
+                    Assert.True(full.ShouldExclude(instance), $"Incorrectly filtered exception: {GetExceptionDetails(instance)}");
 
-                    ExceptionsConfiguration simple = new ExceptionsConfiguration()
+                    ExceptionsConfigurationSettings simple = new()
                     {
-                        Exclude = new() { simpleInvalidOperationException }
+                        Exclude = new() { SimpleInvalidOperationException }
                     };
-                    Assert.False(simple.ShouldExclude(instance));
+                    Assert.False(simple.ShouldExclude(instance), $"Incorrectly filtered exception: {GetExceptionDetails(instance)}");
                 });
         }
 
-        private static void ValidateFilter(ExceptionsConfiguration configuration, bool expectedResult, IEnumerable<IExceptionInstance> instances, Func<ExceptionsConfiguration, IExceptionInstance, bool> shouldFilter)
+        private static void ValidateFilter(ExceptionsConfigurationSettings configuration, bool expectedResult, IEnumerable<IExceptionInstance> instances, Func<ExceptionsConfigurationSettings, IExceptionInstance, bool> shouldFilter)
         {
             foreach (var instance in instances)
             {
-                Assert.Equal(expectedResult, shouldFilter(configuration, instance));
+                if (expectedResult)
+                {
+                    Assert.True(shouldFilter(configuration, instance), $"Incorrectly filtered exception: {GetExceptionDetails(instance)}");
+                }
+                else
+                {
+                    Assert.False(shouldFilter(configuration, instance), $"Incorrectly filtered exception: {GetExceptionDetails(instance)}");
+                }
+            }
+        }
+
+        private static string GetExceptionDetails(IExceptionInstance instance)
+        {
+            var topFrame = instance.CallStack.Frames.FirstOrDefault();
+
+            if (topFrame != null)
+            {
+                return $"MethodName: {topFrame.MethodName}, ModuleName: {topFrame.ModuleName}, ClassName: {topFrame.ClassName}, TypeName: {instance.TypeName}";
+            }
+            else
+            {
+                return $"TypeName: {instance.TypeName}";
             }
         }
 

@@ -27,14 +27,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private const char MethodParameterTypesStart = '(';
         private const char MethodParameterTypesEnd = ')';
 
-        private readonly ExceptionsConfiguration _configuration;
+        private readonly ExceptionsConfigurationSettings _configuration;
         private readonly IEndpointInfo _endpointInfo;
         private readonly ExceptionFormat _format;
         private readonly IExceptionsStore _store;
 
         private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        public ExceptionsOperation(IEndpointInfo endpointInfo, IExceptionsStore store, ExceptionFormat format, ExceptionsConfiguration configuration)
+        public ExceptionsOperation(IEndpointInfo endpointInfo, IExceptionsStore store, ExceptionFormat format, ExceptionsConfigurationSettings configuration)
         {
             _endpointInfo = endpointInfo;
             _store = store;
@@ -93,7 +93,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             }
         }
 
-        internal static List<IExceptionInstance> FilterExceptions(ExceptionsConfiguration configuration, IReadOnlyList<IExceptionInstance> instances)
+        internal static List<IExceptionInstance> FilterExceptions(ExceptionsConfigurationSettings configuration, IReadOnlyList<IExceptionInstance> instances)
         {
             List<IExceptionInstance> filteredInstances = new List<IExceptionInstance>();
             foreach (IExceptionInstance instance in instances)
@@ -107,7 +107,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             return filteredInstances;
         }
 
-        internal static bool FilterException(ExceptionsConfiguration configuration, IExceptionInstance instance)
+        internal static bool FilterException(ExceptionsConfigurationSettings configuration, IExceptionInstance instance)
         {
             bool shouldInclude = true;
             if (configuration.Include.Count > 0)

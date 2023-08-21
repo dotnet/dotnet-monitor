@@ -14,6 +14,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// <summary>
         /// Creates an operation that produces an exceptions artifact.
         /// </summary>
-        IArtifactOperation Create(ExceptionFormat format, ExceptionsConfiguration configuration);
+        IArtifactOperation Create(ExceptionFormat format, ExceptionsConfigurationSettings configuration);
     }
 }

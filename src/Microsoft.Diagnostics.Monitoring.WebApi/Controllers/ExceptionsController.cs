@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -74,7 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 IArtifactOperation operation = processInfo.EndpointInfo.ServiceProvider
                     .GetRequiredService<IExceptionsOperationFactory>()
-                    .Create(format, new ExceptionsConfiguration());
+                    .Create(format, new ExceptionsConfigurationSettings());
 
                 return Result(
                     Utilities.ArtifactType_Exceptions,
@@ -125,7 +126,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 IArtifactOperation operation = processInfo.EndpointInfo.ServiceProvider
                     .GetRequiredService<IExceptionsOperationFactory>()
-                    .Create(format, configuration);
+                    .Create(format, ConvertExceptionsConfiguration(configuration));
 
                 return Result(
                     Utilities.ArtifactType_Exceptions,
@@ -135,6 +136,34 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     tags,
                     format != ExceptionFormat.PlainText);
             }, processKey, Utilities.ArtifactType_Exceptions);
+        }
+
+        private static ExceptionsConfigurationSettings ConvertExceptionsConfiguration(ExceptionsConfiguration configuration)
+        {
+            ExceptionsConfigurationSettings configurationSettings = new();
+
+            foreach (var filter in configuration.Include)
+            {
+                configurationSettings.Include.Add(ConvertExceptionFilter(filter));
+            }
+
+            foreach (var filter in configuration.Exclude)
+            {
+                configurationSettings.Exclude.Add(ConvertExceptionFilter(filter));
+            }
+
+            return configurationSettings;
+        }
+
+        private static ExceptionFilterSettings ConvertExceptionFilter(ExceptionFilter filter)
+        {
+            return new ExceptionFilterSettings()
+            {
+                ClassName = filter.ClassName,
+                ExceptionType = filter.ExceptionType,
+                MethodName = filter.MethodName,
+                ModuleName = filter.ModuleName
+            };
         }
 
         private static ExceptionFormat? ComputeFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
