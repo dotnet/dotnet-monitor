@@ -69,8 +69,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             return result;
         }
 
-        public static async Task<int> RunWebScenarioAsync<TStartup>(Func<ILogger, Task<int>> func, CancellationToken token)
-            where TStartup : class
+        public static async Task<int> RunWebScenarioAsync<TStartup>(Action<IServiceCollection> configureServices, Func<ILogger, Task<int>> func, CancellationToken token)
+    where TStartup : class
         {
             // Create a minimal ASP.NET host that:
             // - Doesn't write logs to stdout (since the unit test app uses this for execution control)
@@ -80,6 +80,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             IWebHost host = new WebHostBuilder()
                 .ConfigureServices(services =>
                 {
+                    configureServices?.Invoke(services);
+
                     services.AddLogging(builder =>
                     {
                         builder.AddEventSourceLogger();
@@ -118,6 +120,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             }
 
             return exitCode;
+        }
+
+        public static Task<int> RunWebScenarioAsync<TStartup>(Func<ILogger, Task<int>> func, CancellationToken token)
+            where TStartup : class
+        {
+            return RunWebScenarioAsync<TStartup>(configureServices: null, func, token);
         }
 
         public static async Task WaitForCommandAsync(string expectedCommand, ILogger logger)

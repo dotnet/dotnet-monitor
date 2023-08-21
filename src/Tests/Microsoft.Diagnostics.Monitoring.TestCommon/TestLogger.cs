@@ -16,6 +16,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public void Add(EventId id, string category, string message) => _events.Add(new LogRecordEntry(id, category, message));
 
         public IList<LogRecordEntry> Events => _events;
+
+        public void Clear() => _events.Clear();
     }
 
     internal sealed class TestLoggerProvider : ILoggerProvider

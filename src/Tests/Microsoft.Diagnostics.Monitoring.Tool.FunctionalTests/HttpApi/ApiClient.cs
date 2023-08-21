@@ -596,6 +596,33 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
+        public async Task<OperationResponse> CaptureParametersAsync(int processId, TimeSpan duration, MethodDescription[] methods, CancellationToken token)
+        {
+            bool isInfinite = (duration == Timeout.InfiniteTimeSpan);
+            string uri = FormattableString.Invariant($"/parameters?pid={processId}&durationSeconds={(isInfinite ? -1 : duration.Seconds)}");
+            using HttpRequestMessage request = new(HttpMethod.Post, uri);
+
+            string content = JsonSerializer.Serialize(methods, DefaultJsonSerializeOptions);
+            request.Content = new StringContent(content, Encoding.UTF8, ContentTypes.ApplicationJson);
+
+            using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
+
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Accepted:
+                    return new OperationResponse(response.StatusCode, response.Headers.Location);
+                case HttpStatusCode.BadRequest:
+                case HttpStatusCode.TooManyRequests:
+                    ValidateContentType(response, ContentTypes.ApplicationProblemJson);
+                    throw await CreateValidationProblemDetailsExceptionAsync(response).ConfigureAwait(false);
+                case HttpStatusCode.Unauthorized:
+                    ThrowIfNotSuccess(response);
+                    break;
+            }
+
+            throw await CreateUnexpectedStatusCodeExceptionAsync(response).ConfigureAwait(false);
+        }
+
         public async Task<HttpResponseMessage> ApiCall(string routeAndQuery, CancellationToken token)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, routeAndQuery);

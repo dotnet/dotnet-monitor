@@ -69,6 +69,8 @@ namespace SampleMethods
 
         public static async Task AsyncMethod(int delay) { await Task.Delay(delay); }
 
+        public static void Basic(int i) { }
+
         public static void BuiltInReferenceTypes(object arg1, string arg2, dynamic arg3) { }
 
         public static void NoArgs() { }
