@@ -17,9 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
     {
         public Guid RequestId { get; set; } = Guid.Empty;
         public TimeSpan Duration { get; set; } = Timeout.InfiniteTimeSpan;
-        // Use the null forgiving operator here to reconcile the fact that this file is used in
-        // multiple projects, some with Nullable set, and others without.
-        public CaptureParametersConfiguration Configuration { get; set; } = null!;
+        public CaptureParametersConfiguration Configuration { get; set; } = new();
     }
 
     internal sealed class StopCapturingParametersPayload
