@@ -82,15 +82,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Stacks
 
                 _ = await _pipeline.StartAsync(token);
 
-                ProfilerMessage response = await _channel.SendMessage(
+                await _channel.SendMessage(
                     _endpointInfo,
-                    new ProfilerMessage { MessageType = ProfilerMessageType.Callstack, Parameter = 0 },
+                    new CommandOnlyProfilerMessage(IpcCommand.Callstack),
                     token);
-
-                if (response.MessageType == ProfilerMessageType.Error)
-                {
-                    throw new InvalidOperationException($"Profiler request failed: 0x{response.Parameter:X8}");
-                }
 
                 return runTask;
             }

@@ -70,6 +70,54 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             }
         }
 
+        public static class FunctionProbes
+        {
+            public const string Name = nameof(FunctionProbes);
+
+            public static class SubScenarios
+            {
+                /* Probe management */
+                public const string ProbeInstallation = nameof(ProbeInstallation);
+                public const string ProbeUninstallation = nameof(ProbeUninstallation);
+                public const string ProbeReinstallation = nameof(ProbeReinstallation);
+
+                /* Parameter capturing */
+                public const string CapturePrimitives = nameof(CapturePrimitives);
+                public const string CaptureValueTypes = nameof(CaptureValueTypes);
+                public const string CaptureImplicitThis = nameof(CaptureImplicitThis);
+                public const string CaptureExplicitThis = nameof(CaptureExplicitThis);
+
+                public const string CaptureNoParameters = nameof(CaptureNoParameters);
+                public const string CaptureUnsupportedParameters = nameof(CaptureUnsupportedParameters);
+                public const string CaptureValueTypeImplicitThis = nameof(CaptureValueTypeImplicitThis);
+
+                /* Interesting methods */
+                public const string AsyncMethod = nameof(AsyncMethod);
+                public const string GenericMethods = nameof(GenericMethods);
+                public const string ExceptionRegionAtBeginningOfMethod = nameof(ExceptionRegionAtBeginningOfMethod);
+
+                /* Fault injection */
+                public const string ExceptionThrownByProbe = nameof(ExceptionThrownByProbe);
+                public const string RecursingProbe = nameof(RecursingProbe);
+                public const string RequestInstallationOnProbeFunction = nameof(RequestInstallationOnProbeFunction);
+
+                /* Self tests */
+                public const string AssertsInProbesAreCaught = nameof(AssertsInProbesAreCaught);
+            }
+        }
+
+        public static class HostingStartup
+        {
+            public const string Name = nameof(HostingStartup);
+
+            public static class SubScenarios
+            {
+                public const string VerifyAspNetAppWithoutHostingStartup = nameof(VerifyAspNetAppWithoutHostingStartup);
+                public const string VerifyAspNetApp = nameof(VerifyAspNetApp);
+                public const string VerifyNonAspNetAppNotImpacted = nameof(VerifyNonAspNetAppNotImpacted);
+            }
+        }
+
         public static class Stacks
         {
             public const string Name = nameof(Stacks);

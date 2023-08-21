@@ -421,6 +421,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parameter capturing is not available in the process..
+        /// </summary>
+        internal static string ErrorMessage_ParameterCapturingNotAvailable {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ParameterCapturingNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} parameter value &apos;{1}&apos; is not allowed..
         /// </summary>
         internal static string ErrorMessage_ParameterNotAllowed {
@@ -521,6 +530,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to find hosting startup assembly at determined path..
+        /// </summary>
+        internal static string ErrorMessage_UnableToFindHostingStartupAssembly {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnableToFindHostingStartupAssembly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to find profiler assembly at determined path..
         /// </summary>
         internal static string ErrorMessage_UnableToFindProfilerAssembly {
@@ -589,6 +607,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string FeatureName_Exceptions {
             get {
                 return ResourceManager.GetString("FeatureName_Exceptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parameter Capturing.
+        /// </summary>
+        internal static string FeatureName_ParameterCapturing {
+            get {
+                return ResourceManager.GetString("FeatureName_ParameterCapturing", resourceCulture);
             }
         }
         
@@ -1525,6 +1552,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string LogFormatString_StartupHookMissing {
             get {
                 return ResourceManager.GetString("LogFormatString_StartupHookMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to apply hosting startup..
+        /// </summary>
+        internal static string LogFormatString_UnableToApplyHostingStartup {
+            get {
+                return ResourceManager.GetString("LogFormatString_UnableToApplyHostingStartup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to apply in process feature flags..
+        /// </summary>
+        internal static string LogFormatString_UnableToApplyInProcessFeatureFlags {
+            get {
+                return ResourceManager.GetString("LogFormatString_UnableToApplyInProcessFeatureFlags", resourceCulture);
             }
         }
         
