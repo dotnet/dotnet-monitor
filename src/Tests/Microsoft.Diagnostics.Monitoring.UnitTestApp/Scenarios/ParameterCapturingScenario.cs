@@ -87,8 +87,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
         public static Task<int> NonAspNetAppAsync(ParseResult result, CancellationToken token)
         {
-            LogRecord logRecord = new();
-
             return ScenarioHelpers.RunScenarioAsync(
                 func: async logger =>
                 {
