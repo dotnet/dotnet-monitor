@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         private readonly ProfilerChannel _profilerChannel;
         private readonly IEndpointInfo _endpointInfo;
         private readonly ILogger _logger;
-        private readonly MethodDescription[] _methods;
+        private readonly CaptureParametersConfiguration _configuration;
         private readonly TimeSpan _duration;
 
         private readonly Guid _requestId;
@@ -28,12 +28,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         private readonly TaskCompletionSource _capturingStoppedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TaskCompletionSource _capturingStartedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        public CaptureParametersOperation(IEndpointInfo endpointInfo, ProfilerChannel profilerChannel, ILogger logger, MethodDescription[] methods, TimeSpan duration)
+        public CaptureParametersOperation(IEndpointInfo endpointInfo, ProfilerChannel profilerChannel, ILogger logger, CaptureParametersConfiguration configuration, TimeSpan duration)
         {
             _profilerChannel = profilerChannel;
             _endpointInfo = endpointInfo;
             _logger = logger;
-            _methods = methods;
+            _configuration = configuration;
             _duration = duration;
 
             _requestId = Guid.NewGuid();
@@ -81,7 +81,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 {
                     RequestId = _requestId,
                     Duration = _duration,
-                    Methods = _methods
+                    Configuration = _configuration
                 }),
                 token);
 

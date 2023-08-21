@@ -568,7 +568,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [EgressValidation]
         public async Task<ActionResult> CaptureParameters(
             [FromBody][Required]
-            MethodDescription[] methods,
+            CaptureParametersConfiguration configuration,
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
@@ -590,7 +590,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return await InvokeForProcess(async processInfo =>
             {
-                IInProcessOperation operation = _captureParametersFactory.Create(processInfo.EndpointInfo, methods, duration);
+                IInProcessOperation operation = _captureParametersFactory.Create(processInfo.EndpointInfo, configuration, duration);
                 return await InProcessResult(Utilities.ArtifactType_Parameters, processInfo, operation, tags);
             }, processKey, Utilities.ArtifactType_Parameters);
         }

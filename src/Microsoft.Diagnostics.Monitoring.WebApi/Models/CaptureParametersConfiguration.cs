@@ -11,6 +11,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher.
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 #endif
 {
+    public class CaptureParametersConfiguration
+    {
+        [JsonPropertyName("methods")]
+        public MethodDescription[] Methods { get; set; } = Array.Empty<MethodDescription>();
+    }
+
     public class MethodDescription
     {
         // CONSIDER: Standardize this with our stack frame representation

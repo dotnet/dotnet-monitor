@@ -945,26 +945,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/MethodDescription"
-                }
+                "$ref": "#/components/schemas/CaptureParametersConfiguration"
               }
             },
             "text/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/MethodDescription"
-                }
+                "$ref": "#/components/schemas/CaptureParametersConfiguration"
               }
             },
             "application/*+json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/MethodDescription"
-                }
+                "$ref": "#/components/schemas/CaptureParametersConfiguration"
               }
             }
           },
@@ -1495,6 +1486,19 @@
   },
   "components": {
     "schemas": {
+      "CaptureParametersConfiguration": {
+        "type": "object",
+        "properties": {
+          "methods": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MethodDescription"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "CollectionRuleDescription": {
         "type": "object",
         "properties": {
