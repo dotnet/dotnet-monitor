@@ -112,7 +112,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return Accepted(location);
         }
 
-        private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, string tags, IArtifactOperation operation = null)
+        private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, string tags, IArtifactOperation operation)
         {
             // While not strictly a Location redirect, use the same header as externally egressed operations for consistency.
             HttpContext.Response.Headers["Location"] = await RegisterOperation(

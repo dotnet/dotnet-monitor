@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         IAsyncDisposable
     {
         private readonly CancellationTokenSource _disposalTokenSource = new();
+        private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         private Task<CollectionRuleActionResult> _completionTask;
         private long _disposedState;
@@ -22,6 +24,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         protected IProcessInfo ProcessInfo { get; }
 
         protected TOptions Options { get; }
+
+
+        public Task Started => _startCompletionSource.Task;
 
         protected CollectionRuleActionBase(IProcessInfo processInfo, TOptions options)
         {
@@ -52,12 +57,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         {
             ThrowIfDisposed();
 
-            TaskCompletionSource<object> startCompleteSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-
             CancellationToken disposalToken = _disposalTokenSource.Token;
-            _completionTask = Task.Run(() => ExecuteAsync(startCompleteSource, collectionRuleMetadata, disposalToken), disposalToken);
+            _completionTask = Task.Run(() => ExecuteAsync(collectionRuleMetadata, disposalToken), disposalToken);
 
-            await startCompleteSource.WithCancellation(token);
+            await _startCompletionSource.WithCancellation(token);
         }
 
         public async Task StartAsync(CancellationToken token)
@@ -72,32 +75,31 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             return await _completionTask.WithCancellation(token);
         }
 
+        protected bool TrySetStarted()
+        {
+            return _startCompletionSource.TrySetResult();
+        }
+
+
         private async Task<CollectionRuleActionResult> ExecuteAsync(
-            TaskCompletionSource<object> startCompletionSource,
             CollectionRuleMetadata collectionRuleMetadata,
             CancellationToken token)
         {
             try
             {
-                return await ExecuteCoreAsync(startCompletionSource, collectionRuleMetadata, token);
+                return await ExecuteCoreAsync(collectionRuleMetadata, token);
             }
-            catch (Exception ex) when (TrySetExceptionReturnFalse(startCompletionSource, ex, token))
+            catch (OperationCanceledException)
             {
+                _startCompletionSource.TrySetCanceled(token);
                 throw;
             }
-        }
-
-        private static bool TrySetExceptionReturnFalse(TaskCompletionSource<object> source, Exception ex, CancellationToken token)
-        {
-            if (ex is OperationCanceledException)
+            catch (Exception ex)
             {
-                source.TrySetCanceled(token);
+                CollectionRuleActionException collectionRuleActionException = new(ex);
+                _startCompletionSource.TrySetException(collectionRuleActionException);
+                throw collectionRuleActionException;
             }
-            else
-            {
-                source.TrySetException(ex);
-            }
-            return false;
         }
 
         protected void ThrowIfDisposed()
@@ -106,7 +108,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         protected abstract Task<CollectionRuleActionResult> ExecuteCoreAsync(
-            TaskCompletionSource<object> startCompletionSource,
             CollectionRuleMetadata collectionRuleMetadata,
             CancellationToken token);
     }

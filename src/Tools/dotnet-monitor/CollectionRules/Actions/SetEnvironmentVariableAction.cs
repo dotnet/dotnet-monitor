@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Logging;
 using System;
@@ -52,28 +51,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
-                TaskCompletionSource<object> startCompletionSource,
                 CollectionRuleMetadata collectionRuleMetadata,
                 CancellationToken token)
             {
-                try
+                DiagnosticsClient client = new DiagnosticsClient(EndpointInfo.Endpoint);
+
+                _logger.SettingEnvironmentVariable(_options.Name, EndpointInfo.ProcessId);
+                await client.SetEnvironmentVariableAsync(_options.Name, _options.Value, token);
+
+                if (!TrySetStarted())
                 {
-                    DiagnosticsClient client = new DiagnosticsClient(EndpointInfo.Endpoint);
-
-                    _logger.SettingEnvironmentVariable(_options.Name, EndpointInfo.ProcessId);
-                    await client.SetEnvironmentVariableAsync(_options.Name, _options.Value, token);
-
-                    if (!startCompletionSource.TrySetResult(null))
-                    {
-                        throw new InvalidOperationException();
-                    }
-
-                    return new CollectionRuleActionResult();
+                    throw new InvalidOperationException();
                 }
-                catch (Exception ex)
-                {
-                    throw new CollectionRuleActionException(ex);
-                }
+
+                return new CollectionRuleActionResult();
             }
         }
     }

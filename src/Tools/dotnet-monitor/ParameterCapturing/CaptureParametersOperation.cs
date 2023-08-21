@@ -28,6 +28,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         private readonly TaskCompletionSource _capturingStoppedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TaskCompletionSource _capturingStartedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
+        public bool IsStoppable => true;
+
+        public Task Started => _capturingStartedCompletionSource.Task;
+
         public CaptureParametersOperation(IEndpointInfo endpointInfo, ProfilerChannel profilerChannel, ILogger logger, CaptureParametersConfiguration configuration, TimeSpan duration)
         {
             _profilerChannel = profilerChannel;
@@ -54,52 +58,55 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             return ToolIdentifiers.IsEnvVarValueEnabled(isManagedMessagingAvailable) && ToolIdentifiers.IsEnvVarValueEnabled(isHostingStartupAvailable);
         }
 
-        public async Task ExecuteAsync(TaskCompletionSource<object> startCompletionSource, CancellationToken token)
+        public async Task ExecuteAsync(CancellationToken token)
         {
-            // Check if the endpoint is capable of responding to our requests
-            if (!await CanEndpointProcessRequestsAsync(token))
-            {
-                throw new MonitoringException(Strings.ErrorMessage_ParameterCapturingNotAvailable);
-            }
-
-            EventParameterCapturingPipelineSettings settings = new()
-            {
-                Duration = Timeout.InfiniteTimeSpan
-            };
-            settings.OnStartedCapturing += OnStartedCapturing;
-            settings.OnStoppedCapturing += OnStoppedCapturing;
-            settings.OnCapturingFailed += OnCapturingFailed;
-            settings.OnServiceStateUpdate += OnServiceStateUpdate;
-            settings.OnUnknownRequestId += OnUnknownRequestId;
-
-            await using EventParameterCapturingPipeline eventTracePipeline = new(_endpointInfo.Endpoint, settings);
-            Task runPipelineTask = eventTracePipeline.StartAsync(token);
-
-            await _profilerChannel.SendMessage(
-                _endpointInfo,
-                new JsonProfilerMessage(IpcCommand.StartCapturingParameters, new StartCapturingParametersPayload
-                {
-                    RequestId = _requestId,
-                    Duration = _duration,
-                    Configuration = _configuration
-                }),
-                token);
-
             try
             {
-                await _capturingStartedCompletionSource.Task.WaitAsync(token).ConfigureAwait(false);
-                startCompletionSource?.TrySetResult(null);
+                // Check if the endpoint is capable of responding to our requests
+                if (!await CanEndpointProcessRequestsAsync(token))
+                {
+                    throw new MonitoringException(Strings.ErrorMessage_ParameterCapturingNotAvailable);
+                }
 
+                EventParameterCapturingPipelineSettings settings = new()
+                {
+                    Duration = Timeout.InfiniteTimeSpan
+                };
+                settings.OnStartedCapturing += OnStartedCapturing;
+                settings.OnStoppedCapturing += OnStoppedCapturing;
+                settings.OnCapturingFailed += OnCapturingFailed;
+                settings.OnServiceStateUpdate += OnServiceStateUpdate;
+                settings.OnUnknownRequestId += OnUnknownRequestId;
+
+                await using EventParameterCapturingPipeline eventTracePipeline = new(_endpointInfo.Endpoint, settings);
+                Task runPipelineTask = eventTracePipeline.StartAsync(token);
+
+                await _profilerChannel.SendMessage(
+                    _endpointInfo,
+                    new JsonProfilerMessage(IpcCommand.StartCapturingParameters, new StartCapturingParametersPayload
+                    {
+                        RequestId = _requestId,
+                        Duration = _duration,
+                        Configuration = _configuration
+                    }),
+                    token);
+
+                await _capturingStartedCompletionSource.Task.WaitAsync(token).ConfigureAwait(false);
                 await _capturingStoppedCompletionSource.Task.WaitAsync(token).ConfigureAwait(false);
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
-                _ = startCompletionSource?.TrySetException(ex);
                 _ = _capturingStartedCompletionSource.TrySetCanceled(token);
                 _ = _capturingStoppedCompletionSource.TrySetCanceled(token);
 
                 using CancellationTokenSource stopCancellationToken = new(TimeSpan.FromSeconds(30));
                 await StopAsync(stopCancellationToken.Token).SafeAwait();
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _ = _capturingStartedCompletionSource.TrySetException(ex);
+                _ = _capturingStoppedCompletionSource.TrySetException(ex);
                 throw;
             }
         }
@@ -185,7 +192,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 }),
                 token);
         }
-
-        public bool IsStoppable => true;
     }
 }
