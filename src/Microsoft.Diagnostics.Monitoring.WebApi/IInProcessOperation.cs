@@ -10,17 +10,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// Represents an operation that can produce a diagnostic
     /// artifact inside the target process
     /// </summary>
-    internal interface IInProcessOperation
+    internal interface IInProcessOperation : IStartable
     {
         /// <summary>
         /// Produces a diagnostic artifact inside the target process
         /// </summary>
-        /// <param name="startCompletionSource">A completion source that is signaled when the operation has started.</param>
         /// <param name="token">A token used to cancel the operation.</param>
         /// <returns></returns>
-        Task ExecuteAsync(
-            TaskCompletionSource<object> startCompletionSource,
-            CancellationToken token);
+        Task ExecuteAsync(CancellationToken token);
 
         /// <summary>
         /// Stops the production of the diagnostic artifact.
