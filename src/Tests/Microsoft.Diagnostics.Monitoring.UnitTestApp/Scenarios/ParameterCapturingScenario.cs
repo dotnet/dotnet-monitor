@@ -42,30 +42,15 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
         public static Task<int> ExpectLogStatementAsync(ParseResult result, CancellationToken token)
         {
-            LogRecord logRecord = new();
-
-            return ScenarioHelpers.RunWebScenarioAsync<Startup>(
-                configureServices: (services) =>
-                {
-                    services.AddLogging(builder =>
-                    {
-                        builder.AddProvider(new TestLoggerProvider(logRecord));
-                    });
-                },
-                func: async logger =>
-                {
-                    await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Validate, logger);
-
-                    SampleMethods.StaticTestMethodSignatures.SinglePrimitive(int.MaxValue);
-
-                    LogRecordEntry logEntry = logRecord.Events.First(e => e.Category == typeof(DotnetMonitor.ParameterCapture.UserCode).FullName);
-                    Assert.NotNull(logEntry);
-
-                    return 0;
-                }, token);
+            return LogStatementCoreAsync(result, expectLogs: true, token);
         }
 
         public static Task<int> DoNotExpectLogStatementAsync(ParseResult result, CancellationToken token)
+        {
+            return LogStatementCoreAsync(result, expectLogs: false, token);
+        }
+
+        private static Task<int> LogStatementCoreAsync(ParseResult result, bool expectLogs, CancellationToken token)
         {
             LogRecord logRecord = new();
 
@@ -84,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                     SampleMethods.StaticTestMethodSignatures.SinglePrimitive(int.MaxValue);
 
                     bool didFindLogs = logRecord.Events.Where(e => e.Category == typeof(DotnetMonitor.ParameterCapture.UserCode).FullName).Any();
-                    Assert.False(didFindLogs);
+                    Assert.Equal(expectLogs, didFindLogs);
                     return 0;
 
                 }, token);
