@@ -157,10 +157,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
         public void SubmitRequest(StartCapturingParametersPayload payload)
         {
             ArgumentNullException.ThrowIfNull(payload.Configuration);
-            if (payload.Configuration == null)
-            {
-                throw new ArgumentException(nameof(payload.Configuration.Methods));
-            }
 
             if (payload.Configuration.Methods.Length == 0)
             {
