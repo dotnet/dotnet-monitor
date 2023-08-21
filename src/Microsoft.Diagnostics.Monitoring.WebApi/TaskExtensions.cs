@@ -4,13 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-#if UNITTEST
-namespace Microsoft.Diagnostics.Monitoring.TestCommon
-#else
-using Microsoft.Diagnostics.Monitoring.WebApi;
-
-namespace Microsoft.Diagnostics.Tools.Monitor
-#endif
+namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class TaskExtensions
     {

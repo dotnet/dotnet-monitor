@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
-    internal interface ICollectionRuleAction
+    internal interface ICollectionRuleAction : IStartable
     {
         Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token);
 
