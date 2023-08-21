@@ -182,7 +182,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     {
                         AssemblyName = "Microsoft.Diagnostics.Monitoring.UnitTestApp",
                         TypeName = "SampleMethods.StaticTestMethodSignatures",
-                        MethodName = "SinglePrimitive"
+                        MethodName = "NoArgs"
                     }
             };
         }

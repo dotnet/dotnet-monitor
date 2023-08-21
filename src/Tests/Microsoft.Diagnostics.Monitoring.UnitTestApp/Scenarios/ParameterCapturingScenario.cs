@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 {
                     await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Validate, logger);
 
-                    SampleMethods.StaticTestMethodSignatures.SinglePrimitive(int.MaxValue);
+                    SampleMethods.StaticTestMethodSignatures.NoArgs();
 
                     bool didFindLogs = logRecord.Events.Where(e => e.Category == typeof(DotnetMonitor.ParameterCapture.UserCode).FullName).Any();
                     Assert.Equal(expectLogs, didFindLogs);
