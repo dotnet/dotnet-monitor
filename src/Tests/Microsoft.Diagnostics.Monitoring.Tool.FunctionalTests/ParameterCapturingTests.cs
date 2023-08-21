@@ -73,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 int processId = await appRunner.ProcessIdTask;
 
-                MethodDescription[] methods = GetValidConfiguration();
+                MethodDescription[] methods = GetValidMethodDescriptions();
 
                 OperationResponse response = await apiClient.CaptureParametersAsync(processId, Timeout.InfiniteTimeSpan, methods);
                 Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
@@ -94,7 +94,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 int processId = await appRunner.ProcessIdTask;
 
-                MethodDescription[] methods = GetValidConfiguration();
+                MethodDescription[] methods = GetValidMethodDescriptions();
 
                 OperationResponse response = await apiClient.CaptureParametersAsync(processId, Timeout.InfiniteTimeSpan, methods);
                 Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
@@ -114,7 +114,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 int processId = await appRunner.ProcessIdTask;
 
-                MethodDescription[] methods = GetValidConfiguration();
+                MethodDescription[] methods = GetValidMethodDescriptions();
 
                 OperationResponse response = await apiClient.CaptureParametersAsync(processId, TimeSpan.FromSeconds(2), methods);
                 Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
@@ -135,7 +135,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 int processId = await appRunner.ProcessIdTask;
 
-                MethodDescription[] methods = GetValidConfiguration();
+                MethodDescription[] methods = GetValidMethodDescriptions();
 
                 OperationResponse response = await apiClient.CaptureParametersAsync(processId, TimeSpan.FromSeconds(1), methods);
                 Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
@@ -174,7 +174,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 subScenarioName: subScenarioName);
         }
 
-        private static MethodDescription[] GetValidConfiguration()
+        private static MethodDescription[] GetValidMethodDescriptions()
         {
             return new MethodDescription[]
             {
