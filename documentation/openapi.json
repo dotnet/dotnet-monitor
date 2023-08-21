@@ -1487,14 +1487,17 @@
   "components": {
     "schemas": {
       "CaptureParametersConfiguration": {
+        "required": [
+          "methods"
+        ],
         "type": "object",
         "properties": {
           "methods": {
+            "minItems": 1,
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/MethodDescription"
-            },
-            "nullable": true
+            }
           }
         },
         "additionalProperties": false
