@@ -108,7 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
-        public async Task StopsProducingLogStatementsAfterOperationCompleted(Architecture targetArchitecture)
+        public async Task StopsProducingLogStatementsAfterOperationCompletes(Architecture targetArchitecture)
         {
             await RunTestCaseCore(TestAppScenarios.ParameterCapturing.SubScenarios.DoNotExpectLogStatement, targetArchitecture, async (appRunner, apiClient) =>
             {
@@ -126,7 +126,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 await appRunner.SendCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue);
             });
         }
-#else // !NET7_0_OR_GREATER
+#else // NET7_0_OR_GREATER
         [Theory(Skip = "Pending https://github.com/dotnet/dotnet-monitor/pull/5169")]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task Net6AppFailsOperation(Architecture targetArchitecture)
@@ -147,7 +147,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 await appRunner.SendCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue);
             });
         }
-#endif // !NET7_0_OR_GREATER
+#endif // NET7_0_OR_GREATER
 
         private async Task RunTestCaseCore(string subScenarioName, Architecture targetArchitecture, Func<AppRunner, ApiClient, Task> appValidate)
         {
@@ -182,7 +182,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     {
                         AssemblyName = "Microsoft.Diagnostics.Monitoring.UnitTestApp",
                         TypeName = "SampleMethods.StaticTestMethodSignatures",
-                        MethodName = "Basic"
+                        MethodName = "SinglePrimitive"
                     }
             };
         }

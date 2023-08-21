@@ -185,8 +185,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string DoNotExpectLogStatement = nameof(DoNotExpectLogStatement);
                 public const string AspNetApp = nameof(AspNetApp);
                 public const string NonAspNetApp = nameof(NonAspNetApp);
-
             }
+
             public static class Commands
             {
                 public const string Continue = nameof(Continue);

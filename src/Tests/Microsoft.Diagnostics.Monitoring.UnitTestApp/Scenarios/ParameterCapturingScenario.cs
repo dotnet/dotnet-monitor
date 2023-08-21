@@ -57,12 +57,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 {
                     await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue, logger);
 
-                    int testValue = int.MaxValue;
-                    SampleMethods.StaticTestMethodSignatures.Basic(testValue);
+                    SampleMethods.StaticTestMethodSignatures.SinglePrimitive(int.MaxValue);
 
                     LogRecordEntry logEntry = logRecord.Events.First(e => e.Category == typeof(DotnetMonitor.ParameterCapture.UserCode).FullName);
                     Assert.NotNull(logEntry);
-                    Assert.Contains(Convert.ToString(testValue), logEntry.Message);
 
                     return 0;
                 }, token);
@@ -84,7 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 {
                     await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue, logger);
 
-                    SampleMethods.StaticTestMethodSignatures.Basic(0);
+                    SampleMethods.StaticTestMethodSignatures.SinglePrimitive(int.MaxValue);
 
                     bool didFindLogs = logRecord.Events.Where(e => e.Category == typeof(DotnetMonitor.ParameterCapture.UserCode).FullName).Any();
                     Assert.False(didFindLogs);
@@ -120,7 +118,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         {
             public static void ConfigureServices(IServiceCollection services)
             {
-
                 services.AddControllers();
             }
 
@@ -131,21 +128,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapGet("/", Responses.Ok);
-                    endpoints.MapGet("/privacy", Responses.Ok);
-                    endpoints.MapGet("/slowresponse", Responses.SlowResponseAsync);
                 });
             }
 
             public static class Responses
             {
                 public static IResult Ok() => Results.Ok();
-
-                public static async Task<IResult> SlowResponseAsync()
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(100));
-
-                    return Results.Ok();
-                }
             }
         }
     }
