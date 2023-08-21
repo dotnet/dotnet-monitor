@@ -503,7 +503,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// GET /stacks
+        /// GET /parameters
         /// </summary>
         public static async Task<OperationResponse> CaptureParametersAsync(this ApiClient client, int pid, TimeSpan duration, MethodDescription[] methods, TimeSpan timeout)
         {
