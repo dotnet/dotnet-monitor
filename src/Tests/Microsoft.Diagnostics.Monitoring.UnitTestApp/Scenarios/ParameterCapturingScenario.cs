@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
 using System.CommandLine;
 using System.Linq;
 using System.Threading;
@@ -55,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 },
                 func: async logger =>
                 {
-                    await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue, logger);
+                    await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Validate, logger);
 
                     SampleMethods.StaticTestMethodSignatures.SinglePrimitive(int.MaxValue);
 
@@ -80,7 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 },
                 func: async logger =>
                 {
-                    await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue, logger);
+                    await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Validate, logger);
 
                     SampleMethods.StaticTestMethodSignatures.SinglePrimitive(int.MaxValue);
 

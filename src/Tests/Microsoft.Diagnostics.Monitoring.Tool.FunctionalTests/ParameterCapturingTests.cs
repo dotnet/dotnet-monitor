@@ -102,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 OperationStatusResponse operationStatus = await apiClient.WaitForOperationToStart(response.OperationUri);
                 Assert.Equal(OperationState.Running, operationStatus.OperationStatus.Status);
 
-                await appRunner.SendCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue);
+                await appRunner.SendCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Validate);
             });
         }
 
@@ -123,7 +123,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 Assert.Equal(HttpStatusCode.Created, operationResult.StatusCode);
                 Assert.Equal(OperationState.Succeeded, operationResult.OperationStatus.Status);
 
-                await appRunner.SendCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue);
+                await appRunner.SendCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Validate);
             });
         }
 #else // NET7_0_OR_GREATER

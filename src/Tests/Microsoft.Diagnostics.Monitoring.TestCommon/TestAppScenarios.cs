@@ -189,6 +189,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             public static class Commands
             {
+                public const string Validate = nameof(Validate);
                 public const string Continue = nameof(Continue);
             }
         }
