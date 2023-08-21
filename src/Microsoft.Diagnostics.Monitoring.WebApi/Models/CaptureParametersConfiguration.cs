@@ -14,6 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     public class CaptureParametersConfiguration
     {
         [JsonPropertyName("methods")]
+        [Required, MinLength(1)]
         public MethodDescription[] Methods { get; set; } = Array.Empty<MethodDescription>();
     }
 
