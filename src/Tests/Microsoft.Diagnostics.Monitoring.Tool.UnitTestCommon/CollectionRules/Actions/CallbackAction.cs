@@ -32,6 +32,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public const string ActionName = nameof(CallbackAction);
 
         private readonly CallbackActionService _service;
+        private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public Task Started => _startCompletionSource.Task;
 
         public CallbackAction(CallbackActionService service)
         {
@@ -45,6 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         public Task StartAsync(CancellationToken token)
         {
+            _startCompletionSource.TrySetResult();
             return _service.NotifyListeners(token);
         }
 
@@ -74,6 +78,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public const string ActionName = nameof(DelayedCallbackAction);
 
         private readonly CallbackActionService _service;
+        private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public Task Started => _startCompletionSource.Task;
 
         public DelayedCallbackAction(CallbackActionService service)
         {
@@ -87,6 +94,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         public Task StartAsync(CancellationToken token)
         {
+            _startCompletionSource.TrySetResult();
             return _service.NotifyListeners(token);
         }
 
