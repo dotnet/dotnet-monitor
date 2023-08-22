@@ -186,8 +186,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 {
                     new MethodDescription()
                     {
-                        AssemblyName = Guid.NewGuid().ToString("D"),
-                        TypeName = Guid.NewGuid().ToString("D"),
+                        ModuleName = Guid.NewGuid().ToString("D"),
+                        ClassName = Guid.NewGuid().ToString("D"),
                         MethodName = Guid.NewGuid().ToString("D")
                     }
                 }
@@ -359,11 +359,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
         private StartCapturingParametersPayload CreateStartCapturingPayload(TimeSpan duration)
         {
-            string assemblyName = typeof(ParameterCapturingPipelineTests).Assembly.GetName()?.Name;
-            Assert.NotNull(assemblyName);
+            string moduleName = typeof(ParameterCapturingPipelineTests).Module.Name;
+            Assert.NotNull(moduleName);
 
-            string typeName = typeof(ParameterCapturingPipelineTests).FullName;
-            Assert.NotNull(typeName);
+            string className = typeof(ParameterCapturingPipelineTests).FullName;
+            Assert.NotNull(className);
 
             return new StartCapturingParametersPayload()
             {
@@ -373,8 +373,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 {
                     new MethodDescription()
                     {
-                        AssemblyName = assemblyName,
-                        TypeName = typeName,
+                        ModuleName = moduleName,
+                        ClassName = className,
                         MethodName = nameof(CreateStartCapturingPayload)
                     }
                 }
