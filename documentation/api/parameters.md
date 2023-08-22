@@ -124,8 +124,6 @@ info: DotnetMonitor.ParameterCapture.SystemCode[0]
         str2: '.ctor')
 ```
 
-
-
 ## Supported Runtimes
 
 | Operating System | Runtime Version |
@@ -133,7 +131,6 @@ info: DotnetMonitor.ParameterCapture.SystemCode[0]
 | Windows | .NET 7+ |
 | Linux | .NET 7+ |
 | MacOS | .NET 7+ |
-
 
 ## Additional Requirements
 - The target application must use ASP.NET Core.
