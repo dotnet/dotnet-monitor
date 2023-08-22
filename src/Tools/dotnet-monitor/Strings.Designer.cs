@@ -430,7 +430,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parameter capturing is not available in the process, the process needs to be using .net 7 or greater..
+        ///   Looks up a localized string similar to Parameter capturing is not available in the process, the process needs to be using .NET 7 or newer..
         /// </summary>
         internal static string ErrorMessage_ParameterCapturingRequiresAtLeastNet7 {
             get {

@@ -945,6 +945,6 @@
     <value>Parameter capturing is not available in the process.</value>
   </data>
   <data name="ErrorMessage_ParameterCapturingRequiresAtLeastNet7" xml:space="preserve">
-    <value>Parameter capturing is not available in the process, the process needs to be using .net 7 or greater.</value>
+    <value>Parameter capturing is not available in the process, the process needs to be using .NET 7 or newer.</value>
   </data>
 </root>
