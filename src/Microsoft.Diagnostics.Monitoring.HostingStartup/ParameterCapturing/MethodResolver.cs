@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
     {
         private record DeclaringTypeDescription(string ModuleName, string ClassName);
 
-        private readonly Dictionary<string, List<Module>> _nameToModules = new(StringComparer.InvariantCulture);
+        private readonly Dictionary<string, List<Module>> _nameToModules = new(StringComparer.Ordinal);
         private readonly Dictionary<DeclaringTypeDescription, List<MethodInfo>> _declaringTypeToMethods = new();
 
         public MethodResolver()
