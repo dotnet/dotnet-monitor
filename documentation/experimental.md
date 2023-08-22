@@ -6,5 +6,5 @@ The following are the current set of experimental features:
 
 | Name | Description | First Available Version | How to Enable |
 |---|---|---|---|
+| [Parameter Capturing](./api/parameters.md) | Captures parameters for one or more methods each time they are called. | 8.0 RC 1 | `InProcessFeatures.ParameterCapturing.Enable`
 
-As of 8.0 Preview 7, there are no experimental features.

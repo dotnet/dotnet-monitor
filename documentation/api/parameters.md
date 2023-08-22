@@ -1,9 +1,11 @@
 
 ### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fparameters)
 
-# Parameters - Post
+# Parameters - Post (experimental feature)
 
-Captures parameters for one or more methods each time they are called.
+Captures parameters for one or more methods each time they are called. Captured parameters are logged inside the target application using its [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger).
+
+>**Note**: Unlike other artifacts, parameters do **not** support being sent to egress provider.
 
 >**Note**: This feature is not enabled by default and requires configuration to be enabled.
 
@@ -56,6 +58,25 @@ The expected content type is `application/json`.
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many parameters requests at this time. Try to request parameters at a later time. | `application/problem+json` |
 
+## `UserCode` vs `SystemCode`
+Methods that belong to any of the following namespaces are considered `SystemCode`:
+- `Microsoft.*`
+- `System.*`
+
+All other methods are considered `UserCode`. `UserCode` methods will have their parameters captured inline, meaning that the added log statements are performed synchronously inside your method, preserving the logger's scope.
+
+`SystemCode` methods will have their parameters captured asynchronous and without scope information.
+
+The [examples](#examples) include a mixture of `UserCode` and `SystemCode` to help showcase the difference.
+
+## Logger Categories
+The following logger categories are used inside the target application when capturing parameters:
+| Category Name | Description |
+| -- | -- |
+| `DotnetMonitor.ParameterCapture.UserCode` | Parameters captured in methods considered `UserCode`. |
+| `DotnetMonitor.ParameterCapture.SystemCode` | Parameters captured in methods considered `SystemCode`. |
+| `DotnetMonitor.ParameterCapture.Service` | Diagnostic messages by `dotnet-monitor`, such as when parameter capturing starts, stops, or is unable to find a request method. |
+
 ## Examples
 
 ### Sample Request
@@ -68,13 +89,13 @@ Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 {
     "methods": [
         {
-            "assemblyName": "SampleWebApp",
-            "typeName": "SampleWebApp.Controllers.HomeController",
+            "moduleName": "SampleWebApp.dll",
+            "className": "SampleWebApp.Controllers.HomeController",
             "methodName": "Index"
         },
         {
-            "assemblyName": "System.Private.CoreLib",
-            "typeName": "System.String",
+            "moduleName": "System.Private.CoreLib.dll",
+            "className": "System.String",
             "methodName": "Concat"
         }
     ]
@@ -84,7 +105,7 @@ Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 ### Sample Response
 
 ```http
-HTTP/1.1 202 OK
+HTTP/1.1 202 Accepted
 Content-Type: application/json
 Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 ```
@@ -115,10 +136,11 @@ info: DotnetMonitor.ParameterCapture.SystemCode[0]
 
 
 ## Additional Requirements
-- The process must use aspnetcore.
-- The process must connect 
-- An `ILogger` factory must be registered.
-- This feature uses a hosting startup assembly behind the scenes. If you have [disabled automatic loading](https://learn.microsoft.com/aspnet/core/fundamentals/host/platform-specific-configuration#disable-automatic-loading-of-hosting-startup-assemblies) of these, this feature will not be available.
+- The target application must use ASP.NET Core.
+- `dotnet-monitor` must be set to `Listen` mode, and the target application must start suspended. See [diagnostic port configuration](../configuration/diagnostic-port-configuration.md) for information on how to do this.
+- The target application must have [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger) available via [ASP.NET Core's dependency injection](https://learn.microsoft.com/aspnet/core/mvc/controllers/dependency-injection).
+- This feature relies on a hosting startup assembly. If the target application [disabled automatic loading](https://learn.microsoft.com/aspnet/core/fundamentals/host/platform-specific-configuration#disable-automatic-loading-of-hosting-startup-assemblies) of these, this feature will not be available.
+- If a target application is using .NET 7 then the `dotnet-monitor` StartupHook must be configured. This is automatically done in .NET 8 and newer.
 
 ## Additional Notes
 
