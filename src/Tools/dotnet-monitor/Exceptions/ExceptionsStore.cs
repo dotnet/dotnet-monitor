@@ -25,11 +25,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private readonly CancellationTokenSource _disposalSource = new();
         private readonly KeyedCollection<ulong, ExceptionInstance> _instances = new ExceptionInstanceCollection();
         private readonly Task _processingTask;
-        private ExceptionsConfiguration _configuration;
+        private ExceptionsConfigurationSettings _configuration;
 
         private long _disposalState;
 
-        public ExceptionsStore(ExceptionsStoreCallback callback, ExceptionsConfiguration configuration)
+        public ExceptionsStore(ExceptionsStoreCallback callback, ExceptionsConfigurationSettings configuration)
         {
             _callback = callback;
             _channel = CreateChannel();

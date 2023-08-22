@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 throw new ArgumentOutOfRangeException(nameof(topLevelLimit));
             }
 
-            _store = new ExceptionsStore(new Callback(this, topLevelLimit, callback), configuration);
+            ExceptionsConfigurationSettings configurationSettings = ExceptionsSettingsFactory.ConvertExceptionsConfiguration(configuration);
+
+            _store = new ExceptionsStore(new Callback(this, topLevelLimit, callback), configurationSettings);
         }
 
         public ValueTask DisposeAsync()
