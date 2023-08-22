@@ -62,6 +62,24 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Method &apos;{0}&apos; is unsupported, it does not have a function id..
+        /// </summary>
+        internal static string ErrorMessage_FunctionDoesNotHaveIdFormatString {
+            get {
+                return ResourceManager.GetString("ErrorMessage_FunctionDoesNotHaveIdFormatString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mismatch probe state. Expected &apos;{0}&apos;, was &apos;{1}&apos;..
+        /// </summary>
+        internal static string ErrorMessage_ProbeStateMismatchFormatString {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ProbeStateMismatchFormatString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to create an ILogger instance in the target process..
         /// </summary>
         internal static string FeatureUnsupported_NoLogger {
@@ -89,6 +107,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parameter capturing encountered an internal error when processing &apos;{method}&apos;, stopping..
+        /// </summary>
+        internal static string StoppingParameterCapturingDueToProbeFault {
+            get {
+                return ResourceManager.GetString("StoppingParameterCapturingDueToProbeFault", resourceCulture);
+            }
+        }
+
         ///   Looks up a localized string similar to Too many requests.
         /// </summary>
         internal static string TooManyRequestsErrorMessage {

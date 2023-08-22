@@ -6,7 +6,6 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
@@ -45,13 +44,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 _operationFactory = serviceProvider.GetRequiredService<IGCDumpOperationFactory>();
             }
 
-            protected override EgressOperation CreateArtifactOperation(TaskCompletionSource<object> startCompletionSource, CollectionRuleMetadata collectionRuleMetadata)
+            protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata collectionRuleMetadata)
             {
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_GCDump, EndpointInfo);
 
                 return new EgressOperation(
                     _operationFactory.Create(ProcessInfo.EndpointInfo),
-                    startCompletionSource,
                     Options.Egress,
                     ProcessInfo,
                     scope,

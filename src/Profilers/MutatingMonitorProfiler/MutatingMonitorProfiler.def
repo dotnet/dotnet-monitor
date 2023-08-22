@@ -7,3 +7,5 @@ EXPORTS
     RequestFunctionProbeRegistration   PRIVATE
     RequestFunctionProbeInstallation   PRIVATE
     RequestFunctionProbeUninstallation PRIVATE
+    RegisterFunctionProbeCallbacks     PRIVATE
+    UnregisterFunctionProbeCallbacks   PRIVATE

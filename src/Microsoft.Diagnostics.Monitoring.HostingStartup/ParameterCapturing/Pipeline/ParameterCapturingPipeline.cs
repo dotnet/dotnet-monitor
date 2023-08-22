@@ -50,33 +50,56 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
             while (!stoppingToken.IsCancellationRequested)
             {
                 CapturingRequest request = await _requestQueue.Reader.ReadAsync(stoppingToken);
-                if (!TryStartCapturing(request.Payload))
-                {
-                    continue;
-                }
 
-                using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-                cts.CancelAfter(request.Payload.Duration);
+                void onFault(object? sender, InstrumentedMethod faultingMethod)
+                {
+                    _callbacks.ProbeFault(request.Payload.RequestId, faultingMethod);
+                }
 
                 try
                 {
-                    await request.StopRequest.Task.WaitAsync(cts.Token).ConfigureAwait(false);
+                    _probeManager.OnProbeFault += onFault;
+
+                    if (!await TryStartCapturingAsync(request.Payload, stoppingToken).ConfigureAwait(false))
+                    {
+                        continue;
+                    }
+
+                    using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+                    cts.CancelAfter(request.Payload.Duration);
+
+                    try
+                    {
+                        await request.StopRequest.Task.WaitAsync(cts.Token).ConfigureAwait(false);
+                    }
+                    catch (OperationCanceledException)
+                    {
+
+                    }
+
+                    //
+                    // NOTE:
+                    // StopCapturingAsync will request a stop regardless of if the stoppingToken is set.
+                    // While we don't support the host & services reloading, the above behavior will ensure
+                    // that we don't leave the app in a potentially bad state on a reload.
+                    //
+                    // See: https://github.com/dotnet/dotnet-monitor/issues/5170
+                    //
+                    await _probeManager.StopCapturingAsync(stoppingToken).ConfigureAwait(false);
+
+                    _callbacks.CapturingStop(request.Payload.RequestId);
+                    _ = _allRequests.TryRemove(request.Payload.RequestId, out _);
                 }
-                catch (OperationCanceledException)
+                finally
                 {
-
+                    _probeManager.OnProbeFault -= onFault;
                 }
-
-                _probeManager.StopCapturing();
-
-                _callbacks.CapturingStop(request.Payload.RequestId);
-                _ = _allRequests.TryRemove(request.Payload.RequestId, out _);
             }
         }
 
         // Private method for work that happens inside the pipeline's RunAsync
         // so use callbacks instead of throwing exceptions.
-        private bool TryStartCapturing(StartCapturingParametersPayload request)
+        private async Task<bool> TryStartCapturingAsync(StartCapturingParametersPayload request, CancellationToken token)
         {
             try
             {
@@ -103,7 +126,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
                     throw ex;
                 }
 
-                _probeManager.StartCapturing(methods);
+                await _probeManager.StartCapturingAsync(methods, token).ConfigureAwait(false);
                 _callbacks.CapturingStart(request, methods);
 
                 return true;
