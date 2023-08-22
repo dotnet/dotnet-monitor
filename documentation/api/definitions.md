@@ -86,6 +86,16 @@ Enumeration that describes the current state of the collection rule.
 | `Throttled` | Indicates that the collection rule is temporarily throttled because the ActionCountLimit has been reached within the ActionCountSlidingWindowDuration. |
 | `Finished` | Indicates that the collection rule has completed and will no longer trigger. |
 
+## CaptureParametersConfiguration
+
+First Available: 8.0 RC 1
+
+Object describing the list of methods to capture parameters for.
+
+| Name | Type | Description |
+|---|---|---|
+| `methods` | [MethodDescription](#methoddescription)[] | Array of methods to capture parameters for. |
+
 ## DotnetMonitorInfo
 
 Object describing diagnostic/automation information about the executing instance of `dotnet monitor`.
@@ -285,6 +295,16 @@ The following configuration will collect logs for the Microsoft.AspNetCore.Hosti
     "useAppFilters": false
 }
 ```
+
+## MethodDescription
+
+Object describing a method.
+
+| Name | Type | Description |
+|---|---|---|
+| `moduleName`| string | The name of the module that the method belongs to. |
+| `className` | string | The name of the class that the method belongs to. |
+| `methodName` | DateTime | The name of the method, not including parameters. |
 
 ## Metric
 
