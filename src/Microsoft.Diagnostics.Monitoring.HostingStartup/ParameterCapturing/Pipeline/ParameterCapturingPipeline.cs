@@ -30,15 +30,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
         }
 
         private readonly IFunctionProbesManager _probeManager;
-        private readonly string[] _namespaceDenyList;
+        private readonly string[] _scopeDenyList;
         private readonly IParameterCapturingPipelineCallbacks _callbacks;
         private readonly Channel<CapturingRequest> _requestQueue;
         private readonly ConcurrentDictionary<Guid, CapturingRequest> _allRequests = new();
 
-        public ParameterCapturingPipeline(IFunctionProbesManager probeManager, IParameterCapturingPipelineCallbacks callbacks, string[]? namespaceDenyList = null)
+        public ParameterCapturingPipeline(IFunctionProbesManager probeManager, IParameterCapturingPipelineCallbacks callbacks, string[]? scopeDenyList = null)
         {
             _probeManager = probeManager;
-            _namespaceDenyList = namespaceDenyList ?? Array.Empty<string>();
+            _scopeDenyList = scopeDenyList ?? Array.Empty<string>();
             _callbacks = callbacks;
 
             _requestQueue = Channel.CreateBounded<CapturingRequest>(new BoundedChannelOptions(capacity: 1)
@@ -161,9 +161,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
             List<MethodDescription> _deniedMethodDescriptions = new();
             foreach (MethodDescription methodDescription in methods)
             {
-                foreach (string deniedNamespace in _namespaceDenyList)
+                foreach (string deniedScope in _scopeDenyList)
                 {
-                    if (TypeUtils.DoesBelongToNamespace(deniedNamespace, methodDescription.TypeName))
+                    if (TypeUtils.DoesBelongToScope(deniedScope, methodDescription.TypeName))
                     {
                         _deniedMethodDescriptions.Add(methodDescription);
                         break;

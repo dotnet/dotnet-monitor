@@ -36,9 +36,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             if (method.DeclaringType != null)
             {
-                foreach (string namespaceName in SystemTypePrefixes)
+                foreach (string scopeName in SystemTypePrefixes)
                 {
-                    if (method.DoesBelongToNamespace(namespaceName))
+                    if (method.DoesBelongToScope(scopeName))
                     {
                         return ParameterCaptureMode.Background;
                     }

@@ -7,11 +7,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     internal static class TypeUtils
     {
-        public static bool DoesBelongToNamespace(string namespaceName, string typeToCheck)
+        public static bool DoesBelongToScope(string scopeName, string typeToCheck)
         {
-            if (string.IsNullOrEmpty(namespaceName))
+            if (string.IsNullOrEmpty(scopeName))
             {
-                throw new ArgumentException(nameof(namespaceName));
+                throw new ArgumentException(nameof(scopeName));
             }
 
             if (string.IsNullOrEmpty(typeToCheck))
@@ -19,17 +19,17 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 throw new ArgumentException(nameof(typeToCheck));
             }
 
-            if (!typeToCheck.StartsWith(namespaceName, StringComparison.Ordinal))
+            if (!typeToCheck.StartsWith(scopeName, StringComparison.Ordinal))
             {
                 return false;
             }
 
-            if (typeToCheck.Length == namespaceName.Length)
+            if (typeToCheck.Length == scopeName.Length)
             {
                 return true;
             }
 
-            char charAfterNamespace = typeToCheck[namespaceName.Length];
+            char charAfterNamespace = typeToCheck[scopeName.Length];
             if (charAfterNamespace == '.' || charAfterNamespace == '+')
             {
                 return true;
