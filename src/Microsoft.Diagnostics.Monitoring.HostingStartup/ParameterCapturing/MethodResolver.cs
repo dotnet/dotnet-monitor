@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     public sealed class MethodResolver
     {
-        private record DeclaringTypeDescription(string ModuleName, string ClassName);
+        private record DeclaringTypeDescription(string ModuleName, string TypeName);
 
         private readonly Dictionary<string, List<Module>> _nameToModules = new(StringComparer.Ordinal);
         private readonly Dictionary<DeclaringTypeDescription, List<MethodInfo>> _declaringTypeToMethods = new();
@@ -61,8 +61,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private List<MethodInfo> GetMethodsForDeclaringType(MethodDescription methodDescription)
         {
-            // Maintain a cache for all methods for a given module+class.
-            DeclaringTypeDescription declType = new(methodDescription.ModuleName, methodDescription.ClassName);
+            // Maintain a cache for all methods for a given module+type.
+            DeclaringTypeDescription declType = new(methodDescription.ModuleName, methodDescription.TypeName);
             if (_declaringTypeToMethods.TryGetValue(declType, out List<MethodInfo>? methods))
             {
                 return methods;
@@ -75,7 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 {
                     try
                     {
-                        MethodInfo[]? allMethods = module.Assembly.GetType(methodDescription.ClassName)?.GetMethods(
+                        MethodInfo[]? allMethods = module.Assembly.GetType(methodDescription.TypeName)?.GetMethods(
                             BindingFlags.Public |
                             BindingFlags.NonPublic |
                             BindingFlags.Instance |

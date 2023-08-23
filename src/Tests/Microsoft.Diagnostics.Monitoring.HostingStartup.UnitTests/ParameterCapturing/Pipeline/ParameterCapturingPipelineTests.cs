@@ -187,7 +187,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                     new MethodDescription()
                     {
                         ModuleName = Guid.NewGuid().ToString("D"),
-                        ClassName = Guid.NewGuid().ToString("D"),
+                        TypeName = Guid.NewGuid().ToString("D"),
                         MethodName = Guid.NewGuid().ToString("D")
                     }
                 }
@@ -374,7 +374,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                     new MethodDescription()
                     {
                         ModuleName = moduleName,
-                        ClassName = className,
+                        TypeName = className,
                         MethodName = nameof(CreateStartCapturingPayload)
                     }
                 }

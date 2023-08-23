@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             MethodDescription description = new()
             {
                 ModuleName = Guid.NewGuid().ToString("D"),
-                ClassName = "Test",
+                TypeName = "Test",
                 MethodName = "Test",
             };
 
@@ -79,7 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             MethodDescription description = new()
             {
                 ModuleName = typeof(StaticTestMethodSignatures).Module.Name,
-                ClassName = "SampleMethods.GenericTestMethodSignatures`2",
+                TypeName = "SampleMethods.GenericTestMethodSignatures`2",
                 MethodName = "GenericParameters",
             };
 
@@ -98,7 +98,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             MethodDescription description = new()
             {
                 ModuleName = typeof(StaticTestMethodSignatures).Module.Name,
-                ClassName = "SampleMethods.GenericTestMethodSignatures",
+                TypeName = "SampleMethods.GenericTestMethodSignatures",
                 MethodName = "GenericParameters",
             };
 
@@ -117,7 +117,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             MethodDescription description = new()
             {
                 ModuleName = typeof(StaticTestMethodSignatures).Module.Name,
-                ClassName = "SampleMethods.TestAmbiguousGenericSignatures`1",
+                TypeName = "SampleMethods.TestAmbiguousGenericSignatures`1",
                 MethodName = "AmbiguousMethod",
             };
 
@@ -158,7 +158,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             return new MethodDescription
             {
                 ModuleName = declaringType.Module.Name,
-                ClassName = declaringType.FullName,
+                TypeName = declaringType.FullName,
                 MethodName = methodName
             };
         }

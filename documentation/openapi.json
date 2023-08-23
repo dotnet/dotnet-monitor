@@ -1772,9 +1772,9 @@
       },
       "MethodDescription": {
         "required": [
-          "className",
           "methodName",
-          "moduleName"
+          "moduleName",
+          "typeName"
         ],
         "type": "object",
         "properties": {
@@ -1782,7 +1782,7 @@
             "minLength": 1,
             "type": "string"
           },
-          "className": {
+          "typeName": {
             "minLength": 1,
             "type": "string"
           },

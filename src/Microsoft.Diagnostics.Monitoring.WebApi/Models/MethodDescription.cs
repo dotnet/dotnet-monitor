@@ -17,14 +17,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [Required]
         public string ModuleName { get; set; } = string.Empty;
 
-        [JsonPropertyName("className")]
+        [JsonPropertyName("typeName")]
         [Required]
-        public string ClassName { get; set; } = string.Empty;
+        public string TypeName { get; set; } = string.Empty;
 
         [JsonPropertyName("methodName")]
         [Required]
         public string MethodName { get; set; } = string.Empty;
 
-        public override string ToString() => FormattableString.Invariant($"{ModuleName}!{ClassName}.{MethodName}");
+        public override string ToString() => FormattableString.Invariant($"{ModuleName}!{TypeName}.{MethodName}");
     }
 }
