@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
+using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -98,7 +99,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                     await ApplyNotifyOnlyProfilerAsync(client, nativeFileProvider, cancellationToken);
                 }
 
-                if (_inProcessFeatures.IsMutatingProfilerRequired)
+                if (IsMutatingProfilerNeeded(endpointInfo))
                 {
                     await ApplyMutatingProfilerAsync(client, nativeFileProvider, cancellationToken);
                 }
@@ -179,6 +180,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
             _logger.ProfilerRuntimeIdentifier(runtimeIdentifier, runtimeIdentifierSource);
 
             return runtimeIdentifier;
+        }
+
+        private bool IsMutatingProfilerNeeded(IEndpointInfo endpointInfo)
+        {
+            if (!_inProcessFeatures.IsMutatingProfilerRequired)
+            {
+                return false;
+            }
+
+            //
+            // Even if features are turned on that need the mutating profiler, this specific endpoint may not
+            // support those features. Ensure that at least one feature that needs the mutating profiler is supported.
+            //
+            return CaptureParametersOperation.IsEndpointRuntimeSupported(endpointInfo);
         }
 
         private static IFileInfo GetProfilerFileInfo(string libraryRootFileName, IFileProvider nativeFileProvider)
