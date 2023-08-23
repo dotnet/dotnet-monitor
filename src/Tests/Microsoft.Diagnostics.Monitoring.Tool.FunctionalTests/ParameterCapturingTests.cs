@@ -2,23 +2,23 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
+using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
+using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
+using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
-using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
-using System.Runtime.InteropServices;
-using Microsoft.Extensions.Logging;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-using System;
-using System.Threading;
-using System.Net;
-using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
