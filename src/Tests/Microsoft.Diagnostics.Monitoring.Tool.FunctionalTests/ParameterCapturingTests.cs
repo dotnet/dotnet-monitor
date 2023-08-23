@@ -127,7 +127,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             });
         }
 #else // NET7_0_OR_GREATER
-        [Theory(Skip = "Pending https://github.com/dotnet/dotnet-monitor/pull/5169")]
+        [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task Net6AppFailsOperation(Architecture targetArchitecture)
         {

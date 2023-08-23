@@ -55,13 +55,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             LogRecord logRecord = new();
 
             return ScenarioHelpers.RunWebScenarioAsync<Startup>(
-                configureServices: (services) =>
-                {
-                    services.AddLogging(builder =>
-                    {
-                        builder.AddProvider(new TestLoggerProvider(logRecord));
-                    });
-                },
                 func: async logger =>
                 {
                     await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Validate, logger);
@@ -72,7 +65,15 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                     Assert.Equal(expectLogs, didFindLogs);
                     return 0;
 
-                }, token);
+                },
+                token,
+                configureServices: (services) =>
+                {
+                    services.AddLogging(builder =>
+                    {
+                        builder.AddProvider(new TestLoggerProvider(logRecord));
+                    });
+                });
         }
 
         public static Task<int> AspNetAppAsync(ParseResult result, CancellationToken token)

@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             return result;
         }
 
-        public static async Task<int> RunWebScenarioAsync<TStartup>(Action<IServiceCollection> configureServices, Func<ILogger, Task<int>> func, CancellationToken token)
+        public static async Task<int> RunWebScenarioAsync<TStartup>(Func<ILogger, Task<int>> func, CancellationToken token, Action<IServiceCollection> configureServices = null)
     where TStartup : class
         {
             // Create a minimal ASP.NET host that:
@@ -120,12 +120,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             }
 
             return exitCode;
-        }
-
-        public static Task<int> RunWebScenarioAsync<TStartup>(Func<ILogger, Task<int>> func, CancellationToken token)
-            where TStartup : class
-        {
-            return RunWebScenarioAsync<TStartup>(configureServices: null, func, token);
         }
 
         public static async Task WaitForCommandAsync(string expectedCommand, ILogger logger)
