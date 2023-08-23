@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
-    internal sealed class MethodResolver
+    public sealed class MethodResolver
     {
         private record DeclaringTypeDescription(string AssemblyName, string TypeName);
 
@@ -82,9 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                             BindingFlags.Public |
                             BindingFlags.NonPublic |
                             BindingFlags.Instance |
-                            BindingFlags.Static)
-                            .Where(m => !m.IsSpecialName)
-                            .ToArray();
+                            BindingFlags.Static);
 
                         if (allMethods == null)
                         {
