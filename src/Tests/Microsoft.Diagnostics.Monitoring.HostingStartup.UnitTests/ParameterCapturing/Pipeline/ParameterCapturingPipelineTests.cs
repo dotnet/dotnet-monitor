@@ -362,8 +362,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             string moduleName = typeof(ParameterCapturingPipelineTests).Module.Name;
             Assert.NotNull(moduleName);
 
-            string className = typeof(ParameterCapturingPipelineTests).FullName;
-            Assert.NotNull(className);
+            string typeName = typeof(ParameterCapturingPipelineTests).FullName;
+            Assert.NotNull(typeName);
 
             return new StartCapturingParametersPayload()
             {
@@ -374,7 +374,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                     new MethodDescription()
                     {
                         ModuleName = moduleName,
-                        TypeName = className,
+                        TypeName = typeName,
                         MethodName = nameof(CreateStartCapturingPayload)
                     }
                 }
