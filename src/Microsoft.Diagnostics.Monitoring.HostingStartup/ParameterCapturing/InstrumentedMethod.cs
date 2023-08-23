@@ -34,11 +34,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private static ParameterCaptureMode ComputeCaptureMode(MethodInfo method)
         {
-            foreach (string namespaceName in SystemTypePrefixes)
+            if (method.DeclaringType != null)
             {
-                if (method.DoesBelongToNamespace(namespaceName))
+                foreach (string namespaceName in SystemTypePrefixes)
                 {
-                    return ParameterCaptureMode.Background;
+                    if (method.DoesBelongToNamespace(namespaceName))
+                    {
+                        return ParameterCaptureMode.Background;
+                    }
                 }
             }
 

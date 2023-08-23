@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 return true;
             }
 
-            return true;
+            return false;
         }
     }
 }

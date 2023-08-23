@@ -11,12 +11,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
     public class TypeUtilsTests
     {
         [Theory]
-        [InlineData("Microsoft", "Microsoft.Diagnostics", true)]
-        [InlineData("Microsoft", "Microsoft+Diagnostics", true)]
-        [InlineData("Microsoft", "Microsoft", true)]
-        [InlineData("Microsoft", "microsoft", false)]
+        [InlineData("ClassInNamespace", "ClassInNamespace.MyClass", true)]
+        [InlineData("NestedType", "NestedType+MyNestedType", true)]
+        [InlineData("SameAsNamespace", "SameAsNamespace", true)]
+        [InlineData("DifferentCasing", "differentcasing", false)]
         [InlineData("CustomNamespace.Microsoft", "Microsoft", false)]
-        [InlineData("Microsoft2", "Microsoft", false)]
+        [InlineData("SubString2", "SubString", false)]
+        [InlineData("SubString", "SubString2", false)]
         public void DoesBelongToNamespace(string namespaceName, string typeName, bool isPartOf)
         {
             Assert.Equal(isPartOf, TypeUtils.DoesBelongToNamespace(namespaceName, typeName));
