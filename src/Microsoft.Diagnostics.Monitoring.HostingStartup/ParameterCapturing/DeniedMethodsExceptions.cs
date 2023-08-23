@@ -14,21 +14,21 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public DeniedMethodsExceptions(MethodDescription methodDescription) : this(new MethodDescription[] { methodDescription }) { }
 
-        public DeniedMethodsExceptions(IEnumerable<MethodDescription> unresolvedMethods) : base(BuildMessage(unresolvedMethods))
+        public DeniedMethodsExceptions(IEnumerable<MethodDescription> deniedMethods) : base(BuildMessage(deniedMethods))
         {
         }
 
-        private static string BuildMessage(IEnumerable<MethodDescription> unresolvedMethods)
+        private static string BuildMessage(IEnumerable<MethodDescription> deniedMethods)
         {
             StringBuilder text = new();
             text.AppendLine();
-            foreach (MethodDescription method in unresolvedMethods)
+            foreach (MethodDescription method in deniedMethods)
             {
                 text.Append("--> ");
                 text.AppendLine(method.ToString());
             }
 
-            return string.Format(CultureInfo.InvariantCulture, ParameterCapturingStrings.UnresolvedMethodsFormatString, text.ToString());
+            return string.Format(CultureInfo.InvariantCulture, ParameterCapturingStrings.DeniedMethodsFormatString, text.ToString());
         }
     }
 }
