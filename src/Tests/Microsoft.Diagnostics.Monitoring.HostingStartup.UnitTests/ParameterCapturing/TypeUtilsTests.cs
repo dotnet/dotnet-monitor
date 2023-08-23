@@ -18,9 +18,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         [InlineData("CustomNamespace.Microsoft", "Microsoft", false)]
         [InlineData("SubString2", "SubString", false)]
         [InlineData("SubString", "SubString2", false)]
-        public void DoesBelongToScope(string scopeName, string typeName, bool doesBelongTo)
+        public void IsSubType(string parentType, string typeName, bool doesBelongTo)
         {
-            Assert.Equal(doesBelongTo, TypeUtils.DoesBelongToScope(scopeName, typeName));
+            Assert.Equal(doesBelongTo, TypeUtils.IsSubType(parentType, typeName));
         }
     }
 }

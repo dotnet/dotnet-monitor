@@ -7,11 +7,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     internal static class TypeUtils
     {
-        public static bool DoesBelongToScope(string scopeName, string typeToCheck)
+        public static bool IsSubType(string parentType, string typeToCheck)
         {
-            if (string.IsNullOrEmpty(scopeName))
+            if (string.IsNullOrEmpty(parentType))
             {
-                throw new ArgumentException(nameof(scopeName));
+                throw new ArgumentException(nameof(parentType));
             }
 
             if (string.IsNullOrEmpty(typeToCheck))
@@ -19,17 +19,17 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 throw new ArgumentException(nameof(typeToCheck));
             }
 
-            if (!typeToCheck.StartsWith(scopeName, StringComparison.Ordinal))
+            if (!typeToCheck.StartsWith(parentType, StringComparison.Ordinal))
             {
                 return false;
             }
 
-            if (typeToCheck.Length == scopeName.Length)
+            if (typeToCheck.Length == parentType.Length)
             {
                 return true;
             }
 
-            char charAfterNamespace = typeToCheck[scopeName.Length];
+            char charAfterNamespace = typeToCheck[parentType.Length];
             if (charAfterNamespace == '.' || charAfterNamespace == '+')
             {
                 return true;

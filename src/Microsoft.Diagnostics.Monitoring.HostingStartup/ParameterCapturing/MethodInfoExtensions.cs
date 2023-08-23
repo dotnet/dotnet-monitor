@@ -17,14 +17,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             return method.CallingConvention.HasFlag(CallingConventions.HasThis);
         }
 
-        public static bool DoesBelongToScope(this MethodInfo method, string scopeName)
+        public static bool IsSubType(this MethodInfo method, string parentType)
         {
             if (method.DeclaringType == null || method.DeclaringType.FullName == null)
             {
                 return false;
             }
 
-            return TypeUtils.DoesBelongToScope(scopeName, method.DeclaringType.FullName);
+            return TypeUtils.IsSubType(parentType, method.DeclaringType.FullName);
         }
     }
 }

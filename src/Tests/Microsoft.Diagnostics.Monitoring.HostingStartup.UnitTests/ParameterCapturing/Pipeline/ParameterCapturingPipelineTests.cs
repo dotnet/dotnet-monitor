@@ -160,9 +160,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public void Request_DoesRejectDenyListMatch()
         {
             // Arrange
-            string[] namespaceDenyList = { "Interop" };
+            string[] denyList = { "Interop" };
 
-            ParameterCapturingPipeline pipeline = new(new TestFunctionProbesManager(), new TestParameterCapturingCallbacks(), namespaceDenyList);
+            ParameterCapturingPipeline pipeline = new(new TestFunctionProbesManager(), new TestParameterCapturingCallbacks(), denyList);
 
             StartCapturingParametersPayload requestPayload = new()
             {
