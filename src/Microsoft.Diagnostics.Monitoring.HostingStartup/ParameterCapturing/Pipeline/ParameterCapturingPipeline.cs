@@ -30,13 +30,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
         }
 
         private readonly IFunctionProbesManager _probeManager;
+        private readonly string[] _namespaceDenyList;
         private readonly IParameterCapturingPipelineCallbacks _callbacks;
         private readonly Channel<CapturingRequest> _requestQueue;
         private readonly ConcurrentDictionary<Guid, CapturingRequest> _allRequests = new();
 
-        public ParameterCapturingPipeline(IFunctionProbesManager probeManager, IParameterCapturingPipelineCallbacks callbacks)
+        public ParameterCapturingPipeline(IFunctionProbesManager probeManager, IParameterCapturingPipelineCallbacks callbacks, string[]? namespaceDenyList = null)
         {
             _probeManager = probeManager;
+            _namespaceDenyList = namespaceDenyList ?? Array.Empty<string>();
             _callbacks = callbacks;
 
             _requestQueue = Channel.CreateBounded<CapturingRequest>(new BoundedChannelOptions(capacity: 1)
@@ -154,12 +156,35 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
             return _requestQueue.Writer.TryComplete();
         }
 
+        private void ValidateMethods(MethodDescription[] methods)
+        {
+            List<MethodDescription> _deniedMethodDescriptions = new();
+            foreach (MethodDescription methodDescription in methods)
+            {
+                foreach (string deniedNamespace in _namespaceDenyList)
+                {
+                    if (TypeUtils.DoesBelongToNamespace(deniedNamespace, methodDescription.TypeName))
+                    {
+                        _deniedMethodDescriptions.Add(methodDescription);
+                        break;
+                    }
+                }
+            }
+
+            if (_deniedMethodDescriptions.Count > 0)
+            {
+                throw new DeniedMethodsExceptions(_deniedMethodDescriptions);
+            }
+        }
+
         public void SubmitRequest(StartCapturingParametersPayload payload)
         {
             if (payload.Methods.Length == 0)
             {
                 throw new ArgumentException(nameof(payload.Methods));
             }
+
+            ValidateMethods(payload.Methods);
 
             CapturingRequest request = new(payload);
             if (!_allRequests.TryAdd(payload.RequestId, request))

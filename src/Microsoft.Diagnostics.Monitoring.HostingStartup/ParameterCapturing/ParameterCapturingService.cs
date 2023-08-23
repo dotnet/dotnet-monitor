@@ -32,6 +32,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private readonly ILogger? _logger;
 
+        private static readonly string[] s_namespaceDenyList = {
+            "Interop",
+            "Internal",
+            "Microsoft.Diagnostics.Monitoring",
+            "System.Diagnostics.Debugger"
+        };
+
         public ParameterCapturingService(IServiceProvider services)
         {
             try
@@ -60,7 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 _parameterCapturingLogger = new(userLogger, systemLogger);
                 FunctionProbesManager probeManager = new(new LogEmittingProbes(_parameterCapturingLogger));
 
-                _pipeline = new ParameterCapturingPipeline(probeManager, this);
+                _pipeline = new ParameterCapturingPipeline(probeManager, this, s_namespaceDenyList);
             }
             catch (NotSupportedException ex)
             {

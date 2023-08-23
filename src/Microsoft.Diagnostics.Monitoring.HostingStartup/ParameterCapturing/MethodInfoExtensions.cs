@@ -16,5 +16,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             return method.CallingConvention.HasFlag(CallingConventions.HasThis);
         }
+
+        public static bool DoesBelongToNamespace(this MethodInfo method, string namespaceName)
+        {
+            if (method.DeclaringType == null || method.DeclaringType.FullName == null)
+            {
+                return false;
+            }
+
+            return TypeUtils.DoesBelongToNamespace(method.DeclaringType.FullName, namespaceName);
+        }
     }
 }

@@ -157,6 +157,39 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Fact]
+        public void Request_DoesRejectDenyListMatch()
+        {
+            // Arrange
+            string[] namespaceDenyList = { "Interop" };
+
+            ParameterCapturingPipeline pipeline = new(new TestFunctionProbesManager(), new TestParameterCapturingCallbacks(), namespaceDenyList);
+
+            StartCapturingParametersPayload requestPayload = new()
+            {
+                RequestId = Guid.NewGuid(),
+                Duration = Timeout.InfiniteTimeSpan,
+                Methods = new[]
+                {
+                    new MethodDescription()
+                    {
+                        AssemblyName = Guid.NewGuid().ToString("D"),
+                        TypeName = "Interop+Advapi32",
+                        MethodName = "EventRegister"
+                    },
+                    new MethodDescription()
+                    {
+                        AssemblyName = Guid.NewGuid().ToString("D"),
+                        TypeName = Guid.NewGuid().ToString("D"),
+                        MethodName = Guid.NewGuid().ToString("D")
+                    },
+                }
+            };
+
+            // Act & Assert
+            Assert.Throws<DeniedMethodsExceptions>(() => pipeline.SubmitRequest(requestPayload));
+        }
+
+        [Fact]
         public async Task UnresolvableMethod_DoesNotify()
         {
             // Arrange
