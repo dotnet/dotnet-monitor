@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             return method.CallingConvention.HasFlag(CallingConventions.HasThis);
         }
 
-        public static bool IsSubType(this MethodInfo method, string parentType)
+        public static bool DoesBelongToType(this MethodInfo method, string parentType)
         {
             if (method.DeclaringType == null || method.DeclaringType.FullName == null)
             {

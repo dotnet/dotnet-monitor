@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             {
                 foreach (string typePrefix in SystemTypePrefixes)
                 {
-                    if (method.IsSubType(typePrefix))
+                    if (method.DoesBelongToType(typePrefix))
                     {
                         return ParameterCaptureMode.Background;
                     }
