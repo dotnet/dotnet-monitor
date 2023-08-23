@@ -29,8 +29,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 return true;
             }
 
-            char charAfterNamespace = typeToCheck[parentType.Length];
-            if (charAfterNamespace == '.' || charAfterNamespace == '+')
+            char charAfterParentType = typeToCheck[parentType.Length];
+            if (charAfterParentType == '.' || charAfterParentType == '+')
             {
                 return true;
             }
