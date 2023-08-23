@@ -43,6 +43,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _requestId = Guid.NewGuid();
         }
 
+        public static bool IsEndpointRuntimeSupported(IEndpointInfo endpointInfo)
+        {
+            // net 7+ is required, see https://github.com/dotnet/runtime/issues/88924 for more information
+            return endpointInfo.RuntimeVersion != null && endpointInfo.RuntimeVersion.Major >= 7;
+        }
+
         private async Task<bool> CanEndpointProcessRequestsAsync(CancellationToken token)
         {
             DiagnosticsClient client = new(_endpointInfo.Endpoint);
@@ -62,6 +68,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         {
             try
             {
+                if (!IsEndpointRuntimeSupported(_endpointInfo))
+                {
+                    throw new MonitoringException(Strings.ErrorMessage_ParameterCapturingRequiresAtLeastNet7);
+                }
+
                 // Check if the endpoint is capable of responding to our requests
                 if (!await CanEndpointProcessRequestsAsync(token))
                 {
