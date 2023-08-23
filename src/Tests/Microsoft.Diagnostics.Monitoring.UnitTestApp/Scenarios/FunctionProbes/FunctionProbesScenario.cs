@@ -24,6 +24,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
         public static CliCommand Command()
         {
+            CliCommand scenarioCommand = new(TestAppScenarios.FunctionProbes.Name);
+
+#if NET7_0_OR_GREATER
             Dictionary<string, TestCaseAsync> testCases = new()
             {
                 /* Probe management */
@@ -52,10 +55,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
                 /* Self tests */
                 { TestAppScenarios.FunctionProbes.SubScenarios.AssertsInProbesAreCaught, Test_AssertsInProbesAreCaughtAsync},
-
             };
 
-            CliCommand scenarioCommand = new(TestAppScenarios.FunctionProbes.Name);
             foreach ((string subCommand, TestCaseAsync testCase) in testCases)
             {
                 CliCommand testCaseCommand = new(subCommand);
@@ -74,7 +75,11 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
                 scenarioCommand.Subcommands.Add(testCaseCommand);
             }
-
+#else // NET7_0_OR_GREATER
+            CliCommand validateNoMutatingProfilerCommand = new(TestAppScenarios.FunctionProbes.SubScenarios.ValidateNoMutatingProfiler);
+            validateNoMutatingProfilerCommand.SetAction(ValidateNoMutatingProfilerAsync);
+            scenarioCommand.Subcommands.Add(validateNoMutatingProfilerCommand);
+#endif // NET7_0_OR_GREATER
             return scenarioCommand;
         }
 
@@ -301,6 +306,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 },
                 thisObj: null, thisParameterSupported: false, token);
             });
+        }
+
+
+        public static Task<int> ValidateNoMutatingProfilerAsync(ParseResult result, CancellationToken token)
+        {
+            return ScenarioHelpers.RunScenarioAsync(logger =>
+            {
+                PerFunctionProbeProxy probeProxy = new PerFunctionProbeProxy();
+                Assert.Throws<DllNotFoundException>(() => new FunctionProbesManager(probeProxy));
+
+                return Task.FromResult(0);
+            }, token);
         }
 
         private static Task RunInstanceMethodTestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, MethodInfo method, object[] args, object thisObj, bool thisParameterSupported, CancellationToken token)
