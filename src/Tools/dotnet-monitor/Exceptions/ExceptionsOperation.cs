@@ -280,6 +280,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     await writer.WriteLineAsync();
                     await writer.WriteAsync("   --- End of inner exception stack trace ---");
                 }
+                else
+                {
+                    await writer.WriteAsync("   --- The inner exception was not included in the filter ---");
+                }
             }
 
             if (null != currentInstance.CallStack)
