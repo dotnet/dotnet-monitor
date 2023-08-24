@@ -79,7 +79,7 @@ Methods that belong to any of the following namespaces are considered `SystemCod
 
 All other methods are considered `UserCode`. `UserCode` methods will have their parameters captured inline, meaning that the added log statements are performed synchronously inside your method, preserving the logger's scope.
 
-`SystemCode` methods will have their parameters captured asynchronous and without scope information.
+`SystemCode` methods will have their parameters captured asynchronously and without scope information.
 
 The [examples](#examples) include a mixture of `UserCode` and `SystemCode` to help showcase the difference.
 
