@@ -72,6 +72,7 @@ The expected content type is `application/json`.
 | 429 Too Many Requests | | There are too many parameters requests at this time. Try to request parameters at a later time. | `application/problem+json` |
 
 ## `UserCode` vs `SystemCode`
+
 Methods that belong to any of the following namespaces are considered `SystemCode`:
 - `Microsoft.*`
 - `System.*`
@@ -83,6 +84,7 @@ All other methods are considered `UserCode`. `UserCode` methods will have their 
 The [examples](#examples) include a mixture of `UserCode` and `SystemCode` to help showcase the difference.
 
 ## Logger Categories
+
 The following logger categories are used inside the target application when capturing parameters:
 | Category Name | Description |
 | -- | -- |
