@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
-    public sealed class MethodResolver
+    internal sealed class MethodResolver
     {
         private record DeclaringTypeDescription(string ModuleName, string TypeName);
 
