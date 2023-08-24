@@ -494,11 +494,27 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             return operationResult;
         }
 
+        /// <summary>
+        /// POST /parameters
+        /// </summary>
+        public static Task<OperationResponse> CaptureParametersAsync(this ApiClient client, int pid, TimeSpan duration, CaptureParametersConfiguration config)
+        {
+            return client.CaptureParametersAsync(pid, duration, config, TestTimeouts.HttpApi);
+        }
+
+        /// <summary>
+        /// POST /parameters
+        /// </summary>
+        public static async Task<OperationResponse> CaptureParametersAsync(this ApiClient client, int pid, TimeSpan duration, CaptureParametersConfiguration config, TimeSpan timeout)
+        {
+            using CancellationTokenSource timeoutSource = new(timeout);
+            return await client.CaptureParametersAsync(pid, duration, config, timeoutSource.Token).ConfigureAwait(false);
+        }
+
         public static Task<OperationStatusResponse> WaitForOperationToStart(this ApiClient apiClient, Uri operationUrl)
         {
             return apiClient.WaitForOperationToStart(operationUrl, TestTimeouts.OperationTimeout);
         }
-
 
         public static async Task<OperationStatusResponse> WaitForOperationToStart(this ApiClient apiClient, Uri operationUrl, TimeSpan timeout)
         {
