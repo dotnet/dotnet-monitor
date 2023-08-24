@@ -159,7 +159,7 @@ info: DotnetMonitor.ParameterCapture.SystemCode[0]
 
 ### Unsupported Parameters
 
-Currently the some types of parameters are unable to be captured. When a method contains one of these unsupported types, the parameter's value will be represented as `<unsupported>`. Other parameters in the method will still be captured so long as they are supported. The most common unsupported types are listed below.
+Currently some types of parameters are unable to be captured. When a method contains one of these unsupported types, the parameter's value will be represented as `<unsupported>`. Other parameters in the method will still be captured so long as they are supported. The most common unsupported types are listed below.
 
 | Parameter Type | Example |
 | -- | -- |
