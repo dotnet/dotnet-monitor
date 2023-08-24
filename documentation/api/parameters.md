@@ -154,7 +154,7 @@ info: DotnetMonitor.ParameterCapture.SystemCode[0]
 ## Additional Notes
 
 ### Unsupported Parameters
-Currently some types of parameters are unable to be captured. When a method contains one of these unsupported types, the parameter's value will be captured as `<unsupported>`. Other parameters in the method will still be captured so long as they are supported.
+Currently some types of parameters are unable to be captured. When a method contains one of these unsupported types, the parameter's value will be represented as `<unsupported>`. Other parameters in the method will still be captured so long as they are supported.
 
 ### When to use `pid` vs `uid`
 
