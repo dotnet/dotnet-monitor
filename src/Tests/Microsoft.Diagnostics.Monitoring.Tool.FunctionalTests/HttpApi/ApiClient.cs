@@ -596,13 +596,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
-        public async Task<OperationResponse> CaptureParametersAsync(int processId, TimeSpan duration, MethodDescription[] methods, CancellationToken token)
+        public async Task<OperationResponse> CaptureParametersAsync(int processId, TimeSpan duration, CaptureParametersConfiguration config, CancellationToken token)
         {
             bool isInfinite = (duration == Timeout.InfiniteTimeSpan);
             string uri = FormattableString.Invariant($"/parameters?pid={processId}&durationSeconds={(isInfinite ? -1 : duration.Seconds)}");
             using HttpRequestMessage request = new(HttpMethod.Post, uri);
 
-            string content = JsonSerializer.Serialize(methods, DefaultJsonSerializeOptions);
+            string content = JsonSerializer.Serialize(config, DefaultJsonSerializeOptions);
             request.Content = new StringContent(content, Encoding.UTF8, ContentTypes.ApplicationJson);
 
             using HttpResponseMessage response = await SendAndLogAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);

@@ -44,17 +44,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 int processId = await appRunner.ProcessIdTask;
 
-                MethodDescription[] methods = new MethodDescription[]
+                CaptureParametersConfiguration config = new()
                 {
-                    new MethodDescription()
+                    Methods = new MethodDescription[]
                     {
-                        AssemblyName = Guid.NewGuid().ToString("D"),
-                        TypeName = Guid.NewGuid().ToString("D"),
-                        MethodName = Guid.NewGuid().ToString("D")
+                        new MethodDescription()
+                        {
+                            ModuleName = Guid.NewGuid().ToString("D"),
+                            TypeName = Guid.NewGuid().ToString("D"),
+                            MethodName = Guid.NewGuid().ToString("D")
+                        }
                     }
                 };
 
-                OperationResponse response = await apiClient.CaptureParametersAsync(processId, Timeout.InfiniteTimeSpan, methods);
+                OperationResponse response = await apiClient.CaptureParametersAsync(processId, Timeout.InfiniteTimeSpan, config);
                 Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
                 OperationStatusResponse operationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
@@ -73,9 +76,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 int processId = await appRunner.ProcessIdTask;
 
-                MethodDescription[] methods = GetValidMethodDescriptions();
+                CaptureParametersConfiguration config = GetValidConfiguration();
 
-                OperationResponse response = await apiClient.CaptureParametersAsync(processId, Timeout.InfiniteTimeSpan, methods);
+                OperationResponse response = await apiClient.CaptureParametersAsync(processId, Timeout.InfiniteTimeSpan, config);
                 Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
                 OperationStatusResponse operationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
@@ -94,9 +97,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 int processId = await appRunner.ProcessIdTask;
 
-                MethodDescription[] methods = GetValidMethodDescriptions();
+                CaptureParametersConfiguration config = GetValidConfiguration();
 
-                OperationResponse response = await apiClient.CaptureParametersAsync(processId, Timeout.InfiniteTimeSpan, methods);
+                OperationResponse response = await apiClient.CaptureParametersAsync(processId, Timeout.InfiniteTimeSpan, config);
                 Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
                 OperationStatusResponse operationStatus = await apiClient.WaitForOperationToStart(response.OperationUri);
@@ -114,9 +117,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 int processId = await appRunner.ProcessIdTask;
 
-                MethodDescription[] methods = GetValidMethodDescriptions();
+                CaptureParametersConfiguration config = GetValidConfiguration();
 
-                OperationResponse response = await apiClient.CaptureParametersAsync(processId, TimeSpan.FromSeconds(2), methods);
+                OperationResponse response = await apiClient.CaptureParametersAsync(processId, TimeSpan.FromSeconds(2), config);
                 Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
                 OperationStatusResponse operationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
@@ -135,9 +138,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 int processId = await appRunner.ProcessIdTask;
 
-                MethodDescription[] methods = GetValidMethodDescriptions();
+                CaptureParametersConfiguration config = GetValidConfiguration();
 
-                OperationResponse response = await apiClient.CaptureParametersAsync(processId, TimeSpan.FromSeconds(1), methods);
+                OperationResponse response = await apiClient.CaptureParametersAsync(processId, TimeSpan.FromSeconds(1), config);
                 Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
                 OperationStatusResponse operationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
@@ -174,16 +177,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 subScenarioName: subScenarioName);
         }
 
-        private static MethodDescription[] GetValidMethodDescriptions()
+        private static CaptureParametersConfiguration GetValidConfiguration()
         {
-            return new MethodDescription[]
+            return new CaptureParametersConfiguration()
             {
+                Methods = new MethodDescription[]
+                {
                     new MethodDescription()
                     {
-                        AssemblyName = "Microsoft.Diagnostics.Monitoring.UnitTestApp",
+                        ModuleName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll",
                         TypeName = "SampleMethods.StaticTestMethodSignatures",
                         MethodName = "NoArgs"
                     }
+                }
             };
         }
 
