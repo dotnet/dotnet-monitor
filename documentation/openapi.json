@@ -1779,13 +1779,13 @@
       },
       "MethodDescription": {
         "required": [
-          "assemblyName",
           "methodName",
+          "moduleName",
           "typeName"
         ],
         "type": "object",
         "properties": {
-          "assemblyName": {
+          "moduleName": {
             "minLength": 1,
             "type": "string"
           },

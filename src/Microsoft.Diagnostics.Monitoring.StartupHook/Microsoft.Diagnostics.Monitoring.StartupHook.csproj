@@ -20,7 +20,8 @@
     <Compile Include="..\Tools\dotnet-monitor\Profiler\ProfilerIdentifiers.cs" />
     <Compile Include="..\Tools\dotnet-monitor\Profiler\ProfilerMessagePayloads.cs" Link="MonitorMessageDispatcher\ProfilerMessagePayloads.cs" />
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\ProfilerMessage.cs" Link="MonitorMessageDispatcher\ProfilerMessage.cs" />
-    <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\Models\CaptureParametersConfiguration.cs" Link="MonitorMessageDispatcher\Models\CaptureParametersConfiguration.cs" /> 
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\Models\CaptureParametersConfiguration.cs" Link="MonitorMessageDispatcher\Models\CaptureParametersConfiguration.cs" />
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\Models\MethodDescription.cs" Link="MonitorMessageDispatcher\Models\MethodDescription.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,5 +29,5 @@
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.HostingStartup" />
   </ItemGroup>
-  
+
 </Project>
