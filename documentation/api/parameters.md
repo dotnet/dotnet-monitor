@@ -5,7 +5,7 @@
 
 Captures parameters for one or more methods each time they are called. Parameters are logged inside the target application using its [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger).
 
->**Note**: Unlike other artifacts, parameters do **not** support being sent to egress provider.
+>**Note**: Unlike other artifacts, parameters do **not** support being sent to an egress provider.
 
 >**Note**: This feature is not enabled by default and requires configuration to be enabled. See [Enabling](#enabling) for more information.
 
