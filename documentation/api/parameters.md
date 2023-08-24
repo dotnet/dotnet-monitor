@@ -88,7 +88,7 @@ The following logger categories are used inside the target application when capt
 | -- | -- |
 | `DotnetMonitor.ParameterCapture.UserCode` | Parameters captured in methods considered `UserCode`. |
 | `DotnetMonitor.ParameterCapture.SystemCode` | Parameters captured in methods considered `SystemCode`. |
-| `DotnetMonitor.ParameterCapture.Service` | Diagnostic messages by `dotnet-monitor`, such as when parameter capturing starts, stops, or is unable to find a request method. |
+| `DotnetMonitor.ParameterCapture.Service` | Diagnostic messages by `dotnet-monitor`, such as when parameter capturing starts, stops, or is unable to find a requested method. |
 
 ## Examples
 
