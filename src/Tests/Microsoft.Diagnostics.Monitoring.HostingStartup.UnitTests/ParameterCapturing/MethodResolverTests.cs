@@ -57,6 +57,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
         // Ambiguous
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.AmbiguousMethod), 3)]
+
+        // Special names
+        [InlineData(typeof(StaticTestMethodSignatures), "get_" + nameof(StaticTestMethodSignatures.FieldWithGetterAndSetter), 0)]
         public void ResolveMethodDescription_MatchesCorrectly(Type declaringType, string methodName, int matches)
         {
             // Arrange
