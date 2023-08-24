@@ -15,7 +15,6 @@ This feature is currently marked as experimental and so needs to be explicitly e
 
 ```json
 "InProcessFeatures": {
-    "Enabled": true,
     "ParameterCapturing": {
         "Enabled": true
     }
@@ -151,7 +150,7 @@ info: DotnetMonitor.ParameterCapture.SystemCode[0]
 
 - The target application must use ASP.NET Core.
 - `dotnet-monitor` must be set to `Listen` mode, and the target application must start suspended. See [diagnostic port configuration](../configuration/diagnostic-port-configuration.md) for information on how to do this.
-- The target application must have [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger) available via [ASP.NET Core's dependency injection](https://learn.microsoft.com/aspnet/core/mvc/controllers/dependency-injection).
+- The target application must have [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger) available via [ASP.NET Core's dependency injection](https://learn.microsoft.com/aspnet/core/fundamentals/dependency-injection).
 - This feature relies on a hosting startup assembly. If the target application [disabled automatic loading](https://learn.microsoft.com/aspnet/core/fundamentals/host/platform-specific-configuration#disable-automatic-loading-of-hosting-startup-assemblies) of these, this feature will not be available.
 - This feature relies on a [ICorProfilerCallback](https://docs.microsoft.com/dotnet/framework/unmanaged-api/profiling/icorprofilercallback-interface) implementation. If the target application is already using an `ICorProfiler` that isn't notify-only, this feature will not be available.
 - If a target application is using .NET 7 then the `dotnet-monitor` startup hook must be configured. This is automatically done in .NET 8+.
@@ -160,7 +159,16 @@ info: DotnetMonitor.ParameterCapture.SystemCode[0]
 
 ### Unsupported Parameters
 
-Currently some types of parameters are unable to be captured. When a method contains one of these unsupported types, the parameter's value will be represented as `<unsupported>`. Other parameters in the method will still be captured so long as they are supported.
+Currently the following types of parameters are unable to be captured. When a method contains one of these unsupported types, the parameter's value will be represented as `<unsupported>`. Other parameters in the method will still be captured so long as they are supported.
+
+| Parameter Type | Example |
+| -- | -- |
+| [Generic type parameters](https://learn.microsoft.com/dotnet/csharp/programming-guide/generics/generic-type-parameters) | `MyMethod<T>(T t)` |
+| Parameters passed with reference modifiers ([`params`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/params) is supported) | Parameters with the [`ref`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/ref), [`out`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/out-parameter-modifier), or [`in`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/in-parameter-modifier) modifiers and [`ref structs`](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/ref-struct) |
+| [Nullable value types](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/nullable-value-types) | `int?` |
+| [Pointers](https://learn.microsoft.com/dotnet/csharp/language-reference/unsafe-code#pointer-types) | `void*` |
+| [Tuples](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/value-tuples) | `(int, int)` |
+| [Value types](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/value-types) defined in another assembly | `MyModule.dll!MyClass.MyMethod(HttpStatusCode s)` since [`HttpStatusCode`](https://learn.microsoft.com/dotnet/api/system.net.httpstatuscode) is an [`enum`](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/enum).  |
 
 ### When to use `pid` vs `uid`
 
