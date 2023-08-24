@@ -1045,6 +1045,17 @@
               "$ref": "#/definitions/ExceptionsOptions"
             }
           ]
+        },
+        "ParameterCapturing": {
+          "description": "[Experimental] Options for the in-process parameter capturing feature.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ParameterCapturingOptions"
+            }
+          ]
         }
       }
     },
@@ -1084,6 +1095,20 @@
           "default": 20,
           "maximum": 2147483647.0,
           "minimum": 1.0
+        }
+      }
+    },
+    "ParameterCapturingOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Enabled": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Enables or disables the parameter capturing feature. By default, this feature is not enabled.",
+          "default": false
         }
       }
     },

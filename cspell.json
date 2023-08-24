@@ -17,6 +17,7 @@
         }
     ],
     "words": [
+        "arity",
         "armv",
         "Bldr",
         "Brotli",
@@ -44,6 +45,7 @@
         "gcdumps",
         "globbing",
         "globstar",
+        "HCORENUM",
         "hmac",
         "HMACSHA",
         "hresult",
@@ -68,7 +70,9 @@
         "nupkg",
         "openapi",
         "overreporting",
+        "PCCOR",
         "Pids",
+        "PINVOKE",
         "Pinnable",
         "Pkce",
         "PKCS",
@@ -95,6 +99,9 @@
         "trce",
         "tstr",
         "ukwn",
+        "uninitialize",
+        "Uninstallation",
+        "uniquifier",
         "Unlocalized",
         "Unredacted",
         "Unthrown",
@@ -127,7 +134,11 @@
         },
         {
             "name": "error_codes",
-            "pattern": "/(_| )E_\\w+/gm"
+            "pattern": "/[A-Z_]+(E|S)_\\w+/gm"
+        },
+        {
+            "name": "il_opcodes",
+            "pattern": "/CEE_[A-Z_]+/gm"
         },
         {
             "name": "xml_comment_block",
@@ -162,6 +173,7 @@
             "allowCompoundWords": true,
             "ignoreRegExpList": [
                 "preprocessor_conditional",
+                "il_opcodes",
                 "error_codes"
             ]
         },

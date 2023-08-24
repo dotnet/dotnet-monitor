@@ -37,12 +37,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
         private readonly IOptions<CallStacksOptions> _callStacksOptions;
+        private readonly IOptions<ParameterCapturingOptions> _parameterCapturingOptions;
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
         private readonly ICollectionRuleService _collectionRuleService;
         private readonly IDumpOperationFactory _dumpOperationFactory;
         private readonly ILogsOperationFactory _logsOperationFactory;
         private readonly IMetricsOperationFactory _metricsOperationFactory;
         private readonly ITraceOperationFactory _traceOperationFactory;
+        private readonly ICaptureParametersOperationFactory _captureParametersFactory;
         private readonly IGCDumpOperationFactory _gcdumpOperationFactory;
         private readonly IStacksOperationFactory _stacksOperationFactory;
 
@@ -51,12 +53,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
             _callStacksOptions = serviceProvider.GetRequiredService<IOptions<CallStacksOptions>>();
+            _parameterCapturingOptions = serviceProvider.GetRequiredService<IOptions<ParameterCapturingOptions>>();
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
             _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
             _dumpOperationFactory = serviceProvider.GetRequiredService<IDumpOperationFactory>();
             _logsOperationFactory = serviceProvider.GetRequiredService<ILogsOperationFactory>();
             _metricsOperationFactory = serviceProvider.GetRequiredService<IMetricsOperationFactory>();
             _traceOperationFactory = serviceProvider.GetRequiredService<ITraceOperationFactory>();
+            _captureParametersFactory = serviceProvider.GetRequiredService<ICaptureParametersOperationFactory>();
             _gcdumpOperationFactory = serviceProvider.GetRequiredService<IGCDumpOperationFactory>();
             _stacksOperationFactory = serviceProvider.GetRequiredService<IStacksOperationFactory>();
         }
@@ -555,6 +559,40 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return _collectionRuleService.GetCollectionRuleDetailedDescription(collectionRuleName, processInfo.EndpointInfo);
             },
             Utilities.GetProcessKey(pid, uid, name));
+        }
+
+        [HttpPost("parameters", Name = nameof(CaptureParameters))]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
+        [EgressValidation]
+        public async Task<ActionResult> CaptureParameters(
+            [FromBody][Required]
+            CaptureParametersConfiguration configuration,
+            [FromQuery][Range(-1, int.MaxValue)]
+            int durationSeconds = 30,
+            [FromQuery]
+            int? pid = null,
+            [FromQuery]
+            Guid? uid = null,
+            [FromQuery]
+            string name = null,
+            [FromQuery]
+            string tags = null)
+        {
+            if (!_parameterCapturingOptions.Value.GetEnabled())
+            {
+                return NotFound();
+            }
+
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
+            TimeSpan duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds);
+
+            return await InvokeForProcess(async processInfo =>
+            {
+                IInProcessOperation operation = _captureParametersFactory.Create(processInfo.EndpointInfo, configuration, duration);
+                return await InProcessResult(Utilities.ArtifactType_Parameters, processInfo, operation, tags);
+            }, processKey, Utilities.ArtifactType_Parameters);
         }
 
         [HttpGet("stacks", Name = nameof(CaptureStacks))]

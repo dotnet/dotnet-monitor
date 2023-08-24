@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
+using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor.Stacks;
 using Microsoft.Diagnostics.Tools.Monitor.Swagger;
 using Microsoft.Extensions.DependencyInjection;
@@ -130,15 +131,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureLibrarySharing();
                 services.ConfigureProfiler();
                 services.ConfigureStartupHook();
+                services.ConfigureHostingStartup();
                 services.ConfigureExceptions();
                 services.ConfigureStartupLoggers(authConfigurator);
-                services.AddSingleton<IExperimentalFlags, ExperimentalFlags>();
                 services.ConfigureInProcessFeatures(context.Configuration);
                 services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
                 services.AddSingleton<IDumpOperationFactory, DumpOperationFactory>();
                 services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
                 services.AddSingleton<IMetricsOperationFactory, MetricsOperationFactory>();
                 services.AddSingleton<ITraceOperationFactory, TraceOperationFactory>();
+                services.AddSingleton<ICaptureParametersOperationFactory, CaptureParametersOperationFactory>();
                 services.AddSingleton<IGCDumpOperationFactory, GCDumpOperationFactory>();
                 services.AddSingleton<IStacksOperationFactory, StacksOperationFactory>();
 
