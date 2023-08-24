@@ -126,6 +126,7 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 ```
 
 ### Sample Output (Target Application)
+
 ```
 info: DotnetMonitor.ParameterCapture.UserCode[0]
       => SpanId:e40e62cffe1cf1cb, TraceId:c76b911969aa8abcf335907e96c62b33, ParentId:0000000000000000 => ConnectionId:0HMT2D6L8GT2Q => RequestPath:/ RequestId:0HMT2D6L8GT2Q:00000003 => SampleWebApp.Controllers.HomeController.Index (SampleWebApp)
@@ -147,6 +148,7 @@ info: DotnetMonitor.ParameterCapture.SystemCode[0]
 | MacOS | .NET 7+ |
 
 ## Additional Requirements
+
 - The target application must use ASP.NET Core.
 - `dotnet-monitor` must be set to `Listen` mode, and the target application must start suspended. See [diagnostic port configuration](../configuration/diagnostic-port-configuration.md) for information on how to do this.
 - The target application must have [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger) available via [ASP.NET Core's dependency injection](https://learn.microsoft.com/aspnet/core/mvc/controllers/dependency-injection).
@@ -156,6 +158,7 @@ info: DotnetMonitor.ParameterCapture.SystemCode[0]
 ## Additional Notes
 
 ### Unsupported Parameters
+
 Currently some types of parameters are unable to be captured. When a method contains one of these unsupported types, the parameter's value will be represented as `<unsupported>`. Other parameters in the method will still be captured so long as they are supported.
 
 ### When to use `pid` vs `uid`
