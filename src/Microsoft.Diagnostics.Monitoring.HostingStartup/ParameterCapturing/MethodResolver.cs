@@ -11,36 +11,33 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     public sealed class MethodResolver
     {
-        private record DeclaringTypeDescription(string AssemblyName, string TypeName);
+        private record DeclaringTypeDescription(string ModuleName, string TypeName);
 
-        private readonly Dictionary<string, List<Assembly>> _nameToAssemblies = new(StringComparer.InvariantCultureIgnoreCase);
+        private readonly Dictionary<string, List<Module>> _nameToModules = new(StringComparer.Ordinal);
         private readonly Dictionary<DeclaringTypeDescription, List<MethodInfo>> _declaringTypeToMethods = new();
 
         public MethodResolver()
         {
-            // Build a lookup table of all viable assembly names to their backing reflection Assembly.
+            // Build a lookup table of all viable module names to their backing reflection object.
             IEnumerable<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(
                 assembly => !assembly.ReflectionOnly &&
                 !assembly.IsDynamic);
 
             foreach (Assembly assembly in assemblies)
             {
-                string? assemblySimpleName = assembly.GetName().Name;
-                if (assemblySimpleName == null)
+                foreach (Module module in assembly.GetModules())
                 {
-                    continue;
-                }
-
-                if (_nameToAssemblies.TryGetValue(assemblySimpleName, out List<Assembly>? assemblyList))
-                {
-                    assemblyList.Add(assembly);
-                }
-                else
-                {
-                    _nameToAssemblies[assemblySimpleName] = new List<Assembly>()
+                    if (_nameToModules.TryGetValue(module.Name, out List<Module>? moduleList))
                     {
-                        assembly
-                    };
+                        moduleList.Add(module);
+                    }
+                    else
+                    {
+                        _nameToModules[module.Name] = new List<Module>()
+                        {
+                            module
+                        };
+                    }
                 }
             }
         }
@@ -64,25 +61,26 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private List<MethodInfo> GetMethodsForDeclaringType(MethodDescription methodDescription)
         {
-            // Maintain a cache for all methods for a given assembly+type.
-            DeclaringTypeDescription declType = new(methodDescription.AssemblyName, methodDescription.TypeName);
+            // Maintain a cache for all methods for a given module+type.
+            DeclaringTypeDescription declType = new(methodDescription.ModuleName, methodDescription.TypeName);
             if (_declaringTypeToMethods.TryGetValue(declType, out List<MethodInfo>? methods))
             {
                 return methods;
             }
 
             List<MethodInfo> declaringTypeMethods = new();
-            if (_nameToAssemblies.TryGetValue(methodDescription.AssemblyName, out List<Assembly>? possibleAssemblies))
+            if (_nameToModules.TryGetValue(methodDescription.ModuleName, out List<Module>? possibleModules))
             {
-                foreach (Assembly assembly in possibleAssemblies)
+                foreach (Module module in possibleModules)
                 {
                     try
                     {
-                        MethodInfo[]? allMethods = assembly.GetType(methodDescription.TypeName)?.GetMethods(
+                        IEnumerable<MethodInfo>? allMethods = module.Assembly.GetType(methodDescription.TypeName)?.GetMethods(
                             BindingFlags.Public |
                             BindingFlags.NonPublic |
                             BindingFlags.Instance |
-                            BindingFlags.Static);
+                            BindingFlags.Static)
+                            .Where(method => !method.IsSpecialName);
 
                         if (allMethods == null)
                         {

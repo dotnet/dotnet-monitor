@@ -182,13 +182,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             {
                 RequestId = Guid.NewGuid(),
                 Duration = Timeout.InfiniteTimeSpan,
-                Methods = new[]
+                Configuration =
                 {
-                    new MethodDescription()
+                    Methods = new[]
                     {
-                        AssemblyName = Guid.NewGuid().ToString("D"),
-                        TypeName = Guid.NewGuid().ToString("D"),
-                        MethodName = Guid.NewGuid().ToString("D")
+                        new MethodDescription()
+                        {
+                            ModuleName = Guid.NewGuid().ToString("D"),
+                            TypeName = Guid.NewGuid().ToString("D"),
+                            MethodName = Guid.NewGuid().ToString("D")
+                        }
                     }
                 }
             };
@@ -359,8 +362,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
         private StartCapturingParametersPayload CreateStartCapturingPayload(TimeSpan duration)
         {
-            string assemblyName = typeof(ParameterCapturingPipelineTests).Assembly.GetName()?.Name;
-            Assert.NotNull(assemblyName);
+            string moduleName = typeof(ParameterCapturingPipelineTests).Module.Name;
+            Assert.NotNull(moduleName);
 
             string typeName = typeof(ParameterCapturingPipelineTests).FullName;
             Assert.NotNull(typeName);
@@ -369,13 +372,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             {
                 RequestId = Guid.NewGuid(),
                 Duration = duration,
-                Methods = new[]
+                Configuration =
                 {
-                    new MethodDescription()
+                    Methods = new[]
                     {
-                        AssemblyName = assemblyName,
-                        TypeName = typeName,
-                        MethodName = nameof(CreateStartCapturingPayload)
+                        new MethodDescription()
+                        {
+                            ModuleName = moduleName,
+                            TypeName = typeName,
+                            MethodName = nameof(CreateStartCapturingPayload)
+                        }
                     }
                 }
             };

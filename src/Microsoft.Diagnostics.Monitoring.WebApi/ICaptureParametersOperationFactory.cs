@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// </summary>
         IInProcessOperation Create(
             IEndpointInfo endpointInfo,
-            MethodDescription[] methods,
+            CaptureParametersConfiguration configuration,
             TimeSpan duration);
     }
 }

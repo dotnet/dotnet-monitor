@@ -54,6 +54,8 @@ namespace SampleMethods
 
     internal static class StaticTestMethodSignatures
     {
+        public static bool FieldWithGetterAndSetter { get; set; }
+
         internal struct SampleNestedStruct
         {
             public void DoWork(int i) { }

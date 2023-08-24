@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             MethodResolver resolver = new();
             MethodDescription description = new()
             {
-                AssemblyName = Guid.NewGuid().ToString("D"),
+                ModuleName = Guid.NewGuid().ToString("D"),
                 TypeName = "Test",
                 MethodName = "Test",
             };
@@ -57,6 +57,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
         // Ambiguous
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.AmbiguousMethod), 3)]
+
+        // Special names
+        [InlineData(typeof(StaticTestMethodSignatures), "get_" + nameof(StaticTestMethodSignatures.FieldWithGetterAndSetter), 0)]
         public void ResolveMethodDescription_MatchesCorrectly(Type declaringType, string methodName, int matches)
         {
             // Arrange
@@ -78,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             MethodResolver resolver = new();
             MethodDescription description = new()
             {
-                AssemblyName = typeof(StaticTestMethodSignatures).Assembly.GetName().Name,
+                ModuleName = typeof(StaticTestMethodSignatures).Module.Name,
                 TypeName = "SampleMethods.GenericTestMethodSignatures`2",
                 MethodName = "GenericParameters",
             };
@@ -97,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             MethodResolver resolver = new();
             MethodDescription description = new()
             {
-                AssemblyName = typeof(StaticTestMethodSignatures).Assembly.GetName().Name,
+                ModuleName = typeof(StaticTestMethodSignatures).Module.Name,
                 TypeName = "SampleMethods.GenericTestMethodSignatures",
                 MethodName = "GenericParameters",
             };
@@ -116,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             MethodResolver resolver = new();
             MethodDescription description = new()
             {
-                AssemblyName = typeof(StaticTestMethodSignatures).Assembly.GetName().Name,
+                ModuleName = typeof(StaticTestMethodSignatures).Module.Name,
                 TypeName = "SampleMethods.TestAmbiguousGenericSignatures`1",
                 MethodName = "AmbiguousMethod",
             };
@@ -157,7 +160,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         {
             return new MethodDescription
             {
-                AssemblyName = declaringType.Assembly.GetName().Name,
+                ModuleName = declaringType.Module.Name,
                 TypeName = declaringType.FullName,
                 MethodName = methodName
             };

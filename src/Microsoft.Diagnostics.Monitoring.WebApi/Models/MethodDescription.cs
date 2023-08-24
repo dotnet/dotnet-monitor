@@ -13,10 +13,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
     public class MethodDescription
     {
-        // CONSIDER: Standardize this with our stack frame representation
-        [JsonPropertyName("assemblyName")]
+        [JsonPropertyName("moduleName")]
         [Required]
-        public string AssemblyName { get; set; } = string.Empty;
+        public string ModuleName { get; set; } = string.Empty;
 
         [JsonPropertyName("typeName")]
         [Required]
@@ -26,6 +25,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [Required]
         public string MethodName { get; set; } = string.Empty;
 
-        public override string ToString() => FormattableString.Invariant($"{AssemblyName}!{TypeName}.{MethodName}");
+        public override string ToString() => FormattableString.Invariant($"{ModuleName}!{TypeName}.{MethodName}");
     }
 }
