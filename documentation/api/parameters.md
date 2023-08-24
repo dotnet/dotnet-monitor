@@ -11,7 +11,7 @@ Captures parameters for one or more methods each time they are called. Parameter
 
 ## Enabling
 
-This feature is currently marked as experimental and so needs to be explicitly enabled. The following configuration configuration must be set for the feature to be used.
+This feature is currently marked as experimental and so needs to be explicitly enabled. The following configuration must be set for the feature to be used.
 
 ```json
 "InProcessFeatures": {
