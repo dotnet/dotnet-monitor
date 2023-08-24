@@ -282,6 +282,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 }
                 else
                 {
+                    await writer.WriteLineAsync();
                     await writer.WriteAsync("   --- The inner exception was not included in the filter ---");
                 }
             }

@@ -173,7 +173,7 @@ Accept: text/plain
     "Include": [
         {
             "methodName": "MyExceptionMethod",
-            "className": "MyApp.MyClass"
+            "typeName": "MyApp.MyClass"
             "moduleName": "MyApp.dll"
             "exceptionType": "System.InvalidOperationException"
         }
@@ -204,7 +204,7 @@ Accept: application/x-ndjson
 {
     "Include": [
         {
-            "className": "MyClass"
+            "typeName": "MyClass"
         }
     ],
     "Exclude": [

@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private static readonly ExceptionFilterSettings SimpleInvalidOperationException = new()
         {
-            ClassName = "ExceptionsScenario",
+            TypeName = "ExceptionsScenario",
             ExceptionType = nameof(InvalidOperationException),
             ModuleName = "UnitTestApp",
             MethodName = "ThrowAndCatchInvalidOperationException"
@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private static readonly ExceptionFilterSettings SimpleArgumentNullException = new()
         {
-            ClassName = "ArgumentNullException",
+            TypeName = "ArgumentNullException",
             ExceptionType = nameof(ArgumentNullException),
             ModuleName = "CoreLib",
             MethodName = "Throw"
@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private static readonly ExceptionFilterSettings FullInvalidOperationException = new()
         {
-            ClassName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario",
+            TypeName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario",
             ExceptionType = typeof(InvalidOperationException).FullName,
             ModuleName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll",
             MethodName = "ThrowAndCatchInvalidOperationException"
@@ -60,7 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private static readonly ExceptionFilterSettings FullArgumentNullException = new()
         {
-            ClassName = "System.ArgumentNullException",
+            TypeName = "System.ArgumentNullException",
             ExceptionType = typeof(ArgumentNullException).FullName,
             ModuleName = "System.Private.CoreLib.dll",
             MethodName = "Throw"

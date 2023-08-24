@@ -225,7 +225,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         {
                             ExceptionType = SystemInvalidOperationException,
                             MethodName = FrameMethodName,
-                            ClassName = FrameClassName,
+                            TypeName = FrameClassName,
                             ModuleName = FrameModuleName
                         }
                     );
@@ -387,7 +387,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         {
                             ExceptionType = SystemInvalidOperationException,
                             MethodName = FrameMethodName,
-                            ClassName = FrameClassName,
+                            TypeName = FrameClassName,
                             ModuleName = FrameModuleName
                         }
                     );

@@ -176,7 +176,7 @@ Object describing attributes of an exception to use for filtering. To be filtere
 | Name | Type | Description |
 |---|---|---|
 | `methodName` | string | The name of the top stack frame's method. |
-| `className` | string | The name of the top stack frame's class. |
+| `typeName` | string | The name of the top stack frame's type. |
 | `moduleName` | string | The name of the top stack frame's module. |
 | `exceptionType` | string | The type of the exception (e.g. "System.ObjectDisposedException"). |
 

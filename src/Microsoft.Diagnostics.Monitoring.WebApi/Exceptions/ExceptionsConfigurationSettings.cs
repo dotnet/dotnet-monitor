@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
                 {
                     CompareIncludeValues(configuration.MethodName, topFrame.MethodName, ref include);
                     CompareIncludeValues(configuration.ModuleName, topFrame.ModuleName, ref include);
-                    CompareIncludeValues(configuration.ClassName, topFrame.ClassName, ref include);
+                    CompareIncludeValues(configuration.TypeName, topFrame.ClassName, ref include);
                 }
 
                 CompareIncludeValues(configuration.ExceptionType, exception.TypeName, ref include);
@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
                 {
                     CompareExcludeValues(configuration.MethodName, topFrame.MethodName, ref exclude);
                     CompareExcludeValues(configuration.ModuleName, topFrame.ModuleName, ref exclude);
-                    CompareExcludeValues(configuration.ClassName, topFrame.ClassName, ref exclude);
+                    CompareExcludeValues(configuration.TypeName, topFrame.ClassName, ref exclude);
                     CompareExcludeValues(configuration.ExceptionType, exception.TypeName, ref exclude);
                 }
                 else
@@ -100,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 
         public string ExceptionType { get; set; }
 
-        public string ClassName { get; set; }
+        public string TypeName { get; set; }
 
         public string ModuleName { get; set; }
     }
