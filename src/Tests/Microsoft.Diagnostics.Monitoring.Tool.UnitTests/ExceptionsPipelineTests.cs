@@ -311,7 +311,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.NotEqual(0UL, outerInstance.Id);
                     Assert.Equal(typeof(InvalidOperationException).FullName, outerInstance.TypeName);
                     Assert.Equal(innerInstance.Id, Assert.Single(outerInstance.InnerExceptionIds));
-                    Assert.NotEmpty(innerInstance.CallStack.Frames); // Indicates this exception was thrown
+                    Assert.NotEmpty(outerInstance.CallStack.Frames); // Indicates this exception was thrown
                 });
         }
 
