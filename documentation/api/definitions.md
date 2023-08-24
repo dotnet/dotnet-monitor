@@ -303,8 +303,8 @@ Object describing a method.
 | Name | Type | Description |
 |---|---|---|
 | `moduleName`| string | The name of the module that the method belongs to. |
-| `className` | string | The name of the class that the method belongs to. |
-| `methodName` | DateTime | The name of the method, not including parameters. |
+| `typeName` | string | The name of the type that the method belongs to. |
+| `methodName` | string | The name of the method, not including parameters. |
 
 ## Metric
 

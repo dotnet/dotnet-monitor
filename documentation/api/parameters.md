@@ -3,11 +3,24 @@
 
 # Parameters - Post (experimental feature)
 
-Captures parameters for one or more methods each time they are called. Captured parameters are logged inside the target application using its [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger).
+Captures parameters for one or more methods each time they are called. Parameters are logged inside the target application using its [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger).
 
 >**Note**: Unlike other artifacts, parameters do **not** support being sent to egress provider.
 
->**Note**: This feature is not enabled by default and requires configuration to be enabled.
+>**Note**: This feature is not enabled by default and requires configuration to be enabled. See [Enabling](#enabling) for more information.
+
+## Enabling
+
+This feature is currently marked as experimental and so needs to be explicitly enabled. The following configuration configuration must be set for the feature to be used.
+
+```json
+"InProcessFeatures": {
+    "Enabled": true,
+    "ParameterCapturing": {
+        "Enabled": true
+    }
+}
+```
 
 ## HTTP Route
 
@@ -90,12 +103,12 @@ Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
     "methods": [
         {
             "moduleName": "SampleWebApp.dll",
-            "className": "SampleWebApp.Controllers.HomeController",
+            "typeName": "SampleWebApp.Controllers.HomeController",
             "methodName": "Index"
         },
         {
             "moduleName": "System.Private.CoreLib.dll",
-            "className": "System.String",
+            "typeName": "System.String",
             "methodName": "Concat"
         }
     ]
@@ -119,9 +132,8 @@ info: DotnetMonitor.ParameterCapture.UserCode[0]
         number: 10)
 info: DotnetMonitor.ParameterCapture.SystemCode[0]
       System.String.Concat(
-        str0: 'InvokeStub_',
-        str1: 'HtmlHelper`1.',
-        str2: '.ctor')
+        str0: 'firstString',
+        str1: '.secondString')
 ```
 
 ## Supported Runtimes
