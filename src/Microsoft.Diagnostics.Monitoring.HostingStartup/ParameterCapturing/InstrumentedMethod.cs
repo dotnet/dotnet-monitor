@@ -5,14 +5,14 @@ using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
-    public enum ParameterCaptureMode
+    internal enum ParameterCaptureMode
     {
         Disallowed = 0,
         Inline,
         Background,
     }
 
-    public sealed class InstrumentedMethod
+    internal sealed class InstrumentedMethod
     {
         private const char NamespaceSeparator = '.';
         private static readonly string[] SystemTypePrefixes = { nameof(System) + NamespaceSeparator, nameof(Microsoft) + NamespaceSeparator };
@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         /// <summary>
         /// A template string that contains the full method name with parameter names and
         /// format items for each supported parameter.
-        /// 
+        ///
         /// The number of format items equals NumberOfSupportedParameters.
         /// </summary>
         public string MethodWithParametersTemplateString { get; }
