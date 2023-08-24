@@ -164,11 +164,11 @@ Currently some types of parameters are unable to be captured. When a method cont
 | Parameter Type | Example |
 | -- | -- |
 | [Generic type parameters](https://learn.microsoft.com/dotnet/csharp/programming-guide/generics/generic-type-parameters) | `MyMethod<T>(T t)` |
-| Parameters with pass-by-reference modifiers ([`in`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/in-parameter-modifier), [`out`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/out-parameter-modifier), [`ref`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/ref), and [`ref structs`](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/ref-struct)) | `MyMethod(ref int i)` |
+| Parameters with pass-by-reference modifiers ([`in`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/in-parameter-modifier), [`out`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/out-parameter-modifier) and [`ref`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/ref)) | `MyMethod(ref int i)` |
 | [Nullable value types](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/nullable-value-types) | `int?` |
 | [Pointers](https://learn.microsoft.com/dotnet/csharp/language-reference/unsafe-code#pointer-types) | `void*` |
 | [Tuples](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/value-tuples) | `(int, int)` |
-| [Value types](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/value-types) defined in another assembly | `MyModule.dll!MyClass.MyMethod(HttpStatusCode s)` since [`HttpStatusCode`](https://learn.microsoft.com/dotnet/api/system.net.httpstatuscode) is an [`enum`](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/enum). |
+| [Value types](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/value-types) defined in another assembly | `MyModule.dll!MyClass.MyMethod(HttpStatusCode s)` since [`HttpStatusCode`](https://learn.microsoft.com/dotnet/api/system.net.httpstatuscode) is an [`enum`](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/enum) |
 
 ### When to use `pid` vs `uid`
 
