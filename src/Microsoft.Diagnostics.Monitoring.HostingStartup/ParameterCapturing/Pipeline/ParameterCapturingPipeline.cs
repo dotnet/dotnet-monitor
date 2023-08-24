@@ -30,15 +30,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
         }
 
         private readonly IFunctionProbesManager _probeManager;
-        private readonly string[] _typeDenyList;
+        private readonly IMethodDenyListService _denyList;
         private readonly IParameterCapturingPipelineCallbacks _callbacks;
         private readonly Channel<CapturingRequest> _requestQueue;
         private readonly ConcurrentDictionary<Guid, CapturingRequest> _allRequests = new();
 
-        public ParameterCapturingPipeline(IFunctionProbesManager probeManager, IParameterCapturingPipelineCallbacks callbacks, string[]? typeDenyList = null)
+        public ParameterCapturingPipeline(IFunctionProbesManager probeManager, IParameterCapturingPipelineCallbacks callbacks, IMethodDenyListService denyList)
         {
             _probeManager = probeManager;
-            _typeDenyList = typeDenyList ?? Array.Empty<string>();
+            _denyList = denyList;
             _callbacks = callbacks;
 
             _requestQueue = Channel.CreateBounded<CapturingRequest>(new BoundedChannelOptions(capacity: 1)
@@ -156,27 +156,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
             return _requestQueue.Writer.TryComplete();
         }
 
-        private void ValidateMethods(MethodDescription[] methods)
-        {
-            List<MethodDescription> _deniedMethodDescriptions = new();
-            foreach (MethodDescription methodDescription in methods)
-            {
-                foreach (string deniedType in _typeDenyList)
-                {
-                    if (TypeUtils.IsSubType(deniedType, methodDescription.TypeName))
-                    {
-                        _deniedMethodDescriptions.Add(methodDescription);
-                        break;
-                    }
-                }
-            }
-
-            if (_deniedMethodDescriptions.Count > 0)
-            {
-                throw new DeniedMethodsExceptions(_deniedMethodDescriptions);
-            }
-        }
-
         public void SubmitRequest(StartCapturingParametersPayload payload)
         {
             ArgumentNullException.ThrowIfNull(payload.Configuration);
@@ -186,7 +165,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
                 throw new ArgumentException(nameof(payload.Configuration.Methods));
             }
 
-            ValidateMethods(payload.Methods);
+            _denyList.ValidateMethods(payload.Configuration.Methods);
 
             CapturingRequest request = new(payload);
             if (!_allRequests.TryAdd(payload.RequestId, request))

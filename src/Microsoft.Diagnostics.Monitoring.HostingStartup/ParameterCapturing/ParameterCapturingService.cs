@@ -32,13 +32,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private readonly ILogger? _logger;
 
-        private static readonly string[] s_typeDenyList = {
-            "Interop",
-            "Internal",
-            "Microsoft.Diagnostics.Monitoring",
-            "System.Diagnostics.Debugger"
-        };
-
         public ParameterCapturingService(IServiceProvider services)
         {
             try
@@ -55,6 +48,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     IpcCommand.StopCapturingParameters,
                     OnStopMessage);
 
+                IMethodDenyListService _denyListService = services.GetRequiredService<IMethodDenyListService>();
+
                 _logger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.Service>>()
                     ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
 
@@ -67,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 _parameterCapturingLogger = new(userLogger, systemLogger);
                 FunctionProbesManager probeManager = new(new LogEmittingProbes(_parameterCapturingLogger));
 
-                _pipeline = new ParameterCapturingPipeline(probeManager, this, s_typeDenyList);
+                _pipeline = new ParameterCapturingPipeline(probeManager, this, _denyListService);
             }
             catch (NotSupportedException ex)
             {
