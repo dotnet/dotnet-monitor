@@ -17,21 +17,4 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [Required, MinLength(1)]
         public MethodDescription[] Methods { get; set; } = Array.Empty<MethodDescription>();
     }
-
-    public class MethodDescription
-    {
-        [JsonPropertyName("moduleName")]
-        [Required]
-        public string ModuleName { get; set; } = string.Empty;
-
-        [JsonPropertyName("typeName")]
-        [Required]
-        public string TypeName { get; set; } = string.Empty;
-
-        [JsonPropertyName("methodName")]
-        [Required]
-        public string MethodName { get; set; } = string.Empty;
-
-        public override string ToString() => FormattableString.Invariant($"{ModuleName}!{TypeName}.{MethodName}");
-    }
 }

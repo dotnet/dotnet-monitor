@@ -75,7 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 {
                     try
                     {
-                        IEnumerable<MethodInfo>? allMethods = assembly.GetType(methodDescription.TypeName)?.GetMethods(
+                        IEnumerable<MethodInfo>? allMethods = module.Assembly.GetType(methodDescription.TypeName)?.GetMethods(
                             BindingFlags.Public |
                             BindingFlags.NonPublic |
                             BindingFlags.Instance |
