@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
     {
         public Guid RequestId { get; set; } = Guid.Empty;
         public TimeSpan Duration { get; set; } = Timeout.InfiniteTimeSpan;
-        public MethodDescription[] Methods { get; set; } = Array.Empty<MethodDescription>();
+        public CaptureParametersConfiguration Configuration { get; set; } = new();
     }
 
     internal sealed class StopCapturingParametersPayload

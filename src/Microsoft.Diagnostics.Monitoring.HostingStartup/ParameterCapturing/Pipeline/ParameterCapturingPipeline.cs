@@ -106,12 +106,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
             try
             {
                 MethodResolver resolver = new();
-                List<MethodInfo> methods = new(request.Methods.Length);
+                List<MethodInfo> methods = new(request.Configuration.Methods.Length);
                 List<MethodDescription> methodsFailedToResolve = new();
 
-                for (int i = 0; i < request.Methods.Length; i++)
+                for (int i = 0; i < request.Configuration.Methods.Length; i++)
                 {
-                    MethodDescription methodDescription = request.Methods[i];
+                    MethodDescription methodDescription = request.Configuration.Methods[i];
 
                     List<MethodInfo> resolvedMethods = resolver.ResolveMethodDescription(methodDescription);
                     if (resolvedMethods.Count == 0)
@@ -179,9 +179,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
 
         public void SubmitRequest(StartCapturingParametersPayload payload)
         {
-            if (payload.Methods.Length == 0)
+            ArgumentNullException.ThrowIfNull(payload.Configuration);
+
+            if (payload.Configuration.Methods.Length == 0)
             {
-                throw new ArgumentException(nameof(payload.Methods));
+                throw new ArgumentException(nameof(payload.Configuration.Methods));
             }
 
             ValidateMethods(payload.Methods);

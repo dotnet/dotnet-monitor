@@ -215,13 +215,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             {
                 RequestId = Guid.NewGuid(),
                 Duration = Timeout.InfiniteTimeSpan,
-                Methods = new[]
+                Configuration =
                 {
-                    new MethodDescription()
+                    Methods = new[]
                     {
-                        AssemblyName = Guid.NewGuid().ToString("D"),
-                        TypeName = Guid.NewGuid().ToString("D"),
-                        MethodName = Guid.NewGuid().ToString("D")
+                        new MethodDescription()
+                        {
+                            AssemblyName = Guid.NewGuid().ToString("D"),
+                            TypeName = Guid.NewGuid().ToString("D"),
+                            MethodName = Guid.NewGuid().ToString("D")
+                        }
                     }
                 }
             };
@@ -402,13 +405,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             {
                 RequestId = Guid.NewGuid(),
                 Duration = duration,
-                Methods = new[]
+                Configuration =
                 {
-                    new MethodDescription()
+                    Methods = new[]
                     {
-                        AssemblyName = assemblyName,
-                        TypeName = typeName,
-                        MethodName = nameof(CreateStartCapturingPayload)
+                        new MethodDescription()
+                        {
+                            AssemblyName = assemblyName,
+                            TypeName = typeName,
+                            MethodName = nameof(CreateStartCapturingPayload)
+                        }
                     }
                 }
             };

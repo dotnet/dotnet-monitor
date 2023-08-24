@@ -78,11 +78,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 {
                     try
                     {
-                        MethodInfo[]? allMethods = assembly.GetType(methodDescription.TypeName)?.GetMethods(
+                        IEnumerable<MethodInfo>? allMethods = assembly.GetType(methodDescription.TypeName)?.GetMethods(
                             BindingFlags.Public |
                             BindingFlags.NonPublic |
                             BindingFlags.Instance |
-                            BindingFlags.Static);
+                            BindingFlags.Static)
+                            .Where(method => !method.IsSpecialName);
 
                         if (allMethods == null)
                         {
