@@ -9,7 +9,7 @@ Captures a history of first chance exceptions that were thrown in the specified 
 ## HTTP Route
 
 ```http
-POST /exceptions HTTP/1.1
+POST /exceptions?pid={pid}&uid={uid}&name={name}&egressProvider={egressProvider}&tags={tags} HTTP/1.1
 ```
 
 ## Host Address
