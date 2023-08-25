@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -73,7 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
                 IArtifactOperation operation = processInfo.EndpointInfo.ServiceProvider
                     .GetRequiredService<IExceptionsOperationFactory>()
-                    .Create(format);
+                    .Create(format, new ExceptionsConfigurationSettings());
 
                 return Result(
                     Utilities.ArtifactType_Exceptions,
@@ -83,6 +85,85 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     tags,
                     format != ExceptionFormat.PlainText);
             }, processKey, Utilities.ArtifactType_Exceptions);
+        }
+
+        /// <summary>
+        /// Gets the exceptions from the target process.
+        /// </summary>
+        /// <param name="pid">Process ID used to identify the target process.</param>
+        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
+        /// <param name="name">Process name used to identify the target process.</param>
+        /// <param name="egressProvider">The egress provider to which the exceptions are saved.</param>
+        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
+        /// <param name="configuration">The exceptions configuration describing which exceptions to include in the response.</param>
+        [HttpPost("exceptions", Name = nameof(CaptureExceptionsCustom))]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [EgressValidation]
+        public Task<ActionResult> CaptureExceptionsCustom(
+            [FromBody]
+            ExceptionsConfiguration configuration,
+            [FromQuery]
+            int? pid = null,
+            [FromQuery]
+            Guid? uid = null,
+            [FromQuery]
+            string name = null,
+            [FromQuery]
+            string egressProvider = null,
+            [FromQuery]
+            string tags = null)
+        {
+            if (!_options.Value.GetEnabled())
+            {
+                return Task.FromResult<ActionResult>(NotFound());
+            }
+            ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
+
+            return InvokeForProcess(processInfo =>
+            {
+                ExceptionFormat format = ComputeFormat(Request.GetTypedHeaders().Accept) ?? ExceptionFormat.PlainText;
+
+                IArtifactOperation operation = processInfo.EndpointInfo.ServiceProvider
+                    .GetRequiredService<IExceptionsOperationFactory>()
+                    .Create(format, ConvertExceptionsConfiguration(configuration));
+
+                return Result(
+                    Utilities.ArtifactType_Exceptions,
+                    egressProvider,
+                    operation,
+                    processInfo,
+                    tags,
+                    format != ExceptionFormat.PlainText);
+            }, processKey, Utilities.ArtifactType_Exceptions);
+        }
+
+        private static ExceptionsConfigurationSettings ConvertExceptionsConfiguration(ExceptionsConfiguration configuration)
+        {
+            ExceptionsConfigurationSettings configurationSettings = new();
+
+            foreach (var filter in configuration.Include)
+            {
+                configurationSettings.Include.Add(ConvertExceptionFilter(filter));
+            }
+
+            foreach (var filter in configuration.Exclude)
+            {
+                configurationSettings.Exclude.Add(ConvertExceptionFilter(filter));
+            }
+
+            return configurationSettings;
+        }
+
+        private static ExceptionFilterSettings ConvertExceptionFilter(ExceptionFilter filter)
+        {
+            return new ExceptionFilterSettings()
+            {
+                TypeName = filter.TypeName,
+                ExceptionType = filter.ExceptionType,
+                MethodName = filter.MethodName,
+                ModuleName = filter.ModuleName
+            };
         }
 
         private static ExceptionFormat? ComputeFormat(IList<MediaTypeHeaderValue> acceptedHeaders)

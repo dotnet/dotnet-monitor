@@ -27,17 +27,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private const char MethodParameterTypesStart = '(';
         private const char MethodParameterTypesEnd = ')';
 
+        private readonly ExceptionsConfigurationSettings _configuration;
         private readonly IEndpointInfo _endpointInfo;
         private readonly ExceptionFormat _format;
         private readonly IExceptionsStore _store;
 
         private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        public ExceptionsOperation(IEndpointInfo endpointInfo, IExceptionsStore store, ExceptionFormat format)
+        public ExceptionsOperation(IEndpointInfo endpointInfo, IExceptionsStore store, ExceptionFormat format, ExceptionsConfigurationSettings configuration)
         {
             _endpointInfo = endpointInfo;
             _store = store;
             _format = format;
+            _configuration = configuration;
         }
 
         public string ContentType => _format switch
@@ -85,10 +87,49 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private async Task WriteJson(Stream stream, IReadOnlyList<IExceptionInstance> instances, CancellationToken token)
         {
-            foreach (IExceptionInstance instance in instances)
+            foreach (IExceptionInstance instance in FilterExceptions(_configuration, instances))
             {
                 await WriteJsonInstance(stream, instance, token);
             }
+        }
+
+        internal static List<IExceptionInstance> FilterExceptions(ExceptionsConfigurationSettings configuration, IReadOnlyList<IExceptionInstance> instances)
+        {
+            List<IExceptionInstance> filteredInstances = new List<IExceptionInstance>();
+            foreach (IExceptionInstance instance in instances)
+            {
+                if (FilterException(configuration, instance))
+                {
+                    filteredInstances.Add(instance);
+                }
+            }
+
+            return filteredInstances;
+        }
+
+        internal static bool FilterException(ExceptionsConfigurationSettings configuration, IExceptionInstance instance)
+        {
+            if (configuration.Exclude.Count > 0)
+            {
+                // filter out exceptions that match the filter
+                if (configuration.ShouldExclude(instance))
+                {
+                    return false;
+                }
+            }
+
+            if (configuration.Include.Count > 0)
+            {
+                // filter out exceptions that don't match the filter
+                if (configuration.ShouldInclude(instance))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         private async Task WriteJsonInstance(Stream stream, IExceptionInstance instance, CancellationToken token)
@@ -159,10 +200,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             await stream.WriteAsync(JsonRecordDelimiter, token);
         }
 
-        private static async Task WriteText(Stream stream, IReadOnlyList<IExceptionInstance> instances, CancellationToken token)
+        private async Task WriteText(Stream stream, IReadOnlyList<IExceptionInstance> instances, CancellationToken token)
         {
-            Dictionary<ulong, IExceptionInstance> priorInstances = new(instances.Count);
-            foreach (IExceptionInstance currentInstance in instances)
+            var filteredInstances = FilterExceptions(_configuration, instances);
+
+            Dictionary<ulong, IExceptionInstance> priorInstances = new(filteredInstances.Count);
+
+            foreach (IExceptionInstance currentInstance in filteredInstances)
             {
                 // Skip writing the exception if it does not have a call stack, which
                 // indicates that the exception was not thrown. It is likely to be referenced
@@ -235,6 +279,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                     await writer.WriteLineAsync();
                     await writer.WriteAsync("   --- End of inner exception stack trace ---");
+                }
+                else
+                {
+                    await writer.WriteLineAsync();
+                    await writer.WriteAsync("   --- The inner exception was not included in the filter ---");
                 }
             }
 
