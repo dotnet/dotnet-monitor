@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
@@ -54,11 +56,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             return supported;
         }
 
+
+
         public static uint[] GetBoxingTokens(MethodInfo method)
         {
             List<Type> methodParameterTypes = method.GetParameters().Select(p => p.ParameterType).ToList();
             List<uint> boxingTokens = new List<uint>(methodParameterTypes.Count + (method.HasImplicitThis() ? 1 : 0));
 
+            Lazy<uint[]> valueTypeTypeRefTokens = new(() => GetValueTypeTypeRefTokens(method));
+
+            int paramIndex = 0;
             // Handle implicit this
             if (method.HasImplicitThis())
             {
@@ -80,6 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 else
                 {
                     methodParameterTypes.Insert(0, thisType);
+                    paramIndex = -1;
                 }
             }
 
@@ -109,8 +117,17 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     }
                     else if (paramType.Assembly != method.Module.Assembly)
                     {
+                        uint[] typeRefTokens = valueTypeTypeRefTokens.Value;
+
                         // Typeref
-                        boxingTokens.Add(UnsupportedParameterToken);
+                        if (paramIndex == -1 || paramIndex >= typeRefTokens.Length)
+                        {
+                            boxingTokens.Add(UnsupportedParameterToken);
+                        }
+                        else
+                        {
+                            boxingTokens.Add(typeRefTokens[paramIndex]);
+                        }
                     }
                     else
                     {
@@ -128,9 +145,35 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 {
                     boxingTokens.Add(UnsupportedParameterToken);
                 }
+                paramIndex++;
             }
 
             return boxingTokens.ToArray();
+        }
+
+        private static unsafe uint[] GetValueTypeTypeRefTokens(MethodInfo method)
+        {
+            try
+            {
+                Assembly assembly = method.Module.Assembly;
+                if (!assembly.TryGetRawMetadata(out byte* pMdBlob, out int mdLength))
+                {
+                    return Array.Empty<uint>();
+                }
+
+                MetadataReader mdReader = new(pMdBlob, mdLength);
+
+                MethodDefinitionHandle methodDefHandle = (MethodDefinitionHandle)MetadataTokens.Handle(method.MetadataToken);
+                MethodDefinition methodDef = mdReader.GetMethodDefinition(methodDefHandle);
+
+                MethodSignature<uint> methodSignature = methodDef.DecodeSignature(BoxingTokenSignatureProvider.Instance.Value, genericContext: null);
+
+                return methodSignature.ParameterTypes.ToArray();
+            }
+            catch (Exception)
+            {
+                return Array.Empty<uint>();
+            }
         }
 
         private static uint GetSpecialCaseBoxingTokenForPrimitive(TypeCode typeCode)
