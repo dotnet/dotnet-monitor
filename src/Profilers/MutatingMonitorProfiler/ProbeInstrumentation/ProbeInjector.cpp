@@ -29,6 +29,8 @@ enum class SpecialCaseBoxingTypes : ULONG32
     TYPE_UINT32,
     TYPE_INT64,
     TYPE_UINT64,
+    TYPE_INTPTR,
+    TYPE_UINTPTR,
     TYPE_SINGLE,
     TYPE_DOUBLE
 };
@@ -47,7 +49,7 @@ HRESULT ProbeInjector::InstallProbe(
     {
         return E_INVALIDARG;
     }
-    
+
     constexpr OPCODE CEE_LDC_NATIVE_I = sizeof(size_t) == 8 ? CEE_LDC_I8 : CEE_LDC_I4;
 
     HRESULT hr;
@@ -276,6 +278,9 @@ HRESULT ProbeInjector::GetBoxingToken(
     case SpecialCaseBoxingTypes::TYPE_INT64:
         boxedType = corLibTypeTokens.systemInt64Type;
         break;
+    case SpecialCaseBoxingTypes::TYPE_INTPTR:
+        boxedType = corLibTypeTokens.systemIntPtrType;
+        break;
     case SpecialCaseBoxingTypes::TYPE_SBYTE:
         boxedType = corLibTypeTokens.systemSByteType;
         break;
@@ -290,6 +295,9 @@ HRESULT ProbeInjector::GetBoxingToken(
         break;
     case SpecialCaseBoxingTypes::TYPE_UINT64:
         boxedType = corLibTypeTokens.systemUInt64Type;
+        break;
+    case SpecialCaseBoxingTypes::TYPE_UINTPTR:
+        boxedType = corLibTypeTokens.systemUIntPtrType;
         break;
 
     case SpecialCaseBoxingTypes::TYPE_OBJECT:
