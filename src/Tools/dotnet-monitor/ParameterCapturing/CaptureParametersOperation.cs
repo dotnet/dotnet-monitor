@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             return endpointInfo.RuntimeVersion != null && endpointInfo.RuntimeVersion.Major >= 7;
         }
 
-        private async Task EnsureEndpointProcessRequestsAsync(CancellationToken token)
+        private async Task EnsureEndpointCanProcessRequestsAsync(CancellationToken token)
         {
             static Exception getNotAvailableException(string reason)
             {
@@ -94,7 +94,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             try
             {
                 // Check if the endpoint is capable of responding to our requests
-                await EnsureEndpointProcessRequestsAsync(token);
+                await EnsureEndpointCanProcessRequestsAsync(token);
 
                 EventParameterCapturingPipelineSettings settings = new()
                 {
