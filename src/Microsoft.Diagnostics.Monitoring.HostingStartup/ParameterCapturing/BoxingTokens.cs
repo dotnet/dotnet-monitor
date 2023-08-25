@@ -151,12 +151,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 {
                     boxingTokens.Add(UnsupportedParameterToken);
                 }
+
                 formalParameterPosition++;
             }
 
             return boxingTokens.ToArray();
         }
-
 
         private static unsafe uint[]? GetAncillaryBoxingTokensFromMethodSignature(MethodInfo method)
         {
