@@ -13,8 +13,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     internal static class BoxingTokens
     {
-        private static readonly uint UnsupportedParameterToken = SpecialCaseBoxingTypes.Unknown.BoxingToken();
-        private static readonly uint SkipBoxingToken = SpecialCaseBoxingTypes.Object.BoxingToken();
+        public static readonly uint UnsupportedParameterToken = SpecialCaseBoxingTypes.Unknown.BoxingToken();
+        public static readonly uint SkipBoxingToken = SpecialCaseBoxingTypes.Object.BoxingToken();
 
         public enum SpecialCaseBoxingTypes
         {
@@ -173,7 +173,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 MethodDefinitionHandle methodDefHandle = (MethodDefinitionHandle)MetadataTokens.Handle(method.MetadataToken);
                 MethodDefinition methodDef = mdReader.GetMethodDefinition(methodDefHandle);
 
-                MethodSignature<uint> methodSignature = methodDef.DecodeSignature(BoxingTokensSignatureProvider.Instance.Value, genericContext: null);
+                MethodSignature<uint> methodSignature = methodDef.DecodeSignature(new BoxingTokensSignatureProvider(), genericContext: null);
 
                 return methodSignature.ParameterTypes.ToArray();
             }
