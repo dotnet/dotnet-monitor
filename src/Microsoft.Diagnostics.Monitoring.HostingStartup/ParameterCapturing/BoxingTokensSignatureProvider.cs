@@ -9,9 +9,15 @@ using static Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
-    internal sealed class BoxingTokenSignatureProvider : ISignatureTypeProvider<uint, object?>
+    /// <summary>
+    /// This decoder is made specifically for:
+    /// - TypeReference'd value-types (e.g. enums from another assembly).
+    ///
+    /// The results of this decoder should not be used for any types not listed above.
+    /// </summary>
+    internal sealed class BoxingTokensSignatureProvider : ISignatureTypeProvider<uint, object?>
     {
-        public static Lazy<BoxingTokenSignatureProvider> Instance = new(new BoxingTokenSignatureProvider());
+        public static Lazy<BoxingTokensSignatureProvider> Instance = new(new BoxingTokensSignatureProvider());
 
         private readonly uint _unsupportedToken = SpecialCaseBoxingTypes.Unknown.BoxingToken();
         public uint GetArrayType(uint elementType, ArrayShape shape) => _unsupportedToken;

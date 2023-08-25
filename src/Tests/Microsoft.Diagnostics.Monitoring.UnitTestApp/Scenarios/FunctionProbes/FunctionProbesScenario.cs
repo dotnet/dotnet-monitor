@@ -38,6 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 { TestAppScenarios.FunctionProbes.SubScenarios.CapturePrimitives, Test_CapturePrimitivesAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureNativeIntegers, Test_CaptureNativeIntegersAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureValueTypes, Test_CaptureValueTypesAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.CaptureTypeRefValueTypes, Test_CaptureTypeRefValueTypesAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureImplicitThis, Test_CaptureImplicitThisAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureExplicitThis, Test_CaptureExplicitThisAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureNoParameters, Test_CaptureNoParametersAsync},
@@ -153,6 +154,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 MyEnum.ValueA
             }, token);
         }
+
+        private static async Task Test_CaptureTypeRefValueTypesAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.ValueType_TypeRef));
+            await RunStaticMethodTestCaseAsync(probeManager, probeProxy, method, new object[]
+            {
+                TypeCode.DateTime
+            }, token);
+        }
+
 
         private static async Task Test_CaptureImplicitThisAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {

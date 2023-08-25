@@ -65,9 +65,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             List<Type> methodParameterTypes = method.GetParameters().Select(p => p.ParameterType).ToList();
             List<uint> boxingTokens = new List<uint>(methodParameterTypes.Count + (method.HasImplicitThis() ? 1 : 0));
 
-            Lazy<uint[]> valueTypeTypeRefTokens = new(() => GetValueTypeTypeRefTokens(method));
+            //
+            // A signature decoder used to determine boxing tokens for parameter types that cannot be determined from standard
+            // reflection alone. The boxing tokens generated from this decoder should only be used to fill in these gaps
+            // as it is not a comprhensive decoder and will produce invalid tokens for any types not explicitly mentioned
+            // in BoxingTokensSignatureProvider's summary.
+            // 
+            Lazy<uint[]?> ancillaryBoxingTokens = new(() => GetAncillaryBoxingTokensFromMethodSignature(method));
 
-            int paramIndex = 0;
+            int formalParameterPosition = 0;
             // Handle implicit this
             if (method.HasImplicitThis())
             {
@@ -89,7 +95,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 else
                 {
                     methodParameterTypes.Insert(0, thisType);
-                    paramIndex = -1;
+                    // Implicit this isn't a formal parameter.
+                    formalParameterPosition = -1;
                 }
             }
 
@@ -119,16 +126,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     }
                     else if (paramType.Assembly != method.Module.Assembly)
                     {
-                        uint[] typeRefTokens = valueTypeTypeRefTokens.Value;
-
                         // Typeref
-                        if (paramIndex == -1 || paramIndex >= typeRefTokens.Length)
+                        if (formalParameterPosition >= 0)
                         {
-                            boxingTokens.Add(UnsupportedParameterToken);
+                            // value-type type refs are supported by the signature decoder
+                            boxingTokens.Add(ancillaryBoxingTokens.Value?[formalParameterPosition] ?? UnsupportedParameterToken);
                         }
                         else
                         {
-                            boxingTokens.Add(typeRefTokens[paramIndex]);
+                            boxingTokens.Add(UnsupportedParameterToken);
                         }
                     }
                     else
@@ -147,20 +153,21 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 {
                     boxingTokens.Add(UnsupportedParameterToken);
                 }
-                paramIndex++;
+                formalParameterPosition++;
             }
 
             return boxingTokens.ToArray();
         }
 
-        private static unsafe uint[] GetValueTypeTypeRefTokens(MethodInfo method)
+
+        private static unsafe uint[]? GetAncillaryBoxingTokensFromMethodSignature(MethodInfo method)
         {
             try
             {
                 Assembly assembly = method.Module.Assembly;
                 if (!assembly.TryGetRawMetadata(out byte* pMdBlob, out int mdLength))
                 {
-                    return Array.Empty<uint>();
+                    return null;
                 }
 
                 MetadataReader mdReader = new(pMdBlob, mdLength);
@@ -168,13 +175,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 MethodDefinitionHandle methodDefHandle = (MethodDefinitionHandle)MetadataTokens.Handle(method.MetadataToken);
                 MethodDefinition methodDef = mdReader.GetMethodDefinition(methodDefHandle);
 
-                MethodSignature<uint> methodSignature = methodDef.DecodeSignature(BoxingTokenSignatureProvider.Instance.Value, genericContext: null);
+                MethodSignature<uint> methodSignature = methodDef.DecodeSignature(BoxingTokensSignatureProvider.Instance.Value, genericContext: null);
 
                 return methodSignature.ParameterTypes.ToArray();
             }
             catch (Exception)
             {
-                return Array.Empty<uint>();
+                return null;
             }
         }
 
