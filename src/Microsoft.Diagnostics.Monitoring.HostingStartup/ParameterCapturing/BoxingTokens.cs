@@ -93,7 +93,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 else
                 {
                     methodParameterTypes.Insert(0, thisType);
-                    // Implicit this isn't a formal parameter.
+                    // Implicit this isn't a formal parameter, so offset by one.
                     formalParameterPosition = -1;
                 }
             }
