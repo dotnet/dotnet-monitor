@@ -421,7 +421,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parameter capturing is not available in the process..
+        ///   Looks up a localized string similar to Parameter capturing is not available in the process. {0}.
         /// </summary>
         internal static string ErrorMessage_ParameterCapturingNotAvailable {
             get {
@@ -1696,6 +1696,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string Message_ShowSources {
             get {
                 return ResourceManager.GetString("Message_ShowSources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This feature is only available on ASP.NET Core. If the process is ASP.NET Core and has started, ensure that it has not been configured to prevent hosting startup assemblies from loading. See https://learn.microsoft.com/aspnet/core/fundamentals/host/platform-specific-configuration#disable-automatic-loading-of-hosting-startup-assemblies for more information..
+        /// </summary>
+        internal static string ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad {
+            get {
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An internal error occured that prevented communicated between the process and dotnet-monitor..
+        /// </summary>
+        internal static string ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad {
+            get {
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The process has prevented hosting startup assemblies from loading using the ASPNETCORE_PREVENTHOSTINGSTARTUP environment variable..
+        /// </summary>
+        internal static string ParameterCapturingNotAvailable_Reason_PreventedHostingStartup {
+            get {
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_PreventedHostingStartup", resourceCulture);
             }
         }
         

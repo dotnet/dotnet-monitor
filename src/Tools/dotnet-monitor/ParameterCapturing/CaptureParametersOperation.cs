@@ -10,6 +10,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -49,19 +50,38 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             return endpointInfo.RuntimeVersion != null && endpointInfo.RuntimeVersion.Major >= 7;
         }
 
-        private async Task<bool> CanEndpointProcessRequestsAsync(CancellationToken token)
+        private async Task EnsureEndpointProcessRequestsAsync(CancellationToken token)
         {
             DiagnosticsClient client = new(_endpointInfo.Endpoint);
 
             IDictionary<string, string> env = await client.GetProcessEnvironmentAsync(token);
 
-            if (!env.TryGetValue(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.ManagedMessaging, out string isManagedMessagingAvailable) ||
-                !env.TryGetValue(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.HostingStartup, out string isHostingStartupAvailable))
+            static Exception getNotAvailableException(string reason)
             {
-                return false;
+                return new MonitoringException(string.Format(
+                        CultureInfo.InvariantCulture,
+                        Strings.ErrorMessage_ParameterCapturingNotAvailable,
+                        reason));
             }
 
-            return ToolIdentifiers.IsEnvVarValueEnabled(isManagedMessagingAvailable) && ToolIdentifiers.IsEnvVarValueEnabled(isHostingStartupAvailable);
+            const string PreventHostingStartupEnvName = "ASPNETCORE_PREVENTHOSTINGSTARTUP";
+            if (env.TryGetValue(PreventHostingStartupEnvName, out string preventHostingStartupEnvValue) &&
+                ToolIdentifiers.IsEnvVarValueEnabled(preventHostingStartupEnvValue))
+            {
+                throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_PreventedHostingStartup);
+            }
+
+            if (!env.TryGetValue(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.ManagedMessaging, out string isManagedMessagingAvailable) ||
+                !ToolIdentifiers.IsEnvVarValueEnabled(isManagedMessagingAvailable))
+            {
+                throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad);
+            }
+
+            if (!env.TryGetValue(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.HostingStartup, out string isHostingStartupAvailable) ||
+                !ToolIdentifiers.IsEnvVarValueEnabled(isHostingStartupAvailable))
+            {
+                throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad);
+            }
         }
 
         public async Task ExecuteAsync(CancellationToken token)
@@ -74,10 +94,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 }
 
                 // Check if the endpoint is capable of responding to our requests
-                if (!await CanEndpointProcessRequestsAsync(token))
-                {
-                    throw new MonitoringException(Strings.ErrorMessage_ParameterCapturingNotAvailable);
-                }
+                await EnsureEndpointProcessRequestsAsync(token);
 
                 EventParameterCapturingPipelineSettings settings = new()
                 {
