@@ -954,7 +954,7 @@
     <value>This feature is only available on processes using ASP.NET Core. If the process is using ASP.NET Core and has successfully started, ensure that it has not been configured to prevent hosting startup assemblies from loading.</value>
   </data>
   <data name="ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad" xml:space="preserve">
-    <value>An internal error occurred that has prevented communicated between the process and dotnet-monitor.</value>
+    <value>An internal error occurred that has prevented communication with the process.</value>
   </data>
   <data name="ParameterCapturingNotAvailable_Reason_UnsupportedRuntime" xml:space="preserve">
     <value>The process needs to be using .NET 7 or newer.</value>

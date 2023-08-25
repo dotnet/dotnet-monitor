@@ -1700,7 +1700,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An internal error occurred that has prevented communicated between the process and dotnet-monitor..
+        ///   Looks up a localized string similar to An internal error occurred that has prevented communication with the process..
         /// </summary>
         internal static string ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad {
             get {
