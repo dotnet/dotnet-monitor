@@ -49,6 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             public static class SubScenarios
             {
                 public const string SingleException = nameof(SingleException);
+                public const string MultipleExceptions = nameof(MultipleExceptions);
                 public const string RepeatException = nameof(RepeatException);
                 public const string AsyncException = nameof(AsyncException);
                 public const string FrameworkException = nameof(FrameworkException);

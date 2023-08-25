@@ -534,12 +534,30 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
+        public async Task<ResponseStreamHolder> CaptureExceptionsAsync(ExceptionsConfiguration configuration, int processId, ExceptionFormat format, CancellationToken token)
+        {
+            string json = JsonSerializer.Serialize(configuration, DefaultJsonSerializeOptions);
+
+            return await CaptureExceptionsAsync(
+                HttpMethod.Post,
+                new StringContent(json, Encoding.UTF8, ContentTypes.ApplicationJson),
+                processId,
+                format,
+                token);
+        }
+
         public async Task<ResponseStreamHolder> CaptureExceptionsAsync(int processId, ExceptionFormat format, CancellationToken token)
+        {
+            return await CaptureExceptionsAsync(HttpMethod.Get, null, processId, format, token);
+        }
+
+        public async Task<ResponseStreamHolder> CaptureExceptionsAsync(HttpMethod method, HttpContent content, int processId, ExceptionFormat format, CancellationToken token)
         {
             string uri = FormattableString.Invariant($"/exceptions?pid={processId}");
             var contentType = ContentTypeUtilities.MapFormatToContentType(format);
-            using HttpRequestMessage request = new(HttpMethod.Get, uri);
+            using HttpRequestMessage request = new(method, uri);
             request.Headers.Add(HeaderNames.Accept, contentType);
+            request.Content = content;
 
             using DisposableBox<HttpResponseMessage> responseBox = new(
                 await SendAndLogAsync(
