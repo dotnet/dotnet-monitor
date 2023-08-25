@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             //
             // A signature decoder used to determine boxing tokens for parameter types that cannot be determined from standard
             // reflection alone. The boxing tokens generated from this decoder should only be used to fill in these gaps
-            // as it is not a comprhensive decoder and will produce invalid tokens for any types not explicitly mentioned
+            // as it is not a comprehensive decoder and will produce UnsupportedParameterToken for any types not explicitly mentioned
             // in BoxingTokensSignatureProvider's summary.
             // 
             Lazy<uint[]?> ancillaryBoxingTokens = new(() => GetAncillaryBoxingTokensFromMethodSignature(method));
