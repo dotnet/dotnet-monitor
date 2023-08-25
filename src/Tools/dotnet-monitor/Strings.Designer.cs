@@ -1691,7 +1691,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This feature is only available on processes using ASP.NET Core. If the process is using ASP.NET Core and has succesfully started, ensure that it has not been configured to prevent hosting startup assemblies from loading..
+        ///   Looks up a localized string similar to This feature is only available on processes using ASP.NET Core. If the process is using ASP.NET Core and has successfully started, ensure that it has not been configured to prevent hosting startup assemblies from loading..
         /// </summary>
         internal static string ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad {
             get {
@@ -1700,7 +1700,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An internal error occured that prevented communicated between the process and dotnet-monitor..
+        ///   Looks up a localized string similar to An internal error occurred that has prevented communicated between the process and dotnet-monitor..
         /// </summary>
         internal static string ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad {
             get {
