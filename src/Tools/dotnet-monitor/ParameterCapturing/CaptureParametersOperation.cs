@@ -52,10 +52,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
         private async Task EnsureEndpointProcessRequestsAsync(CancellationToken token)
         {
-            DiagnosticsClient client = new(_endpointInfo.Endpoint);
-
-            IDictionary<string, string> env = await client.GetProcessEnvironmentAsync(token);
-
             static Exception getNotAvailableException(string reason)
             {
                 return new MonitoringException(string.Format(
@@ -63,6 +59,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                         Strings.ErrorMessage_ParameterCapturingNotAvailable,
                         reason));
             }
+
+            if (!IsEndpointRuntimeSupported(_endpointInfo))
+            {
+                throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_UnsupportedRuntime);
+            }
+
+            DiagnosticsClient client = new(_endpointInfo.Endpoint);
+
+            IDictionary<string, string> env = await client.GetProcessEnvironmentAsync(token);
 
             const string PreventHostingStartupEnvName = "ASPNETCORE_PREVENTHOSTINGSTARTUP";
             if (env.TryGetValue(PreventHostingStartupEnvName, out string preventHostingStartupEnvValue) &&
@@ -88,11 +93,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         {
             try
             {
-                if (!IsEndpointRuntimeSupported(_endpointInfo))
-                {
-                    throw new MonitoringException(Strings.ErrorMessage_ParameterCapturingRequiresAtLeastNet7);
-                }
-
                 // Check if the endpoint is capable of responding to our requests
                 await EnsureEndpointProcessRequestsAsync(token);
 

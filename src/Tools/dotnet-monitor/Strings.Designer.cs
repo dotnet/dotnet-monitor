@@ -430,15 +430,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parameter capturing is not available in the process, the process needs to be using .NET 7 or newer..
-        /// </summary>
-        internal static string ErrorMessage_ParameterCapturingRequiresAtLeastNet7 {
-            get {
-                return ResourceManager.GetString("ErrorMessage_ParameterCapturingRequiresAtLeastNet7", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The {0} parameter value &apos;{1}&apos; is not allowed..
         /// </summary>
         internal static string ErrorMessage_ParameterNotAllowed {
@@ -1723,6 +1714,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ParameterCapturingNotAvailable_Reason_PreventedHostingStartup {
             get {
                 return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_PreventedHostingStartup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The process needs to be using .NET 7 or newer..
+        /// </summary>
+        internal static string ParameterCapturingNotAvailable_Reason_UnsupportedRuntime {
+            get {
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_UnsupportedRuntime", resourceCulture);
             }
         }
         
