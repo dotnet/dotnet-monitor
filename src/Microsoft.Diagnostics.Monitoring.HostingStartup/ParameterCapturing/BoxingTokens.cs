@@ -30,6 +30,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             UInt32,
             Int64,
             UInt64,
+            IntPtr,
+            UIntPtr,
             Single,
             Double,
         };
@@ -105,7 +107,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 }
                 else if (paramType.IsPrimitive)
                 {
-                    boxingTokens.Add(GetSpecialCaseBoxingTokenForPrimitive(Type.GetTypeCode(paramType)));
+                    boxingTokens.Add(GetSpecialCaseBoxingTokenForPrimitive(paramType));
                 }
                 else if (paramType.IsValueType)
                 {
@@ -176,30 +178,67 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             }
         }
 
-        private static uint GetSpecialCaseBoxingTokenForPrimitive(TypeCode typeCode)
+        private static uint GetSpecialCaseBoxingTokenForPrimitive(Type primitiveType)
         {
-            return GetSpecialCaseBoxingTypeForPrimitive(typeCode).BoxingToken();
-        }
-
-        private static SpecialCaseBoxingTypes GetSpecialCaseBoxingTypeForPrimitive(TypeCode typeCode)
-        {
-            return typeCode switch
+            SpecialCaseBoxingTypes boxingType = SpecialCaseBoxingTypes.Unknown;
+            if (primitiveType == typeof(sbyte))
             {
-                TypeCode.Object => SpecialCaseBoxingTypes.Unknown, // IntPtr, UIntPtr
-                TypeCode.Boolean => SpecialCaseBoxingTypes.Boolean,
-                TypeCode.Char => SpecialCaseBoxingTypes.Char,
-                TypeCode.SByte => SpecialCaseBoxingTypes.SByte,
-                TypeCode.Byte => SpecialCaseBoxingTypes.Byte,
-                TypeCode.Int16 => SpecialCaseBoxingTypes.Int16,
-                TypeCode.UInt16 => SpecialCaseBoxingTypes.UInt16,
-                TypeCode.Int32 => SpecialCaseBoxingTypes.Int32,
-                TypeCode.UInt32 => SpecialCaseBoxingTypes.UInt32,
-                TypeCode.Int64 => SpecialCaseBoxingTypes.Int64,
-                TypeCode.UInt64 => SpecialCaseBoxingTypes.UInt64,
-                TypeCode.Single => SpecialCaseBoxingTypes.Single,
-                TypeCode.Double => SpecialCaseBoxingTypes.Double,
-                _ => SpecialCaseBoxingTypes.Unknown,
-            };
+                boxingType = SpecialCaseBoxingTypes.SByte;
+            }
+            else if (primitiveType == typeof(byte))
+            {
+                boxingType = SpecialCaseBoxingTypes.Byte;
+            }
+            else if (primitiveType == typeof(short))
+            {
+                boxingType = SpecialCaseBoxingTypes.Int16;
+            }
+            else if (primitiveType == typeof(ushort))
+            {
+                boxingType = SpecialCaseBoxingTypes.UInt16;
+            }
+            else if (primitiveType == typeof(int))
+            {
+                boxingType = SpecialCaseBoxingTypes.Int32;
+            }
+            else if (primitiveType == typeof(uint))
+            {
+                boxingType = SpecialCaseBoxingTypes.UInt32;
+            }
+            else if (primitiveType == typeof(long))
+            {
+                boxingType = SpecialCaseBoxingTypes.Int64;
+            }
+            else if (primitiveType == typeof(ulong))
+            {
+                boxingType = SpecialCaseBoxingTypes.UInt64;
+            }
+            else if (primitiveType == typeof(bool))
+            {
+                boxingType = SpecialCaseBoxingTypes.Boolean;
+            }
+            else if (primitiveType == typeof(char))
+            {
+                boxingType = SpecialCaseBoxingTypes.Char;
+            }
+            else if (primitiveType == typeof(float))
+            {
+                boxingType = SpecialCaseBoxingTypes.Single;
+            }
+            else if (primitiveType == typeof(double))
+            {
+                boxingType = SpecialCaseBoxingTypes.Double;
+            }
+            else if (primitiveType == typeof(IntPtr))
+            {
+                boxingType = SpecialCaseBoxingTypes.IntPtr;
+            }
+            else if (primitiveType == typeof(UIntPtr))
+            {
+                boxingType = SpecialCaseBoxingTypes.UIntPtr;
+            }
+
+            return boxingType.BoxingToken();
         }
     }
 }
