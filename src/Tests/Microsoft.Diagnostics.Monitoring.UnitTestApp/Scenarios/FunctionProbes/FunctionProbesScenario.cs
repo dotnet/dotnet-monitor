@@ -36,6 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
                 /* Parameter capturing */
                 { TestAppScenarios.FunctionProbes.SubScenarios.CapturePrimitives, Test_CapturePrimitivesAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.CaptureNativeIntegers, Test_CaptureNativeIntegersAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureValueTypes, Test_CaptureValueTypesAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureImplicitThis, Test_CaptureImplicitThisAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureExplicitThis, Test_CaptureExplicitThisAsync},
@@ -131,6 +132,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 ulong.MaxValue,
                 float.MaxValue,
                 double.MaxValue
+            }, token);
+        }
+
+        private static async Task Test_CaptureNativeIntegersAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.NativeIntegers));
+            await RunStaticMethodTestCaseAsync(probeManager, probeProxy, method, new object[]
+            {
+                (IntPtr)Random.Shared.Next(),
+                (UIntPtr)Random.Shared.Next(),
             }, token);
         }
 
