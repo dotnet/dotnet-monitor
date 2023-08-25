@@ -1700,7 +1700,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This feature is only available on ASP.NET Core. If the process is ASP.NET Core and has started, ensure that it has not been configured to prevent hosting startup assemblies from loading. See https://learn.microsoft.com/aspnet/core/fundamentals/host/platform-specific-configuration#disable-automatic-loading-of-hosting-startup-assemblies for more information..
+        ///   Looks up a localized string similar to This feature is only available on processes using ASP.NET Core. If the process is using ASP.NET Core and has succesfully started, ensure that it has not been configured to prevent hosting startup assemblies from loading..
         /// </summary>
         internal static string ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad {
             get {
