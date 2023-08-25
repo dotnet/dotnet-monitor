@@ -162,8 +162,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         {
             try
             {
-                Assembly assembly = method.Module.Assembly;
-                if (!assembly.TryGetRawMetadata(out byte* pMdBlob, out int mdLength))
+                if (!method.Module.Assembly.TryGetRawMetadata(out byte* pMdBlob, out int mdLength))
                 {
                     return null;
                 }
