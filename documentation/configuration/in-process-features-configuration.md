@@ -190,9 +190,9 @@ Similarly, the exceptions history feature can be individually disabled by settin
 
 ### Filtering
 
-Which exceptions are collected and stored can be filtered via [configuration](NEED LINK). This can be useful for noisy exceptions that are not useful to capture - an example of this may be disregarding any `TaskCanceledException` that the target application produces.
+Which exceptions are collected and stored can be filtered via configuration using [ExceptionsConfiguration](../api/exceptions-custom.md#ExceptionsConfiguration). This can be useful for noisy exceptions that are not useful to capture - an example of this may be disregarding any `TaskCanceledException` that the target application produces.
 
-Note that this is different than [real-time filtering](NEED THIS LINK), which does **not** restrict the collection of exceptions and is solely responsible for determining which exceptions are displayed when invoking the `/exceptions` endpoint.
+Note that this is different than [real-time filtering](../api/exceptions-custom.md), which does **not** restrict the collection of exceptions and is solely responsible for determining which exceptions are displayed when invoking the `/exceptions` endpoint.
 
 In this example, a user is choosing to only collect exceptions where the top frame's class is `MyClassName`, and exceptions of types `TaskCanceledException` or `OperationCanceledException` will not be collected.
 
@@ -207,7 +207,7 @@ In this example, a user is choosing to only collect exceptions where the top fra
         "Filters": {
           "Include": [
             {
-              "ClassName": "MyClassName"
+              "TypeName": "MyClassName"
             }
           ],
           "Exclude": [
@@ -230,7 +230,7 @@ In this example, a user is choosing to only collect exceptions where the top fra
   
   ```yaml
   InProcessFeatures__Exceptions__Enabled: "true"
-  InProcessFeatures__Exceptions__Filters__Include__0__ClassName: "MyClassName"
+  InProcessFeatures__Exceptions__Filters__Include__0__TypeName: "MyClassName"
   InProcessFeatures__Exceptions__Filters__Exclude__0__ExceptionType: "TaskCanceledException"
   InProcessFeatures__Exceptions__Filters__Exclude__1__ExceptionType: "OperationCanceledException"
   ```
@@ -242,7 +242,7 @@ In this example, a user is choosing to only collect exceptions where the top fra
   ```yaml
   - name: DotnetMonitor_InProcessFeatures__Exceptions__Enabled
     value: "true"
-  - name: DotnetMonitor_InProcessFeatures__Exceptions__Filters__Include__0__ClassName
+  - name: DotnetMonitor_InProcessFeatures__Exceptions__Filters__Include__0__TypeName
     value: "MyClassName"
   - name: DotnetMonitor_InProcessFeatures__Exceptions__Filters__Exclude__0__ExceptionType
     value: "TaskCanceledException"
