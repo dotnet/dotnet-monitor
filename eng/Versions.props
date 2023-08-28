@@ -62,20 +62,20 @@
     <MicrosoftDotNetCodeAnalysisVersion>8.0.0-beta.23425.2</MicrosoftDotNetCodeAnalysisVersion>
     <MicrosoftDotNetXUnitExtensionsVersion>8.0.0-beta.23425.2</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
-    <MicrosoftAspNetCoreAppRuntimewinx64Version>8.0.0-rc.2.23424.13</MicrosoftAspNetCoreAppRuntimewinx64Version>
-    <VSRedistCommonAspNetCoreSharedFrameworkx6480Version>8.0.0-rc.2.23424.13</VSRedistCommonAspNetCoreSharedFrameworkx6480Version>
+    <MicrosoftAspNetCoreAppRuntimewinx64Version>8.0.0-rc.2.23425.11</MicrosoftAspNetCoreAppRuntimewinx64Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx6480Version>8.0.0-rc.2.23425.11</VSRedistCommonAspNetCoreSharedFrameworkx6480Version>
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta4.23407.1</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>7.0.0-preview.23424.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>7.0.0-preview.23424.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/installer references -->
-    <MicrosoftDotnetSdkInternalVersion>8.0.100-rc.2.23425.18</MicrosoftDotnetSdkInternalVersion>
+    <MicrosoftDotnetSdkInternalVersion>8.0.100-rc.2.23427.4</MicrosoftDotnetSdkInternalVersion>
     <!-- dotnet/roslyn-analyzers -->
     <MicrosoftCodeAnalysisNetAnalyzersVersion>8.0.0-preview.23425.3</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
-    <MicrosoftNETCoreAppRuntimewinx64Version>8.0.0-rc.2.23423.11</MicrosoftNETCoreAppRuntimewinx64Version>
-    <VSRedistCommonNetCoreSharedFrameworkx6480Version>8.0.0-rc.2.23423.11</VSRedistCommonNetCoreSharedFrameworkx6480Version>
+    <MicrosoftNETCoreAppRuntimewinx64Version>8.0.0-rc.2.23426.4</MicrosoftNETCoreAppRuntimewinx64Version>
+    <VSRedistCommonNetCoreSharedFrameworkx6480Version>8.0.0-rc.2.23426.4</VSRedistCommonNetCoreSharedFrameworkx6480Version>
     <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>1.0.442101</MicrosoftFileFormatsVersion>
   </PropertyGroup>
