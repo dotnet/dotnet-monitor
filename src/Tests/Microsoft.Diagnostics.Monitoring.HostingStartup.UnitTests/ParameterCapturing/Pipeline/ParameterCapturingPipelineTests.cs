@@ -94,6 +94,25 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
     }
 
+    internal sealed class TestMethodDescriptionValidator : IMethodDescriptionValidator
+    {
+        private readonly Func<MethodDescription, bool> _onValidateMethods;
+        public TestMethodDescriptionValidator(Func<MethodDescription, bool> onValidateMethods = null)
+        {
+            _onValidateMethods = onValidateMethods;
+        }
+        public bool IsMethodDescriptionAllowed(MethodDescription methodDescription)
+        {
+            if (_onValidateMethods == null)
+            {
+                return true;
+            }
+
+            return _onValidateMethods(methodDescription);
+        }
+    }
+
+
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public class ParameterCapturingPipelineTests
     {
@@ -108,7 +127,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public void RequestStop_InvalidRequestId_Throws()
         {
             // Arrange
-            ParameterCapturingPipeline pipeline = new(new TestFunctionProbesManager(), new TestParameterCapturingCallbacks());
+            ParameterCapturingPipeline pipeline = new(new TestFunctionProbesManager(), new TestParameterCapturingCallbacks(), new TestMethodDescriptionValidator());
 
             // Act & Assert
             Assert.Throws<ArgumentException>(() => pipeline.RequestStop(Guid.NewGuid()));
@@ -142,7 +161,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                     onStartCallbackSource.TrySetResult(payload.RequestId);
                 });
 
-            ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
+            ParameterCapturingPipeline pipeline = new(probeManager, callbacks, new TestMethodDescriptionValidator());
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan);
 
             Task pipelineTask = pipeline.RunAsync(cts.Token);
@@ -160,33 +179,17 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public void Request_DoesRejectDenyListMatch()
         {
             // Arrange
-            string[] denyList = { "Interop" };
-
-            ParameterCapturingPipeline pipeline = new(new TestFunctionProbesManager(), new TestParameterCapturingCallbacks(), denyList);
-
-            StartCapturingParametersPayload requestPayload = new()
-            {
-                RequestId = Guid.NewGuid(),
-                Duration = Timeout.InfiniteTimeSpan,
-                Methods = new[]
+            TestMethodDescriptionValidator methodDescriptionValidator = new(
+                onValidateMethods: (_) =>
                 {
-                    new MethodDescription()
-                    {
-                        AssemblyName = Guid.NewGuid().ToString("D"),
-                        TypeName = "Interop+Advapi32",
-                        MethodName = "EventRegister"
-                    },
-                    new MethodDescription()
-                    {
-                        AssemblyName = Guid.NewGuid().ToString("D"),
-                        TypeName = Guid.NewGuid().ToString("D"),
-                        MethodName = Guid.NewGuid().ToString("D")
-                    },
-                }
-            };
+                    return false;
+                });
+
+            ParameterCapturingPipeline pipeline = new(new TestFunctionProbesManager(), new TestParameterCapturingCallbacks(), methodDescriptionValidator);
+            StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan);
 
             // Act & Assert
-            Assert.Throws<DeniedMethodsExceptions>(() => pipeline.SubmitRequest(requestPayload));
+            Assert.Throws<DeniedMethodsException>(() => pipeline.SubmitRequest(payload));
         }
 
         [Fact]
@@ -210,7 +213,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                     onFailedCallbackSource.TrySetResult((id, reason, details));
                 });
 
-            ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
+            ParameterCapturingPipeline pipeline = new(probeManager, callbacks, new TestMethodDescriptionValidator());
             StartCapturingParametersPayload payload = new()
             {
                 RequestId = Guid.NewGuid(),
@@ -269,7 +272,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                     onStopCallbackSource.TrySetResult(requestId);
                 });
 
-            ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
+            ParameterCapturingPipeline pipeline = new(probeManager, callbacks, new TestMethodDescriptionValidator());
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan);
 
             Task pipelineTask = pipeline.RunAsync(cts.Token);
@@ -306,7 +309,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                     onStopCallbackSource.TrySetResult(requestId);
                 });
 
-            ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
+            ParameterCapturingPipeline pipeline = new(probeManager, callbacks, new TestMethodDescriptionValidator());
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(TimeSpan.FromSeconds(1));
 
             Task pipelineTask = pipeline.RunAsync(cts.Token);
@@ -347,7 +350,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                     onProbeFaultCallbackSource.TrySetResult((requestId, faultingMethod));
                 });
 
-            ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
+            ParameterCapturingPipeline pipeline = new(probeManager, callbacks, new TestMethodDescriptionValidator());
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan);
 
             Task pipelineTask = pipeline.RunAsync(cts.Token);
@@ -381,7 +384,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
             TestParameterCapturingCallbacks callbacks = new();
 
-            ParameterCapturingPipeline pipeline = new(probeManager, callbacks);
+            ParameterCapturingPipeline pipeline = new(probeManager, callbacks, new TestMethodDescriptionValidator());
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(TimeSpan.FromSeconds(1));
 
             // Act

@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     IpcCommand.StopCapturingParameters,
                     OnStopMessage);
 
-                IMethodDenyListService _denyListService = services.GetRequiredService<IMethodDenyListService>();
+                IMethodDescriptionValidator _methodDescriptionValidator = services.GetRequiredService<IMethodDescriptionValidator>();
 
                 _logger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.Service>>()
                     ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 _parameterCapturingLogger = new(userLogger, systemLogger);
                 FunctionProbesManager probeManager = new(new LogEmittingProbes(_parameterCapturingLogger));
 
-                _pipeline = new ParameterCapturingPipeline(probeManager, this, _denyListService);
+                _pipeline = new ParameterCapturingPipeline(probeManager, this, _methodDescriptionValidator);
             }
             catch (NotSupportedException ex)
             {

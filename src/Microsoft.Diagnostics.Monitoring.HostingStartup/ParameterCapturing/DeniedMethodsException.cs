@@ -9,12 +9,11 @@ using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
-    internal sealed class DeniedMethodsExceptions : ArgumentException
+    internal sealed class DeniedMethodsException : ArgumentException
     {
+        public DeniedMethodsException(MethodDescription methodDescription) : this(new MethodDescription[] { methodDescription }) { }
 
-        public DeniedMethodsExceptions(MethodDescription methodDescription) : this(new MethodDescription[] { methodDescription }) { }
-
-        public DeniedMethodsExceptions(IEnumerable<MethodDescription> deniedMethods) : base(BuildMessage(deniedMethods))
+        public DeniedMethodsException(IEnumerable<MethodDescription> deniedMethods) : base(BuildMessage(deniedMethods))
         {
         }
 

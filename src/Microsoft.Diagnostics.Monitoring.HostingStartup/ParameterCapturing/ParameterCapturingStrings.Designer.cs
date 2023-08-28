@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The following methods are not allowed to have their parameters captured: {0}.
+        ///   Looks up a localized string similar to The following method descriptions are not allowed: {0}.
         /// </summary>
         internal static string DeniedMethodsFormatString {
             get {

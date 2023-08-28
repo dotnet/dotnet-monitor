@@ -30,15 +30,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
         }
 
         private readonly IFunctionProbesManager _probeManager;
-        private readonly IMethodDenyListService _denyList;
+        private readonly IMethodDescriptionValidator _methodDescriptionValidator;
         private readonly IParameterCapturingPipelineCallbacks _callbacks;
         private readonly Channel<CapturingRequest> _requestQueue;
         private readonly ConcurrentDictionary<Guid, CapturingRequest> _allRequests = new();
 
-        public ParameterCapturingPipeline(IFunctionProbesManager probeManager, IParameterCapturingPipelineCallbacks callbacks, IMethodDenyListService denyList)
+        public ParameterCapturingPipeline(IFunctionProbesManager probeManager, IParameterCapturingPipelineCallbacks callbacks, IMethodDescriptionValidator methodDescriptionValidator)
         {
             _probeManager = probeManager;
-            _denyList = denyList;
+            _methodDescriptionValidator = methodDescriptionValidator;
             _callbacks = callbacks;
 
             _requestQueue = Channel.CreateBounded<CapturingRequest>(new BoundedChannelOptions(capacity: 1)
@@ -165,7 +165,19 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
                 throw new ArgumentException(nameof(payload.Configuration.Methods));
             }
 
-            _denyList.ValidateMethods(payload.Configuration.Methods);
+            List<MethodDescription> _deniedMethodDescriptions = new();
+            foreach (MethodDescription methodDescription in payload.Configuration.Methods)
+            {
+                if (!_methodDescriptionValidator.IsMethodDescriptionAllowed(methodDescription))
+                {
+                    _deniedMethodDescriptions.Add(methodDescription);
+                }
+            }
+
+            if (_deniedMethodDescriptions.Count > 0)
+            {
+                throw new DeniedMethodsException(_deniedMethodDescriptions);
+            }
 
             CapturingRequest request = new(payload);
             if (!_allRequests.TryAdd(payload.RequestId, request))

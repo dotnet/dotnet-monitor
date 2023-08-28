@@ -2,12 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher.Models;
-using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
-    internal interface IMethodDenyListService
+    internal interface IMethodDescriptionValidator
     {
-        public void ValidateMethods(IEnumerable<MethodDescription> methods);
+        public bool IsMethodDescriptionAllowed(MethodDescription methodDescription);
     }
 }
