@@ -23,12 +23,14 @@ typedef struct _COR_LIB_TYPE_TOKENS
         systemInt16Type,
         systemInt32Type,
         systemInt64Type,
+        systemIntPtrType,
         systemObjectType,
         systemSByteType,
         systemSingleType,
         systemUInt16Type,
         systemUInt32Type,
-        systemUInt64Type;
+        systemUInt64Type,
+        systemUIntPtrType;
 } COR_LIB_TYPE_TOKENS;
 
 class AssemblyProbePrepData

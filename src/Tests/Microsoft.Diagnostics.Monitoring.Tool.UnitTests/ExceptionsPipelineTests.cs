@@ -34,6 +34,43 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             "Microsoft.Diagnostics.Monitoring.StartupHook",
             TargetFrameworkMoniker.Net60);
 
+        private static readonly ExceptionFilterSettings SimpleInvalidOperationException = new()
+        {
+            TypeName = "ExceptionsScenario",
+            ExceptionType = nameof(InvalidOperationException),
+            ModuleName = "UnitTestApp",
+            MethodName = "ThrowAndCatchInvalidOperationException"
+        };
+
+        private static readonly ExceptionFilterSettings SimpleArgumentNullException = new()
+        {
+            TypeName = "ArgumentNullException",
+            ExceptionType = nameof(ArgumentNullException),
+            ModuleName = "CoreLib",
+            MethodName = "Throw"
+        };
+
+        private static readonly ExceptionFilterSettings FullInvalidOperationException = new()
+        {
+            TypeName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario",
+            ExceptionType = typeof(InvalidOperationException).FullName,
+            ModuleName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll",
+            MethodName = "ThrowAndCatchInvalidOperationException"
+        };
+
+        private static readonly ExceptionFilterSettings FullArgumentNullException = new()
+        {
+            TypeName = "System.ArgumentNullException",
+            ExceptionType = typeof(ArgumentNullException).FullName,
+            ModuleName = "System.Private.CoreLib.dll",
+            MethodName = "Throw"
+        };
+
+        private Func<ExceptionsConfigurationSettings, IExceptionInstance, bool> IncludeFunc = (configuration, instance) => configuration.ShouldInclude(instance);
+        private Func<ExceptionsConfigurationSettings, IExceptionInstance, bool> ExcludeFunc = (configuration, instance) => configuration.ShouldExclude(instance);
+
+        private const string CustomGenericsException = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomGenericsException`2[System.Int32,System.String]";
+
         public ExceptionsPipelineTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
@@ -419,6 +456,147 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.Equal(0UL, outerInstance.InnerExceptionIds[1]); // Second loaded exception is null
                     Assert.Equal(inner2Instance.Id, outerInstance.InnerExceptionIds[2]);
                 });
+        }
+
+        /// <summary>
+        /// Tests the Include filter when a single ExceptionConfiguration is provided.
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_IncludeSingle()
+        {
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.SingleException,
+                expectedInstanceCount: 1,
+                validate: instances =>
+                {
+                    IExceptionInstance instance = Assert.Single(instances);
+
+                    ExceptionsConfigurationSettings full = new()
+                    {
+                        Include = new() { FullInvalidOperationException }
+                    };
+                    Assert.True(full.ShouldInclude(instance), $"Incorrectly filtered exception: {GetExceptionDetails(instance)}");
+
+                    ExceptionsConfigurationSettings simple = new()
+                    {
+                        Include = new() { SimpleInvalidOperationException }
+                    };
+                    Assert.False(simple.ShouldInclude(instance), $"Incorrectly filtered exception: {GetExceptionDetails(instance)}");
+                });
+        }
+
+        /// <summary>
+        /// Tests the Include filter when multiple ExceptionConfigurations are provided.
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_IncludeMultiple()
+        {
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.MultipleExceptions,
+                expectedInstanceCount: 3,
+                validate: instances =>
+                {
+                    var expectedIncludeInstancesList = instances.Where(instance => !instance.TypeName.Equals(CustomGenericsException)).ToList();
+                    var expectedNotIncludeInstancesList = instances.Where(instance => instance.TypeName.Equals(CustomGenericsException)).ToList();
+
+                    ExceptionsConfigurationSettings full = new()
+                    {
+                        Include = new() { FullInvalidOperationException, FullArgumentNullException }
+                    };
+                    ValidateFilter(full, true, expectedIncludeInstancesList, IncludeFunc);
+                    ValidateFilter(full, false, expectedNotIncludeInstancesList, IncludeFunc);
+
+                    ExceptionsConfigurationSettings simple = new()
+                    {
+                        Include = new() { SimpleInvalidOperationException, SimpleArgumentNullException }
+                    };
+                    ValidateFilter(simple, false, instances, IncludeFunc);
+                });
+        }
+
+        /// <summary>
+        /// Tests the Exclude filter when multiple ExceptionConfigurations are provided.
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_ExcludeMultiple()
+        {
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.MultipleExceptions,
+                expectedInstanceCount: 3,
+                validate: instances =>
+                {
+                    var expectedExcludeInstancesList = instances.Where(instance => !instance.TypeName.Equals(CustomGenericsException)).ToList();
+                    var expectedNotExcludeInstancesList = instances.Where(instance => instance.TypeName.Equals(CustomGenericsException)).ToList();
+
+                    ExceptionsConfigurationSettings full = new()
+                    {
+                        Exclude = new() { FullInvalidOperationException, FullArgumentNullException }
+                    };
+                    ValidateFilter(full, true, expectedExcludeInstancesList, ExcludeFunc);
+                    ValidateFilter(full, false, expectedNotExcludeInstancesList, ExcludeFunc);
+
+                    ExceptionsConfigurationSettings simple = new()
+                    {
+                        Exclude = new() { SimpleInvalidOperationException, SimpleArgumentNullException }
+                    };
+                    ValidateFilter(simple, false, instances, ExcludeFunc);
+                });
+        }
+
+        /// <summary>
+        /// Tests the Exclude filter when a single ExceptionConfiguration is provided.
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_ExcludeBasic()
+        {
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.SingleException,
+                expectedInstanceCount: 1,
+                validate: instances =>
+                {
+                    IExceptionInstance instance = Assert.Single(instances);
+
+                    ExceptionsConfigurationSettings full = new()
+                    {
+                        Exclude = new() { FullInvalidOperationException }
+                    };
+                    Assert.True(full.ShouldExclude(instance), $"Incorrectly filtered exception: {GetExceptionDetails(instance)}");
+
+                    ExceptionsConfigurationSettings simple = new()
+                    {
+                        Exclude = new() { SimpleInvalidOperationException }
+                    };
+                    Assert.False(simple.ShouldExclude(instance), $"Incorrectly filtered exception: {GetExceptionDetails(instance)}");
+                });
+        }
+
+        private static void ValidateFilter(ExceptionsConfigurationSettings configuration, bool expectedResult, IEnumerable<IExceptionInstance> instances, Func<ExceptionsConfigurationSettings, IExceptionInstance, bool> shouldFilter)
+        {
+            foreach (var instance in instances)
+            {
+                if (expectedResult)
+                {
+                    Assert.True(shouldFilter(configuration, instance), $"Incorrectly filtered exception: {GetExceptionDetails(instance)}");
+                }
+                else
+                {
+                    Assert.False(shouldFilter(configuration, instance), $"Incorrectly filtered exception: {GetExceptionDetails(instance)}");
+                }
+            }
+        }
+
+        private static string GetExceptionDetails(IExceptionInstance instance)
+        {
+            var topFrame = instance.CallStack.Frames.FirstOrDefault();
+
+            if (topFrame != null)
+            {
+                return $"MethodName: {topFrame.MethodName}, ModuleName: {topFrame.ModuleName}, ClassName: {topFrame.ClassName}, TypeName: {instance.TypeName}";
+            }
+            else
+            {
+                return $"TypeName: {instance.TypeName}";
+            }
         }
 
         private async Task Execute(

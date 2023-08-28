@@ -49,6 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             public static class SubScenarios
             {
                 public const string SingleException = nameof(SingleException);
+                public const string MultipleExceptions = nameof(MultipleExceptions);
                 public const string RepeatException = nameof(RepeatException);
                 public const string AsyncException = nameof(AsyncException);
                 public const string FrameworkException = nameof(FrameworkException);
@@ -84,7 +85,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
                 /* Parameter capturing */
                 public const string CapturePrimitives = nameof(CapturePrimitives);
+                public const string CaptureNativeIntegers = nameof(CaptureNativeIntegers);
                 public const string CaptureValueTypes = nameof(CaptureValueTypes);
+                public const string CaptureTypeRefValueTypes = nameof(CaptureTypeRefValueTypes);
                 public const string CaptureImplicitThis = nameof(CaptureImplicitThis);
                 public const string CaptureExplicitThis = nameof(CaptureExplicitThis);
 

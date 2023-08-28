@@ -11,17 +11,26 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher.
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 #endif
 {
-    public class MethodDescription
+    public interface IMethodDescription
     {
         [JsonPropertyName("moduleName")]
+        public string ModuleName { get; set; }
+
+        [JsonPropertyName("typeName")]
+        public string TypeName { get; set; }
+
+        [JsonPropertyName("methodName")]
+        public string MethodName { get; set; }
+    }
+
+    public class MethodDescription : IMethodDescription
+    {
         [Required]
         public string ModuleName { get; set; } = string.Empty;
 
-        [JsonPropertyName("typeName")]
         [Required]
         public string TypeName { get; set; } = string.Empty;
 
-        [JsonPropertyName("methodName")]
         [Required]
         public string MethodName { get; set; } = string.Empty;
 

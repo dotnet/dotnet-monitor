@@ -3,7 +3,7 @@
 
 # Exceptions History - Get
 
-Captures a history of first chance exceptions that were thrown in the [default process](defaultprocess.md).
+Captures a history of first chance exceptions that were thrown in the specified process.
 
 >**Note**: This feature is not enabled by default and requires configuration to be enabled. The [in-process features](./../configuration/in-process-features-configuration.md) must be enabled since the exceptions history feature uses shared libraries loaded into the target application for collecting the exception information.
 
