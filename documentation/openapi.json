@@ -1840,31 +1840,12 @@
       "ExceptionFilter": {
         "type": "object",
         "properties": {
-<<<<<<< HEAD
-          "methodName": {
-            "type": "string",
-            "description": "The name of the top stack frame's method.",
-            "nullable": true
-          },
           "exceptionType": {
             "type": "string",
-            "description": "The type of the exception",
-            "nullable": true
-          },
-          "className": {
-            "type": "string",
-            "description": "The name of the top stack frame's class.",
-=======
-          "exceptionType": {
-            "type": "string",
->>>>>>> 2bc993040b7a400d083ccfb5d7e910ad02e0b26d
             "nullable": true
           },
           "moduleName": {
             "type": "string",
-<<<<<<< HEAD
-            "description": "The name of the top stack frame's module.",
-=======
             "nullable": true
           },
           "typeName": {
@@ -1873,7 +1854,6 @@
           },
           "methodName": {
             "type": "string",
->>>>>>> 2bc993040b7a400d083ccfb5d7e910ad02e0b26d
             "nullable": true
           }
         },

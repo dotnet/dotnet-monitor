@@ -186,11 +186,7 @@ Object describing attributes of an exception to use for filtering. To be filtere
 | Name | Type | Description |
 |---|---|---|
 | `methodName` | string | The name of the top stack frame's method. |
-<<<<<<< HEAD
-| `className` | string | The name of the top stack frame's class. |
-=======
 | `typeName` | string | The name of the top stack frame's type. |
->>>>>>> 2bc993040b7a400d083ccfb5d7e910ad02e0b26d
 | `moduleName` | string | The name of the top stack frame's module. |
 | `exceptionType` | string | The type of the exception (e.g. "System.ObjectDisposedException"). |
 
