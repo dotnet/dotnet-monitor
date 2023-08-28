@@ -23,30 +23,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public List<ExceptionFilter> Exclude { get; set; } = new();
     }
 
-    public sealed class ExceptionFilter
+    public sealed class ExceptionFilter : IMethodDescription
     {
-        /// <summary>
-        /// The name of the top stack frame's method.
-        /// </summary>
-        [JsonPropertyName("methodName")]
-        public string MethodName { get; set; }
-
-        /// <summary>
-        /// The type of the exception
-        /// </summary>
         [JsonPropertyName("exceptionType")]
         public string ExceptionType { get; set; }
 
-        /// <summary>
-        /// The name of the top stack frame's class.
-        /// </summary>
-        [JsonPropertyName("className")]
-        public string ClassName { get; set; }
-
-        /// <summary>
-        /// The name of the top stack frame's module.
-        /// </summary>
-        [JsonPropertyName("moduleName")]
         public string ModuleName { get; set; }
+
+        public string TypeName { get; set; }
+
+        public string MethodName { get; set; }
     }
 }

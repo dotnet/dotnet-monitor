@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using System;
 using System.Collections.Generic;

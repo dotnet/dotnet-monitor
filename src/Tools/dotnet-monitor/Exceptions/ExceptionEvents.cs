@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             public const int ILOffset = 3;
         }
 
-        public static class  StackFrameIdentifierPayloads
+        public static class StackFrameIdentifierPayloads
         {
             public const int StackFrameId = 0;
             public const int FunctionId = 1;

@@ -30,6 +30,7 @@ When running a dotnet application, differences in diverse local and production e
     - [`/collectionrules`](./api/collectionrules.md)
     - [`/stacks`](./api/stacks.md)
     - [`/exceptions`](./api/exceptions.md)
+    - [`/parameters`](./api/parameters.md)
 - [Configuration](./configuration/README.md)
     - [JSON Schema](./schema.json)
 - [Authentication](./authentication.md)

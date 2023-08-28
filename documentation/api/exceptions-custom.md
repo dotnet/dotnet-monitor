@@ -9,7 +9,11 @@ Captures a history of first chance exceptions that were thrown in the specified 
 ## HTTP Route
 
 ```http
+<<<<<<< HEAD
 POST /exceptions HTTP/1.1
+=======
+POST /exceptions?pid={pid}&uid={uid}&name={name}&egressProvider={egressProvider}&tags={tags} HTTP/1.1
+>>>>>>> 2bc993040b7a400d083ccfb5d7e910ad02e0b26d
 ```
 
 ## Host Address
@@ -173,7 +177,11 @@ Accept: text/plain
     "Include": [
         {
             "methodName": "MyExceptionMethod",
+<<<<<<< HEAD
             "className": "MyApp.MyClass"
+=======
+            "typeName": "MyApp.MyClass"
+>>>>>>> 2bc993040b7a400d083ccfb5d7e910ad02e0b26d
             "moduleName": "MyApp.dll"
             "exceptionType": "System.InvalidOperationException"
         }
@@ -204,7 +212,11 @@ Accept: application/x-ndjson
 {
     "Include": [
         {
+<<<<<<< HEAD
             "className": "MyClass"
+=======
+            "typeName": "MyClass"
+>>>>>>> 2bc993040b7a400d083ccfb5d7e910ad02e0b26d
         }
     ],
     "Exclude": [

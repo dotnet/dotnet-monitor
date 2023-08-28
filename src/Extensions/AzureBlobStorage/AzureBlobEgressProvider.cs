@@ -403,7 +403,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
                 ExcludeAzureCliCredential = true,
                 ExcludeAzureDeveloperCliCredential = true,
                 ExcludeManagedIdentityCredential = true,
-                ExcludeWorkloadIdentityCredential= true,
+                ExcludeWorkloadIdentityCredential = true,
                 ExcludeAzurePowerShellCredential = true,
                 ExcludeEnvironmentCredential = true,
                 ExcludeInteractiveBrowserCredential = true,

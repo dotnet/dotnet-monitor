@@ -913,6 +913,18 @@
 0. providerName: The name of the provider that failed validation.
 1. errorMessage: The validation failure message</comment>
   </data>
+  <data name="FeatureName_ParameterCapturing" xml:space="preserve">
+    <value>Parameter Capturing</value>
+  </data>
+  <data name="ErrorMessage_UnableToFindHostingStartupAssembly" xml:space="preserve">
+    <value>Unable to find hosting startup assembly at determined path.</value>
+  </data>
+  <data name="LogFormatString_UnableToApplyHostingStartup" xml:space="preserve">
+    <value>Unable to apply hosting startup.</value>
+  </data>
+  <data name="LogFormatString_UnableToApplyInProcessFeatureFlags" xml:space="preserve">
+    <value>Unable to apply in process feature flags.</value>
+  </data>
   <data name="LogFormatString_ProfilerRuntimeIdentifier" xml:space="preserve">
     <value>Using '{runtimeIdentifier}' profiler runtime identifier. Source: {source}</value>
   </data>
@@ -928,5 +940,11 @@
   </data>
   <data name="ErrorMessage_SharedFileDiffersFromSource" xml:space="preserve">
     <value>The shared file '{0}' is different from source file '{1}'.</value>
+  </data>
+  <data name="ErrorMessage_ParameterCapturingNotAvailable" xml:space="preserve">
+    <value>Parameter capturing is not available in the process.</value>
+  </data>
+  <data name="ErrorMessage_ParameterCapturingRequiresAtLeastNet7" xml:space="preserve">
+    <value>Parameter capturing is not available in the process, the process needs to be using .NET 7 or newer.</value>
   </data>
 </root>

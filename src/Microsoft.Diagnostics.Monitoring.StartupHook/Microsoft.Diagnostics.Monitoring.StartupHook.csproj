@@ -14,10 +14,20 @@
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\Stacks\NameIdentificationEvents.cs" Link="Exceptions\Eventing\NameIdentificationEvents.cs" />
     <Compile Include="..\Tools\dotnet-monitor\DisposableHelper.cs" Link="DisposableHelper.cs" />
     <Compile Include="..\Tools\dotnet-monitor\Exceptions\ExceptionEvents.cs" Link="Exceptions\Eventing\ExceptionEvents.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\StartupHook\StartupHookIdentifiers.cs" Link="StartupHookIdentifiers.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\ToolIdentifiers.cs" Link="ToolIdentifiers.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\InProcessFeatures\InProcessFeaturesIdentifiers.cs" Link="InProcessFeaturesIdentifiers.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\Profiler\ProfilerIdentifiers.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\Profiler\ProfilerMessagePayloads.cs" Link="MonitorMessageDispatcher\ProfilerMessagePayloads.cs" />
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\ProfilerMessage.cs" Link="MonitorMessageDispatcher\ProfilerMessage.cs" />
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\Models\CaptureParametersConfiguration.cs" Link="MonitorMessageDispatcher\Models\CaptureParametersConfiguration.cs" />
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\Models\MethodDescription.cs" Link="MonitorMessageDispatcher\Models\MethodDescription.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.HostingStartup" />
   </ItemGroup>
-  
+
 </Project>

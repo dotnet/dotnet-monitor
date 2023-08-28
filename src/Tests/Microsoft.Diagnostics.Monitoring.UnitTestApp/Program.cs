@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios;
+using Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes;
 using System.CommandLine;
 using System.Threading.Tasks;
 
@@ -18,7 +19,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
                 AsyncWaitScenario.Command(),
                 ExceptionsScenario.Command(),
                 ExecuteScenario.Command(),
+                FunctionProbesScenario.Command(),
                 LoggerScenario.Command(),
+                ParameterCapturingScenario.Command(),
+                HostingStartupScenario.Command(),
                 SpinWaitScenario.Command(),
                 EnvironmentVariablesScenario.Command(),
                 StacksScenario.Command(),

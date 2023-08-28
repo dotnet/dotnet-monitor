@@ -31,8 +31,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private const string FrameClassName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario";
         private const string FrameMethodName = "ThrowAndCatchInvalidOperationException";
         private const string FrameParameterType = "System.Boolean";
-        private const string FrameModuleName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll";
-        private const string ModuleName = "System.Private.CoreLib.dll";
+        private const string UnitTestAppModule = "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll";
+        private const string CoreLibModuleName = "System.Private.CoreLib.dll";
         private const string SystemInvalidOperationException = "System.InvalidOperationException";
         private const string ExceptionMessage = $"Exception of type '{SystemInvalidOperationException}' was thrown.";
         private const string FirstChanceExceptionMessage = "First chance exception at";
@@ -121,7 +121,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     var timestamp = DateTime.Parse(exceptionsDict["timestamp"].ToString());
                     Assert.True(startTime < timestamp);
                     Assert.True(currentTime > timestamp);
-                    Assert.Equal(ModuleName, exceptionsDict["moduleName"].ToString());
+                    Assert.Equal(CoreLibModuleName, exceptionsDict["moduleName"].ToString());
                     Assert.Equal(ExceptionMessage, exceptionsDict["message"].ToString());
 
                     var callStackResultsRootElement = JsonSerializer.SerializeToDocument(exceptionsDict["callStack"]).RootElement;
@@ -135,7 +135,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.Equal(FrameParameterType, topFrame.GetProperty("parameterTypes")[0].ToString());
                     Assert.Equal(FrameParameterType, topFrame.GetProperty("parameterTypes")[1].ToString());
                     Assert.Equal(FrameClassName, topFrame.GetProperty("className").ToString());
-                    Assert.Equal(FrameModuleName, topFrame.GetProperty("moduleName").ToString());
+                    Assert.Equal(UnitTestAppModule, topFrame.GetProperty("moduleName").ToString());
                 },
                 configureApp: runner =>
                 {
@@ -225,8 +225,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         {
                             ExceptionType = SystemInvalidOperationException,
                             MethodName = FrameMethodName,
-                            ClassName = FrameClassName,
-                            ModuleName = FrameModuleName
+                            TypeName = FrameClassName,
+                            ModuleName = UnitTestAppModule
                         }
                     );
 
@@ -267,6 +267,51 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         new()
                         {
                             ExceptionType = CustomGenericsException
+                        }
+                    );
+
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText, configuration);
+
+                    ValidateSingleExceptionText(
+                        SystemInvalidOperationException,
+                        ExceptionMessage,
+                        FrameClassName,
+                        FrameMethodName,
+                        new() { FrameParameterType, FrameParameterType });
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                    runner.EnableMonitorStartupHook = true;
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public async Task Exceptions_FilterIncludeAndExclude(Architecture targetArchitecture)
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Listen,
+                FilteringExceptionsScenario,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    ExceptionsConfiguration configuration = new();
+                    configuration.Include.Add(
+                        new()
+                        {
+                            ModuleName = UnitTestAppModule
+                        }
+                    );
+                    configuration.Exclude.Add(
+                        new()
+                        {
+                            ExceptionType = SystemArgumentNullException
                         }
                     );
 
@@ -395,7 +440,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     configuration.Include.Add(
                         new()
                         {
-                            MethodName = "ThrowAndCatchInvalidOperationException"
+                            MethodName = FrameMethodName
                         }
                     );
                     configuration.Include.Add(
@@ -441,9 +486,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         new()
                         {
                             ExceptionType = SystemInvalidOperationException,
-                            MethodName = "ThrowAndCatchInvalidOperationException",
-                            ClassName = "ExceptionsScenario",
-                            ModuleName = "UnitTestApp"
+                            MethodName = FrameMethodName,
+                            TypeName = FrameClassName,
+                            ModuleName = UnitTestAppModule
                         }
                     );
                     runner.ConfigurationFromEnvironment.SetExceptionFiltering(configuration);
@@ -508,8 +553,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         {
                             ExceptionType = SystemInvalidOperationException,
                             MethodName = FrameMethodName,
-                            ClassName = FrameClassName,
-                            ModuleName = FrameModuleName
+                            TypeName = FrameClassName,
+                            ModuleName = UnitTestAppModule
                         }
                     );
 

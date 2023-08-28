@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
         {
             return new ExceptionFilterSettings()
             {
-                ClassName = filter.ClassName,
+                TypeName = filter.TypeName,
                 ExceptionType = filter.ExceptionType,
                 MethodName = filter.MethodName,
                 ModuleName = filter.ModuleName

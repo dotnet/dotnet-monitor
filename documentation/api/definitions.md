@@ -86,6 +86,16 @@ Enumeration that describes the current state of the collection rule.
 | `Throttled` | Indicates that the collection rule is temporarily throttled because the ActionCountLimit has been reached within the ActionCountSlidingWindowDuration. |
 | `Finished` | Indicates that the collection rule has completed and will no longer trigger. |
 
+## CaptureParametersConfiguration
+
+First Available: 8.0 RC 1
+
+Object describing the list of methods to capture parameters for.
+
+| Name | Type | Description |
+|---|---|---|
+| `methods` | [MethodDescription](#methoddescription)[] | Array of methods to capture parameters for. |
+
 ## DotnetMonitorInfo
 
 Object describing diagnostic/automation information about the executing instance of `dotnet monitor`.
@@ -176,7 +186,11 @@ Object describing attributes of an exception to use for filtering. To be filtere
 | Name | Type | Description |
 |---|---|---|
 | `methodName` | string | The name of the top stack frame's method. |
+<<<<<<< HEAD
 | `className` | string | The name of the top stack frame's class. |
+=======
+| `typeName` | string | The name of the top stack frame's type. |
+>>>>>>> 2bc993040b7a400d083ccfb5d7e910ad02e0b26d
 | `moduleName` | string | The name of the top stack frame's module. |
 | `exceptionType` | string | The type of the exception (e.g. "System.ObjectDisposedException"). |
 
@@ -305,6 +319,16 @@ The following configuration will collect logs for the Microsoft.AspNetCore.Hosti
     "useAppFilters": false
 }
 ```
+
+## MethodDescription
+
+Object describing a method.
+
+| Name | Type | Description |
+|---|---|---|
+| `moduleName`| string | The name of the module that the method belongs to. |
+| `typeName` | string | The name of the type that the method belongs to. |
+| `methodName` | string | The name of the method, not including parameters. |
 
 ## Metric
 

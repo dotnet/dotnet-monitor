@@ -138,6 +138,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Exceptions);
         }
 
+        private static ExceptionFilterSettings ConvertExceptionFilter(ExceptionFilter filter)
+        {
+            return new ExceptionFilterSettings()
+            {
+                TypeName = filter.TypeName,
+                ExceptionType = filter.ExceptionType,
+                MethodName = filter.MethodName,
+                ModuleName = filter.ModuleName
+            };
+        }
+
         private static ExceptionFormat? ComputeFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
         {
             if (acceptedHeaders == null || acceptedHeaders.Count == 0)

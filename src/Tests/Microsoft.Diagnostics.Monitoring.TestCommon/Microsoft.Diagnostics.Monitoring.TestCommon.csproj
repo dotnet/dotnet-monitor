@@ -7,9 +7,7 @@
 
   <ItemGroup>
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\CancellationTokenSourceExtensions.cs" Link="CancellationTokenSourceExtensions.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\IExperimentalFlags.cs" Link="IExperimentalFlags.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\DisposableHelper.cs" Link="DisposableHelper.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\Experimental\ExperimentalFlags.cs" Link="ExperimentalFlags.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\Profiler\ProfilerIdentifiers.cs" Link="ProfilerIdentifiers.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\ToolIdentifiers.cs" Link="ToolIdentifiers.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\EnvironmentInformation.cs" Link="EnvironmentInformation.cs" />
@@ -35,6 +33,8 @@
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.UnitTestApp" />
   </ItemGroup>
 
   <Import Project="GenerateDotNetHost.targets" />

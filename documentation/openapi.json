@@ -892,6 +892,91 @@
         }
       }
     },
+    "/parameters": {
+      "post": {
+        "tags": [
+          "Diag"
+        ],
+        "operationId": "CaptureParameters",
+        "parameters": [
+          {
+            "name": "durationSeconds",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": -1,
+              "type": "integer",
+              "format": "int32",
+              "default": 30
+            }
+          },
+          {
+            "name": "pid",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptureParametersConfiguration"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptureParametersConfiguration"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptureParametersConfiguration"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequestsResponse"
+          },
+          "202": {
+            "description": "Accepted"
+          }
+        }
+      }
+    },
     "/stacks": {
       "get": {
         "tags": [
@@ -1497,6 +1582,22 @@
   },
   "components": {
     "schemas": {
+      "CaptureParametersConfiguration": {
+        "required": [
+          "methods"
+        ],
+        "type": "object",
+        "properties": {
+          "methods": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MethodDescription"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
       "CollectionRuleDescription": {
         "type": "object",
         "properties": {
@@ -1739,6 +1840,7 @@
       "ExceptionFilter": {
         "type": "object",
         "properties": {
+<<<<<<< HEAD
           "methodName": {
             "type": "string",
             "description": "The name of the top stack frame's method.",
@@ -1752,11 +1854,26 @@
           "className": {
             "type": "string",
             "description": "The name of the top stack frame's class.",
+=======
+          "exceptionType": {
+            "type": "string",
+>>>>>>> 2bc993040b7a400d083ccfb5d7e910ad02e0b26d
             "nullable": true
           },
           "moduleName": {
             "type": "string",
+<<<<<<< HEAD
             "description": "The name of the top stack frame's module.",
+=======
+            "nullable": true
+          },
+          "typeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "methodName": {
+            "type": "string",
+>>>>>>> 2bc993040b7a400d083ccfb5d7e910ad02e0b26d
             "nullable": true
           }
         },
@@ -1816,6 +1933,29 @@
           "useAppFilters": {
             "type": "boolean",
             "description": "Set to true to collect logs at the application-defined categories and levels."
+          }
+        },
+        "additionalProperties": false
+      },
+      "MethodDescription": {
+        "required": [
+          "methodName",
+          "moduleName",
+          "typeName"
+        ],
+        "type": "object",
+        "properties": {
+          "moduleName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "typeName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "methodName": {
+            "minLength": 1,
+            "type": "string"
           }
         },
         "additionalProperties": false
