@@ -110,7 +110,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ExceptionsStore_AddTwoRemoveOne_ContainsOne()
         {
-            int ExpectedCount = 1;
             ulong ExpectedId1 = 1;
             ulong ExpectedId2 = 2;
 
@@ -139,17 +138,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
 
             // Assert
-            IReadOnlyList<IExceptionInstance> instances = store.GetSnapshot();
-            Assert.Equal(ExpectedCount, instances.Count);
-
-            IExceptionInstance instance1 = instances[0];
-            Assert.NotNull(instance1);
-            Assert.Equal(ExpectedId1, instance1.Id);
+            IExceptionInstance instance = Assert.Single(store.GetSnapshot());
+            Assert.NotNull(instance);
+            Assert.Equal(ExpectedId1, instance.Id);
         }
 
         /// <summary>
         /// Validates adding exceptions and removing all exceptions
-        /// will invoke the callback and the store be empty.
+        /// will invoke the callback and the store will empty.
         /// </summary>
         [Fact]
         public async Task ExceptionsStore_AddThreeRemoveThree_Empty()
@@ -165,24 +161,24 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             IExceptionsNameCache cache = CreateCache();
 
             // Act
-            ThresholdCallback thresholdCallback1 = new(3, 0);
-            using (CallbackRegistration.Register(aggregateCallback, thresholdCallback1))
+            ThresholdCallback addThreeCallback = new(3, 0);
+            using (CallbackRegistration.Register(aggregateCallback, addThreeCallback))
             {
                 AddExceptionInstance(store, cache, ExpectedId1);
                 AddExceptionInstance(store, cache, ExpectedId2);
                 AddExceptionInstance(store, cache, ExpectedId3);
 
-                await thresholdCallback1.WaitForThresholdsAsync(CommonTestTimeouts.GeneralTimeout);
+                await addThreeCallback.WaitForThresholdsAsync(CommonTestTimeouts.GeneralTimeout);
             }
 
-            ThresholdCallback thresholdCallback2 = new(0, 3);
-            using (CallbackRegistration.Register(aggregateCallback, thresholdCallback2))
+            ThresholdCallback removeThreeCallback = new(0, 3);
+            using (CallbackRegistration.Register(aggregateCallback, removeThreeCallback))
             {
                 RemoveExceptionInstance(store, ExpectedId1);
                 RemoveExceptionInstance(store, ExpectedId2);
                 RemoveExceptionInstance(store, ExpectedId3);
 
-                await thresholdCallback2.WaitForThresholdsAsync(CommonTestTimeouts.GeneralTimeout);
+                await removeThreeCallback.WaitForThresholdsAsync(CommonTestTimeouts.GeneralTimeout);
             }
 
             // Assert
@@ -191,7 +187,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         /// <summary>
         /// Validates adding exceptions and removing all exceptions in an unordered manner
-        /// will invoke the callback and the store be empty.
+        /// will invoke the callback and the store will be empty.
         /// </summary>
         [Fact]
         public async Task ExceptionsStore_AddThreeRemoveThreeOutOfOrder_Empty()
@@ -207,38 +203,38 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             IExceptionsNameCache cache = CreateCache();
 
             // Act
-            ThresholdCallback thresholdCallback1 = new(2, 0);
-            using (CallbackRegistration.Register(aggregateCallback, thresholdCallback1))
+            ThresholdCallback addTwoCallback = new(2, 0);
+            using (CallbackRegistration.Register(aggregateCallback, addTwoCallback))
             {
                 AddExceptionInstance(store, cache, ExpectedId1);
                 AddExceptionInstance(store, cache, ExpectedId2);
 
-                await thresholdCallback1.WaitForThresholdsAsync(CommonTestTimeouts.GeneralTimeout);
+                await addTwoCallback.WaitForThresholdsAsync(CommonTestTimeouts.GeneralTimeout);
             }
 
-            ThresholdCallback thresholdCallback2 = new(0, 1);
-            using (CallbackRegistration.Register(aggregateCallback, thresholdCallback2))
+            ThresholdCallback removeOneCallback = new(0, 1);
+            using (CallbackRegistration.Register(aggregateCallback, removeOneCallback))
             {
                 RemoveExceptionInstance(store, ExpectedId1);
 
-                await thresholdCallback2.WaitForThresholdsAsync(CommonTestTimeouts.GeneralTimeout);
+                await removeOneCallback.WaitForThresholdsAsync(CommonTestTimeouts.GeneralTimeout);
             }
 
-            ThresholdCallback thresholdCallback3 = new(1, 0);
-            using (CallbackRegistration.Register(aggregateCallback, thresholdCallback3))
+            ThresholdCallback addOneCallback = new(1, 0);
+            using (CallbackRegistration.Register(aggregateCallback, addOneCallback))
             {
                 AddExceptionInstance(store, cache, ExpectedId3);
 
-                await thresholdCallback3.WaitForThresholdsAsync(CommonTestTimeouts.GeneralTimeout);
+                await addOneCallback.WaitForThresholdsAsync(CommonTestTimeouts.GeneralTimeout);
             }
 
-            ThresholdCallback thresholdCallback4 = new(0, 2);
-            using (CallbackRegistration.Register(aggregateCallback, thresholdCallback4))
+            ThresholdCallback removeTwoCallback = new(0, 2);
+            using (CallbackRegistration.Register(aggregateCallback, removeTwoCallback))
             {
                 RemoveExceptionInstance(store, ExpectedId2);
                 RemoveExceptionInstance(store, ExpectedId3);
 
-                await thresholdCallback4.WaitForThresholdsAsync(CommonTestTimeouts.GeneralTimeout);
+                await removeTwoCallback.WaitForThresholdsAsync(CommonTestTimeouts.GeneralTimeout);
             }
 
             // Assert
@@ -305,8 +301,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 _addThreshold = addThreshold;
                 _removeThreshold = removeThreshold;
 
-                SetIfAtTarget(_addCompletionSource, addThreshold, 0);
-                SetIfAtTarget(_removeCompletionSource, removeThreshold, 0);
+                SetIfAtTarget(_addCompletionSource, 0, addThreshold);
+                SetIfAtTarget(_removeCompletionSource, 0, removeThreshold);
             }
 
             public override void AfterAdd(IExceptionInstance instance)
