@@ -190,7 +190,7 @@ Similarly, the exceptions history feature can be individually disabled by settin
 
 ### Filtering
 
-Which exceptions are collected and stored can be filtered via configuration using [ExceptionsConfiguration](../api/exceptions-custom.md#ExceptionsConfiguration). This can be useful for noisy exceptions that are not useful to capture - an example of this may be disregarding any `TaskCanceledException` that the target application produces.
+Which exceptions are collected and stored can be filtered via configuration using [ExceptionsConfiguration](../api/definitions.md#ExceptionsConfiguration). This can be useful for noisy exceptions that are not useful to capture - an example of this may be disregarding any `TaskCanceledException` that the target application produces.
 
 Note that this is different than [real-time filtering](../api/exceptions-custom.md), which does **not** restrict the collection of exceptions and is solely responsible for determining which exceptions are displayed when invoking the `/exceptions` endpoint.
 
