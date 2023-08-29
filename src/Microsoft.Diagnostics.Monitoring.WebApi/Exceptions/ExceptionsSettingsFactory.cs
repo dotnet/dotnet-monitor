@@ -14,6 +14,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
         {
             ExceptionsConfigurationSettings configurationSettings = new();
 
+            if (configuration == null)
+            {
+                return configurationSettings;
+            }
+
             foreach (var filter in configuration.Include)
             {
                 configurationSettings.Include.Add(ConvertExceptionFilter(filter));
