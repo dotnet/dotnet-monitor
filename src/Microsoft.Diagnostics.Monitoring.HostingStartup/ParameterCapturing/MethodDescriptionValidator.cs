@@ -7,6 +7,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     internal class MethodDescriptionValidator : IMethodDescriptionValidator
     {
+        // This list represents partial type names that aren't allowed.
+        // Any method description with a type name that belongs to any of these
+        // will be rejected (e.g. the exact same type, or a sub-type that
+        // starts the same and followed by a valid type separator ('.' or '+').
         private static readonly string[] s_typeDenyList = {
             "Interop",
             "Internal",
