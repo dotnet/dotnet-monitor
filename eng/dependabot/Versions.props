@@ -23,6 +23,6 @@
     
     <!-- Release-branch specific reference -->
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>7.0.430602</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>7.0.442301</MicrosoftDiagnosticsMonitoringVersion>
   </PropertyGroup>
 </Project>
