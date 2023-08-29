@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
@@ -1925,7 +1926,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyFeatureDisabled(failures, 0);
+                    VerifyFeatureDisabled(failures, 0, nameof(Tools.Monitor.CollectionRules.Actions.CollectStacksAction));
                 });
         }
 
@@ -1946,7 +1947,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyFeatureDisabled(failures, 0);
+                    VerifyFeatureDisabled(failures, 0, nameof(Tools.Monitor.CollectionRules.Actions.CollectStacksAction));
                 });
         }
 
@@ -1967,7 +1968,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyFeatureDisabled(failures, 0);
+                    VerifyFeatureDisabled(failures, 0, nameof(Tools.Monitor.CollectionRules.Actions.CollectStacksAction));
                 });
         }
 
@@ -2001,6 +2002,189 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         .CreateCollectionRule(DefaultRuleName)
                         .SetCPUUsageTrigger(usageOptions => { usageOptions.GreaterThan = 100; })
                         .AddCollectStacksAction(fileEgress);
+                },
+                ruleOptions =>
+                {
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_CollectExceptionsAction_MinimumOptions()
+        {
+            const string ExpectedEgressProvider = "TmpEgressProvider";
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectExceptionsAction(ExpectedEgressProvider);
+                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp")
+                        .EnableExceptions()
+;
+                },
+                ruleOptions =>
+                {
+                    ruleOptions.VerifyCollectExceptionsAction(0, ExpectedEgressProvider);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_CollectExceptionsAction_RoundTrip()
+        {
+            const string ExpectedEgressProvider = "TmpEgressProvider";
+            const ExceptionFormat ExpectedFormat = ExceptionFormat.PlainText;
+            ExceptionsConfiguration ExpectedFilters = new ExceptionsConfiguration()
+            {
+                Include = new() {
+                    new()
+                    {
+                        ExceptionType = nameof(InvalidOperationException)
+                    }
+                },
+                Exclude = new()
+                {
+                    new()
+                    {
+                        MethodName = "MyMethodName"
+                    }
+                }
+            };
+
+            return ValidateSuccess(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectExceptionsAction(ExpectedEgressProvider, ExpectedFormat, ExpectedFilters);
+                    rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp")
+                        .EnableExceptions();
+                },
+                ruleOptions =>
+                {
+                    CollectExceptionsOptions collectExceptionsOptions = ruleOptions.VerifyCollectExceptionsAction(0, ExpectedEgressProvider);
+                    Assert.Equal(ExpectedFormat, collectExceptionsOptions.Format);
+
+                    ExceptionFilter ActualInclude = Assert.Single(ExpectedFilters.Include);
+                    Assert.Equal(ExpectedFilters.Include.First(), ActualInclude);
+
+                    ExceptionFilter ActualExclude = Assert.Single(ExpectedFilters.Exclude);
+                    Assert.Equal(ExpectedFilters.Exclude.First(), ActualExclude);
+                });
+        }
+
+        [Fact]
+        public Task CollectionRuleOptions_CollectExceptionsAction_PropertyValidation()
+        {
+            return ValidateFailure(
+                rootOptions =>
+                {
+                    rootOptions.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectExceptionsAction(UnknownEgressName);
+
+                    rootOptions.EnableExceptions();
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyEgressNotExistMessage(failures, 0, UnknownEgressName);
+                });
+        }
+
+        [Fact]
+        public async Task CollectionRuleOptions_CollectExceptionsAction_NotEnabled()
+        {
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    const string fileEgress = nameof(fileEgress);
+                    rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
+                        .CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectExceptionsAction(fileEgress);
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyFeatureDisabled(failures, 0, nameof(Tools.Monitor.CollectionRules.Actions.CollectExceptionsAction));
+                });
+        }
+
+        [Fact]
+        public async Task CollectionRuleOptions_CollectExceptionsAction_DisabledViaCallStacks()
+        {
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    const string fileEgress = nameof(fileEgress);
+                    rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
+                        .DisableExceptions() // Make feature unavailable
+                        .CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectExceptionsAction(fileEgress);
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyFeatureDisabled(failures, 0, nameof(Tools.Monitor.CollectionRules.Actions.CollectExceptionsAction));
+                });
+        }
+
+        [Fact]
+        public async Task CollectionRuleOptions_CollectExceptionsAction_DisabledViaInProcessFeatures()
+        {
+            await ValidateFailure(
+                rootOptions =>
+                {
+                    const string fileEgress = nameof(fileEgress);
+                    rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
+                        .DisableInProcessFeatures() // Make all in-process features unavailable
+                        .CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddCollectExceptionsAction(fileEgress);
+                },
+                ex =>
+                {
+                    string[] failures = ex.Failures.ToArray();
+                    Assert.Single(failures);
+                    VerifyFeatureDisabled(failures, 0, nameof(Tools.Monitor.CollectionRules.Actions.CollectExceptionsAction));
+                });
+        }
+
+        [Fact]
+        public async Task CollectionRuleOptions_CollectExceptionsAction_EnabledViaExceptions()
+        {
+            await ValidateSuccess(
+                rootOptions =>
+                {
+                    const string fileEgress = nameof(fileEgress);
+                    rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
+                        .EnableExceptions()
+                        .CreateCollectionRule(DefaultRuleName)
+                        .SetCPUUsageTrigger(usageOptions => { usageOptions.GreaterThan = 100; })
+                        .AddCollectExceptionsAction(fileEgress);
+                },
+                ruleOptions =>
+                {
+                });
+        }
+
+        [Fact]
+        public async Task CollectionRuleOptions_CollectExceptionsAction_EnabledViaInProcessFeatures()
+        {
+            await ValidateSuccess(
+                rootOptions =>
+                {
+                    const string fileEgress = nameof(fileEgress);
+                    rootOptions.AddFileSystemEgress(fileEgress, "/tmp")
+                        .EnableInProcessFeatures()
+                        .CreateCollectionRule(DefaultRuleName)
+                        .SetCPUUsageTrigger(usageOptions => { usageOptions.GreaterThan = 100; })
+                        .AddCollectExceptionsAction(fileEgress);
                 },
                 ruleOptions =>
                 {
@@ -2159,12 +2343,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(message, failures[index]);
         }
 
-        private static void VerifyFeatureDisabled(string[] failures, int index)
+        private static void VerifyFeatureDisabled(string[] failures, int index, string featureName)
         {
             string expectedMessage = string.Format(
                 CultureInfo.InvariantCulture,
                 Strings.ErrorMessage_DisabledFeature,
-                nameof(Tools.Monitor.CollectionRules.Actions.CollectStacksAction));
+                featureName);
 
             Assert.Equal(expectedMessage, failures[index]);
         }
