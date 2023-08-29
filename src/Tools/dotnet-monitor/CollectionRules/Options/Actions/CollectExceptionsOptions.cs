@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -32,5 +33,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectExceptionsOptions_Format))]
         [DefaultValue(CollectExceptionsOptionsDefaults.Format)]
         public ExceptionFormat? Format { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectExceptionsOptions_Filters))]
+        public ExceptionsConfiguration Filters { get; set; }
     }
 }
