@@ -767,4 +767,10 @@
   <data name="DisplayAttributeDescription_InProcessFeaturesOptions_ParameterCapturing" xml:space="preserve">
     <value>Options for the in-process parameter capturing feature.</value>
   </data>
+  <data name="DisplayAttributeDescription_CollectExceptionsOptions_Filters" xml:space="preserve">
+    <value>The filters that determine which exceptions should be included/excluded when collecting exceptions.</value>
+  </data>
+  <data name="String1" xml:space="preserve">
+    <value />
+  </data>
 </root>

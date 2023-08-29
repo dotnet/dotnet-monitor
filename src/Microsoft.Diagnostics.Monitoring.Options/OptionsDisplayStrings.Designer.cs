@@ -295,6 +295,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The filters that determine which exceptions should be included/excluded when collecting exceptions..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectExceptionsOptions_Filters {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectExceptionsOptions_Filters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The format used to display the exceptions..
         /// </summary>
         public static string DisplayAttributeDescription_CollectExceptionsOptions_Format {
@@ -1555,6 +1564,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string ErrorMessage_StatusCodesRegularExpressionDoesNotMatch {
             get {
                 return ResourceManager.GetString("ErrorMessage_StatusCodesRegularExpressionDoesNotMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
     }
