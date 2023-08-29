@@ -134,7 +134,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to resolve one or more methods: {0}.
+        ///   Looks up a localized string similar to Unable to resolve one or more method descriptions: {0}.
         /// </summary>
         internal static string UnresolvedMethodsFormatString {
             get {
