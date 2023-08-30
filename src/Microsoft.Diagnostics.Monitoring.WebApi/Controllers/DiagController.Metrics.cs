@@ -24,6 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [HttpGet("livemetrics", Name = nameof(CaptureMetrics))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [EgressValidation]
         public Task<ActionResult> CaptureMetrics(
@@ -71,6 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [HttpPost("livemetrics", Name = nameof(CaptureMetricsCustom))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [EgressValidation]
         public Task<ActionResult> CaptureMetricsCustom(
