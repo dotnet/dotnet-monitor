@@ -62,6 +62,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The following method descriptions are not allowed: {0}.
+        /// </summary>
+        internal static string DeniedMethodsFormatString {
+            get {
+                return ResourceManager.GetString("DeniedMethodsFormatString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Method &apos;{0}&apos; is unsupported, it does not have a function id..
         /// </summary>
         internal static string ErrorMessage_FunctionDoesNotHaveIdFormatString {
@@ -114,7 +123,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
                 return ResourceManager.GetString("StoppingParameterCapturingDueToProbeFault", resourceCulture);
             }
         }
-
+        
+        /// <summary>
         ///   Looks up a localized string similar to Too many requests.
         /// </summary>
         internal static string TooManyRequestsErrorMessage {
@@ -124,7 +134,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to resolve one or more methods: {0}.
+        ///   Looks up a localized string similar to Unable to resolve one or more method descriptions: {0}.
         /// </summary>
         internal static string UnresolvedMethodsFormatString {
             get {

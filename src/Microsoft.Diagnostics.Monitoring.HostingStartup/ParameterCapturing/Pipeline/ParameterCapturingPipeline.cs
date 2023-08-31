@@ -30,13 +30,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
         }
 
         private readonly IFunctionProbesManager _probeManager;
+        private readonly IMethodDescriptionValidator _methodDescriptionValidator;
         private readonly IParameterCapturingPipelineCallbacks _callbacks;
         private readonly Channel<CapturingRequest> _requestQueue;
         private readonly ConcurrentDictionary<Guid, CapturingRequest> _allRequests = new();
 
-        public ParameterCapturingPipeline(IFunctionProbesManager probeManager, IParameterCapturingPipelineCallbacks callbacks)
+        public ParameterCapturingPipeline(IFunctionProbesManager probeManager, IParameterCapturingPipelineCallbacks callbacks, IMethodDescriptionValidator methodDescriptionValidator)
         {
             _probeManager = probeManager;
+            _methodDescriptionValidator = methodDescriptionValidator;
             _callbacks = callbacks;
 
             _requestQueue = Channel.CreateBounded<CapturingRequest>(new BoundedChannelOptions(capacity: 1)
@@ -161,6 +163,20 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
             if (payload.Configuration.Methods.Length == 0)
             {
                 throw new ArgumentException(nameof(payload.Configuration.Methods));
+            }
+
+            List<MethodDescription> _deniedMethodDescriptions = new();
+            foreach (MethodDescription methodDescription in payload.Configuration.Methods)
+            {
+                if (!_methodDescriptionValidator.IsMethodDescriptionAllowed(methodDescription))
+                {
+                    _deniedMethodDescriptions.Add(methodDescription);
+                }
+            }
+
+            if (_deniedMethodDescriptions.Count > 0)
+            {
+                throw new DeniedMethodsException(_deniedMethodDescriptions);
             }
 
             CapturingRequest request = new(payload);
