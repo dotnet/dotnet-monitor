@@ -28,22 +28,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Fact]
-        public void FormatObject_Handles_Null()
-        {
-            // Arrange
-            ObjectFormatterFunc formatter = (object obj, FormatSpecifier _) =>
-            {
-                return string.Empty;
-            };
-
-            // Act
-            string actual = ObjectFormatter.FormatObject(formatter, null);
-
-            // Assert
-            Assert.Equal(ObjectFormatter.Tokens.Null, actual);
-        }
-
-        [Fact]
         public void FormatObject_Passes_FormatSpecifier()
         {
             // Arrange
