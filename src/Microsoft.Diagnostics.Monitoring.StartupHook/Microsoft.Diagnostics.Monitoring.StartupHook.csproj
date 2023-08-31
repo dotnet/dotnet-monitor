@@ -22,6 +22,7 @@
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\ProfilerMessage.cs" Link="MonitorMessageDispatcher\ProfilerMessage.cs" />
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\Models\CaptureParametersConfiguration.cs" Link="MonitorMessageDispatcher\Models\CaptureParametersConfiguration.cs" />
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\Models\MethodDescription.cs" Link="MonitorMessageDispatcher\Models\MethodDescription.cs" />
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.Options\IMethodDescription.cs" Link="MonitorMessageDispatcher\Models\IMethodDescription.cs" />
   </ItemGroup>
 
   <ItemGroup>

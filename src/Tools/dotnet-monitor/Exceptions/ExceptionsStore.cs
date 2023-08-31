@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         }
 
-        public ExceptionsStore(IEnumerable<IExceptionsStoreCallbackFactory> factories, Monitoring.WebApi.Models.ExceptionsConfiguration configuration)
+        public ExceptionsStore(IEnumerable<IExceptionsStoreCallbackFactory> factories, ExceptionsConfiguration configuration)
         {
             ArgumentNullException.ThrowIfNull(factories);
 
