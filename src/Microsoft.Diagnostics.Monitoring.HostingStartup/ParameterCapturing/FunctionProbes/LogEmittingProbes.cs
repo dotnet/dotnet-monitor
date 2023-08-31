@@ -1,6 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatter;
+
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
     internal sealed class LogEmittingProbes : IFunctionProbes
@@ -30,10 +32,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 return;
             }
 
-            var methodCache = FunctionProbesStub.InstrumentedMethodCache;
-            if (methodCache == null ||
+            FunctionProbesCache? cache = FunctionProbesStub.Cache;
+            if (cache == null ||
                 args == null ||
-                !methodCache.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod) ||
+                !cache.InstrumentedMethods.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod) ||
                 args.Length != instrumentedMethod?.SupportedParameters.Length)
             {
                 return;
@@ -53,10 +55,23 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                     continue;
                 }
 
-                argValues[fmtIndex++] = PrettyPrinter.FormatObject(args[i]);
+                argValues[fmtIndex++] = FormatObject(cache.ObjectFormatterCache, args[i]);
             }
 
             _logger.Log(instrumentedMethod.CaptureMode, instrumentedMethod.MethodWithParametersTemplateString, argValues);
         }
+
+        private static string FormatObject(ObjectFormatterCache objectFormatterCache, object obj)
+        {
+            try
+            {
+                return objectFormatterCache.GetFormatter(obj.GetType())(obj);
+            }
+            catch
+            {
+                return MethodTemplateStringGenerator.Tokens.Parameters.Values.Exception;
+            }
+        }
+
     }
 }

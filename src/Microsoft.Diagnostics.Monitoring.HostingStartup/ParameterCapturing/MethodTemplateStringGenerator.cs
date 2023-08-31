@@ -2,15 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
-using System.Globalization;
 using System.Reflection;
 using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
-    internal static class PrettyPrinter
+    internal static class MethodTemplateStringGenerator
     {
-        private static class Tokens
+        internal static class Tokens
         {
             private static class Internal
             {
@@ -65,48 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             }
         }
 
-        public static string FormatObject(object value)
-        {
-            if (value == null)
-            {
-                return Tokens.Parameters.Values.Null;
-            }
-
-            try
-            {
-                bool doWrapValue = false;
-                string serializedValue;
-
-                //
-                // TODO: Consider memoizing (when possible) which serialization path should be taken
-                // for each parameter and storing it in the method cache if this needs to be more performant
-                // as more options are added.
-                //
-                if (value is IConvertible ic)
-                {
-                    serializedValue = ic.ToString(CultureInfo.InvariantCulture);
-                    doWrapValue = (value is string);
-                }
-                else if (value is IFormattable formattable)
-                {
-                    serializedValue = formattable.ToString(format: null, CultureInfo.InvariantCulture);
-                    doWrapValue = true;
-                }
-                else
-                {
-                    serializedValue = value.ToString() ?? string.Empty;
-                    doWrapValue = true;
-                }
-
-                return doWrapValue ? string.Concat(Tokens.Parameters.Values.WrappedStart, serializedValue, Tokens.Parameters.Values.WrappedEnd) : serializedValue;
-            }
-            catch
-            {
-                return Tokens.Parameters.Values.Exception;
-            }
-        }
-
-        public static string ConstructTemplateStringFromMethod(MethodInfo method, bool[] supportedParameters)
+        public static string GenerateTemplateString(MethodInfo method, bool[] supportedParameters)
         {
             StringBuilder fmtStringBuilder = new();
 

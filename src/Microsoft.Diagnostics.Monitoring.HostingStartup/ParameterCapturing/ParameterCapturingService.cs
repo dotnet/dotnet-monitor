@@ -60,7 +60,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
 
                 _parameterCapturingLogger = new(userLogger, systemLogger);
-                FunctionProbesManager probeManager = new(new LogEmittingProbes(_parameterCapturingLogger));
+                LogEmittingProbes probes = new(_parameterCapturingLogger);
+
+                FunctionProbesManager probeManager = new(probes);
 
                 _pipeline = new ParameterCapturingPipeline(probeManager, this, _methodDescriptionValidator);
             }

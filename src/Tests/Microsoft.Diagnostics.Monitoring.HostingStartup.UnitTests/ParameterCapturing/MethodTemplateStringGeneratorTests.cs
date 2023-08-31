@@ -12,11 +12,11 @@ using Xunit.Abstractions;
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
-    public class PrettyPrinterTests
+    public class MethodTemplateStringGeneratorTests
     {
         private readonly ITestOutputHelper _outputHelper;
 
-        public PrettyPrinterTests(ITestOutputHelper outputHelper)
+        public MethodTemplateStringGeneratorTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
         }
@@ -41,27 +41,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
             // Act
             bool[] supportedParameters = BoxingTokens.AreParametersSupported(BoxingTokens.GetBoxingTokens(method));
-            string actualTemplateString = PrettyPrinter.ConstructTemplateStringFromMethod(method, supportedParameters);
+            string actualTemplateString = MethodTemplateStringGenerator.GenerateTemplateString(method, supportedParameters);
 
             // Assert
             Assert.NotNull(actualTemplateString);
             actualTemplateString = actualTemplateString.ReplaceLineEndings("").Replace("\t", "");
             _outputHelper.WriteLine(actualTemplateString);
             Assert.Equal(templateString, actualTemplateString);
-        }
-
-        [Theory]
-        [InlineData(null, "null")]
-        [InlineData("test", "'test'")]
-        [InlineData(5, "5")]
-        [InlineData(MyEnum.ValueA, nameof(MyEnum.ValueA))]
-        public void FormatObject(object obj, string value)
-        {
-            // Act
-            string actualValue = PrettyPrinter.FormatObject(obj);
-
-            // Assert
-            Assert.Equal(value, actualValue);
         }
     }
 }
