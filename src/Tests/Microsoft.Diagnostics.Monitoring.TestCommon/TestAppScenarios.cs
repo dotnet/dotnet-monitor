@@ -49,6 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             public static class SubScenarios
             {
                 public const string SingleException = nameof(SingleException);
+                public const string MultipleExceptions = nameof(MultipleExceptions);
                 public const string RepeatException = nameof(RepeatException);
                 public const string AsyncException = nameof(AsyncException);
                 public const string FrameworkException = nameof(FrameworkException);
@@ -67,6 +68,60 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             {
                 public const string Begin = nameof(Begin);
                 public const string End = nameof(End);
+            }
+        }
+
+        public static class FunctionProbes
+        {
+            public const string Name = nameof(FunctionProbes);
+
+            public static class SubScenarios
+            {
+#if NET7_0_OR_GREATER
+                /* Probe management */
+                public const string ProbeInstallation = nameof(ProbeInstallation);
+                public const string ProbeUninstallation = nameof(ProbeUninstallation);
+                public const string ProbeReinstallation = nameof(ProbeReinstallation);
+
+                /* Parameter capturing */
+                public const string CapturePrimitives = nameof(CapturePrimitives);
+                public const string CaptureNativeIntegers = nameof(CaptureNativeIntegers);
+                public const string CaptureValueTypes = nameof(CaptureValueTypes);
+                public const string CaptureTypeRefValueTypes = nameof(CaptureTypeRefValueTypes);
+                public const string CaptureImplicitThis = nameof(CaptureImplicitThis);
+                public const string CaptureExplicitThis = nameof(CaptureExplicitThis);
+
+                public const string CaptureNoParameters = nameof(CaptureNoParameters);
+                public const string CaptureUnsupportedParameters = nameof(CaptureUnsupportedParameters);
+                public const string CaptureValueTypeImplicitThis = nameof(CaptureValueTypeImplicitThis);
+
+                /* Interesting methods */
+                public const string AsyncMethod = nameof(AsyncMethod);
+                public const string GenericMethods = nameof(GenericMethods);
+                public const string ExceptionRegionAtBeginningOfMethod = nameof(ExceptionRegionAtBeginningOfMethod);
+
+                /* Fault injection */
+                public const string ExceptionThrownByProbe = nameof(ExceptionThrownByProbe);
+                public const string RecursingProbe = nameof(RecursingProbe);
+                public const string RequestInstallationOnProbeFunction = nameof(RequestInstallationOnProbeFunction);
+
+                /* Self tests */
+                public const string AssertsInProbesAreCaught = nameof(AssertsInProbesAreCaught);
+#else // NET7_0_OR_GREATER
+                public const string ValidateNoMutatingProfiler = nameof(ValidateNoMutatingProfiler);
+#endif // NET7_0_OR_GREATER
+            }
+        }
+
+        public static class HostingStartup
+        {
+            public const string Name = nameof(HostingStartup);
+
+            public static class SubScenarios
+            {
+                public const string VerifyAspNetAppWithoutHostingStartup = nameof(VerifyAspNetAppWithoutHostingStartup);
+                public const string VerifyAspNetApp = nameof(VerifyAspNetApp);
+                public const string VerifyNonAspNetAppNotImpacted = nameof(VerifyNonAspNetAppNotImpacted);
             }
         }
 
@@ -124,6 +179,24 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             public static class Commands
             {
+                public const string Continue = nameof(Continue);
+            }
+        }
+        public static class ParameterCapturing
+        {
+            public const string Name = nameof(ParameterCapturing);
+
+            public static class SubScenarios
+            {
+                public const string ExpectLogStatement = nameof(ExpectLogStatement);
+                public const string DoNotExpectLogStatement = nameof(DoNotExpectLogStatement);
+                public const string AspNetApp = nameof(AspNetApp);
+                public const string NonAspNetApp = nameof(NonAspNetApp);
+            }
+
+            public static class Commands
+            {
+                public const string Validate = nameof(Validate);
                 public const string Continue = nameof(Continue);
             }
         }

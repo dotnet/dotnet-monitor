@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
@@ -12,6 +13,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {
@@ -25,39 +27,46 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private const char MethodParameterTypesStart = '(';
         private const char MethodParameterTypesEnd = ')';
 
-        private readonly ExceptionsFormat _format;
+        private readonly ExceptionsConfigurationSettings _configuration;
+        private readonly IEndpointInfo _endpointInfo;
+        private readonly ExceptionFormat _format;
         private readonly IExceptionsStore _store;
 
-        public ExceptionsOperation(IExceptionsStore store, ExceptionsFormat format)
+        private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public ExceptionsOperation(IEndpointInfo endpointInfo, IExceptionsStore store, ExceptionFormat format, ExceptionsConfigurationSettings configuration)
         {
+            _endpointInfo = endpointInfo;
             _store = store;
             _format = format;
+            _configuration = configuration;
         }
 
         public string ContentType => _format switch
         {
-            ExceptionsFormat.PlainText => ContentTypes.TextPlain,
-            ExceptionsFormat.NewlineDelimitedJson => ContentTypes.ApplicationNdJson,
-            ExceptionsFormat.JsonSequence => ContentTypes.ApplicationJsonSequence,
+            ExceptionFormat.PlainText => ContentTypes.TextPlain,
+            ExceptionFormat.NewlineDelimitedJson => ContentTypes.ApplicationNdJson,
+            ExceptionFormat.JsonSequence => ContentTypes.ApplicationJsonSequence,
             _ => ContentTypes.TextPlain
         };
 
         public bool IsStoppable => false;
 
-        public async Task ExecuteAsync(Stream outputStream, TaskCompletionSource<object> startCompletionSource, CancellationToken token)
-        {
-            startCompletionSource?.TrySetResult(null);
+        public Task Started => _startCompletionSource.Task;
 
+        public async Task ExecuteAsync(Stream outputStream, CancellationToken token)
+        {
+            _startCompletionSource.TrySetResult();
 
             IReadOnlyList<IExceptionInstance> exceptions = _store.GetSnapshot();
 
             switch (_format)
             {
-                case ExceptionsFormat.JsonSequence:
-                case ExceptionsFormat.NewlineDelimitedJson:
+                case ExceptionFormat.JsonSequence:
+                case ExceptionFormat.NewlineDelimitedJson:
                     await WriteJson(outputStream, exceptions, token);
                     break;
-                case ExceptionsFormat.PlainText:
+                case ExceptionFormat.PlainText:
                     await WriteText(outputStream, exceptions, token);
                     break;
                 default:
@@ -67,7 +76,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         public string GenerateFileName()
         {
-            throw new NotSupportedException();
+            string extension = _format == ExceptionFormat.PlainText ? "txt" : "json";
+            return FormattableString.Invariant($"{Utils.GetFileNameTimeStampUtcNow()}_{_endpointInfo.ProcessId}.exceptions.{extension}");
         }
 
         public Task StopAsync(CancellationToken token)
@@ -77,15 +87,54 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private async Task WriteJson(Stream stream, IReadOnlyList<IExceptionInstance> instances, CancellationToken token)
         {
-            foreach (IExceptionInstance instance in instances)
+            foreach (IExceptionInstance instance in FilterExceptions(_configuration, instances))
             {
                 await WriteJsonInstance(stream, instance, token);
             }
         }
 
+        internal static List<IExceptionInstance> FilterExceptions(ExceptionsConfigurationSettings configuration, IReadOnlyList<IExceptionInstance> instances)
+        {
+            List<IExceptionInstance> filteredInstances = new List<IExceptionInstance>();
+            foreach (IExceptionInstance instance in instances)
+            {
+                if (FilterException(configuration, instance))
+                {
+                    filteredInstances.Add(instance);
+                }
+            }
+
+            return filteredInstances;
+        }
+
+        internal static bool FilterException(ExceptionsConfigurationSettings configuration, IExceptionInstance instance)
+        {
+            if (configuration.Exclude.Count > 0)
+            {
+                // filter out exceptions that match the filter
+                if (configuration.ShouldExclude(instance))
+                {
+                    return false;
+                }
+            }
+
+            if (configuration.Include.Count > 0)
+            {
+                // filter out exceptions that don't match the filter
+                if (configuration.ShouldInclude(instance))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
         private async Task WriteJsonInstance(Stream stream, IExceptionInstance instance, CancellationToken token)
         {
-            if (_format == ExceptionsFormat.JsonSequence)
+            if (_format == ExceptionFormat.JsonSequence)
             {
                 await stream.WriteAsync(JsonSequenceRecordSeparator, token);
             }
@@ -151,10 +200,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             await stream.WriteAsync(JsonRecordDelimiter, token);
         }
 
-        private static async Task WriteText(Stream stream, IReadOnlyList<IExceptionInstance> instances, CancellationToken token)
+        private async Task WriteText(Stream stream, IReadOnlyList<IExceptionInstance> instances, CancellationToken token)
         {
-            Dictionary<ulong, IExceptionInstance> priorInstances = new(instances.Count);
-            foreach (IExceptionInstance currentInstance in instances)
+            var filteredInstances = FilterExceptions(_configuration, instances);
+
+            Dictionary<ulong, IExceptionInstance> priorInstances = new(filteredInstances.Count);
+
+            foreach (IExceptionInstance currentInstance in filteredInstances)
             {
                 // Skip writing the exception if it does not have a call stack, which
                 // indicates that the exception was not thrown. It is likely to be referenced
@@ -227,6 +279,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                     await writer.WriteLineAsync();
                     await writer.WriteAsync("   --- End of inner exception stack trace ---");
+                }
+                else
+                {
+                    await writer.WriteLineAsync();
+                    await writer.WriteAsync("   --- The inner exception was not included in the filter ---");
                 }
             }
 

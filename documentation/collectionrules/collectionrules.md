@@ -57,6 +57,7 @@ The following are the currently available actions:
 | Name | Description |
 |---|---|
 | [CollectDump](../configuration/collection-rule-configuration.md#collectdump-action) | Collects a memory dump of the target process. |
+| [CollectExceptions](../configuration/collection-rule-configuration.md#collectexceptions-action) | Collects exceptions from the target process. |
 | [CollectGCDump](../configuration/collection-rule-configuration.md#collectgcdump-action) | Collects a gcdump of the target process. |
 | [CollectLiveMetrics](../configuration/collection-rule-configuration.md#collectlivemetrics-action) | Collects live metrics from the target process. |
 | [CollectLogs](../configuration/collection-rule-configuration.md#collectlogs-action) | Collects logs from the target process. |

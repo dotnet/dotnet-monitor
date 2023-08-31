@@ -10,20 +10,32 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         private readonly CallStacksOptions _callStacksOptions;
         private readonly ExceptionsOptions _exceptionsOptions;
+        private readonly ParameterCapturingOptions _parameterCapturingOptions;
 
-        public InProcessFeatures(IOptions<CallStacksOptions> callStacksOptions, IOptions<ExceptionsOptions> exceptionsOptions)
+        public InProcessFeatures(
+            IOptions<CallStacksOptions> callStacksOptions,
+            IOptions<ExceptionsOptions> exceptionsOptions,
+            IOptions<ParameterCapturingOptions> parameterCapturingOptions)
         {
             _callStacksOptions = callStacksOptions.Value;
             _exceptionsOptions = exceptionsOptions.Value;
+            _parameterCapturingOptions = parameterCapturingOptions.Value;
         }
+
         private bool IsCallStacksEnabled => _callStacksOptions.GetEnabled();
 
         private bool IsExceptionsEnabled => _exceptionsOptions.GetEnabled();
 
-        public bool IsProfilerRequired => IsCallStacksEnabled;
+        private bool IsParameterCapturingEnabled => _parameterCapturingOptions.GetEnabled();
 
-        public bool IsStartupHookRequired => IsExceptionsEnabled;
+        public bool IsProfilerRequired => IsCallStacksEnabled || IsParameterCapturingEnabled;
 
-        public bool IsLibrarySharingRequired => IsProfilerRequired || IsStartupHookRequired;
+        public bool IsMutatingProfilerRequired => IsParameterCapturingEnabled;
+
+        public bool IsStartupHookRequired => IsHostingStartupRequired || IsExceptionsEnabled;
+
+        public bool IsHostingStartupRequired => IsParameterCapturingEnabled;
+
+        public bool IsLibrarySharingRequired => IsProfilerRequired || IsStartupHookRequired || IsHostingStartupRequired;
     }
 }

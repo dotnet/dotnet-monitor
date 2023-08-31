@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using System;
 using System.Collections.Generic;
@@ -114,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public virtual async ValueTask DisposeAsync()
         {
-            if (!DisposableHelper.CanDispose(ref _disposedState))
+            if (!TestCommon.DisposableHelper.CanDispose(ref _disposedState))
             {
                 return;
             }

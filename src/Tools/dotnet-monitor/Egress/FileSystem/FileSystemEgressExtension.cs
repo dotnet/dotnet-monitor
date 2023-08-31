@@ -109,7 +109,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
         private async Task WriteFileAsync(Func<Stream, CancellationToken, Task> action, string filePath, CancellationToken token)
         {
             using Stream fileStream = WrapException(
-                () => new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None));
+                () => new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read));
 
             _logger?.EgressProviderInvokeStreamAction(EgressProviderTypes.FileSystem);
 

@@ -26,6 +26,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         private readonly string _appPath;
 
+        private readonly string _startupHookPath;
+
         private readonly ITestOutputHelper _outputHelper;
 
         private readonly TaskCompletionSource<string> _readySource =
@@ -82,11 +84,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public string ScenarioName { get; set; }
 
+        /// <summary>
+        /// Optional name of the sub scenario to run in the application.
+        /// </summary>
+        public string SubScenarioName { get; set; }
+
         public int AppId { get; }
 
         public bool SetRuntimeIdentifier { get; set; }
 
         public string ProfilerLogLevel { get; set; }
+
+        public bool EnableMonitorStartupHook { get; set; }
 
         public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current)
         {
@@ -98,6 +107,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 testAssembly,
                 "Microsoft.Diagnostics.Monitoring.UnitTestApp",
                 tfm);
+
+            _startupHookPath = AssemblyHelper.GetAssemblyArtifactBinPath(
+                testAssembly,
+                "Microsoft.Diagnostics.Monitoring.StartupHook",
+                TargetFrameworkMoniker.Net60);
 
             _waitingForEnvironmentVariables = new Dictionary<string, TaskCompletionSource<string>>();
 
@@ -134,7 +148,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             }
 
             _runner.EntrypointAssemblyPath = _appPath;
-            _runner.Arguments = ScenarioName;
+
+            string fullScenarioName = string.IsNullOrEmpty(SubScenarioName) ? ScenarioName : string.Concat(ScenarioName, " ", SubScenarioName);
+            _runner.Arguments = fullScenarioName;
 
             // Enable diagnostics in case it is disabled via inheriting test environment.
             _adapter.Environment.Add("COMPlus_EnableDiagnostics", "1");
@@ -161,10 +177,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                     ToolIdentifiers.EnvironmentVariables.RuntimeIdentifier,
                     NativeLibraryHelper.GetTargetRuntimeIdentifier(Architecture));
             }
+
             if (ProfilerLogLevel != null)
             {
                 _adapter.Environment.Add(
                     ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, ProfilerLogLevel);
+            }
+
+            if (EnableMonitorStartupHook)
+            {
+                _adapter.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, _startupHookPath);
             }
 
             await _adapter.StartAsync(token).ConfigureAwait(false);

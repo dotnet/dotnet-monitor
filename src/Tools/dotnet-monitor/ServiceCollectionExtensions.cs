@@ -26,7 +26,9 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.Extension;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
+using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
+using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Diagnostics.Tools.Monitor.Stacks;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
@@ -73,6 +75,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             ConfigureOptions<ExceptionsOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_Exceptions)
                 .AddSingleton<IPostConfigureOptions<ExceptionsOptions>, ExceptionsPostConfigureOptions>();
+
+            ConfigureOptions<ParameterCapturingOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_ParameterCapturing)
+             .AddSingleton<IPostConfigureOptions<ParameterCapturingOptions>, ParameterCapturingPostConfigureOptions>();
+
+            ConfigureOptions<InProcessFeaturesOptions>(services, configuration, ConfigurationKeys.InProcessFeatures)
+                .AddSingleton<InProcessFeaturesService>()
+                .AddSingleton<IEndpointInfoSourceCallbacks, InProcessFeaturesEndpointInfoSourceCallbacks>();
 
             return services;
         }
@@ -126,6 +135,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureCollectionRules(this IServiceCollection services)
         {
             services.RegisterCollectionRuleAction<CollectDumpActionFactory, CollectDumpOptions>(KnownCollectionRuleActions.CollectDump);
+            services.RegisterCollectionRuleAction<CollectExceptionsActionFactory, CollectExceptionsOptions>(KnownCollectionRuleActions.CollectExceptions);
             services.RegisterCollectionRuleAction<CollectGCDumpActionFactory, CollectGCDumpOptions>(KnownCollectionRuleActions.CollectGCDump);
             services.RegisterCollectionRuleAction<CollectLiveMetricsActionFactory, CollectLiveMetricsOptions>(KnownCollectionRuleActions.CollectLiveMetrics);
             services.RegisterCollectionRuleAction<CollectLogsActionFactory, CollectLogsOptions>(KnownCollectionRuleActions.CollectLogs);
@@ -338,7 +348,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             services.AddTransient<IExceptionsOperationFactory, ExceptionsOperationFactory>();
             services.AddScoped<IExceptionsStore, ExceptionsStore>();
+            services.AddScoped<IExceptionsStoreCallbackFactory, ExceptionsStoreLimitsCallbackFactory>();
             services.AddScoped<IDiagnosticLifetimeService, ExceptionsService>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureHostingStartup(this IServiceCollection services)
+        {
+            services.AddScoped<HostingStartupService>();
+            services.AddScopedForwarder<IDiagnosticLifetimeService, HostingStartupService>();
             return services;
         }
 
