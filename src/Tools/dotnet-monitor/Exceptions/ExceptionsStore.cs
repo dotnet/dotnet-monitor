@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
@@ -32,6 +33,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private long _disposalState;
 
         public ExceptionsStore(IEnumerable<IExceptionsStoreCallbackFactory> factories, IOptions<ExceptionsOptions> options)
+            : this(factories, options.Value.CollectionFilters ?? new())
+        {
+
+        }
+
+        public ExceptionsStore(IEnumerable<IExceptionsStoreCallbackFactory> factories, Monitoring.WebApi.Models.ExceptionsConfiguration configuration)
         {
             ArgumentNullException.ThrowIfNull(factories);
 
@@ -44,7 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 callbacks.Add(factory.Create(this));
             }
             _callbacks = callbacks;
-            _configuration = ExceptionsSettingsFactory.ConvertExceptionsConfiguration(options.Value.CollectionFilters);
+            _configuration = ExceptionsSettingsFactory.ConvertExceptionsConfiguration(configuration);
         }
 
         public async ValueTask DisposeAsync()

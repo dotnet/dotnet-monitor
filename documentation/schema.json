@@ -1096,7 +1096,8 @@
           "maximum": 2147483647.0,
           "minimum": 1.0
         },
-        "Filters": {
+        "CollectionFilters": {
+          "description": "The filters that determine which exceptions should be included/excluded when collecting exceptions.",
           "oneOf": [
             {
               "type": "null"

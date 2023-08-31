@@ -1,12 +1,11 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.Options;
-using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Microsoft.Diagnostics.Monitoring.WebApi
+namespace Microsoft.Diagnostics.Monitoring.Options
 {
     /// <summary>
     /// Configuration options for in-process features, ones that execute within each target process.

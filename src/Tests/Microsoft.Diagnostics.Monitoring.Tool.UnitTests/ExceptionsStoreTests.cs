@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ExceptionsStore_Creation()
         {
-            await using ExceptionsStore store = new ExceptionsStore(Array.Empty<IExceptionsStoreCallbackFactory>(), new ExceptionsConfigurationSettings());
+            await using ExceptionsStore store = new ExceptionsStore(Array.Empty<IExceptionsStoreCallbackFactory>(), new ExceptionsConfiguration());
         }
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public void ExceptionsStore_NullFactories_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => new ExceptionsStore(null, null));
+            Assert.Throws<ArgumentNullException>(() => new ExceptionsStore(null, new ExceptionsConfiguration()));
         }
 
         /// <summary>
@@ -46,7 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             // Arrange
             ThresholdCallback callback = new(ExpectedCount);
-            await using ExceptionsStore store = new(new[] { new PassThroughCallbackFactory(callback) }, new ExceptionsConfigurationSettings());
+            await using ExceptionsStore store = new(new[] { new PassThroughCallbackFactory(callback) }, new ExceptionsConfiguration());
 
             IExceptionsNameCache cache = CreateCache();
 
@@ -75,7 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             // Arrange
             ThresholdCallback callback = new(ExpectedCount);
-            await using ExceptionsStore store = new(new[] { new PassThroughCallbackFactory(callback) }, new ExceptionsConfigurationSettings());
+            await using ExceptionsStore store = new(new[] { new PassThroughCallbackFactory(callback) }, new ExceptionsConfiguration());
 
             IExceptionsNameCache cache = CreateCache();
 
@@ -115,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             // Arrange
             AggregateCallback aggregateCallback = new();
-            await using ExceptionsStore store = new(new[] { new PassThroughCallbackFactory(aggregateCallback) }, new ExceptionsConfigurationSettings());
+            await using ExceptionsStore store = new(new[] { new PassThroughCallbackFactory(aggregateCallback) }, new ExceptionsConfiguration());
 
             IExceptionsNameCache cache = CreateCache();
 
@@ -156,7 +157,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             // Arrange
             AggregateCallback aggregateCallback = new();
-            await using ExceptionsStore store = new(new[] { new PassThroughCallbackFactory(aggregateCallback) }, new ExceptionsConfigurationSettings());
+            await using ExceptionsStore store = new(new[] { new PassThroughCallbackFactory(aggregateCallback) }, new ExceptionsConfiguration());
 
             IExceptionsNameCache cache = CreateCache();
 
@@ -198,7 +199,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             // Arrange
             AggregateCallback aggregateCallback = new();
-            await using ExceptionsStore store = new(new[] { new PassThroughCallbackFactory(aggregateCallback) }, new ExceptionsConfigurationSettings());
+            await using ExceptionsStore store = new(new[] { new PassThroughCallbackFactory(aggregateCallback) }, new ExceptionsConfiguration());
 
             IExceptionsNameCache cache = CreateCache();
 
