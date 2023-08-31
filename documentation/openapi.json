@@ -1131,6 +1131,16 @@
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json-seq": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "202": {
             "description": "Accepted"
           }
@@ -1228,6 +1238,16 @@
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json-seq": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "202": {
             "description": "Accepted"

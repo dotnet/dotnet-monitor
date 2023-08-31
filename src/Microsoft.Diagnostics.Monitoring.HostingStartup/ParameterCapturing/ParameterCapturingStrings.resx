@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DeniedMethodsFormatString" xml:space="preserve">
+    <value>The following method descriptions are not allowed: {0}</value>
+  </data>
   <data name="ErrorMessage_FunctionDoesNotHaveIdFormatString" xml:space="preserve">
     <value>Method '{0}' is unsupported, it does not have a function id.</value>
   </data>
@@ -139,6 +142,6 @@
     <value>Too many requests</value>
   </data>
   <data name="UnresolvedMethodsFormatString" xml:space="preserve">
-    <value>Unable to resolve one or more methods: {0}</value>
+    <value>Unable to resolve one or more method descriptions: {0}</value>
   </data>
 </root>

@@ -4,10 +4,12 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Channels;
@@ -20,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
     {
         private const int ChannelCapacity = 1000;
 
-        private readonly ExceptionsStoreCallback _callback;
+        private readonly IReadOnlyList<IExceptionsStoreCallback> _callbacks;
         private readonly Channel<ExceptionInstanceEntry> _channel;
         private readonly CancellationTokenSource _disposalSource = new();
         private readonly KeyedCollection<ulong, ExceptionInstance> _instances = new ExceptionInstanceCollection();
@@ -29,12 +31,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private long _disposalState;
 
-        public ExceptionsStore(ExceptionsStoreCallback callback, ExceptionsConfigurationSettings configuration)
+        public ExceptionsStore(IEnumerable<IExceptionsStoreCallbackFactory> factories, IOptions<ExceptionsOptions> options)
         {
-            _callback = callback;
+            ArgumentNullException.ThrowIfNull(factories);
+
             _channel = CreateChannel();
             _processingTask = ProcessEntriesAsync(_disposalSource.Token);
-            _configuration = configuration;
+
+            List<IExceptionsStoreCallback> callbacks = new(factories.Count());
+            foreach (IExceptionsStoreCallbackFactory factory in factories)
+            {
+                callbacks.Add(factory.Create(this));
+            }
+            _callbacks = callbacks;
+            _configuration = ExceptionsSettingsFactory.ConvertExceptionsConfiguration(options.Value.CollectionFilters);
         }
 
         public async ValueTask DisposeAsync()
@@ -70,9 +80,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         public void RemoveExceptionInstance(ulong exceptionId)
         {
+            ExceptionInstance removedInstance = null;
+
             lock (_instances)
             {
-                _instances.Remove(exceptionId);
+                if (_instances.TryGetValue(exceptionId, out removedInstance))
+                {
+                    _instances.Remove(exceptionId);
+                }
+            }
+
+            if (null != removedInstance)
+            {
+                for (int i = 0; i < _callbacks.Count; i++)
+                {
+                    _callbacks[i].AfterRemove(removedInstance);
+                }
             }
         }
 
@@ -144,14 +167,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                     if (ExceptionsOperation.FilterException(_configuration, instance))
                     {
-                        _callback?.BeforeAdd(instance);
+
+                        for (int i = 0; i < _callbacks.Count; i++)
+                        {
+                            _callbacks[i].BeforeAdd(instance);
+                        }
 
                         lock (_instances)
                         {
                             _instances.Add(instance);
                         }
 
-                        _callback?.AfterAdd(instance);
+                        for (int i = 0; i < _callbacks.Count; i++)
+                        {
+                            _callbacks[i].AfterAdd(instance);
+                        }
                     }
                 }
 

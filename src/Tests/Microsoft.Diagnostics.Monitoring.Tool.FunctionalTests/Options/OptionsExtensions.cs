@@ -96,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 
             options.InProcessFeatures.Exceptions = new()
             {
-                Filters = configuration,
+                CollectionFilters = configuration,
                 Enabled = true
             };
 
