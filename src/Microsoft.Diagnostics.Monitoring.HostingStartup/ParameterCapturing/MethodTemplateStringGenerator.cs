@@ -47,12 +47,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
                 public static class Values
                 {
-                    public const string Null = "null";
+                    //
+                    // TODO: Move this to to ObjectFormatter. Currently unsupported values are pre-baked into the template string.
+                    // However this means unsupported parameters won't correctly show up in structured logging.
+                    // Moving this to ObjectFormatter will fix this.
+                    //
                     public const string Unsupported = Internal.Prefix + "unsupported" + Internal.Postfix;
-                    public const string Exception = Internal.Prefix + "exception_thrown" + Internal.Postfix;
-
-                    public const char WrappedStart = '\'';
-                    public const char WrappedEnd = '\'';
                 }
             }
 
