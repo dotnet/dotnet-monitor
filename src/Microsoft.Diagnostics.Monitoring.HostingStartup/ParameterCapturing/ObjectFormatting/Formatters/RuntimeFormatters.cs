@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
     {
         public static string IConvertibleFormatter(object obj, FormatSpecifier formatSpecifier)
         {
-            if (formatSpecifier == FormatSpecifier.None && obj is not string)
+            if (obj is not string)
             {
                 formatSpecifier |= FormatSpecifier.NoQuotes;
             }
