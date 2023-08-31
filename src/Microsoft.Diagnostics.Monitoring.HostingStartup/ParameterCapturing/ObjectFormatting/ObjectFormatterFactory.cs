@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Globalization;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting
 {

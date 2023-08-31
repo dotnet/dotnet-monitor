@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
 
     internal static class ObjectFormatter
     {
-        internal static class Tokens
+        public static class Tokens
         {
             public const string Null = "null";
             public const char WrappedStart = '\'';
@@ -36,13 +36,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
              value,
              Tokens.WrappedEnd);
 
+
         public static string FormatObject(ObjectFormatterFunc formatterFunc, object obj, FormatSpecifier formatSpecifier = FormatSpecifier.None)
         {
-            if (obj == null)
-            {
-                return Tokens.Null;
-            }
-
             try
             {
                 return formatterFunc(obj, formatSpecifier);

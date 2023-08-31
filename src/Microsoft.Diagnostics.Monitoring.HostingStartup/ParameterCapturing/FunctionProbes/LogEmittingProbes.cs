@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting;
+using System;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
@@ -55,9 +56,17 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                     continue;
                 }
 
-                argValues[fmtIndex++] = ObjectFormatter.FormatObject(
-                    cache.ObjectFormatterCache.GetFormatter(args[i].GetType()),
-                    args[i]);
+                Type? argType = args[i]?.GetType();
+                string value;
+                if (argType == null)
+                {
+                    value = ObjectFormatter.Tokens.Null;
+                }
+                else
+                {
+                    value = ObjectFormatter.FormatObject(cache.ObjectFormatterCache.GetFormatter(argType), args[i]);
+                }
+                argValues[fmtIndex++] = value;
             }
 
             _logger.Log(instrumentedMethod.CaptureMode, instrumentedMethod.MethodWithParametersTemplateString, argValues);
