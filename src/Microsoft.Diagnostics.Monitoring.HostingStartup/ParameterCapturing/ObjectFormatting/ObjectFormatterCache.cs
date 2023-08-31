@@ -6,12 +6,12 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatter
+namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting
 {
     [DebuggerDisplay("Count = {_cache.Count}")]
     internal sealed class ObjectFormatterCache
     {
-        private readonly ConcurrentDictionary<Type, ObjectFormatter> _cache = new();
+        private readonly ConcurrentDictionary<Type, ObjectFormatterFunc> _cache = new();
 
         public ObjectFormatterCache() { }
 
@@ -25,13 +25,18 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
             ParameterInfo[] parameters = method.GetParameters();
             foreach (ParameterInfo parameter in parameters)
             {
+                if (parameter.ParameterType.IsInterface)
+                {
+                    // No point in caching interfaces, GetFormatter should only get called with concrete implementations
+                    continue;
+                }
                 _ = GetFormatter(parameter.ParameterType);
             }
         }
 
-        public ObjectFormatter GetFormatter(Type objType)
+        public ObjectFormatterFunc GetFormatter(Type objType)
         {
-            if (_cache.TryGetValue(objType, out ObjectFormatter? formatter) && formatter != null)
+            if (_cache.TryGetValue(objType, out ObjectFormatterFunc? formatter) && formatter != null)
             {
                 return formatter;
             }
