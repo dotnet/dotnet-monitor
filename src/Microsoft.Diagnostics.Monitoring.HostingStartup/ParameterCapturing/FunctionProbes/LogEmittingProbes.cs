@@ -56,15 +56,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                     continue;
                 }
 
-                Type? argType = args[i]?.GetType();
                 string value;
-                if (argType == null)
+                if (args[i] == null)
                 {
                     value = ObjectFormatter.Tokens.Null;
                 }
                 else
                 {
-                    value = ObjectFormatter.FormatObject(cache.ObjectFormatterCache.GetFormatter(argType), args[i]);
+                    value = ObjectFormatter.FormatObject(cache.ObjectFormatterCache.GetFormatter(args[i].GetType()), args[i]);
                 }
                 argValues[fmtIndex++] = value;
             }
