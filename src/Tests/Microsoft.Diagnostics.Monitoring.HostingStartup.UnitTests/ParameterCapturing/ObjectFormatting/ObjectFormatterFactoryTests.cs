@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         [InlineData(typeof(string), nameof(RuntimeFormatters.IConvertibleFormatter))]
         [InlineData(typeof(MyEnum), nameof(RuntimeFormatters.IConvertibleFormatter))]
         [InlineData(typeof(FormattableString), nameof(RuntimeFormatters.IFormattableFormatter))]
-        [InlineData(typeof(Uri), nameof(RuntimeFormatters.GeneralFormatter))]
+        [InlineData(typeof(object), nameof(RuntimeFormatters.GeneralFormatter))]
         public void GetFormatter_ReturnsCorrectFormatter(Type type, string expectedFormatterName)
         {
             // Act
