@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     internal static class MethodTemplateStringGenerator
     {
-        internal static class Tokens
+        private static class Tokens
         {
             private static class Internal
             {
