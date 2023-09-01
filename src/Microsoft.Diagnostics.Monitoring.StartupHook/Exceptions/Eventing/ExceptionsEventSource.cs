@@ -62,6 +62,17 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             WriteEventWithFlushing(ExceptionEvents.EventIds.ExceptionInstance, data);
         }
 
+        [Event(ExceptionEvents.EventIds.ExceptionInstanceUnhandled)]
+        public void ExceptionInstanceUnhandled(
+            ulong ExceptionId)
+        {
+            Span<EventData> data = stackalloc EventData[1];
+
+            SetValue(ref data[ExceptionEvents.ExceptionInstanceUnhandledPayloads.ExceptionId], ExceptionId);
+
+            WriteEventWithFlushing(ExceptionEvents.EventIds.ExceptionInstanceUnhandled, data);
+        }
+
         [Event(ExceptionEvents.EventIds.ClassDescription)]
         public void ClassDescription(
             ulong ClassId,

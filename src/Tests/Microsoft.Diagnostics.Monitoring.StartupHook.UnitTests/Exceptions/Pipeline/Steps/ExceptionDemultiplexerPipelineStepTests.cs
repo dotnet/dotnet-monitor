@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using System.Collections.Generic;
 using System;
-using Xunit;
+using System.Collections.Generic;
 using System.Reflection;
+using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
 {

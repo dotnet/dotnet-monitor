@@ -27,11 +27,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _scope = scope;
         }
 
-        public OutputStreamResult(IArtifactOperation operation)
-            : this(operation.ExecuteAsync, operation.ContentType, fileDownloadName: null, new KeyValueLogScope())
-        {
-        }
-
         public OutputStreamResult(IArtifactOperation operation, string fileDownloadName, KeyValueLogScope scope)
             : this(operation.ExecuteAsync, operation.ContentType, fileDownloadName, scope)
         {

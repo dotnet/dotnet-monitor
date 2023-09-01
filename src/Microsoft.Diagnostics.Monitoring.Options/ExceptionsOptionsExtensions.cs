@@ -9,5 +9,10 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         {
             return options.Enabled.GetValueOrDefault(ExceptionsOptionsDefaults.Enabled);
         }
+
+        public static int GetTopLevelLimit(this ExceptionsOptions options)
+        {
+            return options.TopLevelLimit.GetValueOrDefault(ExceptionsOptionsDefaults.TopLevelLimit);
+        }
     }
 }

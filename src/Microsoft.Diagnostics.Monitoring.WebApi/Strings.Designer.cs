@@ -178,6 +178,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Operation is not starting..
+        /// </summary>
+        internal static string ErrorMessage_OperationNotStarting {
+            get {
+                return ResourceManager.GetString("ErrorMessage_OperationNotStarting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to enumerate processes..
         /// </summary>
         internal static string ErrorMessage_ProcessEnumerationFailed {
@@ -480,6 +489,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         internal static string Message_CollectionRuleStateReason_Throttled {
             get {
                 return ResourceManager.GetString("Message_CollectionRuleStateReason_Throttled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finished generating in-process artifact.
+        /// </summary>
+        internal static string Message_GeneratedInProcessArtifact {
+            get {
+                return ResourceManager.GetString("Message_GeneratedInProcessArtifact", resourceCulture);
             }
         }
     }

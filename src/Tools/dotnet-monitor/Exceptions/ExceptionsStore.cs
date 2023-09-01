@@ -6,7 +6,9 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Channels;
@@ -19,17 +21,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
     {
         private const int ChannelCapacity = 1000;
 
+        private readonly IReadOnlyList<IExceptionsStoreCallback> _callbacks;
         private readonly Channel<ExceptionInstanceEntry> _channel;
         private readonly CancellationTokenSource _disposalSource = new();
-        private readonly List<ExceptionInstance> _instances = new();
+        private readonly KeyedCollection<ulong, ExceptionInstance> _instances = new ExceptionInstanceCollection();
         private readonly Task _processingTask;
 
         private long _disposalState;
 
-        public ExceptionsStore()
+        public ExceptionsStore(IEnumerable<IExceptionsStoreCallbackFactory> factories)
         {
+            ArgumentNullException.ThrowIfNull(factories);
+
             _channel = CreateChannel();
             _processingTask = ProcessEntriesAsync(_disposalSource.Token);
+
+            List<IExceptionsStoreCallback> callbacks = new(factories.Count());
+            foreach (IExceptionsStoreCallbackFactory factory in factories)
+            {
+                callbacks.Add(factory.Create(this));
+            }
+            _callbacks = callbacks;
         }
 
         public async ValueTask DisposeAsync()
@@ -61,6 +73,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             ExceptionInstanceEntry entry = new(cache, exceptionId, groupId, message, timestamp, stackFrameIds, threadId, innerExceptionIds, activityId, activityIdFormat);
             // This should never fail to write because the behavior is to drop the oldest.
             _channel.Writer.TryWrite(entry);
+        }
+
+        public void RemoveExceptionInstance(ulong exceptionId)
+        {
+            ExceptionInstance removedInstance = null;
+
+            lock (_instances)
+            {
+                if (_instances.TryGetValue(exceptionId, out removedInstance))
+                {
+                    _instances.Remove(exceptionId);
+                }
+            }
+
+            if (null != removedInstance)
+            {
+                for (int i = 0; i < _callbacks.Count; i++)
+                {
+                    _callbacks[i].AfterRemove(removedInstance);
+                }
+            }
         }
 
         public IReadOnlyList<IExceptionInstance> GetSnapshot()
@@ -118,18 +151,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                     CallStackModel callStack = GenerateCallStack(entry.StackFrameIds, entry.Cache, entry.ThreadId);
 
+                    ExceptionInstance instance = new(
+                        entry.ExceptionId,
+                        exceptionTypeName,
+                        moduleName,
+                        entry.Message,
+                        entry.Timestamp,
+                        callStack,
+                        entry.InnerExceptionIds,
+                        entry.ActivityId,
+                        entry.ActivityIdFormat);
+
+                    for (int i = 0; i < _callbacks.Count; i++)
+                    {
+                        _callbacks[i].BeforeAdd(instance);
+                    }
+
                     lock (_instances)
                     {
-                        _instances.Add(new ExceptionInstance(
-                            entry.ExceptionId,
-                            exceptionTypeName,
-                            moduleName,
-                            entry.Message,
-                            entry.Timestamp,
-                            callStack,
-                            entry.InnerExceptionIds,
-                            entry.ActivityId,
-                            entry.ActivityIdFormat));
+                        _instances.Add(instance);
+                    }
+
+                    for (int i = 0; i < _callbacks.Count; i++)
+                    {
+                        _callbacks[i].AfterAdd(instance);
                     }
                 }
 
@@ -204,6 +249,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             public string ActivityId { get; }
 
             public ActivityIdFormat ActivityIdFormat { get; }
+        }
+
+        private sealed class ExceptionInstanceCollection :
+            KeyedCollection<ulong, ExceptionInstance>
+        {
+            protected override ulong GetKeyForItem(ExceptionInstance item)
+            {
+                return item.Id;
+            }
         }
     }
 }

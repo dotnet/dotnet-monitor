@@ -163,6 +163,9 @@
   <data name="ErrorMessage_OperationNotRunning" xml:space="preserve">
     <value>Operation is not running.</value>
   </data>
+  <data name="ErrorMessage_OperationNotStarting" xml:space="preserve">
+    <value>Operation is not starting.</value>
+  </data>
   <data name="ErrorMessage_ProcessEnumerationFailed" xml:space="preserve">
     <value>Unable to enumerate processes.</value>
     <comment>Gets a string similar to "Unable to enumerate processes.".</comment>
@@ -310,5 +313,8 @@
   </data>
   <data name="Message_CollectionRuleStateReason_Throttled" xml:space="preserve">
     <value>This collection rule is temporarily throttled because the ActionCountLimit has been reached within the ActionCountSlidingWindowDuration.</value>
+  </data>
+  <data name="Message_GeneratedInProcessArtifact" xml:space="preserve">
+    <value>Finished generating in-process artifact</value>
   </data>
 </root>

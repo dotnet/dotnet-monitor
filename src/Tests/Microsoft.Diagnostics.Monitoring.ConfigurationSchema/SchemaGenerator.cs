@@ -125,6 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             collectionRuleActionOptionsSchema.Properties[nameof(CollectionRuleActionOptions.Type)].OneOf.Add(collectionRuleActionOptionsTypeSubSchema);
 
             AddCollectionRuleActionSchema<CollectDumpOptions>(context, actionTypeSchema, KnownCollectionRuleActions.CollectDump);
+            AddCollectionRuleActionSchema<CollectExceptionsOptions>(context, actionTypeSchema, KnownCollectionRuleActions.CollectExceptions);
             AddCollectionRuleActionSchema<CollectGCDumpOptions>(context, actionTypeSchema, KnownCollectionRuleActions.CollectGCDump);
             AddCollectionRuleActionSchema<CollectLiveMetricsOptions>(context, actionTypeSchema, KnownCollectionRuleActions.CollectLiveMetrics);
             AddCollectionRuleActionSchema<CollectLogsOptions>(context, actionTypeSchema, KnownCollectionRuleActions.CollectLogs);

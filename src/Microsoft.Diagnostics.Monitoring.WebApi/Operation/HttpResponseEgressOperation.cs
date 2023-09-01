@@ -21,9 +21,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public bool IsStoppable { get { return _operation?.IsStoppable ?? false; } }
         public ISet<string> Tags { get; private set; }
 
+        public Task Started => _operation.Started;
+
         private readonly IArtifactOperation _operation;
 
-        public HttpResponseEgressOperation(HttpContext context, IProcessInfo processInfo, string tags, IArtifactOperation operation = null)
+        public HttpResponseEgressOperation(HttpContext context, IProcessInfo processInfo, string tags, IArtifactOperation operation)
         {
             _httpContext = context;
             _httpContext.Response.OnCompleted(() =>

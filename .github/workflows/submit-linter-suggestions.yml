@@ -30,7 +30,7 @@ jobs:
             });
 
       - name: Checkout
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744
         with:
           persist-credentials: false
 
@@ -57,7 +57,7 @@ jobs:
           path: ./pr-linter
 
       - name: 'Setup reviewdog'
-        uses: reviewdog/action-setup@8e48baae926e97848f0863ae248f3b08e089c81f
+        uses: reviewdog/action-setup@80a06617492b461a66508e2dedf16233f0506804
 
       # Manually supply the triggering PR event information since when a PR is from a fork,
       # this workflow running in the base repo will not be given information about it.

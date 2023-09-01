@@ -1,0 +1,9 @@
+LIBRARY MonitorProfiler
+
+EXPORTS
+    DllCanUnloadNow                    PRIVATE
+    DllGetClassObject                  PRIVATE
+    DllMain                            PRIVATE
+    TestHook                           PRIVATE
+    RegisterMonitorMessageCallback     PRIVATE
+    UnregisterMonitorMessageCallback   PRIVATE

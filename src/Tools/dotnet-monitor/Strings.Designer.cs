@@ -421,6 +421,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parameter capturing is not available in the process. {0}.
+        /// </summary>
+        internal static string ErrorMessage_ParameterCapturingNotAvailable {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ParameterCapturingNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} parameter value &apos;{1}&apos; is not allowed..
         /// </summary>
         internal static string ErrorMessage_ParameterNotAllowed {
@@ -521,6 +530,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to find hosting startup assembly at determined path..
+        /// </summary>
+        internal static string ErrorMessage_UnableToFindHostingStartupAssembly {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnableToFindHostingStartupAssembly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to find profiler assembly at determined path..
         /// </summary>
         internal static string ErrorMessage_UnableToFindProfilerAssembly {
@@ -589,6 +607,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string FeatureName_Exceptions {
             get {
                 return ResourceManager.GetString("FeatureName_Exceptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parameter Capturing.
+        /// </summary>
+        internal static string FeatureName_ParameterCapturing {
+            get {
+                return ResourceManager.GetString("FeatureName_ParameterCapturing", resourceCulture);
             }
         }
         
@@ -1529,6 +1556,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to apply hosting startup..
+        /// </summary>
+        internal static string LogFormatString_UnableToApplyHostingStartup {
+            get {
+                return ResourceManager.GetString("LogFormatString_UnableToApplyHostingStartup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to apply in process feature flags..
+        /// </summary>
+        internal static string LogFormatString_UnableToApplyInProcessFeatureFlags {
+            get {
+                return ResourceManager.GetString("LogFormatString_UnableToApplyInProcessFeatureFlags", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to apply profiler..
         /// </summary>
         internal static string LogFormatString_UnableToApplyProfiler {
@@ -1642,6 +1687,42 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string Message_ShowSources {
             get {
                 return ResourceManager.GetString("Message_ShowSources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This feature is only available on processes using ASP.NET Core. If the process is using ASP.NET Core and has successfully started, ensure that it has not been configured to prevent hosting startup assemblies from loading..
+        /// </summary>
+        internal static string ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad {
+            get {
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An internal error occurred that has prevented communication with the process..
+        /// </summary>
+        internal static string ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad {
+            get {
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The process has prevented hosting startup assemblies from loading using the ASPNETCORE_PREVENTHOSTINGSTARTUP environment variable..
+        /// </summary>
+        internal static string ParameterCapturingNotAvailable_Reason_PreventedHostingStartup {
+            get {
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_PreventedHostingStartup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The process needs to be using .NET 7 or newer..
+        /// </summary>
+        internal static string ParameterCapturingNotAvailable_Reason_UnsupportedRuntime {
+            get {
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_UnsupportedRuntime", resourceCulture);
             }
         }
         

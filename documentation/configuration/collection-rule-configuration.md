@@ -16,6 +16,7 @@ Collection rules are specified in configuration as a named item under the `Colle
   - [Trigger shortcuts](../collectionrules/triggershortcuts.md) 
 - [`Actions`](#actions) - The action to be be performed
   - [CollectDump](#collectdump-action)
+  - [CollectExceptions](#collectexceptions-action)
   - [CollectGCDump](#collectgcdump-action)
   - [CollectTrace](#collecttrace-action)
   - [CollectLiveMetrics](#collectlivemetrics-action)
@@ -595,6 +596,60 @@ Usage that collects a full dump and egresses it to a provider named "AzureBlobDu
     value: "Full"
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress
     value: "AzureBlobDumps"
+  ```
+</details>
+
+### `CollectExceptions` Action
+
+First Available: 8.0 RC 1
+
+An action that collects exceptions from the process that the collection rule is targeting.
+
+#### Properties
+
+| Name | Type | Required | Description | Default Value |
+|---|---|---|---|---|
+| `Egress` | string | true | The named [egress provider](../egress.md) for egressing the collected dump. | |
+| `Format` | [ExceptionFormat](../api/definitions.md#exceptionformat)? | false | The format of the exception entries. | `PlainText` |
+
+#### Outputs
+
+| Name | Description |
+|---|---|
+| `EgressPath` | The path of the file that was egressed using the specified egress provider. |
+
+#### Example
+
+Usage that collects exceptions as newline-delimited JSON and egresses it to a provider named "AzureBlobExceptions".
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Egress": "AzureBlobExceptions",
+    "Format": "NewlineDelimitedJson"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  CollectionRules__RuleName__Actions__0__Settings__Egress: "AzureBlobExceptions"
+  CollectionRules__RuleName__Actions__0__Settings__Format: "NewlineDelimitedJson"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress
+    value: "AzureBlobExceptions"
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Format
+    value: "NewlineDelimitedJson"
   ```
 </details>
 
