@@ -8,7 +8,7 @@
     <!-- Once updated to v7, see https://github.com/dotnet/dotnet-monitor/issues/5036 -->
     <MicrosoftIdentityModelTokensVersion>6.32.2</MicrosoftIdentityModelTokensVersion>
     <MicrosoftIdentityWebVersion>2.13.3</MicrosoftIdentityWebVersion>
-    <MicrosoftOpenApiReadersVersion>1.6.6</MicrosoftOpenApiReadersVersion>
+    <MicrosoftOpenApiReadersVersion>1.6.7</MicrosoftOpenApiReadersVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
 
