@@ -168,7 +168,6 @@ Currently some types of parameters are unable to be captured. When a method cont
 | [Nullable value types](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/nullable-value-types) | `int?` |
 | [Pointers](https://learn.microsoft.com/dotnet/csharp/language-reference/unsafe-code#pointer-types) | `void*` |
 | [Tuples](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/value-tuples) | `(int, int)` |
-| [Value types](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/value-types) defined in another assembly | `MyModule.dll!MyClass.MyMethod(HttpStatusCode s)` since [`HttpStatusCode`](https://learn.microsoft.com/dotnet/api/system.net.httpstatuscode) is an [`enum`](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/enum) |
 
 ### When to use `pid` vs `uid`
 
