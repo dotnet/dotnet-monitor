@@ -113,6 +113,14 @@
     <HelixTargetQueue Include="@(HelixAvailableTargetQueue)" />
   </ItemGroup>
 
+  <!-- Additional package feeds -->
+  <ItemGroup>
+    <AdditionalDotNetPackageFeed Include="https://dotnetbuilds.blob.core.windows.net/internal"
+                                 Condition="'$(SYSTEM_TEAMPROJECT)' == 'internal'">
+      <SasToken>$([System.Environment]::GetEnvironmentVariable('DotNetBuildsInternalContainerReadToken'))</SasToken>
+    </AdditionalDotNetPackageFeed>
+  </ItemGroup>
+
   <!-- Correlation Payload: SDK (to use "dotnet test") -->
   <PropertyGroup>
     <IncludeDotNetCli>true</IncludeDotNetCli>
