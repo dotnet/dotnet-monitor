@@ -321,6 +321,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             if (!DisposableHelper.CanDispose(ref _disposedState))
                 return;
 
+            FunctionProbesStub.Instance = null;
+
             try
             {
                 _disposalTokenSource.Cancel();
