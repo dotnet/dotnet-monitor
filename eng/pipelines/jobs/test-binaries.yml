@@ -101,6 +101,7 @@ jobs:
         -projects $(Build.SourcesDirectory)/eng/helix/Helix.proj
         -skipmanaged
         -skipnative
+        /p:DotNetBuildsInternalContainerReadToken=$(dotnetbuilds-internal-container-read-token-base64)
     ${{ else }}:
       buildArgs: >-
         -test
