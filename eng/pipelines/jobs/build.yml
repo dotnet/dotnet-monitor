@@ -132,9 +132,10 @@ jobs:
       - scriptExt: '.sh'
 
     steps:
-    - template: /eng/pipelines/steps/setup-nuget-sources.yml
-      parameters:
-        osGroup: ${{ parameters.osGroup }}
+    - ${{ if ne(variables['System.TeamProject'], 'public') }}:
+      - template: /eng/pipelines/steps/setup-nuget-sources.yml
+        parameters:
+          osGroup: ${{ parameters.osGroup }}
 
     - ${{ each step in parameters.preBuildSteps }}:
       - ${{ step }}
