@@ -16,6 +16,13 @@ jobs:
           /p:DotNetRuntimeSourceFeed=https://dotnetbuilds.blob.core.windows.net/internal
           /p:DotNetRuntimeSourceFeedKey=$(dotnetbuilds-internal-container-read-token-base64)
     steps:
+    - task: PowerShell@2
+      displayName: Setup Private Feeds Credentials
+      inputs:
+        filePath: $(Build.SourcesDirectory)/eng/common/SetupNugetSources.ps1
+        arguments: -ConfigFile $(Build.SourcesDirectory)/NuGet.config -Password $Env:Token
+      env:
+        Token: $(dn-bot-dnceng-artifact-feeds-rw)
     # Only restore the projects that are shipped so only packages we ship get included in the below CG scan
     - script: >-
         $(Build.SourcesDirectory)/restore.cmd -ci
