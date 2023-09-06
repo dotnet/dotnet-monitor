@@ -49,5 +49,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
 
             return factoryResult.Formatter;
         }
+
+        public void Clear()
+        {
+            _cache.Clear();
+        }
     }
 }

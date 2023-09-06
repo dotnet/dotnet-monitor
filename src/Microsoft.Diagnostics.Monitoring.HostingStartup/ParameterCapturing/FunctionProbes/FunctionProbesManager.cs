@@ -240,11 +240,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, ParameterCapturingStrings.ErrorMessage_ProbeStateMismatchFormatString, ProbeStateUninstalled, _probeState));
             }
 
+            ObjectFormatterCache newObjectFormatterCache = new();
+            Dictionary<ulong, InstrumentedMethod> newMethodCache = new(methods.Count);
             try
             {
-                Dictionary<ulong, InstrumentedMethod> newMethodCache = new(methods.Count);
-                ObjectFormatterCache newObjectFormatterCache = new();
-
                 List<ulong> functionIds = new(methods.Count);
                 List<uint> argumentCounts = new(methods.Count);
                 List<uint> boxingTokens = new();
@@ -283,6 +282,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             catch
             {
                 FunctionProbesStub.Cache = null;
+                newObjectFormatterCache?.Clear();
+
                 _probeState = ProbeStateUninstalled;
                 _installationTaskSource = null;
                 throw;
