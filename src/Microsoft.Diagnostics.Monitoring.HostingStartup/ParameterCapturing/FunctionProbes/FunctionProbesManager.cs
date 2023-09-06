@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting;
 using Microsoft.Diagnostics.Monitoring.StartupHook;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using System;
@@ -123,9 +124,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private void OnFault(ulong uniquifier)
         {
-            var methodCache = FunctionProbesStub.InstrumentedMethodCache;
-            if (methodCache == null ||
-                !methodCache.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod))
+            FunctionProbesCache? cache = FunctionProbesStub.Cache;
+            if (cache == null ||
+                !cache.InstrumentedMethods.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod))
             {
                 //
                 // The probe fault occurred in a method that is no longer actively instrumented, ignore.
@@ -217,7 +218,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 return;
             }
 
-            FunctionProbesStub.InstrumentedMethodCache = null;
+            FunctionProbesStub.Cache = null;
             RequestFunctionProbeUninstallation();
         }
 
@@ -239,9 +240,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, ParameterCapturingStrings.ErrorMessage_ProbeStateMismatchFormatString, ProbeStateUninstalled, _probeState));
             }
 
+            ObjectFormatterCache newObjectFormatterCache = new();
+            Dictionary<ulong, InstrumentedMethod> newMethodCache = new(methods.Count);
             try
             {
-                Dictionary<ulong, InstrumentedMethod> newMethodCache = new(methods.Count);
                 List<ulong> functionIds = new(methods.Count);
                 List<uint> argumentCounts = new(methods.Count);
                 List<uint> boxingTokens = new();
@@ -261,12 +263,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                         continue;
                     }
 
+                    newObjectFormatterCache.CacheMethodParameters(method);
+
                     functionIds.Add(functionId);
                     argumentCounts.Add((uint)methodBoxingTokens.Length);
                     boxingTokens.AddRange(methodBoxingTokens);
                 }
 
-                FunctionProbesStub.InstrumentedMethodCache = new ReadOnlyDictionary<ulong, InstrumentedMethod>(newMethodCache);
+                FunctionProbesStub.Cache = new FunctionProbesCache(new ReadOnlyDictionary<ulong, InstrumentedMethod>(newMethodCache), newObjectFormatterCache);
 
                 _installationTaskSource = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
                 RequestFunctionProbeInstallation(
@@ -277,7 +281,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             }
             catch
             {
-                FunctionProbesStub.InstrumentedMethodCache = null;
+                FunctionProbesStub.Cache = null;
+                newObjectFormatterCache?.Clear();
+
                 _probeState = ProbeStateUninstalled;
                 _installationTaskSource = null;
                 throw;
