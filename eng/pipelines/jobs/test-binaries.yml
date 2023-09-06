@@ -58,10 +58,6 @@ jobs:
       # Provide blank versions of the secrets so we don't have to conditionally create
       # internal vs public versions of tasks.
       - DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET: ''
-    - _InternalHelixArgs: ''
-    - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
-      - _InternalHelixArgs: >-
-          /p:DotNetBuildsInternalContainerReadToken=$(dotnetbuilds-internal-container-read-token-base64)
 
     preBuildSteps:
     - task: DownloadPipelineArtifact@2
@@ -123,6 +119,7 @@ jobs:
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       ${{ if ne(variables['System.TeamProject'], 'public') }}:
         HelixAccessToken: $(HelixApiAccessToken)
+        DotNetBuildsInternalContainerReadToken: $(dotnetbuilds-internal-container-read-token)
 
     postBuildSteps:
     - ${{ if ne(parameters.useHelix, 'true')}}:

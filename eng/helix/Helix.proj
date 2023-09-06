@@ -117,15 +117,31 @@
   <ItemGroup>
     <AdditionalDotNetPackageFeed Include="https://dotnetbuilds.blob.core.windows.net/internal"
                                  Condition="'$(SYSTEM_TEAMPROJECT)' == 'internal'">
-      <SasToken>$(DotNetBuildsInternalContainerReadToken)</SasToken>
+      <SasToken>$([System.Environment]::GetEnvironmentVariable('DotNetBuildsInternalContainerReadToken'))</SasToken>
     </AdditionalDotNetPackageFeed>
   </ItemGroup>
 
   <!-- Correlation Payload: SDK (to use "dotnet test") -->
+  <ItemGroup>
+    <AdditionalDotNetPackage Include="$(MicrosoftDotnetSdkInternalVersion)">
+      <PackageType>sdk</PackageType>
+    </AdditionalDotNetPackage>
+  </ItemGroup>
+
+  <!--
+    Replicate the "IncludeDotNetCli" notion since we are specifying the SDK as an additoional package.
+    Replicated from https://github.com/dotnet/arcade/blob/main/src/Microsoft.DotNet.Helix/Sdk/tools/dotnet-cli/DotNetCli.targets
+    These commands are shared by all work items.
+    -->
   <PropertyGroup>
-    <IncludeDotNetCli>true</IncludeDotNetCli>
-    <DotNetCliPackageType>sdk</DotNetCliPackageType>
-    <DotNetCliVersion>$(MicrosoftDotnetSdkInternalVersion)</DotNetCliVersion>
+    <HelixPreCommands Condition="$(IsHelixPosixShell)">$(HelixPreCommands);export PATH=$HELIX_CORRELATION_PAYLOAD/$(DotNetCliDestination):$PATH</HelixPreCommands>
+    <HelixPreCommands Condition="!$(IsHelixPosixShell)">$(HelixPreCommands);set PATH=%HELIX_CORRELATION_PAYLOAD%\$(DotNetCliDestination)%3B%PATH%</HelixPreCommands> <!-- %3B is an escaped ; -->
+    <HelixPreCommands Condition="$(IsHelixPosixShell)">$(HelixPreCommands);export DOTNET_ROOT=$HELIX_CORRELATION_PAYLOAD/$(DotNetCliDestination);export DOTNET_CLI_TELEMETRY_OPTOUT=1</HelixPreCommands>
+    <HelixPreCommands Condition="!$(IsHelixPosixShell)">$(HelixPreCommands);set DOTNET_ROOT=%HELIX_CORRELATION_PAYLOAD%\$(DotNetCliDestination);set DOTNET_CLI_TELEMETRY_OPTOUT=1</HelixPreCommands>
+    <HelixPreCommands Condition="$(IsHelixPosixShell)">$(HelixPreCommands);export DOTNET_CLI_HOME=$HELIX_WORKITEM_ROOT/.dotnet</HelixPreCommands>
+    <HelixPreCommands Condition="!$(IsHelixPosixShell)">$(HelixPreCommands);set DOTNET_CLI_HOME=%HELIX_WORKITEM_ROOT%\.dotnet</HelixPreCommands>
+    <HelixPreCommands Condition="$(IsHelixPosixShell)">$(HelixPreCommands);export NUGET_PACKAGES=$HELIX_WORKITEM_ROOT/.nuget</HelixPreCommands>
+    <HelixPreCommands Condition="!$(IsHelixPosixShell)">$(HelixPreCommands);set NUGET_PACKAGES=%HELIX_WORKITEM_ROOT%\.nuget</HelixPreCommands>
   </PropertyGroup>
 
   <!-- Correlation Payload: AspNetCore (these packages also contain corresponding NetCoreApp version) -->
