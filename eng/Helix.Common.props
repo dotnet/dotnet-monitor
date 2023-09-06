@@ -7,5 +7,15 @@
     <HelixNodeRuntimeIdentifier Condition="$([MSBuild]::IsOSPlatform(Linux))">linux-$(HelixArchitecture)</HelixNodeRuntimeIdentifier>
     <HelixNodeRuntimeIdentifier Condition="$([MSBuild]::IsOSPlatform(OSX))">darwin-$(HelixArchitecture)</HelixNodeRuntimeIdentifier>
     <HelixNodeName>node-v$(HelixNodeVersion)-$(HelixNodeRuntimeIdentifier)</HelixNodeName>
+    <!--
+      Helix SDK docs state that this type of information can be attached to individual queues
+      as AdditionalProperties metadata, but the AzurePipleines.MultiQueue.targets overwrites it
+      when calcuating and assigning the TestRunId. Calculate this information per-project using
+      available information e.g. PackageRid contains OS, libc, and architecture information.
+    -->
+    <IsHelixPosixShell>true</IsHelixPosixShell>
+    <IsHelixPosixShell Condition="$(PackageRid.Contains(win))">false</IsHelixPosixShell>
+    <IsHelixMuslLibc>false</IsHelixMuslLibc>
+    <IsHelixMuslLibc Condition="$(PackageRid.Contains(musl))">true</IsHelixMuslLibc>
   </PropertyGroup>
 </Project>
