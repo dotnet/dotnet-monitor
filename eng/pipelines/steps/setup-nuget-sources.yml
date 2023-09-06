@@ -11,7 +11,7 @@ steps:
       arguments: -ConfigFile $(Build.SourcesDirectory)/NuGet.config -Password $Env:Token
     env:
       Token: $(dn-bot-dnceng-artifact-feeds-rw)
-- ${{ if ne(parameters.osGroup, 'Windows') }}:
+- ${{ else }}:
   - task: Bash@3
     displayName: Setup Private Feeds Credentials
     inputs:
