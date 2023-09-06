@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.StartupHook;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -68,11 +69,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         public event EventHandler<InstrumentedMethod>? OnProbeFault;
 
-        public FunctionProbesManager(IFunctionProbes probes)
+        private readonly ILogger _logger;
+
+        public FunctionProbesManager(IFunctionProbes probes, ILogger logger)
         {
             ProfilerResolver.InitializeResolver<FunctionProbesManager>();
 
             _disposalToken = _disposalTokenSource.Token;
+            _logger = logger;
 
             //
             // CONSIDER:
@@ -99,6 +103,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private void OnRegistration(int hresult)
         {
+            _logger.LogDebug(ParameterCapturingStrings.ProbeManagementCallback, nameof(OnRegistration), hresult);
+
             TransitionStateFromHr(_probeRegistrationTaskSource, hresult,
                 expectedState: ProbeStateUninitialized,
                 succeededState: ProbeStateUninstalled,
@@ -107,6 +113,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private void OnInstallation(int hresult)
         {
+            _logger.LogDebug(ParameterCapturingStrings.ProbeManagementCallback, nameof(OnInstallation), hresult);
+
             TransitionStateFromHr(_installationTaskSource, hresult,
                 expectedState: ProbeStateInstalling,
                 succeededState: ProbeStateInstalled,
@@ -115,6 +123,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private void OnUninstallation(int hresult)
         {
+            _logger.LogDebug(ParameterCapturingStrings.ProbeManagementCallback, nameof(OnUninstallation), hresult);
+
             TransitionStateFromHr(_uninstallationTaskSource, hresult,
                 expectedState: ProbeStateUninstalling,
                 succeededState: ProbeStateUninstalled,

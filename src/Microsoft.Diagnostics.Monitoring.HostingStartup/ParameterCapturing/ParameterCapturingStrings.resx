@@ -129,6 +129,9 @@
   <data name="FeatureUnsupported_NoLogger" xml:space="preserve">
     <value>Unable to create an ILogger instance in the target process.</value>
   </data>
+  <data name="ProbeManagementCallback" xml:space="preserve">
+    <value>{callbackName}, hr={hr}</value>
+  </data>
   <data name="StartParameterCapturingFormatString" xml:space="preserve">
     <value>Started parameter capturing for {duration} on {numberOfMethods} method(s).</value>
   </data>
