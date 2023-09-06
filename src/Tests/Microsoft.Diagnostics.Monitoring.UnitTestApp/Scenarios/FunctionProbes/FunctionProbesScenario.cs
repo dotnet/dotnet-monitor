@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                     return ScenarioHelpers.RunScenarioAsync(async logger =>
                     {
                         PerFunctionProbeProxy probeProxy = new PerFunctionProbeProxy();
-                        using FunctionProbesManager probeManager = new(probeProxy);
+                        using FunctionProbesManager probeManager = new(probeProxy, logger);
 
                         await testCase(probeManager, probeProxy, token);
 
@@ -335,7 +335,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             return ScenarioHelpers.RunScenarioAsync(logger =>
             {
                 PerFunctionProbeProxy probeProxy = new PerFunctionProbeProxy();
-                Assert.Throws<DllNotFoundException>(() => new FunctionProbesManager(probeProxy));
+                Assert.Throws<DllNotFoundException>(() => new FunctionProbesManager(probeProxy, logger));
 
                 return Task.FromResult(0);
             }, token);

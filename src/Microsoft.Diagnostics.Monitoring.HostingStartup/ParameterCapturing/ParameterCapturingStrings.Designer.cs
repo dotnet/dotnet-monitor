@@ -98,6 +98,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {callbackName}, hr={hr}.
+        /// </summary>
+        internal static string ProbeManagementCallback {
+            get {
+                return ResourceManager.GetString("ProbeManagementCallback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Started parameter capturing for {duration} on {numberOfMethods} method(s)..
         /// </summary>
         internal static string StartParameterCapturingFormatString {
