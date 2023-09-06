@@ -61,7 +61,7 @@ jobs:
     - _InternalHelixArgs: ''
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - _InternalHelixArgs: >-
-          /p:DotNetBuildsInternalContainerReadToken=$(dotnetbuilds-internal-container-read-token-base64)
+          /p:DotNetBuildsInternalContainerReadToken=$(dotnetbuilds-internal-container-read-token)
 
     preBuildSteps:
     - task: DownloadPipelineArtifact@2
