@@ -87,12 +87,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                 ExpressionEvaluator? evaluator;
                 if (chainedExpressionIndex != -1)
                 {
-                    evaluator = BindSingleExpression(unboundExpression[..chainedExpressionIndex], chainedContextType);
+                    evaluator = BindSingleExpression(unboundExpression[..chainedExpressionIndex].ToString(), chainedContextType);
                     unboundExpression = unboundExpression[(chainedExpressionIndex + 1)..];
                 }
                 else
                 {
-                    evaluator = BindSingleExpression(unboundExpression, chainedContextType);
+                    evaluator = BindSingleExpression(unboundExpression.ToString(), chainedContextType);
                     unboundExpression = ReadOnlySpan<char>.Empty;
                 }
 
@@ -108,7 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
             return CollapseChainedEvaluators(evaluatorChain);
         }
 
-        private static ExpressionEvaluator? BindSingleExpression(ReadOnlySpan<char> expression, Type objType)
+        private static ExpressionEvaluator? BindSingleExpression(string expression, Type objType)
         {
             //
             // NOTE: Complex expressions are not supported (e.g. "Count + 1").
@@ -116,54 +116,68 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
             //
             // The following expressions are supported:
             // - A property.
+            // - A field.
             // - A method without parameters.
             //
 
             try
             {
                 //
-                // Check if the expression is a parameter-less method. If not, try to bind it as a property.
+                // Check if the expression is a parameter-less method. If not, try to bind it as a property or a field.
                 // This means any complex expressions, or methods with parameters, will try to bind as a property
                 // and fail.
                 //
-                MethodInfo? method = null;
                 if (expression.EndsWith("()", StringComparison.Ordinal))
                 {
-                    method = objType.GetMethod(
-                        expression[..^2].ToString(),
+                    MethodInfo? method = objType.GetMethod(
+                        expression[..^2],
                         BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static,
                         Array.Empty<Type>());
-                }
-                else
-                {
-                    PropertyInfo? property = objType.GetProperty(expression.ToString());
-                    if (property == null)
+
+                    if (method == null)
                     {
                         return null;
                     }
 
-                    //
-                    // Directly use the property's Get method instead of directly using ".GetValue(..)"
-                    // so that we can identify if it's static or not.
-                    //
-                    method = property.GetGetMethod(nonPublic: true);
+                    return new ExpressionEvaluator(
+                        method.HasImplicitThis()
+                            ? (obj) => method.Invoke(obj, parameters: null)
+                            : (_) => method.Invoke(obj: null, parameters: null),
+                        method.ReturnType);
                 }
 
-                if (method == null)
+                //
+                // It's not a method, check if its a property.
+                //
+                // Use the property's Get method instead of directly using ".GetValue(..)"
+                // so that we can identify if it's static or not.
+                //
+                MethodInfo? getterMethod = objType.GetProperty(expression)?.GetGetMethod(nonPublic: true);
+                if (getterMethod != null)
                 {
-                    return null;
+                    return new ExpressionEvaluator(
+                        getterMethod.HasImplicitThis()
+                            ? (obj) => getterMethod.Invoke(obj, parameters: null)
+                            : (_) => getterMethod.Invoke(obj: null, parameters: null),
+                        getterMethod.ReturnType);
                 }
 
-                return new ExpressionEvaluator(
-                    method.HasImplicitThis()
-                        ? (obj) => method.Invoke(obj, parameters: null)
-                        : (_) => method.Invoke(obj: null, parameters: null),
-                    method.ReturnType);
+                // It's neither a method nor a property. Check if it's a field.
+                FieldInfo? field = objType.GetField(expression);
+                if (field != null)
+                {
+                    return new ExpressionEvaluator(
+                        field.IsStatic
+                            ? (_) => field.GetValue(obj: null)
+                            : field.GetValue,
+                        field.FieldType);
+                }
             }
             catch
             {
-                return null;
             }
+
+            return null;
         }
 
         private static ExpressionEvaluator? CollapseChainedEvaluators(List<ExpressionEvaluator> chain)

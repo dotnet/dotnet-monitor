@@ -14,6 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
     {
         private sealed class DebuggerDisplayClass
         {
+            public int Field = 10;
             public static Uri StaticProperty { get; set; } = new Uri("http://www.bing.com/static");
             public int Count { get; set; } = 10;
 
@@ -43,6 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         [InlineData("DoesntExist()", false, null)]
         [InlineData("WithArgs(Count)", false, null)]
         [InlineData("Count", true, 10)]
+        [InlineData("Field", true, 10)]
         [InlineData("NoReturnType()", true, null)]
         // Chained expression with implicit this type change
         [InlineData("Recursion().RecursionProp.MyUri.Host", true, "www.bing.com")]
