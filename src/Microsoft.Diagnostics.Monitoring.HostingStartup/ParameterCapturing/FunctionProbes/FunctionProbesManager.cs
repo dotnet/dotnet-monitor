@@ -115,11 +115,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         private void OnInstallation(int hresult)
         {
             _logger.LogDebug(ParameterCapturingStrings.ProbeManagementCallback, nameof(OnInstallation), hresult);
-
+            /*
             TransitionStateFromHr(_installationTaskSource, hresult,
                 expectedState: ProbeStateInstalling,
                 succeededState: ProbeStateInstalled,
                 failedState: ProbeStateUninstalled);
+            */
         }
 
         private void OnUninstallation(int hresult)
@@ -305,7 +306,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             {
                 using IDisposable _ = linkedCancellationToken.Register(() =>
                 {
-                    _logger.LogDebug(ParameterCapturingStrings.CancellationRequestedDuingProbeInstallation, token.IsCancellationRequested, _disposalToken.IsCancellationRequested);
+                    _logger.LogDebug(ParameterCapturingStrings.CancellationRequestedDuringProbeInstallation, token.IsCancellationRequested, _disposalToken.IsCancellationRequested);
                     _installationTaskSource.TrySetCanceled(linkedCancellationToken);
 
                     //
@@ -326,6 +327,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                     }
                 });
 
+                _disposalTokenSource.Cancel();
                 await _installationTaskSource.Task.ConfigureAwait(false);
             }
             finally

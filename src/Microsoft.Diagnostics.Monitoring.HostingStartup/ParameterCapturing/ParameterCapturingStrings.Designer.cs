@@ -64,9 +64,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         /// <summary>
         ///   Looks up a localized string similar to Cancellation has been requested during probe installation. Cancellation tokens request state (Provided:{isProvidedTokenCancelled}, Disposal:{isDisposalTokenCancelled})..
         /// </summary>
-        internal static string CancellationRequestedDuingProbeInstallation {
+        internal static string CancellationRequestedDuringProbeInstallation {
             get {
-                return ResourceManager.GetString("CancellationRequestedDuingProbeInstallation", resourceCulture);
+                return ResourceManager.GetString("CancellationRequestedDuringProbeInstallation", resourceCulture);
             }
         }
         
