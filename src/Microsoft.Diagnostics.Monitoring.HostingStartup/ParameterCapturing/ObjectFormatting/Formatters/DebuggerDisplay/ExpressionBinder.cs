@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
         {
             //
             // To construct an ObjectFormatterFunc from a parsed debugger display:
-            // - Succesfully bind all expressions in the debugger display.
+            // - Successfully bind all expressions in the debugger display.
             // - Get object formatters for the results of each bound expression.
             //
             // At this point the ObjectFormatterFunc simply needs to evaluate each bound expression

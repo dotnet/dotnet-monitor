@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
         internal static ParsedDebuggerDisplay? ParseDebuggerDisplay(string debuggerDisplay)
         {
             //
-            // A debugger display value is a string with evaluatable expressions inside it.
+            // A debugger display value is a string with expressions inside that can be evaluated.
             // This method will transformthe debugger display into a standard format string
             // and extract the expressions.
             //
