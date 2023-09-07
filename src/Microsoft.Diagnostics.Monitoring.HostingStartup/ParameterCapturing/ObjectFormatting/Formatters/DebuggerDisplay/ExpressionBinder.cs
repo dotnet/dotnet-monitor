@@ -122,62 +122,77 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
 
             try
             {
-                //
-                // Check if the expression is a parameter-less method. If not, try to bind it as a property or a field.
-                // This means any complex expressions, or methods with parameters, will try to bind as a property
-                // and fail.
-                //
                 if (expression.EndsWith("()", StringComparison.Ordinal))
                 {
-                    MethodInfo? method = objType.GetMethod(
-                        expression[..^2],
-                        BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static,
-                        Array.Empty<Type>());
-
-                    if (method == null)
-                    {
-                        return null;
-                    }
-
-                    return new ExpressionEvaluator(
-                        method.HasImplicitThis()
-                            ? (obj) => method.Invoke(obj, parameters: null)
-                            : (_) => method.Invoke(obj: null, parameters: null),
-                        method.ReturnType);
+                    return BindMethod(objType, expression[..^2]);
                 }
 
-                //
-                // It's not a method, check if its a property.
-                //
-                // Use the property's Get method instead of directly using ".GetValue(..)"
-                // so that we can identify if it's static or not.
-                //
-                MethodInfo? getterMethod = objType.GetProperty(expression)?.GetGetMethod(nonPublic: true);
-                if (getterMethod != null)
-                {
-                    return new ExpressionEvaluator(
-                        getterMethod.HasImplicitThis()
-                            ? (obj) => getterMethod.Invoke(obj, parameters: null)
-                            : (_) => getterMethod.Invoke(obj: null, parameters: null),
-                        getterMethod.ReturnType);
-                }
-
-                // It's neither a method nor a property. Check if it's a field.
-                FieldInfo? field = objType.GetField(expression);
-                if (field != null)
-                {
-                    return new ExpressionEvaluator(
-                        field.IsStatic
-                            ? (_) => field.GetValue(obj: null)
-                            : field.GetValue,
-                        field.FieldType);
-                }
+                return BindProperty(objType, expression) ?? BindField(objType, expression);
             }
             catch
             {
             }
 
             return null;
+        }
+
+        private static ExpressionEvaluator? BindMethod(Type objType, string methodName)
+        {
+            MethodInfo? method = objType.GetMethod(
+                methodName,
+                BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static,
+                Array.Empty<Type>());
+
+            if (method == null)
+            {
+                return null;
+            }
+
+            return new ExpressionEvaluator(
+                method.HasImplicitThis()
+                    ? (obj) => method.Invoke(obj, parameters: null)
+                    : (_) => method.Invoke(obj: null, parameters: null),
+                method.ReturnType);
+        }
+
+        private static ExpressionEvaluator? BindProperty(Type objType, string propertyName)
+        {
+            //
+            // Use the property's Get method instead of directly using ".GetValue(..)"
+            // so that we can identify if it's static or not.
+            //
+            MethodInfo? getterMethod = objType.GetProperty(propertyName,
+                BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static
+                )?.GetGetMethod(nonPublic: true);
+
+            if (getterMethod == null)
+            {
+                return null;
+            }
+
+            return new ExpressionEvaluator(
+                getterMethod.HasImplicitThis()
+                    ? (obj) => getterMethod.Invoke(obj, parameters: null)
+                    : (_) => getterMethod.Invoke(obj: null, parameters: null),
+                getterMethod.ReturnType);
+        }
+
+        private static ExpressionEvaluator? BindField(Type objType, string fieldName)
+        {
+            // It's neither a method nor a property. Check if it's a field.
+            FieldInfo? field = objType.GetField(fieldName,
+                BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+
+            if (field == null)
+            {
+                return null;
+            }
+
+            return new ExpressionEvaluator(
+                field.IsStatic
+                    ? (_) => field.GetValue(obj: null)
+                    : field.GetValue,
+                field.FieldType);
         }
 
         private static ExpressionEvaluator? CollapseChainedEvaluators(List<ExpressionEvaluator> chain)
