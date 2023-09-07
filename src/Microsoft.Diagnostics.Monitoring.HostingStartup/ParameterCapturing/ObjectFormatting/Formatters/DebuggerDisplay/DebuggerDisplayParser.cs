@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                     case '{':
                         // Encountered the start of an expression, try to parse it and replace it with a standard format item.
                         Expression? parsedExpression = ParseExpression(debuggerDisplay.AsMemory(i), out int charsRead);
-                        if (parsedExpression == null || charsRead == 0)
+                        if (parsedExpression == null || charsRead <= 0)
                         {
                             return null;
                         }
