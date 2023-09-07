@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
 {
     internal static class DebuggerDisplayParser
     {
-        internal record ParsedDebuggerDisplay(string FormatString, Expression[] Expressions);
+        internal record ParsedDebuggerDisplay(string FormatString, List<Expression> Expressions);
         internal record Expression(ReadOnlyMemory<char> ExpressionString, FormatSpecifier FormatSpecifier);
 
         internal static ParsedDebuggerDisplay? ParseDebuggerDisplay(string debuggerDisplay)
@@ -60,7 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                 }
             }
 
-            return new ParsedDebuggerDisplay(fmtString.ToString(), expressions.ToArray());
+            return new ParsedDebuggerDisplay(fmtString.ToString(), expressions);
         }
 
         internal static Expression? ParseExpression(ReadOnlyMemory<char> expression, out int charsRead)

@@ -24,14 +24,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
             // and format its results using the debugger display's format string.
             //
 
-            if (debuggerDisplay.Expressions.Length == 0)
+            if (debuggerDisplay.Expressions.Count == 0)
             {
                 return (_, _) => debuggerDisplay.FormatString;
             }
 
-            ExpressionEvaluator[] boundExpressions = new ExpressionEvaluator[debuggerDisplay.Expressions.Length];
-            ObjectFormatterFunc[] evaluatorFormatters = new ObjectFormatterFunc[debuggerDisplay.Expressions.Length];
-            for (int i = 0; i < debuggerDisplay.Expressions.Length; i++)
+            ExpressionEvaluator[] boundExpressions = new ExpressionEvaluator[debuggerDisplay.Expressions.Count];
+            ObjectFormatterFunc[] evaluatorFormatters = new ObjectFormatterFunc[debuggerDisplay.Expressions.Count];
+            for (int i = 0; i < debuggerDisplay.Expressions.Count; i++)
             {
                 ExpressionEvaluator? evaluator = BindExpression(objType, debuggerDisplay.Expressions[i].ExpressionString.Span);
                 if (evaluator == null)
