@@ -179,7 +179,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
 
         private static ExpressionEvaluator? BindField(Type objType, string fieldName)
         {
-            // It's neither a method nor a property. Check if it's a field.
             FieldInfo? field = objType.GetField(fieldName,
                 BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
 
