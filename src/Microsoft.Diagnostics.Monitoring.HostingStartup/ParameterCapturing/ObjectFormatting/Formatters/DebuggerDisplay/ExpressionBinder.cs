@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
         {
             //
             // An expression consists of one or more chained evaluators e.g. "a.b.c.d()", where the chain is [ "a", "b", "c", "d()"].
-            // Each segment of the chain must be bound indivually and the segments composed into a single evaluator.
+            // Each segment of the chain must be bound individually and the segments composed into a single evaluator.
             //
             List<ExpressionEvaluator> evaluatorChain = new();
 
