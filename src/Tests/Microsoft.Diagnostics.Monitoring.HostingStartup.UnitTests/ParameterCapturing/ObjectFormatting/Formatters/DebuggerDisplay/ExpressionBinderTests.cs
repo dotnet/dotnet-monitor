@@ -45,6 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         [InlineData("WithArgs(Count)", false, null)]
         [InlineData("Count", true, 10)]
         [InlineData("Field", true, 10)]
+        [InlineData("Incomplete.Chain.", false, null)]
         [InlineData("NoReturnType()", true, null)]
         // Chained expression with implicit this type change
         [InlineData("Recursion().RecursionProp.MyUri.Host", true, "www.bing.com")]
