@@ -18,6 +18,7 @@ jobs:
     variables:
     - _BuildConfig: ${{ parameters.configuration }}
     - _SignType: real
+    - group: DotNetBuilds storage account read tokens
 
     steps:
     - task: DownloadPipelineArtifact@2
@@ -25,6 +26,10 @@ jobs:
       inputs:
         artifactName: Build_Published_${{ parameters.configuration }}
         targetPath: '$(Build.SourcesDirectory)/artifacts'
+
+    - template: /eng/pipelines/steps/setup-nuget-sources.yml
+      parameters:
+        osGroup: Windows
 
     - script: >-
         $(Build.SourcesDirectory)/restore.cmd
@@ -39,6 +44,8 @@ jobs:
         /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
         /p:DotNetSignType=real
         /p:SignAllBinaries=true
+        /p:DotNetRuntimeSourceFeed=https://dotnetbuilds.blob.core.windows.net/internal
+        /p:DotNetRuntimeSourceFeedKey=$(dotnetbuilds-internal-container-read-token-base64)
       displayName: Sign
 
     - task: CopyFiles@2
