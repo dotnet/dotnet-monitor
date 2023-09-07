@@ -101,7 +101,6 @@ jobs:
         -projects $(Build.SourcesDirectory)/eng/helix/Helix.proj
         -skipmanaged
         -skipnative
-        $(_InternalHelixArgs)
     ${{ else }}:
       buildArgs: >-
         -test
