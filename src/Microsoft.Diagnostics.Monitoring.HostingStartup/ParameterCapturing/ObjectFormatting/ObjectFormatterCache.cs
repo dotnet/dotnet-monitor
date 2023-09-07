@@ -8,12 +8,16 @@ using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting
 {
-    [DebuggerDisplay("Count = {_cache.Count}")]
+    [DebuggerDisplay("Count = {_cache.Count}, UseDebuggerDisplayAttribute={_useDebuggerDisplayAttribute}")]
     internal sealed class ObjectFormatterCache
     {
         private readonly ConcurrentDictionary<Type, ObjectFormatterFunc> _cache = new();
+        private readonly bool _useDebuggerDisplayAttribute;
 
-        public ObjectFormatterCache() { }
+        public ObjectFormatterCache(bool useDebuggerDisplayAttribute)
+        {
+            _useDebuggerDisplayAttribute = useDebuggerDisplayAttribute;
+        }
 
         public void CacheMethodParameters(MethodInfo method)
         {
@@ -34,6 +38,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
             }
         }
 
+        public bool TryGetFormatter(Type objType, out ObjectFormatterFunc? formatter)
+        {
+            return _cache.TryGetValue(objType, out formatter);
+        }
+
         public ObjectFormatterFunc GetFormatter(Type objType)
         {
             if (_cache.TryGetValue(objType, out ObjectFormatterFunc? formatter) && formatter != null)
@@ -41,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                 return formatter;
             }
 
-            FormatterFactoryResult factoryResult = ObjectFormatterFactory.GetFormatter(objType);
+            FormatterFactoryResult factoryResult = ObjectFormatterFactory.GetFormatter(objType, _useDebuggerDisplayAttribute);
             foreach (Type type in factoryResult.MatchingTypes)
             {
                 _cache[type] = factoryResult.Formatter;

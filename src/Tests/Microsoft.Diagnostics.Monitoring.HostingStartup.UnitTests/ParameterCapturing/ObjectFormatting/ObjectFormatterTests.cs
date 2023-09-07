@@ -28,6 +28,19 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Fact]
+        public void FormatObject_Handles_NoSideEffects()
+        {
+            // Arrange
+            ObjectFormatterFunc formatter = (object _, FormatSpecifier _) => { return string.Empty; };
+
+            // Act
+            string actual = ObjectFormatter.FormatObject(formatter, 5, FormatSpecifier.NoSideEffects | FormatSpecifier.NoQuotes);
+
+            // Assert
+            Assert.Equal(ObjectFormatter.Tokens.CannotFormatWithoutSideEffects, actual);
+        }
+
+        [Fact]
         public void FormatObject_Passes_FormatSpecifier()
         {
             // Arrange

@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public void GetFormatter_ReturnsCorrectFormatter(Type type, string expectedFormatterName)
         {
             // Act
-            ObjectFormatterFunc formatter = ObjectFormatterFactory.GetFormatter(type).Formatter;
+            ObjectFormatterFunc formatter = ObjectFormatterFactory.GetFormatter(type, useDebuggerDisplayAttribute: false).Formatter;
 
             // Assert
             Assert.Equal(expectedFormatterName, formatter.GetMethodInfo().Name);
