@@ -187,23 +187,19 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
             }
 
             int startIndex = 0;
-            int length = 0;
             for (int i = 0; i < specifiers.Length; i++)
             {
                 char c = specifiers[i];
 
                 if (c == ',')
                 {
-                    parseSpecifier(specifiers.Slice(startIndex, length));
+                    parseSpecifier(specifiers[startIndex..i]);
                     startIndex = i + 1;
-                    length = 0;
                     continue;
                 }
-
-                length++;
             }
 
-            parseSpecifier(specifiers.Slice(startIndex, length));
+            parseSpecifier(specifiers[startIndex..specifiers.Length]);
             return formatSpecifier;
         }
     }
