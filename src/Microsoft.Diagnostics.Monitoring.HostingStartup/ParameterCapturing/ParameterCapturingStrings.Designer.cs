@@ -62,6 +62,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancellation has been requested during probe installation. Provided token cancellation={isProvidedTokenCancelled}, Disposal token cancellation={isDisposalTokenCancelled}..
+        /// </summary>
+        internal static string CancellationRequestedDuingProbeInstallation {
+            get {
+                return ResourceManager.GetString("CancellationRequestedDuingProbeInstallation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The following method descriptions are not allowed: {0}.
         /// </summary>
         internal static string DeniedMethodsFormatString {
