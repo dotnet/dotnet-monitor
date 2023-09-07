@@ -60,7 +60,8 @@ try {
         --bar-uri $MaestroApiEndPoint `
         --password $MaestroToken `
         --separated `
-        --verbose
+        --verbose `
+        --continue-on-error
 
     if ($LastExitCode -ne 0) {
         Write-Host "Error: unable to gather the assets from build $BarBuildId to $DownloadTargetPath using darc."
