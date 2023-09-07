@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cancellation has been requested during probe installation. Provided token cancellation={isProvidedTokenCancelled}, Disposal token cancellation={isDisposalTokenCancelled}..
+        ///   Looks up a localized string similar to Cancellation has been requested during probe installation. Cancellation tokens request state (Provided:{isProvidedTokenCancelled}, Disposal:{isDisposalTokenCancelled})..
         /// </summary>
         internal static string CancellationRequestedDuingProbeInstallation {
             get {

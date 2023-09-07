@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="CancellationRequestedDuingProbeInstallation" xml:space="preserve">
-    <value>Cancellation has been requested during probe installation. Provided token cancellation={isProvidedTokenCancelled}, Disposal token cancellation={isDisposalTokenCancelled}.</value>
+    <value>Cancellation has been requested during probe installation. Cancellation tokens request state (Provided:{isProvidedTokenCancelled}, Disposal:{isDisposalTokenCancelled}).</value>
   </data>
   <data name="DeniedMethodsFormatString" xml:space="preserve">
     <value>The following method descriptions are not allowed: {0}</value>
