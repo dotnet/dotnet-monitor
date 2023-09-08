@@ -47,7 +47,7 @@ stages:
           filePath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
           arguments: >-
             -BarBuildId "$(BARBuildId)"
-            -AzdoToken "$(dn-bot-dotnet-all-scopes)"
+            -AzdoToken "$(dn-bot-all-drop-rw-code-rw-release-all)"
             -MaestroToken "$(MaestroAccessToken)"
             -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)"
             -DownloadTargetPath "$(System.ArtifactsDirectory)\BuildAssets"
