@@ -34,7 +34,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                     case '\\':
                         // Escape sequence is not currently supported.
                         return null;
-                        
                     case '{':
                         // Encountered the start of an expression, try to parse it and replace it with a standard format item.
                         Expression? parsedExpression = ParseExpression(debuggerDisplay.AsMemory(i), out int charsRead);
