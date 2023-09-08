@@ -491,7 +491,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         }
                     );
 
-                    runner.ConfigurationFromEnvironment.EnableExceptions().SetExceptionFiltering(configuration);
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures().EnableExceptions().SetExceptionFiltering(configuration);
                 });
         }
 
@@ -532,7 +532,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         }
                     );
 
-                    runner.ConfigurationFromEnvironment.EnableExceptions().SetExceptionFiltering(configuration);
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures().EnableExceptions().SetExceptionFiltering(configuration);
                 });
         }
 
@@ -573,7 +573,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             ModuleName = UnitTestAppModule
                         }
                     );
-                    runner.ConfigurationFromEnvironment.EnableExceptions().SetExceptionFiltering(configuration);
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures().EnableExceptions().SetExceptionFiltering(configuration);
                 });
         }
 
@@ -607,7 +607,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         }
                     );
 
-                    runner.ConfigurationFromEnvironment.EnableExceptions().SetExceptionFiltering(configuration);
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures().EnableExceptions().SetExceptionFiltering(configuration);
                 });
         }
 
@@ -644,7 +644,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         }
                     );
 
-                    runner.ConfigurationFromEnvironment.EnableExceptions().SetExceptionFiltering(configuration);
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures().EnableExceptions().SetExceptionFiltering(configuration);
                 });
         }
 
@@ -689,7 +689,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         }
                     );
 
-                    runner.ConfigurationFromEnvironment.EnableExceptions().SetExceptionFiltering(configuration);
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures().EnableExceptions().SetExceptionFiltering(configuration);
                 });
         }
 
@@ -734,7 +734,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         }
                     );
 
-                    runner.ConfigurationFromEnvironment.EnableExceptions().SetExceptionFiltering(configuration);
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures().EnableExceptions().SetExceptionFiltering(configuration);
                 });
         }
 
