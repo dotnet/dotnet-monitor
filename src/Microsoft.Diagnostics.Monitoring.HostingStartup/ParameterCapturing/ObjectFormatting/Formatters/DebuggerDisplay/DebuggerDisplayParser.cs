@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
             {
                 char c = debuggerDisplay[i];
                 switch (c)
-                {
+                {                       
                     case '{':
                         // Encountered the start of an expression, try to parse it and replace it with a standard format item.
                         Expression? parsedExpression = ParseExpression(debuggerDisplay.AsMemory(i), out int charsRead);
@@ -68,7 +68,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
             //
             // An expression inside a debugger display:
             // - Is encapsulated inside curly braces {..},
-            // - Has no escape sequence for curly braces
             // - Is followed by one or more format specifiers (delimited by a comma (,))
             //
             // This method is given the start of an expression, and is responsible for reading up until
