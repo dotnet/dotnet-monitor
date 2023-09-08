@@ -207,11 +207,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             }
 
             using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(_disposalToken, token);
+            CancellationToken linkedCancellationToken = cts.Token;
             try
             {
-                using IDisposable _ = cts.Token.Register(() =>
+                using IDisposable _ = linkedCancellationToken.Register(() =>
                 {
-                    _uninstallationTaskSource.TrySetCanceled(cts.Token);
+                    _uninstallationTaskSource?.TrySetCanceled(linkedCancellationToken);
                 });
                 await _uninstallationTaskSource.Task.ConfigureAwait(false);
             }
@@ -306,7 +307,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 using IDisposable _ = linkedCancellationToken.Register(() =>
                 {
                     _logger.LogDebug(ParameterCapturingStrings.CancellationRequestedDuringProbeInstallation, token.IsCancellationRequested, _disposalToken.IsCancellationRequested);
-                    _installationTaskSource.TrySetCanceled(linkedCancellationToken);
+                    _installationTaskSource?.TrySetCanceled(linkedCancellationToken);
 
                     //
                     // We need to uninstall the probes ourselves here if dispose has happened  otherwise the probes could be left in an installed state.
