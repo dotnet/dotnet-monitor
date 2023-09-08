@@ -114,8 +114,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
 
                 switch (c)
                 {
-                    case '\\':
-                        // Escape sequence is not currently supported.
+                    case '"': // Usage of strings or chars in an expression is not supported (complex expressions or methods with consta parameters)
+                    case '\'':
+                    case '\\': // Escape sequence is not currently supported.
                         return null;
 
                     case '(':

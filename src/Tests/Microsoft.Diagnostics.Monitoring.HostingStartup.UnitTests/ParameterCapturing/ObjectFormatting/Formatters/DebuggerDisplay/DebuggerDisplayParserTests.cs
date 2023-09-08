@@ -56,6 +56,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         [Theory]
         [InlineData("{MyFunc(A,B),nq,raw}", "MyFunc(A,B)", FormatSpecifier.NoQuotes)]
         [InlineData("{(MyFunc(A,B)?.ToString()),nq,raw}", "(MyFunc(A,B)?.ToString())", FormatSpecifier.NoQuotes)]
+        [InlineData("{MyFunc(\"5\")}", null, FormatSpecifier.None)]
+        [InlineData("{MyFunc('5')}", null, FormatSpecifier.None)]
         [InlineData("{)(a)}", null, FormatSpecifier.None)]
         [InlineData("{((a)}", null, FormatSpecifier.None)]
         [InlineData("{\\}}", null, FormatSpecifier.None)]
