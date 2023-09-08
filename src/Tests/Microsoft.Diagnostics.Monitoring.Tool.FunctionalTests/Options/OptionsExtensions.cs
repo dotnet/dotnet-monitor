@@ -89,15 +89,27 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static RootOptions EnableExceptions(this RootOptions options)
+        {
+            options.GetOrCreateInProcessFeaturesOptions().GetOrCreateExceptionsOptions().Enabled = true;
+
+            return options;
+        }
+
+        private static ExceptionsOptions GetOrCreateExceptionsOptions(this InProcessFeaturesOptions options)
+        {
+            ExceptionsOptions exceptionsOptions = options.Exceptions;
+            if (null == exceptionsOptions)
+            {
+                exceptionsOptions = new ExceptionsOptions();
+                options.Exceptions = exceptionsOptions;
+            }
+            return exceptionsOptions;
+        }
+
         public static RootOptions SetExceptionFiltering(this RootOptions options, ExceptionsConfiguration configuration)
         {
-            options.EnableInProcessFeatures();
-
-            options.InProcessFeatures.Exceptions = new()
-            {
-                CollectionFilters = configuration,
-                Enabled = true
-            };
+            options.GetOrCreateInProcessFeaturesOptions().GetOrCreateExceptionsOptions().CollectionFilters = configuration;
 
             return options;
         }

@@ -9,7 +9,6 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -187,7 +186,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Exclude.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemArgumentNullException
                         }
@@ -221,7 +220,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Exclude.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemInvalidOperationException,
                             MethodName = FrameMethodName,
@@ -258,13 +257,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Exclude.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemArgumentNullException
                         }
                     );
                     configuration.Exclude.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = CustomGenericsException
                         }
@@ -303,13 +302,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Include.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ModuleName = UnitTestAppModule
                         }
                     );
                     configuration.Exclude.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemArgumentNullException
                         }
@@ -348,7 +347,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Include.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemInvalidOperationException
                         }
@@ -388,13 +387,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     // This is effectively an OR that will include anything that matches either of the options
                     ExceptionsConfiguration configuration = new();
                     configuration.Include.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             MethodName = FrameMethodName
                         }
                     );
                     configuration.Include.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = CustomGenericsException
                         }
@@ -428,7 +427,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Include.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemInvalidOperationException,
                             MethodName = FrameMethodName,
@@ -486,13 +485,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Include.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemInvalidOperationException
                         }
                     );
 
-                    runner.ConfigurationFromEnvironment.SetExceptionFiltering(configuration);
+                    runner.ConfigurationFromEnvironment.EnableExceptions().SetExceptionFiltering(configuration);
                 });
         }
 
@@ -521,19 +520,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     // This is effectively an OR that will include anything that matches either of the options
                     ExceptionsConfiguration configuration = new();
                     configuration.Include.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             MethodName = FrameMethodName
                         }
                     );
                     configuration.Include.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = CustomGenericsException
                         }
                     );
 
-                    runner.ConfigurationFromEnvironment.SetExceptionFiltering(configuration);
+                    runner.ConfigurationFromEnvironment.EnableExceptions().SetExceptionFiltering(configuration);
                 });
         }
 
@@ -566,7 +565,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Include.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemInvalidOperationException,
                             MethodName = FrameMethodName,
@@ -574,7 +573,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             ModuleName = UnitTestAppModule
                         }
                     );
-                    runner.ConfigurationFromEnvironment.SetExceptionFiltering(configuration);
+                    runner.ConfigurationFromEnvironment.EnableExceptions().SetExceptionFiltering(configuration);
                 });
         }
 
@@ -602,13 +601,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Exclude.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemArgumentNullException
                         }
                     );
 
-                    runner.ConfigurationFromEnvironment.SetExceptionFiltering(configuration);
+                    runner.ConfigurationFromEnvironment.EnableExceptions().SetExceptionFiltering(configuration);
                 });
         }
 
@@ -636,7 +635,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Exclude.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemInvalidOperationException,
                             MethodName = FrameMethodName,
@@ -645,7 +644,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         }
                     );
 
-                    runner.ConfigurationFromEnvironment.SetExceptionFiltering(configuration);
+                    runner.ConfigurationFromEnvironment.EnableExceptions().SetExceptionFiltering(configuration);
                 });
         }
 
@@ -678,19 +677,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Exclude.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemArgumentNullException
                         }
                     );
                     configuration.Exclude.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = CustomGenericsException
                         }
                     );
 
-                    runner.ConfigurationFromEnvironment.SetExceptionFiltering(configuration);
+                    runner.ConfigurationFromEnvironment.EnableExceptions().SetExceptionFiltering(configuration);
                 });
         }
 
@@ -723,19 +722,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Include.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ModuleName = UnitTestAppModule
                         }
                     );
                     configuration.Exclude.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemArgumentNullException
                         }
                     );
 
-                    runner.ConfigurationFromEnvironment.SetExceptionFiltering(configuration);
+                    runner.ConfigurationFromEnvironment.EnableExceptions().SetExceptionFiltering(configuration);
                 });
         }
 
