@@ -21,6 +21,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         [InlineData("{valid} }invalid_expression", null)]
         [InlineData("{valid} {invalid_expression", null)]
         [InlineData("{{invalid_expression}}", null)]
+        // Escape sequence
+        [InlineData("\\{\\}", null)]
         // Method expressions
         [InlineData("Test: {methodName()}", "Test: {0}", "methodName()")]
         [InlineData("Test: {methodName(ArgName, SecondArg)}", "Test: {0}", "methodName(ArgName, SecondArg)")]
@@ -56,6 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         [InlineData("{(MyFunc(A,B)?.ToString()),nq,raw}", "(MyFunc(A,B)?.ToString())", FormatSpecifier.NoQuotes)]
         [InlineData("{)(a)}", null, FormatSpecifier.None)]
         [InlineData("{((a)}", null, FormatSpecifier.None)]
+        [InlineData("{\\}}", null, FormatSpecifier.None)]
         [InlineData("{a}", "a", FormatSpecifier.None)]
         internal void ParseExpression(string rawExpression, string expressionString, FormatSpecifier formatSpecifier)
         {
