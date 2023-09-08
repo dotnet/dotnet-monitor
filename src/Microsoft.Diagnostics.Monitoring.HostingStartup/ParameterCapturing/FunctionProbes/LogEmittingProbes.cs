@@ -55,7 +55,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             else
             {
                 argValues = new string[args.Length];
-                int fmtIndex = 0;
                 for (int i = 0; i < args.Length; i++)
                 {
                     string value;
@@ -71,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                     {
                         value = ObjectFormatter.FormatObject(cache.ObjectFormatterCache.GetFormatter(args[i].GetType()), args[i]);
                     }
-                    argValues[fmtIndex++] = value;
+                    argValues[i] = value;
                 }
             }
 
