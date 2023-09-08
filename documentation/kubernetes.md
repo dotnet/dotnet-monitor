@@ -7,6 +7,10 @@ In addition to its availability as a .NET CLI tool, the `dotnet monitor` tool is
 
 For Dockerfiles and repository information, see [Running in Docker](./docker.md)
 
+## Non-root considerations
+
+Starting with .NET 8.0, both the sample aspnet application and dotnet-monitor run as non-root. If both the application and dotnet-monitor are 8+, no additional configuration is required. Otherwise, a [security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) configuration may need to be added to the application, dotnet-monitor, or both.
+
 ## Example Deployment
 
 The following examples demonstrate a deployment of the dotnet-monitor container image monitoring an application container within the same pod.
@@ -49,6 +53,11 @@ spec:
             memory: 512Mi
       - name: monitor
         image: mcr.microsoft.com/dotnet/monitor:6
+        securityContext:
+          # Default APP_UID for non-root dotnet application images
+          runAsUser: 64198 
+          runAsGroup: 64198 
+          runAsNonRoot: true
         # DO NOT use the --no-auth argument for deployments in production; this argument is used for demonstration
         # purposes only in this example. Please continue reading after this example for further details.
         args: [ "--no-auth" ]
@@ -82,7 +91,7 @@ spec:
 </details>
 
 <details>
-  <summary>.NET Monitor 7+</summary>
+  <summary>.NET Monitor 7</summary>
 
 ```yaml
 # Tell us about your experience using dotnet monitor: https://aka.ms/dotnet-monitor-survey
@@ -119,6 +128,11 @@ spec:
             memory: 512Mi
       - name: monitor
         image: mcr.microsoft.com/dotnet/monitor
+        securityContext:
+          # Default APP_UID for non-root dotnet application images
+          runAsUser: 64198 
+          runAsGroup: 64198 
+          runAsNonRoot: true        
         # DO NOT use the --no-auth argument for deployments in production; this argument is used for demonstration
         # purposes only in this example. Please continue reading after this example for further details.
         args: [ "collect", "--no-auth" ]
@@ -151,6 +165,75 @@ spec:
 ```
 
 </details>
+
+<details>
+  <summary>.NET Monitor 8+</summary>
+
+```yaml
+# Tell us about your experience using dotnet monitor: https://aka.ms/dotnet-monitor-survey
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-exampleapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: exampleapp
+  template:
+    metadata:
+      labels:
+        app: exampleapp
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: app
+        image: mcr.microsoft.com/dotnet/samples:aspnetapp
+        imagePullPolicy: Always
+        env:
+        - name: ASPNETCORE_URLS
+          value: http://+:80
+        - name: DOTNET_DiagnosticPorts
+          value: /diag/dotnet-monitor.sock
+        volumeMounts:
+        - mountPath: /diag
+          name: diagvol
+        resources:
+          limits:
+            cpu: 250m
+            memory: 512Mi
+      - name: monitor
+        image: mcr.microsoft.com/dotnet/monitor:8
+        # DO NOT use the --no-auth argument for deployments in production; this argument is used for demonstration
+        # purposes only in this example. Please continue reading after this example for further details.
+        args: [ "collect", "--no-auth" ]
+        imagePullPolicy: Always
+        env:
+        - name: DOTNETMONITOR_DiagnosticPort__ConnectionMode
+          value: Listen
+        - name: DOTNETMONITOR_Storage__DefaultSharedPath
+          value: /diag
+        # ALWAYS use the HTTPS form of the URL for deployments in production; the removal of HTTPS is done for
+        # demonstration purposes only in this example. Please continue reading after this example for further details.
+        - name: DOTNETMONITOR_Urls
+          value: http://localhost:52323
+        # The metrics URL is set in the CMD instruction of the image by default. However, this deployment overrides that with the args setting; manually set the URL to the same value using configuration.
+        - name: DOTNETMONITOR_Metrics__Endpoints
+          value: http://+:52325
+        volumeMounts:
+        - mountPath: /diag
+          name: diagvol
+        resources:
+          requests:
+            cpu: 50m
+            memory: 32Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+      volumes:
+      - name: diagvol
+        emptyDir: {}
+```
 
 ## Example Details
 
