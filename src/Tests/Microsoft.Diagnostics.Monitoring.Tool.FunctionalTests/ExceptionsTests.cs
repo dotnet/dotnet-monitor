@@ -68,7 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameClassName,
                         FrameMethodName,
-                        new() { FrameParameterType, FrameParameterType });
+                        new List<string>() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -276,7 +276,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameClassName,
                         FrameMethodName,
-                        new() { FrameParameterType, FrameParameterType });
+                        new List<string>() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -321,7 +321,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameClassName,
                         FrameMethodName,
-                        new() { FrameParameterType, FrameParameterType });
+                        new List<string>() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -360,7 +360,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameClassName,
                         FrameMethodName,
-                        new() { FrameParameterType, FrameParameterType });
+                        new List<string>() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -443,7 +443,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameClassName,
                         FrameMethodName,
-                        new() { FrameParameterType, FrameParameterType });
+                        new List<string>() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -474,7 +474,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameClassName,
                         FrameMethodName,
-                        new() { FrameParameterType, FrameParameterType });
+                        new List<string>() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -554,7 +554,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameClassName,
                         FrameMethodName,
-                        new() { FrameParameterType, FrameParameterType });
+                        new List<string>() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -666,7 +666,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameClassName,
                         FrameMethodName,
-                        new() { FrameParameterType, FrameParameterType });
+                        new List<string>() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -711,7 +711,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameClassName,
                         FrameMethodName,
-                        new() { FrameParameterType, FrameParameterType });
+                        new List<string>() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
