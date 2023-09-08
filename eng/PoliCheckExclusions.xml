@@ -1,3 +1,4 @@
 <PoliCheckExclusions>
+	<Exclusion Type="FolderPathFull">.DOTNET</Exclusion>
 	<Exclusion Type="FileName">CONFIGURECOMPILER.CMAKE|COR.H|PAL.H</Exclusion>
 </PoliCheckExclusions>
