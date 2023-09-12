@@ -56,7 +56,7 @@ The official build will not automatically trigger for release branches. Each tim
 1. Wait for changes to be mirrored from [GitHub repository](https://github.com/dotnet/dotnet-monitor) to the [internal repository](https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet-monitor).
 1. Invoke the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) for the release branch. Make sure the `Update dotnet-docker?` parameter is set to true. Setting this will cause a successful build to trigger an update in the `dotnet-docker` repository.
 
-> **Note**: If the release is part of security servicing, build the `internal/release/*` branch instead of the `release/*` branch and set `Update dotnet-docker?` paramter to false. Ensure that all public changes have been mirrored into the release branch before starting the build.
+> **Note**: If the release is part of security servicing, build the `internal/release/*` branch instead of the `release/*` branch and set `Update dotnet-docker?` parameter to false. Ensure that all public changes have been mirrored into the release branch before starting the build.
 
 ## Update Nightly Docker Ingestion
 
@@ -124,4 +124,5 @@ The release image is `mcr.microsoft.com/dotnet/monitor`. The tag list is https:/
 
 1. Change the `NightlyUpdateDockerFromMain` variable to `true` in the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) to begin the consumption of nightly builds into dotnet-docker. Note this should not necessarily be done right after the release, but after the merge from main to nightly in the dotnet-docker repo (such as https://github.com/dotnet/dotnet-docker/pull/4741).
 1. Review and merge the automatically create `Register new release information` PR.
+1. For each release, push its corresponding tag to the `shipped/v<version>` branch in the [internal repository](https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet-monitor) e.g `v8.0.0-rc.1.23458.6 -> shipped/v8.0`. If done correctly, this should be a fast-forward merge.
 1. When necessary, update this document if its instructions were unclear or incorrect.
