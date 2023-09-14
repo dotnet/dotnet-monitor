@@ -2,7 +2,7 @@
   <!-- Import references updated by Dependabot. -->
 
   <PropertyGroup>
-    <AzureIdentityVersion>1.10.0</AzureIdentityVersion>
+    <AzureIdentityVersion>1.10.1</AzureIdentityVersion>
     <AzureStorageBlobsVersion>12.17.0</AzureStorageBlobsVersion>
     <AzureStorageQueuesVersion>12.15.0</AzureStorageQueuesVersion>
     <MicrosoftExtensionsConfigurationAbstractionsVersion>7.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
@@ -10,7 +10,7 @@
     <MicrosoftExtensionsLoggingAbstractionsVersion>7.0.1</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>7.0.0</MicrosoftExtensionsLoggingConsoleVersion>
     <MicrosoftExtensionsLoggingEventSourceVersion>7.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
-    <MicrosoftIdentityModelTokensVersion>6.32.3</MicrosoftIdentityModelTokensVersion>
+    <MicrosoftIdentityModelTokensVersion>7.0.0</MicrosoftIdentityModelTokensVersion>
     <MicrosoftIdentityWebVersion>2.13.4</MicrosoftIdentityWebVersion>
     <MicrosoftOpenApiReadersVersion>1.6.8</MicrosoftOpenApiReadersVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
