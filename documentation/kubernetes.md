@@ -41,7 +41,7 @@ spec:
         imagePullPolicy: Always
         env:
         - name: ASPNETCORE_URLS
-          value: http://+:80
+          value: http://+:8080
         - name: DOTNET_DiagnosticPorts
           value: /diag/dotnet-monitor.sock
         volumeMounts:
@@ -55,8 +55,8 @@ spec:
         image: mcr.microsoft.com/dotnet/monitor:6
         securityContext:
           # Default APP_UID for non-root dotnet application images
-          runAsUser: 1654 
-          runAsGroup: 1654 
+          runAsUser: 1654
+          runAsGroup: 1654
           runAsNonRoot: true
         # DO NOT use the --no-auth argument for deployments in production; this argument is used for demonstration
         # purposes only in this example. Please continue reading after this example for further details.
@@ -116,7 +116,7 @@ spec:
         imagePullPolicy: Always
         env:
         - name: ASPNETCORE_URLS
-          value: http://+:80
+          value: http://+:8080
         - name: DOTNET_DiagnosticPorts
           value: /diag/dotnet-monitor.sock
         volumeMounts:
@@ -127,12 +127,12 @@ spec:
             cpu: 250m
             memory: 512Mi
       - name: monitor
-        image: mcr.microsoft.com/dotnet/monitor
+        image: mcr.microsoft.com/dotnet/monitor:7
         securityContext:
           # Default APP_UID for non-root dotnet application images
-          runAsUser: 1654 
-          runAsGroup: 1654 
-          runAsNonRoot: true        
+          runAsUser: 1654
+          runAsGroup: 1654
+          runAsNonRoot: true
         # DO NOT use the --no-auth argument for deployments in production; this argument is used for demonstration
         # purposes only in this example. Please continue reading after this example for further details.
         args: [ "collect", "--no-auth" ]
@@ -192,7 +192,7 @@ spec:
         imagePullPolicy: Always
         env:
         - name: ASPNETCORE_URLS
-          value: http://+:80
+          value: http://+:8080
         - name: DOTNET_DiagnosticPorts
           value: /diag/dotnet-monitor.sock
         volumeMounts:
