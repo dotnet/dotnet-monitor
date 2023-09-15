@@ -5,7 +5,6 @@
     <AzureIdentityVersion>1.10.1</AzureIdentityVersion>
     <AzureStorageBlobsVersion>12.18.0</AzureStorageBlobsVersion>
     <AzureStorageQueuesVersion>12.16.0</AzureStorageQueuesVersion>
-    <!-- Once updated to v7, see https://github.com/dotnet/dotnet-monitor/issues/5036 -->
     <MicrosoftIdentityModelTokensVersion>7.0.0</MicrosoftIdentityModelTokensVersion>
     <MicrosoftIdentityWebVersion>2.13.4</MicrosoftIdentityWebVersion>
     <MicrosoftOpenApiReadersVersion>1.6.8</MicrosoftOpenApiReadersVersion>
