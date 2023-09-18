@@ -9,8 +9,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
 {
     internal static class DebuggerDisplayParser
     {
-        internal record ParsedDebuggerDisplay(string FormatString, List<Expression> Expressions);
-        internal record Expression(ReadOnlyMemory<char> ExpressionString, FormatSpecifier FormatSpecifier);
+        internal record struct ParsedDebuggerDisplay(string FormatString, List<Expression> Expressions);
+        internal record struct Expression(ReadOnlyMemory<char> ExpressionString, FormatSpecifier FormatSpecifier);
 
         internal static ParsedDebuggerDisplay? ParseDebuggerDisplay(string debuggerDisplay)
         {
@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                         fmtString.Append(expressions.Count);
                         fmtString.Append('}');
 
-                        expressions.Add(parsedExpression);
+                        expressions.Add(parsedExpression.Value);
 
                         break;
                     case '}':

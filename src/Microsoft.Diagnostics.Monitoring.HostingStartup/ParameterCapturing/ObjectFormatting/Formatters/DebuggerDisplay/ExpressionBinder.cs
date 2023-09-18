@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
     internal static class ExpressionBinder
     {
         internal delegate object? BoundEvaluator(object instanceObj);
-        internal record ExpressionEvaluator(BoundEvaluator Evaluate, Type ReturnType);
+        internal record struct ExpressionEvaluator(BoundEvaluator Evaluate, Type ReturnType);
 
         internal static ObjectFormatterFunc? BindParsedDebuggerDisplay(Type objType, ParsedDebuggerDisplay debuggerDisplay)
         {
@@ -39,8 +39,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                     return null;
                 }
 
-                evaluators[i] = evaluator;
-                evaluatorFormatters[i] = ObjectFormatterFactory.GetFormatter(evaluator.ReturnType, useDebuggerDisplayAttribute: false).Formatter;
+                evaluators[i] = evaluator.Value;
+                evaluatorFormatters[i] = ObjectFormatterFactory.GetFormatter(evaluator.Value.ReturnType, useDebuggerDisplayAttribute: false).Formatter;
             }
 
             return (obj, formatSpecifier) =>
@@ -101,8 +101,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                     return null;
                 }
 
-                evaluatorChain.Add(evaluator);
-                chainedContextType = evaluator.ReturnType;
+                evaluatorChain.Add(evaluator.Value);
+                chainedContextType = evaluator.Value.ReturnType;
             }
 
             return CollapseChainedEvaluators(evaluatorChain);

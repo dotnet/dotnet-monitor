@@ -29,7 +29,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public void GetDebuggerDisplayAttribute(Type type, string expected)
         {
             // Act
-            DebuggerDisplayAttributeValue attribute = DebuggerDisplayFormatter.GetDebuggerDisplayAttribute(type);
+            DebuggerDisplayAttributeValue? attribute = DebuggerDisplayFormatter.GetDebuggerDisplayAttribute(type);
 
             // Assert
             if (expected == null)
@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             }
 
             Assert.NotNull(attribute);
-            Assert.Equal(expected, attribute.Value);
+            Assert.Equal(expected, attribute.Value.Text);
         }
 
         [Theory]
@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public void GetDebuggerDisplayAttribute_EncompassingTypes(Type type, int? expectedEncompassedTypes)
         {
             // Act
-            DebuggerDisplayAttributeValue attribute = DebuggerDisplayFormatter.GetDebuggerDisplayAttribute(type);
+            DebuggerDisplayAttributeValue? attribute = DebuggerDisplayFormatter.GetDebuggerDisplayAttribute(type);
 
             // Assert
             if (expectedEncompassedTypes == null)
@@ -59,7 +59,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             }
 
             Assert.NotNull(attribute);
-            Assert.Equal(expectedEncompassedTypes, attribute.EncompassingTypes.Count);
+            Assert.Equal(expectedEncompassedTypes, attribute.Value.EncompassingTypes.Count);
         }
 
         [Fact]

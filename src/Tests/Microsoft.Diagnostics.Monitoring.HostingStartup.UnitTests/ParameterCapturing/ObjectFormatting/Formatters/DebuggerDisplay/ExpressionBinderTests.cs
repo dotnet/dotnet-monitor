@@ -58,17 +58,17 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             DebuggerDisplayClass obj = new("https://www.bing.com/abc");
 
             // Act
-            ExpressionEvaluator evaluator = ExpressionBinder.BindExpression(obj.GetType(), expression);
-            object result = evaluator?.Evaluate(obj);
-
-            // Assert
+            ExpressionEvaluator? evaluator = ExpressionBinder.BindExpression(obj.GetType(), expression);
             if (!doesBind)
             {
                 Assert.Null(evaluator);
                 return;
             }
-
             Assert.NotNull(evaluator);
+
+            object result = evaluator.Value.Evaluate(obj);
+
+            // Assert
             Assert.Equal(expected, result);
         }
     }

@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public void ParseDebuggerDisplay(string debuggerDisplay, string formatString, params string[] expressions)
         {
             // Act
-            ParsedDebuggerDisplay parsed = DebuggerDisplayParser.ParseDebuggerDisplay(debuggerDisplay);
+            ParsedDebuggerDisplay? parsed = DebuggerDisplayParser.ParseDebuggerDisplay(debuggerDisplay);
 
             // Assert
             if (formatString == null)
@@ -49,8 +49,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             }
 
             Assert.NotNull(parsed);
-            Assert.Equal(formatString, parsed.FormatString);
-            Assert.Equal(expressions, parsed.Expressions.Select(p => p.ExpressionString.ToString()));
+            Assert.Equal(formatString, parsed.Value.FormatString);
+            Assert.Equal(expressions, parsed.Value.Expressions.Select(p => p.ExpressionString.ToString()));
         }
 
         [Theory]
@@ -65,7 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         internal void ParseExpression(string rawExpression, string expressionString, FormatSpecifier formatSpecifier)
         {
             // Act
-            Expression expression = DebuggerDisplayParser.ParseExpression(rawExpression.AsMemory(), out _);
+            Expression? expression = DebuggerDisplayParser.ParseExpression(rawExpression.AsMemory(), out _);
 
             // Assert
             if (expressionString == null)
@@ -75,8 +75,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             }
 
             Assert.NotNull(expression);
-            Assert.Equal(expressionString, expression.ExpressionString.ToString());
-            Assert.Equal(formatSpecifier, expression.FormatSpecifier);
+            Assert.Equal(expressionString, expression.Value.ExpressionString.ToString());
+            Assert.Equal(formatSpecifier, expression.Value.FormatSpecifier);
         }
 
         [Theory]
