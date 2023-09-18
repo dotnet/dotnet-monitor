@@ -52,13 +52,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 
         public void Dispose()
         {
+            _eventSource.Dispose();
+
             _firstChancePipeline.Dispose();
             _firstChanceSource.Dispose();
 
             _unhandledPipeline.Dispose();
             _unhandledSource.Dispose();
-
-            _eventSource.Dispose();
         }
     }
 }
