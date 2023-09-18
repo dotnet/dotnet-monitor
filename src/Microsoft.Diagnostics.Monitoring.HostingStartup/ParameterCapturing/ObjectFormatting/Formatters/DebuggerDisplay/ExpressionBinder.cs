@@ -29,7 +29,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                 return (_, _) => debuggerDisplay.FormatString;
             }
 
-            ExpressionEvaluator[] boundExpressions = new ExpressionEvaluator[debuggerDisplay.Expressions.Count];
+            ExpressionEvaluator[] evaluators = new ExpressionEvaluator[debuggerDisplay.Expressions.Count];
             ObjectFormatterFunc[] evaluatorFormatters = new ObjectFormatterFunc[debuggerDisplay.Expressions.Count];
             for (int i = 0; i < debuggerDisplay.Expressions.Count; i++)
             {
@@ -39,16 +39,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                     return null;
                 }
 
-                boundExpressions[i] = evaluator;
+                evaluators[i] = evaluator;
                 evaluatorFormatters[i] = ObjectFormatterFactory.GetFormatter(evaluator.ReturnType, useDebuggerDisplayAttribute: false).Formatter;
             }
 
             return (obj, formatSpecifier) =>
             {
-                string[] evaluationResults = new string[boundExpressions.Length];
-                for (int i = 0; i < boundExpressions.Length; i++)
+                string[] evaluationResults = new string[evaluators.Length];
+                for (int i = 0; i < evaluators.Length; i++)
                 {
-                    object? evaluationResult = boundExpressions[i].Evaluate(obj);
+                    object? evaluationResult = evaluators[i].Evaluate(obj);
                     if (evaluationResult == null)
                     {
                         evaluationResults[i] = ObjectFormatter.Tokens.Null;

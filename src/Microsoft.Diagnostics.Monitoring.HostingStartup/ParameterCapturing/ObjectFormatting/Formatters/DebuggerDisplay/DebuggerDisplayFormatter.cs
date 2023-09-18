@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using static Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting.Formatters.DebuggerDisplay.DebuggerDisplayParser;
 
@@ -64,7 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
 
                 try
                 {
-                    DebuggerDisplayAttribute? attribute = currentType.GetCustomAttribute<DebuggerDisplayAttribute>(inherit: false);
+                    DebuggerDisplayAttribute? attribute = currentType.GetCustomAttributes<DebuggerDisplayAttribute>(inherit: false).FirstOrDefault();
                     if (attribute?.Value != null)
                     {
                         return new DebuggerDisplayAttributeValue(attribute.Value, encompassingTypes);

@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System;
 using System.Diagnostics;
 using Xunit;
+using static Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting.Formatters.DebuggerDisplay.DebuggerDisplayFormatter;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing.ObjectFormatting.Formatters.DebuggerDisplay
 {
@@ -28,10 +29,17 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public void GetDebuggerDisplayAttribute(Type type, string expected)
         {
             // Act
-            string actual = DebuggerDisplayFormatter.GetDebuggerDisplayAttribute(type)?.Value;
+            DebuggerDisplayAttributeValue attribute = DebuggerDisplayFormatter.GetDebuggerDisplayAttribute(type);
 
             // Assert
-            Assert.Equal(expected, actual);
+            if (expected == null)
+            {
+                Assert.Null(attribute);
+                return;
+            }
+
+            Assert.NotNull(attribute);
+            Assert.Equal(expected, attribute.Value);
         }
 
         [Theory]
@@ -41,10 +49,17 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public void GetDebuggerDisplayAttribute_EncompassingTypes(Type type, int? expectedEncompassedTypes)
         {
             // Act
-            int? actual = DebuggerDisplayFormatter.GetDebuggerDisplayAttribute(type)?.EncompassingTypes?.Count;
+            DebuggerDisplayAttributeValue attribute = DebuggerDisplayFormatter.GetDebuggerDisplayAttribute(type);
 
             // Assert
-            Assert.Equal(expectedEncompassedTypes, actual);
+            if (expectedEncompassedTypes == null)
+            {
+                Assert.Null(attribute);
+                return;
+            }
+
+            Assert.NotNull(attribute);
+            Assert.Equal(expectedEncompassedTypes, attribute.EncompassingTypes.Count);
         }
 
         [Fact]

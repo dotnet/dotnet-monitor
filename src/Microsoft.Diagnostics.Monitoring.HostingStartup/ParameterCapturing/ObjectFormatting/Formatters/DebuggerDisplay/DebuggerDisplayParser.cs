@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
         {
             //
             // A debugger display value is a string with expressions inside that can be evaluated.
-            // This method will transformthe debugger display into a standard format string
+            // This method will transform the debugger display into a standard format string
             // and extract the expressions.
             //
             // Simplified example:
@@ -113,7 +113,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
 
                 switch (c)
                 {
-                    case '"': // Usage of strings or chars in an expression is not supported (complex expressions or methods with consta parameters)
+                    case '"': // Usage of strings or chars in an expression is not supported (complex expressions or methods with constant arguments)
                     case '\'':
                     case '\\': // Escape sequence is not currently supported.
                         return null;
@@ -153,6 +153,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                             FormatSpecifier.None);
 
                     case ',':
+                        // Capture the start of the format specifiers.
+                        // The entire set of format specifiers will be parsed later.
                         if (parenthesisDepth == 0 && formatSpecifiersStart == -1)
                         {
                             formatSpecifiersStart = i;

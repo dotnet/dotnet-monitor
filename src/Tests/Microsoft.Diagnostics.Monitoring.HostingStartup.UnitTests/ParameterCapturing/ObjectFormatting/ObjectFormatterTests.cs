@@ -34,7 +34,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             ObjectFormatterFunc formatter = (object _, FormatSpecifier _) => { return string.Empty; };
 
             // Act
-            string actual = ObjectFormatter.FormatObject(formatter, 5, FormatSpecifier.NoSideEffects | FormatSpecifier.NoQuotes);
+            string actual = ObjectFormatter.FormatObject(formatter, 5, FormatSpecifier.NoSideEffects);
 
             // Assert
             Assert.Equal(ObjectFormatter.Tokens.CannotFormatWithoutSideEffects, actual);
