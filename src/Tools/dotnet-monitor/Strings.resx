@@ -959,4 +959,7 @@
   <data name="ParameterCapturingNotAvailable_Reason_UnsupportedRuntime" xml:space="preserve">
     <value>The process needs to be using .NET 7 or newer.</value>
   </data>
+  <data name="ParameterCapturingNotAvailable_Reason_HotReload" xml:space="preserve">
+    <value>The process has Hot Reload enabled.</value>
+  </data>
 </root>

@@ -1700,6 +1700,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The process has Hot Reload enabled..
+        /// </summary>
+        internal static string ParameterCapturingNotAvailable_Reason_HotReload {
+            get {
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_HotReload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An internal error occurred that has prevented communication with the process..
         /// </summary>
         internal static string ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad {
