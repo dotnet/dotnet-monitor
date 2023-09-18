@@ -44,16 +44,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     public const string ImplicitThis = "this";
                     public const string Unknown = Internal.Prefix + "unknown" + Internal.Postfix;
                 }
-
-                public static class Values
-                {
-                    //
-                    // TODO: Move this to to ObjectFormatter. Currently unsupported values are pre-baked into the template string.
-                    // However this means unsupported parameters won't correctly show up in structured logging.
-                    // Moving this to ObjectFormatter will fix this.
-                    //
-                    public const string Unsupported = Internal.Prefix + "unsupported" + Internal.Postfix;
-                }
             }
 
             public static class Generics
@@ -64,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             }
         }
 
-        public static string GenerateTemplateString(MethodInfo method, bool[] supportedParameters)
+        public static string GenerateTemplateString(MethodInfo method)
         {
             StringBuilder fmtStringBuilder = new();
 
@@ -88,20 +78,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             int parameterIndex = 0;
             ParameterInfo[] explicitParameters = method.GetParameters();
 
-            int numberOfParameters = explicitParameters.Length + (method.HasImplicitThis() ? 1 : 0);
-            if (numberOfParameters != supportedParameters.Length)
-            {
-                throw new ArgumentException(nameof(supportedParameters));
-            }
-
             // Implicit this
             if (method.HasImplicitThis())
             {
                 EmitParameter(
                     fmtStringBuilder,
                     method.DeclaringType,
-                    Tokens.Parameters.Names.ImplicitThis,
-                    supportedParameters[parameterIndex]);
+                    Tokens.Parameters.Names.ImplicitThis);
                 parameterIndex++;
             }
 
@@ -117,7 +100,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     fmtStringBuilder,
                     paramInfo.ParameterType,
                     name,
-                    supportedParameters[parameterIndex],
                     paramInfo);
 
                 parameterIndex++;
@@ -128,7 +110,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             return fmtStringBuilder.ToString();
         }
 
-        private static void EmitParameter(StringBuilder stringBuilder, Type? type, string name, bool isSupported, ParameterInfo? paramInfo = null)
+        private static void EmitParameter(StringBuilder stringBuilder, Type? type, string name, ParameterInfo? paramInfo = null)
         {
             stringBuilder.AppendLine();
             stringBuilder.Append('\t');
@@ -155,15 +137,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             stringBuilder.Append(name);
             stringBuilder.Append(Tokens.Parameters.NameValueSeparator);
 
-            // Value (format item or unsupported)
-            if (isSupported)
-            {
-                EmitFormatItem(stringBuilder, name);
-            }
-            else
-            {
-                stringBuilder.Append(Tokens.Parameters.Values.Unsupported);
-            }
+            // Value
+            EmitFormatItem(stringBuilder, name);
         }
 
         private static void EmitGenericArguments(StringBuilder stringBuilder, Type[]? genericArgs)

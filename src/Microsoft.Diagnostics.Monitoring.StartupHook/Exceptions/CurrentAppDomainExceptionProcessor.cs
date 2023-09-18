@@ -4,10 +4,11 @@
 using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing;
 using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline;
 using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps;
+using System;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 {
-    internal sealed class CurrentAppDomainExceptionProcessor
+    internal sealed class CurrentAppDomainExceptionProcessor : IDisposable
     {
         private readonly ExceptionsEventSource _eventSource = new();
         private readonly ExceptionIdSource _idSource = new();
@@ -47,6 +48,17 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
         {
             // Report exception through event source
             builder.Add(next => new UnhandledExceptionEventsPipelineStep(next, _eventSource, _idSource).Invoke);
+        }
+
+        public void Dispose()
+        {
+            _firstChancePipeline.Dispose();
+            _firstChanceSource.Dispose();
+
+            _unhandledPipeline.Dispose();
+            _unhandledSource.Dispose();
+
+            _eventSource.Dispose();
         }
     }
 }

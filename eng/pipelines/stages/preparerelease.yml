@@ -24,6 +24,7 @@ stages:
       - group: DotNet-Diagnostics-Storage
       - group: DotNet-DotNetStage-Storage
       - group: Release-Pipeline
+      - group: DotNetBuilds storage account read tokens
     steps:
     - task: UseDotNet@2
       displayName: 'Use .NET 6'
@@ -46,13 +47,14 @@ stages:
           filePath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
           arguments: >-
             -BarBuildId "$(BARBuildId)"
-            -AzdoToken "$(dn-bot-dotnet-all-scopes)"
+            -AzdoToken "$(dn-bot-all-drop-rw-code-rw-release-all)"
             -MaestroToken "$(MaestroAccessToken)"
             -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)"
             -DownloadTargetPath "$(System.ArtifactsDirectory)\BuildAssets"
-            -SasSuffixes "$(dotnetclichecksumsmsrc-dotnet-read-list-sas-token),$(dotnetclimsrc-read-sas-token)"
+            -SasSuffixes "$(dotnetbuilds-internal-checksums-container-read-token),$(dotnetbuilds-internal-container-read-token)"
             -ReleaseVersion "$(Build.BuildNumber)"
           workingDirectory: '$(Build.Repository.LocalPath)'
+        continueOnError: true
       - script: >-
           $(Build.SourcesDirectory)\dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release
           --
