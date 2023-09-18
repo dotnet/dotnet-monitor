@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting;
+using System;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
@@ -46,25 +47,31 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 return;
             }
 
-            string[] argValues = new string[instrumentedMethod.NumberOfSupportedParameters];
-            int fmtIndex = 0;
-            for (int i = 0; i < args.Length; i++)
+            string[] argValues;
+            if (args.Length == 0)
             {
-                if (!instrumentedMethod.SupportedParameters[i])
+                argValues = Array.Empty<string>();
+            }
+            else
+            {
+                argValues = new string[args.Length];
+                for (int i = 0; i < args.Length; i++)
                 {
-                    continue;
+                    string value;
+                    if (!instrumentedMethod.SupportedParameters[i])
+                    {
+                        value = ObjectFormatter.Tokens.Unsupported;
+                    }
+                    else if (args[i] == null)
+                    {
+                        value = ObjectFormatter.Tokens.Null;
+                    }
+                    else
+                    {
+                        value = ObjectFormatter.FormatObject(cache.ObjectFormatterCache.GetFormatter(args[i].GetType()), args[i]);
+                    }
+                    argValues[i] = value;
                 }
-
-                string value;
-                if (args[i] == null)
-                {
-                    value = ObjectFormatter.Tokens.Null;
-                }
-                else
-                {
-                    value = ObjectFormatter.FormatObject(cache.ObjectFormatterCache.GetFormatter(args[i].GetType()), args[i]);
-                }
-                argValues[fmtIndex++] = value;
             }
 
             _logger.Log(instrumentedMethod.CaptureMode, instrumentedMethod.MethodWithParametersTemplateString, argValues);
