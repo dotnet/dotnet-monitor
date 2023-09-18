@@ -13,13 +13,15 @@ spec:
         app: akstest
     spec:
       restartPolicy: Always
+      securityContext:
+        fsGroup: 1654 # Default APP_ID for the aspnetapp image
       containers:
       - name: publishedapp
         image: mcr.microsoft.com/dotnet/samples:aspnetapp
         imagePullPolicy: Always
         env:
         - name: ASPNETCORE_URLS
-          value: http://+:80
+          value: http://+:8080
         - name: DOTNET_DiagnosticPorts
           value: /diag/port.sock
         volumeMounts:
@@ -30,7 +32,7 @@ spec:
             cpu: 250m
             memory: 512Mi
       - name: monitor
-        image: mcr.microsoft.com/dotnet/monitor:6
+        image: mcr.microsoft.com/dotnet/monitor:8
         imagePullPolicy: Always
         env:
         - name: DotnetMonitor_DiagnosticPort__ConnectionMode
