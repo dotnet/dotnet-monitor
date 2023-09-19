@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         private sealed class DebuggerDisplayClass
         {
             public int Field = 10;
-            public static Uri StaticProperty { get; set; } = new Uri("http://www.bing.com/static");
+            public static Uri StaticProperty { get; set; } = new Uri("http://www.example.com/static");
             public int Count { get; set; } = 10;
 
             public Uri MyUri { get; }
@@ -49,13 +49,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         // Bad chain
         [InlineData(".", false, null)]
         // Chained expression with implicit this type change
-        [InlineData("Recursion().RecursionProp.MyUri.Host", true, "www.bing.com")]
+        [InlineData("Recursion().RecursionProp.MyUri.Host", true, "www.example.com")]
         // Chained expression with static property
-        [InlineData("Recursion().StaticProperty.Host", true, "www.bing.com")]
+        [InlineData("Recursion().StaticProperty.Host", true, "www.example.com")]
         public void BindExpression(string expression, bool doesBind, object expected)
         {
             // Arrange
-            DebuggerDisplayClass obj = new("https://www.bing.com/abc");
+            DebuggerDisplayClass obj = new("https://www.example.com/abc");
 
             // Act
             ExpressionEvaluator? evaluator = ExpressionBinder.BindExpression(obj.GetType(), expression);

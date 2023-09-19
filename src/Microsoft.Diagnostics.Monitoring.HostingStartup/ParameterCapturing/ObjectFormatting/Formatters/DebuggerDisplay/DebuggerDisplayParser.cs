@@ -12,6 +12,37 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
         internal record struct ParsedDebuggerDisplay(string FormatString, List<Expression> Expressions);
         internal record struct Expression(ReadOnlyMemory<char> ExpressionString, FormatSpecifier FormatSpecifier);
 
+        private static class Tokens
+        {
+            public const char EscapeSequence = '\\';
+
+            public static class Expression
+            {
+                public const char Start = '{';
+                public const char End = '}';
+
+                public const char ParenthesisStart = '(';
+                public const char ParenthesisEnd = ')';
+
+                public const char CharWrapper = '\'';
+                public const char StringWrapper = '"';
+            }
+
+            public static class FormatString
+            {
+                public const char ItemStart = '{';
+                public const char ItemEnd = '}';
+            }
+
+            public static class FormatSpecifier
+            {
+                public const char Delimiter = ',';
+
+                public const string NoQuotes = "nq";
+                public const string NoSideEffects = "nse";
+            }
+        }
+
         internal static ParsedDebuggerDisplay? ParseDebuggerDisplay(string debuggerDisplay)
         {
             //
@@ -31,10 +62,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                 char c = debuggerDisplay[i];
                 switch (c)
                 {
-                    case '\\':
+                    case Tokens.EscapeSequence:
                         // Escape sequence is not currently supported.
                         return null;
-                    case '{':
+                    case Tokens.Expression.Start:
                         // Encountered the start of an expression, try to parse it and replace it with a standard format item.
                         Expression? parsedExpression = ParseExpression(debuggerDisplay.AsMemory(i), out int charsRead);
                         if (parsedExpression == null || charsRead <= 0)
@@ -46,14 +77,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                         // (once by this method, and once by ParseExpression).
                         i += (charsRead - 1);
 
-                        fmtString.Append('{');
+                        fmtString.Append(Tokens.FormatString.ItemStart);
                         fmtString.Append(expressions.Count);
-                        fmtString.Append('}');
+                        fmtString.Append(Tokens.FormatString.ItemEnd);
 
                         expressions.Add(parsedExpression.Value);
 
                         break;
-                    case '}':
+                    case Tokens.Expression.End:
                         // Malformed if observed here since above ParseExpression will read the expression's terminating '}'.
                         return null;
 
@@ -88,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
 
             // Ensure the first char is the start of an expression.
             ReadOnlySpan<char> spanExpression = expression.Span;
-            if (spanExpression[0] != '{')
+            if (spanExpression[0] != Tokens.Expression.Start)
             {
                 return null;
             }
@@ -113,16 +144,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
 
                 switch (c)
                 {
-                    case '"': // Usage of strings or chars in an expression is not supported (complex expressions or methods with constant arguments)
-                    case '\'':
-                    case '\\': // Escape sequence is not currently supported.
+                    case Tokens.Expression.StringWrapper: // Usage of strings or chars in an expression is not supported (complex expressions or methods with constant arguments)
+                    case Tokens.Expression.CharWrapper:
+                    case Tokens.EscapeSequence: // Escape sequence is not currently supported.
                         return null;
 
-                    case '(':
+                    case Tokens.Expression.ParenthesisStart:
                         parenthesisDepth++;
                         break;
 
-                    case ')':
+                    case Tokens.Expression.ParenthesisEnd:
                         if (parenthesisDepth-- < 0)
                         {
                             // Unbalanced parenthesis, malformed expression
@@ -130,11 +161,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                         }
                         break;
 
-                    case '{':
+                    case Tokens.Expression.Start:
                         // Malformed, the start of this expression has been processed already
                         return null;
 
-                    case '}':
+                    case Tokens.Expression.End:
                         // End of expression or malformed
                         if (parenthesisDepth != 0)
                         {
@@ -152,7 +183,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                             expression[expressionStartIndex..i],
                             FormatSpecifier.None);
 
-                    case ',':
+                    case Tokens.FormatSpecifier.Delimiter:
                         // Capture the start of the format specifiers.
                         // The entire set of format specifiers will be parsed later.
                         if (parenthesisDepth == 0 && formatSpecifiersStart == -1)
@@ -185,11 +216,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                     return;
                 }
 
-                if (specifier.Equals("nq", StringComparison.Ordinal))
+                if (specifier.Equals(Tokens.FormatSpecifier.NoQuotes, StringComparison.Ordinal))
                 {
                     formatSpecifier |= FormatSpecifier.NoQuotes;
                 }
-                else if (specifier.Equals("nse", StringComparison.Ordinal))
+                else if (specifier.Equals(Tokens.FormatSpecifier.NoSideEffects, StringComparison.Ordinal))
                 {
                     formatSpecifier |= FormatSpecifier.NoSideEffects;
                 }
@@ -200,7 +231,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
             {
                 char c = specifiers[i];
 
-                if (c == ',')
+                if (c == Tokens.FormatSpecifier.Delimiter)
                 {
                     parseSpecifier(specifiers[startIndex..i]);
                     startIndex = i + 1;

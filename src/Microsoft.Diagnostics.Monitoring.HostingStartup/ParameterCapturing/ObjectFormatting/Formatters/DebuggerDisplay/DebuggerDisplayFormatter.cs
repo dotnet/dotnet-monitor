@@ -21,37 +21,50 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                 return null;
             }
 
-            DebuggerDisplayAttributeValue? attribute = GetDebuggerDisplayAttribute(objType);
-            if (attribute == null)
-            {
-                return null;
-            }
-
             //
-            // We found an attribute.
-            // The last encompassing type will be the source of the attribute.
-            // Check if we've already processed this base type, and if so return the precomputed result.
+            // Guard against exceptions from any of these methods as we're dealing with user-provided input.
+            // None of these methods should throw but since we're potentially running inside of user code
+            // we want to be safe here.
             //
-            if (formatterCache != null &&
-                formatterCache.TryGetFormatter(attribute.Value.EncompassingTypes[^1], out ObjectFormatterFunc? precachedFormatter) &&
-                precachedFormatter != null)
+            try
             {
-                return new FormatterFactoryResult(precachedFormatter, attribute.Value.EncompassingTypes);
-            }
+                DebuggerDisplayAttributeValue? attribute = GetDebuggerDisplayAttribute(objType);
+                if (attribute == null || attribute.Value.EncompassingTypes.Count == 0)
+                {
+                    return null;
+                }
 
-            ParsedDebuggerDisplay? parsedDebuggerDiplay = DebuggerDisplayParser.ParseDebuggerDisplay(attribute.Value.Text);
-            if (parsedDebuggerDiplay == null)
+                //
+                // We found an attribute.
+                // The last encompassing type will be the source of the attribute.
+                // Check if we've already processed this base type, and if so return the precomputed result.
+                //
+                if (formatterCache != null &&
+                    formatterCache.TryGetFormatter(attribute.Value.EncompassingTypes[^1], out ObjectFormatterFunc? precachedFormatter) &&
+                    precachedFormatter != null)
+                {
+                    return new FormatterFactoryResult(precachedFormatter, attribute.Value.EncompassingTypes);
+                }
+
+                ParsedDebuggerDisplay? parsedDebuggerDiplay = DebuggerDisplayParser.ParseDebuggerDisplay(attribute.Value.Text);
+                if (parsedDebuggerDiplay == null)
+                {
+                    return null;
+                }
+
+                ObjectFormatterFunc? formatter = ExpressionBinder.BindParsedDebuggerDisplay(objType, parsedDebuggerDiplay.Value);
+                if (formatter == null)
+                {
+                    return null;
+                }
+
+                return new FormatterFactoryResult(formatter, attribute.Value.EncompassingTypes);
+            }
+            catch
             {
                 return null;
             }
 
-            ObjectFormatterFunc? formatter = ExpressionBinder.BindParsedDebuggerDisplay(objType, parsedDebuggerDiplay.Value);
-            if (formatter == null)
-            {
-                return null;
-            }
-
-            return new FormatterFactoryResult(formatter, attribute.Value.EncompassingTypes);
         }
 
         internal static DebuggerDisplayAttributeValue? GetDebuggerDisplayAttribute(Type objType)

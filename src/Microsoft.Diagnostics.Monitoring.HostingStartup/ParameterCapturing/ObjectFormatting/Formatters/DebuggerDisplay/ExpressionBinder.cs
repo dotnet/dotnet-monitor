@@ -87,12 +87,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                 ExpressionEvaluator? evaluator;
                 if (chainedExpressionIndex != -1)
                 {
-                    evaluator = BindSingleExpression(unboundExpression[..chainedExpressionIndex].ToString(), chainedContextType);
+                    evaluator = BindSingleExpression(unboundExpression[..chainedExpressionIndex], chainedContextType);
                     unboundExpression = unboundExpression[(chainedExpressionIndex + 1)..];
                 }
                 else
                 {
-                    evaluator = BindSingleExpression(unboundExpression.ToString(), chainedContextType);
+                    evaluator = BindSingleExpression(unboundExpression, chainedContextType);
                     unboundExpression = ReadOnlySpan<char>.Empty;
                 }
 
@@ -108,7 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
             return CollapseChainedEvaluators(evaluatorChain);
         }
 
-        private static ExpressionEvaluator? BindSingleExpression(string expression, Type objType)
+        private static ExpressionEvaluator? BindSingleExpression(ReadOnlySpan<char> expression, Type objType)
         {
             //
             // NOTE: Complex expressions are not supported (e.g. "Count + 1").
@@ -124,10 +124,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
             {
                 if (expression.EndsWith("()", StringComparison.Ordinal))
                 {
-                    return BindMethod(objType, expression[..^2]);
+                    return BindMethod(objType, expression[..^2].ToString());
                 }
 
-                return BindProperty(objType, expression) ?? BindField(objType, expression);
+                string expressionStr = expression.ToString();
+
+                return BindProperty(objType, expressionStr) ?? BindField(objType, expressionStr);
             }
             catch
             {
