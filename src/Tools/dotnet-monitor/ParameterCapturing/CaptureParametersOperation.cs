@@ -87,6 +87,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             {
                 throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad);
             }
+
+            const string EditAndContinueEnvName = "COMPLUS_ForceEnc";
+            if (env.TryGetValue(EditAndContinueEnvName, out string editAndContinueEnvValue) &&
+                ToolIdentifiers.IsEnvVarValueEnabled(editAndContinueEnvValue))
+            {
+                // Having Enc enabled results in methods belonging to debug modules to silently fail being instrumented.
+                // ref: https://github.com/dotnet/runtime/issues/91963
+                throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_HotReload);
+            }
         }
 
         public async Task ExecuteAsync(CancellationToken token)
