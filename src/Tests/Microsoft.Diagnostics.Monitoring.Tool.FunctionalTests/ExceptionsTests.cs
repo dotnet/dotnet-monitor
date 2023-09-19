@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
     [Collection(DefaultCollectionFixture.Name)]
     public class ExceptionsTests
     {
-        private const string FrameClassName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario";
+        private const string FrameTypeName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario";
         private const string FrameMethodName = "ThrowAndCatchInvalidOperationException";
         private const string FrameParameterType = "System.Boolean";
         private const string UnitTestAppModule = "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll";
@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ValidateSingleExceptionText(
                         SystemInvalidOperationException,
                         ExceptionMessage,
-                        FrameClassName,
+                        FrameTypeName,
                         FrameMethodName,
                         new() { FrameParameterType, FrameParameterType });
                 },
@@ -134,7 +134,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.Equal(2, topFrame.GetProperty("parameterTypes").GetArrayLength());
                     Assert.Equal(FrameParameterType, topFrame.GetProperty("parameterTypes")[0].ToString());
                     Assert.Equal(FrameParameterType, topFrame.GetProperty("parameterTypes")[1].ToString());
-                    Assert.Equal(FrameClassName, topFrame.GetProperty("className").ToString());
+                    Assert.Equal(FrameTypeName, topFrame.GetProperty("typeName").ToString());
                     Assert.Equal(UnitTestAppModule, topFrame.GetProperty("moduleName").ToString());
                 },
                 configureApp: runner =>
@@ -225,7 +225,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         {
                             ExceptionType = SystemInvalidOperationException,
                             MethodName = FrameMethodName,
-                            TypeName = FrameClassName,
+                            TypeName = FrameTypeName,
                             ModuleName = UnitTestAppModule
                         }
                     );
@@ -275,7 +275,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ValidateSingleExceptionText(
                         SystemInvalidOperationException,
                         ExceptionMessage,
-                        FrameClassName,
+                        FrameTypeName,
                         FrameMethodName,
                         new() { FrameParameterType, FrameParameterType });
                 },
@@ -320,7 +320,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ValidateSingleExceptionText(
                         SystemInvalidOperationException,
                         ExceptionMessage,
-                        FrameClassName,
+                        FrameTypeName,
                         FrameMethodName,
                         new() { FrameParameterType, FrameParameterType });
                 },
@@ -359,7 +359,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ValidateSingleExceptionText(
                         SystemInvalidOperationException,
                         ExceptionMessage,
-                        FrameClassName,
+                        FrameTypeName,
                         FrameMethodName,
                         new() { FrameParameterType, FrameParameterType });
                 },
@@ -432,7 +432,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         {
                             ExceptionType = SystemInvalidOperationException,
                             MethodName = FrameMethodName,
-                            TypeName = FrameClassName,
+                            TypeName = FrameTypeName,
                             ModuleName = UnitTestAppModule
                         }
                     );
@@ -442,7 +442,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ValidateSingleExceptionText(
                         SystemInvalidOperationException,
                         ExceptionMessage,
-                        FrameClassName,
+                        FrameTypeName,
                         FrameMethodName,
                         new() { FrameParameterType, FrameParameterType });
                 },
@@ -468,14 +468,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         }
 
-        private void ValidateSingleExceptionText(string exceptionType, string exceptionMessage, string frameClassName, string frameMethodName, List<string> parameterTypes)
+        private void ValidateSingleExceptionText(string exceptionType, string exceptionMessage, string frameTypeName, string frameMethodName, List<string> parameterTypes)
         {
             var exceptionsLines = exceptionsResult.Split(Environment.NewLine, StringSplitOptions.None);
 
             Assert.True(exceptionsLines.Length >= 3);
             Assert.Contains(FirstChanceExceptionMessage, exceptionsLines[0]);
             Assert.Equal($"{exceptionType}: {exceptionMessage}", exceptionsLines[1]);
-            Assert.Equal($"   at {frameClassName}.{frameMethodName}({string.Join(',', parameterTypes)})", exceptionsLines[2]);
+            Assert.Equal($"   at {frameTypeName}.{frameMethodName}({string.Join(',', parameterTypes)})", exceptionsLines[2]);
         }
 
         private async Task GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionFormat format, ExceptionsConfiguration configuration = null)

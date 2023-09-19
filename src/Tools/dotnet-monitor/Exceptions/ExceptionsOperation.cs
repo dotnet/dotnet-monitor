@@ -188,7 +188,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                             writer.WriteStringValue(parameterType);
                         }
                         writer.WriteEndArray(); // end parameterTypes
-                        writer.WriteString("className", frame.ClassName);
+                        writer.WriteString("typeName", frame.TypeName);
                         writer.WriteString("moduleName", frame.ModuleName);
 
                         writer.WriteEndObject();
@@ -297,7 +297,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 {
                     await writer.WriteLineAsync();
                     await writer.WriteAsync("   at ");
-                    await writer.WriteAsync(frame.ClassName);
+                    await writer.WriteAsync(frame.TypeName);
                     await writer.WriteAsync(".");
                     await writer.WriteAsync(frame.MethodName);
                     await writer.WriteAsync(MethodParameterTypesStart);

@@ -86,7 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                             builder.Clear();
                             builder.Append(NameFormatter.GetModuleName(cache, functionData.ModuleId));
                             builder.Append(ModuleSeparator);
-                            NameFormatter.BuildClassName(builder, cache, functionData);
+                            NameFormatter.BuildTypeName(builder, cache, functionData);
                             builder.Append(ClassSeparator);
                             builder.Append(functionData.Name);
                             NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);

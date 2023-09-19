@@ -11,8 +11,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [JsonPropertyName("methodName")]
         public string MethodName { get; set; }
 
-        [JsonPropertyName("className")]
-        public string ClassName { get; set; }
+        [JsonPropertyName("typeName")]
+        public string TypeName { get; set; }
 
         [JsonPropertyName("moduleName")]
         public string ModuleName { get; set; }

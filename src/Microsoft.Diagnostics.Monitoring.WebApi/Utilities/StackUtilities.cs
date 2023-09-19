@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             Models.CallStackFrame frameModel = new Models.CallStackFrame()
             {
-                ClassName = NameFormatter.UnknownClass,
+                TypeName = NameFormatter.UnknownClass,
                 MethodName = StacksFormatter.UnknownFunction,
                 //TODO Bring this back once we have a useful offset value
                 //Offset = frame.Offset,
@@ -47,7 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 frameModel.MethodName = StacksFormatter.NativeFrame;
                 frameModel.ModuleName = StacksFormatter.NativeFrame;
-                frameModel.ClassName = StacksFormatter.NativeFrame;
+                frameModel.TypeName = StacksFormatter.NativeFrame;
             }
             else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
             {
@@ -70,8 +70,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
 
                 builder.Clear();
-                NameFormatter.BuildClassName(builder, cache, functionData);
-                frameModel.ClassName = builder.ToString();
+                NameFormatter.BuildTypeName(builder, cache, functionData);
+                frameModel.TypeName = builder.ToString();
             }
 
             return frameModel;
