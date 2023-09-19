@@ -139,7 +139,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     if (!_exceptionTypeNameMap.TryGetValue(exceptionClassId, out exceptionTypeName))
                     {
                         _builder.Clear();
-                        NameFormatter.BuildClassName(_builder, entry.Cache.NameCache, exceptionClassId);
+                        NameFormatter.BuildTypeName(_builder, entry.Cache.NameCache, exceptionClassId);
                         exceptionTypeName = _builder.ToString();
                     }
 
