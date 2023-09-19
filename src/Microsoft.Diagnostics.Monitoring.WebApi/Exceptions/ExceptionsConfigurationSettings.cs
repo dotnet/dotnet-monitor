@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 
         private static bool CheckConfiguration(IExceptionInstance exception, List<ExceptionFilterSettings> filterList, Func<ExceptionFilterSettings, CallStackFrame, bool> evaluateFilterList)
         {
-            var topFrame = exception.CallStack.Frames.FirstOrDefault();
+            var topFrame = exception.CallStack?.Frames.FirstOrDefault();
 
             foreach (var configuration in filterList)
             {
