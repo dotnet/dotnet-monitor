@@ -37,7 +37,7 @@ public:
 
 private:
     // Method and type name utilities
-    HRESULT GetFullyQualifiedClassName(ClassID classId, tstring& fullTypeName);
+    HRESULT GetFullyQualifiedTypeName(ClassID classId, tstring& fullTypeName);
     HRESULT GetFullyQualifiedMethodName(FunctionID functionId, tstring& fullMethodName);
     HRESULT GetFullyQualifiedMethodName(FunctionID functionId, COR_PRF_FRAME_INFO frameInfo, tstring& fullMethodName);
 

@@ -591,7 +591,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             if (topFrame != null)
             {
-                return $"MethodName: {topFrame.MethodName}, ModuleName: {topFrame.ModuleName}, ClassName: {topFrame.ClassName}, TypeName: {instance.TypeName}";
+                return $"MethodName: {topFrame.MethodName}, ModuleName: {topFrame.ModuleName}, TypeName: {topFrame.TypeName}, TypeName: {instance.TypeName}";
             }
             else
             {
@@ -652,14 +652,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
-        private static void ValidateStack(IExceptionInstance instance, string expectedMethodName, string expectedModuleName, string expectedClassName, IList<string> expectedParameterTypes = null)
+        private static void ValidateStack(IExceptionInstance instance, string expectedMethodName, string expectedModuleName, string expectedTypeName, IList<string> expectedParameterTypes = null)
         {
             CallStack stack = instance.CallStack;
             Assert.NotEmpty(stack.Frames);
             Assert.True(0 < stack.ThreadId);
             Assert.Equal(expectedMethodName, stack.Frames[0].MethodName);
             Assert.Equal(expectedModuleName, stack.Frames[0].ModuleName);
-            Assert.Equal(expectedClassName, stack.Frames[0].ClassName);
+            Assert.Equal(expectedTypeName, stack.Frames[0].TypeName);
             Assert.Equal(expectedParameterTypes ?? new List<string>(), stack.Frames[0].ParameterTypes);
         }
 
@@ -688,7 +688,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     Assert.True(cache.TryGetExceptionGroup(groupId, out ulong exceptionClassId, out _, out _));
 
-                    NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId);
+                    NameFormatter.BuildTypeName(typeBuilder, cache.NameCache, exceptionClassId);
 
                     if (cache.NameCache.ClassData.TryGetValue(exceptionClassId, out ClassData exceptionClassData))
                     {

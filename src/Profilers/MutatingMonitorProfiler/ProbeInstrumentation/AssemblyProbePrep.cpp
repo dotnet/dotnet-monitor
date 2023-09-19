@@ -123,13 +123,13 @@ HRESULT AssemblyProbePrep::EmitProbeReference(
         m_probeCache.assemblyFlags,
         &probeAssemblyRefToken));
 
-    tstring className;
-    IfFailRet(m_nameCache.GetFullyQualifiedClassName(probeFunctionData->GetClass(), className));
+    tstring typeName;
+    IfFailRet(m_nameCache.GetFullyQualifiedTypeName(probeFunctionData->GetClass(), typeName));
 
     mdTypeRef classTypeRef;
     IfFailRet(pMetadataEmit->DefineTypeRefByName(
         probeAssemblyRefToken,
-        className.c_str(),
+        typeName.c_str(),
         &classTypeRef));
 
     mdMemberRef memberRef;
