@@ -25,6 +25,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Eventing
         /// </remarks>
         private static readonly TimeSpan EventSourceBufferAvoidanceTimeout = TimeSpan.FromMilliseconds(200);
 
+        /// <summary>
+        /// Amount of time to wait for the flush timer to finish inflight callbacks.
+        /// </summary>
+        private static readonly TimeSpan FlushTimerFinishedTimeout = TimeSpan.FromMilliseconds(100);
+
         private readonly Timer _flushEventsTimer;
 
         // NOTE: Arrays with a non-"byte" element type are not supported well by in-proc EventListener
@@ -37,7 +42,15 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Eventing
 
         protected override void Dispose(bool disposing)
         {
-            _flushEventsTimer.Dispose();
+            using ManualResetEvent flushTimerFinishedHandle = new(false);
+
+            // Disposing the timer does not wait for any inflight callbacks to finish.
+            // Pass a wait handle that the timer will signal once all callbacks have finished
+            // and wait on it with a timeout.
+            _flushEventsTimer.Dispose(flushTimerFinishedHandle);
+
+            flushTimerFinishedHandle.WaitOne(FlushTimerFinishedTimeout);
+
             base.Dispose(disposing);
         }
 
