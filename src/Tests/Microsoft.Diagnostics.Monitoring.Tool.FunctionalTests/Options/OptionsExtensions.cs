@@ -4,7 +4,6 @@
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
-using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
@@ -127,17 +126,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return callStacksOptions;
         }
 
-        private static ExceptionsOptions GetOrCreateExceptionsOptions(this InProcessFeaturesOptions options)
-        {
-            ExceptionsOptions exceptionsOptions = options.Exceptions;
-            if (null == exceptionsOptions)
-            {
-                exceptionsOptions = new ExceptionsOptions();
-                options.Exceptions = exceptionsOptions;
-            }
-            return exceptionsOptions;
-        }
-
         public static RootOptions DisableCallStacks(this RootOptions options)
         {
             options.GetOrCreateInProcessFeaturesOptions().GetOrCreateCallStacksOptions().Enabled = false;
@@ -148,13 +136,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         public static RootOptions DisableExceptions(this RootOptions options)
         {
             options.GetOrCreateInProcessFeaturesOptions().GetOrCreateExceptionsOptions().Enabled = false;
-
-            return options;
-        }
-
-        public static RootOptions EnableExceptions(this RootOptions options)
-        {
-            options.GetOrCreateInProcessFeaturesOptions().GetOrCreateExceptionsOptions().Enabled = true;
 
             return options;
         }
