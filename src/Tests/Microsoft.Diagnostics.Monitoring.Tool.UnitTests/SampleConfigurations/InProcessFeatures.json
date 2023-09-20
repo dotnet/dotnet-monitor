@@ -1,5 +1,14 @@
 {
   "InProcessFeatures": {
-    "Enabled": "True"
+    "Enabled": "True",
+    "Exceptions": {
+      "Filters": {
+        "Include": [
+          {
+            "ExceptionType": "System.ArgumentNullException"
+          }
+        ]
+      }
+    }
   }
 }

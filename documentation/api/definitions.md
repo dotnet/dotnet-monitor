@@ -211,7 +211,7 @@ Object describing an exception instance.
 | `moduleName` | string | The name of the module in which the current exception type exists. |
 | `message` | string | The message that describes the current exception. |
 | `innerExceptions` | int[] | The IDs of the [ExceptionInstance](#exceptioninstance)s that are the inner exceptions of the current exception. |
-| `callStack` | [CallStack](#callstack) | The call stack of the current exception, if it was thrown. |
+| `stack` | [CallStack](#callstack) | The call stack of the current exception, if it was thrown. |
 
 ## ExceptionFormat
 

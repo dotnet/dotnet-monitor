@@ -171,7 +171,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                 if (null != instance.CallStack)
                 {
-                    writer.WriteStartObject("callStack");
+                    writer.WriteStartObject("stack");
                     writer.WriteNumber("threadId", instance.CallStack.ThreadId);
                     writer.WriteString("threadName", instance.CallStack.ThreadName);
 
