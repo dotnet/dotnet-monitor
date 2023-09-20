@@ -124,7 +124,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.Equal(CoreLibModuleName, exceptionsDict["moduleName"].ToString());
                     Assert.Equal(ExceptionMessage, exceptionsDict["message"].ToString());
 
-                    var callStackResultsRootElement = JsonSerializer.SerializeToDocument(exceptionsDict["callStack"]).RootElement;
+                    var callStackResultsRootElement = JsonSerializer.SerializeToDocument(exceptionsDict["stack"]).RootElement;
 
                     Assert.NotEqual("0", callStackResultsRootElement.GetProperty("threadId").ToString());
 
