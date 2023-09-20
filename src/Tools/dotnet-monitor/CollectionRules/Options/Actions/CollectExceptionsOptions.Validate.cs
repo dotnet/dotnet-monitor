@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

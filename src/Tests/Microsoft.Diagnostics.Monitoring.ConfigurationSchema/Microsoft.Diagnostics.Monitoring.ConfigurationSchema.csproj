@@ -7,14 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Exceptions\ExceptionsOptions.cs" Link="Models\ExceptionsOptions.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Exceptions\ExceptionsOptionsDefaults.cs" Link="Models\ExceptionsOptionsDefaults.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Exceptions\IExceptionInstance.cs" Link="Models\IExceptionInstance.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\CallStackResults.cs" Link="Models\CallStackResults.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\DumpType.cs" Link="Models\DumpType.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\EventMetricsConfiguration.cs" Link="Models\EventMetricsConfiguration.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\EventPipeProvider.cs" Link="Models\EventPipeProvider.cs" />
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\InProcessFeaturesOptions.cs" Link="Models\InProcessFeaturesOptions.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\MethodDescription.cs" Link="Models\MethodDescription.cs" />
     <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Models\TraceProfile.cs" Link="Models\TraceProfile.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\KnownCollectionRuleActions.cs" Link="Options\CollectionRules\KnownCollectionRuleActions.cs" />

@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
