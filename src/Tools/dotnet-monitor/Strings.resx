@@ -942,9 +942,24 @@
     <value>The shared file '{0}' is different from source file '{1}'.</value>
   </data>
   <data name="ErrorMessage_ParameterCapturingNotAvailable" xml:space="preserve">
-    <value>Parameter capturing is not available in the process.</value>
+    <value>Parameter capturing is not available in the process. {0}</value>
+    <comment>Gets the format string for parameter capturing not being available
+1 Format Parameters:
+0. reason: The reason why the feature is unavailable.</comment>
   </data>
-  <data name="ErrorMessage_ParameterCapturingRequiresAtLeastNet7" xml:space="preserve">
-    <value>Parameter capturing is not available in the process, the process needs to be using .NET 7 or newer.</value>
+  <data name="ParameterCapturingNotAvailable_Reason_PreventedHostingStartup" xml:space="preserve">
+    <value>The process has prevented hosting startup assemblies from loading using the ASPNETCORE_PREVENTHOSTINGSTARTUP environment variable.</value>
+  </data>
+  <data name="ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad" xml:space="preserve">
+    <value>This feature is only available on processes using ASP.NET Core. If the process is using ASP.NET Core and has successfully started, ensure that it has not been configured to prevent hosting startup assemblies from loading.</value>
+  </data>
+  <data name="ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad" xml:space="preserve">
+    <value>An internal error occurred that has prevented communication with the process.</value>
+  </data>
+  <data name="ParameterCapturingNotAvailable_Reason_UnsupportedRuntime" xml:space="preserve">
+    <value>The process needs to be using .NET 7 or newer.</value>
+  </data>
+  <data name="ParameterCapturingNotAvailable_Reason_HotReload" xml:space="preserve">
+    <value>The process has Hot Reload enabled.</value>
   </data>
 </root>

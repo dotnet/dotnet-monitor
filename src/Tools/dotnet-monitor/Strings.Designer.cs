@@ -421,20 +421,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parameter capturing is not available in the process..
+        ///   Looks up a localized string similar to Parameter capturing is not available in the process. {0}.
         /// </summary>
         internal static string ErrorMessage_ParameterCapturingNotAvailable {
             get {
                 return ResourceManager.GetString("ErrorMessage_ParameterCapturingNotAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parameter capturing is not available in the process, the process needs to be using .NET 7 or newer..
-        /// </summary>
-        internal static string ErrorMessage_ParameterCapturingRequiresAtLeastNet7 {
-            get {
-                return ResourceManager.GetString("ErrorMessage_ParameterCapturingRequiresAtLeastNet7", resourceCulture);
             }
         }
         
@@ -1696,6 +1687,51 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string Message_ShowSources {
             get {
                 return ResourceManager.GetString("Message_ShowSources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This feature is only available on processes using ASP.NET Core. If the process is using ASP.NET Core and has successfully started, ensure that it has not been configured to prevent hosting startup assemblies from loading..
+        /// </summary>
+        internal static string ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad {
+            get {
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The process has Hot Reload enabled..
+        /// </summary>
+        internal static string ParameterCapturingNotAvailable_Reason_HotReload {
+            get {
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_HotReload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An internal error occurred that has prevented communication with the process..
+        /// </summary>
+        internal static string ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad {
+            get {
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The process has prevented hosting startup assemblies from loading using the ASPNETCORE_PREVENTHOSTINGSTARTUP environment variable..
+        /// </summary>
+        internal static string ParameterCapturingNotAvailable_Reason_PreventedHostingStartup {
+            get {
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_PreventedHostingStartup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The process needs to be using .NET 7 or newer..
+        /// </summary>
+        internal static string ParameterCapturingNotAvailable_Reason_UnsupportedRuntime {
+            get {
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_UnsupportedRuntime", resourceCulture);
             }
         }
         

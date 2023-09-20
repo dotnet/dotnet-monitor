@@ -30,8 +30,8 @@ public:
     void AddTokenData(ModuleID moduleId, mdTypeDef typeDef, mdTypeDef outerToken, tstring&& name);
 
     HRESULT GetFullyQualifiedName(FunctionID id, tstring& name);
-    HRESULT GetFullyQualifiedClassName(ClassID classId, tstring& name);
-    HRESULT GetFullyQualifiedClassName(ModuleID moduleId, mdTypeDef token, tstring& name);
+    HRESULT GetFullyQualifiedTypeName(ClassID classId, tstring& name);
+    HRESULT GetFullyQualifiedTypeName(ModuleID moduleId, mdTypeDef token, tstring& name);
     HRESULT GetGenericParameterNames(const std::vector<UINT64>& typeArgs, tstring& name);
 
     const std::unordered_map<ClassID, std::shared_ptr<ClassData>>& GetClasses();

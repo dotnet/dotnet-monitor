@@ -118,6 +118,7 @@ jobs:
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       ${{ if ne(variables['System.TeamProject'], 'public') }}:
         HelixAccessToken: $(HelixApiAccessToken)
+        DotNetBuildsInternalContainerReadToken: $(dotnetbuilds-internal-container-read-token)
 
     postBuildSteps:
     - ${{ if ne(parameters.useHelix, 'true')}}:

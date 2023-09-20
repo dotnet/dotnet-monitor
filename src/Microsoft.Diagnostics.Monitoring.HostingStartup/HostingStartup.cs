@@ -26,6 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup
 
                 if (ToolIdentifiers.IsEnvVarEnabled(InProcessFeaturesIdentifiers.EnvironmentVariables.EnableParameterCapturing))
                 {
+                    services.AddSingleton<IMethodDescriptionValidator, MethodDescriptionValidator>();
                     services.AddHostedService<ParameterCapturingService>();
                 }
             });

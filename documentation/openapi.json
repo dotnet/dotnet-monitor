@@ -1131,6 +1131,16 @@
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json-seq": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "202": {
             "description": "Accepted"
           }
@@ -1228,6 +1238,16 @@
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json-seq": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "202": {
             "description": "Accepted"
@@ -1867,7 +1887,6 @@
             "items": {
               "$ref": "#/components/schemas/ExceptionFilter"
             },
-            "description": "The list of exception configurations that determine which exceptions should be shown.\r\nEach configuration is a logical OR, so if any of the configurations match, the exception is shown.",
             "nullable": true
           },
           "exclude": {
@@ -1875,7 +1894,6 @@
             "items": {
               "$ref": "#/components/schemas/ExceptionFilter"
             },
-            "description": "The list of exception configurations that determine which exceptions should be shown.\r\nEach configuration is a logical OR, so if any of the configurations match, the exception isn't shown.",
             "nullable": true
           }
         },

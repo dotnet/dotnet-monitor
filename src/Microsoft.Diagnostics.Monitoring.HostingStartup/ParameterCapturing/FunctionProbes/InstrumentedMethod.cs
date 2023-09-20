@@ -3,7 +3,7 @@
 
 using System.Reflection;
 
-namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
+namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
     internal enum ParameterCaptureMode
     {
@@ -14,14 +14,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
     internal sealed class InstrumentedMethod
     {
-        private const char NamespaceSeparator = '.';
-        private static readonly string[] SystemTypePrefixes = { nameof(System) + NamespaceSeparator, nameof(Microsoft) + NamespaceSeparator };
+        private static readonly string[] SystemTypePrefixes = { nameof(System), nameof(Microsoft) };
 
         public InstrumentedMethod(MethodInfo method, uint[] boxingTokens)
         {
             FunctionId = method.GetFunctionId();
             SupportedParameters = BoxingTokens.AreParametersSupported(boxingTokens);
-            MethodWithParametersTemplateString = PrettyPrinter.ConstructTemplateStringFromMethod(method, SupportedParameters);
+            MethodWithParametersTemplateString = MethodTemplateStringGenerator.GenerateTemplateString(method);
             foreach (bool isParameterSupported in SupportedParameters)
             {
                 if (isParameterSupported)
@@ -30,16 +29,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 }
             }
 
-            CaptureMode = ComputeCaptureMode(method.DeclaringType?.FullName);
+            CaptureMode = ComputeCaptureMode(method);
         }
 
-        private static ParameterCaptureMode ComputeCaptureMode(string? typeName)
+        private static ParameterCaptureMode ComputeCaptureMode(MethodInfo method)
         {
-            if (typeName != null)
+            if (method.DeclaringType != null)
             {
-                foreach (string prefix in SystemTypePrefixes)
+                foreach (string typePrefix in SystemTypePrefixes)
                 {
-                    if (typeName?.StartsWith(prefix) == true)
+                    if (method.DoesBelongToType(typePrefix))
                     {
                         return ParameterCaptureMode.Background;
                     }

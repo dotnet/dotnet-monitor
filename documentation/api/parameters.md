@@ -149,6 +149,7 @@ info: DotnetMonitor.ParameterCapture.SystemCode[0]
 ## Additional Requirements
 
 - The target application must use ASP.NET Core.
+- The target application cannot have [Hot Reload](https://learn.microsoft.com/visualstudio/debugger/hot-reload) enabled.
 - `dotnet-monitor` must be set to `Listen` mode, and the target application must start suspended. See [diagnostic port configuration](../configuration/diagnostic-port-configuration.md) for information on how to do this.
 - The target application must have [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger) available via [ASP.NET Core's dependency injection](https://learn.microsoft.com/aspnet/core/fundamentals/dependency-injection).
 - This feature relies on a hosting startup assembly. If the target application [disabled automatic loading](https://learn.microsoft.com/aspnet/core/fundamentals/host/platform-specific-configuration#disable-automatic-loading-of-hosting-startup-assemblies) of these, this feature will not be available.
@@ -168,7 +169,6 @@ Currently some types of parameters are unable to be captured. When a method cont
 | [Nullable value types](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/nullable-value-types) | `int?` |
 | [Pointers](https://learn.microsoft.com/dotnet/csharp/language-reference/unsafe-code#pointer-types) | `void*` |
 | [Tuples](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/value-tuples) | `(int, int)` |
-| [Value types](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/value-types) defined in another assembly | `MyModule.dll!MyClass.MyMethod(HttpStatusCode s)` since [`HttpStatusCode`](https://learn.microsoft.com/dotnet/api/system.net.httpstatuscode) is an [`enum`](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/enum) |
 
 ### When to use `pid` vs `uid`
 

@@ -38,6 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 { TestAppScenarios.FunctionProbes.SubScenarios.CapturePrimitives, Test_CapturePrimitivesAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureNativeIntegers, Test_CaptureNativeIntegersAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureValueTypes, Test_CaptureValueTypesAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.CaptureTypeRefValueTypes, Test_CaptureTypeRefValueTypesAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureImplicitThis, Test_CaptureImplicitThisAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureExplicitThis, Test_CaptureExplicitThisAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureNoParameters, Test_CaptureNoParametersAsync},
@@ -66,7 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                     return ScenarioHelpers.RunScenarioAsync(async logger =>
                     {
                         PerFunctionProbeProxy probeProxy = new PerFunctionProbeProxy();
-                        using FunctionProbesManager probeManager = new(probeProxy);
+                        using FunctionProbesManager probeManager = new(probeProxy, logger);
 
                         await testCase(probeManager, probeProxy, token);
 
@@ -151,6 +152,15 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             await RunStaticMethodTestCaseAsync(probeManager, probeProxy, method, new object[]
             {
                 MyEnum.ValueA
+            }, token);
+        }
+
+        private static async Task Test_CaptureTypeRefValueTypesAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.ValueType_TypeRef));
+            await RunStaticMethodTestCaseAsync(probeManager, probeProxy, method, new object[]
+            {
+                TypeCode.DateTime
             }, token);
         }
 
@@ -325,7 +335,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             return ScenarioHelpers.RunScenarioAsync(logger =>
             {
                 PerFunctionProbeProxy probeProxy = new PerFunctionProbeProxy();
-                Assert.Throws<DllNotFoundException>(() => new FunctionProbesManager(probeProxy));
+                Assert.Throws<DllNotFoundException>(() => new FunctionProbesManager(probeProxy, logger));
 
                 return Task.FromResult(0);
             }, token);

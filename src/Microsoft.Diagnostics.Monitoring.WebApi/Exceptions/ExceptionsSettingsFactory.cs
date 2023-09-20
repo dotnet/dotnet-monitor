@@ -1,7 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Monitoring.Options;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 {
@@ -13,6 +13,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
         public static ExceptionsConfigurationSettings ConvertExceptionsConfiguration(ExceptionsConfiguration configuration)
         {
             ExceptionsConfigurationSettings configurationSettings = new();
+
+            if (configuration == null)
+            {
+                return configurationSettings;
+            }
 
             foreach (var filter in configuration.Include)
             {

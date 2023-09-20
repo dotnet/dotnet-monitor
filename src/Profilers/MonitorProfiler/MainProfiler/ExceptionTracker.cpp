@@ -92,9 +92,9 @@ HRESULT ExceptionTracker::ExceptionThrown(ThreadID threadId, ObjectID objectId)
         ClassID classId;
         IfFailLogRet(_corProfilerInfo->GetClassFromObject(objectId, &classId));
 
-        tstring className;
-        IfFailLogRet(GetFullyQualifiedClassName(classId, className));
-        LogDebugV("Exception thrown: %s", className);
+        tstring typeName;
+        IfFailLogRet(GetFullyQualifiedTypeName(classId, typeName));
+        LogDebugV("Exception thrown: %s", typeName);
 
         hr = _corProfilerInfo->DoStackSnapshot(
             threadId,
@@ -158,7 +158,7 @@ HRESULT ExceptionTracker::ExceptionUnwindFunctionEnter(ThreadID threadId, Functi
     return S_OK;
 }
 
-HRESULT ExceptionTracker::GetFullyQualifiedClassName(ClassID classId, tstring& fullTypeName)
+HRESULT ExceptionTracker::GetFullyQualifiedTypeName(ClassID classId, tstring& fullTypeName)
 {
     HRESULT hr = S_OK;
 
@@ -166,7 +166,7 @@ HRESULT ExceptionTracker::GetFullyQualifiedClassName(ClassID classId, tstring& f
     TypeNameUtilities typeNameUtilities(_corProfilerInfo);
 
     IfFailRet(typeNameUtilities.CacheNames(cache, classId));
-    IfFailRet(cache.GetFullyQualifiedClassName(classId, fullTypeName));
+    IfFailRet(cache.GetFullyQualifiedTypeName(classId, fullTypeName));
 
     return S_OK;
 }
