@@ -16,10 +16,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     //   in the enumeration; otherwise falls back to ToString.
     // - Event Log Logger: checks for IEnumerable<KeyValuePair<string, object>> and formats each value
     //   in the enumeration; otherwise falls back to ToString.
-    internal class KeyValueLogScope : IReadOnlyCollection<KeyValuePair<string, object>>
+    // - Structured Logger: expects a IReadOnlyList<KeyValuePair<string, object>> and formats each value in the enumeration.
+    internal class KeyValueLogScope : IReadOnlyList<KeyValuePair<string, object>>
     {
-        public IDictionary<string, object> Values =
-            new Dictionary<string, object>();
+        public List<KeyValuePair<string, object>> Values = new();
 
         IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
         {
@@ -32,6 +32,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         }
 
         int IReadOnlyCollection<KeyValuePair<string, object>>.Count => Values.Count;
+
+        public KeyValuePair<string, object> this[int index] => Values[index];
 
         public override string ToString()
         {
