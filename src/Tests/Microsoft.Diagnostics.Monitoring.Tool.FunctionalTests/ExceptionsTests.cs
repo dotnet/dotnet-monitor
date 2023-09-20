@@ -472,7 +472,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ValidateSingleExceptionText(
                         SystemInvalidOperationException,
                         ExceptionMessage,
-                        FrameClassName,
+                        FrameTypeName,
                         FrameMethodName,
                         new List<string>() { FrameParameterType, FrameParameterType });
                 },
@@ -552,7 +552,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ValidateSingleExceptionText(
                         SystemInvalidOperationException,
                         ExceptionMessage,
-                        FrameClassName,
+                        FrameTypeName,
                         FrameMethodName,
                         new List<string>() { FrameParameterType, FrameParameterType });
                 },
@@ -569,7 +569,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         {
                             ExceptionType = SystemInvalidOperationException,
                             MethodName = FrameMethodName,
-                            TypeName = FrameClassName,
+                            TypeName = FrameTypeName,
                             ModuleName = UnitTestAppModule
                         }
                     );
@@ -639,7 +639,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         {
                             ExceptionType = SystemInvalidOperationException,
                             MethodName = FrameMethodName,
-                            TypeName = FrameClassName,
+                            TypeName = FrameTypeName,
                             ModuleName = UnitTestAppModule
                         }
                     );
@@ -664,7 +664,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ValidateSingleExceptionText(
                         SystemInvalidOperationException,
                         ExceptionMessage,
-                        FrameClassName,
+                        FrameTypeName,
                         FrameMethodName,
                         new List<string>() { FrameParameterType, FrameParameterType });
                 },
@@ -709,7 +709,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ValidateSingleExceptionText(
                         SystemInvalidOperationException,
                         ExceptionMessage,
-                        FrameClassName,
+                        FrameTypeName,
                         FrameMethodName,
                         new List<string>() { FrameParameterType, FrameParameterType });
                 },
