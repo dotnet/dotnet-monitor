@@ -1,9 +1,11 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -26,10 +28,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         private readonly CancellationTokenSource _disposalSource = new();
         private readonly KeyedCollection<ulong, ExceptionInstance> _instances = new ExceptionInstanceCollection();
         private readonly Task _processingTask;
+        private ExceptionsConfigurationSettings _configuration;
 
         private long _disposalState;
 
-        public ExceptionsStore(IEnumerable<IExceptionsStoreCallbackFactory> factories)
+        public ExceptionsStore(IEnumerable<IExceptionsStoreCallbackFactory> factories, IOptions<ExceptionsOptions> options)
+            : this(factories, options.Value.CollectionFilters ?? new())
+        {
+
+        }
+
+        public ExceptionsStore(IEnumerable<IExceptionsStoreCallbackFactory> factories, ExceptionsConfiguration configuration)
         {
             ArgumentNullException.ThrowIfNull(factories);
 
@@ -42,6 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 callbacks.Add(factory.Create(this));
             }
             _callbacks = callbacks;
+            _configuration = ExceptionsSettingsFactory.ConvertExceptionsConfiguration(configuration);
         }
 
         public async ValueTask DisposeAsync()
@@ -162,19 +172,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         entry.ActivityId,
                         entry.ActivityIdFormat);
 
-                    for (int i = 0; i < _callbacks.Count; i++)
+                    if (ExceptionsOperation.FilterException(_configuration, instance))
                     {
-                        _callbacks[i].BeforeAdd(instance);
-                    }
 
-                    lock (_instances)
-                    {
-                        _instances.Add(instance);
-                    }
+                        for (int i = 0; i < _callbacks.Count; i++)
+                        {
+                            _callbacks[i].BeforeAdd(instance);
+                        }
 
-                    for (int i = 0; i < _callbacks.Count; i++)
-                    {
-                        _callbacks[i].AfterAdd(instance);
+                        lock (_instances)
+                        {
+                            _instances.Add(instance);
+                        }
+
+                        for (int i = 0; i < _callbacks.Count; i++)
+                        {
+                            _callbacks[i].AfterAdd(instance);
+                        }
                     }
                 }
 
