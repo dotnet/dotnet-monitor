@@ -3,17 +3,70 @@
 
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
-    internal record LogRecordEntry(EventId EventId, string Category, string Message);
+    internal record LogRecordEntry(EventId EventId, string Category, string Message, IList<IReadOnlyList<KeyValuePair<string, object>>> Scopes);
+
+    internal sealed class ScopeTracker
+    {
+        public ConcurrentDictionary<int, Scope> Scopes { get; } = new();
+
+        private int _lastHandle = -1;
+
+        public int Register(Scope scope)
+        {
+            int handle = Interlocked.Increment(ref _lastHandle);
+            Scopes[handle] = scope;
+            return handle;
+        }
+
+        public void Remove(int handle)
+        {
+            Scopes.TryRemove(handle, out _);
+        }
+    }
+
+
+    internal sealed class Scope : IDisposable
+    {
+        public object State { get; set; }
+        private static int _handle;
+        private readonly ScopeTracker _scopeTracker;
+
+        public Scope(object state, ScopeTracker tracker)
+        {
+            State = state;
+            _scopeTracker = tracker;
+            _handle = _scopeTracker.Register(this);
+        }
+
+        public void Dispose()
+        {
+            _scopeTracker.Remove(_handle);
+        }
+    }
 
     internal sealed class LogRecord
     {
         private readonly List<LogRecordEntry> _events = new();
 
-        public void Add(EventId id, string category, string message) => _events.Add(new LogRecordEntry(id, category, message));
+        public void Add(EventId id, string category, string message, ScopeTracker scopeTracker)
+        {
+            List<IReadOnlyList<KeyValuePair<string, object>>> keyValueScopes = new();
+            foreach (Scope scope in scopeTracker.Scopes.Values)
+            {
+                if (scope.State is IReadOnlyList<KeyValuePair<string, object>> keyValueScope)
+                {
+                    keyValueScopes.Add(keyValueScope);
+                    continue;
+                }
+            }
+            _events.Add(new LogRecordEntry(id, category, message, keyValueScopes));
+        }
 
         public IList<LogRecordEntry> Events => _events;
     }
@@ -33,25 +86,22 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
     {
         private readonly string _categoryName;
         private readonly LogRecord _logRecord;
-
-        private sealed class Scope : IDisposable
-        {
-            public void Dispose() { }
-        }
+        private readonly ScopeTracker _scopeTracker;
 
         public TestLogger(LogRecord record, string categoryName)
         {
             _logRecord = record;
             _categoryName = categoryName;
+            _scopeTracker = new();
         }
 
-        public IDisposable BeginScope<TState>(TState state) => new Scope();
+        public IDisposable BeginScope<TState>(TState state) => new Scope(state, _scopeTracker);
 
         public bool IsEnabled(LogLevel logLevel) => true;
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            _logRecord.Add(eventId, _categoryName, formatter(state, exception));
+            _logRecord.Add(eventId, _categoryName, formatter(state, exception), _scopeTracker);
         }
     }
 }
