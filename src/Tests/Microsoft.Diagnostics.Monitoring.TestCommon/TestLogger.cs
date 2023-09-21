@@ -30,7 +30,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         }
     }
 
-
     internal sealed class Scope : IDisposable
     {
         public object State { get; set; }

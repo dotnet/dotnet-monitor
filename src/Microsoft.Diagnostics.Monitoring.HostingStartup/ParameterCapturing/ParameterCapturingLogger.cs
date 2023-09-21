@@ -28,7 +28,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             public const string ActivityId = Prefix + "ActivityId";
             public const string ActivityIdFormat = Prefix + "ActivityIdFormat";
 
-
             public static class CaptureSite
             {
                 private const string Prefix = Scopes.Prefix + "CaptureSite_";
