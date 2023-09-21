@@ -42,14 +42,21 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Eventing
 
         protected override void Dispose(bool disposing)
         {
-            using ManualResetEvent flushTimerFinishedHandle = new(false);
+            ManualResetEvent flushTimerFinishedHandle = new(false);
 
             // Disposing the timer does not wait for any inflight callbacks to finish.
             // Pass a wait handle that the timer will signal once all callbacks have finished
             // and wait on it with a timeout.
             _flushEventsTimer.Dispose(flushTimerFinishedHandle);
 
-            flushTimerFinishedHandle.WaitOne(FlushTimerFinishedTimeout);
+            // Intentionally leak wait handle if timeout occurs; the timer will still have a
+            // reference to the handle, thus it cannot be disposed until the timer callbacks
+            // finish. It is assumed that the timer callback will finish quickly, and thus
+            // leaking this handle will be extremely rare.
+            if (flushTimerFinishedHandle.WaitOne(FlushTimerFinishedTimeout))
+            {
+                flushTimerFinishedHandle.Dispose();
+            }
 
             base.Dispose(disposing);
         }
