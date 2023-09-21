@@ -65,7 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
             // Validate variant data first.
 
-            // Timestatmp
+            // Timestamp
             Assert.True(scopeData.Remove(ParameterCapturingLogger.Scopes.TimeStamp, out object rawTimeStamp));
             string timeStampStr = Assert.IsType<string>(rawTimeStamp);
             Assert.True(DateTime.TryParse(timeStampStr, out _));
