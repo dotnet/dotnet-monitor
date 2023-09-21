@@ -2114,7 +2114,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
-        public async Task CollectionRuleOptions_CollectExceptionsAction_DisabledViaCallStacks()
+        public async Task CollectionRuleOptions_CollectExceptionsAction_DisabledViaExceptions()
         {
             await ValidateFailure(
                 rootOptions =>
