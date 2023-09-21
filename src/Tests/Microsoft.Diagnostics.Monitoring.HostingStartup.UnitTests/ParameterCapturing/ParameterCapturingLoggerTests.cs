@@ -52,6 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 { ParameterCapturingLogger.Scopes.CaptureSite.MethodName, _testMethod.Name },
                 { ParameterCapturingLogger.Scopes.CaptureSite.TypeName, _testMethod.DeclaringType.FullName },
                 { ParameterCapturingLogger.Scopes.CaptureSite.ModuleName, _testMethod.Module.Name },
+                { ParameterCapturingLogger.Scopes.ThreadId, Environment.CurrentManagedThreadId }
             };
 
             // Act
@@ -69,11 +70,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             Assert.True(scopeData.Remove(ParameterCapturingLogger.Scopes.TimeStamp, out object rawTimeStamp));
             string timeStampStr = Assert.IsType<string>(rawTimeStamp);
             Assert.True(DateTime.TryParse(timeStampStr, out _));
-
-            // Thread id
-            Assert.True(scopeData.Remove(ParameterCapturingLogger.Scopes.ThreadId, out object rawThreadId));
-            int threadId = Assert.IsType<int>(rawThreadId);
-            Assert.Equal(Environment.CurrentManagedThreadId, threadId);
 
             // Static data
             Assert.Equal(expectedScope, scopeData);
