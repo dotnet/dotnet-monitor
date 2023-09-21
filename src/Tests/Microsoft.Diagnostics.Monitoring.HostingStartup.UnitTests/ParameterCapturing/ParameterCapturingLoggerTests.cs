@@ -6,7 +6,6 @@ using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Functio
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
