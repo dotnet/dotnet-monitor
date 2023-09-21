@@ -169,31 +169,35 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 }
                 writer.WriteEndArray();
 
-                writer.WriteStartObject("stack");
-                writer.WriteNumber("threadId", instance.CallStack.ThreadId);
-                writer.WriteString("threadName", instance.CallStack.ThreadName);
-
-                writer.WriteStartArray("frames");
-
-                foreach (var frame in instance.CallStack.Frames)
+                if (null != instance.CallStack)
                 {
-                    writer.WriteStartObject();
+                    writer.WriteStartObject("stack");
+                    writer.WriteNumber("threadId", instance.CallStack.ThreadId);
+                    writer.WriteString("threadName", instance.CallStack.ThreadName);
 
-                    writer.WriteString("methodName", frame.MethodName);
-                    writer.WriteStartArray("parameterTypes");
-                    foreach (string parameterType in frame.ParameterTypes)
+                    writer.WriteStartArray("frames");
+
+                    foreach (var frame in instance.CallStack.Frames)
                     {
-                        writer.WriteStringValue(parameterType);
-                    }
-                    writer.WriteEndArray(); // end parameterTypes
-                    writer.WriteString("typeName", frame.TypeName);
-                    writer.WriteString("moduleName", frame.ModuleName);
+                        writer.WriteStartObject();
 
-                    writer.WriteEndObject();
+                        writer.WriteString("methodName", frame.MethodName);
+                        writer.WriteStartArray("parameterTypes");
+                        foreach (string parameterType in frame.ParameterTypes)
+                        {
+                            writer.WriteStringValue(parameterType);
+                        }
+                        writer.WriteEndArray(); // end parameterTypes
+                        writer.WriteString("typeName", frame.TypeName);
+                        writer.WriteString("moduleName", frame.ModuleName);
+
+                        writer.WriteEndObject();
+                    }
+
+                    writer.WriteEndArray(); // end frames
+                    writer.WriteEndObject(); // end callStack
                 }
 
-                writer.WriteEndArray(); // end frames
-                writer.WriteEndObject(); // end callStack
                 writer.WriteEndObject(); // end.
             }
 
