@@ -10,7 +10,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Threading;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing
@@ -19,7 +18,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
     public class ParameterCapturingLoggerTests
     {
         private readonly MethodInfo _testMethod = typeof(ParameterCapturingLoggerTests).GetMethod(nameof(TestMethod), BindingFlags.Static | BindingFlags.NonPublic);
-
         private static void TestMethod() { }
 
         [Theory]
@@ -42,7 +40,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         [InlineData(ParameterCaptureMode.Background)]
         internal void ScopeData(ParameterCaptureMode mode)
         {
-            
             // Arrange
             using Activity loggingActivity = new("ScopeDataTest");
             Activity.Current = loggingActivity;
