@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     internal sealed class ParameterCapturingLogger : IDisposable
     {
-        private record QueuedLogStatement(string Format, string[] Args, KeyValueLogScope scope);
+        private record QueuedLogStatement(string Format, string[] Args, KeyValueLogScope Scope);
 
         internal static class Scopes
         {
@@ -129,7 +129,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             {
                 while (_messages.TryTake(out QueuedLogStatement? entry, Timeout.InfiniteTimeSpan))
                 {
-                    Log(_systemLogger, entry.Format, entry.Args, entry.scope);
+                    Log(_systemLogger, entry.Format, entry.Args, entry.Scope);
                 }
             }
             catch (ObjectDisposedException)
