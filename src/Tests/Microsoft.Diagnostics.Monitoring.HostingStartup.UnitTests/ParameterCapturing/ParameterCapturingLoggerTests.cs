@@ -49,10 +49,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             {
                 { ParameterCapturingLogger.Scopes.ActivityId, loggingActivity.Id },
                 { ParameterCapturingLogger.Scopes.ActivityIdFormat, loggingActivity.IdFormat },
+                { ParameterCapturingLogger.Scopes.ThreadId, Environment.CurrentManagedThreadId },
                 { ParameterCapturingLogger.Scopes.CaptureSite.MethodName, _testMethod.Name },
                 { ParameterCapturingLogger.Scopes.CaptureSite.TypeName, _testMethod.DeclaringType.FullName },
-                { ParameterCapturingLogger.Scopes.CaptureSite.ModuleName, _testMethod.Module.Name },
-                { ParameterCapturingLogger.Scopes.ThreadId, Environment.CurrentManagedThreadId }
+                { ParameterCapturingLogger.Scopes.CaptureSite.ModuleName, _testMethod.Module.Name }
             };
 
             // Act
