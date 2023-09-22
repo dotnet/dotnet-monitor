@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public void AddMetric(ICounterPayload metric)
         {
-            if (metric is PercentilePayload payload && !payload.Quantiles.Any())
+            if (metric is AggregatePercentilePayload payload && !payload.Quantiles.Any())
             {
                 // If histogram data is not generated in the monitored app, we can get Histogram events that do not contain quantiles.
                 // For now, we will ignore these events.
@@ -106,7 +106,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
 
                 // CONSIDER We only keep 1 histogram representation per snapshot. Is it meaningful for Prometheus to see previous histograms? These are not timestamped.
-                if ((metrics.Count > 1) && (metric is PercentilePayload))
+                if ((metrics.Count > 1) && (metric is AggregatePercentilePayload))
                 {
                     metrics.Dequeue();
                 }
@@ -138,10 +138,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 foreach (var metric in metricGroup.Value)
                 {
-                    if (metric is PercentilePayload percentilePayload)
+                    if (metric is AggregatePercentilePayload aggregatePayload)
                     {
                         // Summary quantiles must appear from smallest to largest
-                        foreach (Quantile quantile in percentilePayload.Quantiles.OrderBy(q => q.Percentage))
+                        foreach (Quantile quantile in aggregatePayload.Quantiles.OrderBy(q => q.Percentage))
                         {
                             string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(metric.Unit, quantile.Value);
                             string metricLabels = GetMetricLabels(metric, quantile.Percentage);
@@ -226,7 +226,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 await writer.WriteAsync("{" + metricLabels + "}");
             }
 
-            string lineSuffix = metric is PercentilePayload ? string.Empty : FormattableString.Invariant($" {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}");
+            string lineSuffix = metric is AggregatePercentilePayload ? string.Empty : FormattableString.Invariant($" {new DateTimeOffset(metric.Timestamp).ToUnixTimeMilliseconds()}");
 
             await writer.WriteLineAsync(FormattableString.Invariant($" {metricValue}{lineSuffix}"));
         }
