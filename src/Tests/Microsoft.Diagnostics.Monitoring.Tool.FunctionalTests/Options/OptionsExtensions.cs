@@ -132,6 +132,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static RootOptions DisableExceptions(this RootOptions options)
+        {
+            options.GetOrCreateInProcessFeaturesOptions().GetOrCreateExceptionsOptions().Enabled = false;
+
+            return options;
+        }
+
         public static RootOptions EnableCallStacks(this RootOptions options)
         {
             options.GetOrCreateInProcessFeaturesOptions().GetOrCreateCallStacksOptions().Enabled = true;

@@ -32,5 +32,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectExceptionsOptions_Format))]
         [DefaultValue(CollectExceptionsOptionsDefaults.Format)]
         public ExceptionFormat? Format { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectExceptionsOptions_Filters))]
+        public ExceptionsConfiguration Filters { get; set; }
     }
 }

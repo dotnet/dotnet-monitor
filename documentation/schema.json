@@ -1714,6 +1714,16 @@
               "$ref": "#/definitions/ExceptionFormat"
             }
           ]
+        },
+        "Filters": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ExceptionsConfiguration"
+            }
+          ]
         }
       }
     },

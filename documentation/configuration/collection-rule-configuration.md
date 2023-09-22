@@ -611,6 +611,7 @@ An action that collects exceptions from the process that the collection rule is 
 |---|---|---|---|---|
 | `Egress` | string | true | The named [egress provider](../egress.md) for egressing the collected dump. | |
 | `Format` | [ExceptionFormat](../api/definitions.md#exceptionformat)? | false | The format of the exception entries. | `PlainText` |
+| `Filters` | [ExceptionsConfiguration](../api/definitions.md#exceptionsconfiguration)? | false | Determines which exceptions should be included/excluded in the result - note that this does not alter which [exceptions are collected](in-process-features-configuration.md#filtering).
 
 #### Outputs
 
