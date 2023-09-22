@@ -7,7 +7,7 @@ using SampleMethods;
 using System;
 using Xunit;
 
-namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing
+namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing.ObjectFormatting.Formatters
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public class RuntimeFormattersTests

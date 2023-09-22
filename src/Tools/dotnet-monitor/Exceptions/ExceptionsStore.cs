@@ -198,6 +198,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         internal static CallStackModel GenerateCallStack(ulong[] stackFrameIds, IExceptionsNameCache cache, int threadId)
         {
+            // Exceptions without stack frames were not thrown; do not create a call stack object,
+            // which makes it clear that this exception was not thrown.
+            if (stackFrameIds.Length == 0)
+                return null;
+
             CallStack callStack = new();
             callStack.ThreadId = (uint)threadId;
 
