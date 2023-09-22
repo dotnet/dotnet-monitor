@@ -90,6 +90,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
                 return;
             }
+            if (metric is InstrumentationStartedPayload)
+            {
+                // Do we want to do anything with this payload?
+                return;
+            }
 
             lock (_allMetrics)
             {
