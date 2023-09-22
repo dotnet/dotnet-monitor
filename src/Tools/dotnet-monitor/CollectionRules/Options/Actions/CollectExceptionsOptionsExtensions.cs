@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 
         public static ExceptionsConfigurationSettings GetConfigurationSettings(this CollectExceptionsOptions options)
         {
-           return ExceptionsSettingsFactory.ConvertExceptionsConfiguration(options.Filters);
+            return ExceptionsSettingsFactory.ConvertExceptionsConfiguration(options.Filters);
         }
     }
 }
