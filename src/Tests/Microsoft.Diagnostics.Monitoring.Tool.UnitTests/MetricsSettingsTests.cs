@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -106,7 +107,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             var options = host.Services.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
 
-            var settings = MetricsSettingsFactory.CreateSettings(options.CurrentValue, new MetricsOptions
+            var settings = MetricsSettingsFactory.CreateSettings(options.CurrentValue, Timeout.Infinite, new MetricsOptions
             {
                 IncludeDefaultProviders = false,
                 Providers = new List<MetricProvider> { new MetricProvider { ProviderName = CustomProvider1 }, new MetricProvider { ProviderName = CustomProvider2 } }
