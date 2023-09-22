@@ -187,9 +187,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     // will fail and will need to be updated.
                     Regex regex = new Regex(@"\bPercentile=(50|95|99)");
 
-                    int startingIndex = instrumentNamesP1.Length + instrumentNamesP2.Length; // Accounts for empty InstrumentStarted payloads
-
-                    for (int index = startingIndex; index < actualMeterNames.Count; ++index)
+                    for (int index = 0; index < actualMeterNames.Count; ++index)
                     {
                         if (actualInstrumentNames[index] == Constants.HistogramName1)
                         {

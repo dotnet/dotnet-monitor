@@ -46,6 +46,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 Logger.CounterEndedPayload(counter.Name);
                 return;
             }
+            else if (counter is InstrumentationStartedPayload)
+            {
+                // Do we want to do anything with this payload?
+                return;
+            }
 
             if (counter is AggregatePercentilePayload aggregatePercentilePayload)
             {
