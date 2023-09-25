@@ -20,11 +20,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 {
     internal sealed class TestFunctionProbes : IFunctionProbes
     {
+        public void Cache(IList<MethodInfo> methods)
+        {
+        }
+
         public void EnterProbe(ulong uniquifier, object[] args)
         {
         }
     }
-
 
     internal sealed class TestFunctionProbesManager : IFunctionProbesManager
     {

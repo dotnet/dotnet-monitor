@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using Xunit.Sdk;
@@ -90,6 +91,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             }
 
             probe.Invoke(args);
+        }
+
+        public void Cache(IList<MethodInfo> methods)
+        {
         }
     }
 }

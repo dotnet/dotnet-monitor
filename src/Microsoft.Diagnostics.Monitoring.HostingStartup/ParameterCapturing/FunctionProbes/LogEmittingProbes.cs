@@ -3,6 +3,8 @@
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
@@ -15,6 +17,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         {
             _logger = logger;
             _objectFormatterCache = new ObjectFormatterCache(useDebuggerDisplayAttribute);
+        }
+
+        public void Cache(IList<MethodInfo> methods)
+        {
+            foreach (MethodInfo method in methods)
+            {
+                _objectFormatterCache.CacheMethodParameters(method);
+            }
         }
 
         public void EnterProbe(ulong uniquifier, object[] args)
