@@ -61,7 +61,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 if (scope.State is IReadOnlyList<KeyValuePair<string, object>> keyValueScope)
                 {
                     keyValueScopes.Add(keyValueScope);
-                    continue;
                 }
             }
             _events.Add(new LogRecordEntry(id, category, message, keyValueScopes));
