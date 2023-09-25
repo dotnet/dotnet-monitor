@@ -10,7 +10,7 @@ The `/metrics` route (and starting in 8.0, the `/livemetrics` route and `Collect
 - `Microsoft.AspNetCore.Hosting`
 - `Grpc.AspNetCore.Server`
 
-These providers are collected by default for the above mentioned features, even when specifiying [custom metrics](#custom-metrics) collection. The default providers can be excluded by [disabling](#disable-default-providers) them.
+These providers are collected by default for the above mentioned features, even when specifying [custom metrics](#custom-metrics) collection. The default providers can be excluded by [disabling](#disable-default-providers) them.
 
 ## Global Counter Interval
 
