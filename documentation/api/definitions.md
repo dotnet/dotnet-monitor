@@ -95,7 +95,7 @@ Object describing the list of methods to capture parameters for.
 | Name | Type | Description |
 |---|---|---|
 | `methods` | [MethodDescription](#methoddescription)[] | Array of methods to capture parameters for. |
-| `useDebuggerDisplayAttribute` | bool | Determines if parameters should be formatted using their [`DebuggerDisplayAttribute`](https://learn.microsoft.com/dotnet/api/system.diagnostics.debuggerdisplayattribute) if available. |
+| `useDebuggerDisplayAttribute` | bool | Determines if parameters should be formatted using their [`DebuggerDisplayAttribute`](https://learn.microsoft.com/dotnet/api/system.diagnostics.debuggerdisplayattribute) if available and supported. Expressions may consist of properties, fields, or methods without parameters. |
 
 ## DotnetMonitorInfo
 
