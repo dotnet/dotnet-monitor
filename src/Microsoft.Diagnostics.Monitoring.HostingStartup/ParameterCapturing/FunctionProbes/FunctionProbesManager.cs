@@ -72,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private readonly ILogger _logger;
 
-        public FunctionProbesManager(IFunctionProbes probes, ILogger logger)
+        public FunctionProbesManager(ILogger logger)
         {
             ProfilerResolver.InitializeResolver<FunctionProbesManager>();
 
@@ -98,8 +98,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 Marshal.GetFunctionPointerForDelegate(_onFaultDelegate));
 
             RequestFunctionProbeRegistration(FunctionProbesStub.GetProbeFunctionId());
-
-            FunctionProbesStub.Instance = probes;
         }
 
         private void OnRegistration(int hresult)
@@ -134,9 +132,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private void OnFault(ulong uniquifier)
         {
-            FunctionProbesCache? cache = FunctionProbesStub.Cache;
+            var cache = FunctionProbesStub.State?.InstrumentedMethods;
             if (cache == null ||
-                !cache.InstrumentedMethods.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod))
+                !cache.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod))
             {
                 //
                 // The probe fault occurred in a method that is no longer actively instrumented, ignore.
@@ -229,12 +227,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 return;
             }
 
-            FunctionProbesStub.Cache = null;
+            FunctionProbesStub.State = null;
             RequestFunctionProbeUninstallation();
         }
 
 
-        public async Task StartCapturingAsync(IList<MethodInfo> methods, CancellationToken token)
+        public async Task StartCapturingAsync(IList<MethodInfo> methods, IFunctionProbes probes, CancellationToken token)
         {
             DisposableHelper.ThrowIfDisposed<FunctionProbesManager>(ref _disposedState);
 
@@ -274,14 +272,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                         continue;
                     }
 
-                    newObjectFormatterCache.CacheMethodParameters(method);
-
                     functionIds.Add(functionId);
                     argumentCounts.Add((uint)methodBoxingTokens.Length);
                     boxingTokens.AddRange(methodBoxingTokens);
                 }
 
-                FunctionProbesStub.Cache = new FunctionProbesCache(new ReadOnlyDictionary<ulong, InstrumentedMethod>(newMethodCache), newObjectFormatterCache);
+                FunctionProbesStub.State = new FunctionProbesState(new ReadOnlyDictionary<ulong, InstrumentedMethod>(newMethodCache), probes);
 
                 _installationTaskSource = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
                 RequestFunctionProbeInstallation(
@@ -292,7 +288,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             }
             catch
             {
-                FunctionProbesStub.Cache = null;
+                FunctionProbesStub.State = null;
                 newObjectFormatterCache?.Clear();
 
                 _probeState = ProbeStateUninstalled;
@@ -339,8 +335,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         {
             if (!DisposableHelper.CanDispose(ref _disposedState))
                 return;
-
-            FunctionProbesStub.Instance = null;
 
             try
             {

@@ -18,6 +18,14 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing.Pipeline
 {
+    internal sealed class TestFunctionProbes : IFunctionProbes
+    {
+        public void EnterProbe(ulong uniquifier, object[] args)
+        {
+        }
+    }
+
+
     internal sealed class TestFunctionProbesManager : IFunctionProbesManager
     {
         private readonly Action<IList<MethodInfo>> _onStart;
@@ -37,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             OnProbeFault?.Invoke(this, faultingMethod);
         }
 
-        public Task StartCapturingAsync(IList<MethodInfo> methods, CancellationToken token)
+        public Task StartCapturingAsync(IList<MethodInfo> methods, IFunctionProbes probes, CancellationToken token)
         {
             _onStart?.Invoke(methods);
             return Task.CompletedTask;
@@ -149,6 +157,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 _ = onStartCallbackSource.TrySetCanceled(cts.Token);
             });
 
+            TestFunctionProbes probes = new();
+
             TestFunctionProbesManager probeManager = new(
                 onStart: (_) =>
                 {
@@ -167,7 +177,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             Task pipelineTask = pipeline.RunAsync(cts.Token);
 
             // Act
-            pipeline.SubmitRequest(payload);
+            pipeline.SubmitRequest(payload, probes);
 
             // Assert
             await probeManagerStartSource.Task;
@@ -187,9 +197,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
             ParameterCapturingPipeline pipeline = new(new TestFunctionProbesManager(), new TestParameterCapturingCallbacks(), methodDescriptionValidator);
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan);
+            TestFunctionProbes probes = new();
 
             // Act & Assert
-            Assert.Throws<DeniedMethodsException>(() => pipeline.SubmitRequest(payload));
+            Assert.Throws<DeniedMethodsException>(() => pipeline.SubmitRequest(payload, probes));
         }
 
         [Fact]
@@ -205,6 +216,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 _ = onFailedCallbackSource.TrySetCanceled(cts.Token);
             });
 
+            TestFunctionProbes probes = new();
             TestFunctionProbesManager probeManager = new();
 
             TestParameterCapturingCallbacks callbacks = new(
@@ -235,7 +247,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             Task pipelineTask = pipeline.RunAsync(cts.Token);
 
             // Act
-            pipeline.SubmitRequest(payload);
+            pipeline.SubmitRequest(payload, probes);
 
             // Assert
             (Guid requestId, ParameterCapturingEvents.CapturingFailedReason reason, string details) = await onFailedCallbackSource.Task;
@@ -260,6 +272,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 _ = onStopCallbackSource.TrySetCanceled(cts.Token);
             });
 
+            TestFunctionProbes probes = new();
+
             TestFunctionProbesManager probeManager = new(
                 onStop: () =>
                 {
@@ -276,7 +290,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan);
 
             Task pipelineTask = pipeline.RunAsync(cts.Token);
-            pipeline.SubmitRequest(payload);
+            pipeline.SubmitRequest(payload, probes);
 
             // Act
             pipeline.RequestStop(payload.RequestId);
@@ -301,6 +315,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 _ = onStopCallbackSource.TrySetCanceled(cts.Token);
             });
 
+            TestFunctionProbes probes = new();
             TestFunctionProbesManager probeManager = new();
 
             TestParameterCapturingCallbacks callbacks = new(
@@ -315,7 +330,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             Task pipelineTask = pipeline.RunAsync(cts.Token);
 
             // Act
-            pipeline.SubmitRequest(payload);
+            pipeline.SubmitRequest(payload, probes);
 
             // Assert
             Guid stoppedRequest = await onStopCallbackSource.Task;
@@ -338,6 +353,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 _ = onProbeFaultCallbackSource.TrySetCanceled(cts.Token);
             });
 
+            TestFunctionProbes probes = new();
             TestFunctionProbesManager probeManager = new();
 
             TestParameterCapturingCallbacks callbacks = new(
@@ -354,7 +370,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan);
 
             Task pipelineTask = pipeline.RunAsync(cts.Token);
-            pipeline.SubmitRequest(payload);
+            pipeline.SubmitRequest(payload, probes);
             (Guid startedRequest, IList<MethodInfo> methods) = await onStartCallbackSource.Task;
             Assert.Equal(payload.RequestId, startedRequest);
             MethodInfo instrumentedMethod = Assert.Single(methods);
@@ -382,6 +398,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                     throw thrownException;
                 });
 
+            TestFunctionProbes probes = new();
             TestParameterCapturingCallbacks callbacks = new();
 
             ParameterCapturingPipeline pipeline = new(probeManager, callbacks, new TestMethodDescriptionValidator());
@@ -389,7 +406,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
             // Act
             Task pipelineTask = pipeline.RunAsync(cts.Token);
-            pipeline.SubmitRequest(payload);
+            pipeline.SubmitRequest(payload, probes);
 
             // Assert
             Exception ex = await Assert.ThrowsAsync<Exception>(() => pipelineTask).WaitAsync(cts.Token);
