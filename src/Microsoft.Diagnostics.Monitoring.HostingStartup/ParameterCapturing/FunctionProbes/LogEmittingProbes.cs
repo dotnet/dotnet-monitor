@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             _objectFormatterCache = new ObjectFormatterCache(useDebuggerDisplayAttribute: false);
         }
 
-        public void Cache(IList<MethodInfo> methods)
+        public void CacheMethods(IList<MethodInfo> methods)
         {
             foreach (MethodInfo method in methods)
             {

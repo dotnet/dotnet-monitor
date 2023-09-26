@@ -93,7 +93,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             probe.Invoke(args);
         }
 
-        public void Cache(IList<MethodInfo> methods)
+        public void CacheMethods(IList<MethodInfo> methods)
         {
         }
     }
