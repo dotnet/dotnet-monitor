@@ -146,7 +146,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
             OnProbeFault?.Invoke(this, instrumentedMethod);
         }
-
+        
         private void TransitionStateFromHr(TaskCompletionSource? taskCompletionSource, int hresult, long expectedState, long succeededState, long failedState)
         {
             Exception? ex = Marshal.GetExceptionForHR(hresult);
