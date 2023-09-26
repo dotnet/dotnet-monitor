@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -27,10 +26,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 () => new List<EventPipeCounterGroup>(0));
         }
 
-        public static MetricsPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, MetricsOptions options)
+        public static MetricsPipelineSettings CreateSettings(GlobalCounterOptions counterOptions, int durationSeconds,
+            MetricsOptions options)
         {
-            return CreateSettings(options.IncludeDefaultProviders.GetValueOrDefault(MetricsOptionsDefaults.IncludeDefaultProviders),
-                Timeout.Infinite, counterOptions.GetIntervalSeconds(),
+            return CreateSettings(
+                options.IncludeDefaultProviders.GetValueOrDefault(MetricsOptionsDefaults.IncludeDefaultProviders),
+                durationSeconds,
+                counterOptions.GetIntervalSeconds(),
                 counterOptions.Providers,
                 counterOptions.GetMaxHistograms(),
                 counterOptions.GetMaxTimeSeries(),
