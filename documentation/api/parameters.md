@@ -149,6 +149,7 @@ info: DotnetMonitor.ParameterCapture.SystemCode[0]
 ## Additional Requirements
 
 - The target application must use ASP.NET Core.
+- The target application cannot have [Hot Reload](https://learn.microsoft.com/visualstudio/debugger/hot-reload) enabled.
 - `dotnet-monitor` must be set to `Listen` mode, and the target application must start suspended. See [diagnostic port configuration](../configuration/diagnostic-port-configuration.md) for information on how to do this.
 - The target application must have [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger) available via [ASP.NET Core's dependency injection](https://learn.microsoft.com/aspnet/core/fundamentals/dependency-injection).
 - This feature relies on a hosting startup assembly. If the target application [disabled automatic loading](https://learn.microsoft.com/aspnet/core/fundamentals/host/platform-specific-configuration#disable-automatic-loading-of-hosting-startup-assemblies) of these, this feature will not be available.
