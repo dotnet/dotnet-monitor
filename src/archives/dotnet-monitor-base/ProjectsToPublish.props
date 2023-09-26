@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <DotnetMonitorPublishTargetFramework>$(LatestTargetFramework)</DotnetMonitorPublishTargetFramework>
+    <DotnetMonitorPublishTargetFramework Condition="'$(TargetFramework)' != ''">$(TargetFramework)</DotnetMonitorPublishTargetFramework>
+    <DotnetMonitorPublishBasePath>$(ArtifactsDir)pub\dotnet-monitor\$(Configuration)\$(DotnetMonitorPublishTargetFramework)\$(PackageRid)\</DotnetMonitorPublishBasePath>
+    <!-- Framework-dependent deployment (FDD) -->
+    <DotnetMonitorPublishFddPath>$(DotnetMonitorPublishBasePath)fdd\</DotnetMonitorPublishFddPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectToPublish Include="$(RepoRoot)src\Tools\dotnet-monitor\dotnet-monitor.csproj">
+      <AdditionalProperties>TargetFramework=$(DotnetMonitorPublishTargetFramework);RuntimeIdentifier=$(PackageRid);PublishDir=$(DotnetMonitorPublishFddPath);SelfContained=false</AdditionalProperties>
+    </ProjectToPublish>
+  </ItemGroup>
+</Project>

@@ -16,4 +16,5 @@
   <Target Name="IntegrationTest" DependsOnTargets="$(_GetTestsToRunTarget);RunTests" Condition="'$(IsIntegrationTestProject)' == 'true'" />
 
   <Import Project="$(MSBuildThisFileDirectory)CrossTargeting.targets" Condition="'$(IsCrossTargetingBuild)' == 'true'" />
+  <Import Project="$(MSBuildThisFileDirectory)Helix.targets" Condition="'$(IsTestProject)' == 'true'" />
 </Project>

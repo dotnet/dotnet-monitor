@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
         Task IEndpointInfoSourceCallbacks.OnBeforeResumeAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
         {
-            return _profilerService.ApplyProfiler(endpointInfo, cancellationToken);
+            return _profilerService.ApplyProfilersAsync(endpointInfo, cancellationToken);
         }
 
         Task IEndpointInfoSourceCallbacks.OnRemovedEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)

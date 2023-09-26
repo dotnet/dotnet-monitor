@@ -19,7 +19,12 @@
     <Error Text="The archive content root path '$(ArchiveContentRootPath)' does not exist."
            Condition="!Exists($(ArchiveContentRootPath))" />
     <ItemGroup>
-      <FileToArchive Include="$(ArchiveContentRootPath)**" />
+      <PublishedFile Include="$(ArchiveContentRootPath)**" />
+    </ItemGroup>
+    <ItemGroup>
+      <FileToArchive Include="@(PublishedFile)">
+        <PackagePath>$(ArchiveContentPackagePath)%(RecursiveDir)</PackagePath>
+      </FileToArchive>
     </ItemGroup>
     <ItemGroup>
       <FileToArchive Remove="$(ArchiveContentRootPath)**\*.dbg" />
@@ -27,9 +32,14 @@
       <FileToArchive Remove="$(ArchiveContentRootPath)**\*.pdb" />
     </ItemGroup>
     <ItemGroup>
-      <SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.dbg" />
-      <SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.dwarf" />
-      <SymbolFileToArchive Include="$(ArchiveContentRootPath)**\*.pdb" />
+      <PublishedSymbolFile Include="$(ArchiveContentRootPath)**\*.dbg" />
+      <PublishedSymbolFile Include="$(ArchiveContentRootPath)**\*.dwarf" />
+      <PublishedSymbolFile Include="$(ArchiveContentRootPath)**\*.pdb" />
+    </ItemGroup>
+    <ItemGroup>
+      <SymbolFileToArchive Include="@(PublishedSymbolFile)">
+        <PackagePath>$(ArchiveContentPackagePath)%(RecursiveDir)</PackagePath>
+      </SymbolFileToArchive>
     </ItemGroup>
   </Target>
 </Project>

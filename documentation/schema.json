@@ -49,7 +49,6 @@
       ]
     },
     "InProcessFeatures": {
-      "description": "[Experimental]",
       "default": {},
       "oneOf": [
         {
@@ -805,6 +804,16 @@
         {
           "properties": {
             "Type": {
+              "const": "CollectExceptions"
+            },
+            "Settings": {
+              "$ref": "#/definitions/CollectExceptionsOptions"
+            }
+          }
+        },
+        {
+          "properties": {
+            "Type": {
               "const": "CollectGCDump"
             },
             "Settings": {
@@ -1012,7 +1021,158 @@
             "boolean",
             "null"
           ],
-          "description": "[Experimental] Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.",
+          "description": "Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes.",
+          "default": false
+        },
+        "CallStacks": {
+          "description": "Options for the in-process call stacks feature.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/CallStacksOptions"
+            }
+          ]
+        },
+        "Exceptions": {
+          "description": "Options for the in-process exceptions feature.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ExceptionsOptions"
+            }
+          ]
+        },
+        "ParameterCapturing": {
+          "description": "[Experimental] Options for the in-process parameter capturing feature.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ParameterCapturingOptions"
+            }
+          ]
+        }
+      }
+    },
+    "CallStacksOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Enabled": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Enables or disables the call stacks feature. By default, this feature is enabled if in-process features are enabled.",
+          "default": true
+        }
+      }
+    },
+    "ExceptionsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Enabled": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Enables or disables the exceptions feature. By default, this feature is enabled if in-process features are enabled.",
+          "default": true
+        },
+        "TopLevelLimit": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "The number of top-level exceptions to keep in the cache before automatically removing older exceptions. A top-level exception is one that is not an inner exception of another exception.",
+          "format": "int32",
+          "default": 20,
+          "maximum": 2147483647.0,
+          "minimum": 1.0
+        },
+        "CollectionFilters": {
+          "description": "The filters that determine which exceptions should be included/excluded when collecting exceptions.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ExceptionsConfiguration"
+            }
+          ]
+        }
+      }
+    },
+    "ExceptionsConfiguration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Include": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/ExceptionFilter"
+          }
+        },
+        "Exclude": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/ExceptionFilter"
+          }
+        }
+      }
+    },
+    "ExceptionFilter": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ExceptionType": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "ModuleName": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "TypeName": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "MethodName": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
+    },
+    "ParameterCapturingOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Enabled": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Enables or disables the parameter capturing feature. By default, this feature is not enabled.",
           "default": false
         }
       }
@@ -1088,27 +1248,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "AzureBlobStorage": {
-          "type": [
-            "null",
-            "object"
-          ],
-          "description": "Mapping of Azure blob storage egress provider names to their options.",
-          "default": {},
-          "additionalProperties": {
-            "$ref": "#/definitions/AzureBlobEgressProviderOptions"
-          }
-        },
-        "S3Storage": {
-          "type": [
-            "null",
-            "object"
-          ],
-          "description": "Mapping of S3 storage egress provider names to their options.",
-          "additionalProperties": {
-            "$ref": "#/definitions/S3StorageEgressProviderOptions"
-          }
-        },
         "FileSystem": {
           "type": [
             "null",
@@ -1130,198 +1269,28 @@
           "additionalProperties": {
             "type": "string"
           }
-        }
-      }
-    },
-    "AzureBlobEgressProviderOptions": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "AccountUri",
-        "ContainerName"
-      ],
-      "properties": {
-        "AccountUri": {
-          "type": "string",
-          "description": "The URI of the Azure blob storage account.",
-          "format": "uri",
-          "minLength": 1
         },
-        "AccountKey": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The account key used to access the Azure blob storage account."
-        },
-        "AccountKeyName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The name of the account key used to look up the value from the Egress options Properties map."
-        },
-        "SharedAccessSignature": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The shared access signature (SAS) used to access the Azure blob and optionally queue storage accounts."
-        },
-        "SharedAccessSignatureName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The name of the shared access signature (SAS) used to look up the value from the Egress options Properties map."
-        },
-        "ManagedIdentityClientId": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage."
-        },
-        "ContainerName": {
-          "type": "string",
-          "description": "The name of the container to which the blob will be egressed. If egressing to the root container, use the \"$root\" sentinel value.",
-          "minLength": 1
-        },
-        "BlobPrefix": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The prefix to prepend to the blob name."
-        },
-        "CopyBufferSize": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "description": "Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.",
-          "format": "int32"
-        },
-        "QueueName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The name of the queue to which a message will be dispatched upon writing to a blob."
-        },
-        "QueueAccountUri": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The URI of the Azure queue storage account.",
-          "format": "uri"
-        },
-        "QueueSharedAccessSignature": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The shared access signature (SAS) used to access the Azure queue storage account."
-        },
-        "QueueSharedAccessSignatureName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map."
-        },
-        "Metadata": {
+        "AzureBlobStorage": {
           "type": [
             "null",
             "object"
           ],
-          "description": "A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.",
+          "description": "Mapping of Azure blob storage egress provider names to their options.",
+          "default": {},
           "additionalProperties": {
-            "type": "string"
+            "$ref": "#/definitions/AzureBlobEgressProviderOptions"
           }
-        }
-      }
-    },
-    "S3StorageEgressProviderOptions": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "BucketName"
-      ],
-      "properties": {
-        "Endpoint": {
+        },
+        "S3Storage": {
           "type": [
             "null",
-            "string"
+            "object"
           ],
-          "description": "The endpoint of S3 to connect to. This is optional in case of using AWS storage."
-        },
-        "BucketName": {
-          "type": "string",
-          "description": "The name of the bucket used for storage",
-          "minLength": 1
-        },
-        "RegionName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The name of the S3 region"
-        },
-        "AccessKeyId": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The AWS AccessKeyId for IAM user to login"
-        },
-        "SecretAccessKey": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The AWS SecretAccessKey associated AccessKeyId for IAM user to login"
-        },
-        "AwsProfileName": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The AWS profile name to be used for login"
-        },
-        "AwsProfilePath": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The AWS profile path, if profile details not stored in default path"
-        },
-        "GeneratePreSignedUrl": {
-          "type": "boolean",
-          "description": "A boolean flag indicates if the return value of egress provider should be a pre-signed URL or only the bucket name and object id of uploaded entry."
-        },
-        "PreSignedUrlExpiry": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The amount of time the generated pre-signed url will be accessible.",
-          "format": "duration"
-        },
-        "ForcePathStyle": {
-          "type": "boolean",
-          "description": "The boolean flag set for AWS connection configuration ForcePathStyle option."
-        },
-        "CopyBufferSize": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "description": "Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.",
-          "format": "int32",
-          "maximum": 2147483647.0,
-          "minimum": 1.0
+          "description": "Mapping of S3 storage egress provider names to their options.",
+          "default": {},
+          "additionalProperties": {
+            "$ref": "#/definitions/S3StorageEgressProviderOptions"
+          }
         }
       }
     },
@@ -1674,6 +1643,7 @@
       "type": "string",
       "enum": [
         "CollectDump",
+        "CollectExceptions",
         "CollectGCDump",
         "CollectLiveMetrics",
         "CollectLogs",
@@ -1703,7 +1673,7 @@
         },
         "Egress": {
           "type": "string",
-          "description": "The name of the egress provider to which the dump is egressed.",
+          "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
         }
       }
@@ -1724,13 +1694,60 @@
         "Triage"
       ]
     },
+    "CollectExceptionsOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Egress": {
+          "type": "string",
+          "description": "The name of the egress provider to which the artifact is egressed.",
+          "minLength": 1
+        },
+        "Format": {
+          "description": "The format used to display the exceptions.",
+          "default": "PlainText",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ExceptionFormat"
+            }
+          ]
+        },
+        "Filters": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ExceptionsConfiguration"
+            }
+          ]
+        }
+      }
+    },
+    "ExceptionFormat": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "NewlineDelimitedJson",
+        "PlainText",
+        "JsonSequence"
+      ],
+      "enum": [
+        "NewlineDelimitedJson",
+        "PlainText",
+        "JsonSequence"
+      ]
+    },
     "CollectGCDumpOptions": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "Egress": {
           "type": "string",
-          "description": "The name of the egress provider to which the GC dump is egressed.",
+          "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
         }
       }
@@ -1772,13 +1789,13 @@
             "null",
             "string"
           ],
-          "description": "The duration of time in which live metrics are collected.",
+          "description": "The duration of time in which the artifact is collected.",
           "format": "duration",
           "default": "00:00:30"
         },
         "Egress": {
           "type": "string",
-          "description": "The name of the egress provider to which the live metrics are egressed.",
+          "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
         }
       }
@@ -1873,13 +1890,13 @@
             "null",
             "string"
           ],
-          "description": "The duration of time in which logs are collected.",
+          "description": "The duration of time in which the artifact is collected.",
           "format": "duration",
           "default": "00:00:30"
         },
         "Egress": {
           "type": "string",
-          "description": "The name of the egress provider to which the logs are egressed.",
+          "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
         },
         "Format": {
@@ -1916,11 +1933,11 @@
       "properties": {
         "Egress": {
           "type": "string",
-          "description": "[Experimental] The name of the egress provider to which the call stacks are egressed.",
+          "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
         },
         "Format": {
-          "description": "[Experimental] The format used to display the call stacks.",
+          "description": "The format used to display the call stacks.",
           "default": "Json",
           "oneOf": [
             {
@@ -1996,13 +2013,13 @@
             "null",
             "string"
           ],
-          "description": "The duration of time in which trace events are collected.",
+          "description": "The duration of time in which the artifact is collected.",
           "format": "duration",
           "default": "00:00:30"
         },
         "Egress": {
           "type": "string",
-          "description": "The name of the egress provider to which the trace is egressed.",
+          "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
         },
         "StoppingEvent": {
@@ -2607,10 +2624,6 @@
         "Indented": {
           "type": "boolean"
         },
-        "MaxDepth": {
-          "type": "integer",
-          "format": "int32"
-        },
         "SkipValidation": {
           "type": "boolean"
         }
@@ -2700,6 +2713,203 @@
           "type": "boolean",
           "description": "Gets or sets whether or not UTC timezone should be used for timestamps in logging messages. Defaults to false.",
           "default": false
+        }
+      }
+    },
+    "AzureBlobEgressProviderOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "AccountUri",
+        "ContainerName"
+      ],
+      "properties": {
+        "AccountUri": {
+          "type": "string",
+          "description": "The URI of the Azure blob storage account.",
+          "format": "uri",
+          "minLength": 1
+        },
+        "AccountKey": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The account key used to access the Azure blob storage account."
+        },
+        "AccountKeyName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the account key used to look up the value from the Egress options Properties map."
+        },
+        "SharedAccessSignature": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The shared access signature (SAS) used to access the Azure blob and optionally queue storage accounts."
+        },
+        "SharedAccessSignatureName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the shared access signature (SAS) used to look up the value from the Egress options Properties map."
+        },
+        "ManagedIdentityClientId": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage."
+        },
+        "UseWorkloadIdentityFromEnvironment": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Uses WorkloadIdentity for authentication. The environment variables AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_FEDERATED_TOKEN_FILE, and AZURE_AUTHORITY_HOST are used to authenticate."
+        },
+        "ContainerName": {
+          "type": "string",
+          "description": "The name of the container to which the blob will be egressed. If egressing to the root container, use the \"$root\" sentinel value.",
+          "minLength": 1
+        },
+        "BlobPrefix": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The prefix to prepend to the blob name."
+        },
+        "CopyBufferSize": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
+        },
+        "QueueName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the queue to which a message will be dispatched upon writing to a blob."
+        },
+        "QueueAccountUri": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The URI of the Azure queue storage account.",
+          "format": "uri"
+        },
+        "QueueSharedAccessSignature": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The shared access signature (SAS) used to access the Azure queue storage account."
+        },
+        "QueueSharedAccessSignatureName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map."
+        },
+        "Metadata": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "description": "A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "S3StorageEgressProviderOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "BucketName"
+      ],
+      "properties": {
+        "Endpoint": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The endpoint of S3 to connect to. This is optional in case of using AWS storage."
+        },
+        "BucketName": {
+          "type": "string",
+          "description": "The name of the bucket used for storage",
+          "minLength": 1
+        },
+        "RegionName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the S3 region"
+        },
+        "AccessKeyId": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The AWS AccessKeyId for IAM user to login"
+        },
+        "SecretAccessKey": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The AWS SecretAccessKey associated AccessKeyId for IAM user to login"
+        },
+        "AwsProfileName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The AWS profile name to be used for login"
+        },
+        "AwsProfilePath": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The AWS profile path, if profile details not stored in default path"
+        },
+        "PreSignedUrlExpiry": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The amount of time the generated pre-signed url will be accessible.",
+          "format": "duration"
+        },
+        "ForcePathStyle": {
+          "type": "boolean",
+          "description": "The boolean flag set for AWS connection configuration ForcePathStyle option."
+        },
+        "CopyBufferSize": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 1.0
         }
       }
     }

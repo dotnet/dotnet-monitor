@@ -1,0 +1,8 @@
+<Project>
+  <!--
+    MSBuild uses the IsCrossTargetingBuild property (which checks
+    that TargetFrameworks is non-empty and that TargetFramework is empty).
+  -->
+  <Import Project="$(MSBuildThisFileDirectory)Helix.CrossTarget.targets"  Condition="'$(IsCrossTargetingBuild)' == 'true'" />
+  <Import Project="$(MSBuildThisFileDirectory)Helix.SingleTarget.targets"  Condition="'$(IsCrossTargetingBuild)' != 'true'" />
+</Project>

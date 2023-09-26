@@ -2,11 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
-using Microsoft.Diagnostics.NETCore.Client;
 using System;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -19,47 +17,67 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
     internal static class StackUtilities
     {
-        public static string GenerateStacksFilename(IEndpointInfo endpointInfo, bool plainText)
+        public static Models.CallStack TranslateCallStackToModel(CallStack stack, NameCache cache)
         {
-            string extension = plainText ? "txt" : "json";
-            return FormattableString.Invariant($"{Utilities.GetFileNameTimeStampUtcNow()}_{endpointInfo.ProcessId}.stacks.{extension}");
-        }
+            Models.CallStack stackModel = new Models.CallStack();
+            stackModel.ThreadId = stack.ThreadId;
+            stackModel.ThreadName = stack.ThreadName;
 
-        public static async Task CollectStacksAsync(TaskCompletionSource<object> startCompletionSource,
-            IEndpointInfo endpointInfo,
-            ProfilerChannel profilerChannel,
-            StackFormat format,
-            Stream outputStream, CancellationToken token)
-        {
-            var settings = new EventStacksPipelineSettings
+            foreach (CallStackFrame frame in stack.Frames)
             {
-                Duration = Timeout.InfiniteTimeSpan
-            };
-            await using var eventTracePipeline = new EventStacksPipeline(new DiagnosticsClient(endpointInfo.Endpoint), settings);
-
-            Task runPipelineTask = await eventTracePipeline.StartAsync(token);
-
-            //CONSIDER Should we set this before or after the profiler message has been sent.
-            startCompletionSource?.TrySetResult(null);
-
-            ProfilerMessage response = await profilerChannel.SendMessage(
-                endpointInfo,
-                new ProfilerMessage { MessageType = ProfilerMessageType.Callstack, Parameter = 0 },
-                token);
-
-            if (response.MessageType == ProfilerMessageType.Error)
-            {
-                throw new InvalidOperationException($"Profiler request failed: 0x{response.Parameter:X8}");
+                stackModel.Frames.Add(CreateFrameModel(frame, cache));
             }
-            await runPipelineTask;
-            Stacks.CallStackResult result = await eventTracePipeline.Result;
 
-            StacksFormatter formatter = CreateFormatter(format, outputStream);
-
-            await formatter.FormatStack(result, token);
+            return stackModel;
         }
 
-        private static StacksFormatter CreateFormatter(StackFormat format, Stream outputStream) =>
+        internal static Models.CallStackFrame CreateFrameModel(CallStackFrame frame, NameCache cache)
+        {
+            var builder = new StringBuilder();
+
+            Models.CallStackFrame frameModel = new Models.CallStackFrame()
+            {
+                TypeName = NameFormatter.UnknownClass,
+                MethodName = StacksFormatter.UnknownFunction,
+                //TODO Bring this back once we have a useful offset value
+                //Offset = frame.Offset,
+                ModuleName = NameFormatter.UnknownModule
+            };
+            if (frame.FunctionId == 0)
+            {
+                frameModel.MethodName = StacksFormatter.NativeFrame;
+                frameModel.ModuleName = StacksFormatter.NativeFrame;
+                frameModel.TypeName = StacksFormatter.NativeFrame;
+            }
+            else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
+            {
+                frameModel.ModuleName = NameFormatter.GetModuleName(cache, functionData.ModuleId);
+
+                builder.Clear();
+                builder.Append(functionData.Name);
+
+                if (functionData.TypeArgs.Length > 0)
+                {
+                    NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);
+                }
+
+                frameModel.MethodName = builder.ToString();
+
+                if (functionData.ParameterTypes.Length > 0)
+                {
+                    builder.Clear();
+                    frameModel.ParameterTypes = NameFormatter.GetMethodParameterTypes(builder, cache, functionData.ParameterTypes);
+                }
+
+                builder.Clear();
+                NameFormatter.BuildTypeName(builder, cache, functionData);
+                frameModel.TypeName = builder.ToString();
+            }
+
+            return frameModel;
+        }
+
+        internal static StacksFormatter CreateFormatter(StackFormat format, Stream outputStream) =>
             format switch
             {
                 StackFormat.Json => new JsonStacksFormatter(outputStream),

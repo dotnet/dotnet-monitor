@@ -1,0 +1,1 @@
+The files in this directory provide native build support specifically for the dotnet-monitor repo. They may augment or override the behavior of the native build support that is copied from dotnet/runtime.

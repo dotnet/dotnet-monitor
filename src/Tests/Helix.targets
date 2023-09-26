@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup Condition="'$(TargetFramework)' != ''">
+    <HelixDotnetTestArgs>$(TargetName) $(Configuration) $(TargetFramework) $(Platform) $(TestRunnerTestTimeoutMinutes)</HelixDotnetTestArgs>
+    <HelixDotnetTestArgs Condition=" '$(TestRunnerFilterArguments)' != ''">$(HelixDotnetTestArgs) &quot;$(TestRunnerFilterArguments)&quot;</HelixDotnetTestArgs>
+    <HelixDotnetTestCommand Condition="'$(IsHelixPosixShell)' != 'true'">call %HELIX_CORRELATION_PAYLOAD%\dotnettest.cmd $(HelixDotnetTestArgs)</HelixDotnetTestCommand>
+    <HelixDotnetTestCommand Condition="'$(IsHelixPosixShell)' == 'true'">$HELIX_CORRELATION_PAYLOAD/dotnettest.sh $(HelixDotnetTestArgs)</HelixDotnetTestCommand>
+    <!-- Add an arbitrary of time to the test timeout so that the work item has extra time to run pre and post commands. -->
+    <HelixTimeoutMinutes>$([MSBuild]::Add($(TestRunnerTestTimeoutMinutes), 10))</HelixTimeoutMinutes>
+  </PropertyGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' != ''">
+    <!-- Helix work item that calls "dotnet test" for the test assembly. -->
+    <HelixWorkItem Include="$(MSBuildProjectName)-$(TargetFramework)-$(Platform)">
+      <PreCommands Condition="'$(HelixTargetQueue)' != ''">@(HelixWorkItemPreCommand)</PreCommands>
+      <Command Condition="'$(HelixTargetQueue)' != ''">$(HelixDotnetTestCommand)</Command>
+      <PostCommands Condition="'$(HelixTargetQueue)' != ''">@(HelixWorkItemPostCommand)</PostCommands>
+      <Timeout>00:$(HelixTimeoutMinutes):00</Timeout>
+    </HelixWorkItem>
+  </ItemGroup>
+</Project>

@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Net.Http;
 using System.Reflection;
@@ -26,7 +27,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             Action<AppRunner> configureApp = null,
             Action<MonitorCollectRunner> configureTool = null,
             bool disableHttpEgress = false,
-            string profilerLogLevel = null)
+            LogLevel profilerLogLevel = LogLevel.Error,
+            string subScenarioName = null)
         {
             DiagnosticPortHelper.Generate(
                 mode,
@@ -47,10 +49,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             ApiClient apiClient = new(outputHelper, httpClient);
 
             await using AppRunner appRunner = new(outputHelper, Assembly.GetExecutingAssembly());
-            appRunner.ProfilerLogLevel = profilerLogLevel;
+            if (profilerLogLevel != LogLevel.None)
+            {
+                appRunner.ProfilerLogLevel = profilerLogLevel.ToString("G");
+            }
             appRunner.ConnectionMode = appConnectionMode;
             appRunner.DiagnosticPortPath = diagnosticPortPath;
             appRunner.ScenarioName = scenarioName;
+            appRunner.SubScenarioName = subScenarioName;
 
             configureApp?.Invoke(appRunner);
 

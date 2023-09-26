@@ -16,6 +16,7 @@ pr:
     - .gitignore
     - cspell.json
     - eng/actions
+    - samples
     - '**.md'
 
 schedules:
@@ -41,6 +42,10 @@ parameters:
   displayName: 'Update dotnet-docker? (Only for release branches)'
   type: boolean
   default: false
+- name: useHelix
+  displayName: Use Helix Testing
+  type: boolean
+  default: true
 
 variables:
 - template: /eng/common/templates/variables/pool-providers.yml
@@ -61,15 +66,24 @@ stages:
     # Generate a TPN for only the dotnet-monitor project
     - template: /eng/pipelines/jobs/tpn.yml
 
-  # Build and test binaries
+  # Build and (optionally) test binaries
   - template: /eng/pipelines/jobs/platform-matrix.yml
     parameters:
-      jobTemplate: /eng/pipelines/jobs/build-test.yml
-      includeArm64: ${{ ne(variables['System.TeamProject'], 'public') }}
+      jobTemplate: /eng/pipelines/jobs/build-binaries.yml
+      includeArm64: ${{ or(ne(variables['System.TeamProject'], 'public'), eq(parameters.useHelix, 'true')) }}
       includeDebug: true
       jobParameters:
+        publishBinaries: true
         publishArtifacts: ${{ and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}
-        testGroup: ${{ parameters.testGroup }}
+
+  - ${{ if ne(parameters.testGroup, 'None') }}:
+    - template: /eng/pipelines/jobs/platform-matrix.yml
+      parameters:
+        jobTemplate: /eng/pipelines/jobs/test-binaries.yml
+        includeArm64: ${{ parameters.useHelix }}
+        jobParameters:
+          testGroup: ${{ parameters.testGroup }}
+          useHelix: ${{ parameters.useHelix }}
 
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   - stage: Archive
@@ -84,7 +98,7 @@ stages:
     - template: /eng/pipelines/jobs/platform-matrix.yml
       parameters:
         jobTemplate: /eng/pipelines/jobs/build-archive.yml
-        includeArm64: ${{ ne(variables['System.TeamProject'], 'public') }}
+        includeArm64: true
 # This stage creates NuGet packages and generates the BAR manifests
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   - stage: PackSignPublish
@@ -114,7 +128,7 @@ stages:
       validateDependsOn:
       - PackSignPublish
       publishingInfraVersion: 3
-      enableSourceLinkValidation: true
+      enableSourceLinkValidation: ${{ not(startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/')) }}
       enableSigningValidation: true
       enableSymbolValidation: false
       enableNugetValidation: true

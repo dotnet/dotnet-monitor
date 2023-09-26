@@ -90,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     OperationResponse response = await apiClient.EgressTraceAsync(processId, durationSeconds: -1, FileProviderName);
                     Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
-                    OperationStatusResponse operationResult = await apiClient.GetOperationStatus(response.OperationUri);
+                    OperationStatusResponse operationResult = await apiClient.WaitForOperationToStart(response.OperationUri);
                     Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
                     Assert.True(operationResult.OperationStatus.Status == OperationState.Running);
 
@@ -125,7 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     OperationResponse response = await apiClient.EgressTraceAsync(processId, durationSeconds: -1, FileProviderName);
                     Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
-                    OperationStatusResponse operationResult = await apiClient.GetOperationStatus(response.OperationUri);
+                    OperationStatusResponse operationResult = await apiClient.WaitForOperationToStart(response.OperationUri);
                     Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
                     Assert.Equal(OperationState.Running, operationResult.OperationStatus.Status);
                     Assert.True(operationResult.OperationStatus.IsStoppable);
@@ -287,7 +287,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Task drainResponseTask = responseBox.Stream.CopyToAsync(Stream.Null);
 
                     // Make sure the operation exists
-                    OperationStatusResponse operationResult = await apiClient.GetOperationStatus(operationUri);
+                    OperationStatusResponse operationResult = await apiClient.WaitForOperationToStart(operationUri);
                     Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
                     Assert.True(operationResult.OperationStatus.Status == OperationState.Running);
 
@@ -299,7 +299,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
                     Assert.Equal(OperationState.Cancelled, operationResult.OperationStatus.Status);
 
-                    await Assert.ThrowsAsync<IOException>(() => drainResponseTask);
+                    // In .NET 8+ this will throw an HttpIOException, which is derived from IOException
+                    await Assert.ThrowsAnyAsync<IOException>(() => drainResponseTask);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -335,7 +336,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Task drainResponseTask = responseBox.Stream.CopyToAsync(traceFileWriter);
 
                     // Make sure the operation exists
-                    OperationStatusResponse operationResult = await apiClient.GetOperationStatus(operationUri);
+                    OperationStatusResponse operationResult = await apiClient.WaitForOperationToStart(operationUri);
                     Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
                     Assert.True(operationResult.OperationStatus.Status == OperationState.Running);
 

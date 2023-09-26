@@ -892,6 +892,91 @@
         }
       }
     },
+    "/parameters": {
+      "post": {
+        "tags": [
+          "Diag"
+        ],
+        "operationId": "CaptureParameters",
+        "parameters": [
+          {
+            "name": "durationSeconds",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": -1,
+              "type": "integer",
+              "format": "int32",
+              "default": 30
+            }
+          },
+          {
+            "name": "pid",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptureParametersConfiguration"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptureParametersConfiguration"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptureParametersConfiguration"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequestsResponse"
+          },
+          "202": {
+            "description": "Accepted"
+          }
+        }
+      }
+    },
     "/stacks": {
       "get": {
         "tags": [
@@ -1046,6 +1131,16 @@
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json-seq": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "202": {
             "description": "Accepted"
           }
@@ -1144,6 +1239,16 @@
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json-seq": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "202": {
             "description": "Accepted"
           }
@@ -1155,8 +1260,151 @@
         "tags": [
           "Exceptions"
         ],
-        "summary": "Gets the exceptions from the default process.",
+        "summary": "Gets the exceptions from the target process.",
         "operationId": "GetExceptions",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "egressProvider",
+            "in": "query",
+            "description": "The egress provider to which the exceptions are saved.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json-seq": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Exceptions"
+        ],
+        "summary": "Gets the exceptions from the target process.",
+        "operationId": "CaptureExceptionsCustom",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "query",
+            "description": "Process ID used to identify the target process.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The Runtime instance cookie used to identify the target process.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Process name used to identify the target process.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "egressProvider",
+            "in": "query",
+            "description": "The egress provider to which the exceptions are saved.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The exceptions configuration describing which exceptions to include in the response.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExceptionsConfiguration"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExceptionsConfiguration"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExceptionsConfiguration"
+              }
+            }
+          }
+        },
         "responses": {
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
@@ -1214,6 +1462,7 @@
           "Operations"
         ],
         "summary": "Gets the operations list for the specified process (or all processes if left unspecified).",
+        "operationId": "GetOperations",
         "parameters": [
           {
             "name": "pid",
@@ -1275,6 +1524,7 @@
         "tags": [
           "Operations"
         ],
+        "operationId": "GetOperationStatus",
         "parameters": [
           {
             "name": "operationId",
@@ -1316,6 +1566,7 @@
         "tags": [
           "Operations"
         ],
+        "operationId": "CancelOperation",
         "parameters": [
           {
             "name": "operationId",
@@ -1351,6 +1602,22 @@
   },
   "components": {
     "schemas": {
+      "CaptureParametersConfiguration": {
+        "required": [
+          "methods"
+        ],
+        "type": "object",
+        "properties": {
+          "methods": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MethodDescription"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
       "CollectionRuleDescription": {
         "type": "object",
         "properties": {
@@ -1392,13 +1659,25 @@
             "format": "int32"
           },
           "actionCountSlidingWindowDurationLimit": {
-            "$ref": "#/components/schemas/TimeSpan"
+            "type": "string",
+            "description": "The sliding window duration in which the actionCountLimit is the maximum number of occurrences (as defined by Limits).",
+            "format": "time-span",
+            "nullable": true,
+            "example": "00:00:30"
           },
           "slidingWindowDurationCountdown": {
-            "$ref": "#/components/schemas/TimeSpan"
+            "type": "string",
+            "description": "The amount of time that needs to pass before the slidingWindowOccurrences drops below the actionCountLimit",
+            "format": "time-span",
+            "nullable": true,
+            "example": "00:00:30"
           },
           "ruleFinishedCountdown": {
-            "$ref": "#/components/schemas/TimeSpan"
+            "type": "string",
+            "description": "The amount of time that needs to pass before the rule is finished",
+            "format": "time-span",
+            "nullable": true,
+            "example": "00:00:30"
           }
         },
         "additionalProperties": false
@@ -1578,6 +1857,48 @@
         },
         "additionalProperties": false
       },
+      "ExceptionFilter": {
+        "type": "object",
+        "properties": {
+          "exceptionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "moduleName": {
+            "type": "string",
+            "nullable": true
+          },
+          "typeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "methodName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ExceptionsConfiguration": {
+        "type": "object",
+        "properties": {
+          "include": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExceptionFilter"
+            },
+            "nullable": true
+          },
+          "exclude": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExceptionFilter"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "LogLevel": {
         "enum": [
           "Trace",
@@ -1610,6 +1931,29 @@
           "useAppFilters": {
             "type": "boolean",
             "description": "Set to true to collect logs at the application-defined categories and levels."
+          }
+        },
+        "additionalProperties": false
+      },
+      "MethodDescription": {
+        "required": [
+          "methodName",
+          "moduleName",
+          "typeName"
+        ],
+        "type": "object",
+        "properties": {
+          "moduleName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "typeName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "methodName": {
+            "minLength": 1,
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1649,6 +1993,7 @@
       },
       "OperationState": {
         "enum": [
+          "Starting",
           "Running",
           "Succeeded",
           "Failed",
@@ -1810,66 +2155,6 @@
           "processArchitecture": {
             "type": "string",
             "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "TimeSpan": {
-        "type": "object",
-        "properties": {
-          "ticks": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "days": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "hours": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "milliseconds": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "minutes": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "seconds": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "totalDays": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalHours": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalMilliseconds": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalMinutes": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "totalSeconds": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
           }
         },
         "additionalProperties": false

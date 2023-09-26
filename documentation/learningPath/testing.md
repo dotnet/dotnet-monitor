@@ -57,7 +57,9 @@ Note that it is possible to compile option classes directly into the `Configurat
 - [Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests](../../src/Tests/Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests/)
 - [Microsoft.Diagnostics.Monitoring.OpenApiGen](../../src/Tests/Microsoft.Diagnostics.Monitoring.OpenApiGen/)
 
-These assemblies and tests are used to generate the [OpenAPI spec](../../documentation/openapi.json) for the dotnet-monitor API. Changes to the dotnet-monitor api surface require updating openapi.json.
+These assemblies and tests are used to generate the [OpenAPI spec](../../documentation/openapi.json) for the dotnet-monitor API. Changes to the dotnet-monitor api surface require updating `openapi.json`.
+
+If using VSCode or Codespaces, you can also use the `Regenerate openapi.json` task.
 
 ## Startup hooks / hosting startup
 

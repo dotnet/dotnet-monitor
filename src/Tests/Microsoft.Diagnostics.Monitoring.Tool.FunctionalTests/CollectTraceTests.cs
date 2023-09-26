@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
+using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
@@ -15,7 +16,10 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -81,6 +85,59 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             });
         }
 
+        [Fact]
+        public async Task ExitOnStdinDisconnect_Succeeds()
+        {
+            // Start an app in 'connect' mode to match what the Visual Studio profiler does.
+            DiagnosticPortHelper.Generate(
+                DiagnosticPortConnectionMode.Listen,
+                out DiagnosticPortConnectionMode appConnectionMode,
+                out string diagnosticPortPath);
+
+            await using AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
+            appRunner.ConnectionMode = appConnectionMode;
+            appRunner.DiagnosticPortPath = diagnosticPortPath;
+            appRunner.ScenarioName = TestAppScenarios.AspNet.Name;
+            using (CancellationTokenSource appStartCancellationTokenSource = new(CommonTestTimeouts.StartProcess))
+            {
+                // Start the app, but don't wait for it to be ready since we're not going to make any requests.
+                await appRunner.StartAsync(appStartCancellationTokenSource.Token, waitForReady: false);
+            }
+
+            // Start dotnet-monitor in `--exit-on-stdin-disconnect` mode.
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
+            toolRunner.ConnectionModeViaCommandLine = DiagnosticPortConnectionMode.Listen;
+            toolRunner.DiagnosticPortPath = diagnosticPortPath;
+            toolRunner.DisableAuthentication = true;
+            toolRunner.ExitOnStdinDisconnect = true;
+            await toolRunner.StartAsync();
+            Assert.False(toolRunner.HasExited);
+
+            // Close the tool's stdin, which should cause it to exit.
+            toolRunner.StandardInput.Close();
+
+            using (CancellationTokenSource monitorExitCancellationTokenSource = new(TestTimeouts.DotnetMonitorExitAfterStdinCloseTimeout))
+            {
+                await toolRunner.WaitForExitAsync(monitorExitCancellationTokenSource.Token);
+            }
+
+            // Verify that everything shutdown cleanly
+            Assert.Equal(0, toolRunner.ExitCode);
+            Assert.False(appRunner.HasExited);
+
+            await appRunner.StopAsync();
+        }
+
+        [Fact]
+        public Task StopOnOperation_Succeeds()
+        {
+            return StopOnEventTestCore(expectStoppingEvent: false,
+                collectRundown: true,
+                opcode: TraceEventOpcode.Resume,
+                duration: TimeSpan.FromSeconds(200),
+                stopWithApi: true);
+        }
+
         private static string ConstructQualifiedEventName(string eventName, TraceEventOpcode opcode)
         {
             return (opcode == TraceEventOpcode.Info)
@@ -88,7 +145,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 : FormattableString.Invariant($"{eventName}/{opcode}");
         }
 
-        private async Task StopOnEventTestCore(bool expectStoppingEvent, TraceEventOpcode opcode = TestAppScenarios.TraceEvents.UniqueEventOpcode, bool collectRundown = true, IDictionary<string, string> payloadFilter = null, TimeSpan? duration = null)
+        private async Task StopOnEventTestCore(bool expectStoppingEvent,
+            TraceEventOpcode opcode = TestAppScenarios.TraceEvents.UniqueEventOpcode,
+            bool collectRundown = true,
+            IDictionary<string, string> payloadFilter = null,
+            TimeSpan? duration = null,
+            bool stopWithApi = false)
         {
             TimeSpan DefaultCollectTraceTimeout = TimeSpan.FromSeconds(10);
             const string DefaultRuleName = "FunctionalTestRule";
@@ -112,6 +174,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 appValidate: async (appRunner, apiClient) =>
                 {
                     await appRunner.SendCommandAsync(TestAppScenarios.TraceEvents.Commands.EmitUniqueEvent);
+
+                    if (stopWithApi)
+                    {
+                        var operations = await apiClient.GetOperations();
+                        Assert.Single(operations);
+                        await apiClient.StopEgressOperation(operations.First().OperationId);
+                    }
+
                     await ruleCompletedTask;
                     await appRunner.SendCommandAsync(TestAppScenarios.TraceEvents.Commands.ShutdownScenario);
                 },

@@ -19,8 +19,18 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: 'Verify user is a collaborator'
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410
+        with:
+          script: |
+            await github.rest.repos.checkCollaborator({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: context.payload.workflow_run.triggering_actor.login
+            });
+
       - name: Checkout
-        uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
         with:
           persist-credentials: false
 
@@ -39,7 +49,7 @@ jobs:
       # The default artifact download action doesn't support cross-workflow
       # artifacts, so use a 3rd party one.
       - name: 'Download linting results'
-        uses: dawidd6/action-download-artifact@5e780fc7bbd0cac69fc73271ed86edf5dcb72d67
+        uses: dawidd6/action-download-artifact@268677152d06ba59fcec7a7f0b5d961b6ccd7e1e
         with:
           workflow: ${{env.workflow_name}}
           run_id: ${{github.event.workflow_run.id }}
@@ -47,7 +57,7 @@ jobs:
           path: ./pr-linter
 
       - name: 'Setup reviewdog'
-        uses: reviewdog/action-setup@8f2ec89e6b467ca9175527d2a1641bbd0c05783b
+        uses: reviewdog/action-setup@80a06617492b461a66508e2dedf16233f0506804
 
       # Manually supply the triggering PR event information since when a PR is from a fork,
       # this workflow running in the base repo will not be given information about it.
@@ -61,9 +71,8 @@ jobs:
       - name: Submit formatting suggestions
         run: |
           new_event_file=${{github.workspace}}/reviewdog_event.json
-          new_event_name=$(cat ./pr-linter/pr-event-name)
-          jq -j ".${new_event_name}.head.repo.owner.id = .${new_event_name}.base.repo.owner.id" ./pr-linter/pr-event.json > ${new_event_file}
-          GITHUB_EVENT_NAME="${new_event_name}" GITHUB_EVENT_PATH="${new_event_file}" reviewdog \
+          jq -j ".pull_request.head.repo.owner.id = .pull_request.base.repo.owner.id" ./pr-linter/pr-event.json > ${new_event_file}
+          GITHUB_EVENT_NAME="pull_request" GITHUB_EVENT_PATH="${new_event_file}" reviewdog \
               -name="$reporter_name" \
               -f=diff \
               -f.diff.strip=1 \

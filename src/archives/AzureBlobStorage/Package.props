@@ -1,0 +1,19 @@
+<Project>
+  <!-- Import ProjectToPublish items -->
+  <Import Project="$(MSBuildThisFileDirectory)ProjectsToPublish.props" />
+  <PropertyGroup>
+    <ExecutableName>dotnet-monitor-egress-azureblobstorage</ExecutableName>
+    <ArchiveName>dotnet-monitor-egress-azureblobstorage</ArchiveName>
+    <ArchiveContentRootPath>$(AzureBlobStoragePlatformSpecificPublishPath)</ArchiveContentRootPath>
+    <ArchiveContentPackagePath>extensions/AzureBlobStorage/</ArchiveContentPackagePath>
+  </PropertyGroup>
+  <!-- These items are included in addition to those from publishing the AzureBlobStorage project. -->
+  <ItemGroup>
+    <FileToArchive Include="$(RepoRoot)LICENSE.TXT">
+      <PackagePath>$(ArchiveContentPackagePath)</PackagePath>
+    </FileToArchive>
+    <FileToArchive Include="$(ThirdPartyNoticesFilePath)" Condition="Exists('$(ThirdPartyNoticesFilePath)')">
+      <PackagePath>$(ArchiveContentPackagePath)</PackagePath>
+    </FileToArchive>
+  </ItemGroup>
+</Project>

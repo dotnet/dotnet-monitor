@@ -7,7 +7,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
+#if EXTENSION
+namespace Microsoft.Diagnostics.Monitoring.Extension.Common
+#else
 namespace Microsoft.Diagnostics.Tools.Monitor
+#endif
 {
     internal sealed class DataAnnotationValidateOptions<TOptions> :
         IValidateOptions<TOptions>

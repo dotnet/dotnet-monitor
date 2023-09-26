@@ -35,7 +35,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 await writer.WriteLineAsync();
             }
 
+#if NET8_0_OR_GREATER
+            await writer.FlushAsync(token);
+#else
             await writer.FlushAsync();
+#endif
         }
 
         private static void BuildFrame(StringBuilder builder, NameCache cache, CallStackFrame frame)
@@ -48,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             {
                 builder.Append(NameFormatter.GetModuleName(cache, functionData.ModuleId));
                 builder.Append(ModuleSeparator);
-                NameFormatter.BuildClassName(builder, cache, functionData);
+                NameFormatter.BuildTypeName(builder, cache, functionData);
                 builder.Append(ClassSeparator);
                 builder.Append(functionData.Name);
                 NameFormatter.BuildGenericParameters(builder, cache, functionData.TypeArgs);

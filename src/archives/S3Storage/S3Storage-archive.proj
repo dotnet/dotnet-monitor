@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.Build.NoTargets">
+  <Import Project="$(MSBuildThisFileDirectory)Package.props" />
+  <Import Project="$(RepositoryArchivesDir)pkgs\PublishedProject.targets" />
+</Project>

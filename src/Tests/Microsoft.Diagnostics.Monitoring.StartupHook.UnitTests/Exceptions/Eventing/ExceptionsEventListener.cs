@@ -4,8 +4,8 @@
 using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
-using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
@@ -19,7 +19,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
         public List<ExceptionInstance> Exceptions { get; } = new();
 
-        public Dictionary<ulong, ExceptionIdentifierData> ExceptionIdentifiers { get; } = new();
+        public Dictionary<ulong, ExceptionGroupData> ExceptionGroups { get; } = new();
+
+        public Dictionary<ulong, StackFrameIdentifier> StackFrameIdentifiers { get; } = new();
 
         protected override void OnEventWritten(EventWrittenEventArgs eventData)
         {
@@ -31,20 +33,25 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                 {
                     case ExceptionEvents.EventIds.ExceptionInstance:
                         Exceptions.Add(
-                            new ExceptionInstance()
-                            {
-                                ExceptionId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionId]),
-                                ExceptionMessage = ToString(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage])
-                            });
+                            new ExceptionInstance(
+                                ToUInt64(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionId]),
+                                ToUInt64(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionGroupId]),
+                                ToString(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ExceptionMessage]),
+                                ToArray<ulong>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.StackFrameIds]),
+                                ToType<DateTime>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.Timestamp]),
+                                ToArray<ulong>(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.InnerExceptionIds]),
+                                ToString(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ActivityId]),
+                                ToActivityIdFormat(eventData.Payload[ExceptionEvents.ExceptionInstancePayloads.ActivityIdFormat])
+                            ));
                         break;
-                    case ExceptionEvents.EventIds.ExceptionIdentifier:
-                        ExceptionIdentifiers.Add(
-                            ToUInt64(eventData.Payload[ExceptionEvents.ExceptionIdentifierPayloads.ExceptionId]),
-                            new ExceptionIdentifierData()
+                    case ExceptionEvents.EventIds.ExceptionGroup:
+                        ExceptionGroups.Add(
+                            ToUInt64(eventData.Payload[ExceptionEvents.ExceptionGroupPayloads.ExceptionGroupId]),
+                            new ExceptionGroupData()
                             {
-                                ExceptionClassId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionIdentifierPayloads.ExceptionClassId]),
-                                ThrowingMethodId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionIdentifierPayloads.ThrowingMethodId]),
-                                ILOffset = ToInt32(eventData.Payload[ExceptionEvents.ExceptionIdentifierPayloads.ILOffset])
+                                ExceptionClassId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionGroupPayloads.ExceptionClassId]),
+                                ThrowingMethodId = ToUInt64(eventData.Payload[ExceptionEvents.ExceptionGroupPayloads.ThrowingMethodId]),
+                                ILOffset = ToInt32(eventData.Payload[ExceptionEvents.ExceptionGroupPayloads.ILOffset])
                             });
                         break;
                     case ExceptionEvents.EventIds.ClassDescription:
@@ -64,13 +71,21 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                                 ToUInt64(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ClassId]),
                                 ToUInt32(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ClassToken]),
                                 ToUInt64(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ModuleId]),
-                                ToArray<ulong>(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.TypeArgs])));
+                                ToArray<ulong>(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.TypeArgs]),
+                                ToArray<ulong>(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ParameterTypes])));
                         break;
                     case ExceptionEvents.EventIds.ModuleDescription:
                         NameCache.ModuleData.TryAdd(
                             ToUInt64(eventData.Payload[NameIdentificationEvents.ModuleDescPayloads.ModuleId]),
                             new ModuleData(
                                 ToString(eventData.Payload[NameIdentificationEvents.ModuleDescPayloads.Name])));
+                        break;
+                    case ExceptionEvents.EventIds.StackFrameDescription:
+                        StackFrameIdentifiers.TryAdd(
+                            ToUInt64(eventData.Payload[ExceptionEvents.StackFrameIdentifierPayloads.StackFrameId]),
+                            new StackFrameIdentifier(
+                                ToUInt64(eventData.Payload[ExceptionEvents.StackFrameIdentifierPayloads.FunctionId]),
+                                ToInt32(eventData.Payload[ExceptionEvents.StackFrameIdentifierPayloads.ILOffset])));
                         break;
                     case ExceptionEvents.EventIds.TokenDescription:
                         NameCache.TokenData.TryAdd(
@@ -103,23 +118,21 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             return ToType<ulong>(value);
         }
 
+        private static ActivityIdFormat ToActivityIdFormat(object? value)
+        {
+            if (value is int intValue)
+            {
+                return (ActivityIdFormat)intValue;
+            }
+            throw new InvalidCastException();
+        }
+
         private static unsafe T[] ToArray<T>(object? value) where T : unmanaged
         {
-            if (value is not byte[] byteArray)
-                throw new InvalidCastException();
-
-            if (byteArray.Length == 0)
-            {
-                return Array.Empty<T>();
-            }
-
-            T[] destinationArray = new T[byteArray.Length / sizeof(T)];
-            fixed (byte* byteArrayPtr = byteArray)
-            fixed (T* destinationArrayPtr = destinationArray)
-            {
-                Unsafe.CopyBlockUnaligned(destinationArrayPtr, byteArrayPtr, (uint)byteArray.Length);
-            }
-            return destinationArray;
+            // EventSource doesn't decode non-primitive types very well for EventListeners. In the case of non-byte arrays, it interprets the data
+            // as a string and attempts to decode it as a series of chars.
+            // Refer to https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Diagnostics/Tracing/EventSource.cs#L146
+            return Array.Empty<T>();
         }
 
         private static string ToString(object? value)
@@ -143,8 +156,32 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
     internal sealed class ExceptionInstance
     {
-        public ulong ExceptionId { get; set; }
+        public ExceptionInstance(ulong id, ulong groupId, string? message, ulong[] frameIds, DateTime timestamp, ulong[] innerExceptionIds, string activityId, ActivityIdFormat activityIdFormat)
+        {
+            Id = id;
+            GroupId = groupId;
+            ExceptionMessage = message;
+            StackFrameIds = frameIds;
+            Timestamp = timestamp;
+            InnerExceptionIds = innerExceptionIds;
+            ActivityId = activityId;
+            ActivityIdFormat = activityIdFormat;
+        }
 
-        public string? ExceptionMessage { get; set; }
+        public ulong Id { get; }
+
+        public ulong GroupId { get; }
+
+        public string? ExceptionMessage { get; }
+
+        public ulong[] StackFrameIds { get; }
+
+        public DateTime Timestamp { get; }
+
+        public ulong[] InnerExceptionIds { get; }
+
+        public string? ActivityId { get; }
+
+        public ActivityIdFormat ActivityIdFormat { get; }
     }
 }

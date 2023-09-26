@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
@@ -173,14 +174,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
 
         public static CollectionRuleOptions AddExecuteActionAppAction(this CollectionRuleOptions options, Assembly testAssembly, params string[] args)
         {
-            options.AddExecuteAction(DotNetHost.GetPath(), ExecuteActionTestHelper.GenerateArgumentsString(testAssembly, args));
+            options.AddExecuteAction(TestDotNetHost.GetPath(), ExecuteActionTestHelper.GenerateArgumentsString(testAssembly, args));
 
             return options;
         }
 
         public static CollectionRuleOptions AddExecuteActionAppAction(this CollectionRuleOptions options, Assembly testAssembly, bool waitForCompletion, params string[] args)
         {
-            options.AddExecuteAction(DotNetHost.GetPath(), ExecuteActionTestHelper.GenerateArgumentsString(testAssembly, args), waitForCompletion);
+            options.AddExecuteAction(TestDotNetHost.GetPath(), ExecuteActionTestHelper.GenerateArgumentsString(testAssembly, args), waitForCompletion);
 
             return options;
         }
@@ -224,6 +225,21 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                      };
                      actionOptions.Settings = getEnvOpts;
                  });
+        }
+
+        public static CollectionRuleOptions AddCollectExceptionsAction(this CollectionRuleOptions options, string egress, ExceptionFormat? format = null, ExceptionsConfiguration filters = null)
+        {
+            return options.AddAction(
+                KnownCollectionRuleActions.CollectExceptions,
+                actionOptions =>
+                {
+                    CollectExceptionsOptions collectExceptionsOptions = new();
+                    collectExceptionsOptions.Egress = egress;
+                    collectExceptionsOptions.Format = format;
+                    collectExceptionsOptions.Filters = filters;
+
+                    actionOptions.Settings = collectExceptionsOptions;
+                });
         }
 
         public static CollectionRuleOptions SetActionLimits(this CollectionRuleOptions options, int? count = null, TimeSpan? slidingWindowDuration = null, TimeSpan? ruleDuration = null)
@@ -605,6 +621,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             Assert.Equal(expectedName, opts.Name);
 
             return opts;
+        }
+
+        public static CollectExceptionsOptions VerifyCollectExceptionsAction(this CollectionRuleOptions ruleOptions, int actionIndex, string expectedEgress)
+        {
+            CollectExceptionsOptions collectExceptionsOptions = ruleOptions.VerifyAction<CollectExceptionsOptions>(
+                actionIndex, KnownCollectionRuleActions.CollectExceptions);
+
+            Assert.Equal(expectedEgress, collectExceptionsOptions.Egress);
+
+            return collectExceptionsOptions;
         }
 
         private static TOptions VerifyAction<TOptions>(this CollectionRuleOptions ruleOptions, int actionIndex, string actionType)

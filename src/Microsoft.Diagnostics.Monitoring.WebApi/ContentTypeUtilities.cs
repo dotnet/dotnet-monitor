@@ -1,6 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
@@ -31,14 +32,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return null;
         }
 
-        public static bool IsPlainText(StackFormat format) => format == StackFormat.PlainText;
-
         public static string MapFormatToContentType(StackFormat stackFormat) =>
             stackFormat switch
             {
                 StackFormat.PlainText => ContentTypes.TextPlain,
                 StackFormat.Json => ContentTypes.ApplicationJson,
                 StackFormat.Speedscope => ContentTypes.ApplicationSpeedscopeJson,
+                _ => throw new InvalidOperationException()
+            };
+
+        public static string MapFormatToContentType(ExceptionFormat exceptionsFormat) =>
+            exceptionsFormat switch
+            {
+                ExceptionFormat.PlainText => ContentTypes.TextPlain,
+                ExceptionFormat.JsonSequence => ContentTypes.ApplicationJsonSequence,
+                ExceptionFormat.NewlineDelimitedJson => ContentTypes.ApplicationNdJson,
                 _ => throw new InvalidOperationException()
             };
     }

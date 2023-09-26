@@ -6,7 +6,7 @@ using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification;
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 {
     internal sealed class ExceptionsEventSourceIdentifierCacheCallback :
-        ExceptionIdentifierCacheCallback
+        ExceptionGroupIdentifierCacheCallback
     {
         private readonly ExceptionsEventSource _source;
 
@@ -25,10 +25,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                 data.TypeArgs);
         }
 
-        public override void OnExceptionIdentifier(ulong registrationId, ExceptionIdentifierData data)
+        public override void OnExceptionGroupData(ulong groupId, ExceptionGroupData data)
         {
-            _source.ExceptionIdentifier(
-                registrationId,
+            _source.ExceptionGroup(
+                groupId,
                 data.ExceptionClassId,
                 data.ThrowingMethodId,
                 data.ILOffset);
@@ -42,7 +42,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                 data.ParentToken,
                 data.ModuleId,
                 data.Name,
-                data.TypeArgs);
+                data.TypeArgs,
+                data.ParameterTypes);
         }
 
         public override void OnModuleData(ulong moduleId, ModuleData data)
@@ -50,6 +51,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             _source.ModuleDescription(
                 moduleId,
                 data.Name);
+        }
+
+        public override void OnStackFrameData(ulong frameId, StackFrameData data)
+        {
+            _source.StackFrameDescription(
+                frameId,
+                data.MethodId,
+                data.ILOffset);
         }
 
         public override void OnTokenData(ulong moduleId, uint typeToken, TokenData data)

@@ -531,6 +531,17 @@
                   }
                 }
               ]
+            },
+            {
+              "operator": "not",
+              "operands": [
+                {
+                  "name": "isActivitySender",
+                  "parameters": {
+                    "user": "github-actions[bot]"
+                  }
+                }
+              ]
             }
           ]
         },

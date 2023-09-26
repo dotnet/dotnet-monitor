@@ -259,132 +259,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The account key used to access the Azure blob storage account..
+        ///   Looks up a localized string similar to Enables or disables the call stacks feature. By default, this feature is enabled if in-process features are enabled..
         /// </summary>
-        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKey {
+        public static string DisplayAttributeDescription_CallStacksOptions_Enabled {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKey", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_CallStacksOptions_Enabled", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name of the account key used to look up the value from the Egress options Properties map..
+        ///   Looks up a localized string similar to The duration of time in which the artifact is collected..
         /// </summary>
-        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKeyName {
+        public static string DisplayAttributeDescription_CollectArtifactOptions_Duration {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountKeyName", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectArtifactOptions_Duration", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The URI of the Azure blob storage account..
+        ///   Looks up a localized string similar to The name of the egress provider to which the artifact is egressed..
         /// </summary>
-        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountUri {
+        public static string DisplayAttributeDescription_CollectArtifactOptions_Egress {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_AccountUri", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The prefix to prepend to the blob name..
-        /// </summary>
-        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_BlobPrefix {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_BlobPrefix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name of the container to which the blob will be egressed. If egressing to the root container, use the &quot;$root&quot; sentinel value..
-        /// </summary>
-        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_ContainerName {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_ContainerName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Client id of the Managed Identity used for authentication. The identity must have permissions to create containers and write to blob storage..
-        /// </summary>
-        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientId {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_ManagedIdentityClientI" +
-                        "d", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts..
-        /// </summary>
-        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_Metadata {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_Metadata", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The URI of the Azure queue storage account..
-        /// </summary>
-        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueAccountUri", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name of the queue to which a message will be dispatched upon writing to a blob..
-        /// </summary>
-        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueName {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The shared access signature (SAS) used to access the Azure queue storage account..
-        /// </summary>
-        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignature {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSigna" +
-                        "ture", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name of the queue shared access signature (SAS) used to look up the value from the Egress options Properties map..
-        /// </summary>
-        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSignatureName {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_QueueSharedAccessSigna" +
-                        "tureName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The shared access signature (SAS) used to access the Azure blob and optionally queue storage accounts..
-        /// </summary>
-        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignature {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignature", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name of the shared access signature (SAS) used to look up the value from the Egress options Properties map..
-        /// </summary>
-        public static string DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignatureName {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureBlobEgressProviderOptions_SharedAccessSignatureN" +
-                        "ame", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name of the egress provider to which the dump is egressed..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectDumpOptions_Egress {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectDumpOptions_Egress", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectArtifactOptions_Egress", resourceCulture);
             }
         }
         
@@ -398,11 +295,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name of the egress provider to which the GC dump is egressed..
+        ///   Looks up a localized string similar to The filters that determine which exceptions should be included/excluded when collecting exceptions..
         /// </summary>
-        public static string DisplayAttributeDescription_CollectGCDumpOptions_Egress {
+        public static string DisplayAttributeDescription_CollectExceptionsOptions_Filters {
             get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectGCDumpOptions_Egress", resourceCulture);
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectExceptionsOptions_Filters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format used to display the exceptions..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectExceptionsOptions_Format {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectExceptionsOptions_Format", resourceCulture);
             }
         }
         
@@ -617,24 +523,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The duration of time in which live metrics are collected..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectLiveMetricsOptions_Duration {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectLiveMetricsOptions_Duration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name of the egress provider to which the live metrics are egressed..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectLiveMetricsOptions_Egress {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectLiveMetricsOptions_Egress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Determines if the default counter providers should be used..
         /// </summary>
         public static string DisplayAttributeDescription_CollectLiveMetricsOptions_IncludeDefaultProviders {
@@ -671,24 +559,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The duration of time in which logs are collected..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectLogsOptions_Duration {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectLogsOptions_Duration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name of the egress provider to which the logs are egressed..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectLogsOptions_Egress {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectLogsOptions_Egress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to A custom mapping of logger categories to log levels that describes at what level a log statement that matches one of the given categories should be captured..
         /// </summary>
         public static string DisplayAttributeDescription_CollectLogsOptions_FilterSpecs {
@@ -716,15 +586,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name of the egress provider to which the call stacks are egressed..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectStacksOptions_Egress {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectStacksOptions_Egress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The format used to display the call stacks..
         /// </summary>
         public static string DisplayAttributeDescription_CollectStacksOptions_Format {
@@ -739,24 +600,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_CollectTraceOptions_BufferSizeMegabytes {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_BufferSizeMegabytes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The duration of time in which trace events are collected..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectTraceOptions_Duration {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_Duration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name of the egress provider to which the trace is egressed..
-        /// </summary>
-        public static string DisplayAttributeDescription_CollectTraceOptions_Egress {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_CollectTraceOptions_Egress", resourceCulture);
             }
         }
         
@@ -959,15 +802,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mapping of Azure blob storage egress provider names to their options..
-        /// </summary>
-        public static string DisplayAttributeDescription_EgressOptions_AzureBlobStorage {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_AzureBlobStorage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Mapping of file system egress provider names to their options..
         /// </summary>
         public static string DisplayAttributeDescription_EgressOptions_FileSystem {
@@ -982,15 +816,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_EgressOptions_Properties {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_Properties", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Mapping of S3 storage egress provider names to their options..
-        /// </summary>
-        public static string DisplayAttributeDescription_EgressOptions_S3Storage {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_EgressOptions_S3Storage", resourceCulture);
             }
         }
         
@@ -1094,6 +919,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The filters that determine which exceptions should be included/excluded when collecting exceptions..
+        /// </summary>
+        public static string DisplayAttributeDescription_ExceptionsOptions_CollectionFilters {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ExceptionsOptions_CollectionFilters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enables or disables the exceptions feature. By default, this feature is enabled if in-process features are enabled..
+        /// </summary>
+        public static string DisplayAttributeDescription_ExceptionsOptions_Enabled {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ExceptionsOptions_Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of top-level exceptions to keep in the cache before automatically removing older exceptions. A top-level exception is one that is not an inner exception of another exception..
+        /// </summary>
+        public static string DisplayAttributeDescription_ExceptionsOptions_TopLevelLimit {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ExceptionsOptions_TopLevelLimit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The arguments to pass to the executable..
         /// </summary>
         public static string DisplayAttributeDescription_ExecuteOptions_Arguments {
@@ -1176,11 +1028,38 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Options for the in-process call stacks feature..
+        /// </summary>
+        public static string DisplayAttributeDescription_InProcessFeaturesOptions_CallStacks {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_InProcessFeaturesOptions_CallStacks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allows features that require diagnostic components to be loaded into target processes to be enabled. These features may have minimal performance impact on target processes..
         /// </summary>
         public static string DisplayAttributeDescription_InProcessFeaturesOptions_Enabled {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_InProcessFeaturesOptions_Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options for the in-process exceptions feature..
+        /// </summary>
+        public static string DisplayAttributeDescription_InProcessFeaturesOptions_Exceptions {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_InProcessFeaturesOptions_Exceptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options for the in-process parameter capturing feature..
+        /// </summary>
+        public static string DisplayAttributeDescription_InProcessFeaturesOptions_ParameterCapturing {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_InProcessFeaturesOptions_ParameterCapturing", resourceCulture);
             }
         }
         
@@ -1401,6 +1280,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enables or disables the parameter capturing feature. By default, this feature is not enabled..
+        /// </summary>
+        public static string DisplayAttributeDescription_ParameterCapturingOptions_Enabled {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ParameterCapturingOptions_Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Performs a match based on the contents of the command passed to launch the process on the system; this typically includes the executable path and arguments to the process..
         /// </summary>
         public static string DisplayAttributeDescription_ProcessFilterDescriptor_CommandLine {
@@ -1505,96 +1393,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_ProcessFilterType_Exact {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_ProcessFilterType_Exact", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The AWS AccessKeyId for IAM user to login.
-        /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_AccessKeyId {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_AccessKeyId", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The AWS profile name to be used for login.
-        /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfileName {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfileName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The AWS profile path, if profile details not stored in default path.
-        /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfilePath {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_AWSProfilePath", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name of the bucket used for storage.
-        /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_BucketName {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_BucketName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The endpoint of S3 to connect to. This is optional in case of using AWS storage..
-        /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_Endpoint {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_Endpoint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The boolean flag set for AWS connection configuration ForcePathStyle option..
-        /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_ForcePathStyle {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_ForcePathStyle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A boolean flag indicates if the return value of egress provider should be a pre-signed URL or only the bucket name and object id of uploaded entry..
-        /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_GeneratePreSignedUrl {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_GeneratePreSignedUrl", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The amount of time the generated pre-signed url will be accessible..
-        /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiry {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiry", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name of the S3 region.
-        /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_RegionName {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_RegionName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The AWS SecretAccessKey associated AccessKeyId for IAM user to login.
-        /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey", resourceCulture);
             }
         }
         
@@ -1707,29 +1505,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} field, {1} field, or {2} field is required..
+        ///   Looks up a localized string similar to The {0} field, {1} field, {2} field, or {3} field is required..
         /// </summary>
         public static string ErrorMessage_CredentialsMissing {
             get {
                 return ResourceManager.GetString("ErrorMessage_CredentialsMissing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The {0} field is required..
-        /// </summary>
-        public static string ErrorMessage_EgressS3FailedMissingOption {
-            get {
-                return ResourceManager.GetString("ErrorMessage_EgressS3FailedMissingOption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to S3 storage egress failed: Neither the secrets file nor the password are specified..
-        /// </summary>
-        public static string ErrorMessage_EgressS3FailedMissingSecrets {
-            get {
-                return ResourceManager.GetString("ErrorMessage_EgressS3FailedMissingSecrets", resourceCulture);
             }
         }
         

@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
@@ -103,9 +102,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             TimeSpan ClockIncrementDuration = TimeSpan.FromMilliseconds(10);
 
-            MockSystemClock clock = new();
+            MockTimeProvider timeProvider = new();
             ManualTriggerService triggerService = new();
-            CallbackActionService callbackService = new(_outputHelper, clock);
+            CallbackActionService callbackService = new(_outputHelper, timeProvider);
 
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
@@ -158,7 +157,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         StateReason = Strings.Message_CollectionRuleStateReason_ExecutingActions
                     }, TestRuleName);
 
-                    clock.Increment(ClockIncrementDuration);
+                    timeProvider.Increment(ClockIncrementDuration);
 
                     await startedSource.WithCancellation(cancellationSource.Token);
 
@@ -180,7 +179,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 _outputHelper,
                 services =>
                 {
-                    services.AddSingleton<ISystemClock>(clock);
+                    services.AddSingleton<TimeProvider>(timeProvider);
                     services.RegisterManualTrigger(triggerService);
                     services.RegisterDelayedTestAction(callbackService);
                 });
@@ -198,9 +197,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             TimeSpan ExpectedSlidingWindowDurationCountdown = TimeSpan.FromSeconds(1);
             TimeSpan ClockIncrementDuration = TimeSpan.FromMilliseconds(10);
 
-            MockSystemClock clock = new();
+            MockTimeProvider timeProvider = new();
             ManualTriggerService triggerService = new();
-            CallbackActionService callbackService = new(_outputHelper, clock);
+            CallbackActionService callbackService = new(_outputHelper, timeProvider);
 
             return CollectionRulePipelineTestsHelper.ExecuteScenario(
                 appTfm,
@@ -231,7 +230,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         callbacks,
                         IterationCount,
                         ExpectedActionExecutionCount,
-                        clock,
+                        timeProvider,
                         ClockIncrementDuration,
                         completesOnLastExpectedIteration: false,
                         cancellationSource.Token);
@@ -247,7 +246,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         SlidingWindowDurationCountdown = ExpectedSlidingWindowDurationCountdown
                     }, TestRuleName);
 
-                    clock.Increment(2 * SlidingWindowDuration);
+                    timeProvider.Increment(2 * SlidingWindowDuration);
 
                     CompareCollectionRuleDetailedDescriptions(pipeline, new()
                     {
@@ -265,7 +264,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         callbacks,
                         IterationCount,
                         ExpectedActionExecutionCount,
-                        clock,
+                        timeProvider,
                         ClockIncrementDuration,
                         completesOnLastExpectedIteration: false,
                         cancellationSource.Token);
@@ -288,7 +287,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 _outputHelper,
                 services =>
                 {
-                    services.AddSingleton<ISystemClock>(clock);
+                    services.AddSingleton<TimeProvider>(timeProvider);
                     services.RegisterManualTrigger(triggerService);
                     services.RegisterTestAction(callbackService);
                 });
@@ -350,9 +349,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             TimeSpan ClockIncrementDuration = TimeSpan.FromMilliseconds(10);
 
-            MockSystemClock clock = new();
+            MockTimeProvider timeProvider = new();
             ManualTriggerService triggerService = new();
-            CallbackActionService callbackService = new(_outputHelper, clock);
+            CallbackActionService callbackService = new(_outputHelper, timeProvider);
 
             return CollectionRulePipelineTestsHelper.ExecuteScenario(
                 appTfm,
@@ -381,7 +380,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         callbacks,
                         ExpectedActionExecutionCount,
                         ExpectedActionExecutionCount,
-                        clock,
+                        timeProvider,
                         ClockIncrementDuration,
                         completesOnLastExpectedIteration: true,
                         cancellationSource.Token);
@@ -403,7 +402,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 _outputHelper,
                 services =>
                 {
-                    services.AddSingleton<ISystemClock>(clock);
+                    services.AddSingleton<TimeProvider>(timeProvider);
                     services.RegisterManualTrigger(triggerService);
                     services.RegisterTestAction(callbackService);
                 });

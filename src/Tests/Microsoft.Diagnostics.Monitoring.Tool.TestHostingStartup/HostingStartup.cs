@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
         {
             builder.ConfigureServices((context, services) =>
             {
+                services.AddSingleton<ExtensionRepository, BuildOutputExtensionRepository>();
                 services.AddSingleton<ISharedLibraryInitializer, BuildOutputSharedLibraryInitializer>();
             });
         }

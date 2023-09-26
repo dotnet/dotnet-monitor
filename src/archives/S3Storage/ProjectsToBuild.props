@@ -1,0 +1,10 @@
+<Project>
+  <ItemGroup>
+    <ProjectToBuild Include="$(MSBuildThisFileDirectory)S3Storage-archive.proj">
+      <AdditionalProperties>TargetFramework=$(LatestTargetFramework);RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
+    </ProjectToBuild>
+    <ProjectToBuild Include="$(MSBuildThisFileDirectory)S3Storage-symbols.proj">
+      <AdditionalProperties>TargetFramework=$(LatestTargetFramework);RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
+    </ProjectToBuild>
+  </ItemGroup>
+</Project>

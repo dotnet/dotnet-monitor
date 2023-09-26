@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,13 +26,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             List<IConfigurationSource> overrideSource = null)
         {
             IHost host = CreateHost(outputHelper, setup, servicesCallback, loggingCallback, overrideSource);
-
             try
             {
+                //It is necessary to start the host so that the OperationsStore background service is started.
+                await host.StartAsync();
                 await hostCallback(host);
             }
             finally
             {
+                await host.StopAsync();
                 await DisposableHelper.DisposeAsync(host);
             }
         }
@@ -61,7 +64,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             Action<RootOptions> setup,
             Action<IServiceCollection> servicesCallback,
             Action<ILoggingBuilder> loggingCallback = null,
-            List<IConfigurationSource> overrideSource = null)
+            List<IConfigurationSource> overrideSource = null,
+            HostBuilderSettings settings = null)
         {
             return new HostBuilder()
                 .ConfigureAppConfiguration(builder =>
@@ -93,13 +97,23 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 .ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
                 {
                     services.AddSingleton<ITestOutputHelper>(outputHelper);
-                    services.AddSingleton(RealSystemClock.Instance);
+                    services.AddSingleton(TimeProvider.System);
                     services.ConfigureGlobalCounter(context.Configuration);
                     services.ConfigureCollectionRuleDefaults(context.Configuration);
                     services.ConfigureTemplates(context.Configuration);
                     services.AddSingleton<OperationTrackerService>();
                     services.ConfigureCollectionRules();
+
+                    services.ConfigureExtensions();
+                    if (settings != null)
+                    {
+                        services.AddSingleton<IDotnetToolsFileSystem, TestDotnetToolsFileSystem>();
+                        services.ConfigureExtensionLocations(settings);
+                    }
+
                     services.ConfigureEgress();
+                    services.AddSingleton<IRequestLimitTracker, RequestLimitTracker>();
+                    services.ConfigureOperationStore();
 
                     services.ConfigureDiagnosticPort(context.Configuration);
 
@@ -111,6 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
                     services.AddSingleton<IMetricsOperationFactory, MetricsOperationFactory>();
                     services.AddSingleton<ITraceOperationFactory, TraceOperationFactory>();
+                    services.AddSingleton<IGCDumpOperationFactory, GCDumpOperationFactory>();
                     servicesCallback?.Invoke(services);
                 })
                 .Build();

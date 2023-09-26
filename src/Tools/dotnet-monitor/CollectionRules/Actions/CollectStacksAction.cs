@@ -2,14 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading;
-using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
@@ -23,7 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, CollectStacksOptions options)
+        public ICollectionRuleAction Create(IProcessInfo processInfo, CollectStacksOptions options)
         {
             if (null == options)
             {
@@ -33,56 +29,39 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ValidationContext context = new(options, _serviceProvider, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            return new CollectStacksAction(_serviceProvider, endpointInfo, options);
+            return new CollectStacksAction(_serviceProvider, processInfo, options);
         }
     }
 
-    internal sealed class CollectStacksAction : CollectionRuleActionBase<CollectStacksOptions>
+    internal sealed class CollectStacksAction :
+        CollectionRuleEgressActionBase<CollectStacksOptions>
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ProfilerChannel _profilerChannel;
+        private readonly IStacksOperationFactory _operationFactory;
 
-        public CollectStacksAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectStacksOptions options) : base(endpointInfo, options)
+        public CollectStacksAction(IServiceProvider serviceProvider, IProcessInfo processInfo, CollectStacksOptions options)
+            : base(serviceProvider, processInfo, options)
         {
-            _serviceProvider = serviceProvider;
-            _profilerChannel = _serviceProvider.GetRequiredService<ProfilerChannel>();
+            _operationFactory = serviceProvider.GetRequiredService<IStacksOperationFactory>();
         }
 
-        protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(TaskCompletionSource<object> startCompletionSource, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
+        protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata collectionRuleMetadata)
         {
-            bool isPlainText = Options.GetFormat() == CallStackFormat.PlainText;
-
-            string fileName = StackUtilities.GenerateStacksFilename(EndpointInfo, isPlainText);
-
             KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Stacks, EndpointInfo);
+
+            IArtifactOperation stacksOperation = _operationFactory.Create(EndpointInfo, MapCallStackFormat(Options.GetFormat()));
+
             EgressOperation egressOperation = new EgressOperation(
-                async (outputStream, token) =>
-                {
-                    await StackUtilities.CollectStacksAsync(startCompletionSource, EndpointInfo, _profilerChannel, MapCallstackFormat(Options.GetFormat()), outputStream, token);
-                },
+                stacksOperation,
                 Options.Egress,
-                fileName,
-                EndpointInfo,
-                ContentTypes.ApplicationOctetStream,
+                ProcessInfo,
                 scope,
-                collectionRuleMetadata);
+                tags: null,
+                collectionRuleMetadata: collectionRuleMetadata);
 
-            ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
-            if (null != result.Exception)
-            {
-                throw new CollectionRuleActionException(result.Exception);
-            }
-
-            return new CollectionRuleActionResult()
-            {
-                OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    { CollectionRuleActionConstants.EgressPathOutputValueName, result.Result.Value }
-                }
-            };
+            return egressOperation;
         }
 
-        private static StackFormat MapCallstackFormat(CallStackFormat format) =>
+        private static StackFormat MapCallStackFormat(CallStackFormat format) =>
             format switch
             {
                 CallStackFormat.Json => StackFormat.Json,

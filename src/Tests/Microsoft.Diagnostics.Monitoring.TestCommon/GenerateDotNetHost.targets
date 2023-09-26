@@ -7,7 +7,7 @@
    -->
 
   <PropertyGroup>
-    <DotNetHostGeneratedFileName>$(IntermediateOutputPath)/$(TargetFramework)/DotNetHost.g.cs</DotNetHostGeneratedFileName>
+    <DotNetHostGeneratedFileName>$(IntermediateOutputPath)/$(TargetFramework)/TestDotNetHost.g.cs</DotNetHostGeneratedFileName>
     <NetCoreAppVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">$(MicrosoftNETCoreApp31Version)</NetCoreAppVersion>
     <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net5.0'">$(MicrosoftNETCoreApp50Version)</NetCoreAppVersion>
     <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net6.0'">$(MicrosoftNETCoreApp60Version)</NetCoreAppVersion>
@@ -22,7 +22,7 @@
 
   <Target Name="GenerateDotNetHostSourceFile" Inputs="$(VersionsPropsPath)" Outputs="$(DotNetHostGeneratedFileName)">
     <PropertyGroup>
-      <TemplateContent>$([System.IO.File]::ReadAllText('DotNetHost.cs.template'))</TemplateContent>
+      <TemplateContent>$([System.IO.File]::ReadAllText('TestDotNetHost.cs.template'))</TemplateContent>
       <TransformedContent>$(TemplateContent.Replace('$MicrosoftNetCoreAppVersion$', '$(NetCoreAppVersion)'))</TransformedContent>
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreAppVersion$', '$(AspNetCoreAppVersion)'))</TransformedContent>
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftNetCoreApp31Version$', '$(MicrosoftNETCoreApp31Version)'))</TransformedContent>

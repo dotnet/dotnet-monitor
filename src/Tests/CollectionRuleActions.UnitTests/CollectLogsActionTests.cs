@@ -11,11 +11,11 @@ using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -51,7 +51,7 @@ namespace CollectionRuleActions.UnitTests
         /// at the log level specified in the request body.
         /// </summary>
         /// 
-        [Theory]
+        [Theory(Skip = "https://github.com/dotnet/dotnet-monitor/issues/4741")]
         [MemberData(nameof(ActionTestsHelper.GetTfmsAndLogFormat), MemberType = typeof(ActionTestsHelper))]
         public Task LogsDefaultLevelFallbackActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {
@@ -87,7 +87,7 @@ namespace CollectionRuleActions.UnitTests
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
-        [Theory]
+        [Theory(Skip = "https://github.com/dotnet/dotnet-monitor/issues/4741")]
         [MemberData(nameof(ActionTestsHelper.GetTfmsAndLogFormat), MemberType = typeof(ActionTestsHelper))]
         public Task LogsUseAppFiltersViaBodyActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {
@@ -121,7 +121,7 @@ namespace CollectionRuleActions.UnitTests
         /// Test that log events are collected for the categories and levels specified by the application
         /// and for the categories and levels specified in the filter specs.
         /// </summary>
-        [Theory]
+        [Theory(Skip = "https://github.com/dotnet/dotnet-monitor/issues/4741")]
         [MemberData(nameof(ActionTestsHelper.GetTfmsAndLogFormat), MemberType = typeof(ActionTestsHelper))]
         public Task LogsUseAppFiltersAndFilterSpecsActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {
@@ -160,7 +160,7 @@ namespace CollectionRuleActions.UnitTests
         /// <summary>
         /// Test that log events are collected for wildcard categories.
         /// </summary>
-        [Theory]
+        [Theory(Skip = "https://github.com/dotnet/dotnet-monitor/issues/4741")]
         [MemberData(nameof(ActionTestsHelper.GetTfmsAndLogFormat), MemberType = typeof(ActionTestsHelper))]
         public Task LogsWildcardActionTest(TargetFrameworkMoniker tfm, LogFormat logFormat)
         {
@@ -245,13 +245,13 @@ namespace CollectionRuleActions.UnitTests
                 await using AppRunner runner = _endpointUtilities.CreateAppRunner(Assembly.GetExecutingAssembly(), sourceHolder.TransportName, tfm);
                 runner.ScenarioName = TestAppScenarios.Logger.Name;
 
-                Task<IEndpointInfo> newEndpointInfoTask = endpointInfoCallback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
+                Task<IProcessInfo> processInfoTask = endpointInfoCallback.WaitAddedProcessInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
                 await runner.ExecuteAsync(async () =>
                 {
-                    IEndpointInfo endpointInfo = await newEndpointInfoTask;
+                    IProcessInfo processInfo = await processInfoTask;
 
-                    ICollectionRuleAction action = factory.Create(endpointInfo, options);
+                    ICollectionRuleAction action = factory.Create(processInfo, options);
 
                     using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(CommonTestTimeouts.LogsTimeout);
 
@@ -277,9 +277,7 @@ namespace CollectionRuleActions.UnitTests
             },
             services =>
             {
-                services.RegisterProvider<PipeEgressOptions, PipeEgressProvider>(PipeEgressProvider.Name);
-                services.AddSingleton<IConfigureOptions<PipeEgressOptions>, PipeEgressConfigureNamedOptions>(
-                    _ => new PipeEgressConfigureNamedOptions(logEntriesPipe.Writer));
+                services.AddSingleton<IWellKnownExtensionFactory>(sp => new PipeEgressExtensionFactory(logEntriesPipe.Writer));
             },
             overrideSource: new List<IConfigurationSource>()
             {
@@ -287,7 +285,7 @@ namespace CollectionRuleActions.UnitTests
                 {
                     InitialData = new Dictionary<string, string>()
                     {
-                        { ConfigurationPath.Combine(ConfigurationKeys.Egress, PipeEgressProvider.Name, ActionTestsConstants.ExpectedEgressProvider), "UnusedOptions" }
+                        { ConfigurationPath.Combine(ConfigurationKeys.Egress, PipeEgressExtension.Name, ActionTestsConstants.ExpectedEgressProvider), "UnusedOptions" }
                     }
                 }
             });
@@ -301,8 +299,8 @@ namespace CollectionRuleActions.UnitTests
                 // fail frequently causing insertions and builds with unrelated changes to
                 // fail. See https://github.com/dotnet/dotnet-monitor/issues/807 for details.
                 return !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ||
-                    DotNetHost.RuntimeVersion.Major != 3 ||
-                    DotNetHost.RuntimeVersion.Minor != 1;
+                    TestDotNetHost.RuntimeVersion.Major != 3 ||
+                    TestDotNetHost.RuntimeVersion.Minor != 1;
             }
         }
     }

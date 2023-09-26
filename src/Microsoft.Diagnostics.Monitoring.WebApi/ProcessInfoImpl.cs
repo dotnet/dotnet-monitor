@@ -42,6 +42,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ProcessName = processName ?? ProcessFieldUnknownValue;
         }
 
+        public static async Task<IProcessInfo> FromEndpointInfoAsync(IEndpointInfo endpointInfo, TimeSpan? timeout = null)
+        {
+            using CancellationTokenSource tokenSource = new CancellationTokenSource(timeout ?? ExtendedProcessInfoTimeout);
+            return await FromEndpointInfoAsync(endpointInfo, tokenSource.Token);
+        }
+
         // Creates an IProcessInfo object from the IEndpointInfo. Attempts to get the command line using event pipe
         // if the endpoint information doesn't provide it. The cancellation token can be used to timebox this fallback
         // mechanism.

@@ -3,14 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -22,88 +15,58 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
     /// <summary>
     /// Egress service implementation required by the REST server.
     /// </summary>
-    internal class EgressService : IEgressService, IDisposable
+    internal class EgressService : IEgressService
     {
-        private readonly IDisposable _changeRegistration;
-        private readonly ILogger<EgressService> _logger;
-        private readonly IEnumerable<IEgressProviderConfigurationProvider> _providers;
-        private readonly IDictionary<string, string> _providerTypeMap;
-        private readonly IDictionary<string, Type> _optionsTypeMap;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly EgressProviderSource _source;
 
-        public EgressService(
-            IServiceProvider serviceProvider,
-            ILogger<EgressService> logger,
-            IConfiguration configuration,
-            IEnumerable<IEgressProviderConfigurationProvider> providers)
+        public EgressService(EgressProviderSource source)
         {
-            _logger = logger;
-            _providers = providers;
-            _providerTypeMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            _optionsTypeMap = new ConcurrentDictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
-            _serviceProvider = serviceProvider;
+            _source = source;
 
-            _changeRegistration = ChangeToken.OnChange(
-                () => configuration.GetEgressSection().GetReloadToken(),
-                Reload);
-
-            Reload();
+            _source.Initialize();
         }
 
-        public void Dispose()
+        public void ValidateProviderExists(string providerName)
         {
-            _changeRegistration.Dispose();
-        }
-
-        public void ValidateProvider(string providerName)
-        {
-            // GetProvider should never return null so no need to check; it will throw
+            // GetProviderType should never return null so no need to check; it will throw
             // if the egress provider could not be located or instantiated.
-            GetProvider(providerName);
-        }
-
-        public async Task<EgressResult> EgressAsync(string providerName, Func<CancellationToken, Task<Stream>> action, string fileName, string contentType, IEndpointInfo source, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
-        {
-            string value = await GetProvider(providerName).EgressAsync(
-                providerName,
-                action,
-                await CreateSettings(source, fileName, contentType, collectionRuleMetadata, token),
-                token);
-
-            return new EgressResult(value);
+            _ = _source.GetEgressProvider(providerName);
         }
 
         public async Task<EgressResult> EgressAsync(string providerName, Func<Stream, CancellationToken, Task> action, string fileName, string contentType, IEndpointInfo source, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
-            string value = await GetProvider(providerName).EgressAsync(
+            IEgressExtension extension = _source.GetEgressProvider(providerName);
+
+            EgressArtifactResult result = await extension.EgressArtifact(
                 providerName,
-                action,
                 await CreateSettings(source, fileName, contentType, collectionRuleMetadata, token),
+                action,
                 token);
 
-            return new EgressResult(value);
+            if (!result.Succeeded)
+            {
+                throw new EgressException(Strings.ErrorMessage_EgressExtensionFailed);
+            }
+
+            return new EgressResult(result.ArtifactPath);
         }
 
-        private IEgressProviderInternal GetProvider(string providerName)
+        public async Task ValidateProviderOptionsAsync(string providerName, CancellationToken token)
         {
-            if (!_providerTypeMap.TryGetValue(providerName, out string providerType))
-            {
-                throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, providerName));
-            }
+            IEgressExtension extension = _source.GetEgressProvider(providerName);
 
-            if (!_optionsTypeMap.TryGetValue(providerType, out Type optionsType))
-            {
-                throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderTypeNotRegistered, providerName));
-            }
+            EgressArtifactResult result = await extension.ValidateProviderAsync(
+                providerName,
+                new EgressArtifactSettings(),
+                token);
 
-            // Get the egress provider that matches the options type and return the weaker-typed
-            // interface in order to allow egressing from the service without having to use reflection
-            // to invoke it.
-            return (IEgressProviderInternal)_serviceProvider.GetRequiredService(
-                typeof(IEgressProviderInternal<>).MakeGenericType(optionsType));
+            if (!result.Succeeded)
+            {
+                throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderFailedValidation, providerName, result.FailureMessage));
+            }
         }
 
-        private async static Task<EgressArtifactSettings> CreateSettings(IEndpointInfo source, string fileName, string contentType, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
+        private static async Task<EgressArtifactSettings> CreateSettings(IEndpointInfo source, string fileName, string contentType, CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
         {
             EgressArtifactSettings settings = new();
             settings.Name = fileName;
@@ -141,33 +104,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private static void AddMetadata(EgressArtifactSettings settings, string key, string value)
         {
             settings.Metadata.Add($"{ToolIdentifiers.StandardPrefix}{key}", value);
-        }
-
-        private void Reload()
-        {
-            _providerTypeMap.Clear();
-            _optionsTypeMap.Clear();
-
-            // Deliberately fill the maps in the reverse order of how they are accessed
-            // by the GetProvider method to avoid indeterminate accessing of the option
-            // information.
-            foreach (IEgressProviderConfigurationProvider provider in _providers)
-            {
-                _optionsTypeMap.Add(provider.ProviderType, provider.OptionsType);
-
-                foreach (IConfigurationSection optionsSection in provider.Configuration.GetChildren())
-                {
-                    string providerName = optionsSection.Key;
-                    if (_providerTypeMap.TryGetValue(providerName, out string existingProviderType))
-                    {
-                        _logger.DuplicateEgressProviderIgnored(providerName, provider.ProviderType, existingProviderType);
-                    }
-                    else
-                    {
-                        _providerTypeMap.Add(providerName, provider.ProviderType);
-                    }
-                }
-            }
         }
     }
 }

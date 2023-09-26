@@ -1,0 +1,18 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using Microsoft.Diagnostics.Tools.Monitor;
+
+namespace Microsoft.Diagnostics.Monitoring
+{
+    public static class TestProcessCleanupIdentifiers
+    {
+
+        public static class EnvironmentVariables
+        {
+            private const string TestProcessCleanupPrefix = ToolIdentifiers.StandardPrefix + "TestProcessCleanup_";
+
+            public const string ParentPid = TestProcessCleanupPrefix + nameof(ParentPid);
+        }
+    }
+}

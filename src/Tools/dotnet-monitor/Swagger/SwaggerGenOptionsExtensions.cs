@@ -6,10 +6,12 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
 using Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
+using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
-using System.IO;
+using System.Reflection;
+using System.Xml.XPath;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
 {
@@ -27,8 +29,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
             options.OperationFilter<UnauthorizedResponseOperationFilter>();
 
             string documentationFile = $"{typeof(DiagController).Assembly.GetName().Name}.xml";
-            string documentationPath = Path.Combine(AppContext.BaseDirectory, documentationFile);
-            options.IncludeXmlComments(documentationPath);
+            options.IncludeXmlComments(() => new XPathDocument(Assembly.GetExecutingAssembly().GetManifestResourceStream(documentationFile)));
+
+            // Make sure TimeSpan is represented as a string instead of a full object type
+            options.MapType<TimeSpan>(() => new OpenApiSchema() { Type = "string", Format = "time-span", Example = new OpenApiString("00:00:30") });
         }
 
         public static void AddBearerTokenAuthOption(this SwaggerGenOptions options, string securityDefinitionName)

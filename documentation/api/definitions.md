@@ -5,39 +5,49 @@
 
 >**Note**: Some features are [experimental](./../experimental.md) and are denoted as `**[Experimental]**` in this document.
 
-## **[Experimental]** CallStack (7.0+)
+## CallStack
+
+First Available: 8.0 Preview 7
 
 | Name | Type | Description |
 |---|---|---|
 | `threadId` | int | The native thread id of the managed thread. |
 | `threadName` | string | Optional name of the managed thread. |
-| `frames` | [CallStackFrame](#experimental-callstackframe-70)[] | Managed frame for the thread at the time of collection. |
+| `frames` | [CallStackFrame](#callstackframe)[] | Managed frame for the thread at the time of collection. |
 
-## **[Experimental]** CallStackFormat (7.0+)
+## CallStackFormat
+
+First Available: 8.0 Preview 7
 
 Enumeration that describes the output format of the collected call stacks.
 
 | Name | Description |
 |---|---|
-| `Json` | Stacks are formatted in Json. See [CallStackResult](#experimental-callstackresult-70). |
+| `Json` | Stacks are formatted in Json. See [CallStackResult](#callstackresult). |
 | `PlainText` | Stacks are formatted in plain text. |
 | `Speedscope` | Stacks are formatted in [speedscope](https://www.speedscope.app). Note that performance data is not present. |
 
-## **[Experimental]** CallStackFrame (7.0+)
+## CallStackFrame
+
+First Available: 8.0 Preview 7
 
 | Name | Type | Description |
 |---|---|---|
 | `methodName` | string | Name of the method for this frame. This includes generic parameters. |
-| `className` | string | Name of the class for this frame. This includes generic parameters. |
+| `typeName` | string | Name of the class for this frame. This includes generic parameters. |
 | `moduleName` | string | Name of the module for this frame. |
 
-## **[Experimental]** CallStackResult (7.0+)
+## CallStackResult
+
+First Available: 8.0 Preview 7
 
 | Name | Type | Description |
 |---|---|---|
-| `stacks` | [CallStack](#experimental-callstack-70)[] | List of all managed stacks at the time of collection. |
+| `stacks` | [CallStack](#callstack)[] | List of all managed stacks at the time of collection. |
 
-## CollectionRuleDescription (6.3+)
+## CollectionRuleDescription
+
+First Available: 6.3
 
 Object describing the basic state of a collection rule for the executing instance of `dotnet monitor`.
 
@@ -46,7 +56,9 @@ Object describing the basic state of a collection rule for the executing instanc
 | State | [CollectionRuleState](#collectionrulestate-63) | Indicates what state the collection rule is in for the current process. |
 | StateReason | string | Human-readable explanation for the current state of the collection rule. |
 
-## CollectionRuleDetailedDescription (6.3+)
+## CollectionRuleDetailedDescription
+
+First Available: 6.3
 
 Object describing the detailed state of a collection rule for the executing instance of `dotnet monitor`.
 
@@ -61,7 +73,9 @@ Object describing the detailed state of a collection rule for the executing inst
 | SlidingWindowDurationCountdown | TimeSpan? | The amount of time remaining before the collection rule will no longer be throttled. |
 | RuleFinishedCountdown | TimeSpan? | The amount of time remaining before the rule will stop monitoring a process after it has been applied to a process. If not specified, the rule will monitor the process with the trigger indefinitely. |
 
-## CollectionRuleState (6.3+)
+## CollectionRuleState
+
+First Available: 6.3
 
 Enumeration that describes the current state of the collection rule.
 
@@ -71,6 +85,16 @@ Enumeration that describes the current state of the collection rule.
 | `ActionExecuting` | Indicates that the collection has had its triggering conditions satisfied and is currently executing its action list. |
 | `Throttled` | Indicates that the collection rule is temporarily throttled because the ActionCountLimit has been reached within the ActionCountSlidingWindowDuration. |
 | `Finished` | Indicates that the collection rule has completed and will no longer trigger. |
+
+## CaptureParametersConfiguration
+
+First Available: 8.0 RC 1
+
+Object describing the list of methods to capture parameters for.
+
+| Name | Type | Description |
+|---|---|---|
+| `methods` | [MethodDescription](#methoddescription)[] | Array of methods to capture parameters for. |
 
 ## DotnetMonitorInfo
 
@@ -155,6 +179,60 @@ Object describing the list of event providers, keywords, event levels, and addit
 }
 ```
 
+## ExceptionFilter
+
+Object describing attributes of an exception to use for filtering. To be filtered, an exception must match **all** provided fields (e.g. if `typeName` and `exceptionType` are provided, the top frame of the exception's call stack must have that class name and the exception must be that type).
+
+| Name | Type | Description |
+|---|---|---|
+| `methodName` | string | The name of the top stack frame's method. |
+| `typeName` | string | The name of the top stack frame's type. |
+| `moduleName` | string | The name of the top stack frame's module. |
+| `exceptionType` | string | The type of the exception (e.g. "System.ObjectDisposedException"). |
+
+## ExceptionsConfiguration
+
+Object describing which exceptions should be included/excluded. To be filtered, an exception must match **any** of the `ExceptionConfiguration` in the list (e.g. if `include` is a list of three `ExceptionConfiguration`, exceptions only need to match one of the three in order to be included).
+
+| Name | Type | Description |
+|---|---|---|
+| `include` | [ExceptionFilter[]](#exceptionfilter) | The list of exceptions to include in the filter - anything not listed in the filter will not be included in the results. |
+| `exclude` | [ExceptionFilter[]](#exceptionfilter) | The list of exceptions to exclude in the filter - anything not listed in the filter will be included in the results. |
+
+## ExceptionInstance
+
+Object describing an exception instance.
+
+| Name | Type | Description |
+|---|---|---|
+| `id` | int | Unique identifier of the exception instance. |
+| `timestamp` | string | The UTC date and time in the ISO 8601 format of when the current exception was observed. |
+| `typeName` | string | The name of the current exception type, including the namespace and parent type names if it is a nested type. |
+| `moduleName` | string | The name of the module in which the current exception type exists. |
+| `message` | string | The message that describes the current exception. |
+| `innerExceptions` | int[] | The IDs of the [ExceptionInstance](#exceptioninstance)s that are the inner exceptions of the current exception. |
+| `stack` | [CallStack](#callstack) | The call stack of the current exception, if it was thrown. |
+
+## ExceptionFormat
+
+First Available: 8.0 RC 1
+
+Enumeration that describes the format to use when outputting exceptions.
+
+| Name |
+|---|
+| `JsonSequence` |
+| `NewlineDelimitedJson` |
+| `PlainText` |
+
+## ExtensionMode
+
+Enumeration that describes additional execution modes supported by the extension; the ability to execute is assumed.
+
+| Name |
+|---|
+| `Validate` |
+
 ## LogEntry
 
 Object describing a log entry from a target process.
@@ -238,6 +316,16 @@ The following configuration will collect logs for the Microsoft.AspNetCore.Hosti
 }
 ```
 
+## MethodDescription
+
+Object describing a method.
+
+| Name | Type | Description |
+|---|---|---|
+| `moduleName`| string | The name of the module that the method belongs to. |
+| `typeName` | string | The name of the type that the method belongs to. |
+| `methodName` | string | The name of the method, not including parameters. |
+
 ## Metric
 
 Object describing a metric from the application.
@@ -269,7 +357,9 @@ Enumeration that describes the type of metrics a provider consumes.
 | `code` | string | Error code representing the failure. |
 | `message` | string | Detailed error message. |
 
-## OperationProcessInfo (6.3+)
+## OperationProcessInfo
+
+First Available: 6.3
 
 The process on which the egress operation is performed.
 

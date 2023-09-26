@@ -1,7 +1,6 @@
 <Project>
 
   <PropertyGroup>
-    <SharedPublishProjectProperties>SelfContained=false</SharedPublishProjectProperties>
     <SharedPublishProjectProperties>$(SharedPublishProjectProperties);UseAppHost=true</SharedPublishProjectProperties>
     <SharedPublishProjectProperties>$(SharedPublishProjectProperties);PackAsTool=false</SharedPublishProjectProperties>
   </PropertyGroup>

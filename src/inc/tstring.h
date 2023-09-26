@@ -17,12 +17,18 @@
 typedef std::u16string tstring;
 #define _T(str) u##str
 
+#define QUOTE_MACRO_T_HELPER(x) u###x
+#define QUOTE_MACRO_T(x) QUOTE_MACRO_T_HELPER(x)
+
 typedef std::codecvt_utf8_utf16<WCHAR> codecvt_utf8_utf16_wchar;
 
 #else // TARGET_UNIX
 
 typedef std::wstring tstring;
 #define _T(str) L##str
+
+#define QUOTE_MACRO_T_HELPER(x) L###x
+#define QUOTE_MACRO_T(x) QUOTE_MACRO_T_HELPER(x)
 
 typedef std::codecvt_utf8<WCHAR> codecvt_utf8_utf16_wchar;
 

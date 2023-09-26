@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             //
             // Workaround: for now allow Windows environments to skip Azurite based tests due to configuration
             // issues in the Pipeline environment.
-            bool mustInitialize = !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TF_BUILD"));
+            bool mustInitialize = !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TEST_AZURITE_MUST_INITIALIZE"));
 
             byte[] key = new byte[32];
             RandomNumberGenerator.Fill(key);

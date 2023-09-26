@@ -13,7 +13,6 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -214,7 +213,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddProcessNameFilter(DotNetHost.ExeNameWithoutExtension);
+                        .AddProcessNameFilter(TestDotNetHost.ExeNameWithoutExtension);
 
                     startedTask = runner.WaitForCollectionRuleStartedAsync(DefaultRuleName);
                 });

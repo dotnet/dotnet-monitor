@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     try
                     {
-                        return await EndpointInfo.FromProcessIdAsync(pid, linkedToken);
+                        return await EndpointInfo.FromProcessIdAsync(pid, new NotSupportedServiceProvider(), linkedToken);
                     }
                     // Catch when timeout on waiting for EndpointInfo creation. Some runtime instances may be
                     // in a bad state and not respond to any requests on their diagnostic pipe; gracefully abandon

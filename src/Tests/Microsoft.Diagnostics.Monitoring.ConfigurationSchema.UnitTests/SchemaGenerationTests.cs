@@ -15,6 +15,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests
 {
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public class SchemaGenerationTests
     {
         private readonly ITestOutputHelper _outputHelper;
@@ -31,7 +32,10 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests
         private const string SchemaGeneratorName = "Microsoft.Diagnostics.Monitoring.ConfigurationSchema";
 
         private static readonly string SchemaGeneratorPath =
-            AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), SchemaGeneratorName);
+            AssemblyHelper.GetAssemblyArtifactBinPath(
+                Assembly.GetExecutingAssembly(),
+                SchemaGeneratorName,
+                TargetFrameworkMoniker.Net60);
 
         public SchemaGenerationTests(ITestOutputHelper outputHelper)
         {

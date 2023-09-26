@@ -1,0 +1,10 @@
+<Project>
+  <ItemGroup>
+    <ProjectToBuild Include="$(MSBuildThisFileDirectory)AzureBlobStorage-archive.proj">
+      <AdditionalProperties>TargetFramework=$(LatestTargetFramework);RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
+    </ProjectToBuild>
+    <ProjectToBuild Include="$(MSBuildThisFileDirectory)AzureBlobStorage-symbols.proj">
+      <AdditionalProperties>TargetFramework=$(LatestTargetFramework);RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
+    </ProjectToBuild>
+  </ItemGroup>
+</Project>

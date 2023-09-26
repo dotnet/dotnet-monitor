@@ -1,0 +1,5 @@
+{
+    "Name": "AzureBlobStorage",
+    "AssemblyFileName": "dotnet-monitor-egress-azureblobstorage",
+    "Modes": ["Validate"]
+}

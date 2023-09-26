@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,6 +29,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public Dictionary<string, string> Environment { get; } = new();
         public int ExitCode => _runner.HasExited ?
             _runner.ExitCode : throw new InvalidOperationException("Must call WaitForExitAsync before getting exit code.");
+
+        public bool HasExited => _runner.HasExited;
 
         public Task<int> ProcessIdTask => _processIdSource.Task;
 

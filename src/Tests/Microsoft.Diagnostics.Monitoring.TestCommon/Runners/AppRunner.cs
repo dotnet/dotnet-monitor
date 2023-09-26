@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -18,11 +19,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
     /// <summary>
     /// Runner for running the unit test application.
     /// </summary>
+    [DebuggerDisplay(@"\{AppRunner:{_runner.StateForDebuggerDisplay,nq}\}")]
     public sealed class AppRunner : IAsyncDisposable
     {
         private readonly LoggingRunnerAdapter _adapter;
 
         private readonly string _appPath;
+
+        private readonly string _startupHookPath;
 
         private readonly ITestOutputHelper _outputHelper;
 
@@ -59,9 +63,19 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public string DiagnosticPortPath { get; set; }
 
+        /// <summary>
+        /// Indicates whether the process should be suspended at startup via the diagnostic port.
+        /// </summary>
+        /// <remarks>
+        /// By default, the diagnostic port will suspend the target process.
+        /// </remarks>
+        public bool DiagnosticPortSuspend { get; set; } = true;
+
         public Dictionary<string, string> Environment => _adapter.Environment;
 
         public int ExitCode => _adapter.ExitCode;
+
+        public bool HasExited => _adapter.HasExited;
 
         public Task<int> ProcessIdTask => _adapter.ProcessIdTask;
 
@@ -70,11 +84,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public string ScenarioName { get; set; }
 
+        /// <summary>
+        /// Optional name of the sub scenario to run in the application.
+        /// </summary>
+        public string SubScenarioName { get; set; }
+
         public int AppId { get; }
 
-        public bool SetRuntimeIdentifier { get; set; } = true;
+        public bool SetRuntimeIdentifier { get; set; }
 
         public string ProfilerLogLevel { get; set; }
+
+        public bool EnableMonitorStartupHook { get; set; }
 
         public AppRunner(ITestOutputHelper outputHelper, Assembly testAssembly, int appId = 1, TargetFrameworkMoniker tfm = TargetFrameworkMoniker.Current)
         {
@@ -86,6 +107,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 testAssembly,
                 "Microsoft.Diagnostics.Monitoring.UnitTestApp",
                 tfm);
+
+            _startupHookPath = AssemblyHelper.GetAssemblyArtifactBinPath(
+                testAssembly,
+                "Microsoft.Diagnostics.Monitoring.StartupHook",
+                TargetFrameworkMoniker.Net60);
 
             _waitingForEnvironmentVariables = new Dictionary<string, TaskCompletionSource<string>>();
 
@@ -109,7 +135,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             _runner.Dispose();
         }
 
-        public async Task StartAsync(CancellationToken token)
+        public async Task StartAsync(CancellationToken token, bool waitForReady = true)
         {
             if (string.IsNullOrEmpty(ScenarioName))
             {
@@ -122,7 +148,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             }
 
             _runner.EntrypointAssemblyPath = _appPath;
-            _runner.Arguments = ScenarioName;
+
+            string fullScenarioName = string.IsNullOrEmpty(SubScenarioName) ? ScenarioName : string.Concat(ScenarioName, " ", SubScenarioName);
+            _runner.Arguments = fullScenarioName;
 
             // Enable diagnostics in case it is disabled via inheriting test environment.
             _adapter.Environment.Add("COMPlus_EnableDiagnostics", "1");
@@ -134,7 +162,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                     throw new InvalidOperationException($"'{nameof(DiagnosticPortPath)}' is required.");
                 }
 
-                _adapter.Environment.Add("DOTNET_DiagnosticPorts", DiagnosticPortPath);
+                string diagnosticPortsValue = DiagnosticPortPath;
+                if (!DiagnosticPortSuspend)
+                {
+                    diagnosticPortsValue += ",nosuspend";
+                }
+
+                _adapter.Environment.Add("DOTNET_DiagnosticPorts", diagnosticPortsValue);
             }
 
             if (SetRuntimeIdentifier)
@@ -143,15 +177,24 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                     ToolIdentifiers.EnvironmentVariables.RuntimeIdentifier,
                     NativeLibraryHelper.GetTargetRuntimeIdentifier(Architecture));
             }
+
             if (ProfilerLogLevel != null)
             {
                 _adapter.Environment.Add(
                     ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, ProfilerLogLevel);
             }
 
+            if (EnableMonitorStartupHook)
+            {
+                _adapter.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, _startupHookPath);
+            }
+
             await _adapter.StartAsync(token).ConfigureAwait(false);
 
-            await _readySource.WithCancellation(token);
+            if (waitForReady)
+            {
+                await _readySource.WithCancellation(token);
+            }
         }
 
         public Task StopAsync(CancellationToken token)

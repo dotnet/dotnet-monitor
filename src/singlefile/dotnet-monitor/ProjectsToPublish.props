@@ -1,0 +1,9 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)Common.props" />
+
+  <ItemGroup>
+    <ProjectToPublish Include="$(RepoRoot)src\Tools\dotnet-monitor\dotnet-monitor.csproj">
+      <AdditionalProperties>TargetFramework=$(DotnetMonitorPublishTargetFramework);RuntimeIdentifier=$(PackageRid);PublishDir=$(DotnetMonitorPublishSfbPath);PublishSingleFile=true;SelfContained=true</AdditionalProperties>
+    </ProjectToPublish>
+  </ItemGroup>
+</Project>

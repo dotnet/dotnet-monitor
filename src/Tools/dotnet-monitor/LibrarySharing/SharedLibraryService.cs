@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
 
             try
             {
-                _fileProviderFactorySource.SetResult(_sharedLibraryInitializer.Initialize());
+                _fileProviderFactorySource.SetResult(await _sharedLibraryInitializer.InitializeAsync(stoppingToken));
             }
             catch (Exception ex)
             {

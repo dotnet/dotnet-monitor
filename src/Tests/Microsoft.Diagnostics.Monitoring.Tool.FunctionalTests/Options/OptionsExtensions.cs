@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
@@ -63,14 +64,84 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        private static InProcessFeaturesOptions GetOrCreateInProcessFeaturesOptions(this RootOptions options)
+        {
+            InProcessFeaturesOptions inProcessFeaturesOptions = options.InProcessFeatures;
+            if (null == inProcessFeaturesOptions)
+            {
+                inProcessFeaturesOptions = new InProcessFeaturesOptions();
+                options.InProcessFeatures = inProcessFeaturesOptions;
+            }
+            return inProcessFeaturesOptions;
+        }
+
+        public static RootOptions DisableInProcessFeatures(this RootOptions options)
+        {
+            options.GetOrCreateInProcessFeaturesOptions().Enabled = false;
+
+            return options;
+        }
+
         public static RootOptions EnableInProcessFeatures(this RootOptions options)
         {
-            if (null == options.InProcessFeatures)
-            {
-                options.InProcessFeatures = new Monitoring.Options.InProcessFeaturesOptions();
-            }
+            options.GetOrCreateInProcessFeaturesOptions().Enabled = true;
 
-            options.InProcessFeatures.Enabled = true;
+            return options;
+        }
+
+        public static RootOptions EnableExceptions(this RootOptions options)
+        {
+            options.GetOrCreateInProcessFeaturesOptions().GetOrCreateExceptionsOptions().Enabled = true;
+
+            return options;
+        }
+
+        private static ExceptionsOptions GetOrCreateExceptionsOptions(this InProcessFeaturesOptions options)
+        {
+            ExceptionsOptions exceptionsOptions = options.Exceptions;
+            if (null == exceptionsOptions)
+            {
+                exceptionsOptions = new ExceptionsOptions();
+                options.Exceptions = exceptionsOptions;
+            }
+            return exceptionsOptions;
+        }
+
+        public static RootOptions SetExceptionFiltering(this RootOptions options, ExceptionsConfiguration configuration)
+        {
+            options.GetOrCreateInProcessFeaturesOptions().GetOrCreateExceptionsOptions().CollectionFilters = configuration;
+
+            return options;
+        }
+
+        private static CallStacksOptions GetOrCreateCallStacksOptions(this InProcessFeaturesOptions options)
+        {
+            CallStacksOptions callStacksOptions = options.CallStacks;
+            if (null == callStacksOptions)
+            {
+                callStacksOptions = new CallStacksOptions();
+                options.CallStacks = callStacksOptions;
+            }
+            return callStacksOptions;
+        }
+
+        public static RootOptions DisableCallStacks(this RootOptions options)
+        {
+            options.GetOrCreateInProcessFeaturesOptions().GetOrCreateCallStacksOptions().Enabled = false;
+
+            return options;
+        }
+
+        public static RootOptions DisableExceptions(this RootOptions options)
+        {
+            options.GetOrCreateInProcessFeaturesOptions().GetOrCreateExceptionsOptions().Enabled = false;
+
+            return options;
+        }
+
+        public static RootOptions EnableCallStacks(this RootOptions options)
+        {
+            options.GetOrCreateInProcessFeaturesOptions().GetOrCreateCallStacksOptions().Enabled = true;
 
             return options;
         }

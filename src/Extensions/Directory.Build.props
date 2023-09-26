@@ -1,0 +1,10 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props"/>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RuntimeIdentifiers>$(DefaultRuntimeIdentifiers)</RuntimeIdentifiers>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <IsShipping>true</IsShipping>
+  </PropertyGroup>
+</Project>

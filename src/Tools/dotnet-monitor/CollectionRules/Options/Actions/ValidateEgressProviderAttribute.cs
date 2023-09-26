@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
             IEgressService egressService = validationContext.GetRequiredService<IEgressService>();
             try
             {
-                egressService.ValidateProvider(egressProvider);
+                egressService.ValidateProviderExists(egressProvider);
             }
             catch (Exception)
             {

@@ -9,6 +9,11 @@ parameters:
   configuration: Release
   # Build architecture (arm64, x64, x86, etc)
   architecture: x64
+  # Enables cross build from host target libraries and architectures
+  enableCrossBuild: true
+  # Docker container in which job steps shall be run (leave empty to choose default build container).
+  # This should be empty unless exclusively testing on a specific container image.
+  container: ''
   # Additional job variables
   variables: []
   # Additional steps to execute before build
@@ -19,13 +24,12 @@ parameters:
   timeoutInMinutes: 180
   # Job dependencies
   dependsOn: ''
-  # Sub paths under 'artifacts' folder from which files are published to artifacts location
-  publishArtifactsSubPaths: []
   # Disable Component Governance injection and analysis
-  disableComponentGovernance: false
+  disableComponentGovernance: ''
   # Disable SBOM generation
   disableSbom: false
   buildArgs: ''
+  buildEnv: {}
 
 jobs:
 - template: /eng/common/templates/job/job.yml
@@ -34,7 +38,7 @@ jobs:
     displayName: ${{ format('{0} {1} {2} {3}', parameters.prefix, parameters.osGroup, parameters.architecture, parameters.configuration) }}
     timeoutInMinutes: ${{ parameters.timeoutInMinutes }}
     enableTelemetry: true
-    disableComponentGovernance: ${{ or(eq(parameters.disableComponentGovernance, 'true'), eq(parameters.osGroup, 'Linux_Musl')) }}
+    disableComponentGovernance: ${{ parameters.disableComponentGovernance }}
     ${{ if eq(parameters.disableSbom, 'true') }}:
       enableSbom: false
     helixRepo: dotnet/dotnet-monitor
@@ -63,23 +67,26 @@ jobs:
       ${{ if eq(parameters.osGroup, 'Windows') }}:
         ${{ if eq(variables['System.TeamProject'], 'public') }}:
           name: $(DncEngPublicBuildPool)
-          demands: ImageOverride -equals windows.vs2019.amd64.open
+          demands: ImageOverride -equals windows.vs2022.amd64.open
 
         ${{ if ne(variables['System.TeamProject'], 'public') }}:
           name: $(DncEngInternalBuildPool)
-          demands: ImageOverride -equals windows.vs2019.amd64
+          demands: ImageOverride -equals windows.vs2022.amd64
 
-    ${{ if eq(parameters.osGroup, 'Linux') }}:
-      ${{ if eq(parameters.architecture, 'arm64') }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64
-      ${{ else }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7
-
-    ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
-      ${{ if eq(parameters.architecture, 'arm64') }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-alpine
-      ${{ else }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-WithNode
+    ${{ if ne(parameters.container, '') }}:
+      container: ${{ parameters.container }}
+    ${{ else }}:
+      # Fallback to default Linux x64 build container that optionally support cross building
+      ${{ if eq(parameters.osGroup, 'Linux') }}:
+        ${{ if eq(parameters.architecture, 'arm64') }}:
+          container: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-arm64
+        ${{ else }}:
+          container: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-amd64
+      ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
+        ${{ if eq(parameters.architecture, 'arm64') }}:
+          container: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-arm64-alpine
+        ${{ else }}:
+          container: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-amd64-alpine
 
     ${{ if ne(parameters.dependsOn, '') }}:
       dependsOn: ${{ parameters.dependsOn }}
@@ -90,27 +97,21 @@ jobs:
     variables:
     - JobName: ${{ parameters.prefix }}_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
     - _BuildConfig: ${{ parameters.configuration }}
-    - _HelixType: build/product
-    - _HelixBuildConfig: ${{ parameters.configuration }}
     - _CrossBuildArgs: ''
     - _InternalInstallArgs: ''
     - _InternalBuildArgs: ''
     - ${{ each variable in parameters.variables }}:
       - ${{ variable }}
-
-    # Component Governance does not work on Musl
-    - ${{ if or(eq(parameters.disableComponentGovernance, 'true'), eq(parameters.osGroup, 'Linux_Musl')) }}:
-      - skipComponentGovernanceDetection: true
     
-    # Cross build for arm64 non-Windows builds
-    - ${{ if and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')) }}:
+    # Cross build for all Linux builds and arm64 non-Windows builds
+    - ${{ if and(eq(parameters.enableCrossBuild, 'true'), or(in(parameters.osGroup, 'Linux', 'Linux_Musl'), and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')))) }}:
       - _CrossBuildArgs: '-cross'
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
-      - group: DotNet-MSRC-Storage
+      - group: DotNetBuilds storage account read tokens
       - _InternalInstallArgs: >-
-          -RuntimeSourceFeed https://dotnetclimsrc.blob.core.windows.net/dotnet
-          -RuntimeSourceFeedKey $(dotnetclimsrc-read-sas-token-base64)
+          -RuntimeSourceFeed https://dotnetbuilds.blob.core.windows.net/internal
+          -RuntimeSourceFeedKey $(dotnetbuilds-internal-container-read-token-base64)
 
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
       - _InternalBuildArgs: >-
@@ -132,38 +133,27 @@ jobs:
 
     steps:
     - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-      - ${{ if eq(parameters.osGroup, 'Windows') }}:
-        - task: PowerShell@2
-          displayName: Setup Private Feeds Credentials
-          inputs:
-            filePath: $(Build.SourcesDirectory)/eng/common/SetupNugetSources.ps1
-            arguments: -ConfigFile $(Build.SourcesDirectory)/NuGet.config -Password $Env:Token
-          env:
-            Token: $(dn-bot-dnceng-artifact-feeds-rw)
-      - ${{ if ne(parameters.osGroup, 'Windows') }}:
-        - task: Bash@3
-          displayName: Setup Private Feeds Credentials
-          inputs:
-            filePath: $(Build.SourcesDirectory)/eng/common/SetupNugetSources.sh
-            arguments: $(Build.SourcesDirectory)/NuGet.config $Token
-          env:
-            Token: $(dn-bot-dnceng-artifact-feeds-rw)
+      - template: /eng/pipelines/steps/setup-nuget-sources.yml
+        parameters:
+          osGroup: ${{ parameters.osGroup }}
 
     - ${{ each step in parameters.preBuildSteps }}:
       - ${{ step }}
 
     - script: >-
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)
-        ${{ parameters.buildArgs }}
         -configuration ${{ parameters.configuration }}
         -architecture ${{ parameters.architecture }}
+        ${{ parameters.buildArgs }}
         $(_CrossBuildArgs)
         $(_InternalInstallArgs)
         $(_InternalBuildArgs)
       displayName: Build
-      ${{ if and(eq(parameters.architecture, 'arm64'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
-        env:
-          ROOTFS_DIR: '/crossrootfs/arm64'
+      env:
+        ${{ insert }}: ${{ parameters.buildEnv }}
+        # Set ROOTFS_DIR for Linux cross builds
+        ${{ if and(eq(parameters.enableCrossBuild, 'true'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
+          ROOTFS_DIR: '/crossrootfs/${{ parameters.architecture }}'
 
     - ${{ each step in parameters.postBuildSteps }}:
       - ${{ step }}

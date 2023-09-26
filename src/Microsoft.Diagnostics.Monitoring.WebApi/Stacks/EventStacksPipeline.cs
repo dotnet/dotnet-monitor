@@ -97,7 +97,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                     action.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ClassId),
                     action.GetPayload<uint>(NameIdentificationEvents.FunctionDescPayloads.ClassToken),
                     action.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ModuleId),
-                    action.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.TypeArgs) ?? Array.Empty<ulong>()
+                    action.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.TypeArgs) ?? Array.Empty<ulong>(),
+                    action.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.ParameterTypes) ?? Array.Empty<ulong>()
                     );
 
                 _result.NameCache.FunctionData.TryAdd(id, functionData);

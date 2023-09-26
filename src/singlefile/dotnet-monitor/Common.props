@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <DotnetMonitorPublishTargetFramework>$(LatestTargetFramework)</DotnetMonitorPublishTargetFramework>
+    <DotnetMonitorPublishTargetFramework Condition="'$(TargetFramework)' != ''">$(TargetFramework)</DotnetMonitorPublishTargetFramework>
+    <DotnetMonitorPublishBasePath>$(ArtifactsDir)pub\dotnet-monitor\$(Configuration)\$(DotnetMonitorPublishTargetFramework)\$(PackageRid)\</DotnetMonitorPublishBasePath>
+    <!-- Single File Bundle (SFB) -->
+    <DotnetMonitorPublishSfbPath>$(DotnetMonitorPublishBasePath)sfb\</DotnetMonitorPublishSfbPath>
+  </PropertyGroup>
+</Project>

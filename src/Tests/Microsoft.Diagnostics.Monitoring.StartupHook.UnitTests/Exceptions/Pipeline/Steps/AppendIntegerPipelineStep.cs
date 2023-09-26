@@ -21,12 +21,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             _shortCircuit = shortCircuit;
         }
 
-        public void Invoke(Exception ex)
+        public void Invoke(Exception ex, ExceptionPipelineExceptionContext context)
         {
             _list.Add(_id);
             if (!_shortCircuit)
             {
-                _next.Invoke(ex);
+                _next.Invoke(ex, context);
             }
         }
 

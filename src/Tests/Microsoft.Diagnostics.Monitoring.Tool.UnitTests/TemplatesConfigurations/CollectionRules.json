@@ -7,13 +7,7 @@
         {
           "Type": "CollectGCDump"
         },
-        "ActionTemplate2",
-        {
-          "Type": "CollectDump",
-          "Settings": {
-            "Egress": "monitorBlob"
-          }
-        }
+        "ActionTemplate2"
       ],
       "Filters": [
         {
@@ -28,7 +22,13 @@
       "Trigger": "TriggerTemplateINVALID",
       "Actions": [
         "ActionTemplate1",
-        "ActionTemplate2"
+        "ActionTemplate2",
+        {
+          "Type": "CollectDump",
+          "Settings": {
+            "Egress": "monitorBlob"
+          }
+        }
       ],
       "Filters": [
         "FilterTemplateINVALID"

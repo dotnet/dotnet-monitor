@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             public void DoWork<U>(U test, WaitHandle handle)
             {
                 _handle = handle;
-                StacksScenario.TestHook(Callback);
+                MonitorLibrary.TestHook(Callback);
             }
 
             public void Callback()

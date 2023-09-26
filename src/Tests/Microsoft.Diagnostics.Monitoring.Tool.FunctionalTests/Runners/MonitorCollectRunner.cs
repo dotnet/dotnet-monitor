@@ -97,6 +97,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         /// </summary>
         public string DotNetMonitorUrls { get; set; }
 
+        /// <summary>
+        /// Determines whether the dotnet-monitor process should exit when stdin is disconnected.
+        /// </summary>
+        public bool ExitOnStdinDisconnect { get; set; }
 
         public MonitorCollectRunner(ITestOutputHelper outputHelper)
             : base(outputHelper)
@@ -105,7 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public override async ValueTask DisposeAsync()
         {
-            if (!DisposableHelper.CanDispose(ref _disposedState))
+            if (!TestCommon.DisposableHelper.CanDispose(ref _disposedState))
             {
                 return;
             }
@@ -170,6 +174,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             if (UseTempApiKey)
             {
                 argsList.Add("--temp-apikey");
+            }
+
+            if (ExitOnStdinDisconnect)
+            {
+                argsList.Add("--exit-on-stdin-disconnect");
             }
 
             using IDisposable _ = token.Register(() => CancelCompletionSources(token));

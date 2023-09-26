@@ -77,7 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureApp: runner =>
                 {
                     // MachO not supported on .NET 5, only ELF: https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/botr/xplat-minidump-generation.md#os-x
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && DotNetHost.RuntimeVersion.Major == 5)
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && TestDotNetHost.RuntimeVersion.Major == 5)
                     {
                         runner.Environment.Add(DumpTestUtilities.EnableElfDumpOnMacOS, "1");
                     }

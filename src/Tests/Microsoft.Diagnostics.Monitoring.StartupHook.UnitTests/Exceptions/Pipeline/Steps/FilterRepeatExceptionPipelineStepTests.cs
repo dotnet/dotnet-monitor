@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
 {
-    [TargetFrameworkMonikerTrait(TargetFrameworkMoniker.Current)]
+    [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public sealed class FilterRepeatExceptionPipelineStepTests
     {
         private readonly List<Exception> _reportedExceptions = new();
@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
 
         public FilterRepeatExceptionPipelineStepTests()
         {
-            _finalHandler = _reportedExceptions.Add;
+            _finalHandler = (ex, context) => _reportedExceptions.Add(ex);
         }
 
         [Fact]
@@ -25,10 +25,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             FilterRepeatExceptionPipelineStep action = new(_finalHandler);
 
             Exception firstException = new();
-            action.Invoke(firstException);
+            ExceptionPipelineExceptionContext firstContext = new(DateTime.UtcNow);
+
+            action.Invoke(firstException, firstContext);
 
             Exception secondException = new();
-            action.Invoke(secondException);
+            ExceptionPipelineExceptionContext secondContext = new(DateTime.UtcNow);
+
+            action.Invoke(secondException, secondContext);
 
             IEnumerable<Exception> allExceptions = new List<Exception>()
             {
@@ -45,13 +49,20 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             FilterRepeatExceptionPipelineStep action = new(_finalHandler);
 
             Exception firstException = new();
-            action.Invoke(firstException);
-            action.Invoke(firstException);
-            action.Invoke(firstException);
+
+            ExceptionPipelineExceptionContext firstContext = new(DateTime.UtcNow);
+            action.Invoke(firstException, firstContext);
+            firstContext = new ExceptionPipelineExceptionContext(DateTime.UtcNow);
+            action.Invoke(firstException, firstContext);
+            firstContext = new ExceptionPipelineExceptionContext(DateTime.UtcNow);
+            action.Invoke(firstException, firstContext);
 
             Exception secondException = new();
-            action.Invoke(secondException);
-            action.Invoke(secondException);
+
+            ExceptionPipelineExceptionContext secondContext = new(DateTime.UtcNow);
+            action.Invoke(secondException, secondContext);
+            secondContext = new ExceptionPipelineExceptionContext(DateTime.UtcNow);
+            action.Invoke(secondException, secondContext);
 
             IEnumerable<Exception> allExceptions = new List<Exception>()
             {

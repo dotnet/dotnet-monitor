@@ -1,9 +1,9 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
@@ -27,15 +27,34 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
     {
         private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
 
-        private sealed class TestEndpointInfo : WebApi.EndpointInfoBase
+        private sealed class TestProcessInfo : WebApi.IProcessInfo
         {
-            public TestEndpointInfo(Guid runtimeInstanceCookie, int processId = 0, string commandLine = null, string operatingSystem = null, string processArchitecture = null)
+            public TestProcessInfo(Guid runtimeInstanceCookie, int processId = 0, string commandLine = null, string operatingSystem = null, string processArchitecture = null)
+            {
+                EndpointInfo = new TestEndpointInfo(runtimeInstanceCookie, processId, commandLine, operatingSystem, processArchitecture);
+            }
+
+            public IEndpointInfo EndpointInfo { get; }
+
+            public string CommandLine => EndpointInfo.CommandLine;
+
+            public string OperatingSystem => EndpointInfo.OperatingSystem;
+
+            public string ProcessArchitecture => EndpointInfo.ProcessArchitecture;
+
+            public string ProcessName => ProcessInfoImpl.GetProcessName(CommandLine, OperatingSystem);
+        }
+
+        private sealed class TestEndpointInfo : EndpointInfoBase
+        {
+            public TestEndpointInfo(Guid runtimeInstanceCookie, int processId, string commandLine, string operatingSystem, string processArchitecture)
             {
                 ProcessId = processId;
                 RuntimeInstanceCookie = runtimeInstanceCookie;
                 CommandLine = commandLine;
                 OperatingSystem = operatingSystem;
                 ProcessArchitecture = processArchitecture;
+                ServiceProvider = new NotSupportedServiceProvider();
             }
 
             public override int ProcessId { get; protected set; }
@@ -45,6 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             public override string ProcessArchitecture { get; protected set; }
 
             public override Version RuntimeVersion { get; protected set; }
+            public override IServiceProvider ServiceProvider { get; protected set; }
         }
 
         private readonly ITestOutputHelper _outputHelper;
@@ -85,9 +105,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
-                ISystemClock clock = host.Services.GetRequiredService<ISystemClock>();
+                TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, clock);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, timeProvider);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;
@@ -133,14 +153,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
-                ISystemClock clock = host.Services.GetRequiredService<ISystemClock>();
+                TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
                 const string processName = "actionProcess";
                 const int processId = 123;
                 string commandLine = FormattableString.Invariant($"{processName} arg1");
 
                 Guid instanceId = Guid.NewGuid();
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestEndpointInfo(instanceId, processId: processId, commandLine: commandLine), logger, clock);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId, processId: processId, commandLine: commandLine), logger, timeProvider);
 
                 ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
                 PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
@@ -178,9 +198,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
-                ISystemClock clock = host.Services.GetRequiredService<ISystemClock>();
+                TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, clock);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, timeProvider);
 
                 ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
                 analyzer.GetActionDependencies(1);
@@ -217,10 +237,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
-                ISystemClock clock = host.Services.GetRequiredService<ISystemClock>();
+                TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
                 Guid instanceId = Guid.NewGuid();
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestEndpointInfo(instanceId), logger, clock);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), logger, timeProvider);
 
                 ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
                 PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
@@ -262,11 +282,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
-                ISystemClock clock = host.Services.GetRequiredService<ISystemClock>();
+                TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
                 Guid instanceId = Guid.NewGuid();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestEndpointInfo(instanceId), logger, clock);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), logger, timeProvider);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;

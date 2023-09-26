@@ -21,20 +21,26 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.AzureBlob;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
+using Microsoft.Diagnostics.Tools.Monitor.Egress.Extension;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
-using Microsoft.Diagnostics.Tools.Monitor.Egress.S3;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
+using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
+using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
+using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
+using Microsoft.Diagnostics.Tools.Monitor.Stacks;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.IO;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -64,8 +70,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureInProcessFeatures(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<InProcessFeaturesOptions>(services, configuration, ConfigurationKeys.InProcessFeatures)
-                .AddSingleton<IPostConfigureOptions<InProcessFeaturesOptions>, InProcessFeaturesPostConfigureOptions>();
+            ConfigureOptions<CallStacksOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_CallStacks)
+                .AddSingleton<IPostConfigureOptions<CallStacksOptions>, CallStacksPostConfigureOptions>();
+
+            ConfigureOptions<ExceptionsOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_Exceptions)
+                .AddSingleton<IPostConfigureOptions<ExceptionsOptions>, ExceptionsPostConfigureOptions>();
+
+            ConfigureOptions<ParameterCapturingOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_ParameterCapturing)
+             .AddSingleton<IPostConfigureOptions<ParameterCapturingOptions>, ParameterCapturingPostConfigureOptions>();
+
+            ConfigureOptions<InProcessFeaturesOptions>(services, configuration, ConfigurationKeys.InProcessFeatures)
+                .AddSingleton<InProcessFeaturesService>()
+                .AddSingleton<IEndpointInfoSourceCallbacks, InProcessFeaturesEndpointInfoSourceCallbacks>();
+
+            return services;
         }
 
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
@@ -117,6 +135,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureCollectionRules(this IServiceCollection services)
         {
             services.RegisterCollectionRuleAction<CollectDumpActionFactory, CollectDumpOptions>(KnownCollectionRuleActions.CollectDump);
+            services.RegisterCollectionRuleAction<CollectExceptionsActionFactory, CollectExceptionsOptions>(KnownCollectionRuleActions.CollectExceptions);
             services.RegisterCollectionRuleAction<CollectGCDumpActionFactory, CollectGCDumpOptions>(KnownCollectionRuleActions.CollectGCDump);
             services.RegisterCollectionRuleAction<CollectLiveMetricsActionFactory, CollectLiveMetricsOptions>(KnownCollectionRuleActions.CollectLiveMetrics);
             services.RegisterCollectionRuleAction<CollectLogsActionFactory, CollectLogsOptions>(KnownCollectionRuleActions.CollectLogs);
@@ -226,22 +245,75 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services.Configure<T>(configuration.GetSection(key));
         }
 
+        public static IServiceCollection ConfigureExtensions(this IServiceCollection services)
+        {
+            // Extension discovery
+            services.AddSingleton<ExtensionDiscoverer>();
+            // Extension type factories
+            services.AddSingleton<EgressExtensionFactory>();
+            // Well-known extensions
+            services.AddSingleton<ExtensionRepository, WellKnownExtensionRepository>();
+            services.AddSingleton<IWellKnownExtensionFactory, FileSystemEgressExtensionFactory>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureExtensionLocations(this IServiceCollection services, HostBuilderSettings settings)
+        {
+            services.TryAddSingleton<IDotnetToolsFileSystem, DefaultDotnetToolsFileSystem>();
+
+            string progDataFolder = settings.SharedConfigDirectory;
+            string settingsFolder = settings.UserConfigDirectory;
+
+            if (string.IsNullOrWhiteSpace(progDataFolder)
+                || string.IsNullOrWhiteSpace(settingsFolder))
+            {
+                throw new InvalidOperationException();
+            }
+
+            // Add the folders we search to get extensions from
+            services.AddFolderExtensionRepository(AppContext.BaseDirectory);
+            services.AddFolderExtensionRepository(progDataFolder);
+            services.AddFolderExtensionRepository(settingsFolder);
+
+            return services;
+        }
+
+        public static IServiceCollection AddFolderExtensionRepository(this IServiceCollection services, string path)
+        {
+            const string ExtensionFolder = "extensions";
+
+            string targetExtensionFolder = Path.Combine(path, ExtensionFolder);
+
+            Func<IServiceProvider, ExtensionRepository> createDelegate =
+                (IServiceProvider serviceProvider) =>
+                {
+                    IFileProvider fileProvider = GetFileProvider(targetExtensionFolder);
+                    EgressExtensionFactory egressExtensionFactory = serviceProvider.GetRequiredService<EgressExtensionFactory>();
+                    ILogger<FolderExtensionRepository> logger = serviceProvider.GetRequiredService<ILogger<FolderExtensionRepository>>();
+                    return new FolderExtensionRepository(fileProvider, egressExtensionFactory, logger);
+                };
+
+            services.AddSingleton<ExtensionRepository>(createDelegate);
+
+            return services;
+        }
+
+        private static IFileProvider GetFileProvider(string targetExtensionFolder)
+        {
+            if (Directory.Exists(targetExtensionFolder))
+            {
+                return new PhysicalFileProvider(targetExtensionFolder);
+            }
+
+            return new NullFileProvider();
+        }
+
         public static IServiceCollection ConfigureEgress(this IServiceCollection services)
         {
-            // Register IEgressService implementation that provides egressing
-            // of artifacts for the REST server.
+            services.AddSingleton<IEgressConfigurationProvider, EgressConfigurationProvider>();
+            services.AddSingleton<EgressProviderSource>();
             services.AddSingleton<IEgressService, EgressService>();
-
-            services.AddSingleton<IEgressPropertiesConfigurationProvider, EgressPropertiesConfigurationProvider>();
-            services.AddSingleton<IEgressPropertiesProvider, EgressPropertiesProvider>();
-
-            // Register regress providers
-            services.RegisterProvider<AzureBlobEgressProviderOptions, AzureBlobEgressProvider>(EgressProviderTypes.AzureBlobStorage);
-            services.RegisterProvider<FileSystemEgressProviderOptions, FileSystemEgressProvider>(EgressProviderTypes.FileSystem);
-            services.RegisterProvider<S3StorageEgressProviderOptions, S3StorageEgressProvider>(EgressProviderTypes.S3Storage);
-
-            // Extra registrations for provider specific behavior
-            services.AddSingleton<IPostConfigureOptions<AzureBlobEgressProviderOptions>, AzureBlobEgressPostConfigureOptions>();
+            services.AddHostedService<EgressValidationService>();
 
             return services;
         }
@@ -261,6 +333,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingletonForwarder<ISharedLibraryService, SharedLibraryService>();
             services.AddHostedServiceForwarder<SharedLibraryService>();
             services.TryAddSingleton<ISharedLibraryInitializer, DefaultSharedLibraryInitializer>();
+            services.AddSingleton<DefaultSharedLibraryPathProvider>();
             return services;
         }
 
@@ -273,12 +346,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureExceptions(this IServiceCollection services)
         {
-            services.AddSingleton<IExceptionsOperationFactory, ExceptionsOperationFactory>();
-            // The exceptions store for the default process; long term, create a store for each process
-            // that wants to participate in exception collection.
-            services.AddSingleton<IExceptionsStore, ExceptionsStore>();
-            services.AddHostedService<ExceptionsService>();
-            services.AddSingleton<StartupHookValidator>();
+            services.AddTransient<IExceptionsOperationFactory, ExceptionsOperationFactory>();
+            services.AddScoped<IExceptionsStore, ExceptionsStore>();
+            services.AddScoped<IExceptionsStoreCallbackFactory, ExceptionsStoreLimitsCallbackFactory>();
+            services.AddScoped<IDiagnosticLifetimeService, ExceptionsService>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureHostingStartup(this IServiceCollection services)
+        {
+            services.AddScoped<HostingStartupService>();
+            services.AddScopedForwarder<IDiagnosticLifetimeService, HostingStartupService>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureStartupHook(this IServiceCollection services)
+        {
+            services.AddTransient<StartupHookValidator>();
+            services.AddScoped<StartupHookService>();
+            services.AddScopedForwarder<IDiagnosticLifetimeService, StartupHookService>();
             return services;
         }
 
@@ -295,34 +381,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ILogger<Startup> logger = services.GetRequiredService<ILogger<Startup>>();
                 return authConfigurator.CreateStartupLogger(logger, services);
             });
+            services.AddSingleton<IStartupLogger, EgressStartupLogger>();
             return services;
         }
 
-        public static IServiceCollection RegisterProvider<TOptions, TProvider>(this IServiceCollection services, string name)
-            where TProvider : class, IEgressProvider<TOptions>
-            where TOptions : class
+        public static void AddScopedForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
         {
-            // Add services to provide raw configuration for the options type
-            services.AddSingleton(sp => new EgressProviderConfigurationProvider<TOptions>(sp.GetRequiredService<IConfiguration>(), name));
-            services.AddSingletonForwarder<IEgressProviderConfigurationProvider<TOptions>, EgressProviderConfigurationProvider<TOptions>>();
-            services.AddSingletonForwarder<IEgressProviderConfigurationProvider, EgressProviderConfigurationProvider<TOptions>>();
-
-            // Add options services for configuring the options type
-            services.AddSingleton<IConfigureOptions<TOptions>, EgressProviderConfigureNamedOptions<TOptions>>();
-            services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
-
-            // Register change sources for the options type
-            services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressPropertiesConfigurationChangeTokenSource<TOptions>>();
-            services.AddSingleton<IOptionsChangeTokenSource<TOptions>, EgressProviderConfigurationChangeTokenSource<TOptions>>();
-
-            // Add custom options cache to override behavior of default named options
-            services.AddSingleton<IOptionsMonitorCache<TOptions>, DynamicNamedOptionsCache<TOptions>>();
-
-            // Add egress provider and internal provider wrapper
-            services.AddSingleton<IEgressProvider<TOptions>, TProvider>();
-            services.AddSingleton<IEgressProviderInternal<TOptions>, EgressProviderInternal<TOptions>>();
-
-            return services;
+            services.AddScoped<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
         }
 
         private static void AddSingletonForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class

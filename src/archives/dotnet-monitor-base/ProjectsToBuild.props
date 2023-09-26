@@ -1,0 +1,10 @@
+<Project>
+  <ItemGroup>
+    <ProjectToBuild Include="$(MSBuildThisFileDirectory)dotnet-monitor-base-archive.proj">
+      <AdditionalProperties>TargetFramework=$(LatestTargetFramework);RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
+    </ProjectToBuild>
+    <ProjectToBuild Include="$(MSBuildThisFileDirectory)dotnet-monitor-base-symbols.proj">
+      <AdditionalProperties>TargetFramework=$(LatestTargetFramework);RuntimeIdentifier=$(PackageRid)</AdditionalProperties>
+    </ProjectToBuild>
+  </ItemGroup>
+</Project>

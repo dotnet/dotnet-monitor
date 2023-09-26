@@ -5,7 +5,7 @@
 
 Authenticated requests to `dotnet monitor` help protect sensitive diagnostic artifacts from unauthorized users and lower privileged processes. `dotnet monitor` can be configured to use any one of the following authentication modes:
 - [API Key](#api-key-authentication)
-- [Azure Active Directory Authentication](#azure-active-directory-authentication) (7.1+)
+- [Azure Active Directory Authentication](#azure-active-directory-authentication)
 - [Windows Authentication](#windows-authentication)
 
 It is also possible, although strongly not recommended, to [disable authentication](#disabling-authentication).
@@ -16,10 +16,13 @@ The recommended configuration for `dotnet monitor` is to use [Azure Active Direc
 
 ## Azure Active Directory Authentication
 
+First Available: 7.1
+
 Azure Active Directory integration (referred to as Azure AD) is the recommended authentication mechanism for `dotnet monitor` as it does not require storing any secrets or rotating keys yourself. To enable Azure AD authentication:
 
 - [Create an App Registration](https://learn.microsoft.com/azure/active-directory/develop/quickstart-register-app#register-an-application) in your Azure tenant that will be used by `dotnet monitor`. Note that a single App Registration can be used by multiple instances of `dotnet monitor`.
 - [Add a new app role](https://learn.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps#app-roles-ui) for general API access.
+- [Assign user to role](https://learn.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-apps#assign-users-and-groups-to-roles) via the Enterprise Applications section of AAD.
 - [Configure Azure AD in dotnet monitor](./configuration/azure-ad-authentication-configuration.md).
 
 > **Note**: Azure AD B2C is currently not supported.

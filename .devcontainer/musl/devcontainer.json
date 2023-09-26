@@ -17,7 +17,7 @@
         "vscode": {
             "extensions": [
                 "ms-vscode.cpptools",
-                "ms-dotnettools.csharp",
+                "ms-dotnettools.csdevkit",
                 "EditorConfig.EditorConfig",
                 "tintoy.msbuild-project-tools",
                 "streetsidesoftware.code-spell-checker",

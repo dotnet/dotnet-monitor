@@ -1,0 +1,24 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.targets" />
+
+  <PropertyGroup>
+    <BuildDependsOn>$(BuildDependsOn);PublishProjectsBeforeBundle;CopyBundle</BuildDependsOn>
+  </PropertyGroup>
+
+  <Import Project="$(RepositoryEngineeringDir)PublishProjects.targets" />
+
+  <!-- Publish projects if they were not published after build -->
+  <Target Name="PublishProjectsBeforeBundle"
+          Condition="'$(SkipPublishProjects)' != 'true'">
+    <CallTarget Targets="PublishProjects" />
+  </Target>
+
+  <Target Name="CopyBundle">
+    <MakeDir Directories="$(ArtifactsNonShippingBundlesDir)" />
+    <!-- e.g. dotnet-monitor.exe -> dotnet-monitor-win-x64.exe -->
+    <Copy SourceFiles="$(DotnetMonitorPublishSfbPath)$(BundleName)$(BundleSuffix)"
+          DestinationFiles="$(ArtifactsNonShippingBundlesDir)$(BundleName)-$(PackageRid)$(BundleSuffix)" />
+    <Message Text="$(BundleName)$(BundleSuffix) -> $(ArtifactsNonShippingBundlesDir)$(BundleName)-$(PackageRid)$(BundleSuffix)"
+             Importance="High" />
+  </Target>
+</Project>

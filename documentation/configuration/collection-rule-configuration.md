@@ -16,12 +16,13 @@ Collection rules are specified in configuration as a named item under the `Colle
   - [Trigger shortcuts](../collectionrules/triggershortcuts.md) 
 - [`Actions`](#actions) - The action to be be performed
   - [CollectDump](#collectdump-action)
+  - [CollectExceptions](#collectexceptions-action)
   - [CollectGCDump](#collectgcdump-action)
   - [CollectTrace](#collecttrace-action)
   - [CollectLiveMetrics](#collectlivemetrics-action)
   - [CollectLogs](#collectlogs-action)
   - [Execute](#execute-action)
-  - [CollectStacks](#experimental-collectstacks-action-70)
+  - [CollectStacks](#collectstacks-action)
   - [LoadProfiler](#loadprofiler-action)
   - [SetEnvironmentVariable](#setenvironmentvariable-action)
   - [GetEnvironmentVariable](#getenvironmentvariable-action)
@@ -598,6 +599,61 @@ Usage that collects a full dump and egresses it to a provider named "AzureBlobDu
   ```
 </details>
 
+### `CollectExceptions` Action
+
+First Available: 8.0 RC 1
+
+An action that collects exceptions from the process that the collection rule is targeting.
+
+#### Properties
+
+| Name | Type | Required | Description | Default Value |
+|---|---|---|---|---|
+| `Egress` | string | true | The named [egress provider](../egress.md) for egressing the collected dump. | |
+| `Format` | [ExceptionFormat](../api/definitions.md#exceptionformat)? | false | The format of the exception entries. | `PlainText` |
+| `Filters` | [ExceptionsConfiguration](../api/definitions.md#exceptionsconfiguration)? | false | Determines which exceptions should be included/excluded in the result - note that this does not alter which [exceptions are collected](in-process-features-configuration.md#filtering).
+
+#### Outputs
+
+| Name | Description |
+|---|---|
+| `EgressPath` | The path of the file that was egressed using the specified egress provider. |
+
+#### Example
+
+Usage that collects exceptions as newline-delimited JSON and egresses it to a provider named "AzureBlobExceptions".
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "Egress": "AzureBlobExceptions",
+    "Format": "NewlineDelimitedJson"
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+  
+  ```yaml
+  CollectionRules__RuleName__Actions__0__Settings__Egress: "AzureBlobExceptions"
+  CollectionRules__RuleName__Actions__0__Settings__Format: "NewlineDelimitedJson"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+  
+  ```yaml
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Egress
+    value: "AzureBlobExceptions"
+  - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Settings__Format
+    value: "NewlineDelimitedJson"
+  ```
+</details>
+
 ### `CollectGCDump` Action
 
 An action that collects a gcdump of the process that the collection rule is targeting.
@@ -912,17 +968,19 @@ Usage that executes a .NET executable named `myapp.dll` using `dotnet`.
   ```
 </details>
 
-### **[Experimental]** `CollectStacks` Action (7.0+)
+### `CollectStacks` Action
+
+First Available: 8.0 Preview 7
 
 Collect call stacks from the target process.
 
->**Note**: This feature is [experimental](../experimental.md). To enable this feature, set `DotnetMonitor_Experimental_Feature_CallStacks` to `true` as an environment variable on the `dotnet monitor` process or container. Additionally, the [in-process features](#experimental-in-process-features-configuration-70) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
+>**Note**: This feature is not enabled by default and requires configuration to be enabled. The [in-process features](./../configuration/in-process-features-configuration.md) must be enabled since the call stacks feature uses shared libraries loaded into the target application for collecting the call stack information.
 
 #### Properties
 
 | Name | Type | Required | Description | Default Value |
 |---|---|---|---|---|
-| `Format` | [CallStackFormat](../api/definitions.md#experimental-callstackformat-70) | false | The format of the collected call stack. | `Json` |
+| `Format` | [CallStackFormat](../api/definitions.md#callstackformat) | false | The format of the collected call stack. | `Json` |
 | `Egress` | string | true | The named [egress provider](../egress.md) for egressing the collected stacks. | |
 
 ### `LoadProfiler` Action

@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
-using System.CommandLine;
 using System.Globalization;
 using System.IO;
 using System.Text;

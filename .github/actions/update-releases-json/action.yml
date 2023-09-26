@@ -1,0 +1,19 @@
+name: 'Update releases json file'
+description: 'Update releases json file'
+inputs:
+  auth_token:
+    description: 'The token used to authenticate to GitHub.'
+    required: false
+  releases_json_file:
+    description: 'The input releases json file path.'
+    required: true
+  supported_frameworks:
+    description: 'The frameworks supported by the new release.'
+    required: false
+  end_of_support_discussion_category:
+    description: 'The discussion category to post about a version going out of support soon.'
+    required: false
+
+runs:
+  using: 'node16'
+  main: 'index.js'

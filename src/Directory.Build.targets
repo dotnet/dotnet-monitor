@@ -2,6 +2,8 @@
 <Project>
   <Import Project="Sdk.targets" Sdk="Microsoft.DotNet.Arcade.Sdk" />
 
+  <Import Project="$(RepositoryEngineeringDir)Helix.targets" />
+
   <!-- Work around https://github.com/dotnet/sourcelink/issues/572
   Remove once we build using an SDK that contains https://github.com/dotnet/sdk/pull/10613 -->
   <PropertyGroup>
@@ -10,6 +12,9 @@
   <ItemGroup>
     <EmbeddedFiles Include="$(GeneratedAssemblyInfoFile)"/>
   </ItemGroup>
+
+  <Target Name="GetDocumentationFile"
+          Returns="@(DocFileItem)" />
 
   <!-- Creates artifact files related to the package that will be uploaded to blob storage during publish. -->
   <Target Name="GenerateArchivePackageProjectFiles"

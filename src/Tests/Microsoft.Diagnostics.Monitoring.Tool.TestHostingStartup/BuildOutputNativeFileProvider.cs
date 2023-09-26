@@ -28,14 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup
         /// </summary>
         public static IFileProvider Create(string runtimeIdentifier, string sharedLibraryPath)
         {
-            string configurationName =
-#if DEBUG
-            "Debug";
-#else
-            "Release";
-#endif
-
-            string nativeOutputPath = Path.Combine(sharedLibraryPath, $"{runtimeIdentifier}.{configurationName}");
+            string nativeOutputPath = Path.Combine(sharedLibraryPath, $"{runtimeIdentifier}.{BuildOutput.ConfigurationName}");
 
             return new BuildOutputNativeFileProvider(nativeOutputPath);
         }

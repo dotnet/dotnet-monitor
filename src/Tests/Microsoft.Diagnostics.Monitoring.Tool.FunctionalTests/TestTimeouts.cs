@@ -38,5 +38,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Timeout for waiting for a collection rule to run its action list to completion.
         /// </summary>
         public static readonly TimeSpan CollectionRuleActionsCompletedTimeout = CommonTestTimeouts.GeneralTimeout;
+
+        /// <summary>
+        /// Timeout for waiting for the dotnet-monitor process to exit after closing StandardInput.
+        /// </summary>
+        public static readonly TimeSpan DotnetMonitorExitAfterStdinCloseTimeout = TimeSpan.FromSeconds(10);
     }
 }

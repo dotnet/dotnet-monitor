@@ -4,15 +4,11 @@
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading;
-using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
@@ -22,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public ICollectionRuleAction Create(IEndpointInfo endpointInfo, CollectTraceOptions options)
+        public ICollectionRuleAction Create(IProcessInfo processInfo, CollectTraceOptions options)
         {
             if (null == options)
             {
@@ -32,7 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             ValidationContext context = new(options, _serviceProvider, items: null);
             Validator.ValidateObject(options, context, validateAllProperties: true);
 
-            return new CollectTraceAction(_serviceProvider, endpointInfo, options);
+            return new CollectTraceAction(_serviceProvider, processInfo, options);
         }
 
         public CollectTraceActionFactory(IServiceProvider serviceProvider)
@@ -41,22 +37,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         private sealed class CollectTraceAction :
-            CollectionRuleActionBase<CollectTraceOptions>
+            CollectionRuleEgressActionBase<CollectTraceOptions>
         {
-            private readonly IServiceProvider _serviceProvider;
             private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
 
-            public CollectTraceAction(IServiceProvider serviceProvider, IEndpointInfo endpointInfo, CollectTraceOptions options)
-                : base(endpointInfo, options)
+            public CollectTraceAction(IServiceProvider serviceProvider, IProcessInfo processInfo, CollectTraceOptions options)
+                : base(serviceProvider, processInfo, options)
             {
-                _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-                _counterOptions = _serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
+                _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
             }
 
-            protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
-                TaskCompletionSource<object> startCompletionSource,
-                CollectionRuleMetadata collectionRuleMetadata,
-                CancellationToken token)
+            protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata collectionRuleMetadata)
             {
                 TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectTraceOptionsDefaults.Duration));
                 string egressProvider = Options.Egress;
@@ -82,7 +73,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Trace, EndpointInfo);
 
-                ITraceOperationFactory operationFactory = _serviceProvider.GetRequiredService<ITraceOperationFactory>();
+                ITraceOperationFactory operationFactory = ServiceProvider.GetRequiredService<ITraceOperationFactory>();
                 IArtifactOperation operation;
                 if (stoppingEvent == null)
                 {
@@ -103,31 +94,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 }
 
                 EgressOperation egressOperation = new EgressOperation(
-                    async (outputStream, token) =>
-                    {
-                        await operation.ExecuteAsync(outputStream, startCompletionSource, token);
-                    },
+                    operation,
                     egressProvider,
-                    operation.GenerateFileName(),
-                    EndpointInfo,
-                    operation.ContentType,
+                    ProcessInfo,
                     scope,
+                    null,
                     collectionRuleMetadata);
 
-                ExecutionResult<EgressResult> result = await egressOperation.ExecuteAsync(_serviceProvider, token);
-                if (null != result.Exception)
-                {
-                    throw new CollectionRuleActionException(result.Exception);
-                }
-                string traceFilePath = result.Result.Value;
-
-                return new CollectionRuleActionResult()
-                {
-                    OutputValues = new Dictionary<string, string>(StringComparer.Ordinal)
-                    {
-                        { CollectionRuleActionConstants.EgressPathOutputValueName, traceFilePath }
-                    }
-                };
+                return egressOperation;
             }
         }
     }
