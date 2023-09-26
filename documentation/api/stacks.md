@@ -78,17 +78,17 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
     "frames": [
         {
             "methodName": "GetQueuedCompletionStatus",
-            "className": "Interop\u002BKernel32",
+            "typeName": "Interop\u002BKernel32",
             "moduleName": "System.Private.CoreLib.dll",
         },
         {
             "methodName": "WaitForSignal",
-            "className": "System.Threading.LowLevelLifoSemaphore",
+            "typeName": "System.Threading.LowLevelLifoSemaphore",
             "moduleName": "System.Private.CoreLib.dll",
         },
         {
             "methodName": "Wait",
-            "className": "System.Threading.LowLevelLifoSemaphore",
+            "typeName": "System.Threading.LowLevelLifoSemaphore",
             "moduleName": "System.Private.CoreLib.dll",
         }
 }
