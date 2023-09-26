@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 {
     internal sealed class TestFunctionProbes : IFunctionProbes
     {
-        public void Cache(IList<MethodInfo> methods)
+        public void CacheMethods(IList<MethodInfo> methods)
         {
         }
 

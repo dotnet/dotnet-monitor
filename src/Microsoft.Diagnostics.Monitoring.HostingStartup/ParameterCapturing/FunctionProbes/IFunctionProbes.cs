@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 {
     internal interface IFunctionProbes
     {
-        public void Cache(IList<MethodInfo> methods);
+        public void CacheMethods(IList<MethodInfo> methods);
 
         public void EnterProbe(ulong uniquifier, object[] args);
     }

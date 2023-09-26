@@ -146,7 +146,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
             OnProbeFault?.Invoke(this, instrumentedMethod);
         }
-        
+
         private void TransitionStateFromHr(TaskCompletionSource? taskCompletionSource, int hresult, long expectedState, long succeededState, long failedState)
         {
             Exception? ex = Marshal.GetExceptionForHR(hresult);
@@ -277,7 +277,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                     boxingTokens.AddRange(methodBoxingTokens);
                 }
 
-                probes.Cache(methods);
+                probes.CacheMethods(methods);
                 FunctionProbesStub.State = new FunctionProbesState(new ReadOnlyDictionary<ulong, InstrumentedMethod>(newMethodCache), probes);
 
                 _installationTaskSource = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);

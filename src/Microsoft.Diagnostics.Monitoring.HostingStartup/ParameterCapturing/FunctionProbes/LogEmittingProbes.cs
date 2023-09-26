@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             _objectFormatterCache = new ObjectFormatterCache(useDebuggerDisplayAttribute);
         }
 
-        public void Cache(IList<MethodInfo> methods)
+        public void CacheMethods(IList<MethodInfo> methods)
         {
             foreach (MethodInfo method in methods)
             {
@@ -86,7 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 }
             }
 
-            _logger.Log(instrumentedMethod.CaptureMode, instrumentedMethod.MethodWithParametersTemplateString, argValues);
+            _logger.Log(instrumentedMethod.CaptureMode, instrumentedMethod.MethodTemplateString, argValues);
         }
     }
 }

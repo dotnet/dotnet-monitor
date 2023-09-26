@@ -40,6 +40,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             CollectionRuleEgressActionBase<CollectLiveMetricsOptions>
         {
             private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
+            private readonly IOptionsMonitor<MetricsOptions> _metricsOptions;
             private readonly IMetricsOperationFactory _metricsOperationFactory;
 
             public CollectLiveMetricsAction(IServiceProvider serviceProvider, IProcessInfo processInfo, CollectLiveMetricsOptions options)
@@ -47,27 +48,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
                 _metricsOperationFactory = serviceProvider.GetRequiredService<IMetricsOperationFactory>();
+                _metricsOptions = serviceProvider.GetRequiredService<IOptionsMonitor<MetricsOptions>>();
             }
 
             protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata collectionRuleMetadata)
             {
-                EventMetricsProvider[] providers = Options.Providers;
-                EventMetricsMeter[] meters = Options.Meters;
-                bool includeDefaultProviders = Options.IncludeDefaultProviders.GetValueOrDefault(CollectLiveMetricsOptionsDefaults.IncludeDefaultProviders);
-                TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectLiveMetricsOptionsDefaults.Duration));
-                string egressProvider = Options.Egress;
-
-                EventMetricsConfiguration configuration = new EventMetricsConfiguration()
+                MetricsPipelineSettings settings;
+                if (Options.HasCustomConfiguration())
                 {
-                    IncludeDefaultProviders = includeDefaultProviders,
-                    Providers = providers,
-                    Meters = meters
-                };
+                    EventMetricsConfiguration configuration = new()
+                    {
+                        IncludeDefaultProviders = Options.GetIncludeDefaultProviders(),
+                        Providers = Options.Providers,
+                        Meters = Options.Meters
+                    };
 
-                MetricsPipelineSettings settings = MetricsSettingsFactory.CreateSettings(
-                    _counterOptions.CurrentValue,
-                    (int)duration.TotalSeconds,
-                    configuration);
+                    settings = MetricsSettingsFactory.CreateSettings(
+                        _counterOptions.CurrentValue,
+                        (int)Options.GetDuration().TotalSeconds,
+                        configuration);
+                }
+                else
+                {
+                    settings = MetricsSettingsFactory.CreateSettings(
+                        _counterOptions.CurrentValue,
+                        (int)Options.GetDuration().TotalSeconds,
+                        _metricsOptions.CurrentValue);
+                }
 
                 IArtifactOperation operation = _metricsOperationFactory.Create(
                     EndpointInfo,
@@ -77,7 +84,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 EgressOperation egressOperation = new EgressOperation(
                     operation,
-                    egressProvider,
+                    Options.Egress,
                     ProcessInfo,
                     scope,
                     null,
