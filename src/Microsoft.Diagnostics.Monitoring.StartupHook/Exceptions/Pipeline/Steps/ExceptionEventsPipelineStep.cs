@@ -98,7 +98,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             }
 
             StackTrace threadStackTrace = new(fNeedFileInfo: false);
-            ReadOnlySpan<StackFrame> threadStackFrames = threadStackTrace.GetFrames();
+            Span<StackFrame> threadStackFrames = threadStackTrace.GetFrames();
             int index = 0;
             while (index < threadStackFrames.Length)
             {
@@ -110,6 +110,24 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
                 }
 
                 index++;
+            }
+
+            if (index >= threadStackTrace.FrameCount)
+            {
+                // Workaround for https://github.com/dotnet/runtime/issues/91125
+                // Fall back to only checking GetMethod() and ignoring the ILOffset()
+                index = 0;
+                while (index < threadStackFrames.Length)
+                {
+                    StackFrame threadStackFrame = threadStackFrames[index];
+                    if (throwingFrame.GetMethod() == threadStackFrame.GetMethod())
+                    {
+                        threadStackFrames[index] = throwingFrame;
+                        break;
+                    }
+
+                    index++;
+                }
             }
 
             if (index < threadStackTrace.FrameCount)

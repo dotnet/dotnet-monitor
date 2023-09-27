@@ -53,6 +53,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             CliCommand innerThrownExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.InnerThrownException);
             innerThrownExceptionCommand.SetAction(InnerThrownExceptionAsync);
 
+            CliCommand eclipsingExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.EclipsingException);
+            eclipsingExceptionCommand.SetAction(EclipsingExceptionAsync);
+
             CliCommand aggregateExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.AggregateException);
             aggregateExceptionCommand.SetAction(AggregateExceptionAsync);
 
@@ -72,6 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             scenarioCommand.Subcommands.Add(arrayExceptionCommand);
             scenarioCommand.Subcommands.Add(innerUnthrownExceptionCommand);
             scenarioCommand.Subcommands.Add(innerThrownExceptionCommand);
+            scenarioCommand.Subcommands.Add(eclipsingExceptionCommand);
             scenarioCommand.Subcommands.Add(aggregateExceptionCommand);
             scenarioCommand.Subcommands.Add(reflectionTypeLoadExceptionCommand);
             return scenarioCommand;
@@ -296,6 +300,17 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             }, token);
         }
 
+        public static Task<int> EclipsingExceptionAsync(ParseResult result, CancellationToken token)
+        {
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
+                EclipsingInvalidOperationException();
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
+                return 0;
+            }, token);
+        }
+
         public static Task<int> AggregateExceptionAsync(ParseResult result, CancellationToken token)
         {
             return ScenarioHelpers.RunScenarioAsync(async logger =>
@@ -378,6 +393,25 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 }
 
                 throw new InvalidOperationException(null, innerException);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void EclipsingInvalidOperationException()
+        {
+            try
+            {
+                try
+                {
+                    throw new FormatException();
+                }
+                catch (Exception innerException)
+                {
+                    throw new InvalidOperationException(null, innerException);
+                }
             }
             catch (Exception)
             {

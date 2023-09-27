@@ -60,6 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string ArrayException = nameof(ArrayException);
                 public const string InnerUnthrownException = nameof(InnerUnthrownException);
                 public const string InnerThrownException = nameof(InnerThrownException);
+                public const string EclipsingException = nameof(EclipsingException);
                 public const string AggregateException = nameof(AggregateException);
                 public const string ReflectionTypeLoadException = nameof(ReflectionTypeLoadException);
             }
