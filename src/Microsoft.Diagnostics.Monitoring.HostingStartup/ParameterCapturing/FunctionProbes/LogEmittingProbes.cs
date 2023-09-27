@@ -13,10 +13,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         private readonly ParameterCapturingLogger _logger;
         private readonly ObjectFormatterCache _objectFormatterCache;
 
-        public LogEmittingProbes(ParameterCapturingLogger logger)
+        public LogEmittingProbes(ParameterCapturingLogger logger, bool useDebuggerDisplayAttribute)
         {
             _logger = logger;
-            _objectFormatterCache = new ObjectFormatterCache(useDebuggerDisplayAttribute: false);
+            _objectFormatterCache = new ObjectFormatterCache(useDebuggerDisplayAttribute);
         }
 
         public void CacheMethods(IList<MethodInfo> methods)

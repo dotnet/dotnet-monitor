@@ -130,7 +130,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             try
             {
-                _pipeline.SubmitRequest(payload, new LogEmittingProbes(_parameterCapturingLogger));
+                _pipeline.SubmitRequest(payload, new LogEmittingProbes(_parameterCapturingLogger, payload.Configuration.UseDebuggerDisplayAttribute));
             }
             catch (ArgumentException ex)
             {
