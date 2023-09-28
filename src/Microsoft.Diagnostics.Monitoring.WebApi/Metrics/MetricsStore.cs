@@ -90,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
                 return;
             }
-            if (metric is InstrumentationStartedPayload)
+            if (metric.IsValuePublishedEvent)
             {
                 // Do we want to do anything with this payload?
                 return;
@@ -192,7 +192,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static async Task WriteMetricHeader(ICounterPayload metricInfo, StreamWriter writer, string metricName)
         {
-            if ((metricInfo.EventType != EventType.Error) && (metricInfo.EventType != EventType.CounterEnded))
+            if ((!metricInfo.EventType.IsError()) && (metricInfo.EventType != EventType.CounterEnded))
             {
                 string metricType = GetMetricType(metricInfo.EventType);
 
@@ -212,7 +212,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     return "gauge";
                 case EventType.Histogram:
                     return "summary";
-                case EventType.Error:
+                case EventType.HistogramLimitError:
+                case EventType.TimeSeriesLimitError:
+                case EventType.ErrorTargetProcess:
+                case EventType.MultipleSessionsNotSupportedError:
+                case EventType.MultipleSessionsConfiguredIncorrectlyError:
+                case EventType.ObservableInstrumentCallbackError:
                 default:
                     return string.Empty; // Not sure this is how we want to do it.
             }
