@@ -1095,6 +1095,71 @@
           "default": 20,
           "maximum": 2147483647.0,
           "minimum": 1.0
+        },
+        "CollectionFilters": {
+          "description": "The filters that determine which exceptions should be included/excluded when collecting exceptions.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ExceptionsConfiguration"
+            }
+          ]
+        }
+      }
+    },
+    "ExceptionsConfiguration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Include": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/ExceptionFilter"
+          }
+        },
+        "Exclude": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/ExceptionFilter"
+          }
+        }
+      }
+    },
+    "ExceptionFilter": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ExceptionType": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "ModuleName": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "TypeName": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "MethodName": {
+          "type": [
+            "null",
+            "string"
+          ]
         }
       }
     },
@@ -1647,6 +1712,16 @@
             },
             {
               "$ref": "#/definitions/ExceptionFormat"
+            }
+          ]
+        },
+        "Filters": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ExceptionsConfiguration"
             }
           ]
         }

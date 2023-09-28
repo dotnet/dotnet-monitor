@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
+namespace Microsoft.Diagnostics.Monitoring.Options
 {
     public sealed class ExceptionsConfiguration
     {

@@ -12,13 +12,15 @@ using System.IO;
 
 internal sealed class StartupHook
 {
-    private static CurrentAppDomainExceptionProcessor s_exceptionProcessor = new();
+    private static CurrentAppDomainExceptionProcessor? s_exceptionProcessor;
     private static AspNetHostingStartupLoader? s_hostingStartupLoader;
 
     public static void Initialize()
     {
         try
         {
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+
             string? hostingStartupPath = Environment.GetEnvironmentVariable(StartupHookIdentifiers.EnvironmentVariables.HostingStartupPath);
             // TODO: Log if specified hosting startup assembly doesn't exist
             if (File.Exists(hostingStartupPath))
@@ -26,6 +28,7 @@ internal sealed class StartupHook
                 s_hostingStartupLoader = new AspNetHostingStartupLoader(hostingStartupPath);
             }
 
+            s_exceptionProcessor = new CurrentAppDomainExceptionProcessor();
             s_exceptionProcessor.Start();
 
             try
@@ -42,6 +45,20 @@ internal sealed class StartupHook
         catch
         {
             // TODO: Log failure
+        }
+    }
+
+    private static void OnProcessExit(object? sender, EventArgs e)
+    {
+        try
+        {
+            s_exceptionProcessor?.Dispose();
+            s_hostingStartupLoader?.Dispose();
+            SharedInternals.MessageDispatcher?.Dispose();
+        }
+        catch
+        {
+
         }
     }
 }

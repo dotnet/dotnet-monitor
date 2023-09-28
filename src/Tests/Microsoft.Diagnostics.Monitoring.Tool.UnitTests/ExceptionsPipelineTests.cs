@@ -307,7 +307,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.NotEqual(0UL, innerInstance.Id);
                     Assert.Equal(typeof(FormatException).FullName, innerInstance.TypeName);
                     Assert.Empty(innerInstance.InnerExceptionIds);
-                    Assert.Empty(innerInstance.CallStack.Frames); // Indicates this exception was not thrown
+                    Assert.Null(innerInstance.CallStack); // Indicates this exception was not thrown
 
                     IExceptionInstance outerInstance = instances.Skip(1).Single();
                     Assert.NotNull(outerInstance);
@@ -315,7 +315,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.NotEqual(0UL, outerInstance.Id);
                     Assert.Equal(typeof(InvalidOperationException).FullName, outerInstance.TypeName);
                     Assert.Equal(innerInstance.Id, Assert.Single(outerInstance.InnerExceptionIds));
-                    Assert.NotEmpty(outerInstance.CallStack.Frames); // Indicates this exception was thrown
+                    Assert.NotNull(outerInstance.CallStack); // Indicates this exception was thrown
+                    Assert.NotEmpty(outerInstance.CallStack.Frames);
                 });
         }
 
@@ -340,7 +341,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.NotEqual(0UL, innerInstance.Id);
                     Assert.Equal(typeof(FormatException).FullName, innerInstance.TypeName);
                     Assert.Empty(innerInstance.InnerExceptionIds);
-                    Assert.NotEmpty(innerInstance.CallStack.Frames); // Indicates this exception was thrown
+                    Assert.NotNull(innerInstance.CallStack); // Indicates this exception was thrown
+                    Assert.NotEmpty(innerInstance.CallStack.Frames);
 
                     IExceptionInstance outerInstance = instances.Skip(1).Single();
                     Assert.NotNull(outerInstance);
@@ -348,8 +350,56 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.NotEqual(0UL, outerInstance.Id);
                     Assert.Equal(typeof(InvalidOperationException).FullName, outerInstance.TypeName);
                     Assert.Equal(innerInstance.Id, Assert.Single(outerInstance.InnerExceptionIds));
-                    Assert.NotEmpty(outerInstance.CallStack.Frames); // Indicates this exception was thrown
+                    Assert.NotNull(outerInstance.CallStack); // Indicates this exception was thrown
+                    Assert.NotEmpty(outerInstance.CallStack.Frames);
                 });
+        }
+
+        /// <summary>
+        /// Tests that wrapped exceptions thrown within a catch block are detectable
+        /// (and that the outer exception's callstack is present).
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_EclipsingException()
+        {
+            const int ExpectedInstanceCount = 2;
+
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.EclipsingException,
+                ExpectedInstanceCount,
+                validate: instances => ValidateEclipsingException(ExpectedInstanceCount, instances));
+        }
+
+        /// <summary>
+        /// Tests that wrapped exceptions thrown from a method called within the catch block are detectable
+        /// (and that the outer exception's callstack is present).
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_EclipsingExceptionFromMethodCall()
+        {
+            const int ExpectedInstanceCount = 2;
+
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.EclipsingExceptionFromMethodCall,
+                ExpectedInstanceCount,
+                validate: instances => ValidateEclipsingException(ExpectedInstanceCount, instances));
+        }
+
+        private static void ValidateEclipsingException(int expectedInstanceCount, IEnumerable<IExceptionInstance> instances)
+        {
+            Assert.Equal(expectedInstanceCount, instances.Count());
+            IExceptionInstance innerInstance = instances.First();
+            Assert.NotNull(innerInstance);
+            Assert.NotEqual(0UL, innerInstance.Id);
+            Assert.Equal(typeof(FormatException).FullName, innerInstance.TypeName);
+            Assert.Empty(innerInstance.InnerExceptionIds);
+            Assert.NotEmpty(innerInstance.CallStack.Frames); // Indicates this exception was thrown
+            IExceptionInstance outerInstance = instances.Skip(1).Single();
+            Assert.NotNull(outerInstance);
+            Assert.NotEqual(0UL, outerInstance.Id);
+            Assert.Equal(typeof(InvalidOperationException).FullName, outerInstance.TypeName);
+            Assert.Equal(innerInstance.Id, Assert.Single(outerInstance.InnerExceptionIds));
+            Assert.NotEmpty(outerInstance.CallStack.Frames); // Indicates this exception was thrown
         }
 
         /// <summary>
@@ -375,7 +425,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.NotEqual(0UL, inner1Instance.Id);
                     Assert.Equal(typeof(InvalidOperationException).FullName, inner1Instance.TypeName);
                     Assert.Empty(inner1Instance.InnerExceptionIds);
-                    Assert.Empty(inner1Instance.CallStack.Frames); // Indicates this exception was not thrown
+                    Assert.Null(inner1Instance.CallStack); // Indicates this exception was not thrown
 
                     IExceptionInstance inner2Instance = instanceList[1];
                     Assert.NotNull(inner2Instance);
@@ -383,7 +433,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.NotEqual(0UL, inner2Instance.Id);
                     Assert.Equal(typeof(FormatException).FullName, inner2Instance.TypeName);
                     Assert.Empty(inner2Instance.InnerExceptionIds);
-                    Assert.Empty(inner2Instance.CallStack.Frames); // Indicates this exception was not thrown
+                    Assert.Null(inner2Instance.CallStack); // Indicates this exception was not thrown
 
                     IExceptionInstance inner3Instance = instanceList[2];
                     Assert.NotNull(inner3Instance);
@@ -391,7 +441,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.NotEqual(0UL, inner3Instance.Id);
                     Assert.Equal(typeof(TaskCanceledException).FullName, inner3Instance.TypeName);
                     Assert.Empty(inner3Instance.InnerExceptionIds);
-                    Assert.Empty(inner3Instance.CallStack.Frames); // Indicates this exception was not thrown
+                    Assert.Null(inner3Instance.CallStack); // Indicates this exception was not thrown
 
                     IExceptionInstance outerInstance = instanceList[3];
                     Assert.NotNull(outerInstance);
@@ -399,7 +449,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.NotEqual(0UL, outerInstance.Id);
                     Assert.Equal(typeof(AggregateException).FullName, outerInstance.TypeName);
                     Assert.NotEmpty(outerInstance.InnerExceptionIds);
-                    Assert.NotEmpty(outerInstance.CallStack.Frames); // Indicates this exception was thrown
+                    Assert.NotNull(outerInstance.CallStack); // Indicates this exception was thrown
+                    Assert.NotEmpty(outerInstance.CallStack.Frames);
 
                     // Verify inner exceptions of AggregateException instance
                     Assert.Equal(3, outerInstance.InnerExceptionIds.Length);
@@ -432,7 +483,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.NotEqual(0UL, inner1Instance.Id);
                     Assert.Equal(typeof(MissingMethodException).FullName, inner1Instance.TypeName);
                     Assert.Empty(inner1Instance.InnerExceptionIds);
-                    Assert.Empty(inner1Instance.CallStack.Frames); // Indicates this exception was not thrown
+                    Assert.Null(inner1Instance.CallStack); // Indicates this exception was not thrown
 
                     IExceptionInstance inner2Instance = instanceList[1];
                     Assert.NotNull(inner2Instance);
@@ -440,7 +491,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.NotEqual(0UL, inner2Instance.Id);
                     Assert.Equal(typeof(MissingFieldException).FullName, inner2Instance.TypeName);
                     Assert.Empty(inner2Instance.InnerExceptionIds);
-                    Assert.Empty(inner2Instance.CallStack.Frames); // Indicates this exception was not thrown
+                    Assert.Null(inner2Instance.CallStack); // Indicates this exception was not thrown
 
                     IExceptionInstance outerInstance = instanceList[2];
                     Assert.NotNull(outerInstance);
@@ -448,7 +499,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     Assert.NotEqual(0UL, outerInstance.Id);
                     Assert.Equal(typeof(ReflectionTypeLoadException).FullName, outerInstance.TypeName);
                     Assert.NotEmpty(outerInstance.InnerExceptionIds);
-                    Assert.NotEmpty(outerInstance.CallStack.Frames); // Indicates this exception was thrown
+                    Assert.NotNull(outerInstance.CallStack); // Indicates this exception was thrown
+                    Assert.NotEmpty(outerInstance.CallStack.Frames);
 
                     // Verify inner exceptions of ReflectionTypeLoadException instance
                     Assert.Equal(3, outerInstance.InnerExceptionIds.Length);
@@ -587,11 +639,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private static string GetExceptionDetails(IExceptionInstance instance)
         {
-            var topFrame = instance.CallStack.Frames.FirstOrDefault();
+            var topFrame = instance.CallStack?.Frames.FirstOrDefault();
 
             if (topFrame != null)
             {
-                return $"MethodName: {topFrame.MethodName}, ModuleName: {topFrame.ModuleName}, ClassName: {topFrame.ClassName}, TypeName: {instance.TypeName}";
+                return $"MethodName: {topFrame.MethodName}, ModuleName: {topFrame.ModuleName}, TypeName: {topFrame.TypeName}, TypeName: {instance.TypeName}";
             }
             else
             {
@@ -652,14 +704,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
-        private static void ValidateStack(IExceptionInstance instance, string expectedMethodName, string expectedModuleName, string expectedClassName, IList<string> expectedParameterTypes = null)
+        private static void ValidateStack(IExceptionInstance instance, string expectedMethodName, string expectedModuleName, string expectedTypeName, IList<string> expectedParameterTypes = null)
         {
             CallStack stack = instance.CallStack;
             Assert.NotEmpty(stack.Frames);
             Assert.True(0 < stack.ThreadId);
             Assert.Equal(expectedMethodName, stack.Frames[0].MethodName);
             Assert.Equal(expectedModuleName, stack.Frames[0].ModuleName);
-            Assert.Equal(expectedClassName, stack.Frames[0].ClassName);
+            Assert.Equal(expectedTypeName, stack.Frames[0].TypeName);
             Assert.Equal(expectedParameterTypes ?? new List<string>(), stack.Frames[0].ParameterTypes);
         }
 
@@ -688,7 +740,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     Assert.True(cache.TryGetExceptionGroup(groupId, out ulong exceptionClassId, out _, out _));
 
-                    NameFormatter.BuildClassName(typeBuilder, cache.NameCache, exceptionClassId);
+                    NameFormatter.BuildTypeName(typeBuilder, cache.NameCache, exceptionClassId);
 
                     if (cache.NameCache.ClassData.TryGetValue(exceptionClassId, out ClassData exceptionClassData))
                     {

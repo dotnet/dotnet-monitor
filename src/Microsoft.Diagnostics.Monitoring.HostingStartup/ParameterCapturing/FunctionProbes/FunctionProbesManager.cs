@@ -1,8 +1,10 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting;
 using Microsoft.Diagnostics.Monitoring.StartupHook;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -68,11 +70,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         public event EventHandler<InstrumentedMethod>? OnProbeFault;
 
-        public FunctionProbesManager(IFunctionProbes probes)
+        private readonly ILogger _logger;
+
+        public FunctionProbesManager(ILogger logger)
         {
             ProfilerResolver.InitializeResolver<FunctionProbesManager>();
 
             _disposalToken = _disposalTokenSource.Token;
+            _logger = logger;
 
             //
             // CONSIDER:
@@ -93,12 +98,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 Marshal.GetFunctionPointerForDelegate(_onFaultDelegate));
 
             RequestFunctionProbeRegistration(FunctionProbesStub.GetProbeFunctionId());
-
-            FunctionProbesStub.Instance = probes;
         }
 
         private void OnRegistration(int hresult)
         {
+            _logger.LogDebug(ParameterCapturingStrings.ProbeManagementCallback, nameof(OnRegistration), hresult);
+
             TransitionStateFromHr(_probeRegistrationTaskSource, hresult,
                 expectedState: ProbeStateUninitialized,
                 succeededState: ProbeStateUninstalled,
@@ -107,6 +112,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private void OnInstallation(int hresult)
         {
+            _logger.LogDebug(ParameterCapturingStrings.ProbeManagementCallback, nameof(OnInstallation), hresult);
+
             TransitionStateFromHr(_installationTaskSource, hresult,
                 expectedState: ProbeStateInstalling,
                 succeededState: ProbeStateInstalled,
@@ -115,6 +122,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private void OnUninstallation(int hresult)
         {
+            _logger.LogDebug(ParameterCapturingStrings.ProbeManagementCallback, nameof(OnUninstallation), hresult);
+
             TransitionStateFromHr(_uninstallationTaskSource, hresult,
                 expectedState: ProbeStateUninstalling,
                 succeededState: ProbeStateUninstalled,
@@ -123,9 +132,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private void OnFault(ulong uniquifier)
         {
-            var methodCache = FunctionProbesStub.InstrumentedMethodCache;
-            if (methodCache == null ||
-                !methodCache.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod))
+            var cache = FunctionProbesStub.State?.InstrumentedMethods;
+            if (cache == null ||
+                !cache.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod))
             {
                 //
                 // The probe fault occurred in a method that is no longer actively instrumented, ignore.
@@ -195,11 +204,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             }
 
             using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(_disposalToken, token);
+            CancellationToken linkedCancellationToken = cts.Token;
             try
             {
-                using IDisposable _ = cts.Token.Register(() =>
+                using IDisposable _ = linkedCancellationToken.Register(() =>
                 {
-                    _uninstallationTaskSource.TrySetCanceled(cts.Token);
+                    _uninstallationTaskSource?.TrySetCanceled(linkedCancellationToken);
                 });
                 await _uninstallationTaskSource.Task.ConfigureAwait(false);
             }
@@ -216,12 +226,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 return;
             }
 
-            FunctionProbesStub.InstrumentedMethodCache = null;
+            FunctionProbesStub.State = null;
             RequestFunctionProbeUninstallation();
         }
 
 
-        public async Task StartCapturingAsync(IList<MethodInfo> methods, CancellationToken token)
+        public async Task StartCapturingAsync(IList<MethodInfo> methods, IFunctionProbes probes, CancellationToken token)
         {
             DisposableHelper.ThrowIfDisposed<FunctionProbesManager>(ref _disposedState);
 
@@ -238,9 +248,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, ParameterCapturingStrings.ErrorMessage_ProbeStateMismatchFormatString, ProbeStateUninstalled, _probeState));
             }
 
+            ObjectFormatterCache newObjectFormatterCache = new(useDebuggerDisplayAttribute: false);
+            Dictionary<ulong, InstrumentedMethod> newMethodCache = new(methods.Count);
             try
             {
-                Dictionary<ulong, InstrumentedMethod> newMethodCache = new(methods.Count);
                 List<ulong> functionIds = new(methods.Count);
                 List<uint> argumentCounts = new(methods.Count);
                 List<uint> boxingTokens = new();
@@ -265,7 +276,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                     boxingTokens.AddRange(methodBoxingTokens);
                 }
 
-                FunctionProbesStub.InstrumentedMethodCache = new ReadOnlyDictionary<ulong, InstrumentedMethod>(newMethodCache);
+                probes.CacheMethods(methods);
+                FunctionProbesStub.State = new FunctionProbesState(new ReadOnlyDictionary<ulong, InstrumentedMethod>(newMethodCache), probes);
 
                 _installationTaskSource = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
                 RequestFunctionProbeInstallation(
@@ -276,17 +288,23 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             }
             catch
             {
-                FunctionProbesStub.InstrumentedMethodCache = null;
+                FunctionProbesStub.State = null;
+                newObjectFormatterCache?.Clear();
+
                 _probeState = ProbeStateUninstalled;
                 _installationTaskSource = null;
                 throw;
             }
 
             using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(_disposalToken, token);
+            CancellationToken linkedCancellationToken = cts.Token;
             try
             {
-                using IDisposable _ = cts.Token.Register(() =>
+                using IDisposable _ = linkedCancellationToken.Register(() =>
                 {
+                    _logger.LogDebug(ParameterCapturingStrings.CancellationRequestedDuringProbeInstallation, token.IsCancellationRequested, _disposalToken.IsCancellationRequested);
+                    _installationTaskSource?.TrySetCanceled(linkedCancellationToken);
+
                     //
                     // We need to uninstall the probes ourselves here if dispose has happened  otherwise the probes could be left in an installed state.
                     //
@@ -303,8 +321,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                         {
                         }
                     }
-
-                    _installationTaskSource.TrySetCanceled(cts.Token);
                 });
 
                 await _installationTaskSource.Task.ConfigureAwait(false);

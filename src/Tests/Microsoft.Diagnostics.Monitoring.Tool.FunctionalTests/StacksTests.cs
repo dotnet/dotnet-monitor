@@ -452,7 +452,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             FormattableString.Invariant($"{module}!{@class}.{function}");
 
         private static bool AreFramesEqual(WebApi.Models.CallStackFrame left, WebApi.Models.CallStackFrame right) =>
-            (left.ModuleName == right.ModuleName) && (left.ClassName == right.ClassName) && (left.MethodName == right.MethodName);
+            (left.ModuleName == right.ModuleName) && (left.TypeName == right.TypeName) && (left.MethodName == right.MethodName);
 
         private static bool AreFramesEqual(WebApi.Models.ProfileEvent left, WebApi.Models.ProfileEvent right) =>
             (left.Frame == right.Frame) && (left.At == right.At) && (left.Type == right.Type);
@@ -537,19 +537,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         new WebApi.Models.CallStackFrame
                         {
                             ModuleName = ExpectedModule,
-                            ClassName = ExpectedClass,
+                            TypeName = ExpectedClass,
                             MethodName = ExpectedCallbackFunction
                         },
                         new WebApi.Models.CallStackFrame
                         {
                             ModuleName = NativeFrame,
-                            ClassName = NativeFrame,
+                            TypeName = NativeFrame,
                             MethodName = NativeFrame
                         },
                         new WebApi.Models.CallStackFrame
                         {
                             ModuleName = ExpectedModule,
-                            ClassName = ExpectedClass,
+                            TypeName = ExpectedClass,
                             MethodName = ExpectedFunction
                         }
             };

@@ -89,6 +89,31 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static RootOptions EnableExceptions(this RootOptions options)
+        {
+            options.GetOrCreateInProcessFeaturesOptions().GetOrCreateExceptionsOptions().Enabled = true;
+
+            return options;
+        }
+
+        private static ExceptionsOptions GetOrCreateExceptionsOptions(this InProcessFeaturesOptions options)
+        {
+            ExceptionsOptions exceptionsOptions = options.Exceptions;
+            if (null == exceptionsOptions)
+            {
+                exceptionsOptions = new ExceptionsOptions();
+                options.Exceptions = exceptionsOptions;
+            }
+            return exceptionsOptions;
+        }
+
+        public static RootOptions SetExceptionFiltering(this RootOptions options, ExceptionsConfiguration configuration)
+        {
+            options.GetOrCreateInProcessFeaturesOptions().GetOrCreateExceptionsOptions().CollectionFilters = configuration;
+
+            return options;
+        }
+
         private static CallStacksOptions GetOrCreateCallStacksOptions(this InProcessFeaturesOptions options)
         {
             CallStacksOptions callStacksOptions = options.CallStacks;
@@ -103,6 +128,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
         public static RootOptions DisableCallStacks(this RootOptions options)
         {
             options.GetOrCreateInProcessFeaturesOptions().GetOrCreateCallStacksOptions().Enabled = false;
+
+            return options;
+        }
+
+        public static RootOptions DisableExceptions(this RootOptions options)
+        {
+            options.GetOrCreateInProcessFeaturesOptions().GetOrCreateExceptionsOptions().Enabled = false;
 
             return options;
         }

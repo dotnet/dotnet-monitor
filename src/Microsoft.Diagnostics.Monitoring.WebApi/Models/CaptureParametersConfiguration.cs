@@ -16,5 +16,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [JsonPropertyName("methods")]
         [Required, MinLength(1)]
         public MethodDescription[] Methods { get; set; } = Array.Empty<MethodDescription>();
+
+        [JsonPropertyName("useDebuggerDisplayAttribute")]
+        public bool UseDebuggerDisplayAttribute { get; set; } = true;
     }
 }

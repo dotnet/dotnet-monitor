@@ -22,5 +22,10 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         [Range(1, int.MaxValue)]
         [DefaultValue(ExceptionsOptionsDefaults.TopLevelLimit)]
         public int? TopLevelLimit { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExceptionsOptions_CollectionFilters))]
+        public ExceptionsConfiguration CollectionFilters { get; set; }
     }
 }

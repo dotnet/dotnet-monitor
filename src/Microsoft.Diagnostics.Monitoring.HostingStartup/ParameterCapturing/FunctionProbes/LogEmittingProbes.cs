@@ -1,15 +1,30 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
     internal sealed class LogEmittingProbes : IFunctionProbes
     {
         private readonly ParameterCapturingLogger _logger;
+        private readonly ObjectFormatterCache _objectFormatterCache;
 
-        public LogEmittingProbes(ParameterCapturingLogger logger)
+        public LogEmittingProbes(ParameterCapturingLogger logger, bool useDebuggerDisplayAttribute)
         {
             _logger = logger;
+            _objectFormatterCache = new ObjectFormatterCache(useDebuggerDisplayAttribute);
+        }
+
+        public void CacheMethods(IList<MethodInfo> methods)
+        {
+            foreach (MethodInfo method in methods)
+            {
+                _objectFormatterCache.CacheMethodParameters(method);
+            }
         }
 
         public void EnterProbe(ulong uniquifier, object[] args)
@@ -30,10 +45,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 return;
             }
 
-            var methodCache = FunctionProbesStub.InstrumentedMethodCache;
-            if (methodCache == null ||
+            FunctionProbesState? state = FunctionProbesStub.State;
+            if (state == null ||
                 args == null ||
-                !methodCache.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod) ||
+                !state.InstrumentedMethods.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod) ||
                 args.Length != instrumentedMethod?.SupportedParameters.Length)
             {
                 return;
@@ -44,19 +59,34 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 return;
             }
 
-            string[] argValues = new string[instrumentedMethod.NumberOfSupportedParameters];
-            int fmtIndex = 0;
-            for (int i = 0; i < args.Length; i++)
+            string[] argValues;
+            if (args.Length == 0)
             {
-                if (!instrumentedMethod.SupportedParameters[i])
+                argValues = Array.Empty<string>();
+            }
+            else
+            {
+                argValues = new string[args.Length];
+                for (int i = 0; i < args.Length; i++)
                 {
-                    continue;
+                    string value;
+                    if (!instrumentedMethod.SupportedParameters[i])
+                    {
+                        value = ObjectFormatter.Tokens.Unsupported;
+                    }
+                    else if (args[i] == null)
+                    {
+                        value = ObjectFormatter.Tokens.Null;
+                    }
+                    else
+                    {
+                        value = ObjectFormatter.FormatObject(_objectFormatterCache.GetFormatter(args[i].GetType()), args[i]);
+                    }
+                    argValues[i] = value;
                 }
-
-                argValues[fmtIndex++] = PrettyPrinter.FormatObject(args[i]);
             }
 
-            _logger.Log(instrumentedMethod.CaptureMode, instrumentedMethod.MethodWithParametersTemplateString, argValues);
+            _logger.Log(instrumentedMethod.CaptureMode, instrumentedMethod.MethodTemplateString, argValues);
         }
     }
 }

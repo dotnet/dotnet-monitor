@@ -611,6 +611,7 @@ An action that collects exceptions from the process that the collection rule is 
 |---|---|---|---|---|
 | `Egress` | string | true | The named [egress provider](../egress.md) for egressing the collected dump. | |
 | `Format` | [ExceptionFormat](../api/definitions.md#exceptionformat)? | false | The format of the exception entries. | `PlainText` |
+| `Filters` | [ExceptionsConfiguration](../api/definitions.md#exceptionsconfiguration)? | false | Determines which exceptions should be included/excluded in the result - note that this does not alter which [exceptions are collected](in-process-features-configuration.md#filtering).
 
 #### Outputs
 
@@ -761,12 +762,15 @@ Usage that collects a CPU trace for 30 seconds and egresses it to a provider nam
 
 An action that collects live metrics for the process that the collection rule is targeting.
 
+> **NOTE: (8.0+)** If none of `IncludeDefaultProviders`, `Provider`, or `Meters` are specified, then the [metrics configuration](<metrics-configuration.md#metrics-configuration>) is used as the collection specification.
+
 #### Properties
 
 | Name | Type | Required | Description | Default Value | Min Value | Max Value |
 |---|---|---|---|---|---|---|
 | `IncludeDefaultProviders` | bool | false | Determines if the default counter providers should be used. | `true` | | |
 | `Providers` | [EventMetricsProvider](../api/definitions.md#eventmetricsprovider)[] | false | The array of providers for metrics to collect. | | | |
+| `Meters` | [EventMetricsMeter](../api/definitions.md#eventmetricsmeter)[] | false | (7.1+) The array of meters for metrics to collect. | | | |
 | `Duration` | TimeSpan? | false | The duration of the live metrics operation. | `"00:00:30"` (30 seconds) | `"00:00:01"` (1 second) | `"1.00:00:00"` (1 day) |
 | `Egress` | string | true | The named [egress provider](../egress.md) for egressing the collected live metrics. | | | |
 
