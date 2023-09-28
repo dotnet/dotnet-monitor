@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 
         private static bool CheckConfiguration(IExceptionInstance exception, List<ExceptionFilterSettings> filterList, Func<ExceptionFilterSettings, CallStackFrame, bool> evaluateFilterList)
         {
-            var topFrame = exception.CallStack.Frames.FirstOrDefault();
+            var topFrame = exception.CallStack?.Frames.FirstOrDefault();
 
             foreach (var configuration in filterList)
             {
@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
                 {
                     CompareIncludeValues(configuration.MethodName, topFrame.MethodName, ref include);
                     CompareIncludeValues(configuration.ModuleName, topFrame.ModuleName, ref include);
-                    CompareIncludeValues(configuration.TypeName, topFrame.ClassName, ref include);
+                    CompareIncludeValues(configuration.TypeName, topFrame.TypeName, ref include);
                 }
 
                 CompareIncludeValues(configuration.ExceptionType, exception.TypeName, ref include);
@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
                 {
                     CompareExcludeValues(configuration.MethodName, topFrame.MethodName, ref exclude);
                     CompareExcludeValues(configuration.ModuleName, topFrame.ModuleName, ref exclude);
-                    CompareExcludeValues(configuration.TypeName, topFrame.ClassName, ref exclude);
+                    CompareExcludeValues(configuration.TypeName, topFrame.TypeName, ref exclude);
                     CompareExcludeValues(configuration.ExceptionType, exception.TypeName, ref exclude);
                 }
                 else

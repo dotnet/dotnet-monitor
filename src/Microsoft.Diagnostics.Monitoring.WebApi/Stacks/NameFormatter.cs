@@ -25,21 +25,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         private const char GenericSeparator = ',';
         private const char GenericEnd = ']';
 
-        public static void BuildClassName(StringBuilder builder, NameCache cache, FunctionData functionData)
+        public static void BuildTypeName(StringBuilder builder, NameCache cache, FunctionData functionData)
         {
             if (functionData.ParentClass != 0)
             {
-                BuildClassName(builder, cache, functionData.ParentClass);
+                BuildTypeName(builder, cache, functionData.ParentClass);
             }
             else
             {
-                BuildClassName(builder, cache, functionData.ModuleId, functionData.ParentToken);
+                BuildTypeName(builder, cache, functionData.ModuleId, functionData.ParentToken);
             }
         }
 
-        public static void BuildClassName(StringBuilder builder, NameCache cache, ulong classId)
+        public static void BuildTypeName(StringBuilder builder, NameCache cache, ulong classId)
         {
-            string className = UnknownClass;
+            string typeName = UnknownClass;
             if (cache.ClassData.TryGetValue(classId, out ClassData? classData))
             {
                 if (classData.Flags != ClassFlags.None)
@@ -47,51 +47,51 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                     switch (classData.Flags)
                     {
                         case ClassFlags.Array:
-                            className = ArrayType;
+                            typeName = ArrayType;
                             break;
                         case ClassFlags.Composite:
-                            className = CompositeType;
+                            typeName = CompositeType;
                             break;
                         default:
                             //All other cases default to UnknownClass
                             break;
                     }
 
-                    builder.Append(className);
+                    builder.Append(typeName);
                 }
                 else
                 {
-                    BuildClassName(builder, cache, classData.ModuleId, classData.Token);
+                    BuildTypeName(builder, cache, classData.ModuleId, classData.Token);
                 }
                 BuildGenericParameters(builder, cache, classData.TypeArgs);
             }
             else
             {
-                builder.Append(className);
+                builder.Append(typeName);
             }
         }
 
-        private static void BuildClassName(StringBuilder builder, NameCache cache, ulong moduleId, uint token)
+        private static void BuildTypeName(StringBuilder builder, NameCache cache, ulong moduleId, uint token)
         {
-            var classNames = new Stack<string>();
+            var typeNames = new Stack<string>();
 
             uint currentToken = token;
             while (currentToken != 0 && cache.TokenData.TryGetValue(new ModuleScopedToken(moduleId, currentToken), out TokenData? tokenData))
             {
-                classNames.Push(tokenData.Name);
+                typeNames.Push(tokenData.Name);
                 currentToken = tokenData.OuterToken;
             }
 
-            if (classNames.Count == 0)
+            if (typeNames.Count == 0)
             {
                 builder.Append(UnknownClass);
             }
 
-            while (classNames.Count > 0)
+            while (typeNames.Count > 0)
             {
-                string className = classNames.Pop();
-                builder.Append(className);
-                if (classNames.Count > 0)
+                string typeName = typeNames.Pop();
+                builder.Append(typeName);
+                if (typeNames.Count > 0)
                 {
                     builder.Append(NestedSeparator);
                 }
@@ -106,7 +106,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 {
                     builder.Append(GenericStart);
                 }
-                BuildClassName(builder, cache, parameters[i]);
+                BuildTypeName(builder, cache, parameters[i]);
                 if (i < parameters.Length - 1)
                 {
                     builder.Append(GenericSeparator);
@@ -124,7 +124,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             for (int i = 0; i < parameterTypes?.Length; i++)
             {
                 builder.Clear();
-                BuildClassName(builder, cache, parameterTypes[i]);
+                BuildTypeName(builder, cache, parameterTypes[i]);
                 parameterTypesList.Add(builder.ToString());
             }
 

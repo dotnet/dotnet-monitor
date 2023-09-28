@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.Options
     /// <summary>
     /// Configuration options for in-process features, ones that execute within each target process.
     /// </summary>
-    internal class InProcessFeaturesOptions
+    internal sealed class InProcessFeaturesOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

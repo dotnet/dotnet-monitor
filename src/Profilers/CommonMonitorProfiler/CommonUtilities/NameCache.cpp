@@ -63,11 +63,11 @@ HRESULT NameCache::GetFullyQualifiedName(FunctionID id, tstring& name)
     // Currently some functions append name information while others assign it.
     if (functionData->GetClass() != 0)
     {
-        IfFailRet(GetFullyQualifiedClassName(functionData->GetClass(), name));
+        IfFailRet(GetFullyQualifiedTypeName(functionData->GetClass(), name));
     }
     else
     {
-        IfFailRet(GetFullyQualifiedClassName(functionData->GetModuleId(), functionData->GetClassToken(), name));
+        IfFailRet(GetFullyQualifiedTypeName(functionData->GetModuleId(), functionData->GetClassToken(), name));
     }
 
     name += FunctionSeparator + functionData->GetName();
@@ -83,7 +83,7 @@ HRESULT NameCache::GetFullyQualifiedName(FunctionID id, tstring& name)
     return S_OK;
 }
 
-HRESULT NameCache::GetFullyQualifiedClassName(ClassID classId, tstring& name)
+HRESULT NameCache::GetFullyQualifiedTypeName(ClassID classId, tstring& name)
 {
     HRESULT hr;
 
@@ -101,7 +101,7 @@ HRESULT NameCache::GetFullyQualifiedClassName(ClassID classId, tstring& name)
     switch (classData->GetFlags())
     {
         case ClassFlags::None:
-            IfFailRet(GetFullyQualifiedClassName(classData->GetModuleId(), classData->GetToken(), name));
+            IfFailRet(GetFullyQualifiedTypeName(classData->GetModuleId(), classData->GetToken(), name));
             break;
         case ClassFlags::Array:
             name = ArrayClassName;
@@ -121,7 +121,7 @@ HRESULT NameCache::GetFullyQualifiedClassName(ClassID classId, tstring& name)
     return S_OK;
 }
 
-HRESULT NameCache::GetFullyQualifiedClassName(ModuleID moduleId, mdTypeDef token, tstring& name)
+HRESULT NameCache::GetFullyQualifiedTypeName(ModuleID moduleId, mdTypeDef token, tstring& name)
 {
     while (token != 0)
     {
@@ -156,7 +156,7 @@ HRESULT NameCache::GetGenericParameterNames(const std::vector<UINT64>& typeArgs,
         }
 
         tstring genericParamName;
-        IfFailRet(GetFullyQualifiedClassName(static_cast<ClassID>(typeArgs[i]), genericParamName));
+        IfFailRet(GetFullyQualifiedTypeName(static_cast<ClassID>(typeArgs[i]), genericParamName));
         name += genericParamName;
 
         if (i == (typeArgs.size() - 1))

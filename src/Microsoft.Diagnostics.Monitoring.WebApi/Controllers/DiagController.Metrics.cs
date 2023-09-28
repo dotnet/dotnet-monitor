@@ -45,8 +45,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             MetricsPipelineSettings settings = MetricsSettingsFactory.CreateSettings(
                 _counterOptions.CurrentValue,
-                includeDefaults: true,
-                durationSeconds: durationSeconds);
+                durationSeconds,
+                _metricsOptions.CurrentValue);
 
             return InvokeForProcess(
                 processInfo => Result(

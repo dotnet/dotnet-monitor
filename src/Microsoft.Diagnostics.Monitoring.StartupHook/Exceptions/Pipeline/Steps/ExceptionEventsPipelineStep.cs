@@ -98,14 +98,21 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             }
 
             StackTrace threadStackTrace = new(fNeedFileInfo: false);
-            ReadOnlySpan<StackFrame> threadStackFrames = threadStackTrace.GetFrames();
+            Span<StackFrame> threadStackFrames = threadStackTrace.GetFrames();
             int index = 0;
             while (index < threadStackFrames.Length)
             {
                 StackFrame threadStackFrame = threadStackFrames[index];
-                if (throwingFrame.GetMethod() == threadStackFrame.GetMethod() &&
-                    throwingFrame.GetILOffset() == threadStackFrame.GetILOffset())
+
+                // Workaround for https://github.com/dotnet/runtime/issues/91125
+                // The threadStackFrame's ILOffset for eclipsing exceptions
+                // thrown from within the catch block does not match the
+                // ILOffset in the throwingFrame. Unconditionally swap out the
+                // threadStackFrame for the matching throwingFrame to ensure
+                // the correct ILOffset is used.
+                if (throwingFrame.GetMethod() == threadStackFrame.GetMethod())
                 {
+                    threadStackFrames[index] = throwingFrame;
                     break;
                 }
 

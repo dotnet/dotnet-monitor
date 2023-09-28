@@ -19,13 +19,17 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
     {
         private sealed class CapturingRequest
         {
-            public CapturingRequest(StartCapturingParametersPayload payload)
+            public CapturingRequest(StartCapturingParametersPayload payload, IFunctionProbes probes)
             {
-                Payload = payload ?? throw new ArgumentNullException(nameof(payload));
+                Payload = payload;
+                Probes = probes;
                 StopRequest = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
             }
 
             public StartCapturingParametersPayload Payload { get; }
+
+            public IFunctionProbes Probes { get; }
+
             public TaskCompletionSource StopRequest { get; }
         }
 
@@ -62,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
                 {
                     _probeManager.OnProbeFault += onFault;
 
-                    if (!await TryStartCapturingAsync(request.Payload, stoppingToken).ConfigureAwait(false))
+                    if (!await TryStartCapturingAsync(request, stoppingToken).ConfigureAwait(false))
                     {
                         continue;
                     }
@@ -101,17 +105,17 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
 
         // Private method for work that happens inside the pipeline's RunAsync
         // so use callbacks instead of throwing exceptions.
-        private async Task<bool> TryStartCapturingAsync(StartCapturingParametersPayload request, CancellationToken token)
+        private async Task<bool> TryStartCapturingAsync(CapturingRequest request, CancellationToken token)
         {
             try
             {
                 MethodResolver resolver = new();
-                List<MethodInfo> methods = new(request.Configuration.Methods.Length);
+                List<MethodInfo> methods = new(request.Payload.Configuration.Methods.Length);
                 List<MethodDescription> methodsFailedToResolve = new();
 
-                for (int i = 0; i < request.Configuration.Methods.Length; i++)
+                for (int i = 0; i < request.Payload.Configuration.Methods.Length; i++)
                 {
-                    MethodDescription methodDescription = request.Configuration.Methods[i];
+                    MethodDescription methodDescription = request.Payload.Configuration.Methods[i];
 
                     List<MethodInfo> resolvedMethods = resolver.ResolveMethodDescription(methodDescription);
                     if (resolvedMethods.Count == 0)
@@ -128,22 +132,22 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
                     throw ex;
                 }
 
-                await _probeManager.StartCapturingAsync(methods, token).ConfigureAwait(false);
-                _callbacks.CapturingStart(request, methods);
+                await _probeManager.StartCapturingAsync(methods, request.Probes, token).ConfigureAwait(false);
+                _callbacks.CapturingStart(request.Payload, methods);
 
                 return true;
             }
             catch (UnresolvedMethodsExceptions ex)
             {
                 _callbacks.FailedToCapture(
-                    request.RequestId,
+                    request.Payload.RequestId,
                     ParameterCapturingEvents.CapturingFailedReason.UnresolvedMethods,
                     ex.Message);
             }
             catch (Exception ex)
             {
                 _callbacks.FailedToCapture(
-                    request.RequestId,
+                    request.Payload.RequestId,
                     ParameterCapturingEvents.CapturingFailedReason.InternalError,
                     ex.ToString());
             }
@@ -156,7 +160,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
             return _requestQueue.Writer.TryComplete();
         }
 
-        public void SubmitRequest(StartCapturingParametersPayload payload)
+        public void SubmitRequest(StartCapturingParametersPayload payload, IFunctionProbes probes)
         {
             ArgumentNullException.ThrowIfNull(payload.Configuration);
 
@@ -179,7 +183,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
                 throw new DeniedMethodsException(_deniedMethodDescriptions);
             }
 
-            CapturingRequest request = new(payload);
+            CapturingRequest request = new(payload, probes);
             if (!_allRequests.TryAdd(payload.RequestId, request))
             {
                 throw new ArgumentException(nameof(payload.RequestId));

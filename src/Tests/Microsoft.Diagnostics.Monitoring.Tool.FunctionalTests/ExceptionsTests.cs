@@ -9,7 +9,6 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -28,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
     [Collection(DefaultCollectionFixture.Name)]
     public class ExceptionsTests
     {
-        private const string FrameClassName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario";
+        private const string FrameTypeName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario";
         private const string FrameMethodName = "ThrowAndCatchInvalidOperationException";
         private const string FrameParameterType = "System.Boolean";
         private const string UnitTestAppModule = "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll";
@@ -67,9 +66,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ValidateSingleExceptionText(
                         SystemInvalidOperationException,
                         ExceptionMessage,
-                        FrameClassName,
+                        FrameTypeName,
                         FrameMethodName,
-                        new() { FrameParameterType, FrameParameterType });
+                        new List<string>() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -124,7 +123,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.Equal(CoreLibModuleName, exceptionsDict["moduleName"].ToString());
                     Assert.Equal(ExceptionMessage, exceptionsDict["message"].ToString());
 
-                    var callStackResultsRootElement = JsonSerializer.SerializeToDocument(exceptionsDict["callStack"]).RootElement;
+                    var callStackResultsRootElement = JsonSerializer.SerializeToDocument(exceptionsDict["stack"]).RootElement;
 
                     Assert.NotEqual("0", callStackResultsRootElement.GetProperty("threadId").ToString());
 
@@ -134,7 +133,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.Equal(2, topFrame.GetProperty("parameterTypes").GetArrayLength());
                     Assert.Equal(FrameParameterType, topFrame.GetProperty("parameterTypes")[0].ToString());
                     Assert.Equal(FrameParameterType, topFrame.GetProperty("parameterTypes")[1].ToString());
-                    Assert.Equal(FrameClassName, topFrame.GetProperty("className").ToString());
+                    Assert.Equal(FrameTypeName, topFrame.GetProperty("typeName").ToString());
                     Assert.Equal(UnitTestAppModule, topFrame.GetProperty("moduleName").ToString());
                 },
                 configureApp: runner =>
@@ -187,7 +186,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Exclude.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemArgumentNullException
                         }
@@ -221,11 +220,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Exclude.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemInvalidOperationException,
                             MethodName = FrameMethodName,
-                            TypeName = FrameClassName,
+                            TypeName = FrameTypeName,
                             ModuleName = UnitTestAppModule
                         }
                     );
@@ -258,13 +257,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Exclude.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemArgumentNullException
                         }
                     );
                     configuration.Exclude.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = CustomGenericsException
                         }
@@ -275,9 +274,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ValidateSingleExceptionText(
                         SystemInvalidOperationException,
                         ExceptionMessage,
-                        FrameClassName,
+                        FrameTypeName,
                         FrameMethodName,
-                        new() { FrameParameterType, FrameParameterType });
+                        new List<string>() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -303,13 +302,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Include.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ModuleName = UnitTestAppModule
                         }
                     );
                     configuration.Exclude.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemArgumentNullException
                         }
@@ -320,9 +319,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ValidateSingleExceptionText(
                         SystemInvalidOperationException,
                         ExceptionMessage,
-                        FrameClassName,
+                        FrameTypeName,
                         FrameMethodName,
-                        new() { FrameParameterType, FrameParameterType });
+                        new List<string>() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -348,7 +347,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Include.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemInvalidOperationException
                         }
@@ -359,9 +358,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ValidateSingleExceptionText(
                         SystemInvalidOperationException,
                         ExceptionMessage,
-                        FrameClassName,
+                        FrameTypeName,
                         FrameMethodName,
-                        new() { FrameParameterType, FrameParameterType });
+                        new List<string>() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -388,13 +387,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     // This is effectively an OR that will include anything that matches either of the options
                     ExceptionsConfiguration configuration = new();
                     configuration.Include.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             MethodName = FrameMethodName
                         }
                     );
                     configuration.Include.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = CustomGenericsException
                         }
@@ -428,11 +427,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ExceptionsConfiguration configuration = new();
                     configuration.Include.Add(
-                        new()
+                        new ExceptionFilter()
                         {
                             ExceptionType = SystemInvalidOperationException,
                             MethodName = FrameMethodName,
-                            TypeName = FrameClassName,
+                            TypeName = FrameTypeName,
                             ModuleName = UnitTestAppModule
                         }
                     );
@@ -442,9 +441,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ValidateSingleExceptionText(
                         SystemInvalidOperationException,
                         ExceptionMessage,
-                        FrameClassName,
+                        FrameTypeName,
                         FrameMethodName,
-                        new() { FrameParameterType, FrameParameterType });
+                        new List<string>() { FrameParameterType, FrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -454,6 +453,288 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 configureTool: runner =>
                 {
                     runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public async Task Exceptions_FilterIncludeBasic_Configuration(Architecture targetArchitecture)
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Listen,
+                FilteringExceptionsScenario,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText);
+
+                    ValidateSingleExceptionText(
+                        SystemInvalidOperationException,
+                        ExceptionMessage,
+                        FrameTypeName,
+                        FrameMethodName,
+                        new List<string>() { FrameParameterType, FrameParameterType });
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                    runner.EnableMonitorStartupHook = true;
+                },
+                configureTool: runner =>
+                {
+                    ExceptionsConfiguration configuration = new();
+                    configuration.Include.Add(
+                        new ExceptionFilter()
+                        {
+                            ExceptionType = SystemInvalidOperationException
+                        }
+                    );
+
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures().EnableExceptions().SetExceptionFiltering(configuration);
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public async Task Exceptions_FilterIncludeMultiple_Configuration(Architecture targetArchitecture)
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Listen,
+                FilteringExceptionsScenario,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText);
+
+                    ValidateMultipleExceptionsText(2, new() { CustomGenericsException, SystemInvalidOperationException });
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                    runner.EnableMonitorStartupHook = true;
+                },
+                configureTool: runner =>
+                {
+                    // This is effectively an OR that will include anything that matches either of the options
+                    ExceptionsConfiguration configuration = new();
+                    configuration.Include.Add(
+                        new ExceptionFilter()
+                        {
+                            MethodName = FrameMethodName
+                        }
+                    );
+                    configuration.Include.Add(
+                        new ExceptionFilter()
+                        {
+                            ExceptionType = CustomGenericsException
+                        }
+                    );
+
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures().EnableExceptions().SetExceptionFiltering(configuration);
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public async Task Exceptions_FilterIncludeDetailed_Configuration(Architecture targetArchitecture)
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Listen,
+                FilteringExceptionsScenario,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText);
+
+                    ValidateSingleExceptionText(
+                        SystemInvalidOperationException,
+                        ExceptionMessage,
+                        FrameTypeName,
+                        FrameMethodName,
+                        new List<string>() { FrameParameterType, FrameParameterType });
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                    runner.EnableMonitorStartupHook = true;
+                },
+                configureTool: runner =>
+                {
+                    ExceptionsConfiguration configuration = new();
+                    configuration.Include.Add(
+                        new ExceptionFilter()
+                        {
+                            ExceptionType = SystemInvalidOperationException,
+                            MethodName = FrameMethodName,
+                            TypeName = FrameTypeName,
+                            ModuleName = UnitTestAppModule
+                        }
+                    );
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures().EnableExceptions().SetExceptionFiltering(configuration);
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public async Task Exceptions_FilterExcludeBasic_Configuration(Architecture targetArchitecture)
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Listen,
+                FilteringExceptionsScenario,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText);
+
+                    ValidateMultipleExceptionsText(2, new() { CustomGenericsException, SystemInvalidOperationException });
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                    runner.EnableMonitorStartupHook = true;
+                },
+                configureTool: runner =>
+                {
+                    ExceptionsConfiguration configuration = new();
+                    configuration.Exclude.Add(
+                        new ExceptionFilter()
+                        {
+                            ExceptionType = SystemArgumentNullException
+                        }
+                    );
+
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures().EnableExceptions().SetExceptionFiltering(configuration);
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public async Task Exceptions_FilterExcludeDetailed_Configuration(Architecture targetArchitecture)
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Listen,
+                FilteringExceptionsScenario,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText);
+
+                    ValidateMultipleExceptionsText(2, new() { CustomGenericsException, SystemArgumentNullException });
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                    runner.EnableMonitorStartupHook = true;
+                },
+                configureTool: runner =>
+                {
+                    ExceptionsConfiguration configuration = new();
+                    configuration.Exclude.Add(
+                        new ExceptionFilter()
+                        {
+                            ExceptionType = SystemInvalidOperationException,
+                            MethodName = FrameMethodName,
+                            TypeName = FrameTypeName,
+                            ModuleName = UnitTestAppModule
+                        }
+                    );
+
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures().EnableExceptions().SetExceptionFiltering(configuration);
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public async Task Exceptions_FilterExcludeMultiple_Configuration(Architecture targetArchitecture)
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Listen,
+                FilteringExceptionsScenario,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText);
+
+                    ValidateSingleExceptionText(
+                        SystemInvalidOperationException,
+                        ExceptionMessage,
+                        FrameTypeName,
+                        FrameMethodName,
+                        new List<string>() { FrameParameterType, FrameParameterType });
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                    runner.EnableMonitorStartupHook = true;
+                },
+                configureTool: runner =>
+                {
+                    ExceptionsConfiguration configuration = new();
+                    configuration.Exclude.Add(
+                        new ExceptionFilter()
+                        {
+                            ExceptionType = SystemArgumentNullException
+                        }
+                    );
+                    configuration.Exclude.Add(
+                        new ExceptionFilter()
+                        {
+                            ExceptionType = CustomGenericsException
+                        }
+                    );
+
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures().EnableExceptions().SetExceptionFiltering(configuration);
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public async Task Exceptions_FilterIncludeAndExclude_Configuration(Architecture targetArchitecture)
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Listen,
+                FilteringExceptionsScenario,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText);
+
+                    ValidateSingleExceptionText(
+                        SystemInvalidOperationException,
+                        ExceptionMessage,
+                        FrameTypeName,
+                        FrameMethodName,
+                        new List<string>() { FrameParameterType, FrameParameterType });
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                    runner.EnableMonitorStartupHook = true;
+                },
+                configureTool: runner =>
+                {
+                    ExceptionsConfiguration configuration = new();
+                    configuration.Include.Add(
+                        new ExceptionFilter()
+                        {
+                            ModuleName = UnitTestAppModule
+                        }
+                    );
+                    configuration.Exclude.Add(
+                        new ExceptionFilter()
+                        {
+                            ExceptionType = SystemArgumentNullException
+                        }
+                    );
+
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures().EnableExceptions().SetExceptionFiltering(configuration);
                 });
         }
 
@@ -468,14 +749,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         }
 
-        private void ValidateSingleExceptionText(string exceptionType, string exceptionMessage, string frameClassName, string frameMethodName, List<string> parameterTypes)
+        private void ValidateSingleExceptionText(string exceptionType, string exceptionMessage, string frameTypeName, string frameMethodName, List<string> parameterTypes)
         {
             var exceptionsLines = exceptionsResult.Split(Environment.NewLine, StringSplitOptions.None);
 
             Assert.True(exceptionsLines.Length >= 3);
             Assert.Contains(FirstChanceExceptionMessage, exceptionsLines[0]);
             Assert.Equal($"{exceptionType}: {exceptionMessage}", exceptionsLines[1]);
-            Assert.Equal($"   at {frameClassName}.{frameMethodName}({string.Join(',', parameterTypes)})", exceptionsLines[2]);
+            Assert.Equal($"   at {frameTypeName}.{frameMethodName}({string.Join(',', parameterTypes)})", exceptionsLines[2]);
         }
 
         private async Task GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionFormat format, ExceptionsConfiguration configuration = null)

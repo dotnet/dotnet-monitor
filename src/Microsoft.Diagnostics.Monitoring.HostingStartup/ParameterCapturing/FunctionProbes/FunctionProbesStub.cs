@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
-using System.Collections.ObjectModel;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
@@ -14,9 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         [ThreadStatic]
         private static bool s_inProbe;
 
-        internal static ReadOnlyDictionary<ulong, InstrumentedMethod>? InstrumentedMethodCache { get; set; }
-
-        internal static IFunctionProbes? Instance { get; set; }
+        internal static FunctionProbesState? State { get; set; }
 
         internal static ulong GetProbeFunctionId()
         {
@@ -25,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         public static void EnterProbeStub(ulong uniquifier, object[] args)
         {
-            IFunctionProbes? probes = Instance;
+            IFunctionProbes? probes = State?.Probes;
             if (probes == null || s_inProbe)
             {
                 return;

@@ -295,6 +295,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The filters that determine which exceptions should be included/excluded when collecting exceptions..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectExceptionsOptions_Filters {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectExceptionsOptions_Filters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The format used to display the exceptions..
         /// </summary>
         public static string DisplayAttributeDescription_CollectExceptionsOptions_Format {
@@ -906,6 +915,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_EventMeterOptions_SlidingWindowDuration {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_EventMeterOptions_SlidingWindowDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The filters that determine which exceptions should be included/excluded when collecting exceptions..
+        /// </summary>
+        public static string DisplayAttributeDescription_ExceptionsOptions_CollectionFilters {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ExceptionsOptions_CollectionFilters", resourceCulture);
             }
         }
         

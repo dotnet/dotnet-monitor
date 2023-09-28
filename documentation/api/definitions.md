@@ -34,7 +34,7 @@ First Available: 8.0 Preview 7
 | Name | Type | Description |
 |---|---|---|
 | `methodName` | string | Name of the method for this frame. This includes generic parameters. |
-| `className` | string | Name of the class for this frame. This includes generic parameters. |
+| `typeName` | string | Name of the class for this frame. This includes generic parameters. |
 | `moduleName` | string | Name of the module for this frame. |
 
 ## CallStackResult
@@ -95,6 +95,7 @@ Object describing the list of methods to capture parameters for.
 | Name | Type | Description |
 |---|---|---|
 | `methods` | [MethodDescription](#methoddescription)[] | Array of methods to capture parameters for. |
+| `useDebuggerDisplayAttribute` | bool | Determines if parameters should be formatted using their [`DebuggerDisplayAttribute`](https://learn.microsoft.com/dotnet/api/system.diagnostics.debuggerdisplayattribute) if available and supported. Expressions in attributes may consist of properties, fields, methods without parameters, or any combination of these. |
 
 ## DotnetMonitorInfo
 
@@ -126,7 +127,7 @@ Describes custom metrics.
 |---|---|---|
 | `includeDefaultProviders` | bool | Determines if the default counter providers should be used (such as System.Runtime). |
 | `providers` | [EventMetricsProvider](#eventmetricsprovider)[] | Array of counter providers for metrics to collect. |
-| `meters` | [EventMetricsMeter](#eventmetricsmeter)[] | Array of meters for metrics to collect. |
+| `meters` | [EventMetricsMeter](#eventmetricsmeter)[] | (7.1+) Array of meters for metrics to collect. |
 
 ## EventMetricsMeter
 
@@ -181,7 +182,7 @@ Object describing the list of event providers, keywords, event levels, and addit
 
 ## ExceptionFilter
 
-Object describing attributes of an exception to use for filtering. To be filtered, an exception must match **all** provided fields (e.g. if `className` and `exceptionType` are provided, the top frame of the exception's call stack must have that class name and the exception must be that type).
+Object describing attributes of an exception to use for filtering. To be filtered, an exception must match **all** provided fields (e.g. if `typeName` and `exceptionType` are provided, the top frame of the exception's call stack must have that class name and the exception must be that type).
 
 | Name | Type | Description |
 |---|---|---|
@@ -211,7 +212,7 @@ Object describing an exception instance.
 | `moduleName` | string | The name of the module in which the current exception type exists. |
 | `message` | string | The message that describes the current exception. |
 | `innerExceptions` | int[] | The IDs of the [ExceptionInstance](#exceptioninstance)s that are the inner exceptions of the current exception. |
-| `callStack` | [CallStack](#callstack) | The call stack of the current exception, if it was thrown. |
+| `stack` | [CallStack](#callstack) | The call stack of the current exception, if it was thrown. |
 
 ## ExceptionFormat
 
