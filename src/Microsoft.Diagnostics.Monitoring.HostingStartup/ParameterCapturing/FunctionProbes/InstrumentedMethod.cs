@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         {
             FunctionId = method.GetFunctionId();
             SupportedParameters = BoxingTokens.AreParametersSupported(boxingTokens);
-            MethodWithParametersTemplateString = MethodTemplateStringGenerator.GenerateTemplateString(method);
+            MethodTemplateString = new MethodTemplateString(method);
             foreach (bool isParameterSupported in SupportedParameters)
             {
                 if (isParameterSupported)
@@ -63,10 +63,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         /// <summary>
         /// A template string that contains the full method name with parameter names and
         /// format items for each supported parameter.
-        ///
-        /// The number of format items equals NumberOfSupportedParameters.
         /// </summary>
-        public string MethodWithParametersTemplateString { get; }
+        public MethodTemplateString MethodTemplateString { get; }
 
         public ulong FunctionId { get; }
     }

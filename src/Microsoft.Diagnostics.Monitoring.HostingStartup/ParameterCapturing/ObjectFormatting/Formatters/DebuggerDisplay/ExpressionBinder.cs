@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                         debuggerDisplay.Expressions[i].FormatSpecifier);
                 }
 
-                return string.Format(debuggerDisplay.FormatString, evaluationResults);
+                return ObjectFormatter.WrapValue(string.Format(debuggerDisplay.FormatString, evaluationResults));
             };
         }
 

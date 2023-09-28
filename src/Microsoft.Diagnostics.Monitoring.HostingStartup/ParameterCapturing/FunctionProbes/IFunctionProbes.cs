@@ -2,10 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 
+using System.Collections.Generic;
+using System.Reflection;
+
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
     internal interface IFunctionProbes
     {
+        public void CacheMethods(IList<MethodInfo> methods);
+
         public void EnterProbe(ulong uniquifier, object[] args);
     }
 }

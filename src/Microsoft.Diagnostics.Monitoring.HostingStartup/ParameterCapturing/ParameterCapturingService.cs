@@ -60,7 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
 
                 _parameterCapturingLogger = new(userLogger, systemLogger);
-                FunctionProbesManager probeManager = new(new LogEmittingProbes(_parameterCapturingLogger), _logger);
+                FunctionProbesManager probeManager = new(_logger);
 
                 _pipeline = new ParameterCapturingPipeline(probeManager, this, _methodDescriptionValidator);
             }
@@ -102,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         public void ProbeFault(Guid requestId, InstrumentedMethod faultingMethod)
         {
             // TODO: Report back this fault on ParameterCapturingEventSource. 
-            _logger?.LogWarning(ParameterCapturingStrings.StoppingParameterCapturingDueToProbeFault, faultingMethod.MethodWithParametersTemplateString);
+            _logger?.LogWarning(ParameterCapturingStrings.StoppingParameterCapturingDueToProbeFault, faultingMethod.MethodTemplateString.Template);
 
             try
             {
@@ -122,7 +122,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private void OnStartMessage(StartCapturingParametersPayload payload)
         {
-            if (!IsAvailable() || _pipeline == null)
+            if (!IsAvailable() || _pipeline == null || _parameterCapturingLogger == null)
             {
                 BroadcastServiceState();
                 return;
@@ -130,7 +130,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             try
             {
-                _pipeline.SubmitRequest(payload);
+                _pipeline.SubmitRequest(payload, new LogEmittingProbes(_parameterCapturingLogger, payload.Configuration.UseDebuggerDisplayAttribute));
             }
             catch (ArgumentException ex)
             {

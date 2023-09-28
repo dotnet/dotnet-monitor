@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 {
     internal interface IFunctionProbesManager : IDisposable
     {
-        public Task StartCapturingAsync(IList<MethodInfo> methods, CancellationToken token);
+        public Task StartCapturingAsync(IList<MethodInfo> methods, IFunctionProbes probes, CancellationToken token);
 
         public Task StopCapturingAsync(CancellationToken token);
 

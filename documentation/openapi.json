@@ -1614,6 +1614,9 @@
             "items": {
               "$ref": "#/components/schemas/MethodDescription"
             }
+          },
+          "useDebuggerDisplayAttribute": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
