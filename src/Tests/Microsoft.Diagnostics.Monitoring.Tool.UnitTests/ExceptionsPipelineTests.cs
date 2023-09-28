@@ -356,6 +356,53 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
+        /// Tests that wrapped exceptions thrown within a catch block are detectable
+        /// (and that the outer exception's callstack is present).
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_EclipsingException()
+        {
+            const int ExpectedInstanceCount = 2;
+
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.EclipsingException,
+                ExpectedInstanceCount,
+                validate: instances => ValidateEclipsingException(ExpectedInstanceCount, instances));
+        }
+
+        /// <summary>
+        /// Tests that wrapped exceptions thrown from a method called within the catch block are detectable
+        /// (and that the outer exception's callstack is present).
+        /// </summary>
+        [Fact]
+        public Task EventExceptionsPipeline_EclipsingExceptionFromMethodCall()
+        {
+            const int ExpectedInstanceCount = 2;
+
+            return Execute(
+                TestAppScenarios.Exceptions.SubScenarios.EclipsingExceptionFromMethodCall,
+                ExpectedInstanceCount,
+                validate: instances => ValidateEclipsingException(ExpectedInstanceCount, instances));
+        }
+
+        private static void ValidateEclipsingException(int expectedInstanceCount, IEnumerable<IExceptionInstance> instances)
+        {
+            Assert.Equal(expectedInstanceCount, instances.Count());
+            IExceptionInstance innerInstance = instances.First();
+            Assert.NotNull(innerInstance);
+            Assert.NotEqual(0UL, innerInstance.Id);
+            Assert.Equal(typeof(FormatException).FullName, innerInstance.TypeName);
+            Assert.Empty(innerInstance.InnerExceptionIds);
+            Assert.NotEmpty(innerInstance.CallStack.Frames); // Indicates this exception was thrown
+            IExceptionInstance outerInstance = instances.Skip(1).Single();
+            Assert.NotNull(outerInstance);
+            Assert.NotEqual(0UL, outerInstance.Id);
+            Assert.Equal(typeof(InvalidOperationException).FullName, outerInstance.TypeName);
+            Assert.Equal(innerInstance.Id, Assert.Single(outerInstance.InnerExceptionIds));
+            Assert.NotEmpty(outerInstance.CallStack.Frames); // Indicates this exception was thrown
+        }
+
+        /// <summary>
         /// Tests that inner exceptions from AggregateException are detectable.
         /// </summary>
         [Fact]
