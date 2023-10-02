@@ -95,6 +95,7 @@ Object describing the list of methods to capture parameters for.
 | Name | Type | Description |
 |---|---|---|
 | `methods` | [MethodDescription](#methoddescription)[] | Array of methods to capture parameters for. |
+| `useDebuggerDisplayAttribute` | bool | Determines if parameters should be formatted using their [`DebuggerDisplayAttribute`](https://learn.microsoft.com/dotnet/api/system.diagnostics.debuggerdisplayattribute) if available and supported. Expressions in attributes may consist of properties, fields, methods without parameters, or any combination of these. |
 
 ## DotnetMonitorInfo
 
@@ -126,7 +127,7 @@ Describes custom metrics.
 |---|---|---|
 | `includeDefaultProviders` | bool | Determines if the default counter providers should be used (such as System.Runtime). |
 | `providers` | [EventMetricsProvider](#eventmetricsprovider)[] | Array of counter providers for metrics to collect. |
-| `meters` | [EventMetricsMeter](#eventmetricsmeter)[] | Array of meters for metrics to collect. |
+| `meters` | [EventMetricsMeter](#eventmetricsmeter)[] | (7.1+) Array of meters for metrics to collect. |
 
 ## EventMetricsMeter
 
