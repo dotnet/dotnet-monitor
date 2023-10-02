@@ -3,7 +3,9 @@
 
 # Livemetrics - Get
 
-Captures metrics for a chosen process.
+Captures metrics for a chosen process for a duration of time.
+
+> **Note**: Starting in 8.0, the [metrics configuration](../configuration/metrics-configuration.md#metrics-configuration) is used as the collection specification. Prior to 8.0, the collection specification only included the [default providers](../configuration/metrics-configuration.md#default-providers) and could not be changed.
 
 > **Note**: For Prometheus style metrics, use the [metrics](./metrics.md) endpoint.
 
