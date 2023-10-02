@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.OpenApi.Readers" Version="$(MicrosoftOpenApiReadersVersion)" />
+    <PackageReference Include="Microsoft.OpenApi.Readers" />
   </ItemGroup>
 
   <ItemGroup>

@@ -5,6 +5,8 @@
     <MicrosoftExtensionsConfigurationAbstractions70Version>7.0.0</MicrosoftExtensionsConfigurationAbstractions70Version>
     <!-- Microsoft.Extensions.Logging -->
     <MicrosoftExtensionsLogging70Version>7.0.0</MicrosoftExtensionsLogging70Version>
+    <!-- Microsoft.Extensions.Logging.Abstractions -->
+    <MicrosoftExtensionsLoggingAbstractions70Version>7.0.1</MicrosoftExtensionsLoggingAbstractions70Version>
     <!-- Microsoft.Extensions.Logging.Console -->
     <MicrosoftExtensionsLoggingConsole70Version>7.0.0</MicrosoftExtensionsLoggingConsole70Version>
     <!-- Microsoft.NETCore.App -->

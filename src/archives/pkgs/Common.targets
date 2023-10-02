@@ -1,6 +1,6 @@
 <Project>
   <ItemGroup>
-    <PackageReference Include="Microsoft.DotNet.Build.Tasks.Archives" Version="$(MicrosoftDotNetBuildTasksArchivesVersion)" />
+    <PackageReference Include="Microsoft.DotNet.Build.Tasks.Archives" />
   </ItemGroup>
   
   <Target Name="PublishToDisk"
