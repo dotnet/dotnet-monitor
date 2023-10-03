@@ -81,7 +81,7 @@ jobs:
             console.log(typeof comments);
 
             var commentExists = false;
-            for (const comment of comments) {
+            for (const comment of comments[data]) {
               if (comment.body == comment_body) {
                 commentExists = true;
               }
