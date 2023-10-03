@@ -70,7 +70,7 @@ jobs:
             modifiedFiles = process.env.MODIFIED_FILES;
             manuallyReview = process.env.MANUALLY_REVIEW;
             suggestions = process.env.SUGGESTIONS;
-            comment_body = "### Learning Paths Links Check \n\nChanged files in the Learning Path:\n\n" + modifiedFiles.replaceAll(",", "\n") + "\n\n---------\n\n Files that should be manually reviewed:\n\n" + manuallyReview.replaceAll(",", "\n") + "\n\n---------\n\n Suggested changes (note: always verify for correctness):\n\n" + suggestions.replaceAll(",", "\n");
+            comment_body = "### Learning Paths Staleness Check \n\n #### Impacted Paths:\n\n" + modifiedFiles.replaceAll(",", "\n") + "\n\n---------\n\n #### Manually Review:\n\n" + manuallyReview.replaceAll(",", "\n") + "\n\n---------\n\n #### Suggestions:\n\n" + suggestions.replaceAll(",", "\n");
             github.rest.issues.createComment({
               issue_number: context.payload.workflow_run.pull_requests[0].number,
               owner: context.repo.owner,
