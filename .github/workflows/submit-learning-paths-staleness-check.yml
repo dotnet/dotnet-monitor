@@ -55,9 +55,9 @@ jobs:
           echo "modifiedFiles=$modifiedFiles" >> $GITHUB_ENV
           echo "manuallyReview=$manuallyReview" >> $GITHUB_ENV
           echo "suggestions=$suggestions" >> $GITHUB_ENV
-          
+
       - uses: actions/github-script@v6
-        name: Submit Comment
+        name: Check For Duplicate Comment
         if: ${{ env.modifiedFiles != '' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -70,10 +70,26 @@ jobs:
             manuallyReview = process.env.MANUALLY_REVIEW;
             suggestions = process.env.SUGGESTIONS;
             comment_body = "### Learning Paths Staleness Check \n\n #### Impacted Paths:\n\n" + modifiedFiles.replaceAll(",", "\n") + "\n\n---------\n\n #### Manually Review:\n\n" + manuallyReview.replaceAll(",", "\n") + "\n\n---------\n\n #### Suggestions:\n\n" + suggestions.replaceAll(",", "\n");
-            github.rest.issues.createComment({
+          
+            const comments = github.rest.issues.listComments({
               issue_number: context.payload.workflow_run.pull_requests[0].number,
               owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment_body
+              repo: context.repo.repo
             })
 
+            var commentExists = false;
+            for (const comment of comments) {
+              if (comment.body == comment_body) {
+                commentExists = true;
+              }
+            }
+
+            if (!commentExists)
+            {
+              github.rest.issues.createComment({
+                issue_number: context.payload.workflow_run.pull_requests[0].number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment_body
+              })
+            }
