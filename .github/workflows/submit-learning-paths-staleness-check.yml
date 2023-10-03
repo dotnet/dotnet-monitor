@@ -82,11 +82,16 @@ jobs:
             console.log("Actual comment body:");
             console.log(comment_body);
             console.log("");
+
+            const new_comment_stripped = comment_body.replaceAll(/\s/g,'')
             
             for (const comment of comments.data) {
               console.log(comment.body);
-              if (comment.body == comment_body) {
+              const old_comment_stripped = comment.body.replaceAll(/\s/g,'')
+
+              if (old_comment_stripped.equals(new_comment_stripped)) {
                 commentExists = true;
+                console.log("Match!");
               }
             }
 
