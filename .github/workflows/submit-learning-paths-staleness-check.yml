@@ -89,7 +89,7 @@ jobs:
               console.log(comment.body);
               const old_comment_stripped = comment.body.replaceAll(/\s/g,'')
 
-              if (old_comment_stripped.equals(new_comment_stripped)) {
+              if (old_comment_stripped === new_comment_stripped) {
                 commentExists = true;
                 console.log("Match!");
               }
