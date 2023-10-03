@@ -71,11 +71,14 @@ jobs:
             suggestions = process.env.SUGGESTIONS;
             comment_body = "### Learning Paths Staleness Check \n\n #### Impacted Paths:\n\n" + modifiedFiles.replaceAll(",", "\n") + "\n\n---------\n\n #### Manually Review:\n\n" + manuallyReview.replaceAll(",", "\n") + "\n\n---------\n\n #### Suggestions:\n\n" + suggestions.replaceAll(",", "\n");
           
-            const comments = github.rest.issues.listComments({
+            const comments = await github.rest.issues.listComments({
               issue_number: context.payload.workflow_run.pull_requests[0].number,
               owner: context.repo.owner,
               repo: context.repo.repo
             })
+
+            console.log(comments);
+            console.log(typeof comments);
 
             var commentExists = false;
             for (const comment of comments) {
