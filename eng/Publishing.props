@@ -11,7 +11,8 @@
     <PublishDependsOnTargets>$(PublishDependsOnTargets);CollectPackageArtifactFiles;CollectBundleArtifactFiles</PublishDependsOnTargets>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <Target Name="CalculateBuildVersion">
+    <PropertyGroup>
       <!--
         This computes the original version without considering the effect of DotNetFinalVersionKind.
         This can be used to uniquely identify a version of a specific build even if the build produces
@@ -19,6 +20,7 @@
         -->
       <_BuildVersion>$(_OriginalVersionPrefix)-$(_PreReleaseLabel)$(_BuildNumberLabels)</_BuildVersion>
     </PropertyGroup>
+  </Target>
 
   <ItemGroup>
     <PackageFile Include="$(ArtifactsShippingPackagesDir)**/*.tar.gz" IsShipping="true" />
@@ -45,7 +47,7 @@
        This allows using the ReadLinesFromFile task to read the blob group file, which was written with WriteLinesToFile,
        thus avoiding erroneously reading in the newline at the end of the blob group file. -->
   <Target Name="CollectPackageArtifactFiles"
-          DependsOnTargets="GenerateChecksumsForPackages"
+          DependsOnTargets="CalculateBuildVersion;GenerateChecksumsForPackages"
           Inputs="@(PackageFile)"
           Outputs="%(PackageFile.Identity).notexist">
 
@@ -79,7 +81,8 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="CollectBundleArtifactFiles">
+  <Target Name="CollectBundleArtifactFiles"
+          DependsOnTargets="CalculateBuildVersion">
     <ItemGroup>
       <ItemsToPushToBlobFeed Include="@(BundleFile)"
                              RemoveMetadata="IsShipping"
