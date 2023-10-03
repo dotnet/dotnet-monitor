@@ -52,8 +52,10 @@ jobs:
         run: |
           modifiedFiles=$(cat ./learning-path-review/modifiedFiles)
           manuallyReview=$(cat ./learning-path-review/manuallyReview)
+          suggestions=$(cat ./learning-path-review/suggestions)
           echo "modifiedFiles=$modifiedFiles" >> $GITHUB_ENV
           echo "manuallyReview=$manuallyReview" >> $GITHUB_ENV
+          echo "suggestions=$suggestions" >> $GITHUB_ENV
           
       - uses: actions/github-script@v6
         name: Submit Comment
@@ -62,11 +64,13 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MODIFIED_FILES: ${{ env.modifiedFiles }}
           MANUALLY_REVIEW: ${{ env.manuallyReview }}
+          SUGGESTIONS: ${{ env.suggestions }}
         with:
           script: |
             modifiedFiles = process.env.MODIFIED_FILES;
             manuallyReview = process.env.MANUALLY_REVIEW;
-            comment_body = "### Learning Paths Links Check \n\nChanged files in the Learning Path:\n\n" + modifiedFiles.replaceAll(",", "\n") + "\n\n---------\n\n Files that should be manually reviewed:\n\n" + manuallyReview.replaceAll(",", "\n");
+            suggestions = process.env.SUGGESTIONS;
+            comment_body = "### Learning Paths Links Check \n\nChanged files in the Learning Path:\n\n" + modifiedFiles.replaceAll(",", "\n") + "\n\n---------\n\n Files that should be manually reviewed:\n\n" + manuallyReview.replaceAll(",", "\n") + "\n\n---------\n\n Suggested changes (note: always verify for correctness):\n\n" + suggestions.replaceAll(",", "\n");
             github.rest.issues.createComment({
               issue_number: context.payload.workflow_run.pull_requests[0].number,
               owner: context.repo.owner,
