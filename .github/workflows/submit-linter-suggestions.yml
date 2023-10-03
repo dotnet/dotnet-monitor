@@ -85,7 +85,7 @@ jobs:
               -f.diff.strip=1 \
               -reporter="github-pr-review" \
               -filter-mode="diff_context" \
-              -fail-on-error="false" \
+              -fail-on-error="true" \
               -level="warning" \
               < "./pr-linter/linter.diff"
         env:
