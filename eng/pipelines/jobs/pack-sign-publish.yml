@@ -49,7 +49,7 @@ jobs:
         targetType: inline
         script: |
             New-Item "$(Build.ArtifactStagingDirectory)/buildInfo" -Type Directory
-            Copy-Item "$(Build.SourcesDirectory)/artifacts/packages/Release/Shipping/dotnet-monitor-*-win-x64.zip.buildversion" "$(Build.ArtifactStagingDirectory)/buildInfo/dotnet-monitor.nupkg.buildversion"
+            Copy-Item "$(Build.SourcesDirectory)/artifacts/packages/Release/Shipping/dotnet-monitor.buildversion" "$(Build.ArtifactStagingDirectory)/buildInfo/dotnet-monitor.nupkg.buildversion"
     - task: PublishPipelineArtifact@1
       displayName: Publish Build Info
       inputs:
