@@ -77,11 +77,14 @@ jobs:
               repo: context.repo.repo
             })
 
-            console.log(comments);
-            console.log(typeof comments);
-
             var commentExists = false;
+
+            console.log("Actual comment body:");
+            console.log(comment_body);
+            console.log("");
+            
             for (const comment of comments.data) {
+              console.log(comment.body);
               if (comment.body == comment_body) {
                 commentExists = true;
               }
