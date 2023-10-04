@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>$(SchemaTargetFramework)</TargetFramework>
+        <TargetFrameworks>$(SchemaTargetFramework)</TargetFrameworks>
         <OutputType>Library</OutputType>
     </PropertyGroup>
 

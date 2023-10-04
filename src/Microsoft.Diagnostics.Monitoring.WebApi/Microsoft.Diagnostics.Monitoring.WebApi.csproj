@@ -6,7 +6,7 @@
       assemblies have a binary dependency on the older TFMs.
       -->
     <TargetFrameworks>$(TestTargetFrameworks)</TargetFrameworks>
-    <NoWarn>;1591;1701</NoWarn>
+    <NoWarn>$(NoWarn);1591;1701</NoWarn>
     <Description>Web Api surface for dotnet-monitor</Description>
     <!-- Tentatively create package so other teams can tentatively consume. -->
     <IsPackable>true</IsPackable>
@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">
-    <PackageReference Include="Microsoft.Diagnostics.Monitoring.EventPipe" Version="$(MicrosoftDiagnosticsMonitoringEventPipeLibraryVersion)" />
+    <PackageReference Include="Microsoft.Diagnostics.Monitoring.EventPipe" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' != ''">
