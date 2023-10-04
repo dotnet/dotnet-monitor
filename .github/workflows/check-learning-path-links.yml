@@ -48,13 +48,6 @@ jobs:
           repoURLToSearch: 'https://github.com/dotnet/dotnet-monitor'
           learningPathsDirectory: 'documentation/learningPath'
           paths: ${{ env.updated_files }}
-
-      - name: Generate artifacts (Suggestion)
-        working-directory: ./merge
-        run: |
-          mkdir -p ./pr
-          cp "$GITHUB_EVENT_PATH" ./pr/pr-event.json
-          git diff > ./pr/linter.diff
           
       - name: Generate artifacts (Comment)
         working-directory: ./merge
@@ -63,12 +56,6 @@ jobs:
           echo -n "${{ steps.check-links.outputs.modifiedFiles }}" > ./learning-path-review/modifiedFiles
           echo -n "${{ steps.check-links.outputs.manuallyReview }}" > ./learning-path-review/manuallyReview
           echo -n "${{ steps.check-links.outputs.suggestions }}" > ./learning-path-review/suggestions
-
-      - name: Upload artifacts (Suggestion)
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
-        with:
-          name: pr-linter
-          path: merge/pr/
 
       - name: Upload artifacts (Comment)
         uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
