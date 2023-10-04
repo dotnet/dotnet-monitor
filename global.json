@@ -23,7 +23,7 @@
         "$(VSRedistCommonNetCoreSharedFrameworkx6480Version)"
       ]
     },
-    "xcopy-msbuild": "17.7.2"
+    "xcopy-msbuild": "17.7.4"
   },
   "msbuild-sdks": {
     "Microsoft.Build.NoTargets": "3.7.0",
