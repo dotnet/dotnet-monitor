@@ -73,7 +73,7 @@ jobs:
 
     - ${{ if eq(parameters.useHelix, 'true')}}:
       # Calculate the fully qualified Nodejs version first so that any new releases will result in a cache miss
-      - pwsh: eng/GetNodejsVersion.ps1
+      - pwsh: eng/helix/GetNodejsVersion.ps1
           -MajorVersion $(NodeMajorVersion)
           -TaskVariableName "FqNodejsVersion"
         displayName: Calculate Node.js version
@@ -84,7 +84,7 @@ jobs:
           key: 'nodejs | ${{ parameters.osGroup }} | ${{ parameters.architecture }} | "$(FqNodejsVersion)"'
           path: $(HelixNodejsPayloadPath)
 
-      - pwsh: eng/InstallNodejs.ps1
+      - pwsh: eng/helix/InstallNodejs.ps1
           -Version $(FqNodejsVersion)
           -Architecture ${{ parameters.architecture }}
           -DestinationFolder "$(HelixNodejsPayloadPath)"

@@ -24,7 +24,7 @@ if ($latestMatchingVersion -eq $null) {
 }
 
 if ($TaskVariableName) {
-    & $PSScriptRoot\release\Scripts\SetTaskVariable.ps1 `
+    & $PSScriptRoot\..\release\Scripts\SetTaskVariable.ps1 `
         -Name $TaskVariableName `
         -Value $latestMatchingVersion
 }
