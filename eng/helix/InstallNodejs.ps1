@@ -7,17 +7,17 @@ Param(
 )
 
 Set-StrictMode -Version Latest
-$ErrorActionPreference="Stop"
+$ErrorActionPreference = "Stop"
 
 if ($IsMacOS) {
-    $nodePlatform="darwin"
-    $nodeExt="tar.gz"
+    $nodePlatform = "darwin"
+    $nodeExt = "tar.gz"
 } elseif ($IsLinux) {
-    $nodePlatform="linux"
-    $nodeExt="tar.gz"
+    $nodePlatform = "linux"
+    $nodeExt = "tar.gz"
 } elseif ($IsWindows) {
-    $nodePlatform="win"
-    $nodeExt="zip"
+    $nodePlatform = "win"
+    $nodeExt = "zip"
 } else {
     Write-Error "Unknown OS"
     exit 1;
@@ -28,14 +28,14 @@ if (Test-Path -Path $DestinationFolder) {
     exit 0
 }
 
-$nodeName="node-$Version-$nodePlatform-$Architecture"
-$nodeUrl="$Mirror/$Version/$nodeName.$nodeExt"
+$nodeName = "node-$Version-$nodePlatform-$Architecture"
+$nodeUrl = "$Mirror/$Version/$nodeName.$nodeExt"
 Write-Verbose "URL: $nodeUrl"
 
 $tempFolderPath = Join-Path $Env:Temp $(New-Guid)
 New-Item -ItemType Directory -Force -Path $tempFolderPath
 
-$archiveFile= Join-Path $tempFolderPath "$nodeName.$nodeExt"
+$archiveFile = Join-Path $tempFolderPath "$nodeName.$nodeExt"
 Write-Verbose "Archive file: $archiveFile"
 
 Invoke-WebRequest $nodeUrl -OutFile $archiveFile -MaximumRetryCount 5

@@ -7,10 +7,10 @@ Param(
 )
 
 Set-StrictMode -Version Latest
-$ErrorActionPreference="Stop"
+$ErrorActionPreference = "Stop"
 
 $availableVersion = Invoke-WebRequest "$Mirror/index.json" -MaximumRetryCount 5 | ConvertFrom-Json
-$latestMatchingVersion=$null
+$latestMatchingVersion = $null
 foreach ($verObj in $availableVersion) {
     if ($verObj.version.StartsWith("v$MajorVersion.")) {
         $latestMatchingVersion=$verObj.version
