@@ -1,6 +1,5 @@
 [CmdletBinding(PositionalBinding=$false)]
 Param(
-    [ValidateSet("x86","x64","arm64")][string][Alias('a', "platform")]$architecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant(),
     [int] $MajorVersion,
     [string] $Mirror = "https://nodejs.org/dist",
     [Parameter(Mandatory=$false)][string] $TaskVariableName = $null
