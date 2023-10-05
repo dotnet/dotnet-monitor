@@ -72,6 +72,14 @@ jobs:
         targetPath: '$(Build.SourcesDirectory)/artifacts'
 
     - ${{ if eq(parameters.useHelix, 'true')}}:
+      - ${{ if ne(parameters.osGroup, 'Windows') }}:
+        # Not all agents have pwsh available, so manually install it
+        - script: ./dotnet.sh tool install --tool-path "$(Agent.TempDirectory)/pipeline_pwsh" PowerShell
+          displayName: Install pwsh
+
+        - script: echo "##vso[task.prependpath]$(Agent.TempDirectory)/pipeline_pwsh"
+          displayName: Add pwsh to PATH
+
       # Calculate the fully qualified Nodejs version first so that any new releases will result in a cache miss
       - pwsh: eng/helix/GetNodejsVersion.ps1
           -MajorVersion $(NodeMajorVersion)
