@@ -42,6 +42,11 @@ jobs:
         container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-WithNode
 
     variables:
+    - HelixNodejsPayloadPath: '$(Agent.TempDirectory)/helix_nodejs'
+    - ${{ if eq(parameters.osGroup, 'Windows') }}:
+      - NodeMajorVersion: 20 # win-arm64 is only supported on newer versions
+    - ${{ else }}:
+      - NodeMajorVersion: 18 # Ubuntu 18.04 requires older nodejs version due to glibc version
     # If TestGroup == 'Default', choose the test group based on the type of pipeline run
     - ${{ if eq(parameters.testGroup, 'Default') }}:
       - ${{ if in(variables['Build.Reason'], 'BatchedCI', 'IndividualCI') }}:
@@ -66,7 +71,25 @@ jobs:
         artifactName: Build_Binaries_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
         targetPath: '$(Build.SourcesDirectory)/artifacts'
 
-    - ${{ if ne(parameters.useHelix, 'true')}}:
+    - ${{ if eq(parameters.useHelix, 'true')}}:
+      # Calculate the fully qualified Nodejs version first so that any new releases will result in a cache miss
+      - pwsh: eng/GetNodejsVersion.ps1
+          -MajorVersion $(NodeMajorVersion)
+          -TaskVariableName "FqNodejsVersion"
+        displayName: Calculate Node.js version
+
+      - task: Cache@2
+        displayName: Download Node.js cache
+        inputs:
+          key: 'nodejs | ${{ parameters.osGroup }} | ${{ parameters.architecture }} | "$(FqNodejsVersion)"'
+          path: $(HelixNodejsPayloadPath)
+
+      - pwsh: eng/InstallNodejs.ps1
+          -Version $(FqNodejsVersion)
+          -Architecture ${{ parameters.architecture }}
+          -DestinationFolder "$(HelixNodejsPayloadPath)"
+        displayName: Hydrate Node.js cache
+    - ${{ else }}:
       - ${{ if ne(parameters.osGroup, 'Windows') }}:
         - task: NodeTool@0
           displayName: Install Node.js
