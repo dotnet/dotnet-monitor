@@ -10,9 +10,9 @@ $ErrorActionPreference = "Stop"
 
 $availableVersion = Invoke-WebRequest "$Mirror/index.json" -MaximumRetryCount 5 | ConvertFrom-Json
 $latestMatchingVersion = $null
-foreach ($verObj in $availableVersion) {
-    if ($verObj.version.StartsWith("v$MajorVersion.")) {
-        $latestMatchingVersion=$verObj.version
+foreach ($entry in $availableVersion) {
+    if ($entry.version.StartsWith("v$MajorVersion.")) {
+        $latestMatchingVersion=$entry.version
         break
     }
 }
