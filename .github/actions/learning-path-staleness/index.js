@@ -1,5 +1,4 @@
 const actionUtils = require('../action-utils.js');
-const fs = require('fs');
 const mergePathPrefix = "merge/";
 const headPathPrefix = "head/";
 const linePrefix = "#L";
@@ -110,7 +109,7 @@ function CompareFiles(headLearningPathFileContentStr, repoURLToSearch, modifiedP
       // Get the contents of the referenced file from head (old) and merge (new) to compare them
       var mergeContent = ""
       try {
-        mergeContent = fs.readFileSync(mergePathPrefix + filePath, "utf8")
+        mergeContent = actionUtils.readFileSync(mergePathPrefix + filePath, "utf8")
       }
       catch (error) {
         // If the merge branch doesn't have the file, then it was deleted/renamed in the PR and should be manually reviewed
@@ -126,7 +125,7 @@ function CompareFiles(headLearningPathFileContentStr, repoURLToSearch, modifiedP
 
       var headContent = ""
       try {
-        headContent = fs.readFileSync(headPathPrefix + filePath, "utf8")
+        headContent = actionUtils.readFileSync(headPathPrefix + filePath, "utf8")
       }
       catch (error) { continue }
 
@@ -180,9 +179,9 @@ function CompareFiles(headLearningPathFileContentStr, repoURLToSearch, modifiedP
 
 const main = async () => {
 
-  try {
+  const [core] = await actionUtils.installAndRequirePackages("@actions/core");
 
-    const [core] = await actionUtils.installAndRequirePackages("@actions/core");
+  try {
 
     const learningPathDirectory = core.getInput('learningPathsDirectory', { required: true });
     const repoURLToSearch = core.getInput('repoURLToSearch', { required: true });
@@ -192,11 +191,11 @@ const main = async () => {
     if (changedFilePaths === null || changedFilePaths.trim() === "") { return }
 
     // Scan each file in the learningPaths directory
-    fs.readdir(headLearningPathsDirectory, (err, files) => {
+    actionUtils.readdir(headLearningPathsDirectory, (err, files) => {
       files.forEach(learningPathFile => {
 
         try {
-          const headLearningPathFileContent = fs.readFileSync(headLearningPathsDirectory + "/" + learningPathFile, "utf8")
+          const headLearningPathFileContent = actionUtils.readFileSync(headLearningPathsDirectory + "/" + learningPathFile, "utf8")
           if (headLearningPathFileContent)
           {
             CompareFiles(headLearningPathFileContent, repoURLToSearch, changedFilePaths.split(' '), learningPathFile)
