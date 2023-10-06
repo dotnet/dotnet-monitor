@@ -45,4 +45,3 @@ jobs:
         uses: kkeirstead/LearningPathFileChecks-Anchor@master
         with:
           learningPathsDirectory: 'documentation/learningPath'
-          changedFilePaths: ${{ env.updated_files }}
