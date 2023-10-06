@@ -1,1 +1,49 @@
+name: 'Check Learning Path Links'
+on:
+  pull_request:
+    branches: ['main']
 
+permissions:
+  pull-requests: read
+  
+jobs:
+  check-learning-path-links-anchor:
+    if: contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.pull_request.author_association)
+    name: 'Check Learning Path Links Anchor'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout merge
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
+        with:
+          persist-credentials: false
+          path: merge
+          
+      - name: Checkout head
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
+        with:
+          persist-credentials: false
+          ref: main
+          path: head
+
+      - name: Get base commit for the PR
+        working-directory: ./merge
+        run: |
+          git fetch origin "$GITHUB_BASE_REF"
+          base_sha=$(git rev-parse "origin/$GITHUB_BASE_REF")
+          echo "base_sha=$base_sha" >> $GITHUB_ENV
+          echo "Merging ${GITHUB_SHA} into ${GITHUB_BASE_REF}"
+
+      - name: Get learning path files from head
+        working-directory: ./head/documentation/learningPath
+        run: |
+          learning_path_files=$({ grep "**.md$" })
+          echo "Files to validate: '${learning_path_files}'"
+          echo "learning_path_files=$(echo ${learning_path_files})" >> $GITHUB_ENV
+
+          for file in learning_path_files; do
+            if grep -qE '^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$' "$file"; then
+                echo "Found unique identifier in $file"
+            else
+                echo "No unique identifier found in $file"
+            fi
