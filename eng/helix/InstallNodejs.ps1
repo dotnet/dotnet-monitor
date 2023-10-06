@@ -32,7 +32,9 @@ $nodeName = "node-$Version-$nodePlatform-$Architecture"
 $nodeUrl = "$Mirror/$Version/$nodeName.$nodeExt"
 Write-Verbose "URL: $nodeUrl"
 
-$tempFolderPath = Join-Path $Env:Temp $(New-Guid)
+$tempFolderPath = Join-Path $([System.IO.Path]::GetTempPath()) $(New-Guid)
+Write-Verbose "Temp path: $tempFolderPath"
+
 New-Item -ItemType Directory -Force -Path $tempFolderPath
 
 $archiveFile = Join-Path $tempFolderPath "$nodeName.$nodeExt"

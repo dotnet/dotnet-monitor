@@ -46,7 +46,7 @@ jobs:
     - ${{ if eq(parameters.osGroup, 'Windows') }}:
       - NodeMajorVersion: 20 # win-arm64 is only supported on newer versions
     - ${{ else }}:
-      - NodeMajorVersion: 18 # Ubuntu 18.04 requires older nodejs version due to glibc version
+      - NodeMajorVersion: 16 # Ubuntu 18.04 and MacOS requires older nodejs version due to glibc version
     # If TestGroup == 'Default', choose the test group based on the type of pipeline run
     - ${{ if eq(parameters.testGroup, 'Default') }}:
       - ${{ if in(variables['Build.Reason'], 'BatchedCI', 'IndividualCI') }}:
@@ -72,10 +72,15 @@ jobs:
         targetPath: '$(Build.SourcesDirectory)/artifacts'
 
     - ${{ if eq(parameters.useHelix, 'true')}}:
-      # Calculate the fully qualified Nodejs version first so that any new releases will result in a cache miss
+      # Linux builds (of all variants) run in Mariner containers and do not include pwsh by default
+      - ${{ if in(parameters.osGroup, 'Linux', 'Linux_Musl') }}:
+        - script: sudo -n tdnf install -y --refresh powershell
+          displayName: Install pwsh
+
+      # Calculate the fully qualified Nodejs version fist so that any new releases will invalidate the cache
       - pwsh: eng/helix/GetNodejsVersion.ps1
-          -MajorVersion $(NodeMajorVersion)
-          -TaskVariableName 'FqNodejsVersion'
+            -MajorVersion $(NodeMajorVersion)
+            -TaskVariableName 'FqNodejsVersion'
         displayName: Calculate Node.js version
 
       - task: Cache@2
@@ -89,6 +94,7 @@ jobs:
           -Architecture ${{ parameters.architecture }}
           -DestinationFolder "$(HelixNodejsPayloadPath)"
         displayName: Hydrate Node.js cache
+
     - ${{ else }}:
       - ${{ if ne(parameters.osGroup, 'Windows') }}:
         - task: NodeTool@0
