@@ -86,7 +86,7 @@ jobs:
       - task: Cache@2
         displayName: Download Node.js cache
         inputs:
-          # Wrap FqNodejsVersion in quotes to it being interpreted as a file
+          # Wrap FqNodejsVersion in quotes to prevent it being interpreted as a file
           key: 'nodejs | ${{ parameters.osGroup }} | ${{ parameters.architecture }} | "$(FqNodejsVersion)"'
           path: $(HelixNodejsPayloadPath)
 
