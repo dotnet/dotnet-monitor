@@ -37,7 +37,7 @@ jobs:
       - name: Get learning path files from head
         working-directory: ./head/documentation/learningPath
         run: |
-          learning_path_files=$({ grep "**.md$" })
+          learning_path_files=$(ls | grep "**/*.md$")
           echo "Files to validate: '${learning_path_files}'"
           echo "learning_path_files=$(echo ${learning_path_files})" >> $GITHUB_ENV
 
