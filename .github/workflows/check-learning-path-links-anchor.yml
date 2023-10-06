@@ -7,9 +7,9 @@ permissions:
   pull-requests: read
   
 jobs:
-  check-learning-path-links-anchor:
+  check-learning-path-links:
     if: contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.pull_request.author_association)
-    name: 'Check Learning Path Links Anchor'
+    name: 'Check Learning Path Links'
     runs-on: ubuntu-latest
 
     steps:
@@ -34,16 +34,15 @@ jobs:
           echo "base_sha=$base_sha" >> $GITHUB_ENV
           echo "Merging ${GITHUB_SHA} into ${GITHUB_BASE_REF}"
 
-      - name: Get learning path files from head
-        working-directory: ./head/documentation/learningPath
+      - name: Get changed files
+        working-directory: ./merge
         run: |
-          learning_path_files=$(ls | grep "**/*.md$")
-          echo "Files to validate: '${learning_path_files}'"
-          echo "learning_path_files=$(echo ${learning_path_files})" >> $GITHUB_ENV
+          changed_source_files=$(git diff-tree --no-commit-id --name-only -r "$base_sha" "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
+          echo "Files to validate: '${changed_source_files}'"
 
-          for file in learning_path_files; do
-            if grep -qE '^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$' "$file"; then
-                echo "Found unique identifier in $file"
-            else
-                echo "No unique identifier found in $file"
-            fi
+      - name: Check Learning Path Links
+        id: check-links
+        uses: kkeirstead/LearningPathFileChecks-Anchor@main
+        with:
+          learningPathsDirectory: 'documentation/learningPath'
+          changedFilePaths: ${{ env.updated_files }}
