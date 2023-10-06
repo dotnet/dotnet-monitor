@@ -77,7 +77,7 @@ jobs:
         - script: sudo -n tdnf install -y --refresh powershell
           displayName: Install pwsh
 
-      # Calculate the fully qualified Nodejs version fist so that any new releases will invalidate the cache
+      # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
       - pwsh: eng/helix/GetNodejsVersion.ps1
             -MajorVersion $(NodeMajorVersion)
             -TaskVariableName 'FqNodejsVersion'
