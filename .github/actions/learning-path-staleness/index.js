@@ -1,8 +1,4 @@
-// TODO:
-// Don't just look for ) as end of link character
-// Don't print this out every single time a change is made (or add a silencing mechanism) -> look for identical comment that already exists? -> for potential reversions, maybe only scan the most recent LPSC check?
-
-const core = require('@actions/core');
+const actionUtils = require('../action-utils.js');
 const fs = require('fs');
 const mergePathPrefix = "merge/";
 const headPathPrefix = "head/";
@@ -185,6 +181,9 @@ function CompareFiles(headLearningPathFileContentStr, repoURLToSearch, modifiedP
 const main = async () => {
 
   try {
+
+    const [core] = await actionUtils.installAndRequirePackages("@actions/core");
+
     const learningPathDirectory = core.getInput('learningPathsDirectory', { required: true });
     const repoURLToSearch = core.getInput('repoURLToSearch', { required: true });
     const headLearningPathsDirectory = headPathPrefix + learningPathDirectory;
