@@ -40,9 +40,9 @@ jobs:
           changed_source_files=$(git diff-tree --no-commit-id --name-only -r "$base_sha" "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
           echo "Files to validate: '${changed_source_files}'"
 
-      - name: Check Learning Path Links
+      - name: Check Learning Path Links Anchor
         id: check-links
-        uses: kkeirstead/LearningPathFileChecks-Anchor@main
+        uses: kkeirstead/LearningPathFileChecks-Anchor@master
         with:
           learningPathsDirectory: 'documentation/learningPath'
           changedFilePaths: ${{ env.updated_files }}
