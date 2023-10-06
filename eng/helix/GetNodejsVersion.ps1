@@ -1,16 +1,16 @@
 [CmdletBinding(PositionalBinding=$false)]
 Param(
-    [int] $MajorVersion,
-    [string] $Mirror = "https://nodejs.org/dist",
+    [Parameter(Mandatory=$true)][int] $MajorVersion,
+    [Parameter(Mandatory=$false)][string] $Mirror = "https://nodejs.org/dist",
     [Parameter(Mandatory=$false)][string] $TaskVariableName = $null
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$availableVersion = Invoke-WebRequest "$Mirror/index.json" -MaximumRetryCount 5 | ConvertFrom-Json
+$availableVersions = Invoke-WebRequest "$Mirror/index.json" -MaximumRetryCount 5 | ConvertFrom-Json
 $latestMatchingVersion = $null
-foreach ($entry in $availableVersion) {
+foreach ($entry in $availableVersions) {
     if ($entry.version.StartsWith("v$MajorVersion.")) {
         $latestMatchingVersion=$entry.version
         break

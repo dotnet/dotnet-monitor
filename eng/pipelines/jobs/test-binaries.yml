@@ -46,7 +46,7 @@ jobs:
     - ${{ if eq(parameters.osGroup, 'Windows') }}:
       - NodeMajorVersion: 20 # win-arm64 is only supported on newer versions
     - ${{ else }}:
-      - NodeMajorVersion: 16 # Ubuntu 18.04 and MacOS requires older nodejs version due to glibc version
+      - NodeMajorVersion: 16 # Ubuntu 18.04 requires older nodejs version due to glibc version
     # If TestGroup == 'Default', choose the test group based on the type of pipeline run
     - ${{ if eq(parameters.testGroup, 'Default') }}:
       - ${{ if in(variables['Build.Reason'], 'BatchedCI', 'IndividualCI') }}:

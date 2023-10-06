@@ -1,9 +1,9 @@
 [CmdletBinding(PositionalBinding=$false)]
 Param(
-    [ValidateSet("x86","x64","arm64")][string]$Architecture,
-    [string] $Version,
-    [string] $Mirror = "https://nodejs.org/dist",
-    [string] $DestinationFolder
+    [Parameter(Mandatory=$true)][ValidateSet("x86","x64","arm64")][string]$Architecture,
+    [Parameter(Mandatory=$true)][string] $Version,
+    [Parameter(Mandatory=$false)][string] $Mirror = "https://nodejs.org/dist",
+    [Parameter(Mandatory=$true)][string] $DestinationFolder
 )
 
 Set-StrictMode -Version Latest
