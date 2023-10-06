@@ -84,7 +84,7 @@ jobs:
         displayName: Calculate Node.js version
 
       - task: Cache@2
-        displayName: Download Node.js cache
+        displayName: Node.js Cache
         inputs:
           # Wrap FqNodejsVersion in quotes to prevent it being interpreted as a file
           key: 'nodejs | ${{ parameters.osGroup }} | ${{ parameters.architecture }} | "$(FqNodejsVersion)"'
@@ -94,7 +94,7 @@ jobs:
           -Version $(FqNodejsVersion)
           -Architecture ${{ parameters.architecture }}
           -DestinationFolder "$(HelixNodejsPayloadPath)"
-        displayName: Hydrate Node.js cache
+        displayName: Hydrate Node.js Installation
 
     - ${{ else }}:
       - ${{ if ne(parameters.osGroup, 'Windows') }}:
