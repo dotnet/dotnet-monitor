@@ -72,29 +72,30 @@ jobs:
         targetPath: '$(Build.SourcesDirectory)/artifacts'
 
     - ${{ if eq(parameters.useHelix, 'true')}}:
-      # Linux builds (of all variants) run in Mariner containers and do not include pwsh by default
-      - ${{ if in(parameters.osGroup, 'Linux', 'Linux_Musl') }}:
-        - script: sudo -n tdnf install -y --refresh powershell
-          displayName: Install pwsh
+      - ${{ if ne(parameters.osGroup, 'Linux_Musl')}}:
+        # Linux builds (of all variants) run in Mariner containers and do not include pwsh by default
+        - ${{ if eq(parameters.osGroup, 'Linux') }}:
+          - script: sudo -n tdnf install -y --refresh powershell
+            displayName: Install pwsh
 
-      # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
-      - pwsh: eng/helix/GetNodejsVersion.ps1
-            -MajorVersion $(NodeMajorVersion)
-            -TaskVariableName 'FqNodejsVersion'
-        displayName: Calculate Node.js version
+        # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
+        - pwsh: eng/helix/GetNodejsVersion.ps1
+              -MajorVersion $(NodeMajorVersion)
+              -TaskVariableName 'FqNodejsVersion'
+          displayName: Calculate Node.js version
 
-      - task: Cache@2
-        displayName: Node.js Cache
-        inputs:
-          # Wrap FqNodejsVersion in quotes to prevent it being interpreted as a file
-          key: 'nodejs | ${{ parameters.osGroup }} | ${{ parameters.architecture }} | "$(FqNodejsVersion)"'
-          path: $(HelixNodejsPayloadPath)
+        - task: Cache@2
+          displayName: Node.js Cache
+          inputs:
+            # Wrap FqNodejsVersion in quotes to prevent it being interpreted as a file
+            key: 'nodejs | ${{ parameters.osGroup }} | ${{ parameters.architecture }} | "$(FqNodejsVersion)"'
+            path: $(HelixNodejsPayloadPath)
 
-      - pwsh: eng/helix/InstallNodejs.ps1
-          -Version $(FqNodejsVersion)
-          -Architecture ${{ parameters.architecture }}
-          -DestinationFolder "$(HelixNodejsPayloadPath)"
-        displayName: Hydrate Node.js Installation
+        - pwsh: eng/helix/InstallNodejs.ps1
+            -Version $(FqNodejsVersion)
+            -Architecture ${{ parameters.architecture }}
+            -DestinationFolder "$(HelixNodejsPayloadPath)"
+          displayName: Hydrate Node.js Installation
 
     - ${{ else }}:
       - ${{ if ne(parameters.osGroup, 'Windows') }}:

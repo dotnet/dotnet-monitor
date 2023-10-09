@@ -135,7 +135,7 @@
   </ItemGroup>
 
   <!-- Correlation Paylod: Node -->
-  <ItemGroup>
+  <ItemGroup Condition="Exists('$(HelixNodejsPayloadPath)')">
     <HelixCorrelationPayload Include="$(HelixNodejsPayloadPath)">
       <Destination>nodejs</Destination>
     </HelixCorrelationPayload>
