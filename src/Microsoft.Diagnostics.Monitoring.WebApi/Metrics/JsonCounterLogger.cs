@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 Logger.CounterEndedPayload(counter.Name);
                 return;
             }
-            else if (!counter.IsValuePublishedEvent)
+            else if (!counter.EventType.IsValuePublishedEvent())
             {
                 // Do we want to do anything with this payload?
                 return;

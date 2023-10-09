@@ -90,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
                 return;
             }
-            if (!metric.IsValuePublishedEvent)
+            if (!metric.EventType.IsValuePublishedEvent())
             {
                 // Do we want to do anything with this payload?
                 return;
