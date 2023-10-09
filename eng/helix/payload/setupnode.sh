@@ -11,7 +11,7 @@
 # have the necessary tooling to process tar files, let alone the ability to change the EUID to use
 # the distro's package manager to install them.
 #
-# Alternatively we could recreate the symlinks. However certain helix containers have read-only file systems which makes this impossible.
+# Alternatively we could recreate the symbolic links. However certain helix containers have read-only file systems which makes this impossible.
 # Creating a custom alias that directly invokes node with the npm-cli script will work across all of these constraints on all *nix platforms.
 #
 NODE_BIN=$HELIX_CORRELATION_PAYLOAD/nodejs/bin
