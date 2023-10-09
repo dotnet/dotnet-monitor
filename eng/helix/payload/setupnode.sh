@@ -14,9 +14,8 @@
 # Alternatively we could recreate the symbolic links. However certain helix containers have read-only file systems which makes this impossible.
 # Creating a custom alias that directly invokes node with the npm-cli script will work across all of these constraints on all *nix platforms.
 #
-NODE_BIN=$HELIX_CORRELATION_PAYLOAD/nodejs/bin
 alias helix_npm="node $HELIX_CORRELATION_PAYLOAD/nodejs/lib/node_modules/npm/bin/npm-cli.js"
 
-export PATH=$NODE_BIN:$PATH
+export PATH=$HELIX_CORRELATION_PAYLOAD/nodejs/bin:$PATH
 helix_npm config set prefix $HELIX_WORKITEM_ROOT/.npm || exit 1
 export PATH=$HELIX_WORKITEM_ROOT/.npm/bin:$PATH
