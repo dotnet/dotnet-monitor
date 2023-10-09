@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 Logger.CounterEndedPayload(counter.Name);
                 return;
             }
-            else if (!counter.IsValuePublishedEvent)
+            else if (!counter.EventType.IsValuePublishedEvent())
             {
                 // Do we want to do anything with this payload?
                 return;
@@ -70,13 +70,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     Quantile quantile = aggregatePercentilePayload.Quantiles[i];
 
                     SerializeCounterValues(counter.Timestamp,
-                        counter.Provider,
+                        counter.Provider.ProviderName,
                         counter.Name,
                         counter.DisplayName,
                         counter.Unit,
                         counter.CounterType.ToString(),
                         CounterUtilities.AppendPercentile(counter.Metadata, quantile.Percentage),
-                        quantile.Value);
+                        quantile.Value,
+                        counter.Provider.MeterTags,
+                        counter.Provider.InstrumentTags,
+                        counter.Provider.ScopeHash);
 
                     if (i < aggregatePercentilePayload.Quantiles.Length - 1)
                     {
@@ -90,13 +93,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 _bufferWriter.Clear();
 
                 SerializeCounterValues(counter.Timestamp,
-                    counter.Provider,
+                    counter.Provider.ProviderName,
                     counter.Name,
                     counter.DisplayName,
                     counter.Unit,
                     counter.CounterType.ToString(),
                     counter.Metadata,
-                    counter.Value);
+                    counter.Value,
+                    counter.Provider.MeterTags,
+                    counter.Provider.InstrumentTags,
+                    counter.Provider.ScopeHash);
             }
             await _stream.WriteAsync(_bufferWriter.WrittenMemory);
 
@@ -111,7 +117,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             string unit,
             string counterType,
             string tags,
-            double value)
+            double value,
+            string meterTags,
+            string instrumentTags,
+            string scopeHash)
         {
             using var writer = new Utf8JsonWriter(_bufferWriter, new JsonWriterOptions { Indented = false });
             writer.WriteStartObject();
@@ -126,6 +135,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             //Some versions of .Net return invalid metric numbers. See https://github.com/dotnet/runtime/pull/46938
             writer.WriteNumber("value", double.IsNaN(value) ? 0.0 : value);
+
+            writer.WriteString("meterTags", meterTags);
+            writer.WriteString("instrumentTags", instrumentTags);
+            writer.WriteString("scopeHash", scopeHash);
 
             writer.WriteEndObject();
         }

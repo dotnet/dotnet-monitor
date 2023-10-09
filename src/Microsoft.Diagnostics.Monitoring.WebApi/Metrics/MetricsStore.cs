@@ -73,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             //Do not accept CounterEnded payloads.
             if (metric is CounterEndedPayload counterEnded)
             {
-                if (_observedEndedCounters.Add((counterEnded.Provider, counterEnded.Name)))
+                if (_observedEndedCounters.Add((counterEnded.Provider.ProviderName, counterEnded.Name)))
                 {
                     _logger.CounterEndedPayload(counterEnded.Name);
                 }
@@ -90,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
                 return;
             }
-            if (!metric.IsValuePublishedEvent)
+            if (!metric.EventType.IsValuePublishedEvent())
             {
                 // Do we want to do anything with this payload?
                 return;
@@ -137,7 +137,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 ICounterPayload metricInfo = metricGroup.Value.First();
 
-                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.Provider, metricInfo.Name, metricInfo.Unit);
+                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.Provider.ProviderName, metricInfo.Name, metricInfo.Unit);
 
                 await WriteMetricHeader(metricInfo, writer, metricName);
 
@@ -165,10 +165,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static string GetMetricLabels(ICounterPayload metric, double? quantile)
         {
-            string metadata = metric.Metadata;
+            string allMetadata = metric.CombineTags();
 
             char separator = IsMeter(metric) ? '=' : ':';
-            var metadataValues = CounterUtilities.GetMetadata(metadata, separator);
+            var metadataValues = CounterUtilities.GetMetadata(allMetadata, separator);
             if (quantile.HasValue)
             {
                 metadataValues.Add("quantile", quantile.Value.ToString(CultureInfo.InvariantCulture));
