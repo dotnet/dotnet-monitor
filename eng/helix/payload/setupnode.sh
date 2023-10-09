@@ -9,17 +9,16 @@
 # to process tar files nor do all containers have ability to change the EUID, meaning the distro's package manager cannot be used to
 # install the missing tools.
 #
-pushd $HELIX_CORRELATION_PAYLOAD/nodejs/bin
-rm corepack || exit 1
-ln -s ../lib/node_modules/corepack/dist/corepack.js corepack || exit 1
+NODE_BIN=$HELIX_CORRELATION_PAYLOAD/nodejs/bin
+rm $NODE_BIN/corepack || exit 1
+ln -s ../lib/node_modules/corepack/dist/corepack.js $NODE_BIN/corepack || exit 1
 
-rm npm || exit 1
-ln -s ../lib/node_modules/npm/bin/npm-cli.js npm || exit 1
+rm $NODE_BIN/npm || exit 1
+ln -s ../lib/node_modules/npm/bin/npm-cli.js $NODE_BIN/npm || exit 1
 
-rm npx || exit 1
-ln -s ../lib/node_modules/npm/bin/npx-cli.js npx || exit 1
-popd
+rm $NODE_BIN/npx || exit 1
+ln -s ../lib/node_modules/npm/bin/npx-cli.js $NODE_BIN/npx || exit 1
 
-export PATH=$HELIX_CORRELATION_PAYLOAD/nodejs/bin:$PATH
+export PATH=$NODE_BIN:$PATH
 npm config set prefix $HELIX_WORKITEM_ROOT/.npm || exit 1
 export PATH=$HELIX_WORKITEM_ROOT/.npm/bin:$PATH
