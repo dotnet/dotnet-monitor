@@ -576,18 +576,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             yield return new object[] { TargetFrameworkMoniker.Net60 };
             yield return new object[] { TargetFrameworkMoniker.Net70 };
-#if INCLUDE_NEXT_DOTNET
             yield return new object[] { TargetFrameworkMoniker.Net80 };
-#endif
         }
 
         public static IEnumerable<object[]> GetCurrentTfm()
         {
-#if INCLUDE_NEXT_DOTNET
             yield return new object[] { TargetFrameworkMoniker.Net80 };
-#else
-            yield return new object[] { TargetFrameworkMoniker.Net70 };
-#endif
         }
     }
 }
