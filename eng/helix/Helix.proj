@@ -135,9 +135,8 @@
   </ItemGroup>
 
   <!-- Correlation Paylod: Node -->
-  <ItemGroup>
-    <HelixCorrelationPayload Include="nodejs">
-      <Uri>http://nodejs.org/dist/v$(HelixNodeVersion)/$(HelixNodeName).$(HelixArchiveExtension)</Uri>
+  <ItemGroup Condition="Exists('$(HelixNodejsPayloadPath)')">
+    <HelixCorrelationPayload Include="$(HelixNodejsPayloadPath)">
       <Destination>nodejs</Destination>
     </HelixCorrelationPayload>
   </ItemGroup>
