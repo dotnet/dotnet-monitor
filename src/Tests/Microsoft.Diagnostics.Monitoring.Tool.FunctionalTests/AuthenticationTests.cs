@@ -473,7 +473,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 }
                 else
                 {
-                    Assert.True(false, "Unknown algorithm");
+                    Assert.Fail("Unknown algorithm");
                 }
 
                 JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonIgnoreCondition.WhenWritingNull);
