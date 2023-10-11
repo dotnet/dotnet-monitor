@@ -62,6 +62,22 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             }
         }
 
+        internal static async Task AggregateMetrics(IAsyncEnumerable<CounterPayload> actualMetrics,
+            List<string> providers,
+            List<string> names,
+            List<string> metadata,
+            List<string> meterTags,
+            List<string> instrumentTags)
+        {
+            await AggregateMetrics(actualMetrics, providers, names, metadata);
+
+            await foreach (CounterPayload counter in actualMetrics)
+            {
+                meterTags.Add(counter.MeterTags);
+                instrumentTags.Add(counter.InstrumentTags);
+            }
+        }
+
         internal static async IAsyncEnumerable<CounterPayload> GetAllMetrics(Stream liveMetricsStream)
         {
             using var reader = new StreamReader(liveMetricsStream);

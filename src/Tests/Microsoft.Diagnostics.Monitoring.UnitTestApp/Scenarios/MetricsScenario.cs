@@ -37,6 +37,21 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 Meter meter2 = new Meter(Constants.ProviderName2, "1.0.0");
                 Counter<int> counter2 = meter2.CreateCounter<int>(Constants.CounterName);
 
+                var meterTags = new Dictionary<string, object>
+                {
+                    { Constants.MeterMetadataKey, Constants.MeterMetadataValue }
+                };
+
+                var instrumentTags = new Dictionary<string, object>
+                {
+                    { Constants.InstrumentMetadataKey, Constants.InstrumentMetadataValue }
+                };
+
+#if NET8_0_OR_GREATER
+                Meter meter3 = new Meter(Constants.ProviderName3, "1.0.0", meterTags);
+                Counter<int> counter3 = meter3.CreateCounter<int>(Constants.CounterName, null, null, instrumentTags);
+#endif
+
                 var metadata = new Dictionary<string, object>
                 {
                     { Constants.MetadataKey, Constants.MetadataValue }
@@ -53,6 +68,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                     }
 
                     counter2.Add(1);
+
+#if NET8_0_OR_GREATER
+                    counter3.Add(1, metadata.ToArray());
+#endif
 
                     await Task.Delay(100);
                 }

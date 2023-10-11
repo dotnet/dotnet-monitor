@@ -360,5 +360,89 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     });
                 });
         }
+
+        [Fact]
+        public async Task TestSystemDiagnosticsMetrics_MeterInstrumentTags()
+        {
+            var instrumentNamesP3 = new[] { Constants.CounterName };
+
+            MetricProvider p3 = new MetricProvider()
+            {
+                ProviderName = Constants.ProviderName3
+            };
+
+            var providers = new List<MetricProvider>()
+            {
+                p3
+            };
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Connect,
+                TestAppScenarios.Metrics.Name,
+                appValidate: async (runner, client) =>
+                {
+                    using ResponseStreamHolder holder = await client.CaptureMetricsAsync(await runner.ProcessIdTask,
+                        durationSeconds: CommonTestTimeouts.LiveMetricsDurationSeconds,
+                        metricsConfiguration: new EventMetricsConfiguration
+                        {
+                            IncludeDefaultProviders = false,
+                            Meters = new[]
+                            {
+                                new EventMetricsMeter
+                                {
+                                    MeterName = p3.ProviderName,
+                                    InstrumentNames = instrumentNamesP3,
+                                }
+                            }
+                        });
+
+                    await runner.SendCommandAsync(TestAppScenarios.Metrics.Commands.Continue);
+
+                    var metrics = LiveMetricsTestUtilities.GetAllMetrics(holder.Stream);
+
+                    List<string> actualMeterNames = new();
+                    List<string> actualInstrumentNames = new();
+                    List<string> actualMetadata = new();
+                    List<string> actualMeterTags = new();
+                    List<string> actualInstrumentTags = new();
+
+                    await LiveMetricsTestUtilities.AggregateMetrics(metrics, actualMeterNames, actualInstrumentNames, actualMetadata, actualMeterTags, actualInstrumentTags);
+
+                    LiveMetricsTestUtilities.ValidateMetrics(new[] { p3.ProviderName },
+                        instrumentNamesP3,
+                        actualMeterNames.ToHashSet(),
+                        actualInstrumentNames.ToHashSet(),
+                        strict: true);
+
+                    // NOTE: This assumes the default percentiles of 50/95/99 - if this changes, this test
+                    // will fail and will need to be updated.
+
+                    string actualMeterTag = Assert.Single(actualMeterTags.Distinct());
+                    string expectedMeterTag = Constants.MeterMetadataKey + "=" + Constants.MeterMetadataValue;
+                    Assert.Equal(expectedMeterTag, actualMeterTag);
+
+                    string actualInstrumentTag = Assert.Single(actualInstrumentTags.Distinct());
+                    string expectedInstrumentTag = Constants.InstrumentMetadataKey + "=" + Constants.InstrumentMetadataValue;
+                    Assert.Equal(expectedInstrumentTag, actualInstrumentTag);
+                },
+                configureTool: runner =>
+                {
+                    runner.WriteKeyPerValueConfiguration(new RootOptions()
+                    {
+                        Metrics = new MetricsOptions()
+                        {
+                            Enabled = true,
+                            IncludeDefaultProviders = false,
+                            Providers = providers
+                        },
+                        GlobalCounter = new GlobalCounterOptions()
+                        {
+                            IntervalSeconds = 1
+                        }
+                    });
+                });
+        }
     }
 }

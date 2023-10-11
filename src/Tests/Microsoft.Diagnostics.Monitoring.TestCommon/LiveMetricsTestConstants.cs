@@ -11,7 +11,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public const string HistogramName2 = "test-histogram-2";
         public const string ProviderName1 = "P1";
         public const string ProviderName2 = "P2";
+        public const string ProviderName3 = "P3";
         public const string MetadataKey = "key1";
         public const string MetadataValue = "value1";
+        public const string MeterMetadataKey = "mkey1";
+        public const string MeterMetadataValue = "mvalue1";
+        public const string InstrumentMetadataKey = "ikey1";
+        public const string InstrumentMetadataValue = "ivalue1";
     }
 }

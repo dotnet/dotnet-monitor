@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using Provider = Microsoft.Diagnostics.Monitoring.EventPipe.Provider;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
