@@ -109,11 +109,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         /// </summary>
         public bool StopOnParentExit { get; set; } = true;
 
+        // This startup hook assembly is a dependency of the TestCommon assembly, so it is copied to the same
+        // output directory that TestCommon is copied. Do not specify TFM so it uses the one that is in the
+        // same directory; this is interpreted as "relative to the currently executing assembly,
+        // find the startup hook assembly."
         private static string TestProcessCleanupStartupHookPath =>
             AssemblyHelper.GetAssemblyArtifactBinPath(
                 Assembly.GetExecutingAssembly(),
-                TestProcessCleanupStartupHookAssemblyName,
-                TargetFrameworkMoniker.Net60
+                TestProcessCleanupStartupHookAssemblyName
                 );
 
         public DotNetRunner()

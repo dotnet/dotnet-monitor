@@ -23,11 +23,11 @@
         "$(VSRedistCommonNetCoreSharedFrameworkx6480Version)"
       ]
     },
-    "xcopy-msbuild": "17.7.2"
+    "xcopy-msbuild": "17.7.4"
   },
   "msbuild-sdks": {
     "Microsoft.Build.NoTargets": "3.7.0",
-    "Microsoft.DotNet.Arcade.Sdk": "8.0.0-beta.23463.1",
-    "Microsoft.DotNet.Helix.Sdk": "8.0.0-beta.23463.1"
+    "Microsoft.DotNet.Arcade.Sdk": "8.0.0-beta.23505.1",
+    "Microsoft.DotNet.Helix.Sdk": "8.0.0-beta.23505.1"
   }
 }

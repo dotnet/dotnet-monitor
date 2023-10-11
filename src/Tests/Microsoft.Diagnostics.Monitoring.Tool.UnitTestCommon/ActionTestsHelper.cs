@@ -25,17 +25,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             TargetFrameworkMoniker.Net60,
             TargetFrameworkMoniker.Net70,
-#if INCLUDE_NEXT_DOTNET
             TargetFrameworkMoniker.Net80
-#endif
         };
         public static TargetFrameworkMoniker[] tfms6PlusToTest = new TargetFrameworkMoniker[]
         {
             TargetFrameworkMoniker.Net60,
             TargetFrameworkMoniker.Net70,
-#if INCLUDE_NEXT_DOTNET
             TargetFrameworkMoniker.Net80
-#endif
         };
 
         public static IEnumerable<object[]> GetTfms()
