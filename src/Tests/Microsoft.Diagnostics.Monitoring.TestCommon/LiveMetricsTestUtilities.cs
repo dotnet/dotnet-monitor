@@ -69,10 +69,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             List<string> meterTags,
             List<string> instrumentTags)
         {
-            await AggregateMetrics(actualMetrics, providers, names, metadata);
-
             await foreach (CounterPayload counter in actualMetrics)
             {
+                providers.Add(counter.Provider);
+                names.Add(counter.Name);
+                metadata.Add(counter.Metadata);
                 meterTags.Add(counter.MeterTags);
                 instrumentTags.Add(counter.InstrumentTags);
             }
