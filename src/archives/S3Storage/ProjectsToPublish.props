@@ -16,8 +16,5 @@
     <ProjectToPublish Include="$(S3StorageProjectPath)">
       <AdditionalProperties>TargetFramework=$(LatestToolTargetFramework);RuntimeIdentifier=;PublishDir=$(S3StoragePublishRootPath)$(LatestToolTargetFramework)\any\;SelfContained=false</AdditionalProperties>
     </ProjectToPublish>
-    <ProjectToPublish Include="$(S3StorageProjectPath)">
-      <AdditionalProperties>TargetFramework=$(OlderToolTargetFramework);RuntimeIdentifier=;PublishDir=$(S3StoragePublishRootPath)$(OlderToolTargetFramework)\any\;SelfContained=false</AdditionalProperties>
-    </ProjectToPublish>
   </ItemGroup>
 </Project>

@@ -104,7 +104,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 }
             }
 
-            Assert.False(true, $"Unable to find configuration source.");
+            Assert.Fail($"Unable to find configuration source.");
         }
     }
 }

@@ -135,9 +135,8 @@
   </ItemGroup>
 
   <!-- Correlation Paylod: Node -->
-  <ItemGroup>
-    <HelixCorrelationPayload Include="nodejs">
-      <Uri>http://nodejs.org/dist/v$(HelixNodeVersion)/$(HelixNodeName).$(HelixArchiveExtension)</Uri>
+  <ItemGroup Condition="Exists('$(HelixNodejsPayloadPath)')">
+    <HelixCorrelationPayload Include="$(HelixNodejsPayloadPath)">
       <Destination>nodejs</Destination>
     </HelixCorrelationPayload>
   </ItemGroup>
@@ -179,6 +178,10 @@
       <HelixPreCommands Condition="!$(IsHelixPosixShell)">$(HelixPreCommands);set DOTNET_CLI_HOME=%HELIX_WORKITEM_ROOT%\.dotnet</HelixPreCommands>
       <HelixPreCommands Condition="$(IsHelixPosixShell)">$(HelixPreCommands);export NUGET_PACKAGES=$HELIX_WORKITEM_ROOT/.nuget</HelixPreCommands>
       <HelixPreCommands Condition="!$(IsHelixPosixShell)">$(HelixPreCommands);set NUGET_PACKAGES=%HELIX_WORKITEM_ROOT%\.nuget</HelixPreCommands>
+
+      <!-- AzureAd integration tests -->
+      <HelixPreCommands Condition="$(IsHelixPosixShell)">$(HelixPreCommands);export DOTNET_MONITOR_AZURE_AD_TESTS_CLIENT_ID=$(DOTNET_MONITOR_AZURE_AD_TESTS_CLIENT_ID);export DOTNET_MONITOR_AZURE_AD_TESTS_ENABLE=$(DOTNET_MONITOR_AZURE_AD_TESTS_ENABLE);export DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_ID=$(DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_ID);export DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET=$(DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET);export DOTNET_MONITOR_AZURE_AD_TESTS_REQUIRED_ROLE=$(DOTNET_MONITOR_AZURE_AD_TESTS_REQUIRED_ROLE);export DOTNET_MONITOR_AZURE_AD_TESTS_TENANT_ID=$(DOTNET_MONITOR_AZURE_AD_TESTS_TENANT_ID)</HelixPreCommands>
+      <HelixPreCommands Condition="!$(IsHelixPosixShell)">$(HelixPreCommands);set DOTNET_MONITOR_AZURE_AD_TESTS_CLIENT_ID=$(DOTNET_MONITOR_AZURE_AD_TESTS_CLIENT_ID);set DOTNET_MONITOR_AZURE_AD_TESTS_ENABLE=$(DOTNET_MONITOR_AZURE_AD_TESTS_ENABLE);set DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_ID=$(DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_ID);set DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET=$(DOTNET_MONITOR_AZURE_AD_TESTS_PIPELINE_CLIENT_SECRET);set DOTNET_MONITOR_AZURE_AD_TESTS_REQUIRED_ROLE=$(DOTNET_MONITOR_AZURE_AD_TESTS_REQUIRED_ROLE);set DOTNET_MONITOR_AZURE_AD_TESTS_TENANT_ID=$(DOTNET_MONITOR_AZURE_AD_TESTS_TENANT_ID)</HelixPreCommands>
     </PropertyGroup>
   </Target>
 
