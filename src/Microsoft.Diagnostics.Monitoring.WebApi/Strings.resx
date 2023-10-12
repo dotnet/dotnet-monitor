@@ -324,7 +324,7 @@
     <value>This collection rule is temporarily throttled because the ActionCountLimit has been reached within the ActionCountSlidingWindowDuration.</value>
   </data>
   <data name="Message_FeatureNotEnabled" xml:space="preserve">
-    <value>The {0} feature is not enabled.</value>
+    <value>The '{0}' feature is not enabled.</value>
   </data>
   <data name="Message_GeneratedInProcessArtifact" xml:space="preserve">
     <value>Finished generating in-process artifact</value>

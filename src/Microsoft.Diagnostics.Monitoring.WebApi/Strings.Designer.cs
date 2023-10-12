@@ -520,7 +520,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} feature is not enabled..
+        ///   Looks up a localized string similar to The &apos;{0}&apos; feature is not enabled..
         /// </summary>
         internal static string Message_FeatureNotEnabled {
             get {
