@@ -1,4 +1,6 @@
-using Azure;
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
 using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -24,7 +26,7 @@ namespace ReleaseTool.Core
         private readonly string _accountName;
         private readonly string _accountKey;
         private readonly string _containerName;
-        private readonly string _releaseName;
+        private readonly string _buildVersion;
         private readonly int _sasValidDays;
         private readonly ILogger _logger;
 
@@ -66,12 +68,12 @@ namespace ReleaseTool.Core
             }
         }
 
-        public AzureBlobBublisher(string accountName, string accountKey, string containerName, string releaseName, int sasValidDays, ILogger logger)
+        public AzureBlobBublisher(string accountName, string accountKey, string containerName, string buildVersion, int sasValidDays, ILogger logger)
         {
             _accountName = accountName;
             _accountKey = accountKey;
             _containerName = containerName;
-            _releaseName = releaseName;
+            _buildVersion = buildVersion;
             _sasValidDays = sasValidDays;
             _logger = logger;
         }
@@ -101,7 +103,7 @@ namespace ReleaseTool.Core
 
                     using var srcStream = new FileStream(fileMap.LocalSourcePath, FileMode.Open, FileAccess.Read);
 
-                    BlobClient blobClient = client.GetBlobClient(GetBlobName(_releaseName, fileMap.RelativeOutputPath));
+                    BlobClient blobClient = client.GetBlobClient(GetBlobName(_buildVersion, fileMap.RelativeOutputPath));
 
                     await blobClient.UploadAsync(srcStream, overwrite: true, ct);
 
