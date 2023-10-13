@@ -31,10 +31,10 @@
     <ExcludeLatestTargetFramework Condition="'$(ExcludeLatestTargetFramework)' == '' and '$(BuildingInsideVisualStudio)' == 'true'">true</ExcludeLatestTargetFramework>
     <ExcludeLatestTargetFramework Condition="'$(ExcludeLatestTargetFramework)' == ''">false</ExcludeLatestTargetFramework>
     <!-- The TFMs of the dotnet-monitor tool.  -->
-    <ToolTargetFrameworks>net6.0;net8.0</ToolTargetFrameworks>
+    <ToolTargetFrameworks>net6.0</ToolTargetFrameworks>
     <ToolTargetFrameworks Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(ToolTargetFrameworks);$(LatestTargetFramework)</ToolTargetFrameworks>
     <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
-    <TestTargetFrameworks>net6.0;net7.0;net8.0</TestTargetFrameworks>
+    <TestTargetFrameworks>net6.0;net7.0</TestTargetFrameworks>
     <TestTargetFrameworks Condition="'$(ExcludeLatestTargetFramework)' != 'true'">$(TestTargetFrameworks);$(LatestTargetFramework)</TestTargetFrameworks>
     <!-- The TFM for generating schema.json and OpenAPI docs. -->
     <SchemaTargetFramework>net6.0</SchemaTargetFramework>
