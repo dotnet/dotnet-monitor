@@ -277,6 +277,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Call Stacks.
+        /// </summary>
+        internal static string FeatureName_CallStacks {
+            get {
+                return ResourceManager.GetString("FeatureName_CallStacks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exceptions.
+        /// </summary>
+        internal static string FeatureName_Exceptions {
+            get {
+                return ResourceManager.GetString("FeatureName_Exceptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parameter Capturing.
+        /// </summary>
+        internal static string FeatureName_ParameterCapturing {
+            get {
+                return ResourceManager.GetString("FeatureName_ParameterCapturing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The counter {0} ended and is no longer receiving metrics..
         /// </summary>
         internal static string LogFormatString_CounterEndedPayload {
@@ -489,6 +516,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         internal static string Message_CollectionRuleStateReason_Throttled {
             get {
                 return ResourceManager.GetString("Message_CollectionRuleStateReason_Throttled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; feature is not enabled..
+        /// </summary>
+        internal static string Message_FeatureNotEnabled {
+            get {
+                return ResourceManager.GetString("Message_FeatureNotEnabled", resourceCulture);
             }
         }
         

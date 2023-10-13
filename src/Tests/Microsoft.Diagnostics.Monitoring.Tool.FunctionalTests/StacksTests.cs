@@ -247,8 +247,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     int processId = await runner.ProcessIdTask;
 
-                    ApiStatusCodeException ex = await Assert.ThrowsAsync<ApiStatusCodeException>(() => client.CaptureStacksAsync(processId, WebApi.StackFormat.Json));
-                    Assert.Equal(HttpStatusCode.NotFound, ex.StatusCode);
+                    ValidationProblemDetailsException ex = await Assert.ThrowsAsync<ValidationProblemDetailsException>(() => client.CaptureStacksAsync(processId, WebApi.StackFormat.Json));
+                    Assert.Equal(HttpStatusCode.BadRequest, ex.StatusCode);
 
                     await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
                 },
@@ -279,8 +279,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     int processId = await runner.ProcessIdTask;
 
-                    ApiStatusCodeException ex = await Assert.ThrowsAsync<ApiStatusCodeException>(() => client.CaptureStacksAsync(processId, WebApi.StackFormat.Json));
-                    Assert.Equal(HttpStatusCode.NotFound, ex.StatusCode);
+                    ValidationProblemDetailsException ex = await Assert.ThrowsAsync<ValidationProblemDetailsException>(() => client.CaptureStacksAsync(processId, WebApi.StackFormat.Json));
+                    Assert.Equal(HttpStatusCode.BadRequest, ex.StatusCode);
 
                     await runner.SendCommandAsync(TestAppScenarios.Stacks.Commands.Continue);
                 },

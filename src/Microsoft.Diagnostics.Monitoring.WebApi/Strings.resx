@@ -213,6 +213,15 @@
     <value>Value must be of type string.</value>
     <comment>Gets a string similar to "Value must be of type string.".</comment>
   </data>
+  <data name="FeatureName_CallStacks" xml:space="preserve">
+    <value>Call Stacks</value>
+  </data>
+  <data name="FeatureName_Exceptions" xml:space="preserve">
+    <value>Exceptions</value>
+  </data>
+  <data name="FeatureName_ParameterCapturing" xml:space="preserve">
+    <value>Parameter Capturing</value>
+  </data>
   <data name="LogFormatString_CounterEndedPayload" xml:space="preserve">
     <value>The counter {0} ended and is no longer receiving metrics.</value>
   </data>
@@ -313,6 +322,9 @@
   </data>
   <data name="Message_CollectionRuleStateReason_Throttled" xml:space="preserve">
     <value>This collection rule is temporarily throttled because the ActionCountLimit has been reached within the ActionCountSlidingWindowDuration.</value>
+  </data>
+  <data name="Message_FeatureNotEnabled" xml:space="preserve">
+    <value>The '{0}' feature is not enabled.</value>
   </data>
   <data name="Message_GeneratedInProcessArtifact" xml:space="preserve">
     <value>Finished generating in-process artifact</value>
