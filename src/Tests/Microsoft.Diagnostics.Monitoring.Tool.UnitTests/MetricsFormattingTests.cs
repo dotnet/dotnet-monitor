@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using Provider = Microsoft.Diagnostics.Monitoring.EventPipe.Provider;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
@@ -45,8 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             List<ICounterPayload> payload = new();
 
-            Provider provider = new Provider();
-            provider.ProviderName = MeterName;
+            Provider provider = new Provider(MeterName, null, null, null);
 
             payload.Add(new AggregatePercentilePayload(provider, InstrumentName, "DisplayName", string.Empty, string.Empty,
                 new Quantile[] { new Quantile(0.5, Value1), new Quantile(0.95, Value2), new Quantile(0.99, Value3) },
@@ -72,8 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task GaugeFormat_Test()
         {
-            Provider provider = new Provider();
-            provider.ProviderName = MeterName;
+            Provider provider = new Provider(MeterName, null, null, null);
 
             ICounterPayload payload = new GaugePayload(provider, InstrumentName, "DisplayName", "", null, Value1, Timestamp);
 
@@ -92,8 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task CounterFormat_Test()
         {
-            Provider provider = new Provider();
-            provider.ProviderName = MeterName;
+            Provider provider = new Provider(MeterName, null, null, null);
 
             ICounterPayload payload = new RatePayload(provider, InstrumentName, "DisplayName", "", null, Value1, IntervalSeconds, Timestamp);
 
@@ -136,8 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task UpDownCounterFormat_Test()
         {
-            Provider provider = new Provider();
-            provider.ProviderName = MeterName;
+            Provider provider = new Provider(MeterName, null, null, null);
 
             ICounterPayload payload = new UpDownCounterPayload(provider, InstrumentName, "DisplayName", "", null, Value1, Timestamp);
 

@@ -417,9 +417,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         actualInstrumentNames.ToHashSet(),
                         strict: true);
 
-                    // NOTE: This assumes the default percentiles of 50/95/99 - if this changes, this test
-                    // will fail and will need to be updated.
-
                     string actualMeterTag = Assert.Single(actualMeterTags.Distinct());
                     string expectedMeterTag = Constants.MeterMetadataKey + "=" + Constants.MeterMetadataValue;
                     Assert.Equal(expectedMeterTag, actualMeterTag);
