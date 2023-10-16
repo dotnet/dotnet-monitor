@@ -26,7 +26,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             _outputHelper = outputHelper;
         }
 
-        [Theory]
+        // It appears that the profiler isn't loading on musl libc distros for this tests.
+        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsNotAlpine))]
         [MemberData(nameof(ProfilerHelper.GetNotifyOnlyArchitectureProfilerPath), MemberType = typeof(ProfilerHelper))]
         public async Task StartupHook_WithProfiler_HasManagedMessaging(Architecture architecture, string profilerPath, ProfilerVariant variant)
         {
