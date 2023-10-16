@@ -151,6 +151,15 @@ stages:
                 -MaestroToken $(MaestroAccessToken)
                 -TaskVariableName 'ReleaseVersion'
 
+          - task: PowerShell@2
+            displayName: Get Build Version
+            inputs:
+              filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
+              arguments: >-
+                -BarId $(BarId)
+                -MaestroToken $(MaestroAccessToken)
+                -TaskVariableName 'BuildVersion'
+
           - powershell: Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
             displayName: Install NuGet PowerShell Package Provider
 
@@ -184,7 +193,7 @@ stages:
               filePath: $(Build.SourcesDirectory)/eng/release/Scripts/PublishToBlobAccounts.ps1
               arguments: >-
                 -AzCopyPath $(AzCopyPath)
-                -BuildNumber $(resources.pipeline.Build.runName)
+                -BuildVersion $(BuildVersion)
                 -ReleaseVersion $(ReleaseVersion)
                 -DotnetStageAccountKey $(dotnetstage-storage-key)
                 -DestinationAccountName $(DestinationAccountName)
