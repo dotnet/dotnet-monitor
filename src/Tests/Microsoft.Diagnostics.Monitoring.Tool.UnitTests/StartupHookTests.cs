@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -44,6 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             runner.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.NotifyOnlyProfiler.Clsid.StringWithBraces);
             runner.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath, profilerPath);
             runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, Guid.NewGuid().ToString("D"));
+            runner.Environment.Add(ProfilerIdentifiers.EnvironmentVariables.StdErrLogger_Level, LogLevel.Trace.ToString("G"));
 
             await runner.ExecuteAsync(async () =>
             {
