@@ -40,6 +40,14 @@ stages:
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}:
       - template: /eng/common/templates/post-build/setup-maestro-vars.yml
       - task: PowerShell@2
+        displayName: Get Build Version
+        inputs:
+          filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
+          arguments: >-
+            -BarId $(BARBuildId)
+            -MaestroToken $(MaestroAccessToken)
+            -TaskVariableName 'BuildVersion'
+      - task: PowerShell@2
         displayName: 'Download Build Assets'
         inputs:
           targetType: filePath
@@ -61,6 +69,7 @@ stages:
           --tool-manifest "$(Build.Repository.LocalPath)\eng\release\tool-list.json"
           --staging-directory "$(System.ArtifactsDirectory)\AssetsLayout"
           --release-name "$(Build.BuildNumber)"
+          --build-version "$(BuildVersion)"
           --account-name "$(dotnet-diagnostics-storage-accountname)"
           --account-key "$(dotnetstage-storage-key)"
           --sas-valid-days "$(dotnet-diagnostics-storage-retentiondays)"

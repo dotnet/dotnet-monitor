@@ -105,7 +105,7 @@ stages:
       validateDependsOn:
       - PackSignPublish
       publishingInfraVersion: 3
-      enableSourceLinkValidation: true
+      enableSourceLinkValidation: ${{ and(not(startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/')), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}
       enableSigningValidation: true
       enableSymbolValidation: false
       enableNugetValidation: true
