@@ -105,13 +105,7 @@ stages:
       validateDependsOn:
       - PackSignPublish
       publishingInfraVersion: 3
-      # Only enable SourceLink validation for branches that are mirrored.
-      # Otherwise, the validation job will timeout the build waiting for source version to exist
-      # in GitHub, which will not occur for branches that only exist in the internal project.
-      ${{ if or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')) }}:
-        enableSourceLinkValidation: true
-      ${{ else }}:
-        enableSourceLinkValidation: false
+      enableSourceLinkValidation: ${{ and(not(startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/')), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}
       enableSigningValidation: true
       enableSymbolValidation: false
       enableNugetValidation: true
