@@ -2,54 +2,35 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.StartupHook;
-using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions;
-using Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher;
-using Microsoft.Diagnostics.Tools.Monitor;
-using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
-using Microsoft.Diagnostics.Tools.Monitor.Profiler;
-using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using System;
-using System.IO;
 
 internal sealed class StartupHook
 {
-    private static CurrentAppDomainExceptionProcessor? s_exceptionProcessor;
-    private static AspNetHostingStartupLoader? s_hostingStartupLoader;
+    private static DiagnosticsBootstrapper? s_bootstrapper;
+    private static object s_lock = new object();
 
     public static void Initialize()
     {
-        try
+        // Ensure that only one bootstrapper is created for the application domain,
+        // regardless of multiple initializations or multiple threads.
+        if (null == s_bootstrapper)
         {
-            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
-
-            string? hostingStartupPath = Environment.GetEnvironmentVariable(StartupHookIdentifiers.EnvironmentVariables.HostingStartupPath);
-            // TODO: Log if specified hosting startup assembly doesn't exist
-            if (File.Exists(hostingStartupPath))
+            lock (s_lock)
             {
-                s_hostingStartupLoader = new AspNetHostingStartupLoader(hostingStartupPath);
-            }
-
-            s_exceptionProcessor = new CurrentAppDomainExceptionProcessor();
-            s_exceptionProcessor.Start();
-
-            try
-            {
-                // Check that the profiler is loaded before establishing the dispatcher, which has a dependency on the existance of the profiler
-                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(ProfilerIdentifiers.NotifyOnlyProfiler.EnvironmentVariables.ProductVersion)))
+                if (s_bootstrapper == null)
                 {
-                    SharedInternals.MessageDispatcher = new MonitorMessageDispatcher(new ProfilerMessageSource());
-                    ToolIdentifiers.EnableEnvVar(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.ManagedMessaging);
+                    try
+                    {
+                        s_bootstrapper = new DiagnosticsBootstrapper();
+
+                        AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+                    }
+                    catch
+                    {
+                        // TODO: Log failure
+                    }
                 }
             }
-            catch
-            {
-            }
-
-            ToolIdentifiers.EnableEnvVar(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.StartupHook);
-        }
-        catch
-        {
-            // TODO: Log failure
         }
     }
 
@@ -57,13 +38,11 @@ internal sealed class StartupHook
     {
         try
         {
-            s_exceptionProcessor?.Dispose();
-            s_hostingStartupLoader?.Dispose();
-            SharedInternals.MessageDispatcher?.Dispose();
+            s_bootstrapper?.Dispose();
         }
         catch
         {
-
+            // TODO: Log failure
         }
     }
 }
