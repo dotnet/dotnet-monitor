@@ -30,8 +30,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             public override int GetHashCode()
             {
                 HashCode code = new HashCode();
-                code.Add(_metric.Provider);
-                code.Add(_metric.Name);
+                code.Add(_metric.CounterInfo.ProviderName);
+                code.Add(_metric.CounterInfo.CounterName);
                 return code.ToHashCode();
             }
 
@@ -73,9 +73,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             //Do not accept CounterEnded payloads.
             if (metric is CounterEndedPayload counterEnded)
             {
-                if (_observedEndedCounters.Add((counterEnded.Provider.ProviderName, counterEnded.Name)))
+                if (_observedEndedCounters.Add((counterEnded.CounterInfo.ProviderName, counterEnded.CounterInfo.CounterName)))
                 {
-                    _logger.CounterEndedPayload(counterEnded.Name);
+                    _logger.CounterEndedPayload(counterEnded.CounterInfo.CounterName);
                 }
                 return;
             }
@@ -137,7 +137,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 ICounterPayload metricInfo = metricGroup.Value.First();
 
-                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.Provider.ProviderName, metricInfo.Name, metricInfo.Unit);
+                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.CounterInfo.ProviderName, metricInfo.CounterInfo.CounterName, metricInfo.Unit);
 
                 await WriteMetricHeader(metricInfo, writer, metricName);
 
@@ -243,7 +243,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static bool CompareMetrics(ICounterPayload first, ICounterPayload second)
         {
-            return string.Equals(first.Name, second.Name);
+            return string.Equals(first.CounterInfo.CounterName, second.CounterInfo.CounterName);
         }
 
         public void Clear()
