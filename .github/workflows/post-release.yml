@@ -28,7 +28,7 @@ jobs:
     # It's simpler than trying to parse our `eng/Versions.prop` due to the conditionals in it.
     steps:
       - name: Checkout
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
         with:
           persist-credentials: false
 
@@ -51,7 +51,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
         with:
           persist-credentials: false
 
@@ -103,7 +103,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
         with:
           persist-credentials: true # We need to persist credentials inorder to open a PR.
           ref: bot/${{ env.TARGET_BRANCH_POSTFIX }}
