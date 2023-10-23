@@ -150,7 +150,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
-        /// Tests that a feature is enabled if InProcessFeatures:<Feature>:Enabled is true.
+        /// Tests that a feature is enabled if <![CDATA[InProcessFeatures:<Feature>:Enabled]]> is true.
         /// </summary>
         [Fact]
         public void InProcessFeaturesOptionsBinder_BindEnabled_EnabledProperty()
@@ -175,7 +175,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
-        /// Tests that a feature is disabled if InProcessFeatures:<Feature>:Enabled is true
+        /// Tests that a feature is disabled if <![CDATA[InProcessFeatures:<Feature>:Enabled]]> is true
         /// and InProcessFeatures:Enabled is false.
         /// </summary>
         [Fact]

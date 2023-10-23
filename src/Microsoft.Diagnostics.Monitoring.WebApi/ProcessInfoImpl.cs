@@ -120,7 +120,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             if (!string.IsNullOrEmpty(commandLine))
             {
                 // Get the process name from the command line
-                bool isWindowsProcess = false;
+                bool isWindowsProcess;
                 if (string.IsNullOrEmpty(operatingSystem))
                 {
                     // If operating system is null, the process is likely .NET Core 3.1 (which doesn't have the GetProcessInfo command).
