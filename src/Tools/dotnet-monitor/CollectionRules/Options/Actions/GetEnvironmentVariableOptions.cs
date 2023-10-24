@@ -8,7 +8,7 @@ using System.Diagnostics;
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 {
     /// <summary>
-    /// Options for the <see cref="CollectionRules.Actions.GetEnvironmentVariableAction"/> action.
+    /// Options for the GetEnvironmentVariable action.
     /// </summary>
     [DebuggerDisplay("GetEnvironmentVariable")]
 #if SCHEMAGEN

@@ -1,11 +1,14 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace ReleaseTool.Core
 {
@@ -22,7 +25,7 @@ namespace ReleaseTool.Core
         private readonly List<FileReleaseData> _filesToRelease;
         private ILogger _logger;
 
-        public Release(DirectoryInfo productBuildPath, 
+        public Release(DirectoryInfo productBuildPath,
             List<ILayoutWorker> layoutWorkers, List<IReleaseVerifier> verifiers,
             IPublisher publisher, IManifestGenerator manifestGenerator, string manifestSavePath)
         {
@@ -102,21 +105,21 @@ namespace ReleaseTool.Core
             }
             catch (TaskCanceledException)
             {
-               _logger.LogError("Cancellation issued.");
+                _logger.LogError("Cancellation issued.");
                 return -1;
             }
             catch (AggregateException agEx)
             {
-               _logger.LogError("Aggregate Exception");
+                _logger.LogError("Aggregate Exception");
 
                 foreach (var ex in agEx.InnerExceptions)
-                   _logger.LogError(ex, "Inner Exception");
+                    _logger.LogError(ex, "Inner Exception");
 
                 return -1;
             }
             catch (Exception ex)
             {
-               _logger.LogError(ex, "Exception");
+                _logger.LogError(ex, "Exception");
                 return -1;
             }
         }
@@ -271,10 +274,10 @@ namespace ReleaseTool.Core
 
         public void Dispose()
         {
-            foreach(ILayoutWorker lw in _layoutWorkers)
+            foreach (ILayoutWorker lw in _layoutWorkers)
                 lw.Dispose();
 
-            foreach(IReleaseVerifier rv in _verifiers)
+            foreach (IReleaseVerifier rv in _verifiers)
                 rv.Dispose();
 
             _publisher.Dispose();

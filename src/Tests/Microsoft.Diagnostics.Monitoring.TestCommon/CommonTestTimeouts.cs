@@ -47,6 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         /// </summary>
         public static readonly TimeSpan LiveMetricsTimeout = GeneralTimeout;
 
+        /// <summary>
         /// Default timeout for gcdump collection.
         /// </summary>
         /// <remarks>
