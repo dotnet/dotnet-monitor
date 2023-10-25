@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         /// <summary>
-        /// Validates that a <see cref="ConfiguredExceptionsStore"/> will throw with invalid top level limit.
+        /// Validates that a <see cref="ExceptionsStoreLimitsCallback"/> will throw with invalid top level limit.
         /// </summary>
         [Fact]
         public void ExceptionsStoreLimitsCallback_LimitZero_ThrowsException()

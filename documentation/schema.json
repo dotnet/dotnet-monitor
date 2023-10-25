@@ -495,6 +495,7 @@
     },
     "CollectionRuleOptions": {
       "type": "object",
+      "description": "Options for describing an entire collection rule.",
       "additionalProperties": false,
       "required": [
         "Trigger"
@@ -621,6 +622,7 @@
     },
     "CollectionRuleTriggerOptions": {
       "type": "object",
+      "description": "Options for describing the type of trigger and the settings to pass to that trigger.",
       "additionalProperties": false,
       "required": [
         "Type"
@@ -750,6 +752,7 @@
     },
     "CollectionRuleActionOptions": {
       "type": "object",
+      "description": "Options for describing the type of action to execute and the settings to pass to that action.",
       "additionalProperties": false,
       "required": [
         "Type"
@@ -917,6 +920,7 @@
     },
     "CollectionRuleLimitsOptions": {
       "type": "object",
+      "description": "Options for limiting the execution of a collection rule.",
       "additionalProperties": false,
       "properties": {
         "ActionCount": {
@@ -1014,6 +1018,7 @@
     },
     "InProcessFeaturesOptions": {
       "type": "object",
+      "description": "Configuration options for in-process features, ones that execute within each target process.",
       "additionalProperties": false,
       "properties": {
         "Enabled": {
@@ -1118,6 +1123,7 @@
             "array",
             "null"
           ],
+          "description": "The list of exception configurations that determine which exceptions should be shown.\nEach configuration is a logical OR, so if any of the configurations match, the exception is shown.",
           "items": {
             "$ref": "#/definitions/ExceptionFilter"
           }
@@ -1127,6 +1133,7 @@
             "array",
             "null"
           ],
+          "description": "The list of exception configurations that determine which exceptions should be shown.\nEach configuration is a logical OR, so if any of the configurations match, the exception isn't shown.",
           "items": {
             "$ref": "#/definitions/ExceptionFilter"
           }
@@ -1296,6 +1303,7 @@
     },
     "FileSystemEgressProviderOptions": {
       "type": "object",
+      "description": "Egress provider options for file system egress.",
       "additionalProperties": false,
       "required": [
         "DirectoryPath"
@@ -1327,6 +1335,7 @@
     },
     "MetricsOptions": {
       "type": "object",
+      "description": "Configuration for prometheus metric collection and retrieval.\nTODO We may want to expose https endpoints here as well, and make port changes\nTODO How do we determine which process to scrape in multi-proc situations? How do we configure this\nfor situations where the pid is not known or ambiguous?",
       "additionalProperties": false,
       "properties": {
         "Enabled": {
@@ -1595,6 +1604,7 @@
     },
     "TemplateOptions": {
       "type": "object",
+      "description": "Options for describing custom user-defined templates.",
       "additionalProperties": false,
       "properties": {
         "CollectionRuleFilters": {
@@ -1657,6 +1667,7 @@
     },
     "CollectDumpOptions": {
       "type": "object",
+      "description": "Options for the CollectDump action.",
       "additionalProperties": false,
       "properties": {
         "Type": {
@@ -1743,6 +1754,7 @@
     },
     "CollectGCDumpOptions": {
       "type": "object",
+      "description": "Options for the CollectGCDump action.",
       "additionalProperties": false,
       "properties": {
         "Egress": {
@@ -1754,6 +1766,7 @@
     },
     "CollectLiveMetricsOptions": {
       "type": "object",
+      "description": "Options for the CollectLiveMetrics action.",
       "additionalProperties": false,
       "properties": {
         "IncludeDefaultProviders": {
@@ -1846,6 +1859,7 @@
     },
     "CollectLogsOptions": {
       "type": "object",
+      "description": "Options for the CollectLogs action.",
       "additionalProperties": false,
       "properties": {
         "DefaultLevel": {
@@ -1966,6 +1980,7 @@
     },
     "CollectTraceOptions": {
       "type": "object",
+      "description": "Options for the CollectTrace action.",
       "additionalProperties": false,
       "properties": {
         "Profile": {
@@ -2105,6 +2120,7 @@
     },
     "TraceEventFilter": {
       "type": "object",
+      "description": "A trace event filter.",
       "additionalProperties": false,
       "required": [
         "ProviderName",
@@ -2135,6 +2151,7 @@
     },
     "ExecuteOptions": {
       "type": "object",
+      "description": "Options for the Execute action.",
       "additionalProperties": false,
       "required": [
         "Path"
@@ -2163,6 +2180,7 @@
     },
     "LoadProfilerOptions": {
       "type": "object",
+      "description": "Options for the LoadProfilerAction action.",
       "additionalProperties": false,
       "required": [
         "Path",
@@ -2184,6 +2202,7 @@
     },
     "SetEnvironmentVariableOptions": {
       "type": "object",
+      "description": "Options for the SetEnvironmentVariable action.",
       "additionalProperties": false,
       "required": [
         "Name"
@@ -2205,6 +2224,7 @@
     },
     "GetEnvironmentVariableOptions": {
       "type": "object",
+      "description": "Options for the GetEnvironmentVariable action.",
       "additionalProperties": false,
       "required": [
         "Name"
@@ -2233,6 +2253,7 @@
     },
     "AspNetRequestCountOptions": {
       "type": "object",
+      "description": "Options for the AspNetRequestCount trigger.",
       "additionalProperties": false,
       "properties": {
         "RequestCount": {
@@ -2274,6 +2295,7 @@
     },
     "AspNetRequestDurationOptions": {
       "type": "object",
+      "description": "Options for the AspNetRequestDuration trigger.",
       "additionalProperties": false,
       "properties": {
         "RequestCount": {
@@ -2324,6 +2346,7 @@
     },
     "AspNetResponseStatusOptions": {
       "type": "object",
+      "description": "Options for the AspNetResponseStatus trigger.",
       "additionalProperties": false,
       "required": [
         "StatusCodes"
@@ -2377,6 +2400,7 @@
     },
     "EventCounterOptions": {
       "type": "object",
+      "description": "Options for the EventCounter trigger.",
       "additionalProperties": false,
       "required": [
         "ProviderName",
@@ -2421,6 +2445,7 @@
     },
     "CPUUsageOptions": {
       "type": "object",
+      "description": "Options for the CPUUsage trigger.",
       "additionalProperties": false,
       "properties": {
         "GreaterThan": {
@@ -2457,6 +2482,7 @@
     },
     "GCHeapSizeOptions": {
       "type": "object",
+      "description": "Options for the GCHeapSize trigger.",
       "additionalProperties": false,
       "properties": {
         "GreaterThan": {
@@ -2491,6 +2517,7 @@
     },
     "ThreadpoolQueueLengthOptions": {
       "type": "object",
+      "description": "Options for the ThreadpoolQueueLength trigger.",
       "additionalProperties": false,
       "properties": {
         "GreaterThan": {
@@ -2525,6 +2552,7 @@
     },
     "EventMeterOptions": {
       "type": "object",
+      "description": "Options for the EventMeter trigger.",
       "additionalProperties": false,
       "required": [
         "MeterName",
@@ -2722,6 +2750,7 @@
     },
     "AzureBlobEgressProviderOptions": {
       "type": "object",
+      "description": "Egress provider options for Azure blob storage.",
       "additionalProperties": false,
       "required": [
         "AccountUri",
@@ -2841,6 +2870,7 @@
     },
     "S3StorageEgressProviderOptions": {
       "type": "object",
+      "description": "Egress provider options for S3 storage.",
       "additionalProperties": false,
       "required": [
         "BucketName"

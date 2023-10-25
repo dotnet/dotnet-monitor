@@ -9,7 +9,7 @@ using System.Diagnostics;
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 {
     /// <summary>
-    /// Options for the <see cref="CollectionRules.Actions.LoadProfilerActionFactory.LoadProfilerAction"/> action.
+    /// Options for the LoadProfilerAction action.
     /// </summary>
     [DebuggerDisplay("LoadProfiler")]
 #if SCHEMAGEN

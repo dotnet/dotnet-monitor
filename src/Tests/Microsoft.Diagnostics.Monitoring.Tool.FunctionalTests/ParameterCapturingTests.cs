@@ -15,7 +15,9 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
+#if NET7_0_OR_GREATER
 using System.Threading;
+#endif
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
