@@ -46,23 +46,28 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 Logger.CounterEndedPayload(counter.Name);
                 return;
             }
-
-            if (counter is PercentilePayload percentilePayload)
+            else if (!counter.EventType.IsValuePublishedEvent())
             {
-                if (!percentilePayload.Quantiles.Any())
+                // Do we want to do anything with this payload?
+                return;
+            }
+
+            if (counter is AggregatePercentilePayload aggregatePercentilePayload)
+            {
+                if (!aggregatePercentilePayload.Quantiles.Any())
                 {
                     return;
                 }
                 await _stream.WriteAsync(JsonSequenceRecordSeparator);
                 _bufferWriter.Clear();
 
-                for (int i = 0; i < percentilePayload.Quantiles.Length; i++)
+                for (int i = 0; i < aggregatePercentilePayload.Quantiles.Length; i++)
                 {
                     if (i > 0)
                     {
                         _bufferWriter.Write(JsonSequenceRecordSeparator.Span);
                     }
-                    Quantile quantile = percentilePayload.Quantiles[i];
+                    Quantile quantile = aggregatePercentilePayload.Quantiles[i];
 
                     SerializeCounterValues(counter.Timestamp,
                         counter.Provider,
@@ -73,7 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         CounterUtilities.AppendPercentile(counter.Metadata, quantile.Percentage),
                         quantile.Value);
 
-                    if (i < percentilePayload.Quantiles.Length - 1)
+                    if (i < aggregatePercentilePayload.Quantiles.Length - 1)
                     {
                         _bufferWriter.Write(NewLineSeparator.Span);
                     }
