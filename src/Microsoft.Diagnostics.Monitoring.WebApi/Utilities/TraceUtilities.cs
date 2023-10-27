@@ -38,7 +38,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     LogLevel.Trace,
                     LogMessageType.FormattedMessage | LogMessageType.JsonMessage,
                     filterSpecs: null,
-                    useAppFilters: true));
+                    useAppFilters: true,
+                    collectScopes: true));
             }
             if (profile.HasFlag(Models.TraceProfile.Metrics))
             {

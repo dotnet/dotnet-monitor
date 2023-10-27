@@ -11,11 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             JsonSerializerOptions serializerOptions = new()
             {
-#if NET5_0_OR_GREATER
                 DefaultIgnoreCondition = (System.Text.Json.Serialization.JsonIgnoreCondition)ignoreCondition,
-#else
-                IgnoreNullValues = ignoreCondition == JsonIgnoreCondition.WhenWritingNull,
-#endif
             };
             return serializerOptions;
         }
