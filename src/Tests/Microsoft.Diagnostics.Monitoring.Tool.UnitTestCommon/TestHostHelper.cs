@@ -83,10 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
                     builder.AddInMemoryCollection(configurationValues);
 
-                    if (null != overrideSource)
-                    {
-                        overrideSource.ForEach(source => builder.Sources.Add(source));
-                    }
+                    overrideSource?.ForEach(source => builder.Sources.Add(source));
                 })
                 .ConfigureLogging(loggingBuilder =>
                 {

@@ -593,33 +593,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Call Stacks.
-        /// </summary>
-        internal static string FeatureName_CallStacks {
-            get {
-                return ResourceManager.GetString("FeatureName_CallStacks", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Exceptions.
-        /// </summary>
-        internal static string FeatureName_Exceptions {
-            get {
-                return ResourceManager.GetString("FeatureName_Exceptions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parameter Capturing.
-        /// </summary>
-        internal static string FeatureName_ParameterCapturing {
-            get {
-                return ResourceManager.GetString("FeatureName_ParameterCapturing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Monitor logs and metrics in a .NET application send the results to a chosen destination..
         /// </summary>
         internal static string HelpDescription_CommandCollect {

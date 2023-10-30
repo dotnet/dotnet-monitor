@@ -72,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 WriteLine($"Message: {exception.Message}");
                 WriteLine("Start Stack");
                 StringReader reader = new(exception.StackTrace);
-                string line = null;
+                string line;
                 while (null != (line = reader.ReadLine()))
                 {
                     WriteLine(line);

@@ -19,9 +19,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration
         IEnumerable<string> ProviderTypes { get; }
 
         /// <summary>
-        /// Gets the set of keys defined as a <see cref="IDictionary{string, string}"/> with values populated.
+        /// Gets the set of keys defined as a <see cref="IDictionary{TKey, TValue}"/> with values populated.
         /// </summary>
-        /// <returns><see cref="IDictionary{string, string}"/> representing the set of properties.</returns>
+        /// <returns><see cref="IDictionary{TKey, TValue}"/> representing the set of properties.</returns>
         IDictionary<string, string> GetAllProperties();
 
         /// <summary>

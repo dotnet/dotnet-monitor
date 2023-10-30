@@ -17,6 +17,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
     internal static class ControllerExtensions
     {
+        public static ActionResult FeatureNotEnabled(this ControllerBase controller, string featureName)
+        {
+            return new BadRequestObjectResult(new ProblemDetails()
+            {
+                Detail = string.Format(Strings.Message_FeatureNotEnabled, featureName),
+                Status = StatusCodes.Status400BadRequest
+            });
+        }
+
         public static ActionResult NotAcceptable(this ControllerBase controller)
         {
             return new StatusCodeResult((int)HttpStatusCode.NotAcceptable);

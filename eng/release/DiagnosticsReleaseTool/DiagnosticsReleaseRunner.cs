@@ -1,13 +1,14 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using DiagnosticsReleaseTool.Util;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using ReleaseTool.Core;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-
-using DiagnosticsReleaseTool.Util;
-using ReleaseTool.Core;
-
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace DiagnosticsReleaseTool.Impl
 {
@@ -48,7 +49,7 @@ namespace DiagnosticsReleaseTool.Impl
 
             IPublisher releasePublisher = dryRun ?
                 new SkipPublisher() :
-                new AzureBlobBublisher(releaseConfig.AccountName, releaseConfig.AccountKey, releaseConfig.ContainerName, releaseConfig.ReleaseName, releaseConfig.SasValidDays, logger);
+                new AzureBlobBublisher(releaseConfig.AccountName, releaseConfig.AccountKey, releaseConfig.ContainerName, releaseConfig.BuildVersion, releaseConfig.SasValidDays, logger);
             IManifestGenerator manifestGenerator = new DiagnosticsManifestGenerator(releaseMetadata, releaseConfig.ToolManifest, logger);
 
             using var diagnosticsRelease = new Release(

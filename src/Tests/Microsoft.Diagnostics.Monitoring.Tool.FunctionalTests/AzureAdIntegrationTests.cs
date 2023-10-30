@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                () => apiClient.GetProcessesAsync());
+                apiClient.GetProcessesAsync);
             Assert.Equal(HttpStatusCode.Forbidden, statusCodeException.StatusCode);
         }
 

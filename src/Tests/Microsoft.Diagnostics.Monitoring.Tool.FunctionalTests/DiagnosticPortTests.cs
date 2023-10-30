@@ -97,7 +97,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             toolRunner.ConfigurationFromEnvironment.SetDefaultSharedPath(defaultSharedTempDir.FullName);
 
             // dotnet-monitor will fail to start due to misconfigured diagnostic port
-            await Assert.ThrowsAsync<InvalidOperationException>(() => toolRunner.StartAsync());
+            await Assert.ThrowsAsync<InvalidOperationException>(toolRunner.StartAsync);
 
             AssertDefaultDiagnosticPortNotExists(defaultSharedTempDir);
         }

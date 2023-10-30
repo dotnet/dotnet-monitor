@@ -6,7 +6,9 @@ using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Functio
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using SampleMethods;
 using System;
+#if NET7_0_OR_GREATER
 using System.Collections.Generic;
+#endif
 using System.CommandLine;
 using System.Linq;
 using System.Reflection;

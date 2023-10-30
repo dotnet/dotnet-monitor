@@ -2203,8 +2203,7 @@
                 "type": "string"
               }
             },
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           }
         },
         "additionalProperties": { }
