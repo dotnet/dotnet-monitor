@@ -26,6 +26,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         public static bool IsNetCore31 => DotNetHost.BuiltTargetFrameworkMoniker == TargetFrameworkMoniker.NetCoreApp31;
 
+        public static bool IsNotNetCore31 => !IsNetCore31;
+
         public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
     }
 }
