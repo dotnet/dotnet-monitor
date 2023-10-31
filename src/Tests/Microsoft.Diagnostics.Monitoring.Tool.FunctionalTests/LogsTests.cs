@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Tests that all log events are collected if log level set to Trace.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsNotNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 
@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Tests that log events with level at or above the specified level are collected.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsNotNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -117,7 +117,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Test that log events with a category that doesn't have a specified level are collected
         /// at the log level specified in the request body.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsNotNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -230,7 +230,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsNotNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -264,7 +264,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for the categories and levels specified by the application.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsNotNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -303,7 +303,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Test that log events are collected for the categories and levels specified by the application
         /// and for the categories and levels specified in the filter specs.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsNotNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
@@ -347,7 +347,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Test that log events are collected for wildcard categories.
         /// </summary>
-        [Theory]
+        [ConditionalTheory(typeof(TestConditions), nameof(TestConditions.IsNotNetCore31))]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.JsonSequence)]
         [InlineData(DiagnosticPortConnectionMode.Connect, LogFormat.NewlineDelimitedJson)]
 #if NET5_0_OR_GREATER
