@@ -64,7 +64,7 @@ spec:
 
 4. Volume mount permissions
 
-When using shared volume mounts, it may be necessary set the [`fsGroup`](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) for your deployment. This will grant secondary group permissions for shared volumes for both the main container and the dotnet-monitor side car.
+When using shared volume mounts, it may be necessary to set the [`fsGroup`](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) for your deployment. This will grant secondary group permissions for shared volumes for both the main container and the dotnet-monitor side car.
 
 ``` yaml
 spec:
