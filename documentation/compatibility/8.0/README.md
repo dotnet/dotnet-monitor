@@ -41,7 +41,7 @@ securityContext:
     runAsGroup: 0
 ```
 
-2. Non-root application with a different user id than the default (the default uid/gid for dotnet non-root apps is 1654)
+2. Non-root application with a different user id than the default (the default uid/gid for .NET 8 distroless and all .NET Ubuntu Chiseled apps is 1654)
 
 ``` yaml
 image: mcr.microsoft.com/dotnet/monitor:8
