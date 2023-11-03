@@ -1,5 +1,5 @@
 
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fcompatibility%2F7.0%2FREADME)
+### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fcompatibility%2F8.0%2FREADME)
 
 # Breaking Changes in 8.0
 
@@ -17,17 +17,19 @@ If you are migrating your usage to `dotnet monitor` 8.0, the following changes m
 
 ### Deployment: Only 1 TFM for dotnet-monitor
 
-The `dotnet monitor` now targets a single framework. See [PR 5501](https://github.com/dotnet/dotnet-monitor/pull/5501). This has no impact on the dotnet-monitor docker image, but installation through `dotnet tool install` will require the dotnet 8 sdk installed.
+The `dotnet monitor` tool now targets a single framework. See [PR 5501](https://github.com/dotnet/dotnet-monitor/pull/5501). This has no impact on what applications can be monitored nor any impact on the dotnet-monitor docker image but installation through `dotnet tool install` will require the dotnet 8 sdk installed.
 
 ### Docker: Non-root by default
 
-In `dotnet monitor` 8, dotnet-monitor runs as a non-root distroless container by default. If the application is based on a distroless dotnet 8 aspnet image, no changes are needed. However, if the app is running as root, it may require one of the following mitigations:
+In `dotnet monitor` 8, dotnet-monitor runs as a non-root distroless container by default. If the application is based on a distroless dotnet 8 ASP.NET image, no changes are needed. However, if the app is running as root, it may require one of the following mitigations:
 
-**Note** Set both runAsUser and runAsGroup.
+> [!IMPORTANT]
+> Set both `runAsUser` and `runAsGroup` for each mitigation.
 
 1. Root application, non-root dotnet-monitor
 
-_Note_: In reverse server mode, this appears to work for basic scenarios because it's possible to connect from the app to dotnet-monitor. However, scenarios such as callstacks and dump copying will not work.
+> [!NOTE]
+> In reverse server mode, this appears to work for basic scenarios because it's possible to connect from the app to dotnet-monitor. However, scenarios such as callstacks and dump copying will not work.
 
 Elevate dotnet-monitor to match the application.
 
@@ -39,7 +41,7 @@ securityContext:
     runAsGroup: 0
 ```
 
-2. Non-root application with a different userid than the default (the default uid/gid for dotnet non-root apps is 1654)
+2. Non-root application with a different user id than the default (the default uid/gid for dotnet non-root apps is 1654)
 
 ``` yaml
 image: mcr.microsoft.com/dotnet/monitor:8
@@ -62,7 +64,7 @@ spec:
 
 4. Volume mount permissions
 
-When using shared volume mounts, it may be necessary set the [fsgroup](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) for your deployment. This will grant secondary group permissions for shared volumes for both the main container and the dotnet-monitor side car.
+When using shared volume mounts, it may be necessary set the [`fsGroup`](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) for your deployment. This will grant secondary group permissions for shared volumes for both the main container and the dotnet-monitor side car.
 
 ``` yaml
 spec:
