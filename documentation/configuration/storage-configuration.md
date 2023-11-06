@@ -28,7 +28,7 @@ The default shared path option (`DefaultSharedPath`) can be set, which allows ar
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   Storage__DefaultSharedPath: "/diag"
   ```
@@ -36,7 +36,7 @@ The default shared path option (`DefaultSharedPath`) can be set, which allows ar
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_Storage__DefaultSharedPath
     value: "/diag"
@@ -47,7 +47,8 @@ The default shared path option (`DefaultSharedPath`) can be set, which allows ar
 
 Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't streamed back from the target process to `dotnet monitor`. Instead, they are written directly to disk by the runtime. After successful collection of a process dump, `dotnet monitor` will read the process dump directly from disk. In the default configuration, the directory that the runtime writes its process dump to is the temp directory (`%TMP%` on Windows, `/tmp` on \*nix). It is possible to change to the ephemeral directory that these dump files get written to via the following configuration:
 
->**Note**: This option is optional if `dotnet monitor` is running in the same process namespace as the target processes or if `DefaultSharedPath` is specified.
+> [!NOTE]
+> This option is optional if `dotnet monitor` is running in the same process namespace as the target processes or if `DefaultSharedPath` is specified.
 
 <details>
   <summary>JSON</summary>
@@ -63,7 +64,7 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   Storage__DumpTempFolder: "/diag/dumps/"
   ```
@@ -71,7 +72,7 @@ Unlike the other diagnostic artifacts (for example, traces), memory dumps aren't
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_Storage__DumpTempFolder
     value: "/diag/dumps/"
@@ -84,7 +85,8 @@ First Available: 8.0 Preview 7
 
 The shared library path option (`SharedLibraryPath`) allows specifying the path to where shared libraries are copied from the `dotnet monitor` installation to make them available to target applications for in-process diagnostics scenarios, such as call stack collection.
 
->**Note**: This option is not required if `DefaultSharedPath` is specified. This option provides an alternative directory path compared to the behavior of specifying `DefaultSharedPath`.
+> [!NOTE]
+> This option is not required if `DefaultSharedPath` is specified. This option provides an alternative directory path compared to the behavior of specifying `DefaultSharedPath`.
 
 <details>
   <summary>JSON</summary>
@@ -100,7 +102,7 @@ The shared library path option (`SharedLibraryPath`) allows specifying the path 
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   Storage__SharedLibraryPath: "/diag/libs/"
   ```
@@ -108,7 +110,7 @@ The shared library path option (`SharedLibraryPath`) allows specifying the path 
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_Storage__SharedLibraryPath
     value: "/diag/libs/"
