@@ -4,7 +4,7 @@ schedules:
   branches:
     include:
     - shipped/*
-    exlucde:
+    exclude:
     - shipped/7.2
     - shipped/7.1
   always: true
