@@ -9,12 +9,12 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectToPublish Include="$(AzureBlobStorageProjectPath)">
-      <AdditionalProperties>TargetFramework=$(AzureBlobStoragePublishTargetFramework);RuntimeIdentifier=$(PackageRid);PublishDir=$(AzureBlobStoragePlatformSpecificPublishPath);SelfContained=false</AdditionalProperties>
+      <AdditionalProperties>TargetFramework=$(AzureBlobStoragePublishTargetFramework);RuntimeIdentifier=$(PackageRid);PublishDir=$(AzureBlobStoragePlatformSpecificPublishPath);SelfContained=false;UseAppHost=false</AdditionalProperties>
     </ProjectToPublish>
   </ItemGroup>
   <ItemGroup Condition="'$(SkipPlatformNeutralPublish)' != 'true'">
     <ProjectToPublish Include="$(AzureBlobStorageProjectPath)">
-      <AdditionalProperties>TargetFramework=$(LatestToolTargetFramework);RuntimeIdentifier=;PublishDir=$(AzureBlobStoragePublishRootPath)$(LatestToolTargetFramework)\any\;SelfContained=false</AdditionalProperties>
+      <AdditionalProperties>TargetFramework=$(LatestToolTargetFramework);RuntimeIdentifier=;PublishDir=$(AzureBlobStoragePublishRootPath)$(LatestToolTargetFramework)\any\;SelfContained=false;UseAppHost=false</AdditionalProperties>
     </ProjectToPublish>
   </ItemGroup>
 </Project>
