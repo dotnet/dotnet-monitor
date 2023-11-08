@@ -274,7 +274,7 @@ Specifying a `Meter` is done differently than for `EventCounter` providers. The 
   
   ```yaml
   - name: DotnetMonitor_Metrics__Providers__0__ProviderName
-    value: "MyCustomEventCounterProvider"
+    value: "MyProvider"
   - name: DotnetMonitor_Metrics__Providers__0__CounterNames__0
     value: "MyCounter1"
   - name: DotnetMonitor_Metrics__Providers__0__CounterNames__1
