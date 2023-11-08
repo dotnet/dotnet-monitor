@@ -223,9 +223,7 @@ When `CounterNames` are not specified, all the counters associated with the `Pro
 
 [8.0+] Custom metrics support labels for metadata. Metadata cannot include commas (`,`); the inclusion of a comma in metadata will result in all metadata being removed from the custom metric.
 
-[8.0+] `System.Diagnostics.Metrics` is now supported in a limited capacity for custom metrics. At this time, there are several known limitations:
- * `System.Diagnostics.Metrics` cannot have multiple sessions collecting metrics concurrently (i.e. `/metrics` and `/livemetrics` cannot both be looking for `System.Diagnostics.Metrics` at the same time). 
- * There is currently no trigger for `System.Diagnostics.Metrics` for collection rule scenarios.
+[8.0+] `System.Diagnostics.Metrics` is now supported for custom metrics. At this time, there are the following known limitations:
  * `dotnet monitor` may fail to collect `System.Diagnostics.Metrics` if it begins collecting the metric before the target app creates the Meter ([note that this is fixed for .NET 8+ apps](https://github.com/dotnet/runtime/pull/76965)).
  
 ### Set [`MetricType`](../api/definitions.md#metrictype-80)
