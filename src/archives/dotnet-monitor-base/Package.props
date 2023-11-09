@@ -67,6 +67,9 @@
     <SymbolFileToArchive Include="@(MonitorProfilerSymbolsFile->WithMetadataValue('TargetRid', '$(RuntimeIdentifier)'))">
       <PackagePath>shared\$(RuntimeIdentifier)\native\</PackagePath>
     </SymbolFileToArchive>
+    <SymbolFileToArchive Include="@(MutatingMonitorProfilerSymbolsFile->WithMetadataValue('TargetRid', '$(RuntimeIdentifier)'))">
+      <PackagePath>shared\$(RuntimeIdentifier)\native\</PackagePath>
+    </SymbolFileToArchive>
     <!-- Startup hook symbols -->
     <SymbolFileToArchive Include="$(StartupHookSymbolsPath)">
       <PackagePath>shared\any\$(StartupHookTargetFramework)\</PackagePath>
