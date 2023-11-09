@@ -70,7 +70,9 @@
     <SymbolFileToArchive Include="@(MutatingMonitorProfilerSymbolsFile->WithMetadataValue('TargetRid', '$(RuntimeIdentifier)'))">
       <PackagePath>shared\$(RuntimeIdentifier)\native\</PackagePath>
     </SymbolFileToArchive>
-    <SymbolFileToArchive Include="@(CommonMonitorProfilerSymbolsFile->WithMetadataValue('TargetRid', '$(RuntimeIdentifier)'))">
+    <!-- Symbols are not created for static libraries on non-Windows platforms -->
+    <SymbolFileToArchive Include="@(CommonMonitorProfilerSymbolsFile->WithMetadataValue('TargetRid', '$(RuntimeIdentifier)'))"
+                         Condition="$(RuntimeIdentifier.Contains(win))">
       <PackagePath>shared\$(RuntimeIdentifier)\native\</PackagePath>
     </SymbolFileToArchive>
     <!-- Startup hook symbols -->
