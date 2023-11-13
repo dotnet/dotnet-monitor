@@ -5,11 +5,12 @@
 
 `dotnet monitor` has extensive configuration to control various aspects of its behavior. Ordinarily, you are not required to specify most of this configuration and only exists if you wish to change the default behavior in `dotnet monitor`.
 
->**Note**: Some features are [experimental](../experimental.md) and are denoted as `**[Experimental]**` in these documents.
+> [!NOTE]
+> Some features are [experimental](../experimental.md) and are denoted as `**[Experimental]**` in these documents.
 
 ## Configuration Reference
 
-- **[Configuration Sources](./configuration-sources.md)** - How to use JSON configuration files, Environment variables or Kubernetes for configuration 
+- **[Configuration Sources](./configuration-sources.md)** - How to use JSON configuration files, Environment variables or Kubernetes for configuration
 - **[Configuration Schema](#configuration-schema)** - How to get schema completion in supported editors
 - **[View Merged Configuration](./view-merged-configuration.md)** - How to use a diagnostic command to show the merged configuration that will be applied
 - **[Diagnostic Port Configuration](diagnostic-port-configuration.md)** - `dotnet monitor` communicates via .NET processes through their diagnostic port which can be changed if necessary
