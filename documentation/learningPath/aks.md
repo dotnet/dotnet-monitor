@@ -11,10 +11,11 @@ This workflow takes your local development copy of `dotnet-monitor`, patches it 
 
 1. Open `pwsh` and run the [generate-dev-sln script](https://github.com/dotnet/dotnet-monitor/blob/main/generate-dev-sln.ps1), providing a path to your local copy of the diagnostics repo.
 
->**Note**: If your changes do not involve the [.NET Core Diagnostics Repo](https://github.com/dotnet/diagnostics#net-core-diagnostics-repo), you don't need to complete this step.
+> [!NOTE]
+> If your changes do not involve the [.NET Core Diagnostics Repo](https://github.com/dotnet/diagnostics#net-core-diagnostics-repo), you don't need to complete this step.
 
 ```ps1
-cd C:\your-path\dotnet-monitor 
+cd C:\your-path\dotnet-monitor
 .\generate-dev-sln.ps1 C:\your-path\diagnostics
 ```
 
