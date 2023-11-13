@@ -1,7 +1,8 @@
 
 ### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2FlearningPath%2FREADME)
 
->**Note**:  All documents in this directory are a work in progress.
+> [!NOTE]
+> All documents in this directory are a work in progress.
 
 # Overview
 

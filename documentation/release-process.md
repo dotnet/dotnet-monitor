@@ -29,7 +29,8 @@
 ## Updating dependencies
 
 If necessary, update dependencies in the release branch.
->**Note**: This is typically not needed for the diagnostics packages. They are kept up-to-date by dependabot if `UseMicrosoftDiagnosticsMonitoringShippedVersion` in [../eng/Versions.props](../eng/Versions.props) is set to `true`. It might be set to `false` if feature development requiring unreleased diagnostics libraries was merged into the branch. Official releases should use the released diagnostics libraries per agreed upon policy.
+> [!NOTE]
+> This is typically not needed for the diagnostics packages. They are kept up-to-date by dependabot if `UseMicrosoftDiagnosticsMonitoringShippedVersion` in [../eng/Versions.props](../eng/Versions.props) is set to `true`. It might be set to `false` if feature development requiring unreleased diagnostics libraries was merged into the branch. Official releases should use the released diagnostics libraries per agreed upon policy.
 
 1. For new branches only, you need to setup a subscription using darc: `darc add-subscription --channel ".NET Core Tooling Release" --source-repo https://github.com/dotnet/diagnostics --target-repo https://github.com/dotnet/dotnet-monitor --target-branch release/8.x --update-frequency None --standard-automerge`
 1. Use `darc get-subscriptions --target-repo monitor` to see existing subscriptions.
@@ -56,7 +57,8 @@ The official build will not automatically trigger for release branches. Each tim
 1. Wait for changes to be mirrored from [GitHub repository](https://github.com/dotnet/dotnet-monitor) to the [internal repository](https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet-monitor).
 1. Invoke the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) for the release branch. Make sure the `Update dotnet-docker?` parameter is set to true. Setting this will cause a successful build to trigger an update in the `dotnet-docker` repository.
 
-> **Note**: If the release is part of security servicing, build the `internal/release/*` branch instead of the `release/*` branch and set `Update dotnet-docker?` parameter to false. Ensure that all public changes have been mirrored into the release branch before starting the build.
+> [!NOTE]
+> If the release is part of security servicing, build the `internal/release/*` branch instead of the `release/*` branch and set `Update dotnet-docker?` parameter to false. Ensure that all public changes have been mirrored into the release branch before starting the build.
 
 ## Update Nightly Docker Ingestion
 
@@ -70,7 +72,8 @@ If you are releasing a new minor version, you may need to update the current/pre
 
 ### Manually updating docker versions
 
-> **Note**: This only applies for public releases e.g. ones from a `release/*` branch.
+> [!NOTE]
+> This only applies for public releases e.g. ones from a `release/*` branch.
 
 1. Run `\eng\Set-DotnetVersions.ps1`. Example:
 ``` powershell
@@ -97,7 +100,9 @@ The nightly image is `mcr.microsoft.com/dotnet/nightly/monitor`. The tag list is
 1. Run the [Generate release notes](https://github.com/dotnet/dotnet-monitor/actions/workflows/generate-release-notes.yml) workflow, setting `Use workflow from` to the release branch. Review and merge in the PR created by this workflow.
 1. Start [release pipeline](https://dev.azure.com/dnceng/internal/_release?_a=releases&view=mine&definitionId=105). Allow the stages to trigger automatically (do not check the boxes in the associated dropdown). During creation of the release you must select the dotnet-monitor build to release from the list of available builds. This must be a build with the tag `MonitorRelease` and the associated `MonitorRelease` artifact (set `dotnet-monitor_build` to the pipeline run of `dotnet monitor` that is being released; set `dotnet-monitor_source` to the latest commit from `main`).
 1. The release will start the stage "Pre-Release Verification"; this will check that the above steps were done as expected. The name of the release will be updated automatically.
-1. Approve the sign-off step the day before the release after 8:15 AM PT, when ready to publish. **Note**: After sign-off of the "Pre-Release Verification" environment the NuGet and GitHub release steps will automatically wait until 8:15 AM PT the next day.
+1. Approve the sign-off step the day before the release after 8:15 AM PT, when ready to publish.
+> [!NOTE]
+> After sign-off of the "Pre-Release Verification" environment the NuGet and GitHub release steps will automatically wait until 8:15 AM PT the next day.
 
 The remainder of the release will automatically push NuGet packages to nuget.org, [tag](https://github.com/dotnet/dotnet-monitor/tags) the commit from the build with the release version, and add a new [GitHub release](https://github.com/dotnet/dotnet-monitor/releases).
 
