@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       baselineTag:
-        description: 'Baseline Release Tag'
+        description: 'Baseline Release Tag Override'
         required: false
         type: string
 
