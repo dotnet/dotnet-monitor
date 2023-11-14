@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: 'Verify user is a collaborator'
-        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410
+        uses: actions/github-script@e69ef5462fd455e02edcaf4dd7708eda96b9eda0
         with:
           script: |
             await github.rest.repos.checkCollaborator({
