@@ -30,11 +30,12 @@ jobs:
         run: |
           git fetch --tags
 
-          # Grab the latest tag from the current branch. If it doesn't exist, grab the latest tag across all branches.
-          last_release_tag=$BASELINE_TAG
-          if [[ -z "$last_release_tag" ]]; then
-            last_release_tag=$(git describe --tags --abbrev=0 || git describe --tags $(git rev-list --tags --max-count=1))
+          # Grab the latest tag from the current branch unless overridden. If it doesn't exist, grab the latest tag across all branches.
+          if [[ -z "$BASELINE_TAG" ]]; then
+            BASELINE_TAG=$(git describe --tags --abbrev=0)
           fi
+          last_release_tag=$( || git describe --tags $(git rev-list --tags --max-count=1))
+
           echo "Using tag: $last_release_tag"
           last_release_date=$(git log -1 --format=%aI "$last_release_tag")
           echo "last_release_date=$last_release_date" >> $GITHUB_ENV
