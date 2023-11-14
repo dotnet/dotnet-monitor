@@ -28,9 +28,9 @@
       "outOfSupportDate": "2023-01-11T00:00:00.000Z"
     },
     "6.3": {
-      "tag": "v6.3.3",
+      "tag": "v6.3.4",
       "minorReleaseDate": "2022-10-11T00:00:00.000Z",
-      "patchReleaseDate": "2023-10-10T00:00:00.000Z",
+      "patchReleaseDate": "2023-11-14T00:00:00.000Z",
       "supportedFrameworks": [
         "net6.0",
         "netcoreapp3.1"
