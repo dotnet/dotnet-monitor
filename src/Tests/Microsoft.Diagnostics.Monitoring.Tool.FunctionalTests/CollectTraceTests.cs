@@ -30,6 +30,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
     [Collection(DefaultCollectionFixture.Name)]
     public class CollectTraceTests
     {
+        TimeSpan DefaultNotStoppedCollectTraceTimeout = TimeSpan.FromSeconds(15);
+
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITestOutputHelper _outputHelper;
 
@@ -64,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Fact]
         public Task StopOnEvent_DoesNotStop_WhenOpcodeDoesNotMatch()
         {
-            return StopOnEventTestCore(expectStoppingEvent: false, opcode: TraceEventOpcode.Resume);
+            return StopOnEventTestCore(expectStoppingEvent: false, opcode: TraceEventOpcode.Resume, duration: DefaultNotStoppedCollectTraceTimeout);
         }
 
         [Fact]
@@ -74,7 +76,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 { TestAppScenarios.TraceEvents.UniqueEventPayloadField, TestAppScenarios.TraceEvents.UniqueEventMessage },
                 { "foobar", "baz" }
-            });
+            },
+            duration: DefaultNotStoppedCollectTraceTimeout);
         }
 
         [Fact]
@@ -83,7 +86,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             return StopOnEventTestCore(expectStoppingEvent: false, payloadFilter: new Dictionary<string, string>()
             {
                 { TestAppScenarios.TraceEvents.UniqueEventPayloadField, TestAppScenarios.TraceEvents.UniqueEventMessage.ToUpperInvariant() }
-            });
+            },
+            duration: DefaultNotStoppedCollectTraceTimeout);
         }
 
         [Fact]
@@ -135,7 +139,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             return StopOnEventTestCore(expectStoppingEvent: false,
                 collectRundown: true,
                 opcode: TraceEventOpcode.Resume,
-                duration: TimeSpan.FromSeconds(200),
                 stopWithApi: true);
         }
 
@@ -153,7 +156,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             TimeSpan? duration = null,
             bool stopWithApi = false)
         {
-            TimeSpan DefaultCollectTraceTimeout = TimeSpan.FromSeconds(10);
             const string DefaultRuleName = "FunctionalTestRule";
             const string EgressProvider = "TmpEgressProvider";
 
@@ -201,7 +203,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                             },
                             EgressProvider, options =>
                             {
-                                options.Duration = duration ?? DefaultCollectTraceTimeout;
+                                options.Duration = duration ?? CommonTestTimeouts.GeneralTimeout;
                                 options.StoppingEvent = traceEventFilter;
                                 options.RequestRundown = collectRundown;
                             });
