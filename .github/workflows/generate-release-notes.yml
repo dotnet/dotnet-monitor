@@ -3,6 +3,11 @@ run-name: '[${{ github.ref_name }}] Generate release notes'
 
 on:
   workflow_dispatch:
+    inputs:
+      baselineTag:
+        description: 'Baseline Release Tag'
+        required: false
+        type: string
 
 permissions: {}
 
@@ -26,7 +31,10 @@ jobs:
           git fetch --tags
 
           # Grab the latest tag from the current branch. If it doesn't exist, grab the latest tag across all branches.
-          last_release_tag=$(git describe --tags --abbrev=0 || git describe --tags $(git rev-list --tags --max-count=1))
+          last_release_tag=$BASELINE_TAG
+          if [[ -z "$last_release_tag" ]]; then
+            last_release_tag=$(git describe --tags --abbrev=0 || git describe --tags $(git rev-list --tags --max-count=1))
+          fi
           echo "Using tag: $last_release_tag"
           last_release_date=$(git log -1 --format=%aI "$last_release_tag")
           echo "last_release_date=$last_release_date" >> $GITHUB_ENV
@@ -52,6 +60,8 @@ jobs:
           echo "release_note_path=$release_note_path" >> $GITHUB_ENV
           echo "friendly_release_name=$friendly_release_name" >> $GITHUB_ENV
           echo "qualified_release_version=$qualified_release_version" >> $GITHUB_ENV
+        env:
+          BASELINE_TAG: ${{ inputs.baselineTag }}
 
       - name: Checkout main
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
