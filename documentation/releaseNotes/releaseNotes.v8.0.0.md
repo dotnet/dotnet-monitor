@@ -27,7 +27,7 @@ Changes since 7.3.2 release:
 - Enable UpDownCounter For Dotnet-Monitor ([#4310](https://github.com/dotnet/dotnet-monitor/pull/4310))
 - Refactor AzureBlobStorage and S3Storage egress into extensions ([#4133](https://github.com/dotnet/dotnet-monitor/pull/4133))
 - Added EventMeter Trigger for Collection Rules. ([#3812](https://github.com/dotnet/dotnet-monitor/pull/3812))
-- Add support of egress provider to deliver data to a S3 storage ([#2016](https://github.com/dotnet/dotnet-monitor/pull/2016)) -- Thanks to @Egyptmaster
+- Add support of egress provider to deliver data to a S3 storage ([#2016](https://github.com/dotnet/dotnet-monitor/pull/2016)) -- Thanks to `@Egyptmaster`
 
 \*⚠️ **_indicates a breaking change_** \
 \*🔬 **_indicates an experimental feature_**
