@@ -1,4 +1,11 @@
-Today we are releasing the 8.0.0 build of the `dotnet monitor` tool. This release includes:
+Today we are releasing the 8.0.0 build of the `dotnet monitor` tool.
+
+Changes since 8.0.0-rc.2 release:
+
+- Disabled features with HTTP routes will return HTTP 400 ([#5527](https://github.com/dotnet/dotnet-monitor/pull/5527))
+- Remove `net6.0` TFM build and packaging. There is no impact on the ability to monitor .NET 6 (or any other version) applications. ([#5501](https://github.com/dotnet/dotnet-monitor/pull/5501))
+
+Changes since 7.3.2 release:
 
 - Disabled features with HTTP routes will return HTTP 400 ([#5527](https://github.com/dotnet/dotnet-monitor/pull/5527))
 - Remove `net6.0` TFM build and packaging. There is no impact on the ability to monitor .NET 6 (or any other version) applications. ([#5501](https://github.com/dotnet/dotnet-monitor/pull/5501))
@@ -15,14 +22,13 @@ Today we are releasing the 8.0.0 build of the `dotnet monitor` tool. This releas
 - Add exception history egress and tagging support ([#5066](https://github.com/dotnet/dotnet-monitor/pull/5066))
 - Add `CollectExceptions` collection rule action ([#5064](https://github.com/dotnet/dotnet-monitor/pull/5064))
 - Add first chance exceptions history feature and `/exceptions` route. ([#4901](https://github.com/dotnet/dotnet-monitor/pull/4901))
-- Adds new `--exit-on-stdin-disconnect` command line switch to `collect` command ([#4792](https://github.com/dotnet/dotnet-monitor/pull/4792))
 - Make best effort to dynamically determine portable runtime identifier without explicit setting. ([#4777](https://github.com/dotnet/dotnet-monitor/pull/4777))
-- Enable call stacks and exceptions and supported features. ([#4764](https://github.com/dotnet/dotnet-monitor/pull/4764))
+- Enable call stacks and exceptions as supported features. ([#4764](https://github.com/dotnet/dotnet-monitor/pull/4764))
 - Enable UpDownCounter For Dotnet-Monitor ([#4310](https://github.com/dotnet/dotnet-monitor/pull/4310))
 - Refactor AzureBlobStorage and S3Storage egress into extensions ([#4133](https://github.com/dotnet/dotnet-monitor/pull/4133))
 - Added EventMeter Trigger for Collection Rules. ([#3812](https://github.com/dotnet/dotnet-monitor/pull/3812))
 - 🔬 Add support for [speedscope](https://speedscope.app) format when capturing stacks. ([#2795](https://github.com/dotnet/dotnet-monitor/pull/2795))
-- Add support of egress provider to deliver data to a S3 storage ([#2016](https://github.com/dotnet/dotnet-monitor/pull/2016))
+- Add support of egress provider to deliver data to a S3 storage ([#2016](https://github.com/dotnet/dotnet-monitor/pull/2016)) -- Thanks to @Egyptmaster
 
 \*⚠️ **_indicates a breaking change_** \
 \*🔬 **_indicates an experimental feature_**
