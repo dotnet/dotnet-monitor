@@ -2,7 +2,7 @@
   <!-- Import references updated by Dependabot. -->
   <PropertyGroup>
     <!-- Microsoft.Extensions.Configuration.Abstractions -->
-    <MicrosoftExtensionsConfigurationAbstractions80Version>7.0.0</MicrosoftExtensionsConfigurationAbstractions80Version>
+    <MicrosoftExtensionsConfigurationAbstractions80Version>8.0.0</MicrosoftExtensionsConfigurationAbstractions80Version>
     <!-- Microsoft.Extensions.Logging -->
     <MicrosoftExtensionsLogging80Version>8.0.0</MicrosoftExtensionsLogging80Version>
     <!-- Microsoft.Extensions.Logging.Abstractions -->
