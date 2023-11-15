@@ -1,26 +1,26 @@
 {
   "tools": {
-    "dotnet": "8.0.100-rtm.23506.1",
+    "dotnet": "8.0.100",
     "runtimes": {
       "aspnetcore": [
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(MicrosoftAspNetCoreApp70Version)",
-        "$(VSRedistCommonAspNetCoreSharedFrameworkx6480Version)"
+        "$(MicrosoftAspNetCoreApp80Version)"
       ],
       "aspnetcore/x86": [
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(MicrosoftAspNetCoreApp70Version)",
-        "$(VSRedistCommonAspNetCoreSharedFrameworkx6480Version)"
+        "$(MicrosoftAspNetCoreApp80Version)"
       ],
       "dotnet": [
         "$(MicrosoftNETCoreApp60Version)",
         "$(MicrosoftNETCoreApp70Version)",
-        "$(VSRedistCommonNetCoreSharedFrameworkx6480Version)"
+        "$(MicrosoftNETCoreApp80Version)"
       ],
       "dotnet/x86": [
         "$(MicrosoftNETCoreApp60Version)",
         "$(MicrosoftNETCoreApp70Version)",
-        "$(VSRedistCommonNetCoreSharedFrameworkx6480Version)"
+        "$(MicrosoftNETCoreApp80Version)"
       ]
     }
   },
