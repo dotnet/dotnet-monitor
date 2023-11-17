@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 
         private int OnProfilerMessage(IpcCommand command, IntPtr nativeBuffer, long bufferSize)
         {
-            InProcFeatureExecutionContextTracker.MarkInProcFeatureThread();
+            MonitorExecutionContextTracker.MarkMonitorThread();
 
             try
             {

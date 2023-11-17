@@ -126,7 +126,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private void ThreadProc()
         {
-            InProcFeatureExecutionContextTracker.MarkInProcFeatureThread();
+            MonitorExecutionContextTracker.MarkMonitorThread();
 
             try
             {

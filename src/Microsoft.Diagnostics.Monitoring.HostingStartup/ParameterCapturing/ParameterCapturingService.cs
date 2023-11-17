@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public ParameterCapturingService(IServiceProvider services)
         {
-            using IDisposable _ = InProcFeatureExecutionContextTracker.InProcFeatureScope();
+            using IDisposable _ = MonitorExecutionContextTracker.MonitorScope();
 
             try
             {
@@ -199,7 +199,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 return;
             }
 
-            InProcFeatureExecutionContextTracker.MarkInProcFeatureTask();
+            MonitorExecutionContextTracker.MarkMonitorTask();
 
             ChangeServiceState(ParameterCapturingEvents.ServiceState.Running);
             try

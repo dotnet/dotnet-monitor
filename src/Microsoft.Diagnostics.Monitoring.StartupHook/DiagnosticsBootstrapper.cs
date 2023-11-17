@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             _exceptionProcessor = new(ToolIdentifiers.IsEnvVarEnabled(InProcessFeaturesIdentifiers.EnvironmentVariables.Exceptions.IncludeInternalExceptions));
             _exceptionProcessor.Start();
 
-            using IDisposable _ = InProcFeatureExecutionContextTracker.InProcFeatureScope();
+            using IDisposable _ = MonitorExecutionContextTracker.MonitorScope();
 
             string? hostingStartupPath = Environment.GetEnvironmentVariable(StartupHookIdentifiers.EnvironmentVariables.HostingStartupPath);
             // TODO: Log if specified hosting startup assembly doesn't exist

@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
         {
             ArgumentNullException.ThrowIfNull(exception);
 
-            if (InProcFeatureExecutionContextTracker.IsInProcFeatureContext())
+            if (MonitorExecutionContextTracker.IsInMonitorContext())
             {
                 return;
             }
