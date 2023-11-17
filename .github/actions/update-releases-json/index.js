@@ -61,7 +61,7 @@ function addNewReleaseVersion(releasePayload, supportedFrameworks, releasesData)
 
     // Preserve the original minor release date and out-of-support date for RTM releases
     if (existingRelease !== undefined &&
-        actionUtils.isRTMRelease(existingRelease.tag) &&
+        actionUtils.isVersionTagRTM (existingRelease.tag) &&
         isRTMRelease) {
 
         newRelease.minorReleaseDate = existingRelease.minorReleaseDate;
