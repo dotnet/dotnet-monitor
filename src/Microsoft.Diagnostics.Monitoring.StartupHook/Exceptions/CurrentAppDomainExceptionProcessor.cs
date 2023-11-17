@@ -19,8 +19,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
         private readonly CurrentAppDomainUnhandledExceptionSource _unhandledSource;
         private readonly ExceptionPipeline _unhandledPipeline;
 
-        public CurrentAppDomainExceptionProcessor()
+        private readonly bool _includeInternalExceptions;
+
+        public CurrentAppDomainExceptionProcessor(bool includeInternalExceptions)
         {
+            _includeInternalExceptions = includeInternalExceptions;
+
             _firstChanceSource = new();
             _firstChancePipeline = new(_firstChanceSource, ConfigureFirstChancePipeline);
 
@@ -36,6 +40,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 
         private void ConfigureFirstChancePipeline(ExceptionPipelineBuilder builder)
         {
+            // Filtering out dotnet-monitor in-proc feature exceptions
+            if (!_includeInternalExceptions)
+            {
+                builder.Add(next => new FilterInProcFeatureExceptionPipelineStep(next).Invoke);
+            }
             // Process current exception and its inner exceptions
             builder.Add(next => new ExceptionDemultiplexerPipelineStep(next).Invoke);
             // Prevent rethrows from being evaluated; only care about origination of exceptions.

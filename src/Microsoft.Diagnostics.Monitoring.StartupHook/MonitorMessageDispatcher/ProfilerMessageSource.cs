@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 
+using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using System;
 using System.Runtime.InteropServices;
@@ -38,6 +39,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 
         private int OnProfilerMessage(IpcCommand command, IntPtr nativeBuffer, long bufferSize)
         {
+            InProcFeatureExecutionContextTracker.MarkInProcFeatureThread();
+
             try
             {
                 if (bufferSize == 0)

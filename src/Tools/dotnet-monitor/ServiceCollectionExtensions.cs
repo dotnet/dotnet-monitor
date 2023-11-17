@@ -51,6 +51,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return ConfigureOptions<CorsConfigurationOptions>(services, configuration, ConfigurationKeys.CorsConfiguration);
         }
 
+        public static IServiceCollection ConfigureDotnetMonitorDebug(this IServiceCollection services, IConfiguration configuration)
+        {
+            return ConfigureOptions<ExceptionsDebugOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_Exceptions);
+        }
+
         public static IServiceCollection ConfigureGlobalCounter(this IServiceCollection services, IConfiguration configuration)
         {
             return ConfigureOptions<GlobalCounterOptions>(services, configuration, ConfigurationKeys.GlobalCounter)
@@ -67,6 +72,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             return ConfigureOptions<TemplateOptions>(services, configuration, ConfigurationKeys.Templates);
         }
+
 
         public static IServiceCollection ConfigureInProcessFeatures(this IServiceCollection services, IConfiguration configuration)
         {

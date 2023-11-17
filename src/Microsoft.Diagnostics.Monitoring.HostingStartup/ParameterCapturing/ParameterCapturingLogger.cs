@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using Microsoft.Diagnostics.Monitoring.StartupHook;
+using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -125,6 +126,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private void ThreadProc()
         {
+            InProcFeatureExecutionContextTracker.MarkInProcFeatureThread();
+
             try
             {
                 while (_messages.TryTake(out QueuedLogStatement? entry, Timeout.InfiniteTimeSpan))

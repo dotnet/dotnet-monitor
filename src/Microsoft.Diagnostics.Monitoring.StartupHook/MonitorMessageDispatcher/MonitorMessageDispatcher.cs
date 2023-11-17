@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 
+using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps;
 using System;
 using System.Collections.Generic;
 using System.IO;

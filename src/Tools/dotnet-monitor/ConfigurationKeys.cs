@@ -21,6 +21,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public const string InProcessFeatures = nameof(RootOptions.InProcessFeatures);
 
+        public const string DotnetMonitorDebug = nameof(RootOptions.DotnetMonitorDebug);
+
         public static readonly string InProcessFeatures_CallStacks = ConfigurationPath.Combine(InProcessFeatures, "CallStacks");
 
         public static readonly string InProcessFeatures_Enabled = ConfigurationPath.Combine(InProcessFeatures, "Enabled");
@@ -28,6 +30,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static readonly string InProcessFeatures_Exceptions = ConfigurationPath.Combine(InProcessFeatures, "Exceptions");
 
         public static readonly string InProcessFeatures_ParameterCapturing = ConfigurationPath.Combine(InProcessFeatures, "ParameterCapturing");
+
+        public static readonly string DotnetMonitorDebug_Exceptions = ConfigurationPath.Combine(DotnetMonitorDebug, "Exceptions");
 
         public const string Egress = nameof(Egress);
 
