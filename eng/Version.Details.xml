@@ -4,13 +4,13 @@
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>b0c12dfb32e70e2c48b1e0a62e9ceb0f5c6a14e1</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="8.0.0-preview.23527.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="8.0.0-preview.23531.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>bb25d231174007a23933dc1996bb752f8fbdabcd</Sha>
+      <Sha>9e06d89d6d51f361717c7ff5400f0af8d6d9ef69</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="8.0.0-preview.23527.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="8.0.0-preview.23531.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>bb25d231174007a23933dc1996bb752f8fbdabcd</Sha>
+      <Sha>9e06d89d6d51f361717c7ff5400f0af8d6d9ef69</Sha>
     </Dependency>
     <Dependency Name="System.CommandLine" Version="2.0.0-beta4.23407.1">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
@@ -38,9 +38,9 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>a57022b44f3ff23de925530ea1d27da9701aed57</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Dotnet.Sdk.Internal" Version="8.0.100-rtm.23527.17">
+    <Dependency Name="Microsoft.Dotnet.Sdk.Internal" Version="8.0.100-rtm.23530.12">
       <Uri>https://github.com/dotnet/installer</Uri>
-      <Sha>d6d8155f4fdb548222e438e73a7fd93813b8af11</Sha>
+      <Sha>ae28d5bc061eedfe863ef3e22d090054b69e7685</Sha>
     </Dependency>
     <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="8.0.0-beta.23525.4">
       <Uri>https://github.com/dotnet/arcade</Uri>
