@@ -38,7 +38,7 @@ function Extract-TarGz() {
   )
   $extractionPath = Create-PackageDir -FileName $FileInfo.Name
   Write-Host "Extracting $($FileInfo.Name)"
-  tar -xf $FileInfo.FullName -C $extractionPath
+  tar -xzf $FileInfo.FullName -C $extractionPath
 }
 
 function Copy-File() {
