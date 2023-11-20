@@ -5,7 +5,8 @@
 
 Captures log statements that are logged to the [ILogger<> infrastructure](https://docs.microsoft.com/aspnet/core/fundamentals/logging) within a specified process, as described in the settings specified in the request body. By default, logs are collected at the levels as specified by the [application-defined configuration](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/#configure-logging).
 
-> **Note**: The [`LoggingEventSource`](https://docs.microsoft.com/aspnet/core/fundamentals/logging#event-source) provider must be enabled in the process in order to capture logs.
+> [!NOTE]
+> The [`LoggingEventSource`](https://docs.microsoft.com/aspnet/core/fundamentals/logging#event-source) provider must be enabled in the process in order to capture logs.
 
 ## HTTP Route
 
@@ -13,7 +14,8 @@ Captures log statements that are logged to the [ILogger<> infrastructure](https:
 POST /logs?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider}&tags={tags} HTTP/1.1
 ```
 
-> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> [!NOTE]
+> Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 
@@ -59,7 +61,8 @@ The expected content type is `application/json`.
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many logs requests at this time. Try to request logs at a later time. | `application/problem+json` |
 
-> **NOTE: (7.1+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
+> [!NOTE]
+> **(7.1+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
 
 ## Examples
 
@@ -105,7 +108,7 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 
 2021-05-13 18:06:41Z info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
       => RequestId:0HM8M726ENU3K:0000002B, RequestPath:/, SpanId:|4791a4a7-433aa59a9e362743., TraceId:4791a4a7-433aa59a9e362743, ParentId:
-      Request starting HTTP/1.1 GET http://localhost:5000/  
+      Request starting HTTP/1.1 GET http://localhost:5000/
 
 2021-05-13 18:06:41Z info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
       => RequestId:0HM8M726ENU3K:0000002B, RequestPath:/, SpanId:|4791a4a7-433aa59a9e362743., TraceId:4791a4a7-433aa59a9e362743, ParentId:
