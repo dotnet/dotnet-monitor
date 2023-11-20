@@ -10,7 +10,7 @@
     <MicrosoftExtensionsLoggingAbstractionsVersion>7.0.1</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>7.0.0</MicrosoftExtensionsLoggingConsoleVersion>
     <MicrosoftExtensionsLoggingEventSourceVersion>7.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
-    <MicrosoftIdentityWebVersion>2.15.3</MicrosoftIdentityWebVersion>
+    <MicrosoftIdentityWebVersion>2.15.5</MicrosoftIdentityWebVersion>
     <MicrosoftOpenApiReadersVersion>1.6.10</MicrosoftOpenApiReadersVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
