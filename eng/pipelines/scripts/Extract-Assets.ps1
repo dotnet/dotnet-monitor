@@ -1,6 +1,7 @@
 param(
   [Parameter(Mandatory=$true)][string] $SourcePath,
-  [Parameter(Mandatory=$true)][string] $TargetPath,
+  [Parameter(Mandatory=$true)][string] $BinariesTargetPath,
+  [Parameter(Mandatory=$true)][string] $SymbolsTargetPath,
   [Parameter(ValueFromRemainingArguments=$true)][String[]]$properties
 )
 
@@ -14,11 +15,23 @@ if ($null -ne $properties) {
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-function Create-PackageDir() {
-  param( 
+function Get-TargetPath() {
+  param(
     [string] $FileName
   )
-  $extractionPath = Join-Path -Path $TargetPath -ChildPath ($FileName + "_dir")
+  if ($FileName.Contains('symbols')) {
+    return $SymbolsTargetPath
+  } else {
+    return $BinariesTargetPath
+  }
+}
+
+function Create-PackageDir() {
+  param(
+    [string] $FileName
+  )
+  $targetPath = Get-TargetPath -FileName $FileName
+  $extractionPath = Join-Path -Path $targetPath -ChildPath ($FileName + "_dir")
   New-Item -ItemType Directory -Force -Path $extractionPath | Out-Null
   return $extractionPath
 }
@@ -46,15 +59,14 @@ function Copy-File() {
     [System.IO.FileInfo] $FileInfo
   )
   Write-Host "Copying $($FileInfo.Name)"
-  Copy-Item -Path $FileInfo.FullName -Destination $TargetPath
+  Copy-Item -Path $FileInfo.FullName -Destination $BinariesTargetPath
 }
 
-New-Item -ItemType Directory -Force -Path $TargetPath | Out-Null
+New-Item -ItemType Directory -Force -Path $BinariesTargetPath | Out-Null
+New-Item -ItemType Directory -Force -Path $SymbolsTargetPath | Out-Null
 
 foreach ($fileInfo in (Get-ChildItem $SourcePath -Recurse -Attributes !Directory)) {
-  if ($fileInfo.Name.EndsWith('symbols.nupkg')) {
-    Extract-Zip -FileInfo $fileInfo
-  } elseif ($fileInfo.Name.EndsWith('nupkg')) {
+  if ($fileInfo.Name.EndsWith('nupkg')) {
     Extract-Zip -FileInfo $fileInfo
   } elseif ($fileInfo.Name.EndsWith('zip')) {
     Extract-Zip -FileInfo $fileInfo

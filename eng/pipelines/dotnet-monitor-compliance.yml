@@ -76,7 +76,8 @@ stages:
         filePath: '$(Build.Repository.LocalPath)/eng/pipelines/scripts/Extract-Assets.ps1'
         arguments: >-
           -SourcePath '$(System.ArtifactsDirectory)\BuildAssets'
-          -TargetPath '$(System.ArtifactsDirectory)\UnpackedAssets'
+          -BinariesTargetPath '$(System.ArtifactsDirectory)\UnpackedBinaries'
+          -SymbolsTargetPath '$(System.ArtifactsDirectory)\UnpackedSymbols'
 
     # Copy eligible files to be scanned
     - task: PowerShell@2
@@ -86,17 +87,17 @@ stages:
         targetType: filePath
         filePath: '$(Build.Repository.LocalPath)/eng/pipelines/scripts/Copy-ApiScanEligible.ps1'
         arguments: >-
-          -SourcePath '$(System.ArtifactsDirectory)\UnpackedAssets'
-          -TargetPath '$(System.ArtifactsDirectory)\ApiScan'
+          -SourcePath '$(System.ArtifactsDirectory)\UnpackedBinaries'
+          -TargetPath '$(System.ArtifactsDirectory)\ScannableBinaries'
 
     - task: APIScan@2
       displayName: Run APIScan
       inputs:
-        softwareFolder: '$(System.ArtifactsDirectory)\ApiScan'
+        softwareFolder: '$(System.ArtifactsDirectory)\ScannableBinaries'
         softwareName: 'Dotnet-Monitor'
         softwareVersionNum: '$(BuildVersion)'
         softwareBuildNum: '$(resources.pipeline.Build.runID)'
-        symbolsFolder: 'SRV*http://symweb'
+        symbolsFolder: 'SRV*http://symweb;$(System.ArtifactsDirectory)\UnpackedSymbols'
       env:
         AzureServicesAuthConnectionString: runAs=App;AppId=$(apiscan-service-principal-app-id);TenantId=72f988bf-86f1-41af-91ab-2d7cd011db47;AppKey=$(apiscan-service-principal-app-secret)
       continueOnError: true
