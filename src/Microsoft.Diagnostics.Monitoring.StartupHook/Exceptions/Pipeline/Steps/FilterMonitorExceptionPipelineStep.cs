@@ -9,11 +9,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
     /// An exception pipeline step that will only allow an exception to be
     /// processed further if it was not caused by a dotnet-monitor in-proc feature.
     /// </summary>
-    internal sealed class FilterInProcFeatureExceptionPipelineStep
+    internal sealed class FilterMonitorExceptionPipelineStep
     {
         private readonly ExceptionPipelineDelegate _next;
 
-        public FilterInProcFeatureExceptionPipelineStep(ExceptionPipelineDelegate next)
+        public FilterMonitorExceptionPipelineStep(ExceptionPipelineDelegate next)
         {
             ArgumentNullException.ThrowIfNull(next);
 

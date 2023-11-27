@@ -199,7 +199,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 return;
             }
 
-            MonitorExecutionContextTracker.MarkMonitorTask();
+            MonitorExecutionContextTracker.MarkExecutionContext();
 
             ChangeServiceState(ParameterCapturingEvents.ServiceState.Running);
             try

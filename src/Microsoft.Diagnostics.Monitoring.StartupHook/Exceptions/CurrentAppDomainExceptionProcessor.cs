@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             // Filtering out dotnet-monitor in-proc feature exceptions
             if (!_includeInternalExceptions)
             {
-                builder.Add(next => new FilterInProcFeatureExceptionPipelineStep(next).Invoke);
+                builder.Add(next => new FilterMonitorExceptionPipelineStep(next).Invoke);
             }
             // Process current exception and its inner exceptions
             builder.Add(next => new ExceptionDemultiplexerPipelineStep(next).Invoke);

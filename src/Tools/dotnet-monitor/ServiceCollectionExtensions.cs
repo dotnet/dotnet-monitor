@@ -73,7 +73,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return ConfigureOptions<TemplateOptions>(services, configuration, ConfigurationKeys.Templates);
         }
 
-
         public static IServiceCollection ConfigureInProcessFeatures(this IServiceCollection services, IConfiguration configuration)
         {
             ConfigureOptions<CallStacksOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_CallStacks)

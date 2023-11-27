@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
@@ -14,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
 
             public MonitorScopeTracker()
             {
-                MarkMonitorThread(isMonitor: true);
+                MarkExecutionContext(isMonitor: true);
             }
 
             public void Dispose()
@@ -22,33 +23,31 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
                 if (!DisposableHelper.CanDispose(ref _disposedState))
                     return;
 
-                MarkMonitorThread(isMonitor: false);
+                MarkExecutionContext(isMonitor: false);
             }
         }
 
-        private static readonly AsyncLocal<bool> _isMonitorTask = new();
-        private static readonly ThreadLocal<uint> _isMonitorThread = new();
+        private static readonly AsyncLocal<uint> _isMonitorTask = new();
 
         public static bool IsInMonitorContext()
         {
-            return (_isMonitorThread.IsValueCreated && _isMonitorThread.Value != 0) || _isMonitorTask.Value;
+            return _isMonitorTask.Value != 0;
         }
 
-        public static void MarkMonitorTask(bool isMonitor = true)
-        {
-            _isMonitorTask.Value = isMonitor;
-        }
-
-        public static void MarkMonitorThread(bool isMonitor = true)
+        public static void MarkExecutionContext(bool isMonitor = true)
         {
             if (isMonitor)
             {
-                _isMonitorThread.Value++;
-
+                _isMonitorTask.Value++;
             }
             else
             {
-                _isMonitorThread.Value--;
+                if (_isMonitorTask.Value == 0)
+                {
+                    Debug.Fail("Invalid ref count, would underflow");
+                    return;
+                }
+                _isMonitorTask.Value--;
             }
         }
 
