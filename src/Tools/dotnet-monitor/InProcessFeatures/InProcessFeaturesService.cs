@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
             {
                 DiagnosticsClient client = new DiagnosticsClient(endpointInfo.Endpoint);
                 // Exceptions
-                if (_exceptionOptions.GetEnabled() && _debugOptions.Exceptions.GetIncludeMonitorExceptions())
+                if (_exceptionOptions.GetEnabled() && _debugOptions.Exceptions?.GetIncludeMonitorExceptions() == true)
                 {
                     await client.SetEnvironmentVariableAsync(
                         InProcessFeaturesIdentifiers.EnvironmentVariables.Exceptions.IncludeMonitorExceptions,
