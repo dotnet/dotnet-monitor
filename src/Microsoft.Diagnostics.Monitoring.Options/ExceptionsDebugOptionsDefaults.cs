@@ -5,6 +5,6 @@ namespace Microsoft.Diagnostics.Monitoring.Options
 {
     internal static class ExceptionsDebugOptionsDefaults
     {
-        public const bool IncludeInternalExceptions = false;
+        public const bool IncludeMonitorExceptions = false;
     }
 }

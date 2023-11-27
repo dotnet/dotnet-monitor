@@ -1,6 +1,6 @@
 {
   "Exceptions": {
-    "IncludeInternalExceptions": "True"
+    "IncludeMonitorExceptions": "True"
     /*JsonConfigurationProvider for 'settings.json' (Optional)*/
   }
 }

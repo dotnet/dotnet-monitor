@@ -7,7 +7,7 @@ namespace Microsoft.Diagnostics.Monitoring.Options
 {
     internal sealed class ExceptionsDebugOptions
     {
-        [DefaultValue(ExceptionsDebugOptionsDefaults.IncludeInternalExceptions)]
-        public bool? IncludeInternalExceptions { get; set; }
+        [DefaultValue(ExceptionsDebugOptionsDefaults.IncludeMonitorExceptions)]
+        public bool? IncludeMonitorExceptions { get; set; }
     }
 }

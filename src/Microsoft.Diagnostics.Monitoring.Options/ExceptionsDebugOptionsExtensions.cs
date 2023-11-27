@@ -5,9 +5,9 @@ namespace Microsoft.Diagnostics.Monitoring.Options
 {
     internal static class ExceptionsDebugOptionsExtensions
     {
-        public static bool GetIncludeInternalExceptions(this ExceptionsDebugOptions options)
+        public static bool GetIncludeMonitorExceptions(this ExceptionsDebugOptions options)
         {
-            return options.IncludeInternalExceptions.GetValueOrDefault(ExceptionsDebugOptionsDefaults.IncludeInternalExceptions);
+            return options.IncludeMonitorExceptions.GetValueOrDefault(ExceptionsDebugOptionsDefaults.IncludeMonitorExceptions);
         }
     }
 }

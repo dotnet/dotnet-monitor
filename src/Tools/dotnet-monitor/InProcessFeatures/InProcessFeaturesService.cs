@@ -38,10 +38,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
             {
                 DiagnosticsClient client = new DiagnosticsClient(endpointInfo.Endpoint);
                 // Exceptions
-                if (_exceptionOptions.GetEnabled() && _debugOptions.Exceptions.GetIncludeInternalExceptions())
+                if (_exceptionOptions.GetEnabled() && _debugOptions.Exceptions.GetIncludeMonitorExceptions())
                 {
                     await client.SetEnvironmentVariableAsync(
-                        InProcessFeaturesIdentifiers.EnvironmentVariables.Exceptions.IncludeInternalExceptions,
+                        InProcessFeaturesIdentifiers.EnvironmentVariables.Exceptions.IncludeMonitorExceptions,
                         ToolIdentifiers.EnvVarEnabledValue,
                         cancellationToken);
                 }

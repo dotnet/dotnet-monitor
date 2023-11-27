@@ -1,7 +1,7 @@
 {
   "DotnetMonitorDebug": {
     "Exceptions": {
-        "IncludeInternalExceptions":  true
+      "IncludeMonitorExceptions":  true
     }
   }
 }

@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
             public static class Exceptions
             {
                 private const string Prefix = InProcessFeaturesPrefix + "Exceptions_";
-                public const string IncludeInternalExceptions = Prefix + nameof(IncludeInternalExceptions);
+                public const string IncludeMonitorExceptions = Prefix + nameof(IncludeMonitorExceptions);
             }
 
             public static class ParameterCapturing

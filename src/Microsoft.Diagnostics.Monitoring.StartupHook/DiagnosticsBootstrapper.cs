@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 
         public DiagnosticsBootstrapper()
         {
-            _exceptionProcessor = new(ToolIdentifiers.IsEnvVarEnabled(InProcessFeaturesIdentifiers.EnvironmentVariables.Exceptions.IncludeInternalExceptions));
+            _exceptionProcessor = new(ToolIdentifiers.IsEnvVarEnabled(InProcessFeaturesIdentifiers.EnvironmentVariables.Exceptions.IncludeMonitorExceptions));
             _exceptionProcessor.Start();
 
             using IDisposable _ = MonitorExecutionContextTracker.MonitorScope();

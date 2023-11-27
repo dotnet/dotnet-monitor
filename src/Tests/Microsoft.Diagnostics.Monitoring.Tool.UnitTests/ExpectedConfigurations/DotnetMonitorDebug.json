@@ -1,5 +1,5 @@
 {
   "Exceptions": {
-    "IncludeInternalExceptions": "True"
+    "IncludeMonitorExceptions": "True"
   }
 }

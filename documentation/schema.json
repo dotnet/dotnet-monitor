@@ -1681,7 +1681,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "IncludeInternalExceptions": {
+        "IncludeMonitorExceptions": {
           "type": [
             "boolean",
             "null"
