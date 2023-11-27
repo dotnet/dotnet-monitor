@@ -1,0 +1,6 @@
+{
+  "Exceptions": {
+    "IncludeInternalExceptions": "True"
+    /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+  }
+}
