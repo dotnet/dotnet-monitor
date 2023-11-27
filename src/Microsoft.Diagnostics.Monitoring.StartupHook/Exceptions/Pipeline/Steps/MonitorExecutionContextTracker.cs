@@ -34,7 +34,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
             return _isMonitorTask.Value != 0;
         }
 
-        public static void MarkExecutionContext(bool isMonitor = true)
+        public static IDisposable MonitorScope()
+        {
+            return new MonitorScopeTracker();
+        }
+
+        private static void MarkExecutionContext(bool isMonitor)
         {
             if (isMonitor)
             {
@@ -49,11 +54,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
                 }
                 _isMonitorTask.Value--;
             }
-        }
-
-        public static IDisposable MonitorScope()
-        {
-            return new MonitorScopeTracker();
         }
     }
 }

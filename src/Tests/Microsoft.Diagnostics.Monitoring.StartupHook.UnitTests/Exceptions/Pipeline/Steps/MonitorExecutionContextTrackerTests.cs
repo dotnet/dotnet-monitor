@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using System;
 using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
@@ -10,48 +9,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public sealed class MonitorExecutionContextTrackerTests
     {
-        [Fact]
-        public void IsInMonitorContext_Inactive()
-        {
-            // Arrange
-
-            // Act
-            bool result = MonitorExecutionContextTracker.IsInMonitorContext();
-
-            // Assert
-            Assert.False(result);
-        }
-
-        [Fact]
-        public void IsInMonitorContext_Active()
-        {
-            // Arrange
-            MonitorExecutionContextTracker.MarkExecutionContext(isMonitor: true);
-
-            // Act
-            bool result = MonitorExecutionContextTracker.IsInMonitorContext();
-
-            // Assert
-            Assert.True(result);
-        }
-
-        [Fact]
-        public void MarkExecutionContext_Underflow()
-        {
-            // Arrange
-#if DEBUG
-            Assert.ThrowsAny<Exception>(() => MonitorExecutionContextTracker.MarkExecutionContext(isMonitor: false));
-#else
-            MonitorExecutionContextTracker.MarkExecutionContext(isMonitor: false);
-#endif
-
-            // Act
-            bool result = MonitorExecutionContextTracker.IsInMonitorContext();
-
-            // Assert
-            Assert.False(result);
-        }
-
         [Fact]
         public void MonitorScope_IsActive()
         {

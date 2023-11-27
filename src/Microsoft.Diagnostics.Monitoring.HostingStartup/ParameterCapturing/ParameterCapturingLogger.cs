@@ -126,7 +126,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private void ThreadProc()
         {
-            MonitorExecutionContextTracker.MarkExecutionContext();
+            using IDisposable _ = MonitorExecutionContextTracker.MonitorScope();
 
             try
             {
