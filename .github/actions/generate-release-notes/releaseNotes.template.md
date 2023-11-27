@@ -4,4 +4,4 @@ ${changelog}
 
 ${monikerDescriptions}
 
-If you would like to provide additional feedback to the team [please fill out this survey](https://aka.ms/dotnet-monitor-survey?src=3p).
+If you would like to provide additional feedback to the team [please fill out this survey](https://aka.ms/dotnet-monitor-survey?src=rn).
