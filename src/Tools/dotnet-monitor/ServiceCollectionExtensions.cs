@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureDotnetMonitorDebug(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<ExceptionsDebugOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_Exceptions);
+            return ConfigureOptions<DotnetMonitorDebugOptions>(services, configuration, ConfigurationKeys.DotnetMonitorDebug);
         }
 
         public static IServiceCollection ConfigureGlobalCounter(this IServiceCollection services, IConfiguration configuration)

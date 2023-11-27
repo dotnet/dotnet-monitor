@@ -18,17 +18,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
         private readonly ILogger<InProcessFeaturesService> _logger;
         private readonly ParameterCapturingOptions _parameterCapturingOptions;
         private readonly ExceptionsOptions _exceptionOptions;
-        private readonly ExceptionsDebugOptions _exceptionDebugOptions;
+        private readonly DotnetMonitorDebugOptions _debugOptions;
 
         public InProcessFeaturesService(
             IOptions<ParameterCapturingOptions> parameterCapturingOptions,
             IOptions<ExceptionsOptions> exceptionOptions,
-            IOptions<ExceptionsDebugOptions> exceptionDebugOptions,
+            IOptions<DotnetMonitorDebugOptions> debugOptions,
             ILogger<InProcessFeaturesService> logger)
         {
             _parameterCapturingOptions = parameterCapturingOptions.Value;
             _exceptionOptions = exceptionOptions.Value;
-            _exceptionDebugOptions = exceptionDebugOptions.Value;
+            _debugOptions = debugOptions.Value;
             _logger = logger;
         }
 
@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
             {
                 DiagnosticsClient client = new DiagnosticsClient(endpointInfo.Endpoint);
                 // Exceptions
-                if (_exceptionOptions.GetEnabled() && _exceptionDebugOptions.GetIncludeInternalExceptions())
+                if (_exceptionOptions.GetEnabled() && _debugOptions.Exceptions.GetIncludeInternalExceptions())
                 {
                     await client.SetEnvironmentVariableAsync(
                         InProcessFeaturesIdentifiers.EnvironmentVariables.Exceptions.IncludeInternalExceptions,
