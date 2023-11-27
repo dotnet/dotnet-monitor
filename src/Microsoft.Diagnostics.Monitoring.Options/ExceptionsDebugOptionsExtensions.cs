@@ -7,7 +7,7 @@ namespace Microsoft.Diagnostics.Monitoring.Options
     {
         public static bool GetIncludeMonitorExceptions(this ExceptionsDebugOptions options)
         {
-            return options.IncludeMonitorExceptions.GetValueOrDefault(ExceptionsDebugOptionsDefaults.IncludeMonitorExceptions);
+            return (options?.IncludeMonitorExceptions).GetValueOrDefault(ExceptionsDebugOptionsDefaults.IncludeMonitorExceptions);
         }
     }
 }
