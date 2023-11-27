@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 
-namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Pipeline.Steps
+namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 {
     internal static class MonitorExecutionContextTracker
     {
