@@ -2,6 +2,28 @@
 #! Either use the "Regenerate dependabot.yml" task in Codespaces, or run the following command:
 #! > ytt -f .github/dependabot.template.yml > .github/dependabot.yml
 
+#@ load("@ytt:struct", "struct")
+
+#! Returns a dictionary that maps the major version of .NET Monitor
+#! to the list of TFMs that the major version uses for build and test.
+#@ def getTfms():
+#@   return {
+#@     "8": [ "net8.0", "net7.0", "net6.0" ],
+#@     "7": [ "net7.0", "net6.0" ],
+#@     "6": [ "net6.0", "netcoreapp3.1" ]
+#@   }
+#@ end
+
+#! Returns an array of structs that represent a registration of the
+#! target branch and which major version of .NET Monitor it builds.
+#@ def getBranches():
+#@   return [
+#@     struct.encode({"name": "main", "majorVersion": "8"}),
+#@     struct.encode({"name": "release/7.x", "majorVersion": "7"}),
+#@     struct.encode({"name": "release/6.x", "majorVersion": "6"}),
+#@   ]
+#@ end
+
 version: 2
 updates:
   - package-ecosystem: "github-actions"
@@ -9,13 +31,13 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "main"
-#@ for branch in ["main", "release/7.x", "release/6.x"]:
-#@ commit_prefix = "[" + branch + "] "
+#@ for branch in getBranches():
+#@ commit_prefix = "[" + branch.name + "] "
   - package-ecosystem: "nuget"
     directory: "/eng/dependabot"
     schedule:
       interval: "daily"
-    target-branch: #@ branch
+    target-branch: #@ branch.name
     ignore:
       - dependency-name: "Microsoft.Extensions.*"
         update-types: [ "version-update:semver-major" ]
@@ -34,15 +56,15 @@ updates:
     directory: "/eng/dependabot/nuget.org"
     schedule:
       interval: "daily"
-    target-branch: #@ branch
+    target-branch: #@ branch.name
     commit-message:
       prefix: #@ commit_prefix
-#@ for tfm in ["net7.0", "net6.0", "netcoreapp3.1"]:
+#@ for tfm in getTfms()[branch.majorVersion]:
   - package-ecosystem: "nuget"
     directory: #@ "/eng/dependabot/" + tfm
     schedule:
       interval: "daily"
-    target-branch: #@ branch
+    target-branch: #@ branch.name
     ignore:
       - dependency-name: "*"
         update-types: [ "version-update:semver-major" ]
