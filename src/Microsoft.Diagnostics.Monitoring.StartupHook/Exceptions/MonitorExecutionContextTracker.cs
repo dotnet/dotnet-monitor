@@ -11,26 +11,27 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
         private sealed class MonitorScopeTracker : IDisposable
         {
             private long _disposedState;
+            private readonly bool _didMarkContext;
 
             public MonitorScopeTracker()
             {
-                MarkExecutionContext(isMonitor: true);
+                _didMarkContext = MarkExecutionContext(isMonitor: true);
             }
 
             public void Dispose()
             {
-                if (!DisposableHelper.CanDispose(ref _disposedState))
+                if (!DisposableHelper.CanDispose(ref _disposedState) || !_didMarkContext)
                     return;
 
-                MarkExecutionContext(isMonitor: false);
+                _ = MarkExecutionContext(isMonitor: false);
             }
         }
 
-        private static readonly AsyncLocal<uint> _isMonitorTask = new();
+        private static readonly AsyncLocal<uint> _monitorScopeCount = new();
 
         public static bool IsInMonitorContext()
         {
-            return _isMonitorTask.Value != 0;
+            return _monitorScopeCount.Value != 0;
         }
 
         public static IDisposable MonitorScope()
@@ -38,16 +39,39 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             return new MonitorScopeTracker();
         }
 
-        private static void MarkExecutionContext(bool isMonitor)
+        private static bool MarkExecutionContext(bool isMonitor)
         {
             if (isMonitor)
             {
-                _isMonitorTask.Value++;
+                //
+                // Overflows should never happen unless we have bugs around leaking MonitorScopeTracker or creating
+                // an unreasonable number of them in a single execution context / its children.
+                //
+                // No-op to gracefully handle any such bugs.
+                //
+                if (_monitorScopeCount.Value == uint.MaxValue)
+                {
+                    return false;
+                }
+
+                _monitorScopeCount.Value++;
             }
             else
             {
-                _isMonitorTask.Value--;
+                //
+                // Underflows should never happen since this method is private and only called to decrement
+                // if there's a corresponding MonitorScopeTracker being disposed which would have incremented.
+                // Gracefully handle regardless.
+                //
+                if (_monitorScopeCount.Value == uint.MinValue)
+                {
+                    return false;
+                }
+
+                _monitorScopeCount.Value--;
             }
+
+            return true;
         }
     }
 }
