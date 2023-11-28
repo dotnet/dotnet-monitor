@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
@@ -51,6 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
                 //
                 if (_monitorScopeCount.Value == uint.MaxValue)
                 {
+                    Debug.Fail($"{nameof(_monitorScopeCount)} would overflow");
                     return false;
                 }
 
@@ -65,6 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
                 //
                 if (_monitorScopeCount.Value == uint.MinValue)
                 {
+                    Debug.Fail($"{nameof(_monitorScopeCount)} would underflow");
                     return false;
                 }
 
