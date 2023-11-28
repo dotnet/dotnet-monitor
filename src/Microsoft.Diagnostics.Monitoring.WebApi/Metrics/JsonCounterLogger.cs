@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             else if (counter is CounterEndedPayload)
             {
-                Logger.CounterEndedPayload(counter.CounterInfo.CounterName);
+                Logger.CounterEndedPayload(counter.CounterMetadata.CounterName);
                 return;
             }
             else if (!counter.EventType.IsValuePublishedEvent())
@@ -70,16 +70,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     Quantile quantile = aggregatePercentilePayload.Quantiles[i];
 
                     SerializeCounterValues(counter.Timestamp,
-                        counter.CounterInfo.ProviderName,
-                        counter.CounterInfo.CounterName,
+                        counter.CounterMetadata.ProviderName,
+                        counter.CounterMetadata.CounterName,
                         counter.DisplayName,
                         counter.Unit,
                         counter.CounterType.ToString(),
-                        CounterUtilities.AppendPercentile(counter.Metadata, quantile.Percentage),
+                        CounterUtilities.AppendPercentile(counter.ValueTags, quantile.Percentage),
                         quantile.Value,
-                        counter.CounterInfo.MeterTags,
-                        counter.CounterInfo.InstrumentTags,
-                        counter.CounterInfo.ScopeHash);
+                        counter.CounterMetadata.MeterTags,
+                        counter.CounterMetadata.InstrumentTags,
+                        counter.CounterMetadata.ScopeHash);
 
                     if (i < aggregatePercentilePayload.Quantiles.Length - 1)
                     {
@@ -93,16 +93,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 _bufferWriter.Clear();
 
                 SerializeCounterValues(counter.Timestamp,
-                    counter.CounterInfo.ProviderName,
-                    counter.CounterInfo.CounterName,
+                    counter.CounterMetadata.ProviderName,
+                    counter.CounterMetadata.CounterName,
                     counter.DisplayName,
                     counter.Unit,
                     counter.CounterType.ToString(),
-                    counter.Metadata,
+                    counter.ValueTags,
                     counter.Value,
-                    counter.CounterInfo.MeterTags,
-                    counter.CounterInfo.InstrumentTags,
-                    counter.CounterInfo.ScopeHash);
+                    counter.CounterMetadata.MeterTags,
+                    counter.CounterMetadata.InstrumentTags,
+                    counter.CounterMetadata.ScopeHash);
             }
             await _stream.WriteAsync(_bufferWriter.WrittenMemory);
 

@@ -30,8 +30,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             public override int GetHashCode()
             {
                 HashCode code = new HashCode();
-                code.Add(_metric.CounterInfo.ProviderName);
-                code.Add(_metric.CounterInfo.CounterName);
+                code.Add(_metric.CounterMetadata.ProviderName);
+                code.Add(_metric.CounterMetadata.CounterName);
                 return code.ToHashCode();
             }
 
@@ -73,9 +73,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             //Do not accept CounterEnded payloads.
             if (metric is CounterEndedPayload counterEnded)
             {
-                if (_observedEndedCounters.Add((counterEnded.CounterInfo.ProviderName, counterEnded.CounterInfo.CounterName)))
+                if (_observedEndedCounters.Add((counterEnded.CounterMetadata.ProviderName, counterEnded.CounterMetadata.CounterName)))
                 {
-                    _logger.CounterEndedPayload(counterEnded.CounterInfo.CounterName);
+                    _logger.CounterEndedPayload(counterEnded.CounterMetadata.CounterName);
                 }
                 return;
             }
@@ -137,7 +137,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 ICounterPayload metricInfo = metricGroup.Value.First();
 
-                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.CounterInfo.ProviderName, metricInfo.CounterInfo.CounterName, metricInfo.Unit);
+                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.CounterMetadata.ProviderName, metricInfo.CounterMetadata.CounterName, metricInfo.Unit);
 
                 await WriteMetricHeader(metricInfo, writer, metricName);
 
@@ -243,7 +243,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static bool CompareMetrics(ICounterPayload first, ICounterPayload second)
         {
-            return string.Equals(first.CounterInfo.CounterName, second.CounterInfo.CounterName);
+            return string.Equals(first.CounterMetadata.CounterName, second.CounterMetadata.CounterName);
         }
 
         public void Clear()
