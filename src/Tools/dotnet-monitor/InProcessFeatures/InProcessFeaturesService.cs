@@ -17,12 +17,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
     {
         private readonly ILogger<InProcessFeaturesService> _logger;
         private readonly ParameterCapturingOptions _parameterCapturingOptions;
+        private readonly ExceptionsOptions _exceptionOptions;
+        private readonly DotnetMonitorDebugOptions _debugOptions;
 
         public InProcessFeaturesService(
             IOptions<ParameterCapturingOptions> parameterCapturingOptions,
+            IOptions<ExceptionsOptions> exceptionOptions,
+            IOptions<DotnetMonitorDebugOptions> debugOptions,
             ILogger<InProcessFeaturesService> logger)
         {
             _parameterCapturingOptions = parameterCapturingOptions.Value;
+            _exceptionOptions = exceptionOptions.Value;
+            _debugOptions = debugOptions.Value;
             _logger = logger;
         }
 
@@ -31,10 +37,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
             try
             {
                 DiagnosticsClient client = new DiagnosticsClient(endpointInfo.Endpoint);
+                // Exceptions
+                if (_exceptionOptions.GetEnabled() && _debugOptions.Exceptions.GetIncludeMonitorExceptions())
+                {
+                    await client.SetEnvironmentVariableAsync(
+                        InProcessFeaturesIdentifiers.EnvironmentVariables.Exceptions.IncludeMonitorExceptions,
+                        ToolIdentifiers.EnvVarEnabledValue,
+                        cancellationToken);
+                }
+
+                // Parameter Capturing
                 if (_parameterCapturingOptions.GetEnabled() && CaptureParametersOperation.IsEndpointRuntimeSupported(endpointInfo))
                 {
                     await client.SetEnvironmentVariableAsync(
-                        InProcessFeaturesIdentifiers.EnvironmentVariables.EnableParameterCapturing,
+                        InProcessFeaturesIdentifiers.EnvironmentVariables.ParameterCapturing.Enable,
                         ToolIdentifiers.EnvVarEnabledValue,
                         cancellationToken);
                 }

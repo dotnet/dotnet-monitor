@@ -98,6 +98,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     services.ConfigureGlobalCounter(context.Configuration);
                     services.ConfigureCollectionRuleDefaults(context.Configuration);
                     services.ConfigureTemplates(context.Configuration);
+                    services.ConfigureDotnetMonitorDebug(context.Configuration);
                     services.AddSingleton<OperationTrackerService>();
                     services.ConfigureCollectionRules();
 

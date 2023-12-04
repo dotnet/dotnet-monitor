@@ -1,0 +1,7 @@
+{
+  "DotnetMonitorDebug": {
+    "Exceptions": {
+      "IncludeMonitorExceptions":  true
+    }
+  }
+}
