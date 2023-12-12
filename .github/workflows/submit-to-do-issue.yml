@@ -35,7 +35,7 @@ jobs:
       # The default artifact download action doesn't support cross-workflow
       # artifacts, so use a 3rd party one.
       - name: 'Download linting results'
-        uses: dawidd6/action-download-artifact@268677152d06ba59fcec7a7f0b5d961b6ccd7e1e
+        uses: dawidd6/action-download-artifact@f29d1b6a8930683e80acedfbe6baa2930cd646b4
         with:
           workflow: ${{env.workflow_name}}
           run_id: ${{github.event.workflow_run.id }}
