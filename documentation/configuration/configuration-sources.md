@@ -3,7 +3,7 @@
 
 # Configuration Sources
 
-`dotnet monitor` can read and combine configuration from multiple sources. The configuration sources are listed below in the order in which they are read (first is lowest precendence, last is highest precedence):
+`dotnet monitor` can read and combine configuration from multiple sources. The configuration sources are listed below in the order in which they are read (first is lowest precedence, last is highest precedence):
 
 - Command line parameters
 - Environment variables without `DOTNETMONITOR_` prefix e.g. `ASPNETCORE_Urls`
