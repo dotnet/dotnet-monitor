@@ -107,11 +107,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
                         .SetEventCounterTrigger(options =>
                         {
-                            // cpu usage greater than 1% for 2 seconds
+                            // cpu usage greater than 1% for 1 second
                             options.ProviderName = "System.Runtime";
                             options.CounterName = "cpu-usage";
                             options.GreaterThan = 1;
-                            options.SlidingWindowDuration = TimeSpan.FromSeconds(2);
+                            options.SlidingWindowDuration = TimeSpan.FromSeconds(1);
                         })
                         .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), "TextFileOutput", ExpectedFilePath, ExpectedFileContent)
                         .SetActionLimits(count: 1);
