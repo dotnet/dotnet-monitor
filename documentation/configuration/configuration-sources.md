@@ -3,24 +3,26 @@
 
 # Configuration Sources
 
-`dotnet monitor` can read and combine configuration from multiple sources. The configuration sources are listed below in the order in which they are read (User-specified json file is highest precedence) :
+`dotnet monitor` can read and combine configuration from multiple sources. The configuration sources are listed below in the order in which they are read (first is lowest precendence, last is highest precedence):
 
 - Command line parameters
+- Environment variables without `DOTNETMONITOR_` prefix e.g. `ASPNETCORE_Urls`
 - User settings path
   - On Windows, `%USERPROFILE%\.dotnet-monitor\settings.json`
   - On \*nix, `$XDG_CONFIG_HOME/dotnet-monitor/settings.json`
-  -  If `$XDG_CONFIG_HOME` isn't defined, we fall back to ` $HOME/.config/dotnet-monitor/settings.json`
+    - If `$XDG_CONFIG_HOME` isn't defined, we fall back to ` $HOME/.config/dotnet-monitor/settings.json`
+- Shared settings path
+  - On Windows, `%ProgramData%\dotnet-monitor\settings.json`
+  - On \*nix, `/etc/dotnet-monitor/settings.json`
 - [Key-per-file](https://docs.microsoft.com/aspnet/core/fundamentals/configuration/#key-per-file-configuration-provider) in the shared settings path
     - On Windows, `%ProgramData%\dotnet-monitor`
     - On \*nix, `/etc/dotnet-monitor`
-
-- Environment variables
-- User-Specified json file
-  - (6.3+) Use the `--configuration-file-path` flag from the command line to specify your own configuration file (using its full path).
+- Environment variables with `DOTNETMONITOR_` prefix e.g. `DOTNETMONITOR_Urls`
+- Full path to a JSON settings file via the `--configuration-file-path` command line option. First available in .NET Monitor 6.3
 
 ## Translating configuration between providers
 
-While the rest of this document will showcase configuration examples in a json format, the same configuration can be expressed via any of the other configuration sources. For example, the API Key configuration can be expressed via shown below:
+While the rest of this document will showcase configuration examples in a JSON format, the same configuration can be expressed via any of the other configuration sources. For example, the API Key configuration can be expressed via shown below:
 
 ```json
 {
