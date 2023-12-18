@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -321,21 +322,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             public override void AfterAdd(IExceptionInstance instance)
             {
-                _outputHelper.WriteLine($"{nameof(ThresholdCallback)}.{nameof(AfterAdd)}");
+                LogMember();
 
                 if (SetIfAtTarget(_addCompletionSource, ++_addCount, _addThreshold))
                 {
-                    _outputHelper.WriteLine($"{nameof(ThresholdCallback)}.{nameof(AfterAdd)} threshold reached");
+                    LogThresholdReached();
                 }
             }
 
             public override void AfterRemove(IExceptionInstance instance)
             {
-                _outputHelper.WriteLine($"{nameof(ThresholdCallback)}.{nameof(AfterRemove)}");
+                LogMember();
 
                 if (SetIfAtTarget(_removeCompletionSource, ++_removeCount, _removeThreshold))
                 {
-                    _outputHelper.WriteLine($"{nameof(ThresholdCallback)}.{nameof(AfterRemove)} threshold reached");
+                    LogThresholdReached();
                 }
             }
 
@@ -354,6 +355,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 }
                 return false;
             }
+
+            private void LogMember([CallerMemberName] string memberName = "")
+            {
+                _outputHelper.WriteLine($"{nameof(ThresholdCallback)}.{memberName}");
+            }
+
+            private void LogThresholdReached([CallerMemberName] string memberName = "")
+            {
+                _outputHelper.WriteLine($"{nameof(ThresholdCallback)}.{memberName} threshold reached");
+            }
         }
 
         private sealed class AggregateCallback : ExceptionsStoreCallbackBase
@@ -371,19 +382,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 _callbacks.Add(callback);
 
-                _outputHelper.WriteLine($"{nameof(AggregateCallback)}.{nameof(AddCallback)}");
+                LogMember();
             }
 
             public void RemoveCallback(IExceptionsStoreCallback callback)
             {
                 _callbacks.Remove(callback);
 
-                _outputHelper.WriteLine($"{nameof(AggregateCallback)}.{nameof(RemoveCallback)}");
+                LogMember();
             }
 
             public override void AfterAdd(IExceptionInstance instance)
             {
-                _outputHelper.WriteLine($"{nameof(AggregateCallback)}.{nameof(AfterAdd)}");
+                LogMember();
 
                 foreach (IExceptionsStoreCallback callback in _callbacks)
                     callback.AfterAdd(instance);
@@ -391,7 +402,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             public override void AfterRemove(IExceptionInstance instance)
             {
-                _outputHelper.WriteLine($"{nameof(AggregateCallback)}.{nameof(AfterRemove)}");
+                LogMember();
 
                 foreach (IExceptionsStoreCallback callback in _callbacks)
                     callback.AfterRemove(instance);
@@ -399,10 +410,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             public override void BeforeAdd(IExceptionInstance instance)
             {
-                _outputHelper.WriteLine($"{nameof(AggregateCallback)}.{nameof(BeforeAdd)}");
+                LogMember();
 
                 foreach (IExceptionsStoreCallback callback in _callbacks)
                     callback.BeforeAdd(instance);
+            }
+
+            private void LogMember([CallerMemberName] string memberName = "")
+            {
+                _outputHelper.WriteLine($"{nameof(AggregateCallback)}.{memberName}");
             }
         }
 
