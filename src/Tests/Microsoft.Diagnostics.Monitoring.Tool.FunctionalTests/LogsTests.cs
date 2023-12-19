@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Channels;
@@ -391,15 +392,26 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Func<ApiClient, int, Task<ResponseStreamHolder>> captureLogs =
                 (client, pid) =>
                 {
+                    // Make a copy of the configuration to avoid modifying the original. The original configuration is used
+                    // on the subsequent retry attempts, thus modifying the original would potentially have prior attempts
+                    // having modified the configuration.
+                    LogsConfiguration localConfiguration = new()
+                    {
+                        LogLevel = configuration.LogLevel,
+                        UseAppFilters = configuration.UseAppFilters,
+                    };
+
                     // The Sentinel and Flush categories are implementation details of the logs test infrastructure.
                     // Instead of having each test understand to add these, add them to the configuration
                     // if the test is using FilterSpecs.
                     if (null != configuration.FilterSpecs)
                     {
-                        configuration.FilterSpecs.Add(TestAppScenarios.Logger.Categories.SentinelCategory, LogLevel.Critical);
-                        configuration.FilterSpecs.Add(TestAppScenarios.Logger.Categories.FlushCategory, LogLevel.Critical);
+                        localConfiguration.FilterSpecs = configuration.FilterSpecs.ToDictionary(spec => spec.Key, spec => spec.Value);
+
+                        localConfiguration.FilterSpecs.Add(TestAppScenarios.Logger.Categories.SentinelCategory, LogLevel.Critical);
+                        localConfiguration.FilterSpecs.Add(TestAppScenarios.Logger.Categories.FlushCategory, LogLevel.Critical);
                     }
-                    return client.CaptureLogsAsync(pid, CommonTestTimeouts.LogsDuration, configuration, logFormat);
+                    return client.CaptureLogsAsync(pid, CommonTestTimeouts.LogsDuration, localConfiguration, logFormat);
                 };
 
             return Retry(() => ValidateLogsAsyncCore(mode, captureLogs, callback, logFormat));
