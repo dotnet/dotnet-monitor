@@ -112,14 +112,14 @@ When operating in `Listen` mode, you can also specify the maximum number of inco
 </details>
 
 
-## Supported Scenarios
+## Diagnostics Port configuration supported scenarios
 
 
-### Default Configuration
+### `dotnet monitor` in `Connect` mode
 
-As noted the default configuration for `dotnet monitor` is `Connect` mode. This assumes your .NET apps do not have any additional configuration and as a result are communicating via the diagnostics port which is in the default location.
+As noted the default configuration for `dotnet monitor` is `Connect` mode. This assumes your .NET apps does not have any additional diagnostics configurations enabled and as a result is communicating with `dotnet monitor` via the diagnostics port in the default location. 
 
-The following table shows the supported scenarios for the default configuration.
+The following table highlights that triggers and most of the advanced collection scenarios are not supported in this scenario. 
 
 | API | Supported |
 | :-------- | :-------: |
@@ -149,11 +149,13 @@ The following table shows the supported scenarios for the default configuration.
 
 ### `dotnet monitor` in `Listen` mode
 
-When `dotnet monitor` is in `Listen` mode, you must explicitly configure your .NET processes to connect to `dotnet monitor`, the options for the .NET process are either `Connect (susp)` or `Connect (nosusp)`.
+When `dotnet monitor` is in `Listen` mode, you must explicitly configure your .NET processes to connect to `dotnet monitor`, the options for the .NET process are either `suspend` or `nosuspend`.
 
 #### .NET process in Connect `suspend` mode
 
 The `suspend` option indicates that the .NET process will suspend its own startup execution until it successfully communicates with `dotnet monitor`.
+
+As show in this table all scenarion are supported for this configuration.
 
 | API | Supported |
 | :-------- | :-------: |
@@ -183,7 +185,9 @@ The `suspend` option indicates that the .NET process will suspend its own startu
 
 #### .NET process in Connect `nosuspend`
 
-The `nosuspend` option indicates that the .NET process will not permanently suspend execution, and will continue to run even if it is unable to communicate with `dotnet monitor`. In this scenario it is possible that the startup triggers will miss diagnostics data generated during startup.
+The `nosuspend` option indicates that the .NET process will not permanently suspend execution, and will continue to run even if it is unable to communicate with `dotnet monitor`.
+
+In this scenario it is possible that the startup triggers will miss diagnostics data generated during startup, see the following table for more details.
 
 | API | Supported |
 | :-------- | :-------: |
