@@ -110,3 +110,102 @@ When operating in `Listen` mode, you can also specify the maximum number of inco
     value: "10"
   ```
 </details>
+
+
+## Supported Scenarios
+
+
+### Default Configuration
+
+As noted the default configuration for `dotnet monitor` is `Connect` mode. This assumes your .NET apps do not have any additional configuration and as a result are communicating via the diagnostics port which is in the default location.
+
+The following table shows the supported scenarios for the default configuration.
+
+| API | Supported |
+| :-------- | :-------: |
+| /process | Yes |
+| /dump | Yes |
+| /gcdump | Yes |
+| /trace | Yes |
+| /metrics | Yes |
+| /livemetrics | Yes |
+| /logs | Yes |
+| /info | Yes |
+| /operations | Yes |
+| /collectionrules | No |
+| /stacks | No |
+| /exceptions | No |
+| /parameters | No |
+
+| Trigger | Supported |
+| :-------- | :-------: |
+| Trigger - Startup | No |
+| Trigger - EventCounter | No |
+| Trigger - EventMeter | No |
+| Trigger - AspNetResponseStatus | No |
+| Trigger - AspNetRequestCount | No |
+| Trigger - AspNetRequestDuration | No |
+
+
+### `dotnet monitor` in Listen mode
+
+When `dotnet monitor` is in `Listen` mode, you must explicitly configure your .NET processes to connect to `dotnet monitor`, the options for the .NET process are either `Connect (susp)` or `Connect (nosusp)`.
+
+#### App in Connect (susp) mode
+
+The `susp` option indicates that the .NET process will suspend its own startup execution until it successfully communicates with `dotnet monitor`.
+
+| API | Supported |
+| :-------- | :-------: |
+| /process | Yes |
+| /dump | Yes |
+| /gcdump | Yes |
+| /trace | Yes |
+| /metrics | Yes |
+| /livemetrics | Yes |
+| /logs | Yes |
+| /info | Yes |
+| /operations | Yes |
+| /collectionrules | Yes |
+| /stacks | Yes |
+| /exceptions | Yes |
+| /parameters | Yes |
+
+| Trigger | Supported |
+| :-------- | :-------: |
+| Trigger - Startup | Yes |
+| Trigger - EventCounter | Yes |
+| Trigger - EventMeter | Yes |
+| Trigger - AspNetResponseStatus | Yes |
+| Trigger - AspNetRequestCount | Yes |
+| Trigger - AspNetRequestDuration | Yes |
+
+
+#### App in Connect (nosusp)
+
+The `nosusp` suffix indicates that the .NET process will pause but not permanently suspend execution, and will continue to run even if it is unable to communicate with `dotnet monitor`.
+
+| API | Supported |
+| :-------- | :-------: |
+| /process | Yes |
+| /dump | Yes |
+| /gcdump | Yes |
+| /trace | Yes |
+| /metrics | Yes |
+| /livemetrics | Yes |
+| /logs | Yes |
+| /info | Yes |
+| /operations | Yes |
+| /collectionrules | Yes |
+| /stacks | Yes |
+| /exceptions | Yes |
+| /parameters | No |
+
+| Trigger | Supported |
+| :-------- | :-------: |
+| Trigger - Startup | Partial |
+| Trigger - EventCounter | Yes |
+| Trigger - EventMeter | Yes |
+| Trigger - AspNetResponseStatus | Yes |
+| Trigger - AspNetRequestCount | Yes |
+| Trigger - AspNetRequestDuration | Yes |
