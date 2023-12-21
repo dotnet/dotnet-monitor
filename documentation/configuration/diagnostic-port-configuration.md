@@ -147,13 +147,13 @@ The following table shows the supported scenarios for the default configuration.
 | Trigger - AspNetRequestDuration | No |
 
 
-### `dotnet monitor` in Listen mode
+### `dotnet monitor` in `Listen` mode
 
 When `dotnet monitor` is in `Listen` mode, you must explicitly configure your .NET processes to connect to `dotnet monitor`, the options for the .NET process are either `Connect (susp)` or `Connect (nosusp)`.
 
-#### App in Connect (susp) mode
+#### .NET process in Connect `suspend` mode
 
-The `susp` option indicates that the .NET process will suspend its own startup execution until it successfully communicates with `dotnet monitor`.
+The `suspend` option indicates that the .NET process will suspend its own startup execution until it successfully communicates with `dotnet monitor`.
 
 | API | Supported |
 | :-------- | :-------: |
@@ -181,9 +181,9 @@ The `susp` option indicates that the .NET process will suspend its own startup e
 | Trigger - AspNetRequestDuration | Yes |
 
 
-#### App in Connect (nosusp)
+#### .NET process in Connect `nosuspend`
 
-The `nosusp` suffix indicates that the .NET process will pause but not permanently suspend execution, and will continue to run even if it is unable to communicate with `dotnet monitor`.
+The `nosuspend` option indicates that the .NET process will not permanently suspend execution, and will continue to run even if it is unable to communicate with `dotnet monitor`. In this scenario it is possible that the startup triggers will miss diagnostics data generated during startup.
 
 | API | Supported |
 | :-------- | :-------: |
