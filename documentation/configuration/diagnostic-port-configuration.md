@@ -119,32 +119,32 @@ When operating in `Listen` mode, you can also specify the maximum number of inco
 
 As noted the default configuration for `dotnet monitor` is `Connect` mode. This assumes your .NET apps does not have any additional diagnostics configurations enabled and as a result is communicating with `dotnet monitor` via the diagnostics port in the default location. 
 
-The following table highlights that triggers and most of the advanced collection scenarios are not supported in this scenario. 
+The following tables highlight that triggers and most of the advanced collection scenarios are not supported in this mode. 
 
 | API | Supported |
 | :-------- | :-------: |
-| /process | Yes |
-| /dump | Yes |
-| /gcdump | Yes |
-| /trace | Yes |
-| /metrics | Yes |
-| /livemetrics | Yes |
-| /logs | Yes |
-| /info | Yes |
-| /operations | Yes |
-| /collectionrules | No |
-| /stacks | No |
-| /exceptions | No |
-| /parameters | No |
+| `/process` | Yes |
+| /dumpÂ | Yes |
+| /gcdumpÂ | Yes |
+| /traceÂ | Yes |
+| /metricsÂ | Yes |
+| /livemetricsÂ | Yes |
+| /logsÂ | Yes |
+| /infoÂ | Yes |
+| /operationsÂ | Yes |
+| /collectionrulesÂ | No |
+| /stacksÂ | No |
+| /exceptionsÂ | No |
+| /parametersÂ | No |
 
 | Trigger | Supported |
 | :-------- | :-------: |
-| Trigger - Startup | No |
-| Trigger - EventCounter | No |
-| Trigger - EventMeter | No |
-| Trigger - AspNetResponseStatus | No |
-| Trigger - AspNetRequestCount | No |
-| Trigger - AspNetRequestDuration | No |
+| Trigger - StartupÂ | No |
+| Trigger - EventCounterÂ | No |
+| Trigger - EventMeterÂ | No |
+| Trigger - AspNetResponseStatusÂ | No |
+| Trigger - AspNetRequestCountÂ | No |
+| Trigger - AspNetRequestDurationÂ | No |
 
 
 ### `dotnet monitor` in `Listen` mode
@@ -153,63 +153,63 @@ When `dotnet monitor` is in `Listen` mode, you must explicitly configure your .N
 
 #### .NET process in Connect `suspend` mode
 
-The `suspend` option indicates that the .NET process will suspend its own startup execution until it successfully communicates with `dotnet monitor`.
+The `suspend` option indicates that the .NET process will suspend its own startup execution until it successfully communicates with `dotnet monitor`. This is the default mode when the `DOTNET_DiagnosticPorts` environment variable is used. See [Diagnostic Port](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/diagnostic-port#configure-additional-diagnostic-ports) for more information on how to configure this mode.
 
-As show in this table all scenarion are supported for this configuration.
+As shown in these tables, all scenarios are supported for this configuration.
 
 | API | Supported |
 | :-------- | :-------: |
-| /process | Yes |
-| /dump | Yes |
-| /gcdump | Yes |
-| /trace | Yes |
-| /metrics | Yes |
-| /livemetrics | Yes |
-| /logs | Yes |
-| /info | Yes |
-| /operations | Yes |
-| /collectionrules | Yes |
-| /stacks | Yes |
-| /exceptions | Yes |
-| /parameters | Yes |
+| /processÂ | Yes |
+| /dumpÂ | Yes |
+| /gcdumpÂ | Yes |
+| /traceÂ | Yes |
+| /metricsÂ | Yes |
+| /livemetricsÂ | Yes |
+| /logsÂ | Yes |
+| /infoÂ | Yes |
+| /operationsÂ | Yes |
+| /collectionrulesÂ | Yes |
+| /stacksÂ | Yes |
+| /exceptionsÂ | Yes |
+| /parametersÂ | Yes |
 
 | Trigger | Supported |
 | :-------- | :-------: |
-| Trigger - Startup | Yes |
-| Trigger - EventCounter | Yes |
-| Trigger - EventMeter | Yes |
-| Trigger - AspNetResponseStatus | Yes |
-| Trigger - AspNetRequestCount | Yes |
-| Trigger - AspNetRequestDuration | Yes |
+| Trigger - StartupÂ | Yes |
+| Trigger - EventCounterÂ | Yes |
+| Trigger - EventMeterÂ | Yes |
+| Trigger - AspNetResponseStatusÂ | Yes |
+| Trigger - AspNetRequestCountÂ | Yes |
+| Trigger - AspNetRequestDurationÂ | Yes |
 
 
 #### .NET process in Connect `nosuspend`
 
-The `nosuspend` option indicates that the .NET process will not permanently suspend execution, and will continue to run even if it is unable to communicate with `dotnet monitor`.
+The `nosuspend` option indicates that the .NET process will not permanently suspend execution, and will continue to run even if it is unable to communicate with `dotnet monitor`. See [Diagnostic Port](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/diagnostic-port#configure-additional-diagnostic-ports) for more information on how to configure this mode.
 
 In this scenario it is possible that the startup triggers will miss diagnostics data generated during startup, see the following table for more details.
 
 | API | Supported |
 | :-------- | :-------: |
-| /process | Yes |
-| /dump | Yes |
-| /gcdump | Yes |
-| /trace | Yes |
-| /metrics | Yes |
-| /livemetrics | Yes |
-| /logs | Yes |
-| /info | Yes |
-| /operations | Yes |
-| /collectionrules | Yes |
-| /stacks | Yes |
-| /exceptions | Yes |
-| /parameters | No |
+| /processÂ | Yes |
+| /dumpÂ | Yes |
+| /gcdumpÂ | Yes |
+| /traceÂ | Yes |
+| /metricsÂ | Yes |
+| /livemetricsÂ | Yes |
+| /logsÂ | Yes |
+| /infoÂ | Yes |
+| /operationsÂ | Yes |
+| /collectionrulesÂ | Yes |
+| /stacksÂ | Yes |
+| /exceptionsÂ | Yes |
+| /parametersÂ | No |
 
 | Trigger | Supported |
 | :-------- | :-------: |
-| Trigger - Startup | Partial |
-| Trigger - EventCounter | Yes |
-| Trigger - EventMeter | Yes |
-| Trigger - AspNetResponseStatus | Yes |
-| Trigger - AspNetRequestCount | Yes |
-| Trigger - AspNetRequestDuration | Yes |
+| Trigger - StartupÂ | Partial |
+| Trigger - EventCounterÂ | Yes |
+| Trigger - EventMeterÂ | Yes |
+| Trigger - AspNetResponseStatusÂ | Yes |
+| Trigger - AspNetRequestCountÂ | Yes |
+| Trigger - AspNetRequestDurationÂ | Yes |
