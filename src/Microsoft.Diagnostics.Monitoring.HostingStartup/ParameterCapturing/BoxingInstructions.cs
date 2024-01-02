@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,7 +12,7 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
-    internal static class BoxingTokens
+    internal static class BoxingInstructions
     {
         public static readonly uint UnsupportedParameterToken = SpecialCaseBoxingTypes.Unknown.BoxingToken();
         public static readonly uint SkipBoxingToken = SpecialCaseBoxingTypes.Object.BoxingToken();
@@ -47,21 +48,21 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             return token != UnsupportedParameterToken;
         }
 
-        public static bool[] AreParametersSupported(uint[] tokens)
+        public static bool[] AreParametersSupported(ParameterBoxingInstructions[] tokens)
         {
             bool[] supported = new bool[tokens.Length];
             for (int i = 0; i < supported.Length; i++)
             {
-                supported[i] = IsParameterSupported(tokens[i]);
+                supported[i] = IsParameterSupported(tokens[i].Token);
             }
 
             return supported;
         }
 
-        public static uint[] GetBoxingTokens(MethodInfo method)
+        public static ParameterBoxingInstructions[] GetBoxingInstructions(MethodInfo method)
         {
             List<Type> methodParameterTypes = method.GetParameters().Select(p => p.ParameterType).ToList();
-            List<uint> boxingTokens = new List<uint>(methodParameterTypes.Count + (method.HasImplicitThis() ? 1 : 0));
+            ParameterBoxingInstructions[] instructions = new ParameterBoxingInstructions[methodParameterTypes.Count + (method.HasImplicitThis() ? 1 : 0)];
 
             //
             // A signature decoder will used to determine boxing tokens for parameter types that cannot be determined from standard
@@ -69,9 +70,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             // as it is not a comprehensive decoder and will produce UnsupportedParameterToken for any types not explicitly mentioned
             // in BoxingTokensSignatureProvider's summary.
             // 
-            Lazy<uint[]?> ancillaryBoxingTokens = new(() => GetAncillaryBoxingTokensFromMethodSignature(method));
+            Lazy<ParameterBoxingInstructions[]?> ancillaryInstructions = new(() => GetAncillaryBoxingInstructionsFromMethodSignature(method));
 
             int formalParameterPosition = 0;
+            int index = 0;
+
             // Handle implicit this
             if (method.HasImplicitThis())
             {
@@ -88,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     // To enable it in the future add a new special case token and when rewriting IL
                     // emit a ldobj instruction for it.
                     //
-                    boxingTokens.Add(UnsupportedParameterToken);
+                    instructions[index++] = new ParameterBoxingInstructions(UnsupportedParameterToken);
                 }
                 else
                 {
@@ -104,15 +107,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     paramType.IsByRefLike ||
                     paramType.IsPointer)
                 {
-                    boxingTokens.Add(UnsupportedParameterToken);
+                    instructions[index++] = new ParameterBoxingInstructions(UnsupportedParameterToken);
                 }
                 else if (paramType.IsGenericParameter)
                 {
-                    boxingTokens.Add(UnsupportedParameterToken);
+                    instructions[index++] = new ParameterBoxingInstructions(UnsupportedParameterToken);
                 }
                 else if (paramType.IsPrimitive)
                 {
-                    boxingTokens.Add(GetSpecialCaseBoxingTokenForPrimitive(paramType));
+                    instructions[index++] = new ParameterBoxingInstructions(GetSpecialCaseBoxingTokenForPrimitive(paramType));
                 }
                 else if (paramType.IsValueType)
                 {
@@ -120,7 +123,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     if (paramType.IsGenericType)
                     {
                         // Typespec
-                        boxingTokens.Add(UnsupportedParameterToken);
+                        instructions[index++] = new ParameterBoxingInstructions(UnsupportedParameterToken);
                     }
                     else if (paramType.Assembly != method.Module.Assembly)
                     {
@@ -128,37 +131,37 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                         if (formalParameterPosition >= 0)
                         {
                             // value-type type refs are supported by the signature decoder
-                            boxingTokens.Add(ancillaryBoxingTokens.Value?[formalParameterPosition] ?? UnsupportedParameterToken);
+                            instructions[index++] = ancillaryInstructions.Value?[formalParameterPosition] ?? new ParameterBoxingInstructions(UnsupportedParameterToken);
                         }
                         else
                         {
-                            boxingTokens.Add(UnsupportedParameterToken);
+                            instructions[index++] = new ParameterBoxingInstructions(UnsupportedParameterToken);
                         }
                     }
                     else
                     {
                         // Typedef
-                        boxingTokens.Add((uint)paramType.MetadataToken);
+                        instructions[index++] = new ParameterBoxingInstructions((uint)paramType.MetadataToken);
                     }
                 }
                 else if (paramType.IsArray ||
                     paramType.IsClass ||
                     paramType.IsInterface)
                 {
-                    boxingTokens.Add(SkipBoxingToken);
+                    instructions[index++] = new ParameterBoxingInstructions(SkipBoxingToken);
                 }
                 else
                 {
-                    boxingTokens.Add(UnsupportedParameterToken);
+                    instructions[index++] = new ParameterBoxingInstructions(UnsupportedParameterToken);
                 }
 
                 formalParameterPosition++;
             }
 
-            return boxingTokens.ToArray();
+            return instructions;
         }
 
-        private static unsafe uint[]? GetAncillaryBoxingTokensFromMethodSignature(MethodInfo method)
+        private static unsafe ParameterBoxingInstructions[]? GetAncillaryBoxingInstructionsFromMethodSignature(MethodInfo method)
         {
             try
             {
@@ -174,7 +177,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
                 MethodSignature<uint> methodSignature = methodDef.DecodeSignature(new BoxingTokensSignatureProvider(), genericContext: null);
 
-                return methodSignature.ParameterTypes.ToArray();
+                return methodSignature.ParameterTypes.Select(token => new ParameterBoxingInstructions(token)).ToArray();
             }
             catch (Exception)
             {

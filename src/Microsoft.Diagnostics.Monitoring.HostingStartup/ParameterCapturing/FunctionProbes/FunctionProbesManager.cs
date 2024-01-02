@@ -16,6 +16,29 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
+    internal enum BoxingInstruction : ushort
+    {
+        PrecomputedToken = 0,
+        TypeSpec = 1
+    }
+
+    internal struct ParameterBoxingInstructions
+    {
+        public BoxingInstruction BoxingInstruction;
+
+        public uint Token;
+
+        public IntPtr SignaturePtr;
+        public uint SignatureLength;
+
+        public ParameterBoxingInstructions() { }
+        public ParameterBoxingInstructions(uint token)
+        {
+            BoxingInstruction = BoxingInstruction.PrecomputedToken;
+            Token = token;
+        }
+    }
+
     internal sealed class FunctionProbesManager : IFunctionProbesManager
     {
         [DllImport(ProfilerIdentifiers.MutatingProfiler.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
@@ -28,8 +51,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         private static extern void RequestFunctionProbeInstallation(
             [MarshalAs(UnmanagedType.LPArray)] ulong[] funcIds,
             uint count,
-            [MarshalAs(UnmanagedType.LPArray)] uint[] boxingTokens,
-            [MarshalAs(UnmanagedType.LPArray)] uint[] boxingTokenCounts);
+            [MarshalAs(UnmanagedType.LPArray)] ParameterBoxingInstructions[] boxingInstructions,
+            [MarshalAs(UnmanagedType.LPArray)] uint[] boxingInstructionsCounts);
 
         private delegate void FunctionProbeRegistrationCallback(int hresult);
         private delegate void FunctionProbeInstallationCallback(int hresult);
@@ -254,8 +277,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             try
             {
                 List<ulong> functionIds = new(methods.Count);
-                List<uint> argumentCounts = new(methods.Count);
-                List<uint> boxingTokens = new();
+                List<ParameterBoxingInstructions> boxingInstructions = new();
+                List<uint> boxingInstructionCounts = new(methods.Count);
 
                 foreach (MethodInfo method in methods)
                 {
@@ -265,16 +288,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                         throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, ParameterCapturingStrings.ErrorMessage_FunctionDoesNotHaveIdFormatString, method.Name));
                     }
 
-                    uint[] methodBoxingTokens = BoxingTokens.GetBoxingTokens(method);
-                    if (!newMethodCache.TryAdd(functionId, new InstrumentedMethod(method, methodBoxingTokens)))
+                    ParameterBoxingInstructions[] instructions = BoxingInstructions.GetBoxingInstructions(method);
+                    if (!newMethodCache.TryAdd(functionId, new InstrumentedMethod(method, instructions)))
                     {
                         // Duplicate, ignore
                         continue;
                     }
 
                     functionIds.Add(functionId);
-                    argumentCounts.Add((uint)methodBoxingTokens.Length);
-                    boxingTokens.AddRange(methodBoxingTokens);
+                    boxingInstructionCounts.Add((uint)instructions.Length);
+                    boxingInstructions.AddRange(instructions);
                 }
 
                 probes.CacheMethods(methods);
@@ -284,8 +307,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 RequestFunctionProbeInstallation(
                     functionIds.ToArray(),
                     (uint)functionIds.Count,
-                    boxingTokens.ToArray(),
-                    argumentCounts.ToArray());
+                    boxingInstructions.ToArray(),
+                    boxingInstructionCounts.ToArray());
             }
             catch
             {

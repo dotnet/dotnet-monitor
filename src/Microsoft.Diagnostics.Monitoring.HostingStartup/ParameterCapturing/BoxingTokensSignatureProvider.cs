@@ -23,18 +23,18 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         //
         // Unsupported
         //
-        public uint GetArrayType(uint elementType, ArrayShape shape) => BoxingTokens.UnsupportedParameterToken;
-        public uint GetByReferenceType(uint elementType) => BoxingTokens.UnsupportedParameterToken;
-        public uint GetFunctionPointerType(MethodSignature<uint> signature) => BoxingTokens.UnsupportedParameterToken;
-        public uint GetGenericInstantiation(uint genericType, ImmutableArray<uint> typeArguments) => BoxingTokens.UnsupportedParameterToken;
-        public uint GetGenericMethodParameter(object? genericContext, int index) => BoxingTokens.UnsupportedParameterToken;
-        public uint GetGenericTypeParameter(object? genericContext, int index) => BoxingTokens.UnsupportedParameterToken;
-        public uint GetModifiedType(uint modifier, uint unmodifiedType, bool isRequired) => BoxingTokens.UnsupportedParameterToken;
-        public uint GetPinnedType(uint elementType) => BoxingTokens.UnsupportedParameterToken;
-        public uint GetPointerType(uint elementType) => BoxingTokens.UnsupportedParameterToken;
-        public uint GetPrimitiveType(PrimitiveTypeCode typeCode) => BoxingTokens.UnsupportedParameterToken;
-        public uint GetSZArrayType(uint elementType) => BoxingTokens.UnsupportedParameterToken;
-        public uint GetTypeFromDefinition(MetadataReader reader, TypeDefinitionHandle handle, byte rawTypeKind) => BoxingTokens.UnsupportedParameterToken;
-        public uint GetTypeFromSpecification(MetadataReader reader, object? genericContext, TypeSpecificationHandle handle, byte rawTypeKind) => BoxingTokens.UnsupportedParameterToken;
+        public uint GetArrayType(uint elementType, ArrayShape shape) => BoxingInstructions.UnsupportedParameterToken;
+        public uint GetByReferenceType(uint elementType) => BoxingInstructions.UnsupportedParameterToken;
+        public uint GetFunctionPointerType(MethodSignature<uint> signature) => BoxingInstructions.UnsupportedParameterToken;
+        public uint GetGenericInstantiation(uint genericType, ImmutableArray<uint> typeArguments) => BoxingInstructions.UnsupportedParameterToken;
+        public uint GetGenericMethodParameter(object? genericContext, int index) => BoxingInstructions.UnsupportedParameterToken;
+        public uint GetGenericTypeParameter(object? genericContext, int index) => BoxingInstructions.UnsupportedParameterToken;
+        public uint GetModifiedType(uint modifier, uint unmodifiedType, bool isRequired) => BoxingInstructions.UnsupportedParameterToken;
+        public uint GetPinnedType(uint elementType) => BoxingInstructions.UnsupportedParameterToken;
+        public uint GetPointerType(uint elementType) => BoxingInstructions.UnsupportedParameterToken;
+        public uint GetPrimitiveType(PrimitiveTypeCode typeCode) => BoxingInstructions.UnsupportedParameterToken;
+        public uint GetSZArrayType(uint elementType) => BoxingInstructions.UnsupportedParameterToken;
+        public uint GetTypeFromDefinition(MetadataReader reader, TypeDefinitionHandle handle, byte rawTypeKind) => BoxingInstructions.UnsupportedParameterToken;
+        public uint GetTypeFromSpecification(MetadataReader reader, object? genericContext, TypeSpecificationHandle handle, byte rawTypeKind) => BoxingInstructions.UnsupportedParameterToken;
     }
 }
