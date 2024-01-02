@@ -235,18 +235,18 @@ void STDMETHODCALLTYPE ProbeInstrumentation::OnFunctionProbeFault(ULONG64 uniqui
 STDAPI DLLEXPORT RequestFunctionProbeInstallation(
     ULONG64 functionIds[],
     ULONG32 count,
-    ULONG32 argumentBoxingTypes[],
-    ULONG32 argumentCounts[])
+    ULONG32 boxingInstructions[],
+    ULONG32 boxingInstructionsCounts[])
 {
     HRESULT hr;
 
     //
     // This method receives N (where n is "count") function IDs that probes should be installed into.
     //
-    // Along with this, boxing types are provided for every argument in all of the functions, and the number of 
-    // arguments for each function can be found using argumentCounts.
+    // Along with this, boxing instructions are provided for every parameter in every requested function,
+    // and the number of parameters for each function can be found using boxingInstructionsCounts.
     //
-    // The boxing types are passed in as a flattened multidimensional array (argumentBoxingTypes).
+    // The boxing types are passed in as a flattened multidimensional array (boxingInstructions).
     //
     //
 
@@ -263,22 +263,22 @@ STDAPI DLLEXPORT RequestFunctionProbeInstallation(
     ULONG32 offset = 0;
     for (ULONG32 i = 0; i < count; i++)
     {
-        if (UINT32_MAX - offset < argumentCounts[i])
+        if (UINT32_MAX - offset < boxingInstructionsCounts[i])
         {
             return E_INVALIDARG;
         }
 
-        vector<ULONG32> tokens;
-        tokens.reserve(argumentCounts[i]);
-        for (ULONG32 j = 0; j < argumentCounts[i]; j++)
+        vector<PARAMETER_BOXING_INSTRUCTIONS> boxingInstructions;
+        boxingInstructions.reserve(boxingInstructionsCounts[i]);
+        for (ULONG32 j = 0; j < boxingInstructionsCounts[i]; j++)
         {
-            tokens.push_back(argumentBoxingTypes[offset+j]);
+            boxingInstructions.push_back(boxingInstructions[offset+j]);
         }
-        offset += argumentCounts[i];
+        offset += boxingInstructionsCounts[i];
 
         UNPROCESSED_INSTRUMENTATION_REQUEST request;
         request.functionId = static_cast<FunctionID>(functionIds[i]);
-        request.boxingTypes = tokens;
+        request.boxingInstructions = boxingInstructions;
 
         requests.push_back(request);
     }
@@ -357,7 +357,7 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
         // For now just use the function id as the uniquifier.
         // Consider allowing the caller to specify one.
         processedRequest.uniquifier = static_cast<ULONG64>(req.functionId);
-        processedRequest.boxingTypes = req.boxingTypes;
+        processedRequest.boxingInstructions = req.boxingInstructions;
 
         IfFailLogRet(m_pCorProfilerInfo->GetFunctionInfo2(
             req.functionId,
@@ -523,7 +523,7 @@ STDAPI DLLEXPORT RegisterFunctionProbeCallbacks(
     {
         return E_FAIL;
     }
-   
+
     g_probeManagementCallbacks.pProbeRegistrationCallback = pRegistrationCallback;
     g_probeManagementCallbacks.pProbeInstallationCallback = pInstallationCallback;
     g_probeManagementCallbacks.pProbeUninstallationCallback = pUninstallationCallback;

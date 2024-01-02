@@ -11,10 +11,16 @@
 #include <vector>
 #include <memory>
 
+typedef struct _PARAMETER_BOXING_INSTRUCTIONS
+{
+    USHORT boxingInstruction;
+    UINT32 token;
+} PARAMETER_BOXING_INSTRUCTIONS;
+
 typedef struct _INSTRUMENTATION_REQUEST
 {
     ULONG64 uniquifier;
-    std::vector<ULONG32> boxingTypes;
+    std::vector<PARAMETER_BOXING_INSTRUCTIONS> boxingInstructions;
 
     ModuleID moduleId;
     mdMethodDef methodDef;

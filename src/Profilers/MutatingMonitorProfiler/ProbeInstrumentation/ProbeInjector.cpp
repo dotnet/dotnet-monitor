@@ -45,7 +45,7 @@ HRESULT ProbeInjector::InstallProbe(
     ExpectedPtr(pICorProfilerFunctionControl);
     ExpectedPtr(pFaultingProbeCallback);
 
-    if (request.boxingTypes.size() > UINT32_MAX)
+    if (request.boxingInstructions.size() > UINT32_MAX)
     {
         return E_INVALIDARG;
     }
@@ -73,7 +73,7 @@ HRESULT ProbeInjector::InstallProbe(
     ILInstr* pNestedCatchBegin = nullptr;
     ILInstr* pNestedCatchEnd = nullptr;
 
-    UINT32 numArgs = static_cast<UINT32>(request.boxingTypes.size());
+    UINT32 numArgs = static_cast<UINT32>(request.boxingInstructions.size());
 
     //
     // The below IL is equivalent to:
@@ -125,7 +125,8 @@ HRESULT ProbeInjector::InstallProbe(
         rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pNewInstr);
 
         // Load arg
-        ULONG32 typeInfo = request.boxingTypes.at(i);
+        PARAMETER_BOXING_INSTRUCTIONS boxingInstructions = request.boxingInstructions.at(i);
+        ULONG32 typeInfo = boxingInstructions.token;
         if (typeInfo == (SpecialCaseBoxingTypeFlag | static_cast<ULONG32>(SpecialCaseBoxingTypes::TYPE_UNKNOWN)))
         {
             pNewInstr = rewriter.NewILInstr();
