@@ -235,7 +235,7 @@ void STDMETHODCALLTYPE ProbeInstrumentation::OnFunctionProbeFault(ULONG64 uniqui
 STDAPI DLLEXPORT RequestFunctionProbeInstallation(
     ULONG64 functionIds[],
     ULONG32 count,
-    ULONG32 boxingInstructions[],
+    PARAMETER_BOXING_INSTRUCTIONS boxingInstructions[],
     ULONG32 boxingInstructionsCounts[])
 {
     HRESULT hr;
@@ -268,17 +268,17 @@ STDAPI DLLEXPORT RequestFunctionProbeInstallation(
             return E_INVALIDARG;
         }
 
-        vector<PARAMETER_BOXING_INSTRUCTIONS> boxingInstructions;
-        boxingInstructions.reserve(boxingInstructionsCounts[i]);
+        vector<PARAMETER_BOXING_INSTRUCTIONS> instructions;
+        instructions.reserve(boxingInstructionsCounts[i]);
         for (ULONG32 j = 0; j < boxingInstructionsCounts[i]; j++)
         {
-            boxingInstructions.push_back(boxingInstructions[offset+j]);
+            instructions.push_back(boxingInstructions[offset+j]);
         }
         offset += boxingInstructionsCounts[i];
 
         UNPROCESSED_INSTRUMENTATION_REQUEST request;
         request.functionId = static_cast<FunctionID>(functionIds[i]);
-        request.boxingInstructions = boxingInstructions;
+        request.boxingInstructions = instructions;
 
         requests.push_back(request);
     }
