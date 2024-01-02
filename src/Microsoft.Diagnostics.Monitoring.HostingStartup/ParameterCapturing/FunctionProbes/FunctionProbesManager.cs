@@ -28,7 +28,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         public uint Token;
 
-        public ParameterBoxingInstructions() { }
         public ParameterBoxingInstructions(uint token)
         {
             BoxingInstruction = BoxingInstruction.PrecomputedToken;

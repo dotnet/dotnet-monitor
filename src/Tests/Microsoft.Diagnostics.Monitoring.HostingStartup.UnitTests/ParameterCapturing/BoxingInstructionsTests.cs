@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using SampleMethods;
 using System;
-using System.Linq;
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
@@ -77,45 +77,45 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public void GetBoxingInstructions_Handles_Primitives()
         {
             // Arrange
-            uint[] expectedBoxingTokens = new uint[] {
-                SpecialCaseBoxingTypes.Boolean.BoxingToken(),
-                SpecialCaseBoxingTypes.Char.BoxingToken(),
-                SpecialCaseBoxingTypes.SByte.BoxingToken(),
-                SpecialCaseBoxingTypes.Byte.BoxingToken(),
-                SpecialCaseBoxingTypes.Int16.BoxingToken(),
-                SpecialCaseBoxingTypes.UInt16.BoxingToken(),
-                SpecialCaseBoxingTypes.Int32.BoxingToken(),
-                SpecialCaseBoxingTypes.UInt32.BoxingToken(),
-                SpecialCaseBoxingTypes.Int64.BoxingToken(),
-                SpecialCaseBoxingTypes.UInt64.BoxingToken(),
-                SpecialCaseBoxingTypes.Single.BoxingToken(),
-                SpecialCaseBoxingTypes.Double.BoxingToken()
-            };
+            ParameterBoxingInstructions[] expectedInstructions = [
+                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Boolean.BoxingToken()),
+                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Char.BoxingToken()),
+                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.SByte.BoxingToken()),
+                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Byte.BoxingToken()),
+                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Int16.BoxingToken()),
+                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.UInt16.BoxingToken()),
+                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Int32.BoxingToken()),
+                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.UInt32.BoxingToken()),
+                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Int64.BoxingToken()),
+                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.UInt64.BoxingToken()),
+                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Single.BoxingToken()),
+                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Double.BoxingToken()),
+            ];
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.Primitives));
 
             // Act
-            uint[] actualBoxingTokens = BoxingInstructions.GetBoxingInstructions(method).Select(instructions => instructions.Token).ToArray();
+            ParameterBoxingInstructions[] actualInstructions = BoxingInstructions.GetBoxingInstructions(method);
 
             // Assert
-            Assert.Equal(expectedBoxingTokens, actualBoxingTokens);
+            Assert.Equal(expectedInstructions, actualInstructions);
         }
 
         [Fact]
         public void GetBoxingInstructions_Handles_BuiltInReferenceTypes()
         {
             // Arrange
-            uint[] expectedBoxingTokens = new uint[] {
-                SpecialCaseBoxingTypes.Object.BoxingToken(),
-                SpecialCaseBoxingTypes.Object.BoxingToken(),
-                SpecialCaseBoxingTypes.Object.BoxingToken()
-            };
+            ParameterBoxingInstructions[] expectedInstructions = [
+                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Object.BoxingToken()),
+                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Object.BoxingToken()),
+                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Object.BoxingToken()),
+            ];
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.BuiltInReferenceTypes));
 
             // Act
-            uint[] actualBoxingTokens = BoxingInstructions.GetBoxingInstructions(method).Select(instructions => instructions.Token).ToArray();
+            ParameterBoxingInstructions[] actualInstructions = BoxingInstructions.GetBoxingInstructions(method);
 
             // Assert
-            Assert.Equal(expectedBoxingTokens, actualBoxingTokens);
+            Assert.Equal(expectedInstructions, actualInstructions);
         }
     }
 }
