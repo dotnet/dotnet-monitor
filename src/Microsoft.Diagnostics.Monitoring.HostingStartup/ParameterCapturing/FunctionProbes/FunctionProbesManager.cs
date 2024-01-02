@@ -18,8 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 {
     internal enum BoxingInstruction : ushort
     {
-        PrecomputedToken = 0,
-        TypeSpec = 1
+        PrecomputedToken = 0
     }
 
     internal struct ParameterBoxingInstructions
