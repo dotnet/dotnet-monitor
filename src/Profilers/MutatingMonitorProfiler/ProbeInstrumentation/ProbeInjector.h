@@ -11,9 +11,14 @@
 #include <vector>
 #include <memory>
 
+enum class BoxingInstruction : USHORT
+{
+    PRECOMPUTED_TOKEN = 0
+};
+
 typedef struct _PARAMETER_BOXING_INSTRUCTIONS
 {
-    USHORT boxingInstruction;
+    BoxingInstruction boxingInstruction;
     UINT32 token;
 } PARAMETER_BOXING_INSTRUCTIONS;
 
