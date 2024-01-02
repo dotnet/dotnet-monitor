@@ -28,9 +28,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         public uint Token;
 
-        public IntPtr SignaturePtr;
-        public uint SignatureLength;
-
         public ParameterBoxingInstructions() { }
         public ParameterBoxingInstructions(uint token)
         {
