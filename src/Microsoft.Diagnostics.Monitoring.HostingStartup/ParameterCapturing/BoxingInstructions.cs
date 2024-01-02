@@ -89,7 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     // To enable it in the future add a new special case token and when rewriting IL
                     // emit a ldobj instruction for it.
                     //
-                    instructions.Add(new ParameterBoxingInstructions(UnsupportedParameterToken));
+                    instructions.Add(UnsupportedParameterToken);
                 }
                 else
                 {
@@ -105,15 +105,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     paramType.IsByRefLike ||
                     paramType.IsPointer)
                 {
-                    instructions.Add(new ParameterBoxingInstructions(UnsupportedParameterToken));
+                    instructions.Add(UnsupportedParameterToken);
                 }
                 else if (paramType.IsGenericParameter)
                 {
-                    instructions.Add(new ParameterBoxingInstructions(UnsupportedParameterToken));
+                    instructions.Add(UnsupportedParameterToken);
                 }
                 else if (paramType.IsPrimitive)
                 {
-                    instructions.Add(new ParameterBoxingInstructions(GetSpecialCaseBoxingTokenForPrimitive(paramType)));
+                    instructions.Add(GetSpecialCaseBoxingTokenForPrimitive(paramType));
                 }
                 else if (paramType.IsValueType)
                 {
@@ -121,7 +121,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     if (paramType.IsGenericType)
                     {
                         // Typespec
-                        instructions.Add(new ParameterBoxingInstructions(UnsupportedParameterToken));
+                        instructions.Add(UnsupportedParameterToken);
                     }
                     else if (paramType.Assembly != method.Module.Assembly)
                     {
@@ -129,28 +129,28 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                         if (formalParameterPosition >= 0)
                         {
                             // value-type type refs are supported by the signature decoder
-                            instructions.Add(ancillaryInstructions.Value?[formalParameterPosition] ?? new ParameterBoxingInstructions(UnsupportedParameterToken));
+                            instructions.Add(ancillaryInstructions.Value?[formalParameterPosition] ?? UnsupportedParameterToken);
                         }
                         else
                         {
-                            instructions.Add(new ParameterBoxingInstructions(UnsupportedParameterToken));
+                            instructions.Add(UnsupportedParameterToken);
                         }
                     }
                     else
                     {
                         // Typedef
-                        instructions.Add(new ParameterBoxingInstructions((uint)paramType.MetadataToken));
+                        instructions.Add((uint)paramType.MetadataToken);
                     }
                 }
                 else if (paramType.IsArray ||
                     paramType.IsClass ||
                     paramType.IsInterface)
                 {
-                    instructions.Add(new ParameterBoxingInstructions(SkipBoxingToken));
+                    instructions.Add(SkipBoxingToken);
                 }
                 else
                 {
-                    instructions.Add(new ParameterBoxingInstructions(UnsupportedParameterToken));
+                    instructions.Add(UnsupportedParameterToken);
                 }
 
                 formalParameterPosition++;
@@ -175,7 +175,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
                 MethodSignature<uint> methodSignature = methodDef.DecodeSignature(new BoxingTokensSignatureProvider(), genericContext: null);
 
-                return methodSignature.ParameterTypes.Select(token => new ParameterBoxingInstructions(token)).ToArray();
+                return methodSignature.ParameterTypes.Cast<ParameterBoxingInstructions>().ToArray();
             }
             catch (Exception)
             {

@@ -27,10 +27,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         public uint Token;
 
-        public ParameterBoxingInstructions(uint token)
+        public static implicit operator ParameterBoxingInstructions(uint mdToken)
         {
-            BoxingInstruction = BoxingInstruction.PrecomputedToken;
-            Token = token;
+            return new ParameterBoxingInstructions()
+            {
+                BoxingInstruction = BoxingInstruction.PrecomputedToken,
+                Token = mdToken
+            };
         }
     }
 

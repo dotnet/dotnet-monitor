@@ -78,18 +78,18 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         {
             // Arrange
             ParameterBoxingInstructions[] expectedInstructions = [
-                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Boolean.BoxingToken()),
-                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Char.BoxingToken()),
-                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.SByte.BoxingToken()),
-                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Byte.BoxingToken()),
-                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Int16.BoxingToken()),
-                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.UInt16.BoxingToken()),
-                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Int32.BoxingToken()),
-                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.UInt32.BoxingToken()),
-                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Int64.BoxingToken()),
-                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.UInt64.BoxingToken()),
-                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Single.BoxingToken()),
-                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Double.BoxingToken()),
+                SpecialCaseBoxingTypes.Boolean.BoxingToken(),
+                SpecialCaseBoxingTypes.Char.BoxingToken(),
+                SpecialCaseBoxingTypes.SByte.BoxingToken(),
+                SpecialCaseBoxingTypes.Byte.BoxingToken(),
+                SpecialCaseBoxingTypes.Int16.BoxingToken(),
+                SpecialCaseBoxingTypes.UInt16.BoxingToken(),
+                SpecialCaseBoxingTypes.Int32.BoxingToken(),
+                SpecialCaseBoxingTypes.UInt32.BoxingToken(),
+                SpecialCaseBoxingTypes.Int64.BoxingToken(),
+                SpecialCaseBoxingTypes.UInt64.BoxingToken(),
+                SpecialCaseBoxingTypes.Single.BoxingToken(),
+                SpecialCaseBoxingTypes.Double.BoxingToken(),
             ];
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.Primitives));
 
@@ -105,9 +105,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         {
             // Arrange
             ParameterBoxingInstructions[] expectedInstructions = [
-                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Object.BoxingToken()),
-                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Object.BoxingToken()),
-                new ParameterBoxingInstructions(SpecialCaseBoxingTypes.Object.BoxingToken()),
+                SpecialCaseBoxingTypes.Object.BoxingToken(),
+                SpecialCaseBoxingTypes.Object.BoxingToken(),
+                SpecialCaseBoxingTypes.Object.BoxingToken(),
             ];
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.BuiltInReferenceTypes));
 
