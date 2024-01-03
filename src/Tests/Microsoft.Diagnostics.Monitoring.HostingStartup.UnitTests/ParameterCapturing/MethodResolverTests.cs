@@ -137,11 +137,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             // Arrange
             AssemblyLoadContext customContext = new("Custom context", isCollectible: false);
             // Load an assembly that's already loaded (but not our own assembly as that'll impact other tests in this class).
-            Assembly duplicateHostingStartupAssembly = customContext.LoadFromAssemblyPath(typeof(BoxingTokens).Assembly.Location);
+            Assembly duplicateHostingStartupAssembly = customContext.LoadFromAssemblyPath(typeof(BoxingInstructions).Assembly.Location);
             Assert.NotNull(duplicateHostingStartupAssembly);
 
             MethodResolver resolver = new();
-            MethodDescription description = GetMethodDescription(typeof(BoxingTokens), nameof(BoxingTokens.GetBoxingTokens));
+            MethodDescription description = GetMethodDescription(typeof(BoxingInstructions), nameof(BoxingInstructions.GetBoxingInstructions));
 
             // Act
             List<MethodInfo> methods = resolver.ResolveMethodDescription(description);

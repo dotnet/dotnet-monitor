@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
         public void TriggerFault(MethodInfo method)
         {
-            InstrumentedMethod faultingMethod = new(method, BoxingTokens.GetBoxingTokens(method));
+            InstrumentedMethod faultingMethod = new(method, BoxingInstructions.GetBoxingInstructions(method));
             OnProbeFault?.Invoke(this, faultingMethod);
         }
 
