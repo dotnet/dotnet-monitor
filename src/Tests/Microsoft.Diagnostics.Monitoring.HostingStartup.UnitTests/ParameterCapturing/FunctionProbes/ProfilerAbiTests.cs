@@ -19,7 +19,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
         private static void EnsureIsBlittable<T>() where T : unmanaged
         {
-            // bool and char are both unmanaged types but are not blittable, check for them.
+            // The above unmanaged constraint will ensure that T doesn't contain any GC references at build time.
+            // However bool and char are both unmanaged types but are not blittable so we need to check for those.
             FieldInfo[] fields = typeof(T).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
 
             foreach (FieldInfo field in fields)
