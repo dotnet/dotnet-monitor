@@ -236,7 +236,7 @@ STDAPI DLLEXPORT RequestFunctionProbeInstallation(
     ULONG64 functionIds[],
     ULONG32 count,
     PARAMETER_BOXING_INSTRUCTIONS boxingInstructions[],
-    ULONG32 boxingInstructionsCounts[])
+    ULONG32 parameterCounts[])
 {
     HRESULT hr;
 
@@ -244,10 +244,9 @@ STDAPI DLLEXPORT RequestFunctionProbeInstallation(
     // This method receives N (where n is "count") function IDs that probes should be installed into.
     //
     // Along with this, boxing instructions are provided for every parameter in every requested function,
-    // and the number of parameters for each function can be found using boxingInstructionsCounts.
+    // and the number of parameters for each function can be found using parameterCounts.
     //
     // The boxing types are passed in as a flattened multidimensional array (boxingInstructions).
-    //
     //
 
     //
@@ -263,18 +262,18 @@ STDAPI DLLEXPORT RequestFunctionProbeInstallation(
     ULONG32 offset = 0;
     for (ULONG32 i = 0; i < count; i++)
     {
-        if (UINT32_MAX - offset < boxingInstructionsCounts[i])
+        if (UINT32_MAX - offset < parameterCounts[i])
         {
             return E_INVALIDARG;
         }
 
         vector<PARAMETER_BOXING_INSTRUCTIONS> instructions;
-        instructions.reserve(boxingInstructionsCounts[i]);
-        for (ULONG32 j = 0; j < boxingInstructionsCounts[i]; j++)
+        instructions.reserve(parameterCounts[i]);
+        for (ULONG32 j = 0; j < parameterCounts[i]; j++)
         {
             instructions.push_back(boxingInstructions[offset+j]);
         }
-        offset += boxingInstructionsCounts[i];
+        offset += parameterCounts[i];
 
         UNPROCESSED_INSTRUMENTATION_REQUEST request;
         request.functionId = static_cast<FunctionID>(functionIds[i]);

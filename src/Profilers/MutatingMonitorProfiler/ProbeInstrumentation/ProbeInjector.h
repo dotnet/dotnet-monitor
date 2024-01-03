@@ -11,14 +11,14 @@
 #include <vector>
 #include <memory>
 
-enum class BoxingInstruction : USHORT
+enum class InstructionType : USHORT
 {
     PRECOMPUTED_TOKEN = 0
 };
 
 typedef struct _PARAMETER_BOXING_INSTRUCTIONS
 {
-    BoxingInstruction boxingInstruction;
+    InstructionType instructionType;
     UINT32 token;
 } PARAMETER_BOXING_INSTRUCTIONS;
 
