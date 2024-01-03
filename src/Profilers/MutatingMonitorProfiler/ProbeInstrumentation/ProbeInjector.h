@@ -38,6 +38,10 @@ enum class SpecialCaseBoxingTypes : ULONG32
     TYPE_DOUBLE
 };
 
+// Ensure that the size of SpecialCaseBoxingTypes is the same size as ULONG32
+// so that the union used below for easy type access doesn't alter the size of the struct.
+static_assert(sizeof(SpecialCaseBoxingTypes) == sizeof(ULONG32), "SpecialCaseBoxingTypes should be same size as ULONG32");
+
 typedef struct _PARAMETER_BOXING_INSTRUCTIONS
 {
     InstructionType instructionType;
