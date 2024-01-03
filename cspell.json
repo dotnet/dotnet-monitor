@@ -20,7 +20,7 @@
         "arity",
         "armv",
         "Bldr",
-        "Blittable",
+        "blittable",
         "Brotli",
         "Browsable",
         "callstacks",
