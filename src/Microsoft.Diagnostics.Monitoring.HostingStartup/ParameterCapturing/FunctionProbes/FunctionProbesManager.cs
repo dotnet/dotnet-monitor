@@ -13,42 +13,9 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using static Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.BoxingInstructions;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
-    internal enum InstructionType : ushort
-    {
-        Unknown = 0,
-        SpecialCaseToken,
-        MetadataToken
-    }
-
-    internal struct ParameterBoxingInstructions
-    {
-        public InstructionType InstructionType;
-
-        public uint Token;
-
-        public static implicit operator ParameterBoxingInstructions(uint mdToken)
-        {
-            return new ParameterBoxingInstructions()
-            {
-                InstructionType = InstructionType.MetadataToken,
-                Token = mdToken
-            };
-        }
-
-        public static implicit operator ParameterBoxingInstructions(SpecialCaseBoxingTypes token)
-        {
-            return new ParameterBoxingInstructions()
-            {
-                InstructionType = InstructionType.SpecialCaseToken,
-                Token = (uint)token
-            };
-        }
-    }
-
     internal sealed class FunctionProbesManager : IFunctionProbesManager
     {
         [DllImport(ProfilerIdentifiers.MutatingProfiler.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]

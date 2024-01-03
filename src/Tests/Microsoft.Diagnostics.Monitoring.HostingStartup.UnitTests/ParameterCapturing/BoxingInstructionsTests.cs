@@ -9,7 +9,6 @@ using System;
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
-using static Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.BoxingInstructions;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing
 {

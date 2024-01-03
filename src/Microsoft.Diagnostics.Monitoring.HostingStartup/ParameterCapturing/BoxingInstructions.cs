@@ -14,26 +14,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     internal static class BoxingInstructions
     {
-        public enum SpecialCaseBoxingTypes : uint
-        {
-            Unknown = 0,
-            Object,
-            Boolean,
-            Char,
-            SByte,
-            Byte,
-            Int16,
-            UInt16,
-            Int32,
-            UInt32,
-            Int64,
-            UInt64,
-            IntPtr,
-            UIntPtr,
-            Single,
-            Double,
-        };
-
         public static bool IsParameterSupported(ParameterBoxingInstructions instructions)
         {
             return !(instructions.InstructionType == InstructionType.SpecialCaseToken && instructions.Token == (uint)SpecialCaseBoxingTypes.Unknown);
