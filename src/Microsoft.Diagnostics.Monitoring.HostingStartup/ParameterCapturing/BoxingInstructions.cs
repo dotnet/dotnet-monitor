@@ -14,10 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
     internal static class BoxingInstructions
     {
-        public static readonly uint UnsupportedParameterToken = SpecialCaseBoxingTypes.Unknown.BoxingToken();
-        public static readonly uint SkipBoxingToken = SpecialCaseBoxingTypes.Object.BoxingToken();
-
-        public enum SpecialCaseBoxingTypes
+        public enum SpecialCaseBoxingTypes : uint
         {
             Unknown = 0,
             Object,
@@ -37,15 +34,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             Double,
         };
 
-        public static uint BoxingToken(this SpecialCaseBoxingTypes specialCase)
+        public static bool IsParameterSupported(ParameterBoxingInstructions instructions)
         {
-            const uint SpecialCaseBoxingTypeFlag = 0x7f000000;
-            return SpecialCaseBoxingTypeFlag | (uint)specialCase;
-        }
-
-        public static bool IsParameterSupported(uint token)
-        {
-            return token != UnsupportedParameterToken;
+            return !(instructions.InstructionType == InstructionType.SpecialCaseToken && instructions.Token == (uint)SpecialCaseBoxingTypes.Unknown);
         }
 
         public static bool[] AreParametersSupported(ParameterBoxingInstructions[] tokens)
@@ -53,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             bool[] supported = new bool[tokens.Length];
             for (int i = 0; i < supported.Length; i++)
             {
-                supported[i] = IsParameterSupported(tokens[i].Token);
+                supported[i] = IsParameterSupported(tokens[i]);
             }
 
             return supported;
@@ -89,7 +80,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     // To enable it in the future add a new special case token and when rewriting IL
                     // emit a ldobj instruction for it.
                     //
-                    instructions.Add(UnsupportedParameterToken);
+                    instructions.Add(SpecialCaseBoxingTypes.Unknown);
                 }
                 else
                 {
@@ -105,11 +96,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     paramType.IsByRefLike ||
                     paramType.IsPointer)
                 {
-                    instructions.Add(UnsupportedParameterToken);
+                    instructions.Add(SpecialCaseBoxingTypes.Unknown);
                 }
                 else if (paramType.IsGenericParameter)
                 {
-                    instructions.Add(UnsupportedParameterToken);
+                    instructions.Add(SpecialCaseBoxingTypes.Unknown);
                 }
                 else if (paramType.IsPrimitive)
                 {
@@ -121,7 +112,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     if (paramType.IsGenericType)
                     {
                         // Typespec
-                        instructions.Add(UnsupportedParameterToken);
+                        instructions.Add(SpecialCaseBoxingTypes.Unknown);
                     }
                     else if (paramType.Assembly != method.Module.Assembly)
                     {
@@ -129,11 +120,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                         if (formalParameterPosition >= 0)
                         {
                             // value-type type refs are supported by the signature decoder
-                            instructions.Add(ancillaryInstructions.Value?[formalParameterPosition] ?? UnsupportedParameterToken);
+                            instructions.Add(ancillaryInstructions.Value?[formalParameterPosition] ?? SpecialCaseBoxingTypes.Unknown);
                         }
                         else
                         {
-                            instructions.Add(UnsupportedParameterToken);
+                            instructions.Add(SpecialCaseBoxingTypes.Unknown);
                         }
                     }
                     else
@@ -146,11 +137,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     paramType.IsClass ||
                     paramType.IsInterface)
                 {
-                    instructions.Add(SkipBoxingToken);
+                    instructions.Add(SpecialCaseBoxingTypes.Object);
                 }
                 else
                 {
-                    instructions.Add(UnsupportedParameterToken);
+                    instructions.Add(SpecialCaseBoxingTypes.Unknown);
                 }
 
                 formalParameterPosition++;
@@ -173,9 +164,23 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 MethodDefinitionHandle methodDefHandle = (MethodDefinitionHandle)MetadataTokens.Handle(method.MetadataToken);
                 MethodDefinition methodDef = mdReader.GetMethodDefinition(methodDefHandle);
 
-                MethodSignature<uint> methodSignature = methodDef.DecodeSignature(new BoxingTokensSignatureProvider(), genericContext: null);
+                MethodSignature<uint?> methodSignature = methodDef.DecodeSignature(new BoxingTokensSignatureProvider(), genericContext: null);
 
-                return methodSignature.ParameterTypes.Cast<ParameterBoxingInstructions>().ToArray();
+                ParameterBoxingInstructions[] instructions = new ParameterBoxingInstructions[methodSignature.ParameterTypes.Length];
+                for (int i = 0; i < methodSignature.ParameterTypes.Length; i++)
+                {
+                    uint? mdToken = methodSignature.ParameterTypes[i];
+                    if (mdToken.HasValue)
+                    {
+                        instructions[i] = mdToken.Value;
+                    }
+                    else
+                    {
+                        instructions[i] = SpecialCaseBoxingTypes.Unknown;
+                    }
+                }
+
+                return instructions;
             }
             catch (Exception)
             {
@@ -183,67 +188,66 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             }
         }
 
-        private static uint GetSpecialCaseBoxingTokenForPrimitive(Type primitiveType)
+        private static SpecialCaseBoxingTypes GetSpecialCaseBoxingTokenForPrimitive(Type primitiveType)
         {
-            SpecialCaseBoxingTypes boxingType = SpecialCaseBoxingTypes.Unknown;
             if (primitiveType == typeof(sbyte))
             {
-                boxingType = SpecialCaseBoxingTypes.SByte;
+                return SpecialCaseBoxingTypes.SByte;
             }
             else if (primitiveType == typeof(byte))
             {
-                boxingType = SpecialCaseBoxingTypes.Byte;
+                return SpecialCaseBoxingTypes.Byte;
             }
             else if (primitiveType == typeof(short))
             {
-                boxingType = SpecialCaseBoxingTypes.Int16;
+                return SpecialCaseBoxingTypes.Int16;
             }
             else if (primitiveType == typeof(ushort))
             {
-                boxingType = SpecialCaseBoxingTypes.UInt16;
+                return SpecialCaseBoxingTypes.UInt16;
             }
             else if (primitiveType == typeof(int))
             {
-                boxingType = SpecialCaseBoxingTypes.Int32;
+                return SpecialCaseBoxingTypes.Int32;
             }
             else if (primitiveType == typeof(uint))
             {
-                boxingType = SpecialCaseBoxingTypes.UInt32;
+                return SpecialCaseBoxingTypes.UInt32;
             }
             else if (primitiveType == typeof(long))
             {
-                boxingType = SpecialCaseBoxingTypes.Int64;
+                return SpecialCaseBoxingTypes.Int64;
             }
             else if (primitiveType == typeof(ulong))
             {
-                boxingType = SpecialCaseBoxingTypes.UInt64;
+                return SpecialCaseBoxingTypes.UInt64;
             }
             else if (primitiveType == typeof(bool))
             {
-                boxingType = SpecialCaseBoxingTypes.Boolean;
+                return SpecialCaseBoxingTypes.Boolean;
             }
             else if (primitiveType == typeof(char))
             {
-                boxingType = SpecialCaseBoxingTypes.Char;
+                return SpecialCaseBoxingTypes.Char;
             }
             else if (primitiveType == typeof(float))
             {
-                boxingType = SpecialCaseBoxingTypes.Single;
+                return SpecialCaseBoxingTypes.Single;
             }
             else if (primitiveType == typeof(double))
             {
-                boxingType = SpecialCaseBoxingTypes.Double;
+                return SpecialCaseBoxingTypes.Double;
             }
             else if (primitiveType == typeof(IntPtr))
             {
-                boxingType = SpecialCaseBoxingTypes.IntPtr;
+                return SpecialCaseBoxingTypes.IntPtr;
             }
             else if (primitiveType == typeof(UIntPtr))
             {
-                boxingType = SpecialCaseBoxingTypes.UIntPtr;
+                return SpecialCaseBoxingTypes.UIntPtr;
             }
 
-            return boxingType.BoxingToken();
+            return SpecialCaseBoxingTypes.Unknown;
         }
     }
 }

@@ -78,18 +78,18 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         {
             // Arrange
             ParameterBoxingInstructions[] expectedInstructions = [
-                SpecialCaseBoxingTypes.Boolean.BoxingToken(),
-                SpecialCaseBoxingTypes.Char.BoxingToken(),
-                SpecialCaseBoxingTypes.SByte.BoxingToken(),
-                SpecialCaseBoxingTypes.Byte.BoxingToken(),
-                SpecialCaseBoxingTypes.Int16.BoxingToken(),
-                SpecialCaseBoxingTypes.UInt16.BoxingToken(),
-                SpecialCaseBoxingTypes.Int32.BoxingToken(),
-                SpecialCaseBoxingTypes.UInt32.BoxingToken(),
-                SpecialCaseBoxingTypes.Int64.BoxingToken(),
-                SpecialCaseBoxingTypes.UInt64.BoxingToken(),
-                SpecialCaseBoxingTypes.Single.BoxingToken(),
-                SpecialCaseBoxingTypes.Double.BoxingToken(),
+                SpecialCaseBoxingTypes.Boolean,
+                SpecialCaseBoxingTypes.Char,
+                SpecialCaseBoxingTypes.SByte,
+                SpecialCaseBoxingTypes.Byte,
+                SpecialCaseBoxingTypes.Int16,
+                SpecialCaseBoxingTypes.UInt16,
+                SpecialCaseBoxingTypes.Int32,
+                SpecialCaseBoxingTypes.UInt32,
+                SpecialCaseBoxingTypes.Int64,
+                SpecialCaseBoxingTypes.UInt64,
+                SpecialCaseBoxingTypes.Single,
+                SpecialCaseBoxingTypes.Double,
             ];
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.Primitives));
 
@@ -105,9 +105,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         {
             // Arrange
             ParameterBoxingInstructions[] expectedInstructions = [
-                SpecialCaseBoxingTypes.Object.BoxingToken(),
-                SpecialCaseBoxingTypes.Object.BoxingToken(),
-                SpecialCaseBoxingTypes.Object.BoxingToken(),
+                SpecialCaseBoxingTypes.Object,
+                SpecialCaseBoxingTypes.Object,
+                SpecialCaseBoxingTypes.Object,
             ];
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.BuiltInReferenceTypes));
 
