@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             //
             // A signature decoder will used to determine boxing tokens for parameter types that cannot be determined from standard
             // reflection alone. The boxing tokens generated from this decoder should only be used to fill in these gaps
-            // as it is not a comprehensive decoder and will produce UnsupportedParameterToken for any types not explicitly mentioned
+            // as it is not a comprehensive decoder and will produce an unsupport boxing instruction for any types not explicitly mentioned
             // in BoxingTokensSignatureProvider's summary.
             // 
             Lazy<ParameterBoxingInstructions[]?> ancillaryInstructions = new(() => GetAncillaryBoxingInstructionsFromMethodSignature(method));
@@ -144,23 +144,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 MethodDefinitionHandle methodDefHandle = (MethodDefinitionHandle)MetadataTokens.Handle(method.MetadataToken);
                 MethodDefinition methodDef = mdReader.GetMethodDefinition(methodDefHandle);
 
-                MethodSignature<uint?> methodSignature = methodDef.DecodeSignature(new BoxingTokensSignatureProvider(), genericContext: null);
-
-                ParameterBoxingInstructions[] instructions = new ParameterBoxingInstructions[methodSignature.ParameterTypes.Length];
-                for (int i = 0; i < methodSignature.ParameterTypes.Length; i++)
-                {
-                    uint? mdToken = methodSignature.ParameterTypes[i];
-                    if (mdToken.HasValue)
-                    {
-                        instructions[i] = mdToken.Value;
-                    }
-                    else
-                    {
-                        instructions[i] = SpecialCaseBoxingTypes.Unknown;
-                    }
-                }
-
-                return instructions;
+                MethodSignature<ParameterBoxingInstructions> methodSignature = methodDef.DecodeSignature(new BoxingTokensSignatureProvider(), genericContext: null);
+                return [.. methodSignature.ParameterTypes];
             }
             catch (Exception)
             {

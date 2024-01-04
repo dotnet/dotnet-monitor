@@ -1,6 +1,12 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+//
+// !!IMPORTANT!!
+// All types in this file are also used by the mutating profiler during PINVOKEs and so **need** to be kept in sync
+// with the profiler's version (found in src\Profilers\MutatingMonitorProfiler\ProbeInstrumentation\ProbeInjector.h).
+//
+
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
     internal enum SpecialCaseBoxingTypes : uint
