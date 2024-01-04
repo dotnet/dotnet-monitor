@@ -2,22 +2,22 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using SampleMethods;
 using System;
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
-using static Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.BoxingTokens;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
-    public class BoxingTokensTests
+    public class BoxingInstructionsTests
     {
         private readonly ITestOutputHelper _outputHelper;
 
-        public BoxingTokensTests(ITestOutputHelper outputHelper)
+        public BoxingInstructionsTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
         }
@@ -46,75 +46,75 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.ValueType_TypeSpec), false)]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.VarArgs), true, true)]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.Unicode_ΦΨ), true)]
-        public void GetBoxingTokens_Detects_UnsupportedParameters(Type declaringType, string methodName, params bool[] supported)
+        public void GetBoxingInstructions_Detects_UnsupportedParameters(Type declaringType, string methodName, params bool[] supported)
         {
             // Arrange
             MethodInfo method = declaringType.GetMethod(methodName);
 
             // Act
-            bool[] supportedParameters = BoxingTokens.AreParametersSupported(BoxingTokens.GetBoxingTokens(method));
+            bool[] supportedParameters = BoxingInstructions.AreParametersSupported(BoxingInstructions.GetBoxingInstructions(method));
 
             // Assert
             Assert.Equal(supported, supportedParameters);
         }
 
         [Fact]
-        public void GetBoxingTokens_Detects_UnsupportedGenericParameters()
+        public void GetBoxingInstructions_Detects_UnsupportedGenericParameters()
         {
             // Arrange
             MethodInfo method = Type.GetType($"{nameof(SampleMethods)}.GenericTestMethodSignatures`2").GetMethod("GenericParameters");
             bool[] supported = new bool[] { true, false, false, false };
 
             // Act
-            bool[] supportedParameters = BoxingTokens.AreParametersSupported(BoxingTokens.GetBoxingTokens(method));
+            bool[] supportedParameters = BoxingInstructions.AreParametersSupported(BoxingInstructions.GetBoxingInstructions(method));
 
             // Assert
             Assert.Equal(supported, supportedParameters);
         }
 
         [Fact]
-        public void GetBoxingTokens_Handles_Primitives()
+        public void GetBoxingInstructions_Handles_Primitives()
         {
             // Arrange
-            uint[] expectedBoxingTokens = new uint[] {
-                SpecialCaseBoxingTypes.Boolean.BoxingToken(),
-                SpecialCaseBoxingTypes.Char.BoxingToken(),
-                SpecialCaseBoxingTypes.SByte.BoxingToken(),
-                SpecialCaseBoxingTypes.Byte.BoxingToken(),
-                SpecialCaseBoxingTypes.Int16.BoxingToken(),
-                SpecialCaseBoxingTypes.UInt16.BoxingToken(),
-                SpecialCaseBoxingTypes.Int32.BoxingToken(),
-                SpecialCaseBoxingTypes.UInt32.BoxingToken(),
-                SpecialCaseBoxingTypes.Int64.BoxingToken(),
-                SpecialCaseBoxingTypes.UInt64.BoxingToken(),
-                SpecialCaseBoxingTypes.Single.BoxingToken(),
-                SpecialCaseBoxingTypes.Double.BoxingToken()
-            };
+            ParameterBoxingInstructions[] expectedInstructions = [
+                SpecialCaseBoxingTypes.Boolean,
+                SpecialCaseBoxingTypes.Char,
+                SpecialCaseBoxingTypes.SByte,
+                SpecialCaseBoxingTypes.Byte,
+                SpecialCaseBoxingTypes.Int16,
+                SpecialCaseBoxingTypes.UInt16,
+                SpecialCaseBoxingTypes.Int32,
+                SpecialCaseBoxingTypes.UInt32,
+                SpecialCaseBoxingTypes.Int64,
+                SpecialCaseBoxingTypes.UInt64,
+                SpecialCaseBoxingTypes.Single,
+                SpecialCaseBoxingTypes.Double,
+            ];
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.Primitives));
 
             // Act
-            uint[] actualBoxingTokens = BoxingTokens.GetBoxingTokens(method);
+            ParameterBoxingInstructions[] actualInstructions = BoxingInstructions.GetBoxingInstructions(method);
 
             // Assert
-            Assert.Equal(expectedBoxingTokens, actualBoxingTokens);
+            Assert.Equal(expectedInstructions, actualInstructions);
         }
 
         [Fact]
-        public void GetBoxingTokens_Handles_BuiltInReferenceTypes()
+        public void GetBoxingInstructions_Handles_BuiltInReferenceTypes()
         {
             // Arrange
-            uint[] expectedBoxingTokens = new uint[] {
-                SpecialCaseBoxingTypes.Object.BoxingToken(),
-                SpecialCaseBoxingTypes.Object.BoxingToken(),
-                SpecialCaseBoxingTypes.Object.BoxingToken()
-            };
+            ParameterBoxingInstructions[] expectedInstructions = [
+                SpecialCaseBoxingTypes.Object,
+                SpecialCaseBoxingTypes.Object,
+                SpecialCaseBoxingTypes.Object,
+            ];
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.BuiltInReferenceTypes));
 
             // Act
-            uint[] actualBoxingTokens = BoxingTokens.GetBoxingTokens(method);
+            ParameterBoxingInstructions[] actualInstructions = BoxingInstructions.GetBoxingInstructions(method);
 
             // Assert
-            Assert.Equal(expectedBoxingTokens, actualBoxingTokens);
+            Assert.Equal(expectedInstructions, actualInstructions);
         }
     }
 }
