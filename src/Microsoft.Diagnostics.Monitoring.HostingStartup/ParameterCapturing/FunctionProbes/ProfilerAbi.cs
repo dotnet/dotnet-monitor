@@ -7,6 +7,8 @@
 // with the profiler's version (found in src\Profilers\MutatingMonitorProfiler\ProbeInstrumentation\ProbeInjector.h).
 //
 
+using System.Runtime.InteropServices;
+
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
     internal enum SpecialCaseBoxingTypes : uint
@@ -36,6 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         MetadataToken
     }
 
+    [StructLayout(LayoutKind.Sequential)]
     internal struct ParameterBoxingInstructions
     {
         public InstructionType InstructionType;

@@ -38,17 +38,22 @@ enum class SpecialCaseBoxingTypes : ULONG32
     TYPE_DOUBLE
 };
 
+typedef union _BOXING_INSTRUCTION_TOKEN_UNION
+{
+    ULONG32 mdToken;
+    SpecialCaseBoxingTypes specialCaseToken;
+} BOXING_INSTRUCTION_TOKEN_UNION;
+
 // Ensure that the size of SpecialCaseBoxingTypes is the same size as ULONG32
 // so that the union used below for easy type access doesn't alter the size of the struct.
 static_assert(sizeof(SpecialCaseBoxingTypes) == sizeof(ULONG32), "SpecialCaseBoxingTypes should be same size as ULONG32");
+// Also make sure the union is the expected size.
+static_assert(sizeof(BOXING_INSTRUCTION_TOKEN_UNION) == sizeof(ULONG32), "BOXING_INSTRUCTION_TOKEN_UNION should be same size as ULONG32");
 
 typedef struct _PARAMETER_BOXING_INSTRUCTIONS
 {
     InstructionType instructionType;
-    union {
-        ULONG32 mdToken;
-        SpecialCaseBoxingTypes specialCaseToken;
-    } token;
+    BOXING_INSTRUCTION_TOKEN_UNION token;
 } PARAMETER_BOXING_INSTRUCTIONS;
 
 typedef struct _INSTRUMENTATION_REQUEST
