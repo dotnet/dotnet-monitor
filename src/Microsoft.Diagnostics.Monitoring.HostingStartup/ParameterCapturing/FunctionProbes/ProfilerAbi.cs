@@ -3,7 +3,7 @@
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
-    public enum SpecialCaseBoxingTypes : uint
+    internal enum SpecialCaseBoxingTypes : uint
     {
         Unknown = 0,
         Object,
