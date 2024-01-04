@@ -43,6 +43,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
     {
         public InstructionType InstructionType;
 
+        //
+        // NOTE: The profiler represents this Token field as a union for easier type handling.
+        // However it takes extra steps (static asserts) to ensure that the union is the same
+        // size as a uint so it won't impact the size of the struct or field offsets.
+        //
         public uint Token;
 
         public static implicit operator ParameterBoxingInstructions(uint mdToken)
