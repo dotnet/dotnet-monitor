@@ -356,7 +356,6 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
         // For now just use the function id as the uniquifier.
         // Consider allowing the caller to specify one.
         processedRequest.uniquifier = static_cast<ULONG64>(req.functionId);
-        processedRequest.boxingInstructions = req.boxingInstructions;
 
         IfFailLogRet(m_pCorProfilerInfo->GetFunctionInfo2(
             req.functionId,
@@ -367,6 +366,29 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
             0,
             nullptr,
             nullptr));
+
+        ComPtr<IMetaDataEmit> pMetadataEmit;
+        IfFailRet(m_pCorProfilerInfo->GetModuleMetaData(
+            processedRequest.moduleId,
+            ofRead | ofWrite,
+            IID_IMetaDataEmit,
+            reinterpret_cast<IUnknown **>(&pMetadataEmit)));
+
+        for (auto instructions : req.boxingInstructions)
+        {
+            if (instructions.instructionType == InstructionType::TYPESPEC)
+            {
+                // IMetaDataEmit::GetTokenFromTypeSpec
+                IfFailRet(pMetadataEmit->GetTokenFromTypeSpec(
+                    instructions.signatureBlob,
+                    instructions.signatureBlobSize,
+                    &instructions.token.mdToken));
+
+                // Emit metadata for the type spec
+                instructions.instructionType = InstructionType::METADATA_TOKEN;
+            }
+            processedRequest.boxingInstructions.push_back(instructions);
+        }
 
         IfFailLogRet(m_pAssemblyProbePrep->PrepareAssemblyForProbes(processedRequest.moduleId));
 

@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -89,18 +90,29 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 else if (paramType.IsValueType)
                 {
                     // Ref structs have already been filtered out by the above IsByRefLike check.
-                    if (paramType.IsGenericType)
+                    if (paramType.IsGenericType ||
+                        paramType.Assembly != method.Module.Assembly)
                     {
-                        // Typespec
-                        instructions.Add(SpecialCaseBoxingTypes.Unknown);
-                    }
-                    else if (paramType.Assembly != method.Module.Assembly)
-                    {
-                        // Typeref
+                        // Typeref or Typespec
                         if (formalParameterPosition >= 0)
                         {
+                            ParameterBoxingInstructions? signatureDecoderInstructions = ancillaryInstructions.Value?[formalParameterPosition];
                             // value-type type refs are supported by the signature decoder
-                            instructions.Add(ancillaryInstructions.Value?[formalParameterPosition] ?? SpecialCaseBoxingTypes.Unknown);
+                            if (signatureDecoderInstructions.HasValue)
+                            {
+                                ParameterBoxingInstructions unwrappedInstructions = signatureDecoderInstructions.Value;
+                                if (paramType.IsGenericType)
+                                {
+                                    unwrappedInstructions.InstructionType = InstructionType.TypeSpec;
+                                }
+
+                                instructions.Add(unwrappedInstructions);
+                            }
+                            else
+                            {
+                                instructions.Add(SpecialCaseBoxingTypes.Unknown);
+                            }
+
                         }
                         else
                         {
@@ -144,7 +156,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 MethodDefinitionHandle methodDefHandle = (MethodDefinitionHandle)MetadataTokens.Handle(method.MetadataToken);
                 MethodDefinition methodDef = mdReader.GetMethodDefinition(methodDefHandle);
 
-                MethodSignature<ParameterBoxingInstructions> methodSignature = methodDef.DecodeSignature(new BoxingTokensSignatureProvider(), genericContext: null);
+
+                // TODO: Comment this is the expanded helper method
+                BlobReader blobReader = mdReader.GetBlobReader(methodDef.Signature);
+                SignatureDecoder<ParameterBoxingInstructions, object?> signatureDecoder = new(new BoxingTokensSignatureProvider(), mdReader, genericContext: null);
+
+                MethodSignature<ParameterBoxingInstructions> methodSignature = SignatureDecoderEx.DecodeMethodSignature(signatureDecoder, ref blobReader);
+
                 return [.. methodSignature.ParameterTypes];
             }
             catch (Exception)

@@ -96,6 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string CaptureNoParameters = nameof(CaptureNoParameters);
                 public const string CaptureUnsupportedParameters = nameof(CaptureUnsupportedParameters);
                 public const string CaptureValueTypeImplicitThis = nameof(CaptureValueTypeImplicitThis);
+                public const string CaptureValueTypeTypeSpecs = nameof(CaptureValueTypeTypeSpecs);
 
                 /* Interesting methods */
                 public const string AsyncMethod = nameof(AsyncMethod);

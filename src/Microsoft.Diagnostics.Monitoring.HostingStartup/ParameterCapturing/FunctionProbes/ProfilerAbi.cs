@@ -7,6 +7,7 @@
 // with the profiler's version (found in src\Profilers\MutatingMonitorProfiler\ProbeInstrumentation\ProbeInjector.h).
 //
 
+using System;
 using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
@@ -35,7 +36,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
     {
         Unknown = 0,
         SpecialCaseToken,
-        MetadataToken
+        MetadataToken,
+        TypeSpec
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -49,6 +51,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         // size as a uint so it won't impact the size of the struct or field offsets.
         //
         public uint Token;
+
+        public IntPtr SignatureBuffer;
+        public uint SignatureLength;
 
         public static implicit operator ParameterBoxingInstructions(uint mdToken)
         {
