@@ -6,9 +6,7 @@ using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Functio
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using SampleMethods;
 using System;
-#if NET7_0_OR_GREATER
 using System.Collections.Generic;
-#endif
 using System.CommandLine;
 using System.Linq;
 using System.Reflection;
@@ -167,10 +165,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             MethodInfo method = Type.GetType($"{nameof(SampleMethods)}.GenericTestMethodSignatures`2").GetMethod("GenericParameters");
             Assert.NotNull(method);
 
-            GenericTestMethodSignatures<string, int> genericTestMethodSignatures = new();
-            await RunInstanceMethodTestCaseAsync(probeManager, probeProxy, method,
+            List<List<Uri>> uris = [[new Uri("https://example.com")]];
+
+            GenericTestMethodSignatures<List<List<Uri>>, int?> genericTestMethodSignatures = new();
+            await RunTestCaseWithCustomInvokerAsync(probeManager, probeProxy, method, () =>
+            {
+                genericTestMethodSignatures.GenericParameters(uris, 5, false);
+                return Task.CompletedTask;
+            },
             [
-                "Hello, world!",
+                uris,
                 5,
                 false
             ], genericTestMethodSignatures, thisParameterSupported: true, token);
