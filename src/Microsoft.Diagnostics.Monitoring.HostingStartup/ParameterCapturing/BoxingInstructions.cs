@@ -84,14 +84,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             ParameterBoxingInstructions[] instructions = new ParameterBoxingInstructions[numberOfParameters];
             int index = 0;
 
-            //
-            // A signature decoder will used to determine boxing tokens for parameter types that cannot be determined from standard
-            // reflection alone. The boxing tokens generated from this decoder should only be used to fill in these gaps
-            // as it is not a comprehensive decoder and will produce an unsupported boxing instruction for any types not explicitly mentioned
-            // in BoxingTokensSignatureProvider's summary.
-            // 
-            Lazy<ParameterBoxingInstructions[]?> signatureDecodingInstructions = new(() => GetAncillaryBoxingInstructionsFromMethodSignature(method));
-
             // Handle implicit this
             if (method.HasImplicitThis())
             {
@@ -100,8 +92,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 ParameterBoxingInstructions thisBoxingInstructions;
 
                 Type? thisType = method.DeclaringType;
-                if (thisType == null ||
-                    thisType.IsValueType)
+                if (thisType == null || thisType.IsValueType)
                 {
                     //
                     // Implicit this pointers for value types can **sometimes** be passed as an address to the value.
@@ -119,6 +110,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
                 instructions[index++] = thisBoxingInstructions;
             }
+
+
+            //
+            // A signature decoder will used to determine boxing tokens for formal parameter types that cannot be determined from standard
+            // reflection alone. The boxing tokens generated from this decoder should only be used to fill in these gaps
+            // as it is not a comprehensive decoder and will produce an unsupported boxing instruction for any types not explicitly mentioned
+            // in BoxingTokensSignatureProvider's summary.
+            // 
+            Lazy<ParameterBoxingInstructions[]?> signatureDecodingInstructions = new(() => GetFormalBoxingInstructionsFromMethodSignature(method));
+
 
             foreach (ParameterInfo paramInfo in formalParameters)
             {
@@ -138,7 +139,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             return instructions;
         }
 
-        private static unsafe ParameterBoxingInstructions[]? GetAncillaryBoxingInstructionsFromMethodSignature(MethodInfo method)
+        private static unsafe ParameterBoxingInstructions[]? GetFormalBoxingInstructionsFromMethodSignature(MethodInfo method)
         {
             try
             {
