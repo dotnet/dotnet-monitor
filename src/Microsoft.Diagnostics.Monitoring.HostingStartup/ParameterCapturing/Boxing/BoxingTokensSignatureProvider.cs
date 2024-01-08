@@ -6,7 +6,7 @@ using System.Collections.Immutable;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 
-namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
+namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Boxing
 {
     /// <summary>
     /// This decoder is made specifically for parameters of the following types:

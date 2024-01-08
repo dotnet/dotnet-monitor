@@ -7,7 +7,6 @@
 // with the profiler's version (found in src\Profilers\MutatingMonitorProfiler\ProbeInstrumentation\ProbeInjector.h).
 //
 
-using System;
 using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
@@ -41,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct ParameterBoxingInstructions
+    internal unsafe struct ParameterBoxingInstructions
     {
         public InstructionType InstructionType;
 
@@ -52,8 +51,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         //
         public uint Token;
 
-        public IntPtr SignatureBuffer;
-        public uint SignatureLength;
+        public byte* SignatureBufferPointer;
+        public uint SignatureBufferLength;
 
         public static implicit operator ParameterBoxingInstructions(uint mdToken)
         {

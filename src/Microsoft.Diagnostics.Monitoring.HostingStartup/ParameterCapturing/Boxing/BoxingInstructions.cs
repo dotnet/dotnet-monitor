@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 
-namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
+namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Boxing
 {
     internal static class BoxingInstructions
     {
@@ -153,12 +153,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 MethodDefinitionHandle methodDefHandle = (MethodDefinitionHandle)MetadataTokens.Handle(method.MetadataToken);
                 MethodDefinition methodDef = mdReader.GetMethodDefinition(methodDefHandle);
 
-                BlobReader blobReader = mdReader.GetBlobReader(methodDef.Signature);
-                SignatureDecoder<ParameterBoxingInstructions, object?> signatureDecoder = new(new BoxingTokensSignatureProvider(), mdReader, genericContext: null);
-
-                MethodSignature<ParameterBoxingInstructions> methodSignature = SignatureDecoderEx.DecodeMethodSignature(signatureDecoder, ref blobReader);
-
-                return [.. methodSignature.ParameterTypes];
+                return methodDef.GetParameterBoxingInstructions(mdReader);
             }
             catch (Exception)
             {
