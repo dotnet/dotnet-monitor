@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
                 }
                 else
                 {
-                    thisBoxingInstructions = GetBoxingInstructionFromReflection(method, thisType, out _);
+                    thisBoxingInstructions = GetBoxingInstructionsFromReflection(method, thisType, out _);
                 }
 
                 instructions[index++] = thisBoxingInstructions;
