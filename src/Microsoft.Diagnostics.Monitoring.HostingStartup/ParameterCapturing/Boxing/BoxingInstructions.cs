@@ -68,7 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
             }
 
             //
-            // A signature decoder will used to determine boxing tokens for formal parameter types that cannot be determined from standard
+            // A signature decoder will be used to determine boxing tokens for formal parameter types that cannot be determined from standard
             // reflection alone. The boxing tokens generated from this decoder should only be used to fill in these gaps
             // as it is not a comprehensive decoder and will produce an unsupported boxing instruction for any types not explicitly mentioned
             // in BoxingTokensSignatureProvider's summary.
