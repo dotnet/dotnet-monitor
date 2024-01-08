@@ -1,7 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Boxing;
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using SampleMethods;
@@ -10,7 +10,7 @@ using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing
+namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing.Boxing
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public class BoxingInstructionsTests
