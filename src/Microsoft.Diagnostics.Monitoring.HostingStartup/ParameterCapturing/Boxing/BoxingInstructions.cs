@@ -89,7 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
             {
                 ParameterInfo paramInfo = formalParameters[i];
 
-                ParameterBoxingInstructions paramBoxingInstructions = GetBoxingInstructionFromReflection(method, paramInfo.ParameterType, out bool canUseSignatureDecoder);
+                ParameterBoxingInstructions paramBoxingInstructions = GetBoxingInstructionsFromReflection(method, paramInfo.ParameterType, out bool canUseSignatureDecoder);
                 if (canUseSignatureDecoder &&
                     !IsParameterSupported(paramBoxingInstructions) &&
                     signatureDecoderInstructions.Value != null)
@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
             return instructions;
         }
 
-        private static ParameterBoxingInstructions GetBoxingInstructionFromReflection(MethodInfo method, Type paramType, out bool canUseSignatureDecoder)
+        private static ParameterBoxingInstructions GetBoxingInstructionsFromReflection(MethodInfo method, Type paramType, out bool canUseSignatureDecoder)
         {
             canUseSignatureDecoder = false;
 
