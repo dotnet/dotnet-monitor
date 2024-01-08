@@ -11,6 +11,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
     /// <summary>
     /// This decoder is made specifically for parameters of the following types:
     /// - TypeReference'd value-types (e.g. enums from another assembly).
+    /// - Generic method parameters
+    /// - Generic type parameters
+    /// - Generic instantiations (ValueType TypeSpecs)
     ///
     /// The results of this decoder should not be used for any types not listed above.
     /// </summary>
@@ -20,6 +23,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         // Supported
         //
         public ParameterBoxingInstructions GetTypeFromReference(MetadataReader reader, TypeReferenceHandle handle, byte rawTypeKind) => (uint)MetadataTokens.GetToken(handle);
+        public ParameterBoxingInstructions GetGenericMethodParameter(object? genericContext, int index) => new ParameterBoxingInstructions() { InstructionType = InstructionType.TypeSpec };
+        public ParameterBoxingInstructions GetGenericTypeParameter(object? genericContext, int index) => new ParameterBoxingInstructions() { InstructionType = InstructionType.TypeSpec };
+        public ParameterBoxingInstructions GetGenericInstantiation(ParameterBoxingInstructions genericType, ImmutableArray<ParameterBoxingInstructions> typeArguments) => new ParameterBoxingInstructions() { InstructionType = InstructionType.TypeSpec };
+
 
         //
         // Unsupported
@@ -27,9 +34,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         public ParameterBoxingInstructions GetArrayType(ParameterBoxingInstructions elementType, ArrayShape shape) => SpecialCaseBoxingTypes.Unknown;
         public ParameterBoxingInstructions GetByReferenceType(ParameterBoxingInstructions elementType) => SpecialCaseBoxingTypes.Unknown;
         public ParameterBoxingInstructions GetFunctionPointerType(MethodSignature<ParameterBoxingInstructions> signature) => SpecialCaseBoxingTypes.Unknown;
-        public ParameterBoxingInstructions GetGenericInstantiation(ParameterBoxingInstructions genericType, ImmutableArray<ParameterBoxingInstructions> typeArguments) => SpecialCaseBoxingTypes.Unknown;
-        public ParameterBoxingInstructions GetGenericMethodParameter(object? genericContext, int index) => SpecialCaseBoxingTypes.Unknown;
-        public ParameterBoxingInstructions GetGenericTypeParameter(object? genericContext, int index) => SpecialCaseBoxingTypes.Unknown;
         public ParameterBoxingInstructions GetModifiedType(ParameterBoxingInstructions modifier, ParameterBoxingInstructions unmodifiedType, bool isRequired) => SpecialCaseBoxingTypes.Unknown;
         public ParameterBoxingInstructions GetPinnedType(ParameterBoxingInstructions elementType) => SpecialCaseBoxingTypes.Unknown;
         public ParameterBoxingInstructions GetPointerType(ParameterBoxingInstructions elementType) => SpecialCaseBoxingTypes.Unknown;

@@ -7,6 +7,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
+using System.Text;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
@@ -47,60 +48,48 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 {
                     // TODO: Comment change
                     int curOffset = blobReader.Offset;
-                    int typeCode = blobReader.ReadCompressedInteger();
-                    if (typeCode == (int)SignatureTypeCode.Sentinel)
+                    if (blobReader.ReadCompressedInteger() == (int)SignatureTypeCode.Sentinel)
                     {
                         break;
                     }
-
                     blobReader.Offset = curOffset;
 
-                    byte* start = blobReader.CurrentPointer;
-                    ParameterBoxingInstructions instructions = decoder.DecodeType(ref blobReader, allowTypeSpecifications: false);
-                    byte* end = blobReader.CurrentPointer;
-
-                    // TODO: Helper method
-                    long signatureLength = end - start;
-                    if (signatureLength > uint.MaxValue)
-                    {
-                        Debug.Fail("TODO: Fix message");
-                        // TODO: Consider if we want to handle the null pointer in managed (not mark it as typespec)
-                    }
-                    else
-                    {
-                        instructions.SignatureBuffer = new IntPtr(start);
-                        instructions.SignatureLength = (uint)signatureLength;
-                    }
+                    ParameterBoxingInstructions instructions = GetNextParameterBoxingInstructions(decoder, ref blobReader);
                     parameterBuilder.Add(instructions);
                 }
 
                 requiredParameterCount = parameterIndex;
                 for (; parameterIndex < parameterCount; parameterIndex++)
                 {
-                    // TODO: Comment change, helper method?
-                    byte* start = blobReader.CurrentPointer;
-                    ParameterBoxingInstructions instructions = decoder.DecodeType(ref blobReader);
-                    byte* end = blobReader.CurrentPointer;
-
-
-                    long signatureLength = end - start;
-                    if (signatureLength > uint.MaxValue)
-                    {
-                        Debug.Fail("TODO: Fix message");
-                        // TODO: Consider if we want to handle the null pointer in managed (not mark it as typespec)
-                    }
-                    else
-                    {
-                        instructions.SignatureBuffer = new IntPtr(start);
-                        instructions.SignatureLength = (uint)signatureLength;
-                    }
-
+                    // TODO: Comment change
+                    ParameterBoxingInstructions instructions = GetNextParameterBoxingInstructions(decoder, ref blobReader);
                     parameterBuilder.Add(instructions);
                 }
                 parameterTypes = parameterBuilder.MoveToImmutable();
             }
 
             return new MethodSignature<ParameterBoxingInstructions>(header, returnType, requiredParameterCount, genericParameterCount, parameterTypes);
+        }
+
+        private static unsafe ParameterBoxingInstructions GetNextParameterBoxingInstructions(SignatureDecoder<ParameterBoxingInstructions, object?> decoder, ref BlobReader blobReader)
+        {
+            byte* start = blobReader.CurrentPointer;
+            ParameterBoxingInstructions instructions = decoder.DecodeType(ref blobReader);
+            byte* end = blobReader.CurrentPointer;
+
+            long signatureLength = end - start;
+            if (signatureLength > uint.MaxValue)
+            {
+                Debug.Fail("TODO: Fix message");
+                // TODO: Consider if we want to handle the null pointer in managed (not mark it as typespec)
+            }
+            else
+            {
+                instructions.SignatureBuffer = new IntPtr(start);
+                instructions.SignatureLength = (uint)signatureLength;
+            }
+
+            return instructions;
         }
     }
 }
