@@ -127,10 +127,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
             if (paramType.IsValueType)
             {
                 // Ref structs have already been filtered out by the above IsByRefLike check.
-                if (paramType.IsGenericType ||
-                    paramType.Assembly != method.Module.Assembly)
+                if (paramType.IsGenericType)
                 {
-                    // Typeref or Typespec
+                    // Typespec
+                    return SpecialCaseBoxingTypes.Unknown;
+                }
+                else if (paramType.Assembly != method.Module.Assembly)
+                {
+                    // Typeref
                     canUseSignatureDecoder = true;
                     return SpecialCaseBoxingTypes.Unknown;
                 }
