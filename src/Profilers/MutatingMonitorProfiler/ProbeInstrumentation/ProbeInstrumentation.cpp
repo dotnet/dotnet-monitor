@@ -271,6 +271,15 @@ STDAPI DLLEXPORT RequestFunctionProbeInstallation(
         instructions.reserve(parameterCounts[i]);
         for (ULONG32 j = 0; j < parameterCounts[i]; j++)
         {
+            if (boxingInstructions[offset+j].instructionType == InstructionType::TYPESPEC)
+            {
+                if (boxingInstructions[offset+j].signatureBlob == nullptr ||
+                    boxingInstructions[offset+j].signatureBlobSize == 0)
+                {
+                    return E_INVALIDARG;
+                }
+            }
+
             instructions.push_back(boxingInstructions[offset+j]);
         }
         offset += parameterCounts[i];
@@ -384,7 +393,6 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
                     instructions.signatureBlobSize,
                     &instructions.token.mdToken));
 
-                // Emit metadata for the type spec
                 instructions.instructionType = InstructionType::METADATA_TOKEN;
             }
             processedRequest.boxingInstructions.push_back(instructions);
