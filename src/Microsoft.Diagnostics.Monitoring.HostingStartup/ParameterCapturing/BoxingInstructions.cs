@@ -81,7 +81,28 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 }
                 else if (paramType.IsGenericParameter)
                 {
-                    instructions.Add(SpecialCaseBoxingTypes.Unknown);
+                    // Typeref or Typespec
+                    if (formalParameterPosition >= 0)
+                    {
+                        ParameterBoxingInstructions? signatureDecoderInstructions = ancillaryInstructions.Value?[formalParameterPosition];
+                        // value-type type refs are supported by the signature decoder
+                        if (signatureDecoderInstructions.HasValue)
+                        {
+                            ParameterBoxingInstructions unwrappedInstructions = signatureDecoderInstructions.Value;
+                            unwrappedInstructions.InstructionType = InstructionType.TypeSpec;
+
+                            instructions.Add(unwrappedInstructions);
+                        }
+                        else
+                        {
+                            instructions.Add(SpecialCaseBoxingTypes.Unknown);
+                        }
+
+                    }
+                    else
+                    {
+                        instructions.Add(SpecialCaseBoxingTypes.Unknown);
+                    }
                 }
                 else if (paramType.IsPrimitive)
                 {

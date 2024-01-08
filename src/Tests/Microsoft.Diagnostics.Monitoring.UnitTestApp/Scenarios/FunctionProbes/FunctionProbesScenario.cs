@@ -47,6 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureUnsupportedParameters, Test_CaptureUnsupportedParametersAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureValueTypeImplicitThis, Test_CaptureValueTypeImplicitThisAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureValueTypeTypeSpecs, Test_CaptureValueTypeTypeSpecsAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.CaptureGenerics, Test_CaptureGenericsAsync},
 
 
                 /* Interesting functions */
@@ -160,7 +161,21 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 testArg
             }, token);
         }
-        
+
+        private static async Task Test_CaptureGenericsAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = Type.GetType($"{nameof(SampleMethods)}.GenericTestMethodSignatures`2").GetMethod("GenericParameters");
+            Assert.NotNull(method);
+
+            GenericTestMethodSignatures<string, int> genericTestMethodSignatures = new();
+            await RunInstanceMethodTestCaseAsync(probeManager, probeProxy, method,
+            [
+                "Hello, world!",
+                5,
+                false
+            ], genericTestMethodSignatures, thisParameterSupported: true, token);
+        }
+
 
         private static async Task Test_CaptureValueTypesAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
