@@ -73,13 +73,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
             // as it is not a comprehensive decoder and will produce an unsupported boxing instruction for any types not explicitly mentioned
             // in BoxingTokensSignatureProvider's summary.
             // 
-            Lazy<ParameterBoxingInstructions[]?> signatureDecodingInstructions = new(() =>
+            Lazy<ParameterBoxingInstructions[]?> signatureDecoderInstructions = new(() =>
             {
                 ParameterBoxingInstructions[]? instructions = GetAncillaryBoxingInstructionsFromMethodSignature(method);
                 if (instructions != null &&
                     instructions.Length != formalParameters.Length)
                 {
-                    Debug.Fail("Signature decoder results have unexpected number of formal parameters");
+                    Debug.Fail("Signature decoder results have an unexpected number of formal parameters");
                     return null;
                 }
                 return instructions;
@@ -92,9 +92,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
                 ParameterBoxingInstructions paramBoxingInstructions = GetBoxingInstructionFromReflection(method, paramInfo.ParameterType, out bool canUseSignatureDecoder);
                 if (canUseSignatureDecoder &&
                     !IsParameterSupported(paramBoxingInstructions) &&
-                    signatureDecodingInstructions.Value != null)
+                    signatureDecoderInstructions.Value != null)
                 {
-                    paramBoxingInstructions = signatureDecodingInstructions.Value[i];
+                    paramBoxingInstructions = signatureDecoderInstructions.Value[i];
                 }
 
                 instructions[index++] = paramBoxingInstructions;
