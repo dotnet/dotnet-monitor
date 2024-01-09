@@ -172,8 +172,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
                 MethodSignature<ParameterBoxingInstructions> methodSignature = methodDef.DecodeSignature(new BoxingTokensSignatureProvider(), genericContext: null);
                 return [.. methodSignature.ParameterTypes];
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.Fail($"Unable to decode method '{method.Name}' signature", ex.Message);
                 return null;
             }
         }
