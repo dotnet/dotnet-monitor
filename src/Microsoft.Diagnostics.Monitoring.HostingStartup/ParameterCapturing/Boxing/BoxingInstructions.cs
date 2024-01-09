@@ -103,7 +103,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
             return instructions;
         }
 
-        private static ParameterBoxingInstructions GetBoxingInstructionsFromReflection(MethodInfo method, Type paramType, out bool canUseSignatureDecoder)
+        // Internal for testing, do not use outside of unit tests.
+        internal static ParameterBoxingInstructions GetBoxingInstructionsFromReflection(MethodInfo method, Type paramType, out bool canUseSignatureDecoder)
         {
             canUseSignatureDecoder = false;
 
@@ -155,7 +156,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
             return SpecialCaseBoxingTypes.Unknown;
         }
 
-        private static unsafe ParameterBoxingInstructions[]? GetAncillaryBoxingInstructionsFromMethodSignature(MethodInfo method)
+        // Internal for testing, do not use outside of unit tests.
+        internal static unsafe ParameterBoxingInstructions[]? GetAncillaryBoxingInstructionsFromMethodSignature(MethodInfo method)
         {
             try
             {
