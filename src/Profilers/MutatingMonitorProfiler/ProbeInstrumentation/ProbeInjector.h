@@ -56,8 +56,8 @@ typedef struct _PARAMETER_BOXING_INSTRUCTIONS
     InstructionType instructionType;
     BOXING_INSTRUCTION_TOKEN_UNION token;
 
-    PCCOR_SIGNATURE signatureBlob;
-    ULONG32 signatureBlobSize;
+    PCCOR_SIGNATURE signatureBufferPointer;
+    ULONG32 signatureBufferLength;
 } PARAMETER_BOXING_INSTRUCTIONS;
 
 typedef struct _INSTRUMENTATION_REQUEST

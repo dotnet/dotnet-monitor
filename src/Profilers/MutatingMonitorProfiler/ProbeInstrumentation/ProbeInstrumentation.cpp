@@ -271,16 +271,17 @@ STDAPI DLLEXPORT RequestFunctionProbeInstallation(
         instructions.reserve(parameterCounts[i]);
         for (ULONG32 j = 0; j < parameterCounts[i]; j++)
         {
-            if (boxingInstructions[offset+j].instructionType == InstructionType::TYPESPEC)
+            const ULONG32 boxingInstructionIndex = offset + j;
+            if (boxingInstructions[boxingInstructionIndex].instructionType == InstructionType::TYPESPEC)
             {
-                if (boxingInstructions[offset+j].signatureBlob == nullptr ||
-                    boxingInstructions[offset+j].signatureBlobSize == 0)
+                if (boxingInstructions[boxingInstructionIndex].signatureBufferPointer == nullptr ||
+                    boxingInstructions[boxingInstructionIndex].signatureBufferLength == 0)
                 {
                     return E_INVALIDARG;
                 }
             }
 
-            instructions.push_back(boxingInstructions[offset+j]);
+            instructions.push_back(boxingInstructions[boxingInstructionIndex]);
         }
         offset += parameterCounts[i];
 
@@ -383,14 +384,19 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
             IID_IMetaDataEmit,
             reinterpret_cast<IUnknown **>(&pMetadataEmit)));
 
+        //
+        // Process the boxing instructions, converting any typespecs into metadata tokens.
+        // NOTE: We have ownership of the UNPROCESSED_INSTRUMENTATION_REQUEST (req)
+        // so we can safely modify it in-place when performing any conversions.
+        //
+        processedRequest.boxingInstructions.reserve(req.boxingInstructions.size());
         for (auto instructions : req.boxingInstructions)
         {
             if (instructions.instructionType == InstructionType::TYPESPEC)
             {
-                // IMetaDataEmit::GetTokenFromTypeSpec
                 IfFailRet(pMetadataEmit->GetTokenFromTypeSpec(
-                    instructions.signatureBlob,
-                    instructions.signatureBlobSize,
+                    instructions.signatureBufferPointer,
+                    instructions.signatureBufferLength,
                     &instructions.token.mdToken));
 
                 instructions.instructionType = InstructionType::METADATA_TOKEN;

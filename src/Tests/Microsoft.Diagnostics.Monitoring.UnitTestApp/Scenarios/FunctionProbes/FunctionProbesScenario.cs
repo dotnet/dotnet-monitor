@@ -153,12 +153,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.ValueType_TypeSpec));
             await RunStaticMethodTestCaseAsync(probeManager, probeProxy, method, new object[]
             {
-                null
-            }, token);
-
-            await RunStaticMethodTestCaseAsync(probeManager, probeProxy, method, new object[]
-            {
-                true
+                null,
+                (false, 10)
             }, token);
         }
 

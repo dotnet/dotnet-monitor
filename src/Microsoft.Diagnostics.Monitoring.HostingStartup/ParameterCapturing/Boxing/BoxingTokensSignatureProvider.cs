@@ -10,10 +10,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
 {
     /// <summary>
     /// This decoder is made specifically for parameters of the following types:
-    /// - TypeReference'd value-types (e.g. enums from another assembly).
+    /// - TypeReference'd ValueTypes (e.g. enums from another assembly).
     /// - Generic method parameters
     /// - Generic type parameters
-    /// - Generic instantiations (ValueType TypeSpecs)
+    /// - ValueType TypeSpecs (generic instantiations)
     ///
     /// The results of this decoder should not be used for any types not listed above.
     /// </summary>

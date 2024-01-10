@@ -10,7 +10,7 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Boxing
 {
-    internal static class SignatureDecoderEx
+    internal static class MethodDefinitionExtensions
     {
         public static ParameterBoxingInstructions[] GetParameterBoxingInstructions(this MethodDefinition methodDef, MetadataReader mdReader)
         {
