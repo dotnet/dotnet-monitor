@@ -384,24 +384,25 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
             IID_IMetaDataEmit,
             reinterpret_cast<IUnknown **>(&pMetadataEmit)));
 
-        //
         // Process the boxing instructions, converting any typespecs into metadata tokens.
-        // NOTE: We have ownership of the UNPROCESSED_INSTRUMENTATION_REQUEST (req)
-        // so we can safely modify it in-place when performing any conversions.
-        //
         processedRequest.boxingInstructions.reserve(req.boxingInstructions.size());
-        for (auto instructions : req.boxingInstructions)
+        for (auto const& instructions : req.boxingInstructions)
         {
+            PARAMETER_BOXING_INSTRUCTIONS newInstructions = {};
             if (instructions.instructionType == InstructionType::TYPESPEC)
             {
+                newInstructions.instructionType = InstructionType::METADATA_TOKEN;
                 IfFailRet(pMetadataEmit->GetTokenFromTypeSpec(
                     instructions.signatureBufferPointer,
                     instructions.signatureBufferLength,
-                    &instructions.token.mdToken));
-
-                instructions.instructionType = InstructionType::METADATA_TOKEN;
+                    &newInstructions.token.mdToken));
             }
-            processedRequest.boxingInstructions.push_back(instructions);
+            else
+            {
+                newInstructions = instructions;
+            }
+
+            processedRequest.boxingInstructions.push_back(newInstructions);
         }
 
         IfFailLogRet(m_pAssemblyProbePrep->PrepareAssemblyForProbes(processedRequest.moduleId));
