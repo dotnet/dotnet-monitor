@@ -110,6 +110,18 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
                 return SpecialCaseBoxingTypes.Unknown;
             }
 
+            //
+            // We return the pointer to native memory used by the blob reader (returned by AssemblyExtensions.TryGetRawMetadata).
+            // The metadata memory will remain valid as long as the assembly its for is alive.
+            //
+            // We store the MethodInfo for every method being activly instrumented, which holds a reference to the assembly it belongs to (method.Module.Assembly)
+            // this ensures that the pointers we're using here will remain valid as long as we're instrumenting the assembly it belongs to.
+            //
+            // With regards to assemblies that belong to a collectible (unloadable) AssemblyLoadContext, the ALC won't allow a full unload
+            // to occur while there are still references to the assembly in question so we do not need to worry about unloads here.
+            // ref: https://github.com/dotnet/runtime/blob/v8.0.1/docs/design/features/unloadability.md#assemblyloadcontext-unloading-process
+            //
+
             instructions.SignatureBufferPointer = start;
             instructions.SignatureBufferLength = (uint)signatureLength;
 
