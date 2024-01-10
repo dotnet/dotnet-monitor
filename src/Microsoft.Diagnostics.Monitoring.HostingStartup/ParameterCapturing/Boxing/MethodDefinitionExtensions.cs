@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
 
         /// <summary>
         /// This is modified version of SignatureDecoder.DecodeMethodSignature that captures the memory regions of specific parameter signatures.
-        /// Any changes are denoted by comments above the relevants lines explaining why they were necessary.
+        /// Any changes are denoted by comments above the relevant lines explaining why they were necessary.
         ///
         /// Original source: https://github.com/dotnet/runtime/blob/5535e31a712343a63f5d7d796cd874e563e5ac14/src/libraries/System.Reflection.Metadata/src/System/Reflection/Metadata/Ecma335/SignatureDecoder.cs#L164
         /// </summary>
@@ -114,7 +114,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
             // We return the pointer to native memory used by the blob reader (returned by AssemblyExtensions.TryGetRawMetadata).
             // The metadata memory will remain valid as long as the assembly its for is alive.
             //
-            // We store the MethodInfo for every method being activly instrumented, which holds a reference to the assembly it belongs to (method.Module.Assembly)
+            // We store the MethodInfo for every method being actively instrumented, which holds a reference to the assembly it belongs to (method.Module.Assembly)
             // this ensures that the pointers we're using here will remain valid as long as we're instrumenting the assembly it belongs to.
             //
             // With regards to assemblies that belong to a collectible (unloadable) AssemblyLoadContext, the ALC won't allow a full unload
