@@ -22,5 +22,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         [JsonPropertyName("tags")]
         public string Metadata { get; set; }
+
+        [JsonPropertyName("meterTags")]
+        public string MeterTags { get; set; }
+
+        [JsonPropertyName("instrumentTags")]
+        public string InstrumentTags { get; set; }
     }
 }
