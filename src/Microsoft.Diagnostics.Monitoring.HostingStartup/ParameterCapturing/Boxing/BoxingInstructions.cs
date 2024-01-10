@@ -3,14 +3,12 @@
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 
-namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
+namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Boxing
 {
     internal static class BoxingInstructions
     {
@@ -32,26 +30,25 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public static ParameterBoxingInstructions[] GetBoxingInstructions(MethodInfo method)
         {
-            List<Type> methodParameterTypes = method.GetParameters().Select(p => p.ParameterType).ToList();
-            List<ParameterBoxingInstructions> instructions = new(methodParameterTypes.Count + (method.HasImplicitThis() ? 1 : 0));
-            //
-            // A signature decoder will used to determine boxing tokens for parameter types that cannot be determined from standard
-            // reflection alone. The boxing tokens generated from this decoder should only be used to fill in these gaps
-            // as it is not a comprehensive decoder and will produce an unsupported boxing instruction for any types not explicitly mentioned
-            // in BoxingTokensSignatureProvider's summary.
-            // 
-            Lazy<ParameterBoxingInstructions[]?> ancillaryInstructions = new(() => GetAncillaryBoxingInstructionsFromMethodSignature(method));
+            ParameterInfo[] formalParameters = method.GetParameters();
+            int numberOfParameters = formalParameters.Length + (method.HasImplicitThis() ? 1 : 0);
+            if (numberOfParameters == 0)
+            {
+                return Array.Empty<ParameterBoxingInstructions>();
+            }
 
-            int formalParameterPosition = 0;
+            ParameterBoxingInstructions[] instructions = new ParameterBoxingInstructions[numberOfParameters];
+            int index = 0;
 
             // Handle implicit this
             if (method.HasImplicitThis())
             {
                 Debug.Assert(!method.IsStatic);
 
+                ParameterBoxingInstructions thisBoxingInstructions;
+
                 Type? thisType = method.DeclaringType;
-                if (thisType == null ||
-                    thisType.IsValueType)
+                if (thisType == null || thisType.IsValueType)
                 {
                     //
                     // Implicit this pointers for value types can **sometimes** be passed as an address to the value.
@@ -60,77 +57,107 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     // To enable it in the future add a new special case token and when rewriting IL
                     // emit a ldobj instruction for it.
                     //
-                    instructions.Add(SpecialCaseBoxingTypes.Unknown);
+                    thisBoxingInstructions = SpecialCaseBoxingTypes.Unknown;
                 }
                 else
                 {
-                    methodParameterTypes.Insert(0, thisType);
-                    // Implicit this isn't a formal parameter, so offset by one.
-                    formalParameterPosition = -1;
+                    thisBoxingInstructions = GetBoxingInstructionsFromReflection(method, thisType, out _);
                 }
+
+                instructions[index++] = thisBoxingInstructions;
             }
 
-            foreach (Type paramType in methodParameterTypes)
+            //
+            // A signature decoder will be used to determine boxing tokens for formal parameter types that cannot be determined from standard
+            // reflection alone. The boxing tokens generated from this decoder should only be used to fill in these gaps
+            // as it is not a comprehensive decoder and will produce an unsupported boxing instruction for any types not explicitly mentioned
+            // in BoxingTokensSignatureProvider's summary.
+            // 
+            Lazy<ParameterBoxingInstructions[]?> signatureDecoderInstructions = new(() =>
             {
-                if (paramType.IsByRef ||
-                    paramType.IsByRefLike ||
-                    paramType.IsPointer)
+                ParameterBoxingInstructions[]? instructions = GetAncillaryBoxingInstructionsFromMethodSignature(method);
+                if (instructions != null &&
+                    instructions.Length != formalParameters.Length)
                 {
-                    instructions.Add(SpecialCaseBoxingTypes.Unknown);
+                    Debug.Fail("Signature decoder results have an unexpected number of formal parameters");
+                    return null;
                 }
-                else if (paramType.IsGenericParameter)
+                return instructions;
+            });
+
+            for (int i = 0; i < formalParameters.Length; i++)
+            {
+                ParameterInfo paramInfo = formalParameters[i];
+
+                ParameterBoxingInstructions paramBoxingInstructions = GetBoxingInstructionsFromReflection(method, paramInfo.ParameterType, out bool canUseSignatureDecoder);
+                if (canUseSignatureDecoder &&
+                    !IsParameterSupported(paramBoxingInstructions) &&
+                    signatureDecoderInstructions.Value != null)
                 {
-                    instructions.Add(SpecialCaseBoxingTypes.Unknown);
-                }
-                else if (paramType.IsPrimitive)
-                {
-                    instructions.Add(GetSpecialCaseBoxingTokenForPrimitive(paramType));
-                }
-                else if (paramType.IsValueType)
-                {
-                    // Ref structs have already been filtered out by the above IsByRefLike check.
-                    if (paramType.IsGenericType)
-                    {
-                        // Typespec
-                        instructions.Add(SpecialCaseBoxingTypes.Unknown);
-                    }
-                    else if (paramType.Assembly != method.Module.Assembly)
-                    {
-                        // Typeref
-                        if (formalParameterPosition >= 0)
-                        {
-                            // value-type type refs are supported by the signature decoder
-                            instructions.Add(ancillaryInstructions.Value?[formalParameterPosition] ?? SpecialCaseBoxingTypes.Unknown);
-                        }
-                        else
-                        {
-                            instructions.Add(SpecialCaseBoxingTypes.Unknown);
-                        }
-                    }
-                    else
-                    {
-                        // Typedef
-                        instructions.Add((uint)paramType.MetadataToken);
-                    }
-                }
-                else if (paramType.IsArray ||
-                    paramType.IsClass ||
-                    paramType.IsInterface)
-                {
-                    instructions.Add(SpecialCaseBoxingTypes.Object);
-                }
-                else
-                {
-                    instructions.Add(SpecialCaseBoxingTypes.Unknown);
+                    paramBoxingInstructions = signatureDecoderInstructions.Value[i];
                 }
 
-                formalParameterPosition++;
+                instructions[index++] = paramBoxingInstructions;
             }
 
-            return instructions.ToArray();
+            return instructions;
         }
 
-        private static unsafe ParameterBoxingInstructions[]? GetAncillaryBoxingInstructionsFromMethodSignature(MethodInfo method)
+        // Internal for testing, do not use outside of unit tests.
+        internal static ParameterBoxingInstructions GetBoxingInstructionsFromReflection(MethodInfo method, Type paramType, out bool canUseSignatureDecoder)
+        {
+            canUseSignatureDecoder = false;
+
+            if (paramType.IsByRef ||
+                paramType.IsByRefLike ||
+                paramType.IsPointer)
+            {
+                return SpecialCaseBoxingTypes.Unknown;
+            }
+
+            if (paramType.IsGenericParameter)
+            {
+                return SpecialCaseBoxingTypes.Unknown;
+            }
+
+            if (paramType.IsPrimitive)
+            {
+                return GetSpecialCaseBoxingTokenForPrimitive(paramType);
+            }
+
+            if (paramType.IsValueType)
+            {
+                // Ref structs have already been filtered out by the above IsByRefLike check.
+                if (paramType.IsGenericType)
+                {
+                    // Typespec
+                    return SpecialCaseBoxingTypes.Unknown;
+                }
+                else if (paramType.Assembly != method.Module.Assembly)
+                {
+                    // Typeref
+                    canUseSignatureDecoder = true;
+                    return SpecialCaseBoxingTypes.Unknown;
+                }
+                else
+                {
+                    // Typedef
+                    return (uint)paramType.MetadataToken;
+                }
+            }
+
+            if (paramType.IsArray ||
+                paramType.IsClass ||
+                paramType.IsInterface)
+            {
+                return SpecialCaseBoxingTypes.Object;
+            }
+
+            return SpecialCaseBoxingTypes.Unknown;
+        }
+
+        // Internal for testing, do not use outside of unit tests.
+        internal static unsafe ParameterBoxingInstructions[]? GetAncillaryBoxingInstructionsFromMethodSignature(MethodInfo method)
         {
             try
             {
@@ -147,8 +174,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 MethodSignature<ParameterBoxingInstructions> methodSignature = methodDef.DecodeSignature(new BoxingTokensSignatureProvider(), genericContext: null);
                 return [.. methodSignature.ParameterTypes];
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.Fail($"Unable to decode method '{method.Name}' signature", ex.Message);
                 return null;
             }
         }
