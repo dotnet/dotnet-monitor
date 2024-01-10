@@ -151,10 +151,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
         private static async Task Test_CaptureValueTypeTypeSpecsAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.ValueType_TypeSpec));
+            (int?, bool?) testTuple = (null, true);
+
             await RunStaticMethodTestCaseAsync(probeManager, probeProxy, method, new object[]
             {
                 null,
-                (false, 10)
+                testTuple
             }, token);
         }
 
