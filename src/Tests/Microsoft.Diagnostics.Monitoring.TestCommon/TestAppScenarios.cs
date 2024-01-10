@@ -99,7 +99,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string CaptureValueTypeTypeSpecs = nameof(CaptureValueTypeTypeSpecs);
                 public const string CaptureGenerics = nameof(CaptureGenerics);
 
-
                 /* Interesting methods */
                 public const string AsyncMethod = nameof(AsyncMethod);
                 public const string GenericMethods = nameof(GenericMethods);

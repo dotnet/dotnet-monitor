@@ -22,6 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
 
         /// <summary>
         /// This is modified version of SignatureDecoder.DecodeMethodSignature that captures the memory regions of specific parameter signatures.
+        /// Any changes are denoted by comments above the relevants lines explaining why they were necessary.
         ///
         /// Original source: https://github.com/dotnet/runtime/blob/5535e31a712343a63f5d7d796cd874e563e5ac14/src/libraries/System.Reflection.Metadata/src/System/Reflection/Metadata/Ecma335/SignatureDecoder.cs#L164
         /// </summary>
@@ -31,7 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
             // This is an expanded version of SignatureDecoder.CheckMethodOrPropertyHeader since that method is not public.
             if (header.Kind != SignatureKind.Method)
             {
-                throw new Exception("oops");
+                throw new BadImageFormatException(ParameterCapturingStrings.ErrorMessage_SignatureIsNotForAMethod);
             }
 
             int genericParameterCount = 0;
@@ -67,12 +68,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
                     }
                     blobReader.Offset = curOffset;
 
+                    // Updated to extract the memory region of the parameter's signature when needed. 
                     parameterBuilder.Add(DecodeNextParameterBoxingInstructions(decoder, ref blobReader));
                 }
 
                 requiredParameterCount = parameterIndex;
                 for (; parameterIndex < parameterCount; parameterIndex++)
                 {
+                    // Updated to extract the memory region of the parameter's signature when needed. 
                     parameterBuilder.Add(DecodeNextParameterBoxingInstructions(decoder, ref blobReader));
                 }
                 parameterTypes = parameterBuilder.MoveToImmutable();

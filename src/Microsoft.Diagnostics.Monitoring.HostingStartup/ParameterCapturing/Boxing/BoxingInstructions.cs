@@ -28,50 +28,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
             return supported;
         }
 
-        public static ParameterBoxingInstructions GetBoxingInstructionFromReflection(MethodInfo method, Type paramType, out bool canUseSignatureDecoder)
-        {
-            canUseSignatureDecoder = false;
-
-            if (paramType.IsByRef || paramType.IsByRefLike || paramType.IsPointer)
-            {
-                return SpecialCaseBoxingTypes.Unknown;
-            }
-
-            if (paramType.IsGenericParameter)
-            {
-                canUseSignatureDecoder = true;
-                return SpecialCaseBoxingTypes.Unknown;
-            }
-
-            if (paramType.IsPrimitive)
-            {
-                return GetSpecialCaseBoxingTokenForPrimitive(paramType);
-            }
-
-            if (paramType.IsValueType)
-            {
-                // Ref structs have already been filtered out by the above IsByRefLike check.
-                if (paramType.IsGenericType ||
-                    paramType.Assembly != method.Module.Assembly)
-                {
-                    // Typeref or Typespec
-                    canUseSignatureDecoder = true;
-                    return SpecialCaseBoxingTypes.Unknown;
-                }
-                else
-                {
-                    // Typedef
-                    return (uint)paramType.MetadataToken;
-                }
-            }
-
-            if (paramType.IsArray || paramType.IsClass || paramType.IsInterface)
-            {
-                return SpecialCaseBoxingTypes.Object;
-            }
-
-            return SpecialCaseBoxingTypes.Unknown;
-        }
         public static ParameterBoxingInstructions[] GetBoxingInstructions(MethodInfo method)
         {
             ParameterInfo[] formalParameters = method.GetParameters();

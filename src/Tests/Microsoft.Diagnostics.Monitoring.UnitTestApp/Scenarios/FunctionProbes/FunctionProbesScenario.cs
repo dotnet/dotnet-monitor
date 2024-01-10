@@ -47,7 +47,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureValueTypeTypeSpecs, Test_CaptureValueTypeTypeSpecsAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureGenerics, Test_CaptureGenericsAsync},
 
-
                 /* Interesting functions */
                 { TestAppScenarios.FunctionProbes.SubScenarios.AsyncMethod, Test_AsyncMethodAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.GenericMethods, Test_GenericMethodsAsync},
@@ -149,14 +148,17 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             }, token);
         }
 
-
         private static async Task Test_CaptureValueTypeTypeSpecsAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.ValueType_TypeSpec));
-            bool? testArg = null;
             await RunStaticMethodTestCaseAsync(probeManager, probeProxy, method, new object[]
             {
-                testArg
+                null
+            }, token);
+
+            await RunStaticMethodTestCaseAsync(probeManager, probeProxy, method, new object[]
+            {
+                true
             }, token);
         }
 
