@@ -78,8 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         CounterUtilities.AppendPercentile(counter.ValueTags, quantile.Percentage),
                         quantile.Value,
                         counter.CounterMetadata.MeterTags,
-                        counter.CounterMetadata.InstrumentTags,
-                        counter.CounterMetadata.ScopeHash);
+                        counter.CounterMetadata.InstrumentTags);
 
                     if (i < aggregatePercentilePayload.Quantiles.Length - 1)
                     {
@@ -101,8 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     counter.ValueTags,
                     counter.Value,
                     counter.CounterMetadata.MeterTags,
-                    counter.CounterMetadata.InstrumentTags,
-                    counter.CounterMetadata.ScopeHash);
+                    counter.CounterMetadata.InstrumentTags);
             }
             await _stream.WriteAsync(_bufferWriter.WrittenMemory);
 
@@ -119,8 +117,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             string tags,
             double value,
             string meterTags,
-            string instrumentTags,
-            string scopeHash)
+            string instrumentTags)
         {
             using var writer = new Utf8JsonWriter(_bufferWriter, new JsonWriterOptions { Indented = false });
             writer.WriteStartObject();
@@ -138,7 +135,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             writer.WriteString("meterTags", meterTags);
             writer.WriteString("instrumentTags", instrumentTags);
-            writer.WriteString("scopeHash", scopeHash);
 
             writer.WriteEndObject();
         }

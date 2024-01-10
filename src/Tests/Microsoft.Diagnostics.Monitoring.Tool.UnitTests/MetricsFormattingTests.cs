@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             List<ICounterPayload> payload = new();
 
-            CounterMetadata counterInfo = new CounterMetadata(MeterName, InstrumentName, null, null, null);
+            CounterMetadata counterInfo = new CounterMetadata(MeterName, InstrumentName, meterTags: null, instrumentTags: null, scopeHash: null);
 
             payload.Add(new AggregatePercentilePayload(counterInfo, "DisplayName", string.Empty, string.Empty,
                 new Quantile[] { new Quantile(0.5, Value1), new Quantile(0.95, Value2), new Quantile(0.99, Value3) },
@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task GaugeFormat_Test()
         {
-            CounterMetadata counterInfo = new CounterMetadata(MeterName, InstrumentName, null, null, null);
+            CounterMetadata counterInfo = new CounterMetadata(MeterName, InstrumentName, meterTags: null, instrumentTags: null, scopeHash: null);
 
             ICounterPayload payload = new GaugePayload(counterInfo, "DisplayName", "", null, Value1, Timestamp);
 
@@ -89,7 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task CounterFormat_Test()
         {
-            CounterMetadata counterInfo = new CounterMetadata(MeterName, InstrumentName, null, null, null);
+            CounterMetadata counterInfo = new CounterMetadata(MeterName, InstrumentName, meterTags: null, instrumentTags: null, scopeHash: null);
 
             ICounterPayload payload = new RatePayload(counterInfo, "DisplayName", "", null, Value1, IntervalSeconds, Timestamp);
 
@@ -132,7 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task UpDownCounterFormat_Test()
         {
-            CounterMetadata counterInfo = new CounterMetadata(MeterName, InstrumentName, null, null, null);
+            CounterMetadata counterInfo = new CounterMetadata(MeterName, InstrumentName, meterTags: null, instrumentTags: null, scopeHash: null);
 
             ICounterPayload payload = new UpDownCounterPayload(counterInfo, "DisplayName", "", null, Value1, Timestamp);
 
