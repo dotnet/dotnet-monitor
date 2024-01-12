@@ -165,17 +165,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             MethodInfo method = Type.GetType($"{nameof(SampleMethods)}.GenericTestMethodSignatures`2").GetMethod("GenericParameters");
             Assert.NotNull(method);
 
-            List<List<Uri>> uris = [[new Uri("https://example.com")]];
+            List<List<int?>> ints = [[10]];
+            Uri uri = new Uri("https://example.com/2");
 
-            GenericTestMethodSignatures<List<List<Uri>>, int?> genericTestMethodSignatures = new();
+            GenericTestMethodSignatures<List<List<int?>>, Uri> genericTestMethodSignatures = new();
             await RunTestCaseWithCustomInvokerAsync(probeManager, probeProxy, method, () =>
             {
-                genericTestMethodSignatures.GenericParameters(uris, 5, false);
+                genericTestMethodSignatures.GenericParameters(ints, uri, false);
                 return Task.CompletedTask;
             },
             [
-                uris,
-                5,
+                ints,
+                uri,
                 false
             ], genericTestMethodSignatures, thisParameterSupported: true, token);
         }
