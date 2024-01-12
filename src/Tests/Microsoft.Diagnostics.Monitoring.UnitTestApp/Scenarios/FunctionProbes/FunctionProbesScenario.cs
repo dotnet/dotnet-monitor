@@ -166,7 +166,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             Assert.NotNull(method);
 
             List<List<int?>> ints = [[10]];
-            Uri uri = new Uri("https://example.com/2");
+            Uri uri = new Uri("https://example.com");
 
             GenericTestMethodSignatures<List<List<int?>>, Uri> genericTestMethodSignatures = new();
             await RunTestCaseWithCustomInvokerAsync(probeManager, probeProxy, method, () =>
