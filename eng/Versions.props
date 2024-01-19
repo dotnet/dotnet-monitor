@@ -62,8 +62,8 @@
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta4.24059.2</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>8.0.0-preview.24065.1</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>8.0.0-preview.24065.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>8.0.0-preview.24068.1</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>8.0.0-preview.24068.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/installer references -->
     <MicrosoftDotnetSdkInternalVersion>9.0.100-alpha.1.24068.3</MicrosoftDotnetSdkInternalVersion>
     <!-- dotnet/roslyn-analyzers -->
@@ -112,7 +112,7 @@
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging80Version)</MicrosoftExtensionsLoggingVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions80Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole80Version)</MicrosoftExtensionsLoggingConsoleVersion>
-  </PropertyGroup>  
+  </PropertyGroup>
   <PropertyGroup Label=".NET 9 Dependent" Condition=" '$(TargetFramework)' == 'net9.0' ">
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp90Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
     <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreApp90Version)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
