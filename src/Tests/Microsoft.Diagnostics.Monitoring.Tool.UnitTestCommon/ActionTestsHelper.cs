@@ -24,13 +24,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             TargetFrameworkMoniker.Net60,
             TargetFrameworkMoniker.Net70,
-            TargetFrameworkMoniker.Net80
+            TargetFrameworkMoniker.Net80,
+            TargetFrameworkMoniker.Net90
         };
         public static TargetFrameworkMoniker[] tfms6PlusToTest = new TargetFrameworkMoniker[]
         {
             TargetFrameworkMoniker.Net60,
             TargetFrameworkMoniker.Net70,
-            TargetFrameworkMoniker.Net80
+            TargetFrameworkMoniker.Net80,
+            TargetFrameworkMoniker.Net90
         };
 
         public static IEnumerable<object[]> GetTfms()
@@ -71,7 +73,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 if (!DistroInformation.IsAlpineLinux
                     || tfm == TargetFrameworkMoniker.Net60
                     || tfm == TargetFrameworkMoniker.Net70
-                    || tfm == TargetFrameworkMoniker.Net80)
+                    || tfm == TargetFrameworkMoniker.Net80
+                    || tfm == TargetFrameworkMoniker.Net90)
                 {
                     yield return new object[] { tfm, DumpType.WithHeap };
                     yield return new object[] { tfm, DumpType.Triage };

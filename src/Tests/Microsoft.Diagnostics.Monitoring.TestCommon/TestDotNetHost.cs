@@ -88,6 +88,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 return TargetFrameworkMoniker.Net70;
 #elif NET8_0
                 return TargetFrameworkMoniker.Net80;
+#elif NET9_0
+                return TargetFrameworkMoniker.Net90;
 #endif
             }
         }

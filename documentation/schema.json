@@ -2693,6 +2693,13 @@
         "Indented": {
           "type": "boolean"
         },
+        "IndentCharacter": {
+          "type": "string"
+        },
+        "IndentSize": {
+          "type": "integer",
+          "format": "int32"
+        },
         "MaxDepth": {
           "type": "integer",
           "format": "int32"

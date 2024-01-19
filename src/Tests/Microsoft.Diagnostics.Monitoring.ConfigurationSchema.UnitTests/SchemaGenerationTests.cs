@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema.UnitTests
             AssemblyHelper.GetAssemblyArtifactBinPath(
                 Assembly.GetExecutingAssembly(),
                 SchemaGeneratorName,
-                TargetFrameworkMoniker.Net80);
+                TargetFrameworkMoniker.Net90);
 
         public SchemaGenerationTests(ITestOutputHelper outputHelper)
         {
