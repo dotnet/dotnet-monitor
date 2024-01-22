@@ -14,11 +14,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      - name: Get previous update SHA
+        id: get_sha
+        run: |
+          cd .github
+          prev_sha=$(cat learning-path-sha.txt)
+          echo "prev_sha=$prev_sha" >> $GITHUB_ENV
+          echo "Writing Prev Sha into GitHub Env"
+          cd ../
+    
       - name: Checkout previous update
         uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
         with:
           persist-credentials: false
-          ref: abc
+          ref:  ${{ env.prev_sha }}
+          path: prev
           
       - name: Checkout head
         uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
@@ -27,18 +38,10 @@ jobs:
           ref: main
           path: head
 
-      - name: Get base commit for the PR
-        working-directory: ./merge
-        run: |
-          git fetch origin "$GITHUB_BASE_REF"
-          base_sha=$(git rev-parse "origin/$GITHUB_BASE_REF")
-          echo "base_sha=$base_sha" >> $GITHUB_ENV
-          echo "Merging ${GITHUB_SHA} into ${GITHUB_BASE_REF}"
-
       - name: Get changed files
-        working-directory: ./merge
+        working-directory: ./head
         run: |
-          changed_source_files=$(git diff-tree --no-commit-id --name-only -r "$base_sha" "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
+          changed_source_files=$(git diff-tree --no-commit-id --name-only -r "$prev_sha" "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
           echo "Files to validate: '${changed_source_files}'"
           echo "updated_files=$(echo ${changed_source_files})" >> $GITHUB_ENV
 
