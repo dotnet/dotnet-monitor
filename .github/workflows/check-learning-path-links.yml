@@ -36,12 +36,8 @@ jobs:
         working-directory: ./head
         run: |
           cd .github
-          prev_branch_name=$(cat learning-path-sha.txt)
-          echo "prev_branch_name=$prev_branch_name" >> $GITHUB_ENV
-          echo "Writing prev_branch_name into GitHub Env"
-          echo "prev_sha=$(git rev-parse kkeirstead/kkeirstead/StackFrameExceptions)"
-          echo "prev_sha=$prev_sha" >> $GITHUB_ENV
-          echo "$prev_sha"
+          prev_sha=$(cat learning-path-sha.txt)
+          echo "prev_sha=$prev_branch_name" >> $GITHUB_ENV
           echo "Writing prev_sha into GitHub Env"
           cd ../
     
