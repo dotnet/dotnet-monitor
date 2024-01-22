@@ -57,7 +57,7 @@ jobs:
           echo "suggestions=$suggestions" >> $GITHUB_ENV
 
       - uses: actions/github-script@v6
-        name: Check For Duplicate Comment
+        name: Check For Duplicate Before Creating Comment
         if: ${{ env.modifiedFiles != '' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -79,14 +79,9 @@ jobs:
 
             var commentExists = false;
 
-            console.log("Actual comment body:");
-            console.log(comment_body);
-            console.log("");
-
             const new_comment_stripped = comment_body.replaceAll(/\s/g,'')
             
             for (const comment of comments.data) {
-              console.log(comment.body);
               const old_comment_stripped = comment.body.replaceAll(/\s/g,'')
 
               if (old_comment_stripped === new_comment_stripped) {
