@@ -83,10 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
                     builder.AddInMemoryCollection(configurationValues);
 
-                    if (null != overrideSource)
-                    {
-                        overrideSource.ForEach(source => builder.Sources.Add(source));
-                    }
+                    overrideSource?.ForEach(source => builder.Sources.Add(source));
                 })
                 .ConfigureLogging(loggingBuilder =>
                 {
@@ -101,6 +98,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     services.ConfigureGlobalCounter(context.Configuration);
                     services.ConfigureCollectionRuleDefaults(context.Configuration);
                     services.ConfigureTemplates(context.Configuration);
+                    services.ConfigureDotnetMonitorDebug(context.Configuration);
                     services.AddSingleton<OperationTrackerService>();
                     services.ConfigureCollectionRules();
 

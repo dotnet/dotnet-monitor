@@ -3,9 +3,13 @@
 
 # Livemetrics - Get
 
-Captures metrics for a chosen process.
+Captures metrics for a chosen process for a duration of time.
 
-> **Note**: For Prometheus style metrics, use the [metrics](./metrics.md) endpoint.
+> [!NOTE]
+> Starting in 8.0, the [metrics configuration](../configuration/metrics-configuration.md#metrics-configuration) is used as the collection specification. Prior to 8.0, the collection specification only included the [default providers](../configuration/metrics-configuration.md#default-providers) and could not be changed.
+
+> [!NOTE]
+> For Prometheus style metrics, use the [metrics](./metrics.md) endpoint.
 
 ## HTTP Route
 
@@ -13,7 +17,8 @@ Captures metrics for a chosen process.
 GET /livemetrics?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider}&tags={tags} HTTP/1.1
 ```
 
-> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> [!NOTE]
+> Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 
@@ -52,7 +57,8 @@ Allowed schemes:
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many requests at this time. Try to request metrics at a later time. | `application/problem+json` |
 
-> **NOTE: (7.1+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
+> [!NOTE]
+> **(7.1+)** Regardless if an egress provider is specified if the request was successful (response codes 200 or 202), the Location header contains the URI of the operation. This can be used to query the status of the operation or change its state.
 
 ## Examples
 

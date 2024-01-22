@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup
                 // validation in tests.
                 Interlocked.Increment(ref InvocationCount);
 
-                if (ToolIdentifiers.IsEnvVarEnabled(InProcessFeaturesIdentifiers.EnvironmentVariables.EnableParameterCapturing))
+                if (ToolIdentifiers.IsEnvVarEnabled(InProcessFeaturesIdentifiers.EnvironmentVariables.ParameterCapturing.Enable))
                 {
                     services.AddSingleton<IMethodDescriptionValidator, MethodDescriptionValidator>();
                     services.AddHostedService<ParameterCapturingService>();

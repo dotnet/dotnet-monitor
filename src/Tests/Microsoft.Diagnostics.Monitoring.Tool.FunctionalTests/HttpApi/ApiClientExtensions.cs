@@ -137,7 +137,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         /// <summary>
         /// Capable of getting every combination of process query: PID, UID, and/or Name
-        /// Get /process?pid={pid}&uid={uid}&name={name}
+        /// Get <![CDATA[/process?pid={pid}&uid={uid}&name={name}]]>
         /// </summary>
         public static async Task<ProcessInfo> GetProcessAsync(this ApiClient client, int? pid, Guid? uid, string name, TimeSpan timeout)
         {
@@ -146,7 +146,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// Get /process?pid={pid}&uid={uid}&name={name} with retry attempts.
+        /// Get <![CDATA[/process?pid={pid}&uid={uid}&name={name}]]> with retry attempts.
         /// </summary>
         public static async Task<ProcessInfo> GetProcessWithRetryAsync(this ApiClient client, ITestOutputHelper outputHelper, int? pid = null, Guid? uid = null, string name = null, int maxAttempts = 5)
         {
@@ -222,7 +222,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// Get /dump?pid={pid}&type={dumpType}
+        /// Get <![CDATA[/dump?pid={pid}&type={dumpType}]]>
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, int pid, DumpType dumpType)
         {
@@ -230,7 +230,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// Get /dump?pid={pid}&type={dumpType}
+        /// Get <![CDATA[/dump?pid={pid}&type={dumpType}]]>
         /// </summary>
         public static async Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, int pid, DumpType dumpType, TimeSpan timeout)
         {
@@ -239,7 +239,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// Get /dump?uid={uid}&type={dumpType}
+        /// Get <![CDATA[/dump?uid={uid}&type={dumpType}]]>
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, Guid uid, DumpType dumpType)
         {
@@ -247,7 +247,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// Get /dump?uid={uid}&type={dumpType}
+        /// Get <![CDATA[/dump?uid={uid}&type={dumpType}]]>
         /// </summary>
         public static async Task<ResponseStreamHolder> CaptureDumpAsync(this ApiClient client, Guid uid, DumpType dumpType, TimeSpan timeout)
         {
@@ -256,7 +256,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// GET /logs?pid={pid}&level={logLevel}&durationSeconds={duration}
+        /// GET <![CDATA[/logs?pid={pid}&level={logLevel}&durationSeconds={duration}]]>
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogLevel? logLevel, LogFormat logFormat)
         {
@@ -264,7 +264,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// GET /logs?pid={pid}&level={logLevel}&durationSeconds={duration}
+        /// GET <![CDATA[/logs?pid={pid}&level={logLevel}&durationSeconds={duration}]]>
         /// </summary>
         public static async Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogLevel? logLevel, TimeSpan timeout, LogFormat logFormat)
         {
@@ -273,7 +273,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// POST /logs?pid={pid}&durationSeconds={duration}
+        /// POST <![CDATA[/logs?pid={pid}&durationSeconds={duration}]]>
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogsConfiguration configuration, LogFormat logFormat)
         {
@@ -281,7 +281,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// POST /logs/{pid}?durationSeconds={duration}
+        /// POST <![CDATA[/logs/{pid}?durationSeconds={duration}]]>
         /// </summary>
         public static async Task<ResponseStreamHolder> CaptureLogsAsync(this ApiClient client, int pid, TimeSpan duration, LogsConfiguration configuration, TimeSpan timeout, LogFormat logFormat)
         {
@@ -290,7 +290,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// GET /trace?pid={pid}&profile={profile}&durationSeconds={duration}
+        /// GET <![CDATA[/trace?pid={pid}&profile={profile}&durationSeconds={duration}]]>
         /// </summary>
         public static Task<ResponseStreamHolder> CaptureTraceAsync(this ApiClient client, int pid, TimeSpan duration, TraceProfile? profile)
         {
@@ -298,7 +298,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// GET /trace?pid={pid}&profile={profile}&durationSeconds={duration}
+        /// GET <![CDATA[/trace?pid={pid}&profile={profile}&durationSeconds={duration}]]>
         /// </summary>
         public static async Task<ResponseStreamHolder> CaptureTraceAsync(this ApiClient client, int pid, TimeSpan duration, TraceProfile? profile, TimeSpan timeout)
         {
@@ -405,7 +405,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         /// <summary>
         /// Capable of getting every combination of process query: PID, UID, and/or Name
-        /// GET /collectionrules?pid={pid}&uid={uid}&name={name}
+        /// GET <![CDATA[/collectionrules?pid={pid}&uid={uid}&name={name}]]>
         /// </summary>
         public static Task<Dictionary<string, CollectionRuleDescription>> GetCollectionRulesDescriptionAsync(this ApiClient client, int? pid, Guid? uid, string name)
         {
@@ -414,7 +414,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         /// <summary>
         /// Capable of getting every combination of process query: PID, UID, and/or Name
-        /// GET /collectionrules?pid={pid}&uid={uid}&name={name}
+        /// GET <![CDATA[/collectionrules?pid={pid}&uid={uid}&name={name}]]>
         /// </summary>
         public static async Task<Dictionary<string, CollectionRuleDescription>> GetCollectionRulesDescriptionAsync(this ApiClient client, int? pid, Guid? uid, string name, TimeSpan timeout)
         {
@@ -424,7 +424,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         /// <summary>
         /// Capable of getting every combination of process query: PID, UID, and/or Name
-        /// GET /collectionrules/{collectionrulename}?pid={pid}&uid={uid}&name={name}
+        /// GET <![CDATA[/collectionrules/{collectionrulename}?pid={pid}&uid={uid}&name={name}]]>
         /// </summary>
         public static Task<CollectionRuleDetailedDescription> GetCollectionRuleDetailedDescriptionAsync(this ApiClient client, string collectionRuleName, int? pid, Guid? uid, string name)
         {
@@ -433,7 +433,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         /// <summary>
         /// Capable of getting every combination of process query: PID, UID, and/or Name
-        /// GET /collectionrules/{collectionrulename}?pid={pid}&uid={uid}&name={name}
+        /// GET <![CDATA[/collectionrules/{collectionrulename}?pid={pid}&uid={uid}&name={name}]]>
         /// </summary>
         public static async Task<CollectionRuleDetailedDescription> GetCollectionRuleDetailedDescriptionAsync(this ApiClient client, string collectionRuleName, int? pid, Guid? uid, string name, TimeSpan timeout)
         {

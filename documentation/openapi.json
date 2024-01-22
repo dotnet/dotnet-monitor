@@ -1614,6 +1614,9 @@
             "items": {
               "$ref": "#/components/schemas/MethodDescription"
             }
+          },
+          "useDebuggerDisplayAttribute": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -2200,8 +2203,7 @@
                 "type": "string"
               }
             },
-            "nullable": true,
-            "readOnly": true
+            "nullable": true
           }
         },
         "additionalProperties": { }

@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
                     {
                         Reference = new OpenApiReference()
                         {
-                            Id = typeof(ValidationProblemDetails).Name,
+                            Id = nameof(ValidationProblemDetails),
                             Type = ReferenceType.Schema
                         }
                     }

@@ -110,6 +110,8 @@ stages:
     variables:
     - ${{ if eq(parameters.IsTestRun, 'true') }}:
       - group: DotNet-Diagnostics-Storage-Test
+    - ${{ else }}:
+      - group: DotNetCli storage account tokens
     - group: DotNet-DotNetStage-Storage
 
     workspace:
@@ -149,32 +151,41 @@ stages:
                 -MaestroToken $(MaestroAccessToken)
                 -TaskVariableName 'ReleaseVersion'
 
+          - task: PowerShell@2
+            displayName: Get Build Version
+            inputs:
+              filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
+              arguments: >-
+                -BarId $(BarId)
+                -MaestroToken $(MaestroAccessToken)
+                -TaskVariableName 'BuildVersion'
+
           - powershell: Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
             displayName: Install NuGet PowerShell Package Provider
 
-          - powershell: Install-Module Az.Storage -Force -Scope CurrentUser -AllowClobber -Verbose
-            displayName: Install Az.Storage Module
+          - powershell: Install-Module Az.Storage -Force -Scope CurrentUser -AllowClobber -Verbose -RequiredVersion 5.10.1
+            displayName: Install Az.Storage Module 5.10.1
 
           - powershell: |
               Write-Host "##vso[task.setvariable variable=DestinationAccountName]$env:DESTINATION_ACCOUNT_NAME"
-              Write-Host "##vso[task.setvariable variable=DestinationAccountKey;issecret=true]$env:DESTINATION_ACCOUNT_KEY"
+              Write-Host "##vso[task.setvariable variable=DestinationSasTokenBase64;issecret=true]$env:DESTINATION_SAS_TOKEN_BASE64"
               Write-Host "##vso[task.setvariable variable=ChecksumsAccountName]$env:CHECKSUMS_ACCOUNT_NAME"
-              Write-Host "##vso[task.setvariable variable=ChecksumsAccountKey;issecret=true]$env:CHECKSUMS_ACCOUNT_KEY"
+              Write-Host "##vso[task.setvariable variable=ChecksumsSasTokenBase64;issecret=true]$env:CHECKSUMS_SAS_TOKEN_BASE64"
             displayName: Set Storage Accounts
             ${{ if eq(parameters.IsTestRun, 'true') }}:
               env:
                 # Variables provided by DotNet-Diagnostics-Storage-Test group
                 DESTINATION_ACCOUNT_NAME: $(dotnet-monitor-test-storage-accountname)
-                DESTINATION_ACCOUNT_KEY: $(dotnet-monitor-test-storage-accountkey)
+                DESTINATION_SAS_TOKEN_BASE64: $(dotnet-monitor-test-blob-write-token-base64)
                 CHECKSUMS_ACCOUNT_NAME: $(dotnet-monitor-checksums-test-storage-accountname)
-                CHECKSUMS_ACCOUNT_KEY: $(dotnet-monitor-checksums-test-storage-accountkey)
+                CHECKSUMS_SAS_TOKEN_BASE64: $(dotnet-monitor-checksums-test-blob-write-token-base64)
             ${{ else }}:
               env:
-                # Variables provided by Release-Pipeline group
+                # Variables provided by "DotNetCli storage account tokens" group
                 DESTINATION_ACCOUNT_NAME: dotnetcli
-                DESTINATION_ACCOUNT_KEY: $(dotnetcli-storage-key)
+                DESTINATION_SAS_TOKEN_BASE64: $(dotnetcli-account-blob-write-token-base64)
                 CHECKSUMS_ACCOUNT_NAME: dotnetclichecksums
-                CHECKSUMS_ACCOUNT_KEY: $(dotnetclichecksums-storage-key)
+                CHECKSUMS_SAS_TOKEN_BASE64: $(dotnetclichecksums-account-blob-write-token-base64)
 
           - task: PowerShell@2
             displayName: Publish Assets
@@ -182,13 +193,13 @@ stages:
               filePath: $(Build.SourcesDirectory)/eng/release/Scripts/PublishToBlobAccounts.ps1
               arguments: >-
                 -AzCopyPath $(AzCopyPath)
-                -BuildNumber $(resources.pipeline.Build.runName)
+                -BuildVersion $(BuildVersion)
                 -ReleaseVersion $(ReleaseVersion)
                 -DotnetStageAccountKey $(dotnetstage-storage-key)
                 -DestinationAccountName $(DestinationAccountName)
-                -DestinationAccountKey $(DestinationAccountKey)
+                -DestinationSasTokenBase64 $(DestinationSasTokenBase64)
                 -ChecksumsAccountName $(ChecksumsAccountName)
-                -ChecksumsAccountKey $(ChecksumsAccountKey)
+                -ChecksumsSasTokenBase64 $(ChecksumsSasTokenBase64)
                 -WhatIf:${{ format('${0}', parameters.IsDryRun) }}
           
           - task: PublishBuildArtifacts@1

@@ -38,10 +38,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Private.Uri" Version="$(SystemPrivateUriVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
     <NativeArtifactDirectories Include="$(ArtifactsBinDir)linux-arm64.$(Configuration)" TargetRid="linux-arm64" LibraryPrefix="lib" LibraryExtension=".so" SymbolsExtension=".so.dbg" />
     <NativeArtifactDirectories Include="$(ArtifactsBinDir)linux-x64.$(Configuration)" TargetRid="linux-x64" LibraryPrefix="lib" LibraryExtension=".so" SymbolsExtension=".so.dbg" />
     <NativeArtifactDirectories Include="$(ArtifactsBinDir)linux-musl-arm64.$(Configuration)" TargetRid="linux-musl-arm64" LibraryPrefix="lib" LibraryExtension=".so" SymbolsExtension=".so.dbg" />

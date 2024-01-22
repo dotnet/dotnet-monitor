@@ -16,7 +16,7 @@ class MutatingMonitorProfiler final :
 {
 private:
     static constexpr LPCWSTR ProfilerVersionEnvVar = _T("DotnetMonitor_MutatingMonitorProfiler_ProductVersion");
-    static constexpr LPCWSTR EnableParameterCapturingEnvVar = _T("DotnetMonitor_InProcessFeatures_EnableParameterCapturing");
+    static constexpr LPCWSTR EnableParameterCapturingEnvVar = _T("DotnetMonitor_InProcessFeatures_ParameterCapturing_Enable");
 
 private:
     std::shared_ptr<IEnvironment> m_pEnvironment;

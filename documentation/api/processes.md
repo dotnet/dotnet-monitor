@@ -5,7 +5,8 @@
 
 The Processes API enables enumeration of the processes that `dotnet monitor` can detect and allows for obtaining their metadata (such as their names and environment variables).
 
-> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> [!NOTE]
+> Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 | Operation | Description |
 |---|---|

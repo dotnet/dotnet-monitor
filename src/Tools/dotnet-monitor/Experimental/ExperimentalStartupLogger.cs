@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             if (_parameterCapturingOptions.GetEnabled())
             {
-                _logger.ExperimentalFeatureEnabled(Strings.FeatureName_ParameterCapturing);
+                _logger.ExperimentalFeatureEnabled(Microsoft.Diagnostics.Monitoring.WebApi.Strings.FeatureName_ParameterCapturing);
             }
 
             // Experimental features should log a warning when they are activated e.g.

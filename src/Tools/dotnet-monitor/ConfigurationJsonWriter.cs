@@ -75,6 +75,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ProcessChildSection(configuration, ConfigurationKeys.Storage, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.DefaultProcess, skipNotPresent, includeChildSections: true, showSources: showSources);
                 ProcessChildSection(configuration, ConfigurationKeys.Logging, skipNotPresent, includeChildSections: true, showSources: showSources);
+                ProcessChildSection(configuration, ConfigurationKeys.DotnetMonitorDebug, skipNotPresent, includeChildSections: true, showSources: showSources);
 
                 if (full)
                 {

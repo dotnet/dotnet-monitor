@@ -3,16 +3,28 @@
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
     internal sealed class LogEmittingProbes : IFunctionProbes
     {
         private readonly ParameterCapturingLogger _logger;
+        private readonly ObjectFormatterCache _objectFormatterCache;
 
-        public LogEmittingProbes(ParameterCapturingLogger logger)
+        public LogEmittingProbes(ParameterCapturingLogger logger, bool useDebuggerDisplayAttribute)
         {
             _logger = logger;
+            _objectFormatterCache = new ObjectFormatterCache(useDebuggerDisplayAttribute);
+        }
+
+        public void CacheMethods(IList<MethodInfo> methods)
+        {
+            foreach (MethodInfo method in methods)
+            {
+                _objectFormatterCache.CacheMethodParameters(method);
+            }
         }
 
         public void EnterProbe(ulong uniquifier, object[] args)
@@ -33,10 +45,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 return;
             }
 
-            FunctionProbesCache? cache = FunctionProbesStub.Cache;
-            if (cache == null ||
+            FunctionProbesState? state = FunctionProbesStub.State;
+            if (state == null ||
                 args == null ||
-                !cache.InstrumentedMethods.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod) ||
+                !state.InstrumentedMethods.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod) ||
                 args.Length != instrumentedMethod?.SupportedParameters.Length)
             {
                 return;
@@ -68,13 +80,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                     }
                     else
                     {
-                        value = ObjectFormatter.FormatObject(cache.ObjectFormatterCache.GetFormatter(args[i].GetType()), args[i]);
+                        value = ObjectFormatter.FormatObject(_objectFormatterCache.GetFormatter(args[i].GetType()), args[i]);
                     }
                     argValues[i] = value;
                 }
             }
 
-            _logger.Log(instrumentedMethod.CaptureMode, instrumentedMethod.MethodWithParametersTemplateString, argValues);
+            _logger.Log(instrumentedMethod.CaptureMode, instrumentedMethod.MethodTemplateString, argValues);
         }
     }
 }

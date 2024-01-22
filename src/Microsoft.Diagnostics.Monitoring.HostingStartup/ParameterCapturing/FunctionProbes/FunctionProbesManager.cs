@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Boxing;
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting;
 using Microsoft.Diagnostics.Monitoring.StartupHook;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
@@ -28,8 +29,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         private static extern void RequestFunctionProbeInstallation(
             [MarshalAs(UnmanagedType.LPArray)] ulong[] funcIds,
             uint count,
-            [MarshalAs(UnmanagedType.LPArray)] uint[] boxingTokens,
-            [MarshalAs(UnmanagedType.LPArray)] uint[] boxingTokenCounts);
+            [MarshalAs(UnmanagedType.LPArray)] ParameterBoxingInstructions[] boxingInstructions,
+            [MarshalAs(UnmanagedType.LPArray)] uint[] parameterCounts);
 
         private delegate void FunctionProbeRegistrationCallback(int hresult);
         private delegate void FunctionProbeInstallationCallback(int hresult);
@@ -72,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private readonly ILogger _logger;
 
-        public FunctionProbesManager(IFunctionProbes probes, ILogger logger)
+        public FunctionProbesManager(ILogger logger)
         {
             ProfilerResolver.InitializeResolver<FunctionProbesManager>();
 
@@ -98,8 +99,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 Marshal.GetFunctionPointerForDelegate(_onFaultDelegate));
 
             RequestFunctionProbeRegistration(FunctionProbesStub.GetProbeFunctionId());
-
-            FunctionProbesStub.Instance = probes;
         }
 
         private void OnRegistration(int hresult)
@@ -134,9 +133,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private void OnFault(ulong uniquifier)
         {
-            FunctionProbesCache? cache = FunctionProbesStub.Cache;
+            var cache = FunctionProbesStub.State?.InstrumentedMethods;
             if (cache == null ||
-                !cache.InstrumentedMethods.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod))
+                !cache.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod))
             {
                 //
                 // The probe fault occurred in a method that is no longer actively instrumented, ignore.
@@ -229,12 +228,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 return;
             }
 
-            FunctionProbesStub.Cache = null;
+            FunctionProbesStub.State = null;
             RequestFunctionProbeUninstallation();
         }
 
 
-        public async Task StartCapturingAsync(IList<MethodInfo> methods, CancellationToken token)
+        public async Task StartCapturingAsync(IList<MethodInfo> methods, IFunctionProbes probes, CancellationToken token)
         {
             DisposableHelper.ThrowIfDisposed<FunctionProbesManager>(ref _disposedState);
 
@@ -256,8 +255,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             try
             {
                 List<ulong> functionIds = new(methods.Count);
-                List<uint> argumentCounts = new(methods.Count);
-                List<uint> boxingTokens = new();
+                List<ParameterBoxingInstructions> allBoxingInstructions = new();
+                List<uint> parameterCounts = new(methods.Count);
 
                 foreach (MethodInfo method in methods)
                 {
@@ -267,32 +266,31 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                         throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, ParameterCapturingStrings.ErrorMessage_FunctionDoesNotHaveIdFormatString, method.Name));
                     }
 
-                    uint[] methodBoxingTokens = BoxingTokens.GetBoxingTokens(method);
-                    if (!newMethodCache.TryAdd(functionId, new InstrumentedMethod(method, methodBoxingTokens)))
+                    ParameterBoxingInstructions[] boxingInstructionsForMethod = BoxingInstructions.GetBoxingInstructions(method);
+                    if (!newMethodCache.TryAdd(functionId, new InstrumentedMethod(method, boxingInstructionsForMethod)))
                     {
                         // Duplicate, ignore
                         continue;
                     }
 
-                    newObjectFormatterCache.CacheMethodParameters(method);
-
                     functionIds.Add(functionId);
-                    argumentCounts.Add((uint)methodBoxingTokens.Length);
-                    boxingTokens.AddRange(methodBoxingTokens);
+                    parameterCounts.Add((uint)boxingInstructionsForMethod.Length);
+                    allBoxingInstructions.AddRange(boxingInstructionsForMethod);
                 }
 
-                FunctionProbesStub.Cache = new FunctionProbesCache(new ReadOnlyDictionary<ulong, InstrumentedMethod>(newMethodCache), newObjectFormatterCache);
+                probes.CacheMethods(methods);
+                FunctionProbesStub.State = new FunctionProbesState(new ReadOnlyDictionary<ulong, InstrumentedMethod>(newMethodCache), probes);
 
                 _installationTaskSource = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
                 RequestFunctionProbeInstallation(
                     functionIds.ToArray(),
                     (uint)functionIds.Count,
-                    boxingTokens.ToArray(),
-                    argumentCounts.ToArray());
+                    allBoxingInstructions.ToArray(),
+                    parameterCounts.ToArray());
             }
             catch
             {
-                FunctionProbesStub.Cache = null;
+                FunctionProbesStub.State = null;
                 newObjectFormatterCache?.Clear();
 
                 _probeState = ProbeStateUninstalled;
@@ -339,8 +337,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         {
             if (!DisposableHelper.CanDispose(ref _disposedState))
                 return;
-
-            FunctionProbesStub.Instance = null;
 
             try
             {

@@ -3,7 +3,8 @@
 
 # Definitions
 
->**Note**: Some features are [experimental](./../experimental.md) and are denoted as `**[Experimental]**` in this document.
+> [!NOTE]
+> Some features are [experimental](./../experimental.md) and are denoted as `**[Experimental]**` in this document.
 
 ## CallStack
 
@@ -95,6 +96,7 @@ Object describing the list of methods to capture parameters for.
 | Name | Type | Description |
 |---|---|---|
 | `methods` | [MethodDescription](#methoddescription)[] | Array of methods to capture parameters for. |
+| `useDebuggerDisplayAttribute` | bool | Determines if parameters should be formatted using their [`DebuggerDisplayAttribute`](https://learn.microsoft.com/dotnet/api/system.diagnostics.debuggerdisplayattribute) if available and supported. Expressions in attributes may consist of properties, fields, methods without parameters, or any combination of these. |
 
 ## DotnetMonitorInfo
 
@@ -126,7 +128,7 @@ Describes custom metrics.
 |---|---|---|
 | `includeDefaultProviders` | bool | Determines if the default counter providers should be used (such as System.Runtime). |
 | `providers` | [EventMetricsProvider](#eventmetricsprovider)[] | Array of counter providers for metrics to collect. |
-| `meters` | [EventMetricsMeter](#eventmetricsmeter)[] | Array of meters for metrics to collect. |
+| `meters` | [EventMetricsMeter](#eventmetricsmeter)[] | (7.1+) Array of meters for metrics to collect. |
 
 ## EventMetricsMeter
 
@@ -339,16 +341,6 @@ Object describing a metric from the application.
 | `unit` | string | The unit for the metric. Can be null. |
 | `counterType` | string | The type of metric. This is typically `Rate` or `Metric`. |
 | `value` | double | The value of the metric. |
-
-## MetricType (8.0+)
-
-Enumeration that describes the type of metrics a provider consumes.
-
-| Name |
-|---|
-| `EventCounter` |
-| `Meter` |
-| `All` |
 
 ## OperationError
 

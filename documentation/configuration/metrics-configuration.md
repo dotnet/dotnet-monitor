@@ -3,12 +3,21 @@
 
 # Metrics Configuration
 
+## Default Providers
+
+The `/metrics` route (and starting in 8.0, the `/livemetrics` route and `CollectLiveMetrics` actions) will collect metrics from the default providers. The default providers are:
+- `System.Runtime`
+- `Microsoft.AspNetCore.Hosting`
+- `Grpc.AspNetCore.Server`
+
+These providers are collected by default for the above mentioned features, even when specifying [custom metrics](#custom-metrics) collection. The default providers can be excluded by [disabling](#disable-default-providers) them.
+
 ## Global Counter Interval
 
 Due to limitations in event counters, `dotnet monitor` supports only **one** refresh interval when collecting metrics. This interval is used for
 Prometheus metrics, livemetrics, triggers, traces, and trigger actions that collect traces. The default interval is 5 seconds, but can be changed in configuration.
 
-[8.0+] For EventCounter providers, is possible to specify a different interval for each provider. See [Per provider intervals](#per-provider-intervals-71).
+[7.1+] For EventCounter providers, is possible to specify a different interval for each provider. See [Per provider intervals](#per-provider-intervals).
 
 <details>
   <summary>JSON</summary>
@@ -39,7 +48,9 @@ Prometheus metrics, livemetrics, triggers, traces, and trigger actions that coll
   ```
 </details>
 
-## Per provider intervals (8.0+)
+## Per Provider Intervals
+
+First Available: 7.1
 
 It is possible to override the global interval on a per provider basis. Note this forces all scenarios (triggers, live metrics, prometheus metrics, traces) that use a particular provider to use that interval. Metrics that are `System.Diagnostics.Metrics` based always use global interval.
 
@@ -212,14 +223,12 @@ When `CounterNames` are not specified, all the counters associated with the `Pro
 
 [8.0+] Custom metrics support labels for metadata. Metadata cannot include commas (`,`); the inclusion of a comma in metadata will result in all metadata being removed from the custom metric.
 
-[8.0+] `System.Diagnostics.Metrics` is now supported in a limited capacity for custom metrics. At this time, there are several known limitations:
- * `System.Diagnostics.Metrics` cannot have multiple sessions collecting metrics concurrently (i.e. `/metrics` and `/livemetrics` cannot both be looking for `System.Diagnostics.Metrics` at the same time). 
- * There is currently no trigger for `System.Diagnostics.Metrics` for collection rule scenarios.
+[8.0+] `System.Diagnostics.Metrics` is now supported for custom metrics. At this time, there are the following known limitations:
  * `dotnet monitor` may fail to collect `System.Diagnostics.Metrics` if it begins collecting the metric before the target app creates the Meter ([note that this is fixed for .NET 8+ apps](https://github.com/dotnet/runtime/pull/76965)).
  
-### Set [`MetricType`](../api/definitions.md#metrictype-80)
+### Adding Meters/Instruments for `System.Diagnostics.Metrics`
 
-By default, `dotnet monitor` is unable to determine whether a custom provider is an `EventCounter` or `Meter`, and will attempt to collect both kinds of metrics for the specified provider. To explicitly specify whether a custom provider is an `EventCounter` or `Meter`, set the appropriate `MetricType`:
+Specifying a `Meter` is done differently than for `EventCounter` providers. The following example uses `MyCounter1` and `MyCounter2` on an `EventCounter` named `MyProvider`, as well as the `MyInstrument` instrument on `MyCustomMeter` and all instruments on the `AnotherMeter` meter:
 
 <details>
   <summary>JSON</summary>
@@ -229,12 +238,17 @@ By default, `dotnet monitor` is unable to determine whether a custom provider is
     "Metrics": {
       "Providers": [
         {
-          "ProviderName": "MyCustomEventCounterProvider",
-          "MetricType": "EventCounter"
+          "ProviderName": "MyProvider",
+          "CounterNames": ["MyCounter1", "MyCounter2"]
+        }
+      ],
+      "Meters": [
+        {
+          "MeterName": "MyCustomMeter",
+          "InstrumentNames": ["MyInstrument"]
         },
         {
-          "ProviderName": "MyCustomSDMProvider",
-          "MetricType": "Meter"
+          "MeterName": "AnotherMeter"
         }
       ]
     }
@@ -246,10 +260,12 @@ By default, `dotnet monitor` is unable to determine whether a custom provider is
   <summary>Kubernetes ConfigMap</summary>
   
   ```yaml
-  Metrics__Providers__0__ProviderName: "MyCustomEventCounterProvider"
-  Metrics__Providers__0__MetricType: "EventCounter"
-  Metrics__Providers__1__ProviderName: "MyCustomSDMProvider"
-  Metrics__Providers__1__MetricType: "Meter"
+  Metrics__Providers__0__ProviderName: "MyProvider"
+  Metrics__Providers__0__CounterNames__0: "MyCounter1"
+  Metrics__Providers__0__CounterNames__1: "MyCounter2"
+  Metrics__Meters__0__MeterName: "MyCustomMeter"
+  Metrics__Meters__0__InstrumentNames__0: "MyInstrument"
+  Metrics__Meters__1__MeterName: "AnotherMeter"
   ```
 </details>
 
@@ -258,13 +274,17 @@ By default, `dotnet monitor` is unable to determine whether a custom provider is
   
   ```yaml
   - name: DotnetMonitor_Metrics__Providers__0__ProviderName
-    value: "MyCustomEventCounterProvider"
-  - name: DotnetMonitor_Metrics__Providers__0__MetricType
-    value: "EventCounter"
-  - name: DotnetMonitor_Metrics__Providers__1__ProviderName
-    value: "MyCustomSDMProvider"
-  - name: DotnetMonitor_Metrics__Providers__1__MetricType
-    value: "Meter"
+    value: "MyProvider"
+  - name: DotnetMonitor_Metrics__Providers__0__CounterNames__0
+    value: "MyCounter1"
+  - name: DotnetMonitor_Metrics__Providers__0__CounterNames__1
+    value: "MyCounter2"
+  - name: DotnetMonitor_Metrics__Meters__0__MeterName
+    value: "MyCustomMeter"
+  - name: DotnetMonitor_Metrics__Meters__0__InstrumentNames__0
+    value: "MyInstrument"
+  - name: DotnetMonitor_Metrics__Meters__1__MeterName
+    value: "AnotherMeter"
   ```
 </details>
 
@@ -334,7 +354,7 @@ For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum n
   ```
 </details>
 
-## Disable default providers
+## Disable Default Providers
 
 In addition to enabling custom providers, `dotnet monitor` also allows you to disable collection of the default providers. You can do so via the following configuration:
 

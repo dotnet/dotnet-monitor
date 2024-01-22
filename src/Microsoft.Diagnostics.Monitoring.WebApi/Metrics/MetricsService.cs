@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     //If metric options change, we need to cancel the existing metrics pipeline and restart with the new settings.
                     using IDisposable monitorListener = _optionsMonitor.OnChange((_, _) => optionsTokenSource.SafeCancel());
 
-                    MetricsPipelineSettings counterSettings = MetricsSettingsFactory.CreateSettings(counterOptions, options);
+                    MetricsPipelineSettings counterSettings = MetricsSettingsFactory.CreateSettings(counterOptions, Timeout.Infinite, options);
                     counterSettings.UseSharedSession = pi.EndpointInfo.RuntimeVersion?.Major >= 8;
 
                     _counterPipeline = new MetricsPipeline(client, counterSettings, loggers: new[] { new MetricsLogger(_store.MetricsStore) });

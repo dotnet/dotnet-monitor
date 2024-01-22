@@ -1,13 +1,13 @@
 [CmdletBinding(SupportsShouldProcess)]
 Param(
     [Parameter(Mandatory=$true)][string]$AzCopyPath,
-    [Parameter(Mandatory=$true)][string]$BuildNumber,
+    [Parameter(Mandatory=$true)][string]$BuildVersion,
     [Parameter(Mandatory=$true)][string]$ReleaseVersion,
     [Parameter(Mandatory=$true)][string]$DotnetStageAccountKey,
     [Parameter(Mandatory=$true)][string]$DestinationAccountName,
-    [Parameter(Mandatory=$true)][string]$DestinationAccountKey,
+    [Parameter(Mandatory=$true)][string]$DestinationSasTokenBase64,
     [Parameter(Mandatory=$true)][string]$ChecksumsAccountName,
-    [Parameter(Mandatory=$true)][string]$ChecksumsAccountKey
+    [Parameter(Mandatory=$true)][string]$ChecksumsSasTokenBase64
 )
 
 $ErrorActionPreference = 'Stop'
@@ -17,13 +17,16 @@ $sourceAccountName = 'dotnetstage'
 $sourceContainerName = 'dotnet-monitor'
 $destinationContainerName = 'dotnet'
 
+$destinationSasToken = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($DestinationSasTokenBase64))
+$checksumsSasToken = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($ChecksumsSasTokenBase64))
+
 function Generate-Source-Uri{
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$true)][string]$AssetType
     )
 
-    return "https://$sourceAccountName.blob.core.windows.net/$sourceContainerName/$BuildNumber/${AssetType}Assets/*"
+    return "https://$sourceAccountName.blob.core.windows.net/$sourceContainerName/$BuildVersion/${AssetType}Assets/*"
 }
 
 function Generate-Destination-Uri{
@@ -65,13 +68,13 @@ function Transfer-File{
         [Parameter(Mandatory=$true)][string]$ToToken
     )
 
-    Write-Verbose "Copy $From -> $To"
+    Write-Host "Copy $From -> $To"
 
     if ($From -eq $to) {
-        Write-Verbose 'Skipping copy because source and destination are the same.'
+        Write-Host 'Skipping copy because source and destination are the same.'
     } else {
-        [array]$azCopyArgs = "$from$fromToken"
-        $azCopyArgs += "$to$toToken"
+        [array]$azCopyArgs = "$From$FromToken"
+        $azCopyArgs += "$To$ToToken"
         $azCopyArgs += "--s2s-preserve-properties"
         $azCopyArgs += "--s2s-preserve-access-tier=false"
         if ($WhatIfPreference) {
@@ -90,14 +93,9 @@ $soureSasToken = Generate-Sas-Token `
     -AccountKey $DotnetStageAccountKey `
     -Permissions 'rl'
 
-# Create destination URI and SAS token
+# Create destination URI
 $destinationUri = Generate-Destination-Uri `
     -AccountName $DestinationAccountName
-$destinationSasToken = Generate-Sas-Token `
-    -StorageAccountName $DestinationAccountName `
-    -ContainerName $destinationContainerName `
-    -AccountKey $DestinationAccountKey `
-    -Permissions 'rlw'
 
 # Copy files to destination account
 Transfer-File `
@@ -111,19 +109,14 @@ Transfer-File `
 $checksumsSourceUri = Generate-Source-Uri `
     -AssetType 'Checksum'
 
-# Create checksums destination URI and SAS token
+# Create checksums destination URI
 $checksumsDestinationUri = Generate-Destination-Uri `
     -AccountName $ChecksumsAccountName
-$checksumsDestinationSasToken = Generate-Sas-Token `
-    -StorageAccountName $ChecksumsAccountName `
-    -ContainerName $destinationContainerName `
-    -AccountKey $ChecksumsAccountKey `
-    -Permissions 'rlw'
 
 # Copy checksums to checksum account
 Transfer-File `
     -From $checksumsSourceUri `
     -FromToken $soureSasToken `
     -To $checksumsDestinationUri `
-    -ToToken $checksumsDestinationSasToken `
+    -ToToken $checksumsSasToken `
     -WhatIf:$WhatIfPreference

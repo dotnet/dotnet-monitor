@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.Options;
-using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
@@ -25,17 +24,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             TargetFrameworkMoniker.Net60,
             TargetFrameworkMoniker.Net70,
-#if INCLUDE_NEXT_DOTNET
             TargetFrameworkMoniker.Net80
-#endif
         };
         public static TargetFrameworkMoniker[] tfms6PlusToTest = new TargetFrameworkMoniker[]
         {
             TargetFrameworkMoniker.Net60,
             TargetFrameworkMoniker.Net70,
-#if INCLUDE_NEXT_DOTNET
             TargetFrameworkMoniker.Net80
-#endif
         };
 
         public static IEnumerable<object[]> GetTfms()
@@ -136,7 +131,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             return options;
         }
 
-        internal async static Task<CollectionRuleActionResult> ExecuteAndDisposeAsync(ICollectionRuleAction action, TimeSpan timeout)
+        internal static async Task<CollectionRuleActionResult> ExecuteAndDisposeAsync(ICollectionRuleAction action, TimeSpan timeout)
         {
             using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(timeout);
 

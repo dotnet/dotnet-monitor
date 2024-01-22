@@ -39,6 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly IOptions<CallStacksOptions> _callStacksOptions;
         private readonly IOptions<ParameterCapturingOptions> _parameterCapturingOptions;
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
+        private readonly IOptionsMonitor<MetricsOptions> _metricsOptions;
         private readonly ICollectionRuleService _collectionRuleService;
         private readonly IDumpOperationFactory _dumpOperationFactory;
         private readonly ILogsOperationFactory _logsOperationFactory;
@@ -55,6 +56,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _callStacksOptions = serviceProvider.GetRequiredService<IOptions<CallStacksOptions>>();
             _parameterCapturingOptions = serviceProvider.GetRequiredService<IOptions<ParameterCapturingOptions>>();
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
+            _metricsOptions = serviceProvider.GetRequiredService<IOptionsMonitor<MetricsOptions>>();
             _collectionRuleService = serviceProvider.GetRequiredService<ICollectionRuleService>();
             _dumpOperationFactory = serviceProvider.GetRequiredService<IDumpOperationFactory>();
             _logsOperationFactory = serviceProvider.GetRequiredService<ILogsOperationFactory>();
@@ -582,7 +584,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             if (!_parameterCapturingOptions.Value.GetEnabled())
             {
-                return NotFound();
+                return this.FeatureNotEnabled(Strings.FeatureName_ParameterCapturing);
             }
 
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
@@ -615,7 +617,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             if (!_callStacksOptions.Value.GetEnabled())
             {
-                return Task.FromResult<ActionResult>(NotFound());
+                return Task.FromResult<ActionResult>(this.FeatureNotEnabled(Strings.FeatureName_CallStacks));
             }
 
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);

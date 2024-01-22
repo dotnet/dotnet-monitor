@@ -7,20 +7,12 @@ using SampleMethods;
 using System;
 using System.Reflection;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
-    public class MethodTemplateStringGeneratorTests
+    public class MethodTemplateStringTests
     {
-        private readonly ITestOutputHelper _outputHelper;
-
-        public MethodTemplateStringGeneratorTests(ITestOutputHelper outputHelper)
-        {
-            _outputHelper = outputHelper;
-        }
-
         [Theory]
         [InlineData(typeof(TestMethodSignatures), nameof(TestMethodSignatures.ImplicitThis), "SampleMethods.TestMethodSignatures.ImplicitThis(this: {this})")]
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.Arrays), "SampleMethods.StaticTestMethodSignatures.Arrays(intArray: {intArray}, multidimensionalArray: {multidimensionalArray})")]
@@ -40,12 +32,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             Assert.NotNull(method);
 
             // Act
-            string actualTemplateString = MethodTemplateStringGenerator.GenerateTemplateString(method);
+            string actualTemplateString = new MethodTemplateString(method).Template;
 
             // Assert
             Assert.NotNull(actualTemplateString);
             actualTemplateString = actualTemplateString.ReplaceLineEndings("").Replace("\t", "");
-            _outputHelper.WriteLine(actualTemplateString);
             Assert.Equal(templateString, actualTemplateString);
         }
     }

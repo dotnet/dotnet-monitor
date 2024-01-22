@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Boxing;
 using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
@@ -16,11 +17,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
     {
         private static readonly string[] SystemTypePrefixes = { nameof(System), nameof(Microsoft) };
 
-        public InstrumentedMethod(MethodInfo method, uint[] boxingTokens)
+        public InstrumentedMethod(MethodInfo method, ParameterBoxingInstructions[] boxingInstructions)
         {
             FunctionId = method.GetFunctionId();
-            SupportedParameters = BoxingTokens.AreParametersSupported(boxingTokens);
-            MethodWithParametersTemplateString = MethodTemplateStringGenerator.GenerateTemplateString(method);
+            SupportedParameters = BoxingInstructions.AreParametersSupported(boxingInstructions);
+            MethodTemplateString = new MethodTemplateString(method);
             foreach (bool isParameterSupported in SupportedParameters)
             {
                 if (isParameterSupported)
@@ -30,6 +31,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             }
 
             CaptureMode = ComputeCaptureMode(method);
+
+            // Hold a reference to the method to ensure we keep the assembly it belongs to from being unloaded
+            // while we are instrumenting it.
+            Method = method;
         }
 
         private static ParameterCaptureMode ComputeCaptureMode(MethodInfo method)
@@ -48,6 +53,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             return ParameterCaptureMode.Inline;
         }
 
+        public MethodInfo Method { get; private set; }
+
         public ParameterCaptureMode CaptureMode { get; }
 
         /// <summary>
@@ -63,10 +70,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         /// <summary>
         /// A template string that contains the full method name with parameter names and
         /// format items for each supported parameter.
-        ///
-        /// The number of format items equals NumberOfSupportedParameters.
         /// </summary>
-        public string MethodWithParametersTemplateString { get; }
+        public MethodTemplateString MethodTemplateString { get; }
 
         public ulong FunctionId { get; }
     }

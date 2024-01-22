@@ -44,6 +44,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureNoParameters, Test_CaptureNoParametersAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureUnsupportedParameters, Test_CaptureUnsupportedParametersAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureValueTypeImplicitThis, Test_CaptureValueTypeImplicitThisAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.CaptureValueTypeTypeSpecs, Test_CaptureValueTypeTypeSpecsAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.CaptureGenerics, Test_CaptureGenericsAsync},
 
                 /* Interesting functions */
                 { TestAppScenarios.FunctionProbes.SubScenarios.AsyncMethod, Test_AsyncMethodAsync},
@@ -67,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                     return ScenarioHelpers.RunScenarioAsync(async logger =>
                     {
                         PerFunctionProbeProxy probeProxy = new PerFunctionProbeProxy();
-                        using FunctionProbesManager probeManager = new(probeProxy, logger);
+                        using FunctionProbesManager probeManager = new(logger);
 
                         await testCase(probeManager, probeProxy, token);
 
@@ -90,7 +92,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.NoArgs));
             probeProxy.RegisterPerFunctionProbe(method, (object[] args) => { });
 
-            await probeManager.StartCapturingAsync(new[] { method }, token);
+            await probeManager.StartCapturingAsync(new[] { method }, probeProxy, token);
             StaticTestMethodSignatures.NoArgs();
 
             Assert.Equal(1, probeProxy.GetProbeInvokeCount(method));
@@ -101,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.NoArgs));
             probeProxy.RegisterPerFunctionProbe(method, (object[] args) => { });
 
-            await probeManager.StartCapturingAsync(new[] { method }, token);
+            await probeManager.StartCapturingAsync(new[] { method }, probeProxy, token);
             StaticTestMethodSignatures.NoArgs();
 
             await probeManager.StopCapturingAsync(token);
@@ -145,6 +147,40 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 (UIntPtr)Random.Shared.Next(),
             }, token);
         }
+
+        private static async Task Test_CaptureValueTypeTypeSpecsAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.ValueType_TypeSpec));
+            (int?, bool?) testTuple = (null, true);
+
+            await RunStaticMethodTestCaseAsync(probeManager, probeProxy, method, new object[]
+            {
+                null,
+                testTuple
+            }, token);
+        }
+
+        private static async Task Test_CaptureGenericsAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = Type.GetType($"{nameof(SampleMethods)}.GenericTestMethodSignatures`2").GetMethod("GenericParameters");
+            Assert.NotNull(method);
+
+            List<List<int?>> ints = [[10]];
+            Uri uri = new Uri("https://example.com");
+
+            GenericTestMethodSignatures<List<List<int?>>, Uri> genericTestMethodSignatures = new();
+            await RunTestCaseWithCustomInvokerAsync(probeManager, probeProxy, method, () =>
+            {
+                genericTestMethodSignatures.GenericParameters(ints, uri, false);
+                return Task.CompletedTask;
+            },
+            [
+                ints,
+                uri,
+                false
+            ], genericTestMethodSignatures, thisParameterSupported: true, token);
+        }
+
 
         private static async Task Test_CaptureValueTypesAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {
@@ -212,7 +248,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
             probeProxy.RegisterPerFunctionProbe(method, (object[] actualArgs) => { });
 
-            await probeManager.StartCapturingAsync(new[] { method }, token);
+            await probeManager.StartCapturingAsync(new[] { method }, probeProxy, token);
 
             new GenericTestMethodSignatures<bool, int>().GenericParameters(false, 10, "hello world");
             new GenericTestMethodSignatures<string, object>().GenericParameters("", new object(), 10);
@@ -258,7 +294,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 throw new InvalidOperationException();
             });
 
-            await probeManager.StartCapturingAsync(new[] { method }, token);
+            await probeManager.StartCapturingAsync(new[] { method }, probeProxy, token);
 
             TaskCompletionSource<InstrumentedMethod> faultingMethodSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
             void onFault(object caller, InstrumentedMethod faultingMethod)
@@ -289,7 +325,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 StaticTestMethodSignatures.NoArgs();
             });
 
-            await probeManager.StartCapturingAsync(new[] { method }, token);
+            await probeManager.StartCapturingAsync(new[] { method }, probeProxy, token);
 
             StaticTestMethodSignatures.NoArgs();
 
@@ -306,7 +342,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             using CancellationTokenSource timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
             timeoutSource.CancelAfter(TimeSpan.FromSeconds(5));
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await probeManager.StartCapturingAsync(new[] { method }, token));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await probeManager.StartCapturingAsync(new[] { method }, probeProxy, token));
         }
 
         private static async Task Test_AssertsInProbesAreCaughtAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
@@ -334,8 +370,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
         {
             return ScenarioHelpers.RunScenarioAsync(logger =>
             {
-                PerFunctionProbeProxy probeProxy = new PerFunctionProbeProxy();
-                Assert.Throws<DllNotFoundException>(() => new FunctionProbesManager(probeProxy, logger));
+                Assert.Throws<DllNotFoundException>(() => new FunctionProbesManager(logger));
 
                 return Task.FromResult(0);
             }, token);
@@ -386,7 +421,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 }
             });
 
-            await probeManager.StartCapturingAsync(new[] { method }, token);
+            await probeManager.StartCapturingAsync(new[] { method }, probeProxy, token);
 
             await invoker().WaitAsync(token);
 

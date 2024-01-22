@@ -60,6 +60,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string ArrayException = nameof(ArrayException);
                 public const string InnerUnthrownException = nameof(InnerUnthrownException);
                 public const string InnerThrownException = nameof(InnerThrownException);
+                public const string EclipsingException = nameof(EclipsingException);
+                public const string EclipsingExceptionFromMethodCall = nameof(EclipsingExceptionFromMethodCall);
                 public const string AggregateException = nameof(AggregateException);
                 public const string ReflectionTypeLoadException = nameof(ReflectionTypeLoadException);
             }
@@ -94,6 +96,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string CaptureNoParameters = nameof(CaptureNoParameters);
                 public const string CaptureUnsupportedParameters = nameof(CaptureUnsupportedParameters);
                 public const string CaptureValueTypeImplicitThis = nameof(CaptureValueTypeImplicitThis);
+                public const string CaptureValueTypeTypeSpecs = nameof(CaptureValueTypeTypeSpecs);
+                public const string CaptureGenerics = nameof(CaptureGenerics);
 
                 /* Interesting methods */
                 public const string AsyncMethod = nameof(AsyncMethod);
