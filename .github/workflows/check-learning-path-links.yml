@@ -1,8 +1,15 @@
 name: 'Check Learning Path Links'
 on:
-  schedule: # Run once a week.
-    - cron: '0 0 * * 1'
   workflow_dispatch:
+    inputs:
+      baselineTag:
+        description: 'Baseline Release Tag Override'
+        required: false
+        type: string
+
+  # schedule: # Run once a week.
+  #   - cron: '0 0 * * 1'
+  # workflow_dispatch:
 
 permissions:
   pull-requests: read
