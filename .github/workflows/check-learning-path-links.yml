@@ -35,9 +35,13 @@ jobs:
         working-directory: ./head
         run: |
           cd .github
-          prev_sha=$(cat learning-path-sha.txt)
+          prev_branch_name=$(cat learning-path-sha.txt)
+          echo "prev_branch_name=$prev_branch_name" >> $GITHUB_ENV
+          echo "Writing prev_branch_name into GitHub Env"
+          echo "prev_sha=$(git rev-parse $prev_branch_name)"
           echo "prev_sha=$prev_sha" >> $GITHUB_ENV
-          echo "Writing Prev Sha into GitHub Env"
+          echo "$prev_sha"
+          echo "Writing prev_sha into GitHub Env"
           cd ../
     
       - name: Checkout previous update
@@ -51,7 +55,7 @@ jobs:
         working-directory: ./head
         run: |
           # changed_source_files=$(git diff-tree --no-commit-id --name-only -r "$prev_sha" "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
-          changed_source_files=$(git diff-tree --no-commit-id --name-only -r "9c3809d" "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
+          changed_source_files=$(git diff-tree --no-commit-id --name-only -r "$prev_sha" "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
           echo "Files to validate: '${changed_source_files}'"
           echo "updated_files=$(echo ${changed_source_files})" >> $GITHUB_ENV
 
