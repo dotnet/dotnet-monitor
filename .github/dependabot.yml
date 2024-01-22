@@ -33,6 +33,22 @@ updates:
   commit-message:
     prefix: '[main] '
 - package-ecosystem: nuget
+  directory: /eng/dependabot/net8.0
+  schedule:
+    interval: daily
+  target-branch: main
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+  commit-message:
+    prefix: '[main] '
+  groups:
+    runtime-dependencies:
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
+- package-ecosystem: nuget
   directory: /eng/dependabot/net7.0
   schedule:
     interval: daily
@@ -50,22 +66,6 @@ updates:
       - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
-  schedule:
-    interval: daily
-  target-branch: main
-  ignore:
-  - dependency-name: '*'
-    update-types:
-    - version-update:semver-major
-  commit-message:
-    prefix: '[main] '
-  groups:
-    runtime-dependencies:
-      patterns:
-      - Microsoft.Extensions.*
-      - Microsoft.NETCore.App.Runtime.*
-- package-ecosystem: nuget
-  directory: /eng/dependabot/netcoreapp3.1
   schedule:
     interval: daily
   target-branch: main
@@ -140,97 +140,6 @@ updates:
       - Microsoft.Extensions.*
       - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
-  directory: /eng/dependabot/netcoreapp3.1
-  schedule:
-    interval: daily
-  target-branch: release/7.x
-  ignore:
-  - dependency-name: '*'
-    update-types:
-    - version-update:semver-major
-  commit-message:
-    prefix: '[release/7.x] '
-  groups:
-    runtime-dependencies:
-      patterns:
-      - Microsoft.Extensions.*
-      - Microsoft.NETCore.App.Runtime.*
-- package-ecosystem: nuget
-  directory: /eng/dependabot
-  schedule:
-    interval: daily
-  target-branch: release/7.2
-  ignore:
-  - dependency-name: Microsoft.Extensions.*
-    update-types:
-    - version-update:semver-major
-  commit-message:
-    prefix: '[release/7.2] '
-  groups:
-    azure-storage-dependencies:
-      patterns:
-      - Azure.Storage.*
-    identity-dependencies:
-      patterns:
-      - Azure.Identity
-      - Microsoft.Identity.*
-      - Microsoft.IdentityModel.*
-- package-ecosystem: nuget
-  directory: /eng/dependabot/nuget.org
-  schedule:
-    interval: daily
-  target-branch: release/7.2
-  commit-message:
-    prefix: '[release/7.2] '
-- package-ecosystem: nuget
-  directory: /eng/dependabot/net7.0
-  schedule:
-    interval: daily
-  target-branch: release/7.2
-  ignore:
-  - dependency-name: '*'
-    update-types:
-    - version-update:semver-major
-  commit-message:
-    prefix: '[release/7.2] '
-  groups:
-    runtime-dependencies:
-      patterns:
-      - Microsoft.Extensions.*
-      - Microsoft.NETCore.App.Runtime.*
-- package-ecosystem: nuget
-  directory: /eng/dependabot/net6.0
-  schedule:
-    interval: daily
-  target-branch: release/7.2
-  ignore:
-  - dependency-name: '*'
-    update-types:
-    - version-update:semver-major
-  commit-message:
-    prefix: '[release/7.2] '
-  groups:
-    runtime-dependencies:
-      patterns:
-      - Microsoft.Extensions.*
-      - Microsoft.NETCore.App.Runtime.*
-- package-ecosystem: nuget
-  directory: /eng/dependabot/netcoreapp3.1
-  schedule:
-    interval: daily
-  target-branch: release/7.2
-  ignore:
-  - dependency-name: '*'
-    update-types:
-    - version-update:semver-major
-  commit-message:
-    prefix: '[release/7.2] '
-  groups:
-    runtime-dependencies:
-      patterns:
-      - Microsoft.Extensions.*
-      - Microsoft.NETCore.App.Runtime.*
-- package-ecosystem: nuget
   directory: /eng/dependabot
   schedule:
     interval: daily
@@ -257,22 +166,6 @@ updates:
   target-branch: release/6.x
   commit-message:
     prefix: '[release/6.x] '
-- package-ecosystem: nuget
-  directory: /eng/dependabot/net7.0
-  schedule:
-    interval: daily
-  target-branch: release/6.x
-  ignore:
-  - dependency-name: '*'
-    update-types:
-    - version-update:semver-major
-  commit-message:
-    prefix: '[release/6.x] '
-  groups:
-    runtime-dependencies:
-      patterns:
-      - Microsoft.Extensions.*
-      - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
   schedule:

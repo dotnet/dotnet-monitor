@@ -5,7 +5,8 @@
 
 `dotnet monitor` can be [configured](../configuration/collection-rule-configuration.md#collection-rule-configuration) to automatically collect diagnostic artifacts based on conditions within the discovered processes.
 
->**Note**: Collection rules are only enabled when running dotnet-monitor in `Listen` mode. See [Connection Mode](../configuration/collection-rule-configuration.md#connection-mode) configuration for details.
+> [!NOTE]
+> Collection rules are only enabled when running dotnet-monitor in `Listen` mode. See [Connection Mode](../configuration/collection-rule-configuration.md#connection-mode) configuration for details.
 
 A collection rule is composed of four key aspects:
 - [Filters](#filters): Describes for which processes the rule is applied. Can filter on aspects such as process name, ID, and command line.
@@ -27,7 +28,8 @@ Once a trigger is satisfied, the [action](#actions) list is executed. Each actio
 
 A rule can describe for which processes that the rule is applied. If a discovered process does not match the filters, then the rule is not applied to the process. If filters are not configured, the rule is applied to the process.
 
->**Note**: `dotnet monitor` is capable of observing multiple processes simultaneously. The filter mechanism for collection rules allows the user to specify which subset of the observed processes that each individual rule should be applied.
+> [!NOTE]
+> `dotnet monitor` is capable of observing multiple processes simultaneously. The filter mechanism for collection rules allows the user to specify which subset of the observed processes that each individual rule should be applied.
 
 The filter criteria are the same as those used for the [default process](../configuration/collection-rule-configuration.md#default-process-configuration) configuration.
 
@@ -110,7 +112,7 @@ For example, if action `A` has an output named `EgressPath`, and action `B` has 
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   CollectionRules__RuleName__Actions__0__Name: "A"
   CollectionRules__RuleName__Actions__0__Type: "CollectTrace"
@@ -125,7 +127,7 @@ For example, if action `A` has an output named `EgressPath`, and action `B` has 
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_CollectionRules__RuleName__Actions__0__Name
     value: "A"

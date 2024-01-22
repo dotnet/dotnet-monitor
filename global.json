@@ -1,33 +1,32 @@
 {
   "tools": {
-    "dotnet": "8.0.100-rc.1.23455.8",
+    "dotnet": "8.0.101",
     "runtimes": {
       "aspnetcore": [
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(MicrosoftAspNetCoreApp70Version)",
-        "$(VSRedistCommonAspNetCoreSharedFrameworkx6480Version)"
+        "$(MicrosoftAspNetCoreApp80Version)"
       ],
       "aspnetcore/x86": [
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(MicrosoftAspNetCoreApp70Version)",
-        "$(VSRedistCommonAspNetCoreSharedFrameworkx6480Version)"
+        "$(MicrosoftAspNetCoreApp80Version)"
       ],
       "dotnet": [
         "$(MicrosoftNETCoreApp60Version)",
         "$(MicrosoftNETCoreApp70Version)",
-        "$(VSRedistCommonNetCoreSharedFrameworkx6480Version)"
+        "$(MicrosoftNETCoreApp80Version)"
       ],
       "dotnet/x86": [
         "$(MicrosoftNETCoreApp60Version)",
         "$(MicrosoftNETCoreApp70Version)",
-        "$(VSRedistCommonNetCoreSharedFrameworkx6480Version)"
+        "$(MicrosoftNETCoreApp80Version)"
       ]
-    },
-    "xcopy-msbuild": "17.7.4"
+    }
   },
   "msbuild-sdks": {
     "Microsoft.Build.NoTargets": "3.7.0",
-    "Microsoft.DotNet.Arcade.Sdk": "9.0.0-beta.23506.1",
-    "Microsoft.DotNet.Helix.Sdk": "9.0.0-beta.23506.1"
+    "Microsoft.DotNet.Arcade.Sdk": "8.0.0-beta.24060.4",
+    "Microsoft.DotNet.Helix.Sdk": "8.0.0-beta.24060.4"
   }
 }

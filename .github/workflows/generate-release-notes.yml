@@ -3,6 +3,11 @@ run-name: '[${{ github.ref_name }}] Generate release notes'
 
 on:
   workflow_dispatch:
+    inputs:
+      baselineTag:
+        description: 'Baseline Release Tag Override'
+        required: false
+        type: string
 
 permissions: {}
 
@@ -16,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout release branch
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
         with:
           persist-credentials: false
           fetch-depth: 0 # Fetch the entire repo for the below git commit graph operations
@@ -25,8 +30,12 @@ jobs:
         run: |
           git fetch --tags
 
-          # Grab the latest tag from the current branch. If it doesn't exist, grab the latest tag across all branches.
-          last_release_tag=$(git describe --tags --abbrev=0 || git describe --tags $(git rev-list --tags --max-count=1))
+          # Grab the latest tag from the current branch unless overridden. If it doesn't exist, grab the latest tag across all branches.
+          last_release_tag=$BASELINE_TAG
+          if [[ -z "$BASELINE_TAG" ]]; then
+            last_release_tag=$(git describe --tags --abbrev=0 || git describe --tags $(git rev-list --tags --max-count=1))
+          fi
+
           echo "Using tag: $last_release_tag"
           last_release_date=$(git log -1 --format=%aI "$last_release_tag")
           echo "last_release_date=$last_release_date" >> $GITHUB_ENV
@@ -52,9 +61,11 @@ jobs:
           echo "release_note_path=$release_note_path" >> $GITHUB_ENV
           echo "friendly_release_name=$friendly_release_name" >> $GITHUB_ENV
           echo "qualified_release_version=$qualified_release_version" >> $GITHUB_ENV
+        env:
+          BASELINE_TAG: ${{ inputs.baselineTag }}
 
       - name: Checkout main
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
         with:
           persist-credentials: true # We need to persist credentials to push the resulting changes upstream.
           ref: main

@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             // Any authenticated route on the default address should 401 Unauthenticated
 
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                () => apiClient.GetProcessesAsync());
+                apiClient.GetProcessesAsync);
             Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
 
             // TODO: Verify other routes (e.g. /dump, /trace, /logs) also 401 Unauthenticated
@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             // Any non-metrics route on the metrics address should 404 Not Found
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                () => apiClient.GetProcessesAsync());
+                apiClient.GetProcessesAsync);
             Assert.Equal(HttpStatusCode.NotFound, statusCodeException.StatusCode);
 
             // TODO: Verify other routes (e.g. /dump, /trace, /logs) also 404 Not Found
@@ -185,7 +185,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
 
             // check that the old key is now invalid
-            ApiStatusCodeException thrownEx = await Assert.ThrowsAsync<ApiStatusCodeException>(async () => await apiClient.GetProcessesAsync());
+            ApiStatusCodeException thrownEx = await Assert.ThrowsAsync<ApiStatusCodeException>(apiClient.GetProcessesAsync);
             Assert.True(HttpStatusCode.Unauthorized == thrownEx.StatusCode);
 
             _outputHelper.WriteLine("Verifying new API key.");
@@ -247,7 +247,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 }
                 else
                 {
-                    ApiStatusCodeException ex = await Assert.ThrowsAsync<ApiStatusCodeException>(async () => { await apiClient.GetProcessesAsync(); });
+                    ApiStatusCodeException ex = await Assert.ThrowsAsync<ApiStatusCodeException>(apiClient.GetProcessesAsync);
                     Assert.Equal(HttpStatusCode.Unauthorized, ex.StatusCode);
                 }
             }
@@ -287,7 +287,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                () => apiClient.GetProcessesAsync());
+                apiClient.GetProcessesAsync);
             Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
         }
 
@@ -315,7 +315,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                () => apiClient.GetProcessesAsync());
+                apiClient.GetProcessesAsync);
             Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
         }
 
@@ -344,7 +344,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                () => apiClient.GetProcessesAsync());
+                apiClient.GetProcessesAsync);
             Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
         }
 
@@ -372,7 +372,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                () => apiClient.GetProcessesAsync());
+                apiClient.GetProcessesAsync);
             Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
         }
 
@@ -436,7 +436,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                () => apiClient.GetProcessesAsync());
+                apiClient.GetProcessesAsync);
             Assert.Equal(expectedError, statusCodeException.StatusCode);
         }
 
@@ -473,7 +473,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 }
                 else
                 {
-                    Assert.True(false, "Unknown algorithm");
+                    Assert.Fail("Unknown algorithm");
                 }
 
                 JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonIgnoreCondition.WhenWritingNull);
@@ -533,7 +533,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             // Test that clearing the Authorization header will result in a 401
             httpClient.DefaultRequestHeaders.Authorization = null;
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                () => apiClient.GetProcessesAsync());
+                apiClient.GetProcessesAsync);
             Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
         }
 
@@ -565,7 +565,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, apiKey);
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                () => apiClient.GetProcessesAsync());
+                apiClient.GetProcessesAsync);
             Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
         }
 
@@ -608,7 +608,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                () => apiClient.GetProcessesAsync());
+                apiClient.GetProcessesAsync);
             Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
         }
 
@@ -661,7 +661,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             if (EnvironmentInformation.IsElevated)
             {
                 var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
-                    () => client.GetProcessesAsync());
+                    client.GetProcessesAsync);
                 Assert.Equal(HttpStatusCode.Forbidden, statusCodeException.StatusCode);
             }
             else

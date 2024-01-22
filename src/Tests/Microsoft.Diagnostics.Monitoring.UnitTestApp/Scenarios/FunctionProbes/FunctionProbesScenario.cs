@@ -44,6 +44,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureNoParameters, Test_CaptureNoParametersAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureUnsupportedParameters, Test_CaptureUnsupportedParametersAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.CaptureValueTypeImplicitThis, Test_CaptureValueTypeImplicitThisAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.CaptureValueTypeTypeSpecs, Test_CaptureValueTypeTypeSpecsAsync},
+                { TestAppScenarios.FunctionProbes.SubScenarios.CaptureGenerics, Test_CaptureGenericsAsync},
 
                 /* Interesting functions */
                 { TestAppScenarios.FunctionProbes.SubScenarios.AsyncMethod, Test_AsyncMethodAsync},
@@ -145,6 +147,40 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 (UIntPtr)Random.Shared.Next(),
             }, token);
         }
+
+        private static async Task Test_CaptureValueTypeTypeSpecsAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.ValueType_TypeSpec));
+            (int?, bool?) testTuple = (null, true);
+
+            await RunStaticMethodTestCaseAsync(probeManager, probeProxy, method, new object[]
+            {
+                null,
+                testTuple
+            }, token);
+        }
+
+        private static async Task Test_CaptureGenericsAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = Type.GetType($"{nameof(SampleMethods)}.GenericTestMethodSignatures`2").GetMethod("GenericParameters");
+            Assert.NotNull(method);
+
+            List<List<int?>> ints = [[10]];
+            Uri uri = new Uri("https://example.com");
+
+            GenericTestMethodSignatures<List<List<int?>>, Uri> genericTestMethodSignatures = new();
+            await RunTestCaseWithCustomInvokerAsync(probeManager, probeProxy, method, () =>
+            {
+                genericTestMethodSignatures.GenericParameters(ints, uri, false);
+                return Task.CompletedTask;
+            },
+            [
+                ints,
+                uri,
+                false
+            ], genericTestMethodSignatures, thisParameterSupported: true, token);
+        }
+
 
         private static async Task Test_CaptureValueTypesAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
         {

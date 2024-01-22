@@ -31,9 +31,9 @@ Functional tests are composed of 3 main parts:
 1. An instance of an application that is being monitored (from the UnitTestApp assembly)
 
 * [ScenarioRunner](../../src/Tests/Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests/Runners/ScenarioRunner.cs) is typically used to orchestrate test runs. The class will spawn both an instance of dotnet-monitor and an instance of test application. The app and the test communicate via stdio. The test communicates with dotnet-monitor via its Api surface.
-* The dotnet-monitor Api surface can be accessed through the [ApiClient](../../src/Tests/Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests/HttpApi/ApiClient.cs).
+* The dotnet-monitor Api surface can be accessed through the [ApiClient](https://github.com/dotnet/dotnet-monitor/blob/main/src/Tests/Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests/HttpApi/ApiClient.cs).
 * New scenarios can be added [here](../../src/Tests/Microsoft.Diagnostics.Monitoring.UnitTestApp/Scenarios/).
-* The [AsyncWaitScenario](../../src/Tests/Microsoft.Diagnostics.Monitoring.UnitTestApp/Scenarios/AsyncWaitScenario.cs) is sufficient for most tests.
+* The [AsyncWaitScenario](https://github.com/dotnet/dotnet-monitor/blob/main/src/Tests/Microsoft.Diagnostics.Monitoring.UnitTestApp/Scenarios/AsyncWaitScenario.cs) is sufficient for most tests.
 * Coordination of the scenario and the test is done via message passing (json over stdio) between the test and the app. To send messages to the app from the test, [AppRunner](../../src/Tests/Microsoft.Diagnostics.Monitoring.TestCommon/Runners/AppRunner.cs)'s `SendCommandAsync` is used. In the scenario definition, [ScenarioHelpers](../../src/Tests/Microsoft.Diagnostics.Monitoring.UnitTestApp/ScenarioHelpers.cs)'s `WaitForCommandAsync` is used. This can be used to synchronize various points of the test application with the execution of the dotnet-monitor Api from the test itself.
 
 ## Native/Profiler Tests

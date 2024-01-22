@@ -24,7 +24,8 @@ When `dotnet-monitor` is used to produce artifacts such as dumps or traces, an e
 | queueSharedAccessSignatureName | string | false | (6.3+) Name of the property in the Properties section that will contain the queue SAS token; if using SAS, must be specified if `queueSharedAccessSignature` is not specified.|
 | metadata | Dictionary<string, string> | false | A mapping of metadata keys to environment variable names. The values of the environment variables will be added as metadata for egressed artifacts.|
 
-> **Note**: Starting with `dotnet monitor` 7.0, all built-in metadata keys are prefixed with `DotnetMonitor_`; to avoid metadata naming conflicts, avoid prefixing your metadata keys with `DotnetMonitor_`.
+> [!NOTE]
+> Starting with `dotnet monitor` 7.0, all built-in metadata keys are prefixed with `DotnetMonitor_`; to avoid metadata naming conflicts, avoid prefixing your metadata keys with `DotnetMonitor_`.
 
 ### Example azureBlobStorage provider
 
@@ -52,7 +53,7 @@ When `dotnet-monitor` is used to produce artifacts such as dumps or traces, an e
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   Egress__AzureBlobStorage__monitorBlob__accountUri: "https://exampleaccount.blob.core.windows.net"
   Egress__AzureBlobStorage__monitorBlob__containerName: "dotnet-monitor"
@@ -64,7 +65,7 @@ When `dotnet-monitor` is used to produce artifacts such as dumps or traces, an e
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountUri
     value: "https://exampleaccount.blob.core.windows.net"
@@ -107,7 +108,7 @@ When `dotnet-monitor` is used to produce artifacts such as dumps or traces, an e
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   Egress__AzureBlobStorage__monitorBlob__accountUri: "https://exampleaccount.blob.core.windows.net"
   Egress__AzureBlobStorage__monitorBlob__containerName: "dotnet-monitor"
@@ -121,7 +122,7 @@ When `dotnet-monitor` is used to produce artifacts such as dumps or traces, an e
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_Egress__AzureBlobStorage__monitorBlob__accountUri
     value: "https://exampleaccount.blob.core.windows.net"
@@ -185,7 +186,7 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 
 <details>
   <summary>Kubernetes Secret</summary>
-  
+
   ```sh
   #!/bin/sh
   kubectl create secret generic my-s3-secrets \
@@ -225,7 +226,7 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   Egress__FileSystem__monitorFile__directoryPath: "/artifacts"
   Egress__FileSystem__monitorFile__intermediateDirectoryPath: "/intermediateArtifacts"
@@ -234,7 +235,7 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_Egress__FileSystem__monitorFile__directoryPath
     value: "/artifacts"

@@ -1,9 +1,12 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using ReleaseTool.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using ReleaseTool.Core;
 
 namespace DiagnosticsReleaseTool.Util
 {
@@ -47,10 +50,10 @@ namespace DiagnosticsReleaseTool.Util
 
                 // This iteration is necessary due to the public/private nature repos.
                 var repoBuilds = buildList.EnumerateArray()
-                                          .Where(build => 
+                                          .Where(build =>
                                           {
-                                            var buildUri = new Uri(build.GetProperty("repo").GetString());
-                                            return repoUrls.Any(repoUrl => buildUri == new Uri(repoUrl));
+                                              var buildUri = new Uri(build.GetProperty("repo").GetString());
+                                              return repoUrls.Any(repoUrl => buildUri == new Uri(repoUrl));
                                           });
 
                 if (repoBuilds.Count() != 1)

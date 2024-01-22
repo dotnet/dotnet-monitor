@@ -86,6 +86,7 @@ jobs:
 
               if (old_comment_stripped === new_comment_stripped) {
                 commentExists = true;
+                console.log("Match!");
               }
             }
 

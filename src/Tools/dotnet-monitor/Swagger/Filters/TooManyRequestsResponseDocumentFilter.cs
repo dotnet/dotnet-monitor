@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
                      {
                          Reference = new OpenApiReference()
                          {
-                             Id = typeof(ProblemDetails).Name,
+                             Id = nameof(ProblemDetails),
                              Type = ReferenceType.Schema
                          }
                      }

@@ -43,37 +43,44 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             else if (counter is CounterEndedPayload)
             {
-                Logger.CounterEndedPayload(counter.Name);
+                Logger.CounterEndedPayload(counter.CounterMetadata.CounterName);
+                return;
+            }
+            else if (!counter.EventType.IsValuePublishedEvent())
+            {
+                // Do we want to do anything with this payload?
                 return;
             }
 
-            if (counter is PercentilePayload percentilePayload)
+            if (counter is AggregatePercentilePayload aggregatePercentilePayload)
             {
-                if (!percentilePayload.Quantiles.Any())
+                if (!aggregatePercentilePayload.Quantiles.Any())
                 {
                     return;
                 }
                 await _stream.WriteAsync(JsonSequenceRecordSeparator);
                 _bufferWriter.Clear();
 
-                for (int i = 0; i < percentilePayload.Quantiles.Length; i++)
+                for (int i = 0; i < aggregatePercentilePayload.Quantiles.Length; i++)
                 {
                     if (i > 0)
                     {
                         _bufferWriter.Write(JsonSequenceRecordSeparator.Span);
                     }
-                    Quantile quantile = percentilePayload.Quantiles[i];
+                    Quantile quantile = aggregatePercentilePayload.Quantiles[i];
 
                     SerializeCounterValues(counter.Timestamp,
-                        counter.Provider,
-                        counter.Name,
+                        counter.CounterMetadata.ProviderName,
+                        counter.CounterMetadata.CounterName,
                         counter.DisplayName,
                         counter.Unit,
                         counter.CounterType.ToString(),
-                        CounterUtilities.AppendPercentile(counter.Metadata, quantile.Percentage),
-                        quantile.Value);
+                        CounterUtilities.AppendPercentile(counter.ValueTags, quantile.Percentage),
+                        quantile.Value,
+                        counter.CounterMetadata.MeterTags,
+                        counter.CounterMetadata.InstrumentTags);
 
-                    if (i < percentilePayload.Quantiles.Length - 1)
+                    if (i < aggregatePercentilePayload.Quantiles.Length - 1)
                     {
                         _bufferWriter.Write(NewLineSeparator.Span);
                     }
@@ -85,13 +92,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 _bufferWriter.Clear();
 
                 SerializeCounterValues(counter.Timestamp,
-                    counter.Provider,
-                    counter.Name,
+                    counter.CounterMetadata.ProviderName,
+                    counter.CounterMetadata.CounterName,
                     counter.DisplayName,
                     counter.Unit,
                     counter.CounterType.ToString(),
-                    counter.Metadata,
-                    counter.Value);
+                    counter.ValueTags,
+                    counter.Value,
+                    counter.CounterMetadata.MeterTags,
+                    counter.CounterMetadata.InstrumentTags);
             }
             await _stream.WriteAsync(_bufferWriter.WrittenMemory);
 
@@ -106,7 +115,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             string unit,
             string counterType,
             string tags,
-            double value)
+            double value,
+            string meterTags,
+            string instrumentTags)
         {
             using var writer = new Utf8JsonWriter(_bufferWriter, new JsonWriterOptions { Indented = false });
             writer.WriteStartObject();
@@ -121,6 +132,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             //Some versions of .Net return invalid metric numbers. See https://github.com/dotnet/runtime/pull/46938
             writer.WriteNumber("value", double.IsNaN(value) ? 0.0 : value);
+
+            writer.WriteString("meterTags", meterTags);
+            writer.WriteString("instrumentTags", instrumentTags);
 
             writer.WriteEndObject();
         }

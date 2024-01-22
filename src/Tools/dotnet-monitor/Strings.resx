@@ -377,12 +377,6 @@
     <value>'{0}' is not a known trigger type.</value>
     <comment>{0} = The type of trigger that is unknown.</comment>
   </data>
-  <data name="FeatureName_CallStacks" xml:space="preserve">
-    <value>Call Stacks</value>
-  </data>
-  <data name="FeatureName_Exceptions" xml:space="preserve">
-    <value>Exceptions</value>
-  </data>
   <data name="HelpDescription_CommandCollect" xml:space="preserve">
     <value>Monitor logs and metrics in a .NET application send the results to a chosen destination.</value>
     <comment>Gets the string to display in help that explains what the 'collect' command does.</comment>
@@ -912,9 +906,6 @@
 2 Format Parameters:
 0. providerName: The name of the provider that failed validation.
 1. errorMessage: The validation failure message</comment>
-  </data>
-  <data name="FeatureName_ParameterCapturing" xml:space="preserve">
-    <value>Parameter Capturing</value>
   </data>
   <data name="ErrorMessage_UnableToFindHostingStartupAssembly" xml:space="preserve">
     <value>Unable to find hosting startup assembly at determined path.</value>

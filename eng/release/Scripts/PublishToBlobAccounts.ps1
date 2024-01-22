@@ -1,7 +1,7 @@
 [CmdletBinding(SupportsShouldProcess)]
 Param(
     [Parameter(Mandatory=$true)][string]$AzCopyPath,
-    [Parameter(Mandatory=$true)][string]$BuildNumber,
+    [Parameter(Mandatory=$true)][string]$BuildVersion,
     [Parameter(Mandatory=$true)][string]$ReleaseVersion,
     [Parameter(Mandatory=$true)][string]$DotnetStageAccountKey,
     [Parameter(Mandatory=$true)][string]$DestinationAccountName,
@@ -26,7 +26,7 @@ function Generate-Source-Uri{
         [Parameter(Mandatory=$true)][string]$AssetType
     )
 
-    return "https://$sourceAccountName.blob.core.windows.net/$sourceContainerName/$BuildNumber/${AssetType}Assets/*"
+    return "https://$sourceAccountName.blob.core.windows.net/$sourceContainerName/$BuildVersion/${AssetType}Assets/*"
 }
 
 function Generate-Destination-Uri{

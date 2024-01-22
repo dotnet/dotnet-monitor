@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Collections.Generic;
-using System.Globalization;
 
 #if HOSTINGSTARTUP
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup
 #else
+using System.Globalization;
+
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 #endif
 {

@@ -584,7 +584,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             if (!_parameterCapturingOptions.Value.GetEnabled())
             {
-                return NotFound();
+                return this.FeatureNotEnabled(Strings.FeatureName_ParameterCapturing);
             }
 
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
@@ -617,7 +617,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             if (!_callStacksOptions.Value.GetEnabled())
             {
-                return Task.FromResult<ActionResult>(NotFound());
+                return Task.FromResult<ActionResult>(this.FeatureNotEnabled(Strings.FeatureName_CallStacks));
             }
 
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);

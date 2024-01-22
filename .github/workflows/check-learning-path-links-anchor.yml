@@ -1,0 +1,47 @@
+name: 'Check Learning Path Links'
+on:
+  pull_request:
+    branches: ['main']
+
+permissions:
+  pull-requests: read
+  
+jobs:
+  check-learning-path-links:
+    if: contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.pull_request.author_association)
+    name: 'Check Learning Path Links'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout merge
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
+        with:
+          persist-credentials: false
+          path: merge
+          
+      - name: Checkout head
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
+        with:
+          persist-credentials: false
+          ref: main
+          path: head
+
+      - name: Get base commit for the PR
+        working-directory: ./merge
+        run: |
+          git fetch origin "$GITHUB_BASE_REF"
+          base_sha=$(git rev-parse "origin/$GITHUB_BASE_REF")
+          echo "base_sha=$base_sha" >> $GITHUB_ENV
+          echo "Merging ${GITHUB_SHA} into ${GITHUB_BASE_REF}"
+
+      - name: Get changed files
+        working-directory: ./merge
+        run: |
+          changed_source_files=$(git diff-tree --no-commit-id --name-only -r "$base_sha" "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
+          echo "Files to validate: '${changed_source_files}'"
+
+      - name: Check Learning Path Links Anchor
+        id: check-links
+        uses: kkeirstead/LearningPathFileChecks-Anchor@master
+        with:
+          learningPathsDirectory: 'documentation/learningPath'

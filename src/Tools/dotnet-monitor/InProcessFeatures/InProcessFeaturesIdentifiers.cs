@@ -9,8 +9,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
         {
             private const string InProcessFeaturesPrefix = ToolIdentifiers.StandardPrefix + "InProcessFeatures_";
 
-            public const string EnableParameterCapturing = InProcessFeaturesPrefix + nameof(EnableParameterCapturing);
+            public static class Exceptions
+            {
+                private const string Prefix = InProcessFeaturesPrefix + "Exceptions_";
+                public const string IncludeMonitorExceptions = Prefix + nameof(IncludeMonitorExceptions);
+            }
 
+            public static class ParameterCapturing
+            {
+                private const string Prefix = InProcessFeaturesPrefix + "ParameterCapturing_";
+                public const string Enable = Prefix + nameof(Enable);
+            }
 
             public static class AvailableInfrastructure
             {

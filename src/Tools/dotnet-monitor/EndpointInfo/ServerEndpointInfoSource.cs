@@ -179,7 +179,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// <summary>
         /// Accepts endpoint infos from the reversed diagnostics server.
         /// </summary>
-        /// <param name="maxConnections">The maximum number of connections the server will support.</param>
+        /// <param name="server">The reversed diagnostics server instance from which connections are accepted.</param>
         /// <param name="token">The token to monitor for cancellation requests.</param>
         private async Task ListenAsync(ReversedDiagnosticsServer server, CancellationToken token)
         {

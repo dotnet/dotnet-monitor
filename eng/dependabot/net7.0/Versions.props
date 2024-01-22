@@ -10,6 +10,6 @@
     <!-- Microsoft.Extensions.Logging.Console -->
     <MicrosoftExtensionsLoggingConsole70Version>7.0.0</MicrosoftExtensionsLoggingConsole70Version>
     <!-- Microsoft.NETCore.App -->
-    <MicrosoftNETCoreApp70Version>7.0.11</MicrosoftNETCoreApp70Version>
+    <MicrosoftNETCoreApp70Version>7.0.14</MicrosoftNETCoreApp70Version>
   </PropertyGroup>
 </Project>

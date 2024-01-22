@@ -1,14 +1,14 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using Microsoft.Extensions.Logging;
+using ReleaseTool.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
-using DiagnosticsReleaseTool.Util;
-using Microsoft.Extensions.Logging;
-using ReleaseTool.Core;
 
 namespace DiagnosticsReleaseTool.Impl
 {
@@ -60,7 +60,7 @@ namespace DiagnosticsReleaseTool.Impl
 
         private void WriteFiles(Utf8JsonWriter writer, IEnumerable<FileReleaseData> filesProcessed, FileClass fileClass)
         {
-            writer.WritePropertyName(FileMetadata.GetDefaultCatgoryForClass(fileClass));
+            writer.WritePropertyName(FileMetadata.GetDefaultCategoryForClass(fileClass));
             writer.WriteStartArray();
 
             IEnumerable<FileReleaseData> nugetFiles = filesProcessed.Where(file => file.FileMetadata.Class == fileClass);
@@ -83,7 +83,7 @@ namespace DiagnosticsReleaseTool.Impl
             // There's no way to obtain the json DOM for an object...
             byte[] metadataJsonObj = JsonSerializer.SerializeToUtf8Bytes<ReleaseMetadata>(_productReleaseMetadata);
             JsonDocument metadataDoc = JsonDocument.Parse(metadataJsonObj);
-            foreach(var element in metadataDoc.RootElement.EnumerateObject())
+            foreach (var element in metadataDoc.RootElement.EnumerateObject())
             {
                 element.WriteTo(writer);
             }

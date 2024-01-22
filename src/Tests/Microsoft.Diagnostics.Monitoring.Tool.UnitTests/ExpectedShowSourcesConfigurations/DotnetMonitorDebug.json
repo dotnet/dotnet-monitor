@@ -1,0 +1,6 @@
+{
+  "Exceptions": {
+    "IncludeMonitorExceptions": "True"
+    /*JsonConfigurationProvider for 'settings.json' (Optional)*/
+  }
+}

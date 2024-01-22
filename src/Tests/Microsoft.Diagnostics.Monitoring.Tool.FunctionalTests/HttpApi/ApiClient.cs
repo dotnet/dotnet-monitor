@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         /// <summary>
         /// Capable of getting every combination of process query: PID, UID, and/or Name
-        /// Get /process?pid={pid}&uid={uid}&name={name}
+        /// Get <![CDATA[/process?pid={pid}&uid={uid}&name={name}]]>
         /// </summary>
         public Task<ProcessInfo> GetProcessAsync(int? pid, Guid? uid, string name, CancellationToken token)
         {
@@ -208,7 +208,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// Get /dump?pid={pid}&type={dumpType}
+        /// Get <![CDATA[/dump?pid={pid}&type={dumpType}]]>
         /// </summary>
         public Task<ResponseStreamHolder> CaptureDumpAsync(int pid, DumpType dumpType, CancellationToken token)
         {
@@ -216,7 +216,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// Get /dump?uid={uid}&type={dumpType}
+        /// Get <![CDATA[/dump?uid={uid}&type={dumpType}]]>
         /// </summary>
         public Task<ResponseStreamHolder> CaptureDumpAsync(Guid uid, DumpType dumpType, CancellationToken token)
         {
@@ -254,7 +254,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         /// <summary>
         /// Capable of getting every combination of process query: PID, UID, and/or Name
-        /// Get /collectionrules?pid={pid}&uid={uid}&name={name}
+        /// Get <![CDATA[/collectionrules?pid={pid}&uid={uid}&name={name}]]>
         /// </summary>
         public Task<Dictionary<string, CollectionRuleDescription>> GetCollectionRulesDescriptionAsync(int? pid, Guid? uid, string name, CancellationToken token)
         {
@@ -290,7 +290,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
 
         /// <summary>
         /// Capable of getting every combination of process query: PID, UID, and/or Name
-        /// GET /collectionrules/{collectionrulename}?pid={pid}&uid={uid}&name={name}
+        /// GET <![CDATA[/collectionrules/{collectionrulename}?pid={pid}&uid={uid}&name={name}]]>
         /// </summary>
         public Task<CollectionRuleDetailedDescription> GetCollectionRuleDetailedDescriptionAsync(string collectionRuleName, int? pid, Guid? uid, string name, CancellationToken token)
         {
@@ -325,7 +325,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// GET /logs?pid={pid}&level={logLevel}&durationSeconds={duration}
+        /// GET <![CDATA[/logs?pid={pid}&level={logLevel}&durationSeconds={duration}]]>
         /// </summary>
         public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogLevel? logLevel, LogFormat logFormat, CancellationToken token)
         {
@@ -333,7 +333,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// GET /logs?uid={uid}&level={logLevel}&durationSeconds={duration}
+        /// GET <![CDATA[/logs?uid={uid}&level={logLevel}&durationSeconds={duration}]]>
         /// </summary>
         public Task<ResponseStreamHolder> CaptureLogsAsync(Guid uid, TimeSpan duration, LogLevel? logLevel, LogFormat logFormat, CancellationToken token)
         {
@@ -351,7 +351,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// POST /logs?pid={pid}&durationSeconds={duration}
+        /// POST <![CDATA[/logs?pid={pid}&durationSeconds={duration}]]>
         /// </summary>
         public Task<ResponseStreamHolder> CaptureLogsAsync(int pid, TimeSpan duration, LogsConfiguration configuration, LogFormat logFormat, CancellationToken token)
         {
@@ -412,7 +412,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         }
 
         /// <summary>
-        /// GET /trace?pid={pid}&profile={profile}&durationSeconds={duration}
+        /// GET <![CDATA[/trace?pid={pid}&profile={profile}&durationSeconds={duration}]]>
         /// </summary>
         public Task<ResponseStreamHolder> CaptureTraceAsync(int pid, TimeSpan duration, TraceProfile? profile, CancellationToken token)
         {

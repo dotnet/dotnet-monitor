@@ -235,19 +235,18 @@ void STDMETHODCALLTYPE ProbeInstrumentation::OnFunctionProbeFault(ULONG64 uniqui
 STDAPI DLLEXPORT RequestFunctionProbeInstallation(
     ULONG64 functionIds[],
     ULONG32 count,
-    ULONG32 argumentBoxingTypes[],
-    ULONG32 argumentCounts[])
+    PARAMETER_BOXING_INSTRUCTIONS boxingInstructions[],
+    ULONG32 parameterCounts[])
 {
     HRESULT hr;
 
     //
     // This method receives N (where n is "count") function IDs that probes should be installed into.
     //
-    // Along with this, boxing types are provided for every argument in all of the functions, and the number of 
-    // arguments for each function can be found using argumentCounts.
+    // Along with this, boxing instructions are provided for every parameter in every requested function,
+    // and the number of parameters for each function can be found using parameterCounts.
     //
-    // The boxing types are passed in as a flattened multidimensional array (argumentBoxingTypes).
-    //
+    // The boxing types are passed in as a flattened multidimensional array (boxingInstructions).
     //
 
     //
@@ -263,22 +262,32 @@ STDAPI DLLEXPORT RequestFunctionProbeInstallation(
     ULONG32 offset = 0;
     for (ULONG32 i = 0; i < count; i++)
     {
-        if (UINT32_MAX - offset < argumentCounts[i])
+        if (UINT32_MAX - offset < parameterCounts[i])
         {
             return E_INVALIDARG;
         }
 
-        vector<ULONG32> tokens;
-        tokens.reserve(argumentCounts[i]);
-        for (ULONG32 j = 0; j < argumentCounts[i]; j++)
+        vector<PARAMETER_BOXING_INSTRUCTIONS> instructions;
+        instructions.reserve(parameterCounts[i]);
+        for (ULONG32 j = 0; j < parameterCounts[i]; j++)
         {
-            tokens.push_back(argumentBoxingTypes[offset+j]);
+            const ULONG32 boxingInstructionIndex = offset + j;
+            if (boxingInstructions[boxingInstructionIndex].instructionType == InstructionType::TYPESPEC)
+            {
+                if (boxingInstructions[boxingInstructionIndex].signatureBufferPointer == nullptr ||
+                    boxingInstructions[boxingInstructionIndex].signatureBufferLength == 0)
+                {
+                    return E_INVALIDARG;
+                }
+            }
+
+            instructions.push_back(boxingInstructions[boxingInstructionIndex]);
         }
-        offset += argumentCounts[i];
+        offset += parameterCounts[i];
 
         UNPROCESSED_INSTRUMENTATION_REQUEST request;
         request.functionId = static_cast<FunctionID>(functionIds[i]);
-        request.boxingTypes = tokens;
+        request.boxingInstructions = instructions;
 
         requests.push_back(request);
     }
@@ -357,7 +366,6 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
         // For now just use the function id as the uniquifier.
         // Consider allowing the caller to specify one.
         processedRequest.uniquifier = static_cast<ULONG64>(req.functionId);
-        processedRequest.boxingTypes = req.boxingTypes;
 
         IfFailLogRet(m_pCorProfilerInfo->GetFunctionInfo2(
             req.functionId,
@@ -368,6 +376,34 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
             0,
             nullptr,
             nullptr));
+
+        ComPtr<IMetaDataEmit> pMetadataEmit;
+        IfFailRet(m_pCorProfilerInfo->GetModuleMetaData(
+            processedRequest.moduleId,
+            ofRead | ofWrite,
+            IID_IMetaDataEmit,
+            reinterpret_cast<IUnknown **>(&pMetadataEmit)));
+
+        // Process the boxing instructions, converting any typespecs into metadata tokens.
+        processedRequest.boxingInstructions.reserve(req.boxingInstructions.size());
+        for (auto const& instructions : req.boxingInstructions)
+        {
+            PARAMETER_BOXING_INSTRUCTIONS newInstructions = {};
+            if (instructions.instructionType == InstructionType::TYPESPEC)
+            {
+                newInstructions.instructionType = InstructionType::METADATA_TOKEN;
+                IfFailRet(pMetadataEmit->GetTokenFromTypeSpec(
+                    instructions.signatureBufferPointer,
+                    instructions.signatureBufferLength,
+                    &newInstructions.token.mdToken));
+            }
+            else
+            {
+                newInstructions = instructions;
+            }
+
+            processedRequest.boxingInstructions.push_back(newInstructions);
+        }
 
         IfFailLogRet(m_pAssemblyProbePrep->PrepareAssemblyForProbes(processedRequest.moduleId));
 
@@ -523,7 +559,7 @@ STDAPI DLLEXPORT RegisterFunctionProbeCallbacks(
     {
         return E_FAIL;
     }
-   
+
     g_probeManagementCallbacks.pProbeRegistrationCallback = pRegistrationCallback;
     g_probeManagementCallbacks.pProbeInstallationCallback = pInstallationCallback;
     g_probeManagementCallbacks.pProbeUninstallationCallback = pUninstallationCallback;
