@@ -50,7 +50,8 @@ jobs:
       - name: Get changed files
         working-directory: ./head
         run: |
-          changed_source_files=$(git diff-tree --no-commit-id --name-only -r "$prev_sha" "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
+          # changed_source_files=$(git diff-tree --no-commit-id --name-only -r "$prev_sha" "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
+          changed_source_files=$(git diff-tree --no-commit-id --name-only -r 9c3809d "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
           echo "Files to validate: '${changed_source_files}'"
           echo "updated_files=$(echo ${changed_source_files})" >> $GITHUB_ENV
 
