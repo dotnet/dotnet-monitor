@@ -37,8 +37,8 @@ jobs:
         run: |
           cd .github
           prev_sha=$(cat learning-path-sha.txt)
-          echo "prev_sha=$prev_branch_name" >> $GITHUB_ENV
-          echo "Writing prev_sha into GitHub Env"
+          echo "prev_sha=$prev_sha" >> $GITHUB_ENV
+          echo "Writing prev_sha into GitHub Env: $prev_sha"
           cd ../
     
       - name: Checkout previous update
@@ -67,7 +67,7 @@ jobs:
           sourceDirectoryName: 'src'
           
       - name: Generate artifacts (Comment)
-        working-directory: ./merge
+        working-directory: ./head
         run: |
           mkdir -p ./learning-path-review
           echo -n "${{ steps.check-links.outputs.modifiedFiles }}" > ./learning-path-review/modifiedFiles
