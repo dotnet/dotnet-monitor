@@ -1,7 +1,8 @@
 name: 'Check Learning Path Links'
 on:
-  pull_request:
-    branches: ['main']
+  schedule: # Run once a week.
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
 
 permissions:
   pull-requests: read
@@ -13,11 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout merge
+      - name: Checkout previous update
         uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
         with:
           persist-credentials: false
-          path: merge
+          ref: abc
           
       - name: Checkout head
         uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
