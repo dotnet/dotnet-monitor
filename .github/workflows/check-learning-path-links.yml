@@ -18,7 +18,6 @@ permissions:
   
 jobs:
   check-learning-path-links:
-    if: contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.pull_request.author_association)
     name: 'Check Learning Path Links'
     runs-on: ubuntu-latest
 
