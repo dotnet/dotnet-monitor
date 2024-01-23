@@ -60,7 +60,7 @@ jobs:
           suggestions=${suggestions//,/<br />}
           modifiedFiles=$(cat ./learning-path-review/modifiedFiles)
           modifiedFiles=${modifiedFiles//,/<br />}
-          body="### Learning Paths Staleness Check \n\n #### Impacted Paths:\n\n${modifiedFiles}\n\n---------\n\n #### Manually Review:\n\n${manuallyReview}\n\n---------\n\n #### Suggestions:\n\n${suggestions}"
+          body="### Learning Paths Staleness Check <br /> #### Impacted Paths:\n\n${modifiedFiles}<br />---------<br /> #### Manually Review:<br />${manuallyReview}<br />---------<br /> #### Suggestions:<br />${suggestions}"
           gh issue create --label "todo" --title "$title" --body "$body"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
