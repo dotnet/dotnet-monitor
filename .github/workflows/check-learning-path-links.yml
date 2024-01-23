@@ -73,6 +73,7 @@ jobs:
           echo -n "${{ steps.check-links.outputs.modifiedFiles }}" > ./learning-path-review/modifiedFiles
           echo -n "${{ steps.check-links.outputs.manuallyReview }}" > ./learning-path-review/manuallyReview
           echo -n "${{ steps.check-links.outputs.suggestions }}" > ./learning-path-review/suggestions
+          echo -n "Potential Stale Learning Path" > ./learning-path-review/issue-title
 
       - name: Upload artifacts (Comment)
         uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
