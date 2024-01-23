@@ -54,7 +54,7 @@ jobs:
       - name: Submit Issue
         run: |
           title=$(cat ./learning-path-review/issue-title)
-          body = $(cat ./learning-path-review/manuallyReview)
+          body=$(cat ./learning-path-review/manuallyReview)
           gh issue create --label "todo" --title "$title" --body "$body"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
