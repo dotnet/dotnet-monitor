@@ -3,7 +3,7 @@ run-name: '[${{ github.ref_name }}] Create Learning Path Update'
 
 on:
   workflow_run:
-    workflows: ["Scan For To Do Comments"]
+    workflows: ["Scan For Learning Path Update Comments"]
     types:
       - completed
 
