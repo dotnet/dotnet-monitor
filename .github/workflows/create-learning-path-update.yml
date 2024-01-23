@@ -1,0 +1,91 @@
+name: 'Create Learning Path Update'
+run-name: '[${{ github.ref_name }}] Create Learning Path Update'
+
+on:
+  workflow_dispatch:
+    inputs:
+      baselineTag:
+        description: 'Baseline Release Tag Override'
+        required: false
+        type: string
+
+permissions: {}
+
+jobs:
+  create-learning-path-update-pr:
+    name: 'Create Learning Path Update'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # Fetch the entire repo for the below git commit graph operations
+
+      - name: Calculate release information
+        run: |
+          git fetch --tags
+
+          # Grab the latest tag from the current branch unless overridden. If it doesn't exist, grab the latest tag across all branches.
+          last_release_tag=$BASELINE_TAG
+          if [[ -z "$BASELINE_TAG" ]]; then
+            last_release_tag=$(git describe --tags --abbrev=0 || git describe --tags $(git rev-list --tags --max-count=1))
+          fi
+
+          echo "Using tag: $last_release_tag"
+          last_release_date=$(git log -1 --format=%aI "$last_release_tag")
+          echo "last_release_date=$last_release_date" >> $GITHUB_ENV
+
+          versionFile="./eng/Versions.props"
+          release_version=$(perl -ne '/<VersionPrefix>([^<]*)/ && print $1' $versionFile)
+          release_version_label=$(perl -ne '/<PreReleaseVersionLabel>([^<]*)/ && print $1' $versionFile)
+          release_version_iteration=$(perl -ne '/<PreReleaseVersionIteration>([^<]*)/ && print $1' $versionFile)
+
+          friendly_release_name=""
+          qualified_release_version="$release_version-$release_version_label.$release_version_iteration"
+
+          if [ "$release_version_label" == "rtm" ] || [ "$release_version_label" == "servicing" ]; then
+            friendly_release_name="$release_version build"
+            qualified_release_version="$release_version"
+          elif [ "$release_version_label" == "rc" ]; then
+            friendly_release_name="official $release_version Release Candidate"
+          else
+            friendly_release_name="next official preview version"
+          fi
+
+          release_note_path="./documentation/releaseNotes/releaseNotes.v${qualified_release_version}.md"
+          echo "release_note_path=$release_note_path" >> $GITHUB_ENV
+          echo "friendly_release_name=$friendly_release_name" >> $GITHUB_ENV
+          echo "qualified_release_version=$qualified_release_version" >> $GITHUB_ENV
+        env:
+          BASELINE_TAG: ${{ inputs.baselineTag }}
+
+      - name: Checkout main
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          persist-credentials: true # We need to persist credentials to push the resulting changes upstream.
+          ref: main
+
+      - name: Generate release notes
+        uses: ./.github/actions/generate-release-notes
+        with:
+          output: ${{ env.release_note_path }}
+          last_release_date:  ${{ env.last_release_date }}
+          build_description: ${{ env.friendly_release_name }}
+          auth_token: ${{ secrets.GITHUB_TOKEN }}
+          branch_name: ${{ github.ref_name }}
+
+      - name: Open PR
+        uses: ./.github/actions/open-pr
+        with:
+          files_to_commit: ${{ env.release_note_path }}
+          title: "Update Learning Path Links"
+          commit_message: Update Learning Path Links
+          body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.
+          branch_name: releaseNotes/${{ env.qualified_release_version }}
+          fail_if_files_unchanged: true
+          auth_token: ${{ secrets.GITHUB_TOKEN }}
