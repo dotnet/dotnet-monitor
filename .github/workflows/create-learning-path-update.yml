@@ -31,8 +31,15 @@ jobs:
           persist-credentials: true # We need to persist credentials to push the resulting changes upstream.
           ref: main
 
+      - name: Get current SHA
+        id: get_new_sha
+        run: |
+          new_sha=$(git rev-parse HEAD)
+          echo "new_sha=$new_sha" >> $GITHUB_ENV
+          echo "Writing new_sha into GitHub Env: $new_sha"
+
       - name: Get previous update SHA
-        id: get_sha
+        id: get_prev_sha
         run: |
           cd .github
           prev_sha=$(cat learning-path-sha.txt)
@@ -47,7 +54,7 @@ jobs:
           learningPathsDirectory: 'documentation/learningPath'
           learningPathHashFile: '.github/learning-path-sha.txt'
           oldHash: ${{ env.prev_sha }}
-          newHash: "abc"
+          newHash: ${{ env.new_sha }}
 
       - name: Open PR
         uses: ./.github/actions/open-pr
@@ -56,6 +63,6 @@ jobs:
           title: "Update Learning Path Links"
           commit_message: Update Learning Path Links
           body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.
-          branch_name: learningPathUpdates/${{ env.prev_sha }} # should probably update this to new sha once we determine that
+          branch_name: learningPathUpdates/${{ env.new_sha }}
           fail_if_files_unchanged: true
           auth_token: ${{ secrets.GITHUB_TOKEN }}
