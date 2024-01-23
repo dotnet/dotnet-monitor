@@ -26,7 +26,7 @@ jobs:
 
       - name: Update Learning Path Hashes
         id: check-links
-        uses: kkeirstead/LearningPathFileChecks@main
+        uses: kkeirstead/UpdateLearningPathCommitHashes@main
         with:
           learningPathsDirectory: 'documentation/learningPath'
           oldHash: "def"
