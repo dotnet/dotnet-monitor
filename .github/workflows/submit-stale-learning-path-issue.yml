@@ -41,11 +41,23 @@ jobs:
           run_id: ${{github.event.workflow_run.id }}
           name: learning-path-review
           path: ./learning-path-review
+
+      - name: Set Env Vars
+        run: |
+          modifiedFiles=$(cat ./learning-path-review/modifiedFiles)
+          manuallyReview=$(cat ./learning-path-review/manuallyReview)
+          suggestions=$(cat ./learning-path-review/suggestions)
+          echo "modifiedFiles=$modifiedFiles" >> $GITHUB_ENV
+          echo "manuallyReview=$manuallyReview" >> $GITHUB_ENV
+          echo "suggestions=$suggestions" >> $GITHUB_ENV
+          
       - name: Submit Issue
         run: |
           title=$(cat ./learning-path-review/issue-title)
-          user=$(cat ./learning-path-review/issue-user)
-          recommendations=$(cat ./learning-path-review/issue-recommendations)
-          gh issue create --label "todo" --assignee "$user" --title "$title" --body "$recommendations"
+          comment_body = "### Learning Paths Staleness Check \n\n #### Impacted Paths:\n\n" + modifiedFiles.replaceAll(",", "\n") + "\n\n---------\n\n #### Manually Review:\n\n" + manuallyReview.replaceAll(",", "\n") + "\n\n---------\n\n #### Suggestions:\n\n" + suggestions.replaceAll(",", "\n");
+          gh issue create --label "todo" --title "$title" --body "$comment_body"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MODIFIED_FILES: ${{ env.modifiedFiles }}
+          MANUALLY_REVIEW: ${{ env.manuallyReview }}
+          SUGGESTIONS: ${{ env.suggestions }}
