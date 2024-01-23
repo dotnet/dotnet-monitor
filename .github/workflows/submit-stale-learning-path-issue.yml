@@ -57,7 +57,10 @@ jobs:
           manuallyReview=$(cat ./learning-path-review/manuallyReview)
           manuallyReview=${manuallyReview//,/<br />}
           suggestions=$(cat ./learning-path-review/suggestions)
+          suggestions=${suggestions//,/<br />}
           modifiedFiles=$(cat ./learning-path-review/modifiedFiles)
+          modifiedFiles=${modifiedFiles//,/<br />}
+          comment_body="### Learning Paths Staleness Check \n\n #### Impacted Paths:\n\n${modifiedFiles}\n\n---------\n\n #### Manually Review:\n\n${manuallyReview}\n\n---------\n\n #### Suggestions:\n\n${suggestions}"
           gh issue create --label "todo" --title "$title" --body "$manuallyReview"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
