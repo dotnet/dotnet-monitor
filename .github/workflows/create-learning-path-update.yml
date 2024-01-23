@@ -39,6 +39,7 @@ jobs:
         uses: kkeirstead/UpdateLearningPathCommitHashes@main
         with:
           learningPathsDirectory: 'documentation/learningPath'
+          learningPathHashFile: '.github/learning-path-sha.txt'
           oldHash: ${{ env.prev_sha }}
           newHash: "abc"
 
