@@ -24,6 +24,14 @@ jobs:
           persist-credentials: false
           fetch-depth: 0 # Fetch the entire repo for the below git commit graph operations
 
+      - name: Update Learning Path Hashes
+        id: check-links
+        uses: kkeirstead/LearningPathFileChecks@main
+        with:
+          learningPathsDirectory: 'documentation/learningPath'
+          oldHash: "def"
+          newHash: "abc"
+
       - name: Calculate release information
         run: |
           git fetch --tags
