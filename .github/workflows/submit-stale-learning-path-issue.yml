@@ -55,7 +55,7 @@ jobs:
         run: |
           title=$(cat ./learning-path-review/issue-title)
           manuallyReview=$(cat ./learning-path-review/manuallyReview)
-          manuallyReview=${manuallyReview//,/\\n}
+          manuallyReview=${manuallyReview//,/<br />}
           suggestions=$(cat ./learning-path-review/suggestions)
           modifiedFiles=$(cat ./learning-path-review/modifiedFiles)
           gh issue create --label "todo" --title "$title" --body "$manuallyReview"
