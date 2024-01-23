@@ -12,20 +12,9 @@
   "unsupported": [
     "7.2",
     "7.1",
-    "7.0",
-    "6.2"
+    "7.0"
   ],
   "releases": {
-    "6.2": {
-      "tag": "v6.2.2",
-      "minorReleaseDate": "2022-06-14T00:00:00.000Z",
-      "patchReleaseDate": "2022-08-09T00:00:00.000Z",
-      "supportedFrameworks": [
-        "netcoreapp3.1 (with major roll forward)",
-        "net6.0"
-      ],
-      "outOfSupportDate": "2023-01-11T00:00:00.000Z"
-    },
     "6.3": {
       "tag": "v6.3.4",
       "minorReleaseDate": "2022-10-11T00:00:00.000Z",
