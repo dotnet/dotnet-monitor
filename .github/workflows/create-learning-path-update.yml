@@ -24,12 +24,22 @@ jobs:
           persist-credentials: false
           fetch-depth: 0 # Fetch the entire repo for the below git commit graph operations
 
+      - name: Get previous update SHA
+        id: get_sha
+        working-directory: ./head
+        run: |
+          cd .github
+          prev_sha=$(cat learning-path-sha.txt)
+          echo "prev_sha=$prev_sha" >> $GITHUB_ENV
+          echo "Writing prev_sha into GitHub Env: $prev_sha"
+          cd ../
+
       - name: Update Learning Path Hashes
         id: check-links
         uses: kkeirstead/UpdateLearningPathCommitHashes@main
         with:
           learningPathsDirectory: 'documentation/learningPath'
-          oldHash: "def"
+          oldHash: ${{ env.prev_sha }}
           newHash: "abc"
 
       - name: Calculate release information
