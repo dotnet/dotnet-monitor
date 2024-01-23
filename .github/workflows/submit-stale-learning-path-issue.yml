@@ -54,7 +54,7 @@ jobs:
       - name: Submit Issue
         run: |
           title=$(cat ./learning-path-review/issue-title)
-          comment_body = "### Learning Paths Staleness Check \n\n #### Impacted Paths:\n\n" + modifiedFiles.replaceAll(",", "\n") + "\n\n---------\n\n #### Manually Review:\n\n" + manuallyReview.replaceAll(",", "\n") + "\n\n---------\n\n #### Suggestions:\n\n" + suggestions.replaceAll(",", "\n");
+          comment_body = $(cat ./learning-path-review/manuallyReview)
           gh issue create --label "todo" --title "$title" --body "$comment_body"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
