@@ -54,8 +54,13 @@ jobs:
       - name: Submit Issue
         run: |
           title=$(cat ./learning-path-review/issue-title)
-          body=$(cat ./learning-path-review/manuallyReview)
-          gh issue create --label "todo" --title "$title" --body "$body"
+          comma=","
+          newline="\n"
+          manuallyReview=$(cat ./learning-path-review/manuallyReview)
+          manuallyReview=${manuallyReview//comma/newline}
+          suggestions=$(cat ./learning-path-review/suggestions)
+          modifiedFiles=$(cat ./learning-path-review/modifiedFiles)
+          gh issue create --label "todo" --title "$title" --body "$manuallyReview"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MODIFIED_FILES: ${{ env.modifiedFiles }}
