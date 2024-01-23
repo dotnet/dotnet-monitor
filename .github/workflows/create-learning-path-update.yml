@@ -18,15 +18,15 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Checkout release branch
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - name: Checkout head
+        uses: actions/checkout@v4
         with:
-          persist-credentials: false
-          fetch-depth: 0 # Fetch the entire repo for the below git commit graph operations
+          persist-credentials: true
+          ref: main
+          fetch-depth: 0 # Fetch the entire repo for the below git operations
 
       - name: Get previous update SHA
         id: get_sha
-        working-directory: ./head
         run: |
           cd .github
           prev_sha=$(cat learning-path-sha.txt)
