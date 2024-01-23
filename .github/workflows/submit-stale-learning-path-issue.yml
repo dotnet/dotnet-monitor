@@ -54,10 +54,8 @@ jobs:
       - name: Submit Issue
         run: |
           title=$(cat ./learning-path-review/issue-title)
-          comma=","
-          newline="\n"
           manuallyReview=$(cat ./learning-path-review/manuallyReview)
-          manuallyReview=${manuallyReview//comma/newline}
+          manuallyReview=${manuallyReview//,/\\n}
           suggestions=$(cat ./learning-path-review/suggestions)
           modifiedFiles=$(cat ./learning-path-review/modifiedFiles)
           gh issue create --label "todo" --title "$title" --body "$manuallyReview"
