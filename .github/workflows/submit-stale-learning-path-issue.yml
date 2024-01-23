@@ -62,7 +62,7 @@ jobs:
           modifiedFiles=$(cat ./learning-path-review/modifiedFiles)
           modifiedFiles=${modifiedFiles//,/<br />}
           body="# Learning Paths Staleness Check<br /><h2>Impacted Paths:</h2>${modifiedFiles}<br /><h2>Manually Review:</h2><br />${manuallyReview}<br /><h2>Suggestions:</h2><br />${suggestions}"
-          gh issue create --label "learning-path" --title "$title" --body "$body"
+          gh issue create --label "learning-path-update" --title "$title" --body "$body"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MODIFIED_FILES: ${{ env.modifiedFiles }}
