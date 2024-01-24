@@ -62,7 +62,7 @@ jobs:
           files_to_commit: ${{ steps.update-links.outputs.modifiedFiles }}
           title: "Update Learning Path Links"
           commit_message: Update Learning Path Links
-          body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.
+          body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.<br />Closes #123456789.
           branch_name: learningPathUpdates/${{ env.new_sha }}
           fail_if_files_unchanged: true
           auth_token: ${{ secrets.GITHUB_TOKEN }}
