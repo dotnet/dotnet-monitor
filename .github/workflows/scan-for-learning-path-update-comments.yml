@@ -11,14 +11,12 @@ permissions:
 
 jobs:
   scan-for-learning-path-update-comments:
-    if: startsWith(github.event.comment.body, '/LEARNINGPATHUPDATE') && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+    if: startsWith(github.event.comment.body, '👍') && equals(github.event.issue.title, "[BOT] Learning Path Update" && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     steps:
       - name: Generate artifacts
         run: |
-          trimmed_comment=$(echo "$COMMENT_BODY" | sed 's|/LEARNINGPATHUPDATE ||I')
           mkdir -p ./issue
-          echo -n "$trimmed_comment" > ./issue/issue-title
           echo -n "$COMMENT_URL" > ./issue/issue-url
           echo -n "$COMMENT_AUTHOR" > ./issue/issue-user
         env:
