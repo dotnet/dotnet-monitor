@@ -158,8 +158,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             for (int i = 0; i < types?.Length; i++)
             {
                 builder.Clear();
-                BuildTypeName(builder, cache, parameterTypes[i], typeFormat);
-                parameterTypesList.Add(builder.ToString());
+                BuildTypeName(builder, cache, types[i], typeFormat);
+                typesList.Add(builder.ToString());
             }
 
             return typesList;

@@ -704,7 +704,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
-        private static void ValidateStack(IExceptionInstance instance, string expectedMethodName, string expectedModuleName, string expectedClassName, IList<string> expectedFullParameterTypes = null, IList<string> expectedParameterTypes = null)
+        private static void ValidateStack(IExceptionInstance instance, string expectedMethodName, string expectedModuleName, string expectedTypeName, IList<string> expectedFullParameterTypes = null, IList<string> expectedParameterTypes = null)
         {
             CallStack stack = instance.CallStack;
             Assert.NotEmpty(stack.Frames);
