@@ -31,6 +31,13 @@ jobs:
           fetch-depth: 0 # Fetch the entire repo for the below git operations
           path: head
 
+      - name: Get current SHA
+        id: get_new_sha
+        run: |
+          new_sha=$(git rev-parse HEAD)
+          echo "new_sha=$new_sha" >> $GITHUB_ENV
+          echo "Writing new_sha into GitHub Env: $new_sha"
+
       - name: Get previous update SHA
         id: get_sha
         working-directory: ./head
@@ -64,6 +71,8 @@ jobs:
           learningPathsDirectory: 'documentation/learningPath'
           changedFilePaths: ${{ env.updated_files }}
           sourceDirectoryName: 'src'
+          oldHash: ${{ env.prev_sha }}
+          newHash: ${{ env.new_sha }}
           
       - name: Generate artifacts (Comment)
         working-directory: ./head
