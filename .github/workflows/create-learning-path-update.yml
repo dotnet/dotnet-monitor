@@ -2,17 +2,17 @@ name: 'Create Learning Path Update'
 run-name: '[${{ github.ref_name }}] Create Learning Path Update'
 
 on:
-  workflow_dispatch:
-    inputs:
-      baselineTag:
-        description: 'Baseline Release Tag Override'
-        required: false
-        type: string
+  workflow_run:
+    workflows: ["Scan For Learning Path Update Comments"]
+    types:
+      - completed
 
-  # workflow_run:
-  #   workflows: ["Scan For Learning Path Update Comments"]
-  #   types:
-  #     - completed
+  # workflow_dispatch:
+  #   inputs:
+  #     baselineTag:
+  #       description: 'Baseline Release Tag Override'
+  #       required: false
+  #       type: string
 
 permissions: {}
 
