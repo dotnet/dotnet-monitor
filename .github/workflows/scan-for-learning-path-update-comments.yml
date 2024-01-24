@@ -19,13 +19,15 @@ jobs:
           mkdir -p ./issue
           echo -n "$COMMENT_URL" > ./issue/issue-url
           echo -n "$COMMENT_AUTHOR" > ./issue/issue-user
+          echo -n "$ISSUE_NUMBER" > ./issue/issue-number
         env:
           COMMENT_BODY: ${{ github.event.comment.body }}
           COMMENT_URL: ${{ github.event.comment.html_url }}
           COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@694cdabd8bdb0f10b2cea11669e1bf5453eed0a6
         with:
-          name: issue-learning-path-update
+          name: issue-update
           path: issue/
