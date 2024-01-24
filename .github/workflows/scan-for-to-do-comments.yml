@@ -29,5 +29,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@694cdabd8bdb0f10b2cea11669e1bf5453eed0a6
         with:
-          name: issue-todo
-          path: issue/
+          name: learning-path-update
+          path: learning-path-update/
