@@ -62,7 +62,6 @@ jobs:
         with:
           repoURLToSearch: 'https://github.com/dotnet/dotnet-monitor'
           learningPathsDirectory: 'documentation/learningPath'
-          paths: ${{ env.updated_files }}
           changedFilePaths: ${{ env.updated_files }}
           sourceDirectoryName: 'src'
           
