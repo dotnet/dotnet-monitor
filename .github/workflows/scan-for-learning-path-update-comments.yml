@@ -18,12 +18,12 @@ jobs:
         run: |
           mkdir -p ./learning-path-update
           echo -n "$COMMENT_AUTHOR" > ./learning-path-update/issue-user
-          echo -n "$ISSUE_URL" > ./learning-path-update/issueUrl
+          echo -n "#$ISSUE_NUMBER" > ./learning-path-update/issueNumber
         env:
           COMMENT_BODY: ${{ github.event.comment.body }}
           COMMENT_URL: ${{ github.event.comment.html_url }}
           COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
-          ISSUE_URL: ${{ github.event.issue.url }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@694cdabd8bdb0f10b2cea11669e1bf5453eed0a6
