@@ -24,6 +24,7 @@ jobs:
     steps:
 
       - name: Checkout head
+        working-directory: ./head
         uses: actions/checkout@v4
         with:
           persist-credentials: true
