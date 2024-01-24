@@ -44,6 +44,10 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             return egressCommand;
         }
 
+        private static int MiscHelper()
+        {
+            return 5;
+        }
 
         private static async Task<int> Egress<TProvider, TOptions>(Action<IServiceCollection> configureServices, CancellationToken token)
             where TProvider : EgressProvider<TOptions>
