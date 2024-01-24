@@ -45,6 +45,7 @@ private:
     static const tstring UnknownName;
     static const tstring ModuleSeparator;
     static const tstring FunctionSeparator;
+    static const tstring NamespaceSeparator;
     static const tstring NestedSeparator;
     static const tstring GenericBegin;
     static const tstring GenericSeparator;

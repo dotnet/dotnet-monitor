@@ -10,6 +10,7 @@ const tstring NameCache::ArrayClassName = _T("_ArrayClass_");
 const tstring NameCache::UnknownName = _T("_Unknown_");
 const tstring NameCache::ModuleSeparator = _T("!");
 const tstring NameCache::FunctionSeparator = _T(".");
+const tstring NameCache::NamespaceSeparator = _T(".");
 const tstring NameCache::NestedSeparator = _T("+");
 const tstring NameCache::GenericBegin = _T("<");
 const tstring NameCache::GenericSeparator = _T(",");
@@ -132,7 +133,7 @@ HRESULT NameCache::GetFullyQualifiedTypeName(ModuleID moduleId, mdTypeDef token,
             {
                 name = NestedSeparator + name;
             }
-            name = tokenData->GetName() + name;
+            name = tokenData->GetNamespace() + NamespaceSeparator + tokenData->GetName() + name;
             token = tokenData->GetOuterToken();
         }
         else
