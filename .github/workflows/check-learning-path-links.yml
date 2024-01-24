@@ -24,7 +24,6 @@ jobs:
     steps:
 
       - name: Checkout head
-        working-directory: ./head
         uses: actions/checkout@v4
         with:
           persist-credentials: true
@@ -34,6 +33,7 @@ jobs:
 
       - name: Get current SHA
         id: get_new_sha
+        working-directory: ./head
         run: |
           new_sha=$(git rev-parse HEAD)
           echo "new_sha=$new_sha" >> $GITHUB_ENV
