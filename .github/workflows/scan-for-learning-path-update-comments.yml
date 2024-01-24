@@ -16,10 +16,10 @@ jobs:
     steps:
       - name: Generate artifacts
         run: |
-          mkdir -p ./issue
-          echo -n "$COMMENT_URL" > ./issue/issue-url
-          echo -n "$COMMENT_AUTHOR" > ./issue/issue-user
-          echo -n "$ISSUE_NUMBER" > ./issue/issue-number
+          mkdir -p ./learning-path-update
+          echo -n "$COMMENT_URL" > ./learning-path-update/issue-url
+          echo -n "$COMMENT_AUTHOR" > ./learning-path-update/issue-user
+          echo -n "$ISSUE_NUMBER" > ./learning-path-update/issue-number
         env:
           COMMENT_BODY: ${{ github.event.comment.body }}
           COMMENT_URL: ${{ github.event.comment.html_url }}
