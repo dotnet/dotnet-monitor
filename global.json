@@ -1,6 +1,6 @@
 {
   "tools": {
-    "dotnet": "9.0.100-alpha.1.23615.4",
+    "dotnet": "9.0.100-alpha.1.24067.4",
     "runtimes": {
       "aspnetcore": [
         "$(MicrosoftAspNetCoreApp60Version)",
