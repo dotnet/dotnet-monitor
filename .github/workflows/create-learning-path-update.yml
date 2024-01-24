@@ -56,13 +56,29 @@ jobs:
           oldHash: ${{ env.prev_sha }}
           newHash: ${{ env.new_sha }}
 
+      # Download the artifact from the workflow that kicked off this one.
+      # The default artifact download action doesn't support cross-workflow
+      # artifacts, so use a 3rd party one.
+      - name: 'Download linting results'
+        uses: dawidd6/action-download-artifact@e7466d1a7587ed14867642c2ca74b5bcc1e19a2d
+        with:
+          workflow: ${{env.workflow_name}}
+          run_id: ${{github.event.workflow_run.id }}
+          name: learning-path-update
+          path: ./learning-path-update
+
+      - name: Set Env Vars
+        run: |
+          issueNumber=$(cat ./learning-path-update/issue-number)
+          echo "issueNumber=$issueNumber" >> $GITHUB_ENV
+
       - name: Open PR
         uses: ./.github/actions/open-pr
         with:
           files_to_commit: ${{ steps.update-links.outputs.modifiedFiles }}
           title: "Update Learning Path Links"
           commit_message: Update Learning Path Links
-          body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.<br />Closes #123456789.
+          body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.<br />Closes #${{ env.new_sha }}.
           branch_name: learningPathUpdates/${{ env.new_sha }}
           fail_if_files_unchanged: true
           auth_token: ${{ secrets.GITHUB_TOKEN }}
