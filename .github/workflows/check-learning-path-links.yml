@@ -1,25 +1,19 @@
 name: 'Check Learning Path Links'
 on:
   workflow_dispatch:
-    inputs:
-      baselineTag:
-        description: 'Baseline Release Tag Override'
-        required: false
-        type: string
 
   # schedule: # Run once a week.
   #   - cron: '0 0 * * 1'
   # workflow_dispatch:
 
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+permissions: {}
   
 jobs:
   check-learning-path-links:
     name: 'Check Learning Path Links'
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
 
     steps:
 
