@@ -1,4 +1,4 @@
-name: Scan For Learning Path Update Comments
+name: Scan For Learning Path Comments
 on:
   pull_request_review_comment:
     types: [created]
