@@ -31,7 +31,6 @@ jobs:
         run: |
           new_sha=$(git rev-parse HEAD)
           echo "new_sha=$new_sha" >> $GITHUB_ENV
-          echo "Writing new_sha into GitHub Env: $new_sha"
 
       - name: Get previous update SHA
         id: get_sha
@@ -40,7 +39,6 @@ jobs:
           cd .github
           prev_sha=$(cat learning-path-sha.txt)
           echo "prev_sha=$prev_sha" >> $GITHUB_ENV
-          echo "Writing prev_sha into GitHub Env: $prev_sha"
           cd ../
     
       - name: Checkout previous update
