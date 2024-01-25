@@ -1,24 +1,17 @@
-name: 'Create Learning Path Update'
-run-name: '[${{ github.ref_name }}] Create Learning Path Update'
+name: 'Submit Learning Path PR'
+run-name: '[${{ github.ref_name }}] Submit Learning Path PR'
 
 on:
   workflow_run:
-    workflows: ["Scan For Learning Path Update Comments"]
+    workflows: ["Scan For Learning Path Comments"]
     types:
       - completed
-
-  # workflow_dispatch:
-  #   inputs:
-  #     baselineTag:
-  #       description: 'Baseline Release Tag Override'
-  #       required: false
-  #       type: string
 
 permissions: {}
 
 jobs:
-  create-learning-path-update-pr:
-    name: 'Create Learning Path Update'
+  submit-learning-path-pr:
+    name: 'Submit Learning Path PR'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -48,7 +41,7 @@ jobs:
           cd ../
 
       - name: Update Learning Path Hashes
-        id: update-links
+        id: update-hashes
         uses: kkeirstead/UpdateLearningPathCommitHashes@main
         with:
           learningPathsDirectory: 'documentation/learningPath'
@@ -75,9 +68,9 @@ jobs:
       - name: Open PR
         uses: ./.github/actions/open-pr
         with:
-          files_to_commit: ${{ steps.update-links.outputs.modifiedFiles }}
-          title: "Update Learning Path Links"
-          commit_message: Update Learning Path Links
+          files_to_commit: ${{ steps.update-hashes.outputs.modifiedFiles }}
+          title: "Update Learning Paths"
+          commit_message: Update Learning Paths
           body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.<br />Closes ${{ env.issueNumber }}.
           branch_name: learningPathUpdates/${{ env.new_sha }}
           fail_if_files_unchanged: true
