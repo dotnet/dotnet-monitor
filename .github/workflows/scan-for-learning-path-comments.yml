@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   scan-for-learning-path-update-comments:
-    if: github.event.comment.body == '👍' && github.event.issue.title == '[BOT] Learning Path Update' && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+    if: startsWith(github.event.comment.body, '👍') && github.event.issue.title == '[BOT] Learning Path Update' && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     steps:
       - name: Generate artifacts
