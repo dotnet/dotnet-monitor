@@ -47,11 +47,27 @@ jobs:
           title=$(cat ./learning-path-review/issue-title)
           manuallyReview=$(cat ./learning-path-review/manuallyReview)
           manuallyReview=${manuallyReview//,/<br />}
+          manuallyReviewSection="<h2>Manually Review:</h2>${manuallyReview}<br />"
+          if test -z "$manuallyReview"; then
+          manuallyReviewSection=""
+          fi
           outOfSync=$(cat ./learning-path-review/outOfSync)
           outOfSync=${outOfSync//,/<br />}
+          outOfSyncSection="<h2>Out Of Sync:</h2>${outOfSync}<br />"
+          if test -z "$outOfSync"; then
+          outOfSyncSection=""
+          fi
           suggestions=$(cat ./learning-path-review/suggestions)
           suggestions=${suggestions//,/<br />}
+          suggestionsSection="<h2>Suggestions:</h2>${suggestions}<br />"
+          if test -z "$suggestions"; then
+          suggestionsSection=""
+          fi
           modifiedFiles=$(cat ./learning-path-review/modifiedFiles)
           modifiedFiles=${modifiedFiles//,/<br />}
-          body="# Learning Paths Staleness Report<br /><h2>Impacted Paths:</h2>${modifiedFiles}<br /><h2>Manually Review:</h2>${manuallyReview}<br /><h2>Out Of Sync:</h2>${outOfSync}<br /><h2>Suggestions:</h2>${suggestions}<br /><br />Comment a 👍 to open a new PR - commit hashes will be updated automatically, but any other updates must be made manually."
+          modifiedFilesSection="<h2>Suggestions:</h2>${modifiedFiles}<br />"
+          if test -z "$modifiedFiles"; then
+          modifiedFilesSection=""
+          fi
+          body="# Learning Paths Staleness Report<br />${modifiedFilesSection}${manuallyReviewSection}${outOfSyncSection}${suggestionsSection}<br />Comment a 👍 to open a new PR - commit hashes will be updated automatically, but any other updates must be made manually."
           gh issue create --label "learning-path-update" --title "$title" --body "$body"
