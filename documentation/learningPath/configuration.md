@@ -25,3 +25,7 @@ Our configuration is primarily documented [here](https://github.com/dotnet/dotne
 * A list of properties with descriptions, types, and whether a property is required
 
 Types are defined in [definitions.md](https://github.com/dotnet/dotnet-monitor/blob/7eff2fd94ac2c05455a935d3b38beb5ca38d2ed0/documentation/api/definitions.md), and additional information about configuring collection rules can be found in the [collection rules](https://github.com/dotnet/dotnet-monitor/blob/7eff2fd94ac2c05455a935d3b38beb5ca38d2ed0/documentation/collectionrules) directory. Where appropriate, indicate if configuration only pertains to a specific version of `dotnet-monitor` (e.g. `7.0+`).
+
+## TESTING ONLY
+
+This is a link that erroneously points to main, instead of the designated hash [here](https://github.com/dotnet/dotnet-monitor/tree/main/documentation/configuration).
