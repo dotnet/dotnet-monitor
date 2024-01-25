@@ -42,17 +42,6 @@ jobs:
           name: learning-path-review
           path: ./learning-path-review
 
-      - name: Set Env Vars
-        run: |
-          modifiedFiles=$(cat ./learning-path-review/modifiedFiles)
-          manuallyReview=$(cat ./learning-path-review/manuallyReview)
-          suggestions=$(cat ./learning-path-review/suggestions)
-          outOfSync=$(cat ./learning-path-review/outOfSync)
-          echo "modifiedFiles=$modifiedFiles" >> $GITHUB_ENV
-          echo "manuallyReview=$manuallyReview" >> $GITHUB_ENV
-          echo "suggestions=$suggestions" >> $GITHUB_ENV
-          echo "outOfSync=$outOfSync" >> $GITHUB_ENV
-          
       - name: Submit Issue
         if: ${{ env.modifiedFiles != '' }}
         run: |
@@ -67,9 +56,3 @@ jobs:
           modifiedFiles=${modifiedFiles//,/<br />}
           body="# Learning Paths Staleness Report<br /><h2>Impacted Paths:</h2>${modifiedFiles}<br /><h2>Manually Review:</h2>${manuallyReview}<br /><h2>Out Of Sync:</h2>${outOfSync}<br /><h2>Suggestions:</h2>${suggestions}<br /><br />Comment a 👍 to open a new PR - commit hashes will be updated automatically, but any other updates must be made manually."
           gh issue create --label "learning-path-update" --title "$title" --body "$body"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MODIFIED_FILES: ${{ env.modifiedFiles }}
-          MANUALLY_REVIEW: ${{ env.manuallyReview }}
-          SUGGESTIONS: ${{ env.suggestions }}
-          OUTOFSYNC: ${{ env.outOfSync }}
