@@ -53,7 +53,7 @@ jobs:
           fi
           outOfSync=$(cat ./learning-path-review/outOfSync)
           outOfSync=${outOfSync//,/<br />}
-          outOfSyncSection="<h2>Out Of Sync:</h2>${outOfSync}<br />"
+          outOfSyncSection="<h2>Links With Out Of Sync Commit Hashes:</h2>${outOfSync}<br />"
           if test -z "$outOfSync"; then
           outOfSyncSection=""
           fi
@@ -65,7 +65,7 @@ jobs:
           fi
           modifiedFiles=$(cat ./learning-path-review/modifiedFiles)
           modifiedFiles=${modifiedFiles//,/<br />}
-          modifiedFilesSection="<h2>Suggestions:</h2>${modifiedFiles}<br />"
+          modifiedFilesSection="<h2>Modified Files:</h2>${modifiedFiles}<br />"
           if test -z "$modifiedFiles"; then
           modifiedFilesSection=""
           fi
