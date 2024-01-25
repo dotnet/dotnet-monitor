@@ -43,7 +43,6 @@ jobs:
           path: ./learning-path-review
 
       - name: Submit Issue
-        if: ${{ env.modifiedFiles != '' }}
         run: |
           title=$(cat ./learning-path-review/issue-title)
           manuallyReview=$(cat ./learning-path-review/manuallyReview)
