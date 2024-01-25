@@ -61,7 +61,7 @@ jobs:
           suggestions=${suggestions//,/<br />}
           modifiedFiles=$(cat ./learning-path-review/modifiedFiles)
           modifiedFiles=${modifiedFiles//,/<br />}
-          body="# Learning Paths Staleness Report<br /><h2>Impacted Paths:</h2>${modifiedFiles}<br /><h2>Manually Review:</h2>${manuallyReview}<br /><h2>Suggestions:</h2>${suggestions}<br />Comment a 👍 to open a new PR - commit hashes will be updated automatically, but any other updates must be made manually."
+          body="# Learning Paths Staleness Report<br /><h2>Impacted Paths:</h2>${modifiedFiles}<br /><h2>Manually Review:</h2>${manuallyReview}<br /><h2>Suggestions:</h2>${suggestions}<br /><br />Comment a 👍 to open a new PR - commit hashes will be updated automatically, but any other updates must be made manually."
           gh issue create --label "learning-path-update" --title "$title" --body "$body"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
