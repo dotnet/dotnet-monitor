@@ -1,4 +1,4 @@
-name: 'Stale Learning Path Issue'
+name: 'Submit Learning Path Issue'
 
 on:
   workflow_run:
@@ -71,3 +71,5 @@ jobs:
           fi
           body="# Learning Paths Staleness Report<br />${modifiedFilesSection}${manuallyReviewSection}${outOfSyncSection}${suggestionsSection}<br />Comment a 👍 to open a new PR - commit hashes will be updated automatically, but any other updates must be made manually."
           gh issue create --label "learning-path-update" --title "$title" --body "$body"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
