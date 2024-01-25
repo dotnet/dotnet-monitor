@@ -28,4 +28,4 @@ Types are defined in [definitions.md](https://github.com/dotnet/dotnet-monitor/b
 
 ## TESTING ONLY
 
-This is a link that erroneously points to main, instead of the designated hash [here](https://github.com/dotnet/dotnet-monitor/tree/main/documentation/configuration).
+This is a link that erroneously points to main, instead of the designated hash [here]((https://github.com/dotnet/dotnet-monitor/blob/main/src/Tools/dotnet-monitor/Commands/CollectCommandHandler.cs#L8).
