@@ -82,6 +82,7 @@ jobs:
           echo -n "${{ steps.check-links.outputs.modifiedFiles }}" > ./learning-path-review/modifiedFiles
           echo -n "${{ steps.check-links.outputs.manuallyReview }}" > ./learning-path-review/manuallyReview
           echo -n "${{ steps.check-links.outputs.suggestions }}" > ./learning-path-review/suggestions
+          echo -n "${{ steps.check-links.outputs.outOfSync }}" > ./learning-path-review/outOfSync
           echo -n "[BOT] Learning Path Update" > ./learning-path-review/issue-title
 
       - name: Upload artifacts (Comment)
