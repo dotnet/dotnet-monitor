@@ -17,10 +17,8 @@ jobs:
       - name: Generate artifacts
         run: |
           mkdir -p ./learning-path-update
-          echo -n "$COMMENT_AUTHOR" > ./learning-path-update/issue-user
           echo -n "#$ISSUE_NUMBER" > ./learning-path-update/issueNumber
         env:
-          COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
 
       - name: Upload artifacts
