@@ -1,8 +1,7 @@
 name: 'Check Learning Path Links'
 on:
   schedule: # Run once a week.
-    - cron: '0/10 * * * *'
-  workflow_dispatch:
+    - cron: '0/5 * * * *'
 
 permissions: {}
   
