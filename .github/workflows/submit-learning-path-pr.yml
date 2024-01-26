@@ -3,7 +3,7 @@ run-name: '[${{ github.ref_name }}] Submit Learning Path PR'
 
 on:
   workflow_run:
-    workflows: ["Scan For Learning Path Comments"]
+    workflows: ["Check Learning Path Links"]
     types:
       - completed
 
@@ -18,6 +18,16 @@ jobs:
       pull-requests: write
 
     steps:
+      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
+        id: check-user
+        with:
+          script: |
+            await github.rest.repos.checkCollaborator({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: context.payload.workflow_run.triggering_actor.login
+            });
+    
       - name: Checkout main
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
         with:
@@ -38,6 +48,17 @@ jobs:
           echo "prev_sha=$prev_sha" >> $GITHUB_ENV
           cd ../
 
+      # Download the artifact from the workflow that kicked off this one.
+      # The default artifact download action doesn't support cross-workflow
+      # artifacts, so use a 3rd party one.
+      - name: 'Download linting results'
+        uses: dawidd6/action-download-artifact@e7466d1a7587ed14867642c2ca74b5bcc1e19a2d
+        with:
+          workflow: ${{env.workflow_name}}
+          run_id: ${{github.event.workflow_run.id }}
+          name: learning-path-review
+          path: ./learning-path-review
+
       - name: Update Learning Path Hashes
         id: update-hashes
         uses: kkeirstead/UpdateLearningPathCommitHashes@main
@@ -47,29 +68,45 @@ jobs:
           oldHash: ${{ env.prev_sha }}
           newHash: ${{ env.new_sha }}
 
-      # Download the artifact from the workflow that kicked off this one.
-      # The default artifact download action doesn't support cross-workflow
-      # artifacts, so use a 3rd party one.
-      - name: 'Download linting results'
-        uses: dawidd6/action-download-artifact@e7466d1a7587ed14867642c2ca74b5bcc1e19a2d
-        with:
-          workflow: ${{env.workflow_name}}
-          run_id: ${{github.event.workflow_run.id }}
-          name: learning-path-update
-          path: ./learning-path-update
-
-      - name: Set Env Vars
+      - name: Create PR Body
         run: |
-          issueNumber=$(cat ./learning-path-update/issueNumber)
-          echo "issueNumber=$issueNumber" >> $GITHUB_ENV
+          title=$(cat ./learning-path-review/issue-title)
+          manuallyReview=$(cat ./learning-path-review/manuallyReview)
+          manuallyReview=${manuallyReview//,/<br />}
+          manuallyReviewSection="<h2>Manually Review:</h2>${manuallyReview}<br />"
+          if test -z "$manuallyReview"; then
+          manuallyReviewSection=""
+          fi
+          outOfSync=$(cat ./learning-path-review/outOfSync)
+          outOfSync=${outOfSync//,/<br />}
+          outOfSyncSection="<h2>Links With Out Of Sync Commit Hashes:</h2>${outOfSync}<br />"
+          if test -z "$outOfSync"; then
+          outOfSyncSection=""
+          fi
+          suggestions=$(cat ./learning-path-review/suggestions)
+          suggestions=${suggestions//,/<br />}
+          suggestionsSection="<h2>Suggestions:</h2>${suggestions}<br />"
+          if test -z "$suggestions"; then
+          suggestionsSection=""
+          fi
+          modifiedFiles=$(cat ./learning-path-review/modifiedFiles)
+          modifiedFiles=${modifiedFiles//,/<br />}
+          modifiedFilesSection="<h2>Modified Files:</h2>${modifiedFiles}<br />"
+          if test -z "$modifiedFiles"; then
+          modifiedFilesSection=""
+          fi
+          body="${modifiedFilesSection}${manuallyReviewSection}${outOfSyncSection}${suggestionsSection}<br />Comment a 👍 to open a new PR - commit hashes will be updated automatically, but any other updates must be made manually."
+          echo "body=$body" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Open PR
         uses: ./.github/actions/open-pr
         with:
           files_to_commit: ${{ steps.update-hashes.outputs.modifiedFiles }}
-          title: "Update Learning Paths"
+          title: "[DO NOT MERGE WITHOUT MANUAL REVIEW] Update Learning Paths"
           commit_message: Update Learning Paths
-          body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.<br />Closes ${{ env.issueNumber }}.
+          body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.<br /><br />${{ env.body }}
           branch_name: learningPathUpdates/${{ env.new_sha }}
           fail_if_files_unchanged: true
           auth_token: ${{ secrets.GITHUB_TOKEN }}
