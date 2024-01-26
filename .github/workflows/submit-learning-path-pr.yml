@@ -59,12 +59,18 @@ jobs:
           name: learning-path-review
           path: ./learning-path-review
 
+      - name: Put Suggestions In Env Var
+        run: |
+          suggestions=$(cat ./learning-path-review/suggestions)
+          echo "suggestions=$suggestions" >> $GITHUB_ENV
+
       - name: Update Learning Path Hashes
         id: update-hashes
         uses: kkeirstead/UpdateLearningPathCommitHashes@main
         with:
           learningPathsDirectory: 'documentation/learningPath'
           learningPathHashFile: '.github/learning-path-sha.txt'
+          suggestions: ${{ env.suggestions }}
           oldHash: ${{ env.prev_sha }}
           newHash: ${{ env.new_sha }}
 
