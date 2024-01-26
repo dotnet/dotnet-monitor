@@ -14,6 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
     {
         public TargetFrameworkMonikerTraitAttribute(TargetFrameworkMoniker targetFrameworkMoniker)
         {
+            int number = 5; // TESTING ONLY
         }
     }
 }
