@@ -1,6 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
@@ -139,6 +138,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureCollectionRules(this IServiceCollection services)
         {
+            // TESTING SOME CHANGES
             services.RegisterCollectionRuleAction<CollectDumpActionFactory, CollectDumpOptions>(KnownCollectionRuleActions.CollectDump);
             services.RegisterCollectionRuleAction<CollectExceptionsActionFactory, CollectExceptionsOptions>(KnownCollectionRuleActions.CollectExceptions);
             services.RegisterCollectionRuleAction<CollectGCDumpActionFactory, CollectGCDumpOptions>(KnownCollectionRuleActions.CollectGCDump);
