@@ -91,7 +91,7 @@ jobs:
           fi
           suggestions=$(cat ./learning-path-review/suggestions)
           suggestions=${suggestions//,/<br />}
-          suggestionsSection="<h2>Suggestions:</h2>${suggestions}<br />"
+          suggestionsSection="<h2>Auto-Applied Suggestions:</h2>${suggestions}<br />"
           if test -z "$suggestions"; then
           suggestionsSection=""
           fi
@@ -101,7 +101,7 @@ jobs:
           if test -z "$modifiedFiles"; then
           modifiedFilesSection=""
           fi
-          body="${modifiedFilesSection}${manuallyReviewSection}${outOfSyncSection}${suggestionsSection}<br />Comment a 👍 to open a new PR - commit hashes will be updated automatically, but any other updates must be made manually."
+          body="${modifiedFilesSection}${manuallyReviewSection}${outOfSyncSection}${suggestionsSection}"
           echo "body=$body" >> $GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -110,9 +110,9 @@ jobs:
         uses: ./.github/actions/open-pr
         with:
           files_to_commit: ${{ steps.update-hashes.outputs.modifiedFiles }}
-          title: "[DO NOT MERGE WITHOUT MANUAL REVIEW] Update Learning Paths"
+          title: "[REQUIRES MANUAL REVIEW] Update Learning Paths"
           commit_message: Update Learning Paths
-          body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.<br /><br />${{ env.body }}
+          body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.<br />${{ env.body }}
           branch_name: learningPathUpdates/${{ env.new_sha }}
           fail_if_files_unchanged: true
           auth_token: ${{ secrets.GITHUB_TOKEN }}
