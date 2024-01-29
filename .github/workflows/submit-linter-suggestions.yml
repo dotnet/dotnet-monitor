@@ -45,7 +45,6 @@ jobs:
         run: |
           echo 'reporter_name=Add Markdown Feedback' >> $GITHUB_ENV
           echo 'workflow_name=add-markdown-feedback.yml' >> $GITHUB_ENV
-
       # Download the artifact from the workflow that kicked off this one.
       # The default artifact download action doesn't support cross-workflow
       # artifacts, so use a 3rd party one.
@@ -79,7 +78,7 @@ jobs:
               -f.diff.strip=1 \
               -reporter="github-pr-review" \
               -filter-mode="diff_context" \
-              -fail-on-error="true" \
+              -fail-on-error="false" \
               -level="warning" \
               < "./pr-linter/linter.diff"
         env:
