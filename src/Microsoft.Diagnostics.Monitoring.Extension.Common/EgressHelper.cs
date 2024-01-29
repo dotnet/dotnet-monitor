@@ -44,10 +44,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             return egressCommand;
         }
 
-        private static int MiscHelper()
-        {
-            return 5;
-        }
 
         private static async Task<int> Egress<TProvider, TOptions>(Action<IServiceCollection> configureServices, CancellationToken token)
             where TProvider : EgressProvider<TOptions>
@@ -80,8 +76,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
 
             return ProcessEgressResult(result);
         }
-
-        // Putting comments after the duplicate line to see if it lines up 1:1
 
         private static async Task<int> Validate<TProvider, TOptions>(Action<IServiceCollection> configureServices, CancellationToken token)
             where TProvider : EgressProvider<TOptions>
