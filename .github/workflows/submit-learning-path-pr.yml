@@ -79,26 +79,26 @@ jobs:
           manuallyReview=$(cat ./learning-path-review/manuallyReview)
           manuallyReview=${manuallyReview//,/<br />}
           manuallyReviewSection="<h2>Manually Review:</h2>${manuallyReview}<br />"
-          if test -z "$manuallyReview"; then
-          manuallyReviewSection=""
+          if [ -z "$manuallyReview" ]; then
+            manuallyReviewSection=""
           fi
           outOfSync=$(cat ./learning-path-review/outOfSync)
           outOfSync=${outOfSync//,/<br />}
           outOfSyncSection="<h2>Links With Out Of Sync Commit Hashes:</h2>${outOfSync}<br />"
-          if test -z "$outOfSync"; then
-          outOfSyncSection=""
+          if [ -z "$outOfSync" ]; then
+            outOfSyncSection=""
           fi
           suggestions=$(cat ./learning-path-review/suggestions)
           suggestions=${suggestions//,/<br />}
           suggestionsSection="<h2>Auto-Applied Suggestions:</h2>${suggestions}<br />"
-          if test -z "$suggestions"; then
-          suggestionsSection=""
+          if [ -z "$suggestions" ]; then
+            suggestionsSection=""
           fi
           modifiedFiles=$(cat ./learning-path-review/modifiedFiles)
           modifiedFiles=${modifiedFiles//,/<br />}
           modifiedFilesSection="<h2>Modified Files:</h2>${modifiedFiles}<br />"
-          if test -z "$modifiedFiles"; then
-          modifiedFilesSection=""
+          if [ -z "$modifiedFiles" ]; then
+            modifiedFilesSection=""
           fi
           body="${modifiedFilesSection}${manuallyReviewSection}${outOfSyncSection}${suggestionsSection}"
           echo "body=$body" >> $GITHUB_ENV
