@@ -34,7 +34,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
         public CollectionRuleLimitsOptions Limits { get; set; }
 
         internal List<ValidationResult> ErrorList { get; } = new List<ValidationResult>();
-
-        public int number = 5; // TESTING ONLY
     }
 }
