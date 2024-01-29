@@ -1,6 +1,4 @@
-const core = require('@actions/core');
-const fs = require('fs');
-//const actionUtils = require('../action-utils.js');
+const actionUtils = require('../action-utils.js');
 
 const suggestionsSeparator = ',';
 const oldNewLinkSeparator = ' -> ';
@@ -18,6 +16,9 @@ function ReplaceOldWithNewText(content, oldText, newText)
 }
 
 const main = async () => {
+
+  const [core] = await actionUtils.installAndRequirePackages("@actions/core");
+
   try {
     const learningPathDirectory = core.getInput('learningPathsDirectory', { required: true });
     const learningPathHashFile = core.getInput('learningPathHashFile', { required: true });
@@ -25,15 +26,15 @@ const main = async () => {
     const oldHash = core.getInput('oldHash', { required: true });
     const newHash = core.getInput('newHash', { required: true });
 
-    fs.writeFileSync(learningPathHashFile, newHash, "utf8");
+    actionUtils.writeFile(learningPathHashFile, newHash);
     AppendModifiedFiles(learningPathHashFile)
 
     // Scan each file in the learningPaths directory
-    fs.readdir(learningPathDirectory, (_, files) => {
+    actionUtils.readdir(learningPathDirectory, (_, files) => {
       files.forEach(learningPathFile => {
         try {
           const fullPath = learningPathDirectory + "/" + learningPathFile
-          const content = fs.readFileSync(fullPath, "utf8")
+          const content = actionUtils.readFileSync(fullPath, "utf8")
 
           var replacedContent = content
 
@@ -51,8 +52,7 @@ const main = async () => {
 
           replacedContent = ReplaceOldWithNewText(replacedContent, oldHash, newHash)
 
-          fs.writeFileSync(learningPathDirectory + "/" + learningPathFile, replacedContent, "utf8");
-          //actionUtils.writeFile(learningPathDirectory + "/" + learningPathFile, learningPathFileContentStr);
+          actionUtils.writeFile(learningPathDirectory + "/" + learningPathFile, replacedContent);
 
           if (content !== replacedContent) {
             AppendModifiedFiles(fullPath)
