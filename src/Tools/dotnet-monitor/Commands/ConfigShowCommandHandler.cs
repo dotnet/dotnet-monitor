@@ -11,7 +11,7 @@ using System.IO;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 {
-    internal sealed class ConfigShowCommandHandlerTEST
+    internal sealed class ConfigShowCommandHandler
     {
         // Although the "noHttpEgress" parameter is unused, it keeps the entire command parameter set a superset
         // of the "collect" command so that users can take the same arguments from "collect" and use it on "config show"
