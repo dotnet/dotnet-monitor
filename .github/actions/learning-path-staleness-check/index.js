@@ -1,5 +1,4 @@
-const core = require('@actions/core');
-const fs = require('fs');
+const actionUtils = require('../action-utils.js');
 const prevPathPrefix = "prev/";
 const headPathPrefix = "head/";
 const linePrefix = "#L";
@@ -107,7 +106,7 @@ function StripLineNumber(link, linePrefixIndex)
 
 function GetContent(path) {
   try {
-    return fs.readFileSync(path, "utf8")
+    return actionUtils.readFileSync(path, "utf8")
   }
   catch (error) {}
 
@@ -193,6 +192,8 @@ function ValidateLinks(learningPathContents, repoURLToSearch, modifiedPRFiles, l
 
 const main = async () => {
 
+  const [core] = await actionUtils.installAndRequirePackages("@actions/core");
+  
   try {
     const learningPathDirectory = core.getInput('learningPathsDirectory', { required: true });
     const repoURLToSearch = core.getInput('repoURLToSearch', { required: true });
@@ -202,10 +203,10 @@ const main = async () => {
     if (changedFilePaths === null || changedFilePaths.trim() === "") { return }
 
     // Scan each file in the learningPaths directory
-    fs.readdir(headLearningPathsDirectory, (_, files) => {
+    actionUtils.readdir(headLearningPathsDirectory, (_, files) => {
       files.forEach(learningPathFile => {
         try {
-          const learningPathContents = fs.readFileSync(headLearningPathsDirectory + "/" + learningPathFile, "utf8")
+          const learningPathContents = GetContent(headLearningPathsDirectory + "/" + learningPathFile)
           if (learningPathContents)
           {
             ValidateLinks(learningPathContents, repoURLToSearch, changedFilePaths.split(' '), learningPathFile)
