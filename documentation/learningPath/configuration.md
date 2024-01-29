@@ -6,7 +6,7 @@
 
 ## How Configuration Works
 
-`dotnet-monitor` accepts configuration from several different sources, and must [combine these sources for the host builder](https://github.com/dotnet/dotnet-monitor/blob/341ff64a6097fe0bc66950e254e6160abcf77b84/src/Tools/dotnet-monitor/HostBuilder/HostBuilderHelper.cs#L46). Configuration sources are added in the order of lowest to highest precedence - meaning that if there is a conflict between a property in two configuration sources, the property found in the latter configuration source will be used.
+`dotnet-monitor` accepts configuration from several different sources, and must [combine these sources for the host builder](https://github.com/dotnet/dotnet-monitor/blob/341ff64a6097fe0bc66950e254e6160abcf77b84/src/Tools/dotnet-monitor/HostBuilder/HostBuilderHelper.cs#L47). Configuration sources are added in the order of lowest to highest precedence - meaning that if there is a conflict between a property in two configuration sources, the property found in the latter configuration source will be used.
 
 To see the merged configuration, the user can run the `config show` command (see [here](https://github.com/dotnet/dotnet-monitor/blob/341ff64a6097fe0bc66950e254e6160abcf77b84/src/Tools/dotnet-monitor/Program.cs#L68) and [here](https://github.com/dotnet/dotnet-monitor/blob/341ff64a6097fe0bc66950e254e6160abcf77b84/src/Tools/dotnet-monitor/Commands/ConfigShowCommandHandler.cs)); the `--show-sources` flag can be used to reveal which configuration source is responsible for each property. The `config show` command's output is [written out as JSON](https://github.com/dotnet/dotnet-monitor/blob/341ff64a6097fe0bc66950e254e6160abcf77b84/src/Tools/dotnet-monitor/ConfigurationJsonWriter.cs); this section must be manually updated whenever new options are added (or existing options are changed).
 
@@ -25,7 +25,3 @@ Our configuration is primarily documented [here](https://github.com/dotnet/dotne
 * A list of properties with descriptions, types, and whether a property is required
 
 Types are defined in [definitions.md](https://github.com/dotnet/dotnet-monitor/blob/341ff64a6097fe0bc66950e254e6160abcf77b84/documentation/api/definitions.md), and additional information about configuring collection rules can be found in the [collection rules](https://github.com/dotnet/dotnet-monitor/blob/341ff64a6097fe0bc66950e254e6160abcf77b84/documentation/collectionrules) directory. Where appropriate, indicate if configuration only pertains to a specific version of `dotnet-monitor` (e.g. `7.0+`).
-
-## TESTING ONLY
-
-This is a link that erroneously points to main, instead of the designated hash [here]((https://github.com/dotnet/dotnet-monitor/blob/main/src/Tools/dotnet-monitor/Commands/CollectCommandHandler.cs#L8).
