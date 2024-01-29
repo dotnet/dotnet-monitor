@@ -14,13 +14,11 @@ jobs:
       issues: write
 
     steps:
-
       - name: Checkout head
         uses: actions/checkout@v4
         with:
           persist-credentials: true
           ref: main
-          fetch-depth: 0 # Fetch the entire repo for the below git operations
           path: head
 
       - name: Get current SHA
@@ -49,7 +47,6 @@ jobs:
       - name: Get changed files
         working-directory: ./head
         run: |
-          # changed_source_files=$(git diff-tree --no-commit-id --name-only -r "$prev_sha" "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
           changed_source_files=$(git diff-tree --no-commit-id --name-only -r "$prev_sha" "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
           echo "Files to validate: '${changed_source_files}'"
           echo "updated_files=$(echo ${changed_source_files})" >> $GITHUB_ENV
@@ -73,7 +70,6 @@ jobs:
           echo -n "${{ steps.check-links.outputs.manuallyReview }}" > ./learning-path-review/manuallyReview
           echo -n "${{ steps.check-links.outputs.suggestions }}" > ./learning-path-review/suggestions
           echo -n "${{ steps.check-links.outputs.outOfSync }}" > ./learning-path-review/outOfSync
-          echo -n "[BOT] Learning Path Update" > ./learning-path-review/issue-title
 
       - name: Upload artifacts (Comment)
         uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
