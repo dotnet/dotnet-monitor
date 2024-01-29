@@ -85,9 +85,3 @@ Utility classes that are shared between Unit Tests and Functional Tests.
 - [Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon](https://github.com/dotnet/dotnet-monitor/blob/e7604005393058330b88552b0087ace27ea15e26/src/Tests/Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon/)
 
 Utility classes shared between unit test assemblies.
-
-TESTING
-
-
-[`dotnet monitor` will pass serialized configuration via `StdIn` to the extension](https://github.com/dotnet/dotnet-monitor/blob/e7604005393058330b88552b0087ace27ea15e26/src/Tools/dotnet-monitor/Egress/Extension/EgressExtension.cs#L182); an example of how the `AzureBlobStorage` egress provider interprets the egress payload can be found [here](https://github.com/dotnet/dotnet-monitor/blob/e7604005393058330b88552b0087ace27ea15e26/src/Microsoft.Diagnostics.Monitoring.Extension.Common/EgressHelper.cs#L145). **It's important to validate the version number at the beginning of the stream; if an extension does not have the same version as `dotnet-monitor`, it should not attempt to continue reading from the stream, and users may need to update to a newer version of the extension.**
-
