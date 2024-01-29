@@ -1,0 +1,22 @@
+name: 'UpdateLearningPathCommitHashes Action'
+description: 'Checks the links in the learning paths for staleness'
+inputs:
+  oldHash:
+    description: 'The commit hash to replace with the newHash in the learning path directory'
+    required: true
+  learningPathsDirectory:
+    description: 'The directory where the learning paths reside (e.g. documentation/learningPath)'
+    required: true
+  suggestions:
+    description: 'The auto-generated suggestions from the prior workflow'
+    required: false
+  learningPathHashFile:
+    description: 'The file where the commit hash being used for the learning paths is kept'
+    required: true
+  newHash:
+    description: 'The commit hash used to replace the oldHash in the learning path directory'
+    required: true
+
+runs:
+  using: 'node16'
+  main: 'index.js'
