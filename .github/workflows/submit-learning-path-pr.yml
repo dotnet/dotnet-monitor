@@ -66,7 +66,7 @@ jobs:
 
       - name: Update Learning Path Hashes
         id: update-hashes
-        uses: kkeirstead/UpdateLearningPathCommitHashes@main
+        uses: ./.github/actions/apply-learning-path-updates
         with:
           learningPathsDirectory: 'documentation/learningPath'
           learningPathHashFile: '.github/learning-path-sha.txt'
