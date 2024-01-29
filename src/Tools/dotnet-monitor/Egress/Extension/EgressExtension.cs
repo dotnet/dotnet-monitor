@@ -52,12 +52,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             _processEnvironmentVariables[key] = value;
         }
 
-        public void MyImportantMethod()
-        {
-            // Very important stuff in here.
-
-        }
-
         /// <inheritdoc/>
         public Task<EgressArtifactResult> EgressArtifact(
             string providerName,
