@@ -76,7 +76,6 @@ jobs:
 
       - name: Create PR Body
         run: |
-          title=$(cat ./learning-path-review/issue-title)
           manuallyReview=$(cat ./learning-path-review/manuallyReview)
           manuallyReview=${manuallyReview//,/<br />}
           manuallyReviewSection="<h2>Manually Review:</h2>${manuallyReview}<br />"
