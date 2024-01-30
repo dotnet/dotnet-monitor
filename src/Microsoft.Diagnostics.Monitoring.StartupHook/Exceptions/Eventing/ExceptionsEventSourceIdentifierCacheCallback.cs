@@ -67,7 +67,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                 moduleId,
                 typeToken,
                 data.OuterToken,
-                data.Name);
+                data.Name,
+                data.Namespace);
         }
     }
 }
