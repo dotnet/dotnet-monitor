@@ -179,30 +179,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                     writer.WriteStartArray("frames");
 
-                StringBuilder builder = new StringBuilder();
+                    StringBuilder builder = new StringBuilder();
 
-                foreach (var frame in instance.CallStack.Frames)
-                {
-                    writer.WriteStartObject();
+                    foreach (var frame in instance.CallStack.Frames)
+                    {
+                        writer.WriteStartObject();
 
-                    string assembledMethodName = frame.MethodName;
-                    if (frame.FullGenericArgTypes.Count > 0)
-                    {
-                        builder.Clear();
-                        builder.Append(GenericStart);
-                        builder.Append(string.Join(GenericSeparator, frame.FullGenericArgTypes));
-                        builder.Append(GenericEnd);
-                        assembledMethodName += builder.ToString();
-                    }
-                    writer.WriteString("methodName", assembledMethodName);
-                    writer.WriteStartArray("parameterTypes");
-                    foreach (string parameterType in frame.FullParameterTypes)
-                    {
-                        writer.WriteStringValue(parameterType);
-                    }
-                    writer.WriteEndArray(); // end parameterTypes
-                    writer.WriteString("typeName", frame.TypeName);
-                    writer.WriteString("moduleName", frame.ModuleName);
+                        string assembledMethodName = frame.MethodName;
+                        if (frame.FullGenericArgTypes.Count > 0)
+                        {
+                            builder.Clear();
+                            builder.Append(GenericStart);
+                            builder.Append(string.Join(GenericSeparator, frame.FullGenericArgTypes));
+                            builder.Append(GenericEnd);
+                            assembledMethodName += builder.ToString();
+                        }
+                        writer.WriteString("methodName", assembledMethodName);
+                        writer.WriteStartArray("parameterTypes");
+                        foreach (string parameterType in frame.FullParameterTypes)
+                        {
+                            writer.WriteStringValue(parameterType);
+                        }
+                        writer.WriteEndArray(); // end parameterTypes
+                        writer.WriteString("typeName", frame.TypeName);
+                        writer.WriteString("moduleName", frame.ModuleName);
 
                         writer.WriteEndObject();
                     }
