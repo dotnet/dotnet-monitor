@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-        [Theory(Skip = "net9.0temporary Linux dump collection does not work properly for .net90")]
+        [Theory()]
         [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Full)]
         [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Mini)]
         [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Triage)]
