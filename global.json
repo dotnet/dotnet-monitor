@@ -26,7 +26,8 @@
         "$(MicrosoftNETCoreApp80Version)",
         "$(MicrosoftNETCoreApp90Version)"
       ]
-    }
+    },
+    "xcopy-msbuild": "17.8.5"
   },
   "msbuild-sdks": {
     "Microsoft.Build.NoTargets": "3.7.0",
