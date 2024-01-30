@@ -132,7 +132,10 @@
     <AdditionalDotNetPackage Include="$(MicrosoftAspNetCoreApp80Version)">
       <PackageType>aspnetcore-runtime</PackageType>
     </AdditionalDotNetPackage>
-  </ItemGroup>
+    <AdditionalDotNetPackage Include="$(MicrosoftAspNetCoreApp90Version)">
+      <PackageType>aspnetcore-runtime</PackageType>
+    </AdditionalDotNetPackage>
+  </ItemGroup>  
 
   <!-- Correlation Paylod: Node -->
   <ItemGroup Condition="Exists('$(HelixNodejsPayloadPath)')">
