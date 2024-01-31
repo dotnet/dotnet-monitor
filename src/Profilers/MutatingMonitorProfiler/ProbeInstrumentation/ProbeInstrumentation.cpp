@@ -271,7 +271,17 @@ STDAPI DLLEXPORT RequestFunctionProbeInstallation(
         instructions.reserve(parameterCounts[i]);
         for (ULONG32 j = 0; j < parameterCounts[i]; j++)
         {
-            instructions.push_back(boxingInstructions[offset+j]);
+            const ULONG32 boxingInstructionIndex = offset + j;
+            if (boxingInstructions[boxingInstructionIndex].instructionType == InstructionType::TYPESPEC)
+            {
+                if (boxingInstructions[boxingInstructionIndex].signatureBufferPointer == nullptr ||
+                    boxingInstructions[boxingInstructionIndex].signatureBufferLength == 0)
+                {
+                    return E_INVALIDARG;
+                }
+            }
+
+            instructions.push_back(boxingInstructions[boxingInstructionIndex]);
         }
         offset += parameterCounts[i];
 
@@ -356,7 +366,6 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
         // For now just use the function id as the uniquifier.
         // Consider allowing the caller to specify one.
         processedRequest.uniquifier = static_cast<ULONG64>(req.functionId);
-        processedRequest.boxingInstructions = req.boxingInstructions;
 
         IfFailLogRet(m_pCorProfilerInfo->GetFunctionInfo2(
             req.functionId,
@@ -367,6 +376,34 @@ HRESULT ProbeInstrumentation::InstallProbes(vector<UNPROCESSED_INSTRUMENTATION_R
             0,
             nullptr,
             nullptr));
+
+        ComPtr<IMetaDataEmit> pMetadataEmit;
+        IfFailRet(m_pCorProfilerInfo->GetModuleMetaData(
+            processedRequest.moduleId,
+            ofRead | ofWrite,
+            IID_IMetaDataEmit,
+            reinterpret_cast<IUnknown **>(&pMetadataEmit)));
+
+        // Process the boxing instructions, converting any typespecs into metadata tokens.
+        processedRequest.boxingInstructions.reserve(req.boxingInstructions.size());
+        for (auto const& instructions : req.boxingInstructions)
+        {
+            PARAMETER_BOXING_INSTRUCTIONS newInstructions = {};
+            if (instructions.instructionType == InstructionType::TYPESPEC)
+            {
+                newInstructions.instructionType = InstructionType::METADATA_TOKEN;
+                IfFailRet(pMetadataEmit->GetTokenFromTypeSpec(
+                    instructions.signatureBufferPointer,
+                    instructions.signatureBufferLength,
+                    &newInstructions.token.mdToken));
+            }
+            else
+            {
+                newInstructions = instructions;
+            }
+
+            processedRequest.boxingInstructions.push_back(newInstructions);
+        }
 
         IfFailLogRet(m_pAssemblyProbePrep->PrepareAssemblyForProbes(processedRequest.moduleId));
 

@@ -30,6 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private const string FrameTypeName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario";
         private const string FrameMethodName = "ThrowAndCatchInvalidOperationException";
         private const string FrameParameterType = "System.Boolean";
+        private const string SimpleFrameParameterType = "Boolean";
         private const string UnitTestAppModule = "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll";
         private const string CoreLibModuleName = "System.Private.CoreLib.dll";
         private const string SystemInvalidOperationException = "System.InvalidOperationException";
@@ -68,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameTypeName,
                         FrameMethodName,
-                        new List<string>() { FrameParameterType, FrameParameterType });
+                        new List<string>() { SimpleFrameParameterType, SimpleFrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -276,7 +277,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameTypeName,
                         FrameMethodName,
-                        new List<string>() { FrameParameterType, FrameParameterType });
+                        new List<string>() { SimpleFrameParameterType, SimpleFrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -321,7 +322,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameTypeName,
                         FrameMethodName,
-                        new List<string>() { FrameParameterType, FrameParameterType });
+                        new List<string>() { SimpleFrameParameterType, SimpleFrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -360,7 +361,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameTypeName,
                         FrameMethodName,
-                        new List<string>() { FrameParameterType, FrameParameterType });
+                        new List<string>() { SimpleFrameParameterType, SimpleFrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -443,7 +444,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameTypeName,
                         FrameMethodName,
-                        new List<string>() { FrameParameterType, FrameParameterType });
+                        new List<string>() { SimpleFrameParameterType, SimpleFrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -474,7 +475,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameTypeName,
                         FrameMethodName,
-                        new List<string>() { FrameParameterType, FrameParameterType });
+                        new List<string>() { SimpleFrameParameterType, SimpleFrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -554,7 +555,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameTypeName,
                         FrameMethodName,
-                        new List<string>() { FrameParameterType, FrameParameterType });
+                        new List<string>() { SimpleFrameParameterType, SimpleFrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -666,7 +667,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameTypeName,
                         FrameMethodName,
-                        new List<string>() { FrameParameterType, FrameParameterType });
+                        new List<string>() { SimpleFrameParameterType, SimpleFrameParameterType });
                 },
                 configureApp: runner =>
                 {
@@ -711,7 +712,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         ExceptionMessage,
                         FrameTypeName,
                         FrameMethodName,
-                        new List<string>() { FrameParameterType, FrameParameterType });
+                        new List<string>() { SimpleFrameParameterType, SimpleFrameParameterType });
                 },
                 configureApp: runner =>
                 {

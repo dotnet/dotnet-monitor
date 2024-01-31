@@ -41,6 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             public const int Token = 1;
             public const int OuterToken = 2;
             public const int Name = 3;
+            public const int Namespace = 4;
         }
     }
 }

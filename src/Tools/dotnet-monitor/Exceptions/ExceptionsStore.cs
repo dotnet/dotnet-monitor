@@ -149,7 +149,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     if (!_exceptionTypeNameMap.TryGetValue(exceptionClassId, out exceptionTypeName))
                     {
                         _builder.Clear();
-                        NameFormatter.BuildTypeName(_builder, entry.Cache.NameCache, exceptionClassId);
+                        NameFormatter.BuildTypeName(_builder, entry.Cache.NameCache, exceptionClassId, NameFormatter.TypeFormat.Full);
                         exceptionTypeName = _builder.ToString();
                     }
 
@@ -220,7 +220,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 }
             }
 
-            return StackUtilities.TranslateCallStackToModel(callStack, cache.NameCache);
+            return StackUtilities.TranslateCallStackToModel(callStack, cache.NameCache, methodNameIncludesGenericParameters: false);
         }
 
         private sealed class ExceptionInstanceEntry
