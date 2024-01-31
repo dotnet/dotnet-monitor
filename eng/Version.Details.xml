@@ -22,29 +22,29 @@
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
       <Sha>bf54e2bebc28004dec0311dc4083bcff4fd44cdb</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="9.0.0-beta.24080.1">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="9.0.0-beta.24080.3">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>dd50030a0278e8c82f45624446fbec120b83c26b</Sha>
+      <Sha>b4e9225c6c2f9da42fbb611a5e8942a08476fe89</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="9.0.0-beta.24080.1">
+    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="9.0.0-beta.24080.3">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>dd50030a0278e8c82f45624446fbec120b83c26b</Sha>
+      <Sha>b4e9225c6c2f9da42fbb611a5e8942a08476fe89</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="9.0.0-beta.24080.1">
+    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="9.0.0-beta.24080.3">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>dd50030a0278e8c82f45624446fbec120b83c26b</Sha>
+      <Sha>b4e9225c6c2f9da42fbb611a5e8942a08476fe89</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="9.0.0-beta.24080.1">
+    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="9.0.0-beta.24080.3">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>dd50030a0278e8c82f45624446fbec120b83c26b</Sha>
+      <Sha>b4e9225c6c2f9da42fbb611a5e8942a08476fe89</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Dotnet.Sdk.Internal" Version="9.0.100-preview.1.24080.2">
       <Uri>https://github.com/dotnet/installer</Uri>
       <Sha>b8dce67ebe366f971308217b0e703e2a25eae16e</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="9.0.0-beta.24080.1">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="9.0.0-beta.24080.3">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>dd50030a0278e8c82f45624446fbec120b83c26b</Sha>
+      <Sha>b4e9225c6c2f9da42fbb611a5e8942a08476fe89</Sha>
     </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.507901">
       <Uri>https://github.com/dotnet/symstore</Uri>
