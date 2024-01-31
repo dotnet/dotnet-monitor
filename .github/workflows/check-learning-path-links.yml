@@ -76,25 +76,25 @@ jobs:
 
       - name: Create PR Body
         run: |
-          manuallyReview="${{steps.check-links.outputs.manuallyReview}}"
+          manuallyReview=$MANUALLY_REVIEW
           manuallyReview=${manuallyReview//,/<br />}
           manuallyReviewSection="<h2>Manually Review:</h2>${manuallyReview}<br />"
           if [ -z "$manuallyReview" ]; then
             manuallyReviewSection=""
           fi
-          outOfSync="${{steps.check-links.outputs.outOfSync}}"
+          outOfSync=$OUT_OF_SYNC
           outOfSync=${outOfSync//,/<br />}
           outOfSyncSection="<h2>Links With Out Of Sync Commit Hashes:</h2>${outOfSync}<br />"
           if [ -z "$outOfSync" ]; then
             outOfSyncSection=""
           fi
-          suggestions="${{steps.check-links.outputs.suggestions}}"
+          suggestions=$SUGGESTIONS
           suggestions=${suggestions//,/<br />}
           suggestionsSection="<h2>Auto-Applied Suggestions:</h2>${suggestions}<br />"
           if [ -z "$suggestions" ]; then
             suggestionsSection=""
           fi
-          modifiedFiles="${{steps.check-links.outputs.modifiedFiles}}"
+          modifiedFiles=$MODIFIED_FILES
           modifiedFiles=${modifiedFiles//,/<br />}
           modifiedFilesSection="<h2>Modified Files:</h2>${modifiedFiles}<br />"
           if [ -z "$modifiedFiles" ]; then
@@ -104,6 +104,10 @@ jobs:
           echo "body=$body" >> $GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MODIFIED_FILES: ${{ steps.check-links.outputs.modifiedFiles }}
+          MANUALLY_REVIEW: ${{ steps.check-links.outputs.manuallyReview }}
+          SUGGESTIONS: ${{ steps.check-links.outputs.suggestions }}
+          OUT_OF_SYNC: ${{ steps.check-links.outputs.outOfSync }}
 
       - name: Open PR
         uses: ./.github/actions/open-pr
