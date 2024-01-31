@@ -1,6 +1,6 @@
+const core = require('@actions/core');
 const actionUtils = require('../action-utils.js');
 const prevPathPrefix = "prev/";
-const headPathPrefix = "head/";
 const linePrefix = "#L";
 const separator = " | ";
 const sourceDirectoryName = core.getInput('sourceDirectoryName', { required: true });
@@ -15,6 +15,20 @@ modifiedFilesUrlToFileName = {};
 var outOfSync = new Set();
 var manuallyReview = new Set();
 var suggestions = new Set();
+
+const oldNewLinkSeparator = ' -> ';
+let modifiedFilesToCommit = [];
+
+function AppendModifiedFilesToCommit(path)
+{
+  modifiedFilesToCommit.push(path)
+  core.setOutput('modifiedFilesToCommit', modifiedFilesToCommit.join(' '))
+}
+
+function ReplaceOldWithNewText(content, oldText, newText)
+{
+  return content.replaceAll(oldText, newText);
+}
 
 function UpdateModifiedFiles(fileName, path, learningPathFile)
 {
@@ -55,9 +69,6 @@ function UpdateOutOfSync(link, learningPathFile)
   SetOutput('outOfSync', outOfSync)
 }
 
-// Suggestions - A line reference has changed in this PR, and the PR Author should update the line accordingly.
-// There are edge cases where this may make an incorrect recommendation, so the PR author should verify that
-// this is the correct line to reference.
 function UpdateSuggestions(fileName, oldPath, newPath, learningPathFile, learningPathLineNumber, oldLineNumber, newLineNumber)
 {
   suggestions.add(AssembleOutput(fileName, oldPath, newPath, oldLineNumber, newLineNumber, learningPathFile, learningPathLineNumber))
@@ -80,7 +91,7 @@ function AssembleOutput(fileName, oldPath, newPath, oldLineNumber, newLineNumber
   var codeFileLink = CreateLink(fileName, oldPath, oldLineNumber)
 
   if (newPath && newLineNumber) {
-    codeFileLink += " -> " + CreateLink(fileName, newPath, newLineNumber)
+    codeFileLink += oldNewLinkSeparator + CreateLink(fileName, newPath, newLineNumber)
   }
 
   return codeFileLink + separator + BoldedText(AppendLineNumber(learningPathFile, learningPathLineNumber, undefined));
@@ -106,7 +117,7 @@ function StripLineNumber(link, linePrefixIndex)
 
 function GetContent(path) {
   try {
-    return actionUtils.readFileSync(path, "utf8")
+    return actionUtils.readFile(path)
   }
   catch (error) {}
 
@@ -153,7 +164,7 @@ function ValidateLinks(learningPathContents, repoURLToSearch, modifiedPRFiles, l
       // This is the line number in the learning path file that contains the link - not the #L line number in the link itself
       const learningPathLineNumber = learningPathContents.substring(0, startOfLink).split("\n").length;
 
-      var headContent = GetContent(headPathPrefix + linkFilePath)
+      var headContent = GetContent(linkFilePath)
       if (!headContent) {
         UpdateManuallyReview(fileName, link, learningPathFile, learningPathLineNumber);
         continue
@@ -193,23 +204,61 @@ function ValidateLinks(learningPathContents, repoURLToSearch, modifiedPRFiles, l
 const main = async () => {
 
   const [core] = await actionUtils.installAndRequirePackages("@actions/core");
-  
+
   try {
     const learningPathDirectory = core.getInput('learningPathsDirectory', { required: true });
     const repoURLToSearch = core.getInput('repoURLToSearch', { required: true });
-    const headLearningPathsDirectory = headPathPrefix + learningPathDirectory;
     const changedFilePaths = core.getInput('changedFilePaths', {required: false});
-    
+    const learningPathHashFile = core.getInput('learningPathHashFile', { required: true });
+
     if (changedFilePaths === null || changedFilePaths.trim() === "") { return }
 
     // Scan each file in the learningPaths directory
-    actionUtils.readdir(headLearningPathsDirectory, (_, files) => {
+    actionUtils.readdir(learningPathDirectory, (_, files) => {
       files.forEach(learningPathFile => {
         try {
-          const learningPathContents = GetContent(headLearningPathsDirectory + "/" + learningPathFile)
+          const learningPathContents = actionUtils.readFile(learningPathDirectory + "/" + learningPathFile)
           if (learningPathContents)
           {
             ValidateLinks(learningPathContents, repoURLToSearch, changedFilePaths.split(' '), learningPathFile)
+          }
+        } catch (error) {
+          console.log("Error: " + error)
+          console.log("Could not find learning path file: " + learningPathFile)
+        }
+      });
+    });
+
+    actionUtils.writeFile(learningPathHashFile, newHash);
+    AppendModifiedFilesToCommit(learningPathHashFile)
+
+    // Scan each file in the learningPaths directory
+    actionUtils.readdir(learningPathDirectory, (_, files) => {
+      files.forEach(learningPathFile => {
+        try {
+          const fullPath = learningPathDirectory + "/" + learningPathFile
+          const content = actionUtils.readFile(fullPath)
+
+          var replacedContent = content
+
+          let suggestionsArray = Array.from(suggestions);
+          if (suggestionsArray && suggestionsArray.length > 0) {
+            suggestionsArray.forEach(suggestion => {
+              const suggestionArray = suggestion.split(oldNewLinkSeparator)
+              var oldLink = suggestionArray[0]
+              var newLink = suggestionArray[1]
+              oldLink = oldLink.substring(oldLink.indexOf('(') + 1, oldLink.lastIndexOf(')'))
+              newLink = newLink.substring(newLink.indexOf('(') + 1, newLink.lastIndexOf(')'))
+              replacedContent = ReplaceOldWithNewText(replacedContent, oldLink, newLink)
+            })
+          }
+
+          replacedContent = ReplaceOldWithNewText(replacedContent, oldHash, newHash)
+
+          actionUtils.writeFile(fullPath, replacedContent);
+
+          if (content !== replacedContent) {
+            AppendModifiedFilesToCommit(fullPath)
           }
         } catch (error) {
           console.log("Error: " + error)
