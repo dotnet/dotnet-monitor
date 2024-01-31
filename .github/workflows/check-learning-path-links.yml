@@ -19,7 +19,7 @@ jobs:
       - name: Checkout head
         uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          persist-credentials: true
           ref: main
           path: head
 
