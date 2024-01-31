@@ -228,7 +228,7 @@ const main = async () => {
       });
     });
 
-    actionUtils.writeFile(learningPathHashFile, newHash);
+    actionUtils.writeFileSync(learningPathHashFile, newHash);
     AppendModifiedFilesToCommit(learningPathHashFile, core)
 
     // Scan each file in the learningPaths directory
@@ -254,7 +254,7 @@ const main = async () => {
 
           replacedContent = ReplaceOldWithNewText(replacedContent, oldHash, newHash)
 
-          actionUtils.writeFile(fullPath, replacedContent);
+          actionUtils.writeFileSync(fullPath, replacedContent);
 
           if (content !== replacedContent) {
             AppendModifiedFilesToCommit(fullPath, core)
