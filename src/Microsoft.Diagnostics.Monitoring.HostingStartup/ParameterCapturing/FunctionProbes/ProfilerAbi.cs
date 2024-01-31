@@ -35,11 +35,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
     {
         Unknown = 0,
         SpecialCaseToken,
-        MetadataToken
+        MetadataToken,
+        TypeSpec
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct ParameterBoxingInstructions
+    internal unsafe struct ParameterBoxingInstructions
     {
         public InstructionType InstructionType;
 
@@ -49,6 +50,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         // size as a uint so it won't impact the size of the struct or field offsets.
         //
         public uint Token;
+
+        public byte* SignatureBufferPointer;
+        public uint SignatureBufferLength;
 
         public static implicit operator ParameterBoxingInstructions(uint mdToken)
         {
