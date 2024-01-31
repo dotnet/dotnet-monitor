@@ -110,7 +110,7 @@ jobs:
       - name: Open PR
         uses: ./.github/actions/open-pr
         with:
-          files_to_commit: ${{ steps.update-hashes.outputs.modifiedFiles }}
+          files_to_commit: ${{ steps.check-links.outputs.modifiedFiles }}
           title: "[REQUIRES MANUAL REVIEW] Update Learning Paths"
           commit_message: Update Learning Paths
           body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.<br />${{ env.body }}
