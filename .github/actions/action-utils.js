@@ -53,4 +53,5 @@ module.exports.splitVersionTag = splitVersionTag;
 module.exports.readFile = (fileName) => util.promisify(fs.readFile)(fileName, 'utf8');
 module.exports.readFileSync = (fileName) => util.promisify(fs.readFileSync)(fileName, 'utf8');
 module.exports.writeFile = (fileName, contents) => util.promisify(fs.writeFile)(fileName, contents);
+module.exports.writeFileSync = (fileName, contents) => util.promisify(fs.writeFileSync)(fileName, contents);
 module.exports.readdir = (dirName, callback) => util.promisify(fs.readdir)(dirName, callback);
