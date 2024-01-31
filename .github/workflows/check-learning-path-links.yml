@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       issues: write
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout head
@@ -40,7 +42,7 @@ jobs:
       - name: Checkout previous update
         uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          persist-credentials: true
           ref:  ${{ env.prev_sha }}
           path: prev
 
@@ -61,18 +63,55 @@ jobs:
           sourceDirectoryName: 'src'
           oldHash: ${{ env.prev_sha }}
           newHash: ${{ env.new_sha }}
-          
-      - name: Generate artifacts (Comment)
-        working-directory: ./head
-        run: |
-          mkdir -p ./learning-path-review
-          echo -n "${{ steps.check-links.outputs.modifiedFiles }}" > ./learning-path-review/modifiedFiles
-          echo -n "${{ steps.check-links.outputs.manuallyReview }}" > ./learning-path-review/manuallyReview
-          echo -n "${{ steps.check-links.outputs.suggestions }}" > ./learning-path-review/suggestions
-          echo -n "${{ steps.check-links.outputs.outOfSync }}" > ./learning-path-review/outOfSync
 
-      - name: Upload artifacts (Comment)
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
+      - name: Update Learning Path Hashes
+        id: update-hashes
+        uses: ./.github/actions/apply-learning-path-updates
         with:
-          name: learning-path-review
-          path: head/learning-path-review/
+          learningPathsDirectory: 'documentation/learningPath'
+          learningPathHashFile: '.github/learning-path-sha.txt'
+          suggestions: ${{ env.suggestions }}
+          oldHash: ${{ env.prev_sha }}
+          newHash: ${{ env.new_sha }}
+
+      - name: Create PR Body
+        run: |
+          manuallyReview="${{steps.check-links.outputs.manuallyReview}}"
+          manuallyReview=${manuallyReview//,/<br />}
+          manuallyReviewSection="<h2>Manually Review:</h2>${manuallyReview}<br />"
+          if [ -z "$manuallyReview" ]; then
+            manuallyReviewSection=""
+          fi
+          outOfSync="${{steps.check-links.outputs.outOfSync}}"
+          outOfSync=${outOfSync//,/<br />}
+          outOfSyncSection="<h2>Links With Out Of Sync Commit Hashes:</h2>${outOfSync}<br />"
+          if [ -z "$outOfSync" ]; then
+            outOfSyncSection=""
+          fi
+          suggestions="${{steps.check-links.outputs.suggestions}}"
+          suggestions=${suggestions//,/<br />}
+          suggestionsSection="<h2>Auto-Applied Suggestions:</h2>${suggestions}<br />"
+          if [ -z "$suggestions" ]; then
+            suggestionsSection=""
+          fi
+          modifiedFiles="${{steps.check-links.outputs.modifiedFiles}}"
+          modifiedFiles=${modifiedFiles//,/<br />}
+          modifiedFilesSection="<h2>Modified Files:</h2>${modifiedFiles}<br />"
+          if [ -z "$modifiedFiles" ]; then
+            modifiedFilesSection=""
+          fi
+          body="${modifiedFilesSection}${manuallyReviewSection}${outOfSyncSection}${suggestionsSection}"
+          echo "body=$body" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Open PR
+        uses: ./.github/actions/open-pr
+        with:
+          files_to_commit: ${{ steps.update-hashes.outputs.modifiedFiles }}
+          title: "[REQUIRES MANUAL REVIEW] Update Learning Paths"
+          commit_message: Update Learning Paths
+          body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.<br />${{ env.body }}
+          branch_name: learningPathUpdates/${{ env.new_sha }}
+          fail_if_files_unchanged: true
+          auth_token: ${{ secrets.GITHUB_TOKEN }}
