@@ -26,7 +26,7 @@ jobs:
       - name: Checkout head
         uses: actions/checkout@v4
         with:
-          persist-credentials: true
+          persist-credentials: false
           ref: main
           path: head
 
@@ -110,6 +110,12 @@ jobs:
           MANUALLY_REVIEW: ${{ steps.check-links.outputs.manuallyReview }}
           SUGGESTIONS: ${{ steps.check-links.outputs.suggestions }}
           OUT_OF_SYNC: ${{ steps.check-links.outputs.outOfSync }}
+
+      - name: Checkout head
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          ref: main
 
       - name: Open PR
         uses: ./.github/actions/open-pr
