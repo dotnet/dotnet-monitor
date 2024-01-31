@@ -111,7 +111,7 @@ function StripLineNumber(link, linePrefixIndex)
 
 function GetContent(path) {
   try {
-    return actionUtils.readFile(path)
+    return actionUtils.readFileSync(path)
   }
   catch (error) {}
 
@@ -216,7 +216,7 @@ const main = async () => {
     actionUtils.readdir(learningPathDirectory, (_, files) => {
       files.forEach(learningPathFile => {
         try {
-          const learningPathContents = actionUtils.readFile(learningPathDirectory + "/" + learningPathFile)
+          const learningPathContents = actionUtils.readFileSync(learningPathDirectory + "/" + learningPathFile)
           if (learningPathContents)
           {
             ValidateLinks(learningPathContents, repoURLToSearch, changedFilePaths.split(' '), learningPathFile, oldHash, newHash, sourceDirectoryName, excludeLinksArray, core)
@@ -236,7 +236,7 @@ const main = async () => {
       files.forEach(learningPathFile => {
         try {
           const fullPath = learningPathDirectory + "/" + learningPathFile
-          const content = actionUtils.readFile(fullPath)
+          const content = actionUtils.readFileSync(fullPath)
 
           var replacedContent = content
 
