@@ -15,7 +15,14 @@ jobs:
       contents: write
       pull-requests: write
 
-    steps:
+    steps:    
+      - name: Checkout previous update
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref:  ${{ env.prev_sha }}
+          path: prev
+
       - name: Checkout head
         uses: actions/checkout@v4
         with:
@@ -38,13 +45,6 @@ jobs:
           prev_sha=$(cat learning-path-sha.txt)
           echo "prev_sha=$prev_sha" >> $GITHUB_ENV
           cd ../
-    
-      - name: Checkout previous update
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-          ref:  ${{ env.prev_sha }}
-          path: prev
 
       - name: Get changed files
         working-directory: ./head
@@ -113,7 +113,6 @@ jobs:
 
       - name: Open PR
         uses: ./.github/actions/open-pr
-        working-directory: ./head
         with:
           files_to_commit: ${{ steps.update-hashes.outputs.modifiedFiles }}
           title: "[REQUIRES MANUAL REVIEW] Update Learning Paths"
