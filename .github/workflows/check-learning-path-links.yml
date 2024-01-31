@@ -71,6 +71,7 @@ jobs:
         with:
           persist-credentials: true
           ref: main
+          path: head
 
       - name: Create PR Body
         run: |
