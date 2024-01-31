@@ -21,7 +21,6 @@ function AppendModifiedFilesToCommit(path, core)
 
 function ReplaceOldWithNewText(content, oldText, newText)
 {
-  console.log("Content: " + content);
   return content.replaceAll(oldText, newText);
 }
 
@@ -123,7 +122,6 @@ function ValidateLinks(learningPathContents, repoURLToSearch, modifiedPRFiles, l
 {
   // Get all indices where a link to the repo is found within the current learning path file
   var linkIndices = [];
-  console.log("learningPathContents: " + learningPathContents);
   for(var pos = learningPathContents.indexOf(repoURLToSearch); pos !== -1; pos = learningPathContents.indexOf(repoURLToSearch, pos + 1)) {
       linkIndices.push(pos);
   }
@@ -218,7 +216,7 @@ const main = async () => {
     actionUtils.readdir(learningPathDirectory, (_, files) => {
       files.forEach(learningPathFile => {
         try {
-          const learningPathContents = actionUtils.readFileSync(learningPathDirectory + "/" + learningPathFile)
+          const learningPathContents = GetContent(learningPathDirectory + "/" + learningPathFile)
           if (learningPathContents)
           {
             ValidateLinks(learningPathContents, repoURLToSearch, changedFilePaths.split(' '), learningPathFile, oldHash, newHash, sourceDirectoryName, excludeLinksArray, core)
