@@ -136,7 +136,7 @@ namespace SampleMethods
 
         public static void ValueType_TypeRef(TypeCode typeCode) { }
 
-        public static void ValueType_TypeSpec(bool? b) { }
+        public static void ValueType_TypeSpec(bool? b, (int? i, bool? b) tuple) { }
 
         public static void VarArgs(bool b, params int[] myInts) { }
 

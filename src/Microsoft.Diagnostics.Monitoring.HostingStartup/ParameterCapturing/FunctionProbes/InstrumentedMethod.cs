@@ -31,6 +31,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             }
 
             CaptureMode = ComputeCaptureMode(method);
+
+            // Hold a reference to the method to ensure we keep the assembly it belongs to from being unloaded
+            // while we are instrumenting it.
+            Method = method;
         }
 
         private static ParameterCaptureMode ComputeCaptureMode(MethodInfo method)
@@ -48,6 +52,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
             return ParameterCaptureMode.Inline;
         }
+
+        public MethodInfo Method { get; private set; }
 
         public ParameterCaptureMode CaptureMode { get; }
 

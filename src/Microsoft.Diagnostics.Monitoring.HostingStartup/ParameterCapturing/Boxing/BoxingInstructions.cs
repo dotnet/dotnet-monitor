@@ -72,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
             // reflection alone. The boxing tokens generated from this decoder should only be used to fill in these gaps
             // as it is not a comprehensive decoder and will produce an unsupported boxing instruction for any types not explicitly mentioned
             // in BoxingTokensSignatureProvider's summary.
-            // 
+            //
             Lazy<ParameterBoxingInstructions[]?> signatureDecoderInstructions = new(() =>
             {
                 ParameterBoxingInstructions[]? instructions = GetAncillaryBoxingInstructionsFromMethodSignature(method);
@@ -117,6 +117,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
 
             if (paramType.IsGenericParameter)
             {
+                canUseSignatureDecoder = true;
                 return SpecialCaseBoxingTypes.Unknown;
             }
 
@@ -131,6 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
                 if (paramType.IsGenericType)
                 {
                     // Typespec
+                    canUseSignatureDecoder = true;
                     return SpecialCaseBoxingTypes.Unknown;
                 }
                 else if (paramType.Assembly != method.Module.Assembly)
@@ -171,8 +173,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Box
                 MethodDefinitionHandle methodDefHandle = (MethodDefinitionHandle)MetadataTokens.Handle(method.MetadataToken);
                 MethodDefinition methodDef = mdReader.GetMethodDefinition(methodDefHandle);
 
-                MethodSignature<ParameterBoxingInstructions> methodSignature = methodDef.DecodeSignature(new BoxingTokensSignatureProvider(), genericContext: null);
-                return [.. methodSignature.ParameterTypes];
+                return methodDef.GetParameterBoxingInstructions(mdReader);
             }
             catch (Exception ex)
             {
