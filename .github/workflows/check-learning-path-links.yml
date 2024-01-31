@@ -56,7 +56,7 @@ jobs:
 
       - name: Check Learning Path Links
         id: check-links
-        uses: kkeirstead/LearningPathFileChecks@main
+        uses: ./.github/actions/learning-path-staleness-check
         with:
           repoURLToSearch: 'https://github.com/dotnet/dotnet-monitor'
           learningPathsDirectory: 'documentation/learningPath'
@@ -73,7 +73,7 @@ jobs:
 
       - name: Update Learning Path Hashes
         id: update-hashes
-        uses: kkeirstead/UpdateLearningPathCommitHashes@main
+        uses: ./.github/actions/apply-learning-path-updates
         with:
           learningPathsDirectory: 'documentation/learningPath'
           learningPathHashFile: '.github/learning-path-sha.txt'
