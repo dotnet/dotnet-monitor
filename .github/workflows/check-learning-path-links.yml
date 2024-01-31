@@ -19,7 +19,8 @@ jobs:
       - name: Checkout head
         uses: actions/checkout@v4
         with:
-          persist-credentials: true
+          persist-credentials: false
+          fetch-depth: 0 # Fetch the entire repo for the below git commit graph operations
           ref: main
           path: head
 
