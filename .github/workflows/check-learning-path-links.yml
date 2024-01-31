@@ -26,7 +26,7 @@ jobs:
       - name: Checkout head
         uses: actions/checkout@v4
         with:
-          persist-credentials: true
+          persist-credentials: false
           ref: main
           path: head
 
@@ -63,6 +63,12 @@ jobs:
           sourceDirectoryName: 'src'
           oldHash: ${{ env.prev_sha }}
           newHash: ${{ env.new_sha }}
+
+      - name: Checkout head
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          ref: main
 
       - name: Update Learning Path Hashes
         id: update-hashes
@@ -112,7 +118,7 @@ jobs:
           OUT_OF_SYNC: ${{ steps.check-links.outputs.outOfSync }}
 
       - name: Open PR
-        uses: ./head/.github/actions/open-pr
+        uses: ./.github/actions/open-pr
         with:
           files_to_commit: ${{ steps.update-hashes.outputs.modifiedFiles }}
           title: "[REQUIRES MANUAL REVIEW] Update Learning Paths"
