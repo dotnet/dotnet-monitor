@@ -26,7 +26,7 @@ jobs:
       - name: Checkout head
         uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          persist-credentials: true
           ref: main
           path: head
 
@@ -111,14 +111,8 @@ jobs:
           SUGGESTIONS: ${{ steps.check-links.outputs.suggestions }}
           OUT_OF_SYNC: ${{ steps.check-links.outputs.outOfSync }}
 
-      - name: Checkout head
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-          ref: main
-
       - name: Open PR
-        uses: ./.github/actions/open-pr
+        uses: ./head/.github/actions/open-pr
         with:
           files_to_commit: ${{ steps.update-hashes.outputs.modifiedFiles }}
           title: "[REQUIRES MANUAL REVIEW] Update Learning Paths"
