@@ -50,6 +50,12 @@ jobs:
           echo "Files to validate: '${changed_source_files}'"
           echo "updated_files=$(echo ${changed_source_files})" >> $GITHUB_ENV
 
+      - name: Checkout head
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          ref: main
+
       - name: Check Learning Path Links
         id: check-links
         uses: kkeirstead/LearningPathFileChecks@main
@@ -61,12 +67,6 @@ jobs:
           oldHash: ${{ env.prev_sha }}
           newHash: ${{ env.new_sha }}
           learningPathHashFile: '.github/learning-path-sha.txt'
-
-      - name: Checkout head
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-          ref: main
 
       - name: Create PR Body
         run: |
