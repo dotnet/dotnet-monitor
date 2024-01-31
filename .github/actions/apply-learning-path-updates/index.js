@@ -12,7 +12,7 @@ function AppendModifiedFiles(path)
 
 function ReplaceOldWithNewText(content, oldText, newText)
 {
-  return content.replace(new RegExp(oldText, 'g'), newText);
+  return content.replaceAll(oldText, newText);
 }
 
 const main = async () => {
