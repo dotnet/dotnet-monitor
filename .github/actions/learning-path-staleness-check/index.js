@@ -21,7 +21,6 @@ function AppendModifiedFilesToCommit(path, core)
 
 function ReplaceOldWithNewText(content, oldText, newText)
 {
-  console.log("Content: " + content);
   return content.replaceAll(oldText, newText);
 }
 
@@ -123,7 +122,6 @@ function ValidateLinks(learningPathContents, repoURLToSearch, modifiedPRFiles, l
 {
   // Get all indices where a link to the repo is found within the current learning path file
   var linkIndices = [];
-  console.log("learningPathContents: " + learningPathContents);
   for(var pos = learningPathContents.indexOf(repoURLToSearch); pos !== -1; pos = learningPathContents.indexOf(repoURLToSearch, pos + 1)) {
       linkIndices.push(pos);
   }
@@ -215,10 +213,10 @@ const main = async () => {
     if (changedFilePaths === null || changedFilePaths.trim() === "") { return }
 
     // Scan each file in the learningPaths directory
-    actionUtils.readdir(learningPathDirectory, (_, files) => {
-      files.forEach(learningPathFile => {
+    await actionUtils.readdir(learningPathDirectory, (_, files) => {
+      files.forEach(async learningPathFile => {
         try {
-          const learningPathContents = actionUtils.readFile(learningPathDirectory + "/" + learningPathFile)
+          const learningPathContents = await actionUtils.readFile(learningPathDirectory + "/" + learningPathFile)
           if (learningPathContents)
           {
             ValidateLinks(learningPathContents, repoURLToSearch, changedFilePaths.split(' '), learningPathFile, oldHash, newHash, sourceDirectoryName, excludeLinksArray, core)
@@ -234,11 +232,11 @@ const main = async () => {
     AppendModifiedFilesToCommit(learningPathHashFile, core)
 
     // Scan each file in the learningPaths directory
-    actionUtils.readdir(learningPathDirectory, (_, files) => {
-      files.forEach(learningPathFile => {
+    await actionUtils.readdir(learningPathDirectory, (_, files) => {
+      files.forEach(async learningPathFile => {
         try {
           const fullPath = learningPathDirectory + "/" + learningPathFile
-          const content = actionUtils.readFile(fullPath)
+          const content = await actionUtils.readFile(fullPath)
 
           var replacedContent = content
 
