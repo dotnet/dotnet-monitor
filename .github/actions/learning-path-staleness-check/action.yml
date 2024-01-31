@@ -19,6 +19,9 @@ inputs:
   newHash:
     description: 'The hash to be inserted into the updated learning path'
     required: true
+  learningPathHashFile:
+    description: 'The file where the commit hash being used for the learning paths is kept'
+    required: true
   excludeLinks:
     description: 'Comma separated strings to exclude from processing'
     required: false

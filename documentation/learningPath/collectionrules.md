@@ -77,4 +77,4 @@ Each collection rule pipeline has a [state holder](https://github.com/dotnet/dot
 
 ## Keeping Documentation Up-To-Date
 
-When making changes to collection rules that require updates to configuration, these changes should be added [here](https://github.com/dotnet/dotnet-monitor/blob/341ff64a6097fe0bc66950e254e6160abcf77b84/documentation/configuration.md#collection-rule-configuration). Additional information on collection rules and examples can be provided [here](https://github.com/dotnet/dotnet-monitor/tree/341ff64a6097fe0bc66950e254e6160abcf77b84/documentation/collectionrules).
+When making changes to collection rules that require updates to configuration, these changes should be added [here](https://github.com/dotnet/dotnet-monitor/blob/341ff64a6097fe0bc66950e254e6160abcf77b84/documentation/configuration/collection-rule-configuration.md). Additional information on collection rules and examples can be provided [here](https://github.com/dotnet/dotnet-monitor/tree/341ff64a6097fe0bc66950e254e6160abcf77b84/documentation/collectionrules).
