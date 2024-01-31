@@ -1,0 +1,7 @@
+<Project>
+  <!-- Import references updated by Dependabot. -->
+  <PropertyGroup>
+    <!-- Microsoft.NETCore.App -->
+    <MicrosoftNETCoreApp80Version>8.0.1</MicrosoftNETCoreApp80Version>
+  </PropertyGroup>
+</Project>
