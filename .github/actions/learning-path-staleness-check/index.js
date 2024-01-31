@@ -1,4 +1,3 @@
-const core = require('@actions/core');
 const actionUtils = require('../action-utils.js');
 const prevPathPrefix = "prev/";
 const linePrefix = "#L";
