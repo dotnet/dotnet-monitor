@@ -22,18 +22,15 @@ jobs:
           persist-credentials: false
           fetch-depth: 0 # Fetch the entire repo for the below git commit graph operations
           ref: main
-          path: head
 
       - name: Get current SHA
         id: get_new_sha
-        working-directory: ./head
         run: |
           new_sha=$(git rev-parse HEAD)
           echo "new_sha=$new_sha" >> $GITHUB_ENV
 
       - name: Get previous update SHA
         id: get_sha
-        working-directory: ./head
         run: |
           cd .github
           prev_sha=$(cat learning-path-sha.txt)
@@ -48,7 +45,6 @@ jobs:
           path: prev
 
       - name: Get changed files
-        working-directory: ./head
         run: |
           changed_source_files=$(git diff-tree --no-commit-id --name-only -r "$prev_sha" "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
           echo "Files to validate: '${changed_source_files}'"
@@ -71,7 +67,6 @@ jobs:
         with:
           persist-credentials: true
           ref: main
-          path: head
 
       - name: Create PR Body
         run: |
