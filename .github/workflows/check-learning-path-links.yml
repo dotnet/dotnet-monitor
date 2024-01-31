@@ -55,7 +55,7 @@ jobs:
 
       - name: Check Learning Path Links
         id: check-links
-        uses: ./.github/actions/learning-path-staleness-check
+        uses: kkeirstead/LearningPathFileChecks@main
         with:
           repoURLToSearch: 'https://github.com/dotnet/dotnet-monitor'
           learningPathsDirectory: 'documentation/learningPath'
@@ -66,13 +66,15 @@ jobs:
 
       - name: Update Learning Path Hashes
         id: update-hashes
-        uses: ./.github/actions/apply-learning-path-updates
+        uses: kkeirstead/UpdateLearningPathCommitHashes@main
         with:
           learningPathsDirectory: 'documentation/learningPath'
           learningPathHashFile: '.github/learning-path-sha.txt'
-          suggestions: ${{ env.suggestions }}
+          suggestions: $SUGGESTIONS
           oldHash: ${{ env.prev_sha }}
           newHash: ${{ env.new_sha }}
+        env:
+          SUGGESTIONS: ${{ steps.check-links.outputs.suggestions }}
 
       - name: Create PR Body
         run: |
