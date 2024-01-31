@@ -19,7 +19,7 @@ jobs:
       - name: Checkout head
         uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          persist-credentials: true
           ref: main
           path: head
 
@@ -42,7 +42,7 @@ jobs:
       - name: Checkout previous update
         uses: actions/checkout@v4
         with:
-          persist-credentials: true
+          persist-credentials: false
           ref:  ${{ env.prev_sha }}
           path: prev
 
