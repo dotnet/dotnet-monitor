@@ -213,10 +213,10 @@ const main = async () => {
     if (changedFilePaths === null || changedFilePaths.trim() === "") { return }
 
     // Scan each file in the learningPaths directory
-    await actionUtils.readdir(learningPathDirectory, (_, files) => {
-      files.forEach(async learningPathFile => {
+    actionUtils.readdir(learningPathDirectory, (_, files) => {
+      files.forEach(learningPathFile => {
         try {
-          const learningPathContents = await actionUtils.readFile(learningPathDirectory + "/" + learningPathFile)
+          const learningPathContents = actionUtils.readFile(learningPathDirectory + "/" + learningPathFile)
           if (learningPathContents)
           {
             ValidateLinks(learningPathContents, repoURLToSearch, changedFilePaths.split(' '), learningPathFile, oldHash, newHash, sourceDirectoryName, excludeLinksArray, core)
@@ -232,11 +232,11 @@ const main = async () => {
     AppendModifiedFilesToCommit(learningPathHashFile, core)
 
     // Scan each file in the learningPaths directory
-    await actionUtils.readdir(learningPathDirectory, (_, files) => {
-      files.forEach(async learningPathFile => {
+    actionUtils.readdir(learningPathDirectory, (_, files) => {
+      files.forEach(learningPathFile => {
         try {
           const fullPath = learningPathDirectory + "/" + learningPathFile
-          const content = await actionUtils.readFile(fullPath)
+          const content = actionUtils.readFile(fullPath)
 
           var replacedContent = content
 
