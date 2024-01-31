@@ -113,6 +113,7 @@ jobs:
 
       - name: Open PR
         uses: ./.github/actions/open-pr
+        working-directory: ./head
         with:
           files_to_commit: ${{ steps.update-hashes.outputs.modifiedFiles }}
           title: "[REQUIRES MANUAL REVIEW] Update Learning Paths"
