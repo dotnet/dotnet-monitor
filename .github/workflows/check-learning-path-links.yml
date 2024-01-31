@@ -58,7 +58,7 @@ jobs:
 
       - name: Check Learning Path Links
         id: check-links
-        uses: kkeirstead/LearningPathFileChecks@main
+        uses: ./.github/actions/learning-path-staleness-check
         with:
           repoURLToSearch: 'https://github.com/dotnet/dotnet-monitor'
           learningPathsDirectory: 'documentation/learningPath'
