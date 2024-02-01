@@ -68,48 +68,13 @@ jobs:
           newHash: ${{ env.new_sha }}
           learningPathHashFile: '.github/learning-path-sha.txt'
 
-      - name: Create PR Body
-        run: |
-          manuallyReview=$MANUALLY_REVIEW
-          manuallyReview=${manuallyReview//,/<br />}
-          manuallyReviewSection="<h2>Manually Review:</h2>${manuallyReview}<br />"
-          if [ -z "$manuallyReview" ]; then
-            manuallyReviewSection=""
-          fi
-          outOfSync=$OUT_OF_SYNC
-          outOfSync=${outOfSync//,/<br />}
-          outOfSyncSection="<h2>Links With Out Of Sync Commit Hashes:</h2>${outOfSync}<br />"
-          if [ -z "$outOfSync" ]; then
-            outOfSyncSection=""
-          fi
-          suggestions=$SUGGESTIONS
-          suggestions=${suggestions//,/<br />}
-          suggestionsSection="<h2>Auto-Applied Suggestions:</h2>${suggestions}<br />"
-          if [ -z "$suggestions" ]; then
-            suggestionsSection=""
-          fi
-          modifiedFiles=$MODIFIED_FILES
-          modifiedFiles=${modifiedFiles//,/<br />}
-          modifiedFilesSection="<h2>Modified Files:</h2>${modifiedFiles}<br />"
-          if [ -z "$modifiedFiles" ]; then
-            modifiedFilesSection=""
-          fi
-          body="${modifiedFilesSection}${manuallyReviewSection}${outOfSyncSection}${suggestionsSection}"
-          echo "body=$body" >> $GITHUB_ENV
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MODIFIED_FILES: ${{ steps.check-links.outputs.modifiedFiles }}
-          MANUALLY_REVIEW: ${{ steps.check-links.outputs.manuallyReview }}
-          SUGGESTIONS: ${{ steps.check-links.outputs.suggestions }}
-          OUT_OF_SYNC: ${{ steps.check-links.outputs.outOfSync }}
-
       - name: Open PR
         uses: ./.github/actions/open-pr
         with:
           files_to_commit: ${{ steps.check-links.outputs.modifiedFilesToCommit }}
           title: "[REQUIRES MANUAL REVIEW] Update Learning Paths"
           commit_message: Update Learning Paths
-          body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.<br />${{ env.body }}
+          body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.<br />${{ steps.check-links.outputs.outputText }}
           branch_name: learningPathUpdates/${{ env.new_sha }}
           fail_if_files_unchanged: true
           auth_token: ${{ secrets.GITHUB_TOKEN }}
