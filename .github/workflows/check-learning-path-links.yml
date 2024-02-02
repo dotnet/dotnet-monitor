@@ -18,29 +18,15 @@ jobs:
       - name: Checkout head
         uses: actions/checkout@v4
         with:
-          persist-credentials: false
-          fetch-depth: 0 # Fetch the entire repo for the below git commit graph operations
+          persist-credentials: true # need this for opening a PR
+          fetch-depth: 0
           ref: main
-
-      - name: Get current SHA
-        id: get_new_sha
-        run: |
-          new_sha=$(git rev-parse HEAD)
-          echo "new_sha=$new_sha" >> $GITHUB_ENV
 
       - name: Get previous update SHA
         id: get_sha
         run: |
-          cd .github
-          prev_sha=$(cat learning-path-sha.txt)
+          prev_sha=$(cat .github/learning-path-sha.txt)
           echo "prev_sha=$prev_sha" >> $GITHUB_ENV
-          cd ../
-
-      - name: Checkout head
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-          ref: main
 
       - name: Checkout previous update
         uses: actions/checkout@v4
@@ -64,16 +50,16 @@ jobs:
           changedFilePaths: ${{ env.updated_files }}
           sourceDirectoryName: 'src'
           oldHash: ${{ env.prev_sha }}
-          newHash: ${{ env.new_sha }}
+          newHash: ${{ github.sha }}
           learningPathHashFile: '.github/learning-path-sha.txt'
 
       - name: Open PR
         uses: ./.github/actions/open-pr
         with:
-          files_to_commit: ${{ steps.check-links.outputs.modifiedFilesToCommit }}
+          files_to_commit: --all -- :!prev
           title: "[REQUIRES MANUAL REVIEW] Update Learning Paths"
           commit_message: Update Learning Paths
           body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.<br />${{ steps.check-links.outputs.outputText }}
-          branch_name: learningPathUpdates/${{ env.new_sha }}
+          branch_name: learningPathUpdates/${{ github.sha }}
           fail_if_files_unchanged: true
           auth_token: ${{ secrets.GITHUB_TOKEN }}
