@@ -1,0 +1,30 @@
+name: 'CheckLearningPathLinks Action'
+description: 'Checks the links in the learning paths for staleness'
+inputs:
+  repoURLToSearch:
+    description: 'The repo referenced in the learning path docs (in URL form)'
+    required: true
+  learningPathsDirectory:
+    description: 'The directory where the learning paths reside (e.g. documentation/learningPath)'
+    required: true
+  changedFilePaths:
+    description: 'Paths to the changed files'
+    required: false
+  sourceDirectoryName:
+    description: 'The name of the top-level directory (e.g. src) - only files inside this directory will be included in the search'
+    required: true
+  oldHash:
+    description: 'The hash currently being used by the learning path'
+    required: true
+  newHash:
+    description: 'The hash to be inserted into the updated learning path'
+    required: true
+  learningPathHashFile:
+    description: 'The file where the commit hash being used for the learning paths is kept'
+    required: true
+  excludeLinks:
+    description: 'Comma separated strings to exclude from processing'
+    required: false
+runs:
+  using: 'node16'
+  main: 'index.js'
