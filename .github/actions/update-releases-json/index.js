@@ -47,6 +47,7 @@ function addNewReleaseVersion(releasePayload, supportedFrameworks, releasesData)
 
     const [majorVersion, minorVersion, patchVersion, iteration] = actionUtils.splitVersionTag(releasePayload.tag_name);
     const releaseMajorMinorVersion = `${majorVersion}.${minorVersion}`;
+    const isRTMRelease = (iteration === undefined);
 
     // See if we're updating a release
     let existingRelease = releasesData.releases[releaseMajorMinorVersion];
@@ -59,7 +60,10 @@ function addNewReleaseVersion(releasePayload, supportedFrameworks, releasesData)
     };
 
     // Preserve the original minor release date and out-of-support date for RTM releases
-    if (existingRelease !== undefined && iteration === undefined) {
+    if (existingRelease !== undefined &&
+        actionUtils.isVersionTagRTM(existingRelease.tag) &&
+        isRTMRelease) {
+
         newRelease.minorReleaseDate = existingRelease.minorReleaseDate;
         newRelease.outOfSupportDate = existingRelease.outOfSupportDate;
     }
@@ -67,7 +71,7 @@ function addNewReleaseVersion(releasePayload, supportedFrameworks, releasesData)
     releasesData.releases[releaseMajorMinorVersion] = newRelease;
 
     // Check if we're going to be putting a version out-of-support.
-    if (minorVersion > 0 && patchVersion === 0 && iteration === undefined) {
+    if (minorVersion > 0 && patchVersion === 0 && isRTMRelease) {
         const endOfSupportDate = new Date(releaseDate.valueOf());
         endOfSupportDate.setMonth(endOfSupportDate.getMonth() + releasesData.policy.additionalMonthsOfSupportOnNewMinorRelease);
 
