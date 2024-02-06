@@ -30,8 +30,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             public override int GetHashCode()
             {
                 HashCode code = new HashCode();
-                code.Add(_metric.Provider);
-                code.Add(_metric.Name);
+                code.Add(_metric.CounterMetadata.ProviderName);
+                code.Add(_metric.CounterMetadata.CounterName);
                 return code.ToHashCode();
             }
 
@@ -73,9 +73,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             //Do not accept CounterEnded payloads.
             if (metric is CounterEndedPayload counterEnded)
             {
-                if (_observedEndedCounters.Add((counterEnded.Provider, counterEnded.Name)))
+                if (_observedEndedCounters.Add((counterEnded.CounterMetadata.ProviderName, counterEnded.CounterMetadata.CounterName)))
                 {
-                    _logger.CounterEndedPayload(counterEnded.Name);
+                    _logger.CounterEndedPayload(counterEnded.CounterMetadata.CounterName);
                 }
                 return;
             }
@@ -137,7 +137,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 ICounterPayload metricInfo = metricGroup.Value.First();
 
-                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.Provider, metricInfo.Name, metricInfo.Unit);
+                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.CounterMetadata.ProviderName, metricInfo.CounterMetadata.CounterName, metricInfo.Unit);
 
                 await WriteMetricHeader(metricInfo, writer, metricName);
 
@@ -165,7 +165,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static string GetMetricLabels(ICounterPayload metric, double? quantile)
         {
-            string metadata = metric.Metadata;
+            string metadata = metric.ValueTags;
 
             char separator = IsMeter(metric) ? '=' : ':';
             var metadataValues = CounterUtilities.GetMetadata(metadata, separator);
@@ -242,7 +242,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static bool CompareMetrics(ICounterPayload first, ICounterPayload second)
         {
-            return string.Equals(first.Name, second.Name);
+            return string.Equals(first.CounterMetadata.ProviderName, second.CounterMetadata.ProviderName);
         }
 
         public void Clear()
