@@ -28,8 +28,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             public override int GetHashCode()
             {
                 HashCode code = new HashCode();
-                code.Add(_metric.Provider);
-                code.Add(_metric.Name);
+                code.Add(_metric.CounterMetadata.ProviderName);
+                code.Add(_metric.CounterMetadata.CounterName);
                 return code.ToHashCode();
             }
 
@@ -91,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             foreach (var metricGroup in copy)
             {
                 ICounterPayload metricInfo = metricGroup.Value.First();
-                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.Provider, metricInfo.Name, metricInfo.Unit);
+                string metricName = PrometheusDataModel.GetPrometheusNormalizedName(metricInfo.CounterMetadata.ProviderName, metricInfo.CounterMetadata.CounterName, metricInfo.Unit);
                 string metricType = "gauge";
 
                 //TODO Some clr metrics claim to be incrementing, but are really gauges.
@@ -119,7 +119,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static bool CompareMetrics(ICounterPayload first, ICounterPayload second)
         {
-            return string.Equals(first.Name, second.Name);
+            return string.Equals(first.CounterMetadata.CounterName, second.CounterMetadata.CounterName);
         }
 
         public void Clear()
