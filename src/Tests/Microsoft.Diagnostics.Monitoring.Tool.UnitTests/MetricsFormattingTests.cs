@@ -44,15 +44,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             List<ICounterPayload> payload = new();
 
-            payload.Add(new AggregatePercentilePayload(new CounterMetadata(MeterName, InstrumentName, null, null, null), "DisplayName", string.Empty, string.Empty,
+            payload.Add(new AggregatePercentilePayload(new CounterMetadata(MeterName, InstrumentName, meterTags: null, instrumentTags: null, scopeHash: null),
+                "DisplayName", string.Empty, string.Empty,
                 new Quantile[] { new Quantile(0.5, Value1), new Quantile(0.95, Value2), new Quantile(0.99, Value3) },
                 Timestamp));
 
             using MemoryStream stream = await GetMetrics(payload);
             List<string> lines = ReadStream(stream);
 
-            // Question - this is manually recreating what PrometheusDataModel.GetPrometheusNormalizedName does to get the metric name;
-            // should we call this method, or should this also be implicitly testing its behavior by having this hard-coded?
             string metricName = $"{MeterName.ToLowerInvariant()}_{payload[0].CounterMetadata.CounterName}";
 
             const string quantile_50 = "{quantile=\"0.5\"}";
@@ -70,14 +69,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task GaugeFormat_Test()
         {
-            ICounterPayload payload = new GaugePayload(new CounterMetadata(MeterName, InstrumentName, null, null, null), "DisplayName", "", null, Value1, Timestamp);
+            ICounterPayload payload = new GaugePayload(new CounterMetadata(MeterName, InstrumentName, meterTags: null, instrumentTags: null, scopeHash: null),
+                "DisplayName", "", null, Value1, Timestamp);
 
             MemoryStream stream = await GetMetrics(new() { payload });
 
             List<string> lines = ReadStream(stream);
 
-            // Question - this is manually recreating what PrometheusDataModel.GetPrometheusNormalizedName does to get the metric name;
-            // should we call this method, or should this also be implicitly testing its behavior by having this hard-coded?
             string metricName = $"{MeterName.ToLowerInvariant()}_{payload.CounterMetadata.CounterName}";
 
             Assert.Equal(3, lines.Count);
@@ -89,14 +87,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task CounterFormat_Test()
         {
-            ICounterPayload payload = new RatePayload(new CounterMetadata(MeterName, InstrumentName, null, null, null), "DisplayName", "", null, Value1, IntervalSeconds, Timestamp);
+            ICounterPayload payload = new RatePayload(new CounterMetadata(MeterName, InstrumentName, meterTags: null, instrumentTags: null, scopeHash: null),
+                "DisplayName", "", null, Value1, IntervalSeconds, Timestamp);
 
             MemoryStream stream = await GetMetrics(new() { payload });
 
             List<string> lines = ReadStream(stream);
 
-            // Question - this is manually recreating what PrometheusDataModel.GetPrometheusNormalizedName does to get the metric name;
-            // should we call this method, or should this also be implicitly testing its behavior by having this hard-coded?
             string metricName = $"{MeterName.ToLowerInvariant()}_{payload.CounterMetadata.CounterName}";
 
             Assert.Equal(3, lines.Count);
@@ -108,7 +105,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task UpDownCounterFormat_Test()
         {
-            ICounterPayload payload = new UpDownCounterPayload(new CounterMetadata(MeterName, InstrumentName, null, null, null), "DisplayName", "", null, Value1, Timestamp);
+            ICounterPayload payload = new UpDownCounterPayload(new CounterMetadata(MeterName, InstrumentName, meterTags: null, instrumentTags: null, scopeHash: null),
+                "DisplayName", "", null, Value1, Timestamp);
 
             MemoryStream stream = await GetMetrics(new() { payload });
 

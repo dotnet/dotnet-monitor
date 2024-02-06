@@ -243,7 +243,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static bool CompareMetrics(ICounterPayload first, ICounterPayload second)
         {
-            return string.Equals(first.CounterMetadata.ProviderName, second.CounterMetadata.ProviderName);
+            return string.Equals(first.CounterMetadata.CounterName, second.CounterMetadata.CounterName);
         }
 
         public void Clear()
