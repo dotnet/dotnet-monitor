@@ -62,8 +62,8 @@
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta4.24102.1</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>8.0.510202</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>8.0.510202</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>8.0.510501</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>8.0.510501</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/installer references -->
     <MicrosoftDotnetSdkInternalVersion>9.0.100-preview.1.24101.4</MicrosoftDotnetSdkInternalVersion>
     <!-- dotnet/roslyn-analyzers -->
