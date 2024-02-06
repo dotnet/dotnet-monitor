@@ -1,12 +1,12 @@
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="8.0.505301">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="8.0.510501">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>c1546ae0be249dfa797d6e18cdf89cedc849e3ba</Sha>
+      <Sha>8c08c89a0643d31db91e119b1adb463be3e0ffe5</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="8.0.505301">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="8.0.510501">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>c1546ae0be249dfa797d6e18cdf89cedc849e3ba</Sha>
+      <Sha>8c08c89a0643d31db91e119b1adb463be3e0ffe5</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Extensions.Configuration.KeyPerFile" Version="6.0.0">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
