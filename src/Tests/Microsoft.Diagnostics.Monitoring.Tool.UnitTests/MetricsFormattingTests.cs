@@ -108,13 +108,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task UpDownCounterFormat_Test()
         {
-            ICounterPayload payload = new UpDownCounterPayload(MeterName, InstrumentName, "DisplayName", "", null, Value1, Timestamp);
+            ICounterPayload payload = new UpDownCounterPayload(new CounterMetadata(MeterName, InstrumentName, null, null, null), "DisplayName", "", null, Value1, Timestamp);
 
             MemoryStream stream = await GetMetrics(new() { payload });
 
             List<string> lines = ReadStream(stream);
 
-            string metricName = $"{MeterName.ToLowerInvariant()}_{payload.Name}";
+            string metricName = $"{MeterName.ToLowerInvariant()}_{payload.CounterMetadata.CounterName}";
 
             Assert.Equal(3, lines.Count);
             Assert.Equal(FormattableString.Invariant($"# HELP {metricName}{payload.Unit} {payload.DisplayName}"), lines[0]);
