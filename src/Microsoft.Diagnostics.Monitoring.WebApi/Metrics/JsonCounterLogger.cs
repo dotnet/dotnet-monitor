@@ -20,8 +20,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 writer.WriteStartObject();
                 writer.WriteString("timestamp", counter.Timestamp);
-                writer.WriteString("provider", counter.Provider);
-                writer.WriteString("name", counter.Name);
+                writer.WriteString("provider", counter.CounterMetadata.ProviderName);
+                writer.WriteString("name", counter.CounterMetadata.CounterName);
                 writer.WriteString("displayName", counter.DisplayName);
                 writer.WriteString("unit", counter.Unit);
                 writer.WriteString("counterType", counter.CounterType.ToString());
