@@ -42,7 +42,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             List<ICounterPayload> payload = new();
 
-            payload.Add(new AggregatePercentilePayload(new CounterMetadata(MeterName, InstrumentName, null, null, null), "DisplayName", string.Empty, string.Empty,
+            payload.Add(new AggregatePercentilePayload(new CounterMetadata(MeterName, InstrumentName, meterTags: null, instrumentTags: null, scopeHash: null),
+                "DisplayName", string.Empty, string.Empty,
                 new Quantile[] { new Quantile(0.5, Value1), new Quantile(0.95, Value2), new Quantile(0.99, Value3) },
                 Timestamp));
 
@@ -68,7 +69,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task GaugeFormat_Test()
         {
-            ICounterPayload payload = new GaugePayload(new CounterMetadata(MeterName, InstrumentName, null, null, null), "DisplayName", "", null, Value1, Timestamp);
+            ICounterPayload payload = new GaugePayload(new CounterMetadata(MeterName, InstrumentName, meterTags: null, instrumentTags: null, scopeHash: null),
+                "DisplayName", "", null, Value1, Timestamp);
 
             MemoryStream stream = await GetMetrics(new() { payload });
 
@@ -87,7 +89,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task CounterFormat_Test()
         {
-            ICounterPayload payload = new RatePayload(new CounterMetadata(MeterName, InstrumentName, null, null, null), "DisplayName", "", null, Value1, IntervalSeconds, Timestamp);
+            ICounterPayload payload = new RatePayload(new CounterMetadata(MeterName, InstrumentName, meterTags: null, instrumentTags: null, scopeHash: null),
+                "DisplayName", "", null, Value1, IntervalSeconds, Timestamp);
 
             MemoryStream stream = await GetMetrics(new() { payload });
 
