@@ -1,6 +1,6 @@
 Today we are releasing the 8.0.1 build of the `dotnet monitor` tool. This release includes:
 - Updated dependencies
-- ⚠️ Simplify Types in Plain Text Representation [#5882](https://github.com/dotnet/dotnet-monitor/pull/5882)
+- ⚠️ Simplify Types in Plain Text Representation ([#5882](https://github.com/dotnet/dotnet-monitor/pull/5882))
 
 \*⚠️ **_indicates a breaking change_** \
 
