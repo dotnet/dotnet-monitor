@@ -21,3 +21,10 @@
 | 7.0 | November 11, 2022 | [7.0.2](https://github.com/dotnet/dotnet-monitor/releases/tag/v7.0.2) | February 14, 2023 | June 14, 2023 | net6.0<br/>net7.0 |
 
 
+## Preview versions
+
+| Version | Release Date | Latest Version | Runtime Frameworks |
+| --- | --- | --- | --- |
+| 9.0 | February 13, 2024 | [9.0.0 preview 1](https://github.com/dotnet/dotnet-monitor/releases/tag/v9.0.0-preview.1.24106.4) | net9.0 |
+
+
