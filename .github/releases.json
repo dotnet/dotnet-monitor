@@ -16,9 +16,9 @@
   ],
   "releases": {
     "6.3": {
-      "tag": "v6.3.4",
+      "tag": "v6.3.5",
       "minorReleaseDate": "2022-10-11T00:00:00.000Z",
-      "patchReleaseDate": "2023-11-14T00:00:00.000Z",
+      "patchReleaseDate": "2024-02-13T00:00:00.000Z",
       "supportedFrameworks": [
         "net6.0",
         "netcoreapp3.1"
