@@ -93,7 +93,7 @@ configuration:
         - isAction:
             action: Edited
         - isAction:
-            action: Null
+            action: Closed
       - not:
           isActivitySender:
             user: msftbot
@@ -115,8 +115,6 @@ configuration:
             action: Reopened
         - isAction:
             action: Opened
-        - isAction:
-            action: Null
       - not:
           hasLabel:
             label: needs-review
@@ -158,14 +156,11 @@ configuration:
       - payloadType: Pull_Request
       - hasLabel:
           label: needs-review
-      - or:
-        - isAction:
-            action: Closed
-        - isAction:
-            action: Null
+      - isAction:
+          action: Closed
       then:
       - removeLabel:
           label: needs-review
-      description: Remove needs-review Label On Merge Or Close
+      description: Remove needs-review Label On Close (merged or not)
 onFailure: 
-onSuccess: 
+onSuccess:
