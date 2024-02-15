@@ -2,6 +2,7 @@
   <!-- Dependendabot is configured to read package versions from Directory.Build.props, so just use this file as a shim. -->
   <Import Project="Versions.props" />
   <Import Project="Packages.props" />
+  <!-- When these dependabot projects are parsed  -->
   <PropertyGroup>
     <_SuppressSdkImports>true</_SuppressSdkImports>
   </PropertyGroup>
