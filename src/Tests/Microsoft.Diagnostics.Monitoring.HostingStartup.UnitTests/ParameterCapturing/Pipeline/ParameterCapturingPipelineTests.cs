@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Boxing;
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pipeline;
 using Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher.Models;
@@ -44,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
         public void TriggerFault(MethodInfo method)
         {
-            InstrumentedMethod faultingMethod = new(method, BoxingTokens.GetBoxingTokens(method));
+            InstrumentedMethod faultingMethod = new(method, BoxingInstructions.GetBoxingInstructions(method));
             OnProbeFault?.Invoke(this, faultingMethod);
         }
 

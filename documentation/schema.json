@@ -149,6 +149,17 @@
           "$ref": "#/definitions/TemplateOptions"
         }
       ]
+    },
+    "DotnetMonitorDebug": {
+      "default": {},
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/DotnetMonitorDebugOptions"
+        }
+      ]
     }
   },
   "definitions": {
@@ -1646,6 +1657,36 @@
           "additionalProperties": {
             "$ref": "#/definitions/CollectionRuleLimitsOptions"
           }
+        }
+      }
+    },
+    "DotnetMonitorDebugOptions": {
+      "type": "object",
+      "description": "Configuration options for debugging dotnet-monitor features.\nThese options are not officially supported and are subject to change.",
+      "additionalProperties": false,
+      "properties": {
+        "Exceptions": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/ExceptionsDebugOptions"
+            }
+          ]
+        }
+      }
+    },
+    "ExceptionsDebugOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "IncludeMonitorExceptions": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": false
         }
       }
     },

@@ -35,12 +35,24 @@
 
   <Target Name="GenerateChecksumsForPackages">
     <ItemGroup>
-      <GenerateChecksumItems Include="@(PackageFile)">
+      <!-- Generate checksums for non-symbols packages -->
+      <GenerateChecksumItems Include="@(PackageFile)" Condition="!$([System.String]::Copy(%(Filename)).Contains('symbols'))">
         <DestinationPath>%(FullPath).sha512</DestinationPath>
       </GenerateChecksumItems>
     </ItemGroup>
 
     <GenerateChecksums Items="@(GenerateChecksumItems)" />
+
+    <!-- Gather all checksum values of each shipping asset. -->
+    <ItemGroup>
+      <ShippingChecksums Include="@(GenerateChecksumItems)" Condition="'%(IsShipping)' == 'true'">
+        <ChecksumValue>$([System.IO.File]::ReadAllText('%(DestinationPath)').ToLowerInvariant())</ChecksumValue>
+      </ShippingChecksums>
+    </ItemGroup>
+
+    <!-- Write checksums of each shipping asset into a single file. -->
+    <WriteLinesToFile File="$(ArtifactsShippingPackagesDir)$(Version)-sha.txt"
+                      Lines="@(ShippingChecksums->'%(ChecksumValue) %(Filename)%(Extension)')"/>
   </Target>
 
   <!-- Run the CollectPackageArtifactFiles target on each PackageFile by target batching on a non-existing file.

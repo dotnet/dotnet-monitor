@@ -219,7 +219,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                     }
 
                     TokenData tokenData = new(
-                        null == type.DeclaringType ? type.FullName ?? type.Name : type.Name,
+                        type.Name,
+                        null == type.DeclaringType ? type.Namespace ?? string.Empty : string.Empty,
                         parentToken);
 
                     if (!_nameCache.TokenData.TryAdd(key, tokenData))

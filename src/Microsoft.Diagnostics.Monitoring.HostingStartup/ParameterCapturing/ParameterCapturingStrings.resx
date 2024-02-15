@@ -129,6 +129,9 @@
   <data name="ErrorMessage_ProbeStateMismatchFormatString" xml:space="preserve">
     <value>Mismatch probe state. Expected '{0}', was '{1}'.</value>
   </data>
+  <data name="ErrorMessage_SignatureIsNotForAMethod" xml:space="preserve">
+    <value>The provided signature blob must be for a method.</value>
+  </data>
   <data name="FeatureUnsupported_NoLogger" xml:space="preserve">
     <value>Unable to create an ILogger instance in the target process.</value>
   </data>

@@ -4,7 +4,8 @@
 
 Captures a history of first chance exceptions that were thrown in the specified process, with the ability to filter which exceptions are included in the response.
 
->**Note**: This feature is not enabled by default and requires configuration to be enabled. The [in-process features](./../configuration/in-process-features-configuration.md) must be enabled since the exceptions history feature uses shared libraries loaded into the target application for collecting the exception information.
+> [!NOTE]
+> This feature is not enabled by default and requires configuration to be enabled. The [in-process features](./../configuration/in-process-features-configuration.md) must be enabled since the exceptions history feature uses shared libraries loaded into the target application for collecting the exception information.
 
 ## HTTP Route
 
