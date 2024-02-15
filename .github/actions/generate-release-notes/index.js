@@ -156,7 +156,7 @@ async function generateChangelog(octokit, branch, repoOwner, repoName, minMergeD
     }
 
     if (changelog.length === 0) {
-        changelog.push("Updated dependencies");
+        changelog.push("- Updated dependencies");
     }
 
     return changelog.join("\n");
