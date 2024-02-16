@@ -6,7 +6,7 @@
     <!-- Microsoft.Extensions.Logging -->
     <MicrosoftExtensionsLogging60Version>6.0.0</MicrosoftExtensionsLogging60Version>
     <!-- Microsoft.Extensions.Logging.Abstractions -->
-    <MicrosoftExtensionsLoggingAbstractions60Version>6.0.2</MicrosoftExtensionsLoggingAbstractions60Version>
+    <MicrosoftExtensionsLoggingAbstractions60Version>6.0.4</MicrosoftExtensionsLoggingAbstractions60Version>
     <!-- Microsoft.Extensions.Logging.Console -->
     <MicrosoftExtensionsLoggingConsole60Version>6.0.0</MicrosoftExtensionsLoggingConsole60Version>
     <!-- Microsoft.NETCore.App -->
