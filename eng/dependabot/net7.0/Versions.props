@@ -4,9 +4,9 @@
     <!-- Microsoft.Extensions.Configuration.Abstractions -->
     <MicrosoftExtensionsConfigurationAbstractions70Version>7.0.0</MicrosoftExtensionsConfigurationAbstractions70Version>
     <!-- Microsoft.Extensions.Logging -->
-    <MicrosoftExtensionsLoggingAbstractions70Version>7.0.1</MicrosoftExtensionsLoggingAbstractions70Version>
+    <MicrosoftExtensionsLogging70Version>7.0.0</MicrosoftExtensionsLogging70Version>
     <!-- Microsoft.Extensions.Logging.Abstractions -->
-    <MicrosoftExtensionsLoggingAbstractions70Version>7.0.0</MicrosoftExtensionsLoggingAbstractions70Version>
+    <MicrosoftExtensionsLoggingAbstractions70Version>7.0.1</MicrosoftExtensionsLoggingAbstractions70Version>
     <!-- Microsoft.Extensions.Logging.Console -->
     <MicrosoftExtensionsLoggingConsole70Version>7.0.0</MicrosoftExtensionsLoggingConsole70Version>
     <!-- Microsoft.NETCore.App -->
