@@ -3,6 +3,6 @@
     Packages in this file have versions updated periodically by Dependabot specifically for .NET Core 3.1.
   -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.NETCore.App.Runtime.win-x64" Version="$(MicrosoftNETCoreApp31Version)" />
+    <PackageReference Include="Microsoft.NETCore.DotNetHost" Version="$(MicrosoftNETCoreApp31Version)" />
   </ItemGroup>
 </Project>

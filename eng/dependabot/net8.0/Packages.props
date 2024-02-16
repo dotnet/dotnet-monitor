@@ -7,6 +7,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsLogging80Version)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftExtensionsLoggingAbstractions80Version)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftExtensionsLoggingConsole80Version)" />
-    <PackageReference Include="Microsoft.NETCore.App.Runtime.win-x64" Version="$(MicrosoftNETCoreApp80Version)" />
+    <PackageReference Include="Microsoft.NETCore.DotNetHost" Version="$(MicrosoftNETCoreApp80Version)" />
   </ItemGroup>
 </Project>
