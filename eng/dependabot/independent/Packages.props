@@ -3,6 +3,7 @@
   Versions managed by Maestro should be in ..\..\Versions.props.
   Versions managed by Dependabot should be in .\Versions.props.
   -->
+
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
     <PackageReference Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
