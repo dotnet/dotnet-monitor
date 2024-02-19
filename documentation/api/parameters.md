@@ -5,9 +5,11 @@
 
 Captures parameters for one or more methods each time they are called. Parameters are logged inside the target application using its [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger).
 
->**Note**: Unlike other artifacts, parameters do **not** support being sent to an egress provider.
+> [!NOTE]
+> Unlike other artifacts, parameters do **not** support being sent to an egress provider.
 
->**Note**: This feature is not enabled by default and requires configuration to be enabled. See [Enabling](#enabling) for more information.
+> [!IMPORTANT]
+> This feature is not enabled by default and requires configuration to be enabled. See [Enabling](#enabling) for more information.
 
 ## Enabling
 
@@ -27,7 +29,8 @@ This feature is currently marked as experimental and so needs to be explicitly e
 POST /parameters?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&tags={tags} HTTP/1.1
 ```
 
-> **Note**: Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
+> [!NOTE]
+> Process information (IDs, names, environment, etc) may change between invocations of these APIs. Processes may start or stop between API invocations, causing this information to change.
 
 ## Host Address
 
@@ -164,11 +167,8 @@ Currently some types of parameters are unable to be captured. When a method cont
 
 | Parameter Type | Example |
 | -- | -- |
-| [Generic type parameters](https://learn.microsoft.com/dotnet/csharp/programming-guide/generics/generic-type-parameters) | `MyMethod<T>(T t)` |
 | Parameters with pass-by-reference modifiers ([`in`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/in-parameter-modifier), [`out`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/out-parameter-modifier), and [`ref`](https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/ref)) | `ref int i` |
-| [Nullable value types](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/nullable-value-types) | `int?` |
 | [Pointers](https://learn.microsoft.com/dotnet/csharp/language-reference/unsafe-code#pointer-types) | `void*` |
-| [Tuples](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/value-tuples) | `(int, int)` |
 
 ### When to use `pid` vs `uid`
 
