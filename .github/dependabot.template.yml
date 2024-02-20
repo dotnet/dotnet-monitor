@@ -34,7 +34,7 @@ updates:
 #@ for branch in getBranches():
 #@ commit_prefix = "[" + branch.name + "] "
   - package-ecosystem: "nuget"
-    directory: "/eng/dependabot"
+    directory: "/eng/dependabot/independent"
     schedule:
       interval: "daily"
     target-branch: #@ branch.name

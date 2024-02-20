@@ -6,7 +6,7 @@ updates:
     interval: daily
   target-branch: main
 - package-ecosystem: nuget
-  directory: /eng/dependabot
+  directory: /eng/dependabot/independent
   schedule:
     interval: daily
   target-branch: main
@@ -81,7 +81,7 @@ updates:
       - Microsoft.Extensions.*
       - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
-  directory: /eng/dependabot
+  directory: /eng/dependabot/independent
   schedule:
     interval: daily
   target-branch: release/7.x
@@ -140,7 +140,7 @@ updates:
       - Microsoft.Extensions.*
       - Microsoft.NETCore.App.Runtime.*
 - package-ecosystem: nuget
-  directory: /eng/dependabot
+  directory: /eng/dependabot/independent
   schedule:
     interval: daily
   target-branch: release/6.x
