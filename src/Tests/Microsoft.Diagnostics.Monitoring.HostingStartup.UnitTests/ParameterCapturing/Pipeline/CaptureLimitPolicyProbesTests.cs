@@ -60,7 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Fact]
-        public void EnterProbe_ShortCircuts_WhenLimitReached()
+        public void EnterProbe_ShortCircuits_WhenLimitReached()
         {
             // Arrange
             int invokeCount = 0;
