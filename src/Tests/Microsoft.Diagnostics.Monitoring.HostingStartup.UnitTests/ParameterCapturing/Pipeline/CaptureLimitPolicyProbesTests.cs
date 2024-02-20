@@ -41,6 +41,25 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Fact]
+        public void EnterProbe_DoesNotRequestStop_WhenProbeDoesNotCapture()
+        {
+            // Arrange
+            TestFunctionProbes testProbes = new(onEnterProbe: (_, _) =>
+            {
+                return false;
+            });
+
+            TaskCompletionSource requestStop = new();
+            CaptureLimitPolicyProbes probes = new(testProbes, captureLimit: 1, requestStop);
+
+            // Act
+            probes.EnterProbe(1, []);
+
+            // Assert
+            Assert.False(requestStop.Task.IsCompleted);
+        }
+
+        [Fact]
         public void EnterProbe_ShortCircuts_WhenLimitReached()
         {
             // Arrange
