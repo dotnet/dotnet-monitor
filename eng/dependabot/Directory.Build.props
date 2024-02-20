@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+   <!--
+    Prevent dependabot's evaluation of these shim projects from traversing up the directory structure looking for additional
+    Directory.Packages.props and Directory.Build.targets files.
+    This is necessary as otherwise the repo's central Packages and arcade related target files will be evaluated,
+    even though we aren't directly referencing them here.
+    -->
+    <ImportDirectoryPackagesProps>false</ImportDirectoryPackagesProps>
+    <ImportDirectoryBuildTargets>false</ImportDirectoryBuildTargets>
+  </PropertyGroup>
+</Project>

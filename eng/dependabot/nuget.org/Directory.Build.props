@@ -1,8 +1,5 @@
 <Project>
-  <!-- Dependendabot is configured to read package versions from Directory.Build.props, so just use this file as a shim. -->
+  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />
   <Import Project="Versions.props" />
   <Import Project="Packages.props" />
-  <PropertyGroup>
-    <_SuppressSdkImports>true</_SuppressSdkImports>
-  </PropertyGroup>
 </Project>
