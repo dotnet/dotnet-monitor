@@ -22,6 +22,7 @@
     <PackageVersion Include="Moq" Version="$(MoqVersion)" />
     <PackageVersion Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
     <PackageVersion Include="NJsonSchema" Version="$(NJsonSchemaVersion)" />
+    <PackageVersion Include="NJsonSchema.NewtonsoftJson" Version="$(NJsonSchemaVersion)" />
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="$(SwashbuckleAspNetCoreVersion)" />
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="$(SwashbuckleAspNetCoreVersion)" />
     <PackageVersion Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
