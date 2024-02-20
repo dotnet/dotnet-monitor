@@ -18,5 +18,6 @@
     <PackageReference Include="NJsonSchema" Version="$(NJsonSchemaVersion)" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="$(SwashbuckleAspNetCoreVersion)" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
+    <PackageReference Include="AWSSDK.S3" Version="$(AwsSdkS3Version)" />
   </ItemGroup>
 </Project>
