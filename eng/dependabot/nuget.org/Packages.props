@@ -13,8 +13,8 @@
         the publicly shipped related packages.
       - Microsoft.Diagnostics.DbgShim, and select other packages from dotnet/diagnostics, share the same version tag as the
         Microsoft.Diagnostics.Monitoring.* packages so we can use them to manage MicrosoftDiagnosticsMonitoring*LibraryVersion.
-      - This is part of a shim project for dependabot and will never actually be built or restored, so we
-        can add a package reference to public Microsoft.Diagnostics.DbgShim package.
+      - This project is evaluated by dependabot using msbuild, so we have to use a package that can actually be restored,
+        so use Microsoft.Diagnostics.DbgShim.
     -->
     <PackageReference Include="Microsoft.Diagnostics.DbgShim" Version="$(MicrosoftDiagnosticsMonitoringShippedVersion)" />
   </ItemGroup>
