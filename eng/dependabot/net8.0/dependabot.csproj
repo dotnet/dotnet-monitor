@@ -1,5 +1,6 @@
-<Project>
-  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />
-  <Import Project="Versions.props" />
-  <Import Project="Packages.props" />
+<!-- This isn't a real project, but Dependabot requires a project. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
 </Project>
