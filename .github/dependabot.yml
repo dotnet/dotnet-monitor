@@ -14,6 +14,7 @@ updates:
   - dependency-name: Microsoft.Extensions.*
     update-types:
     - version-update:semver-major
+  - dependency-name: Moq
   commit-message:
     prefix: '[main] '
   groups:
@@ -89,6 +90,7 @@ updates:
   - dependency-name: Microsoft.Extensions.*
     update-types:
     - version-update:semver-major
+  - dependency-name: Moq
   commit-message:
     prefix: '[release/7.x] '
   groups:
@@ -148,6 +150,7 @@ updates:
   - dependency-name: Microsoft.Extensions.*
     update-types:
     - version-update:semver-major
+  - dependency-name: Moq
   commit-message:
     prefix: '[release/6.x] '
   groups:
