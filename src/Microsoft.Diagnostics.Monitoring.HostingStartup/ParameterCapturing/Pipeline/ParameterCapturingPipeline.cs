@@ -22,8 +22,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
             public CapturingRequest(StartCapturingParametersPayload payload, IFunctionProbes probes)
             {
                 Payload = payload;
-                Probes = probes;
                 StopRequest = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+                Probes = payload.Configuration.CaptureLimit.HasValue
+                    ? new PolicyEnforcerProbe(probes, payload.Configuration.CaptureLimit.Value, StopRequest)
+                    : probes;
             }
 
             public StartCapturingParametersPayload Payload { get; }

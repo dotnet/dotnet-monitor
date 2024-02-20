@@ -19,5 +19,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         [JsonPropertyName("useDebuggerDisplayAttribute")]
         public bool UseDebuggerDisplayAttribute { get; set; } = true;
+
+        [JsonPropertyName("captureLimit")]
+        [Range(1, int.MaxValue)]
+        public int? CaptureLimit { get; set; }
     }
 }

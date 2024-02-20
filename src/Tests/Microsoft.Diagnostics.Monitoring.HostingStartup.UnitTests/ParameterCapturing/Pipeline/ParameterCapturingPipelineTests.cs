@@ -25,8 +25,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         {
         }
 
-        public void EnterProbe(ulong uniquifier, object[] args)
+        public bool EnterProbe(ulong uniquifier, object[] args)
         {
+            return true;
         }
     }
 

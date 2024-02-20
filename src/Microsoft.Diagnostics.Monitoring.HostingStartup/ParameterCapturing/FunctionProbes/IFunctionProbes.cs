@@ -11,6 +11,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
     {
         public void CacheMethods(IList<MethodInfo> methods);
 
-        public void EnterProbe(ulong uniquifier, object[] args);
+        /// <summary>
+        /// </summary>
+        /// <param name="uniquifier">The uniquifier which identifies the method calling the probe.</param>
+        /// <param name="args">The arguments passed into the method.</param>
+        /// <returns>True if the the arguments were captured by the probe.</returns>
+        public bool EnterProbe(ulong uniquifier, object[] args);
     }
 }
