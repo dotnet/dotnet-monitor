@@ -34,13 +34,14 @@ updates:
 #@ for branch in getBranches():
 #@ commit_prefix = "[" + branch.name + "] "
   - package-ecosystem: "nuget"
-    directory: "/eng/dependabot"
+    directory: "/eng/dependabot/independent"
     schedule:
       interval: "daily"
     target-branch: #@ branch.name
     ignore:
       - dependency-name: "Microsoft.Extensions.*"
         update-types: [ "version-update:semver-major" ]
+      - dependency-name: "Moq"
     commit-message:
       prefix: #@ commit_prefix
     groups:
