@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
                 StopRequest = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
 
                 Probes = payload.Configuration.CaptureLimit.HasValue
-                    ? new PolicyEnforcerProbe(probes, payload.Configuration.CaptureLimit.Value, StopRequest)
+                    ? new CaptureLimitPolicyProbes(probes, payload.Configuration.CaptureLimit.Value, StopRequest)
                     : probes;
             }
 
@@ -170,6 +170,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
             if (payload.Configuration.Methods.Length == 0)
             {
                 throw new ArgumentException(nameof(payload.Configuration.Methods));
+            }
+
+            if (payload.Configuration.CaptureLimit.HasValue && payload.Configuration.CaptureLimit.Value <= 0)
+            {
+                throw new ArgumentException(nameof(payload.Configuration.CaptureLimit));
             }
 
             List<MethodDescription> _deniedMethodDescriptions = new();

@@ -10,20 +10,19 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pipeline
 {
-    internal sealed class PolicyEnforcerProbe : IFunctionProbes
+    internal sealed class CaptureLimitPolicyProbes : IFunctionProbes
     {
         private readonly IFunctionProbes _probes;
         private readonly int _captureLimit;
-
-        private int _captureCount;
         private readonly TaskCompletionSource _stopRequest;
 
+        private int _captureCount;
         private bool _stopped;
 
-        public PolicyEnforcerProbe(IFunctionProbes probes, int captureLimit, TaskCompletionSource stopRequest)
+        public CaptureLimitPolicyProbes(IFunctionProbes probes, int captureLimit, TaskCompletionSource stopRequest)
         {
-            _captureLimit = captureLimit;
             _probes = probes;
+            _captureLimit = captureLimit;
             _stopRequest = stopRequest;
         }
 

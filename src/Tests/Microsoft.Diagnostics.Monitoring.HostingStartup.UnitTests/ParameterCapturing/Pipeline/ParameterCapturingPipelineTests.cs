@@ -19,26 +19,14 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing.Pipeline
 {
-    internal sealed class TestFunctionProbes : IFunctionProbes
-    {
-        public void CacheMethods(IList<MethodInfo> methods)
-        {
-        }
-
-        public bool EnterProbe(ulong uniquifier, object[] args)
-        {
-            return true;
-        }
-    }
-
     internal sealed class TestFunctionProbesManager : IFunctionProbesManager
     {
-        private readonly Action<IList<MethodInfo>> _onStart;
+        private readonly Action<IList<MethodInfo>, IFunctionProbes> _onStart;
         private readonly Action _onStop;
 
         public event EventHandler<InstrumentedMethod> OnProbeFault;
 
-        public TestFunctionProbesManager(Action<IList<MethodInfo>> onStart = null, Action onStop = null)
+        public TestFunctionProbesManager(Action<IList<MethodInfo>, IFunctionProbes> onStart = null, Action onStop = null)
         {
             _onStart = onStart;
             _onStop = onStop;
@@ -52,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
         public Task StartCapturingAsync(IList<MethodInfo> methods, IFunctionProbes probes, CancellationToken token)
         {
-            _onStart?.Invoke(methods);
+            _onStart?.Invoke(methods, probes);
             return Task.CompletedTask;
         }
 
@@ -165,7 +153,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             TestFunctionProbes probes = new();
 
             TestFunctionProbesManager probeManager = new(
-                onStart: (_) =>
+                onStart: (_, _) =>
                 {
                     probeManagerStartSource.TrySetResult();
                 });
@@ -343,6 +331,51 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Fact]
+        public async Task Request_StopsAfterCaptureLimit()
+        {
+            // Arrange
+            using CancellationTokenSource cts = new();
+            cts.CancelAfter(CommonTestTimeouts.GeneralTimeout);
+
+            TaskCompletionSource<Guid> onStopCallbackSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            TaskCompletionSource<IFunctionProbes> onStartCallbackSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            using IDisposable registration = cts.Token.Register(() =>
+            {
+                _ = onStartCallbackSource.TrySetCanceled(cts.Token);
+                _ = onStopCallbackSource.TrySetCanceled(cts.Token);
+            });
+
+            TestFunctionProbes probes = new();
+            TestFunctionProbesManager probeManager = new(
+                onStart: (_, probes) =>
+                {
+                    onStartCallbackSource.TrySetResult(probes);
+                });
+
+            TestParameterCapturingCallbacks callbacks = new(
+                onCapturingStop: (requestId) =>
+                {
+                    onStopCallbackSource.TrySetResult(requestId);
+                });
+
+            ParameterCapturingPipeline pipeline = new(probeManager, callbacks, new TestMethodDescriptionValidator());
+            StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan, captureLimit: 1);
+
+            Task pipelineTask = pipeline.RunAsync(cts.Token);
+            pipeline.SubmitRequest(payload, probes);
+            IFunctionProbes pipelineProbes = await onStartCallbackSource.Task;
+
+            // Act
+            pipelineProbes.EnterProbe(1, []);
+
+
+            // Assert
+            Guid stoppedRequest = await onStopCallbackSource.Task;
+            Assert.Equal(payload.RequestId, stoppedRequest);
+        }
+
+        [Fact]
         public async Task ProbeFault_DoesNotify()
         {
             // Arrange
@@ -418,7 +451,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             Assert.Equal(ex, thrownException);
         }
 
-        private StartCapturingParametersPayload CreateStartCapturingPayload(TimeSpan duration)
+        private StartCapturingParametersPayload CreateStartCapturingPayload(TimeSpan duration, int? captureLimit = null)
         {
             string moduleName = typeof(ParameterCapturingPipelineTests).Module.Name;
             Assert.NotNull(moduleName);
@@ -440,7 +473,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                             TypeName = typeName,
                             MethodName = nameof(CreateStartCapturingPayload)
                         }
-                    }
+                    },
+                    CaptureLimit = captureLimit
                 }
             };
         }
