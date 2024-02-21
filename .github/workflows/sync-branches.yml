@@ -11,6 +11,7 @@ env:
 
 jobs:
   sync-non-code:
+    if: github.repository == 'dotnet/dotnet-monitor'
     strategy:
       matrix:
         branch: ["release/6.x", "release/7.x", "release/8.0"]
@@ -51,6 +52,7 @@ jobs:
           auth_token: ${{ secrets.GITHUB_TOKEN }}
 
   sync-code:
+    if: github.repository == 'dotnet/dotnet-monitor'
     strategy:
       matrix:
         branch: ["feature/9.x"]
