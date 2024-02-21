@@ -73,9 +73,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git merge "origin/$base_branch" --strategy=ort --strategy-option=theirs
+          git merge "$base_branch" --strategy=ort --strategy-option=theirs
 
-          git checkout "origin/$target_branch" -- \
+          git checkout "origin/${{ matrix.branch }}" -- \
             "global.json" \
             "eng/common" \
             "eng/Common.props" \
