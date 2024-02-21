@@ -76,6 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             "Storage",
             "DefaultProcess",
             "Logging",
+            "DotnetMonitorDebug",
             "Authentication",
             "Egress"
         };
@@ -280,7 +281,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             // This is the settings.json file in the shared configuration directory that is visible
             // to all users on the machine e.g. /etc/dotnet-monitor on Unix systems.
-            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson("Logging.json", "Metrics.json", "InProcessFeatures.json"));
+            File.WriteAllText(Path.Combine(sharedConfigDir.FullName, "settings.json"), ConstructSettingsJson("Logging.json", "Metrics.json", "InProcessFeatures.json", "DotnetMonitorDebug.json"));
 
             // Create the initial host builder.
             IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
@@ -438,7 +439,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 { "CollectionRuleDefaults", "CollectionRuleDefaults.json" },
                 { "Templates", "Templates.json" },
                 { "Authentication", redact ? "AuthenticationRedacted.json" : "AuthenticationFull.json" },
-                { "InProcessFeatures", "InProcessFeatures.json" }
+                { "InProcessFeatures", "InProcessFeatures.json" },
+                { "DotnetMonitorDebug", "DotnetMonitorDebug.json" },
             };
         }
 

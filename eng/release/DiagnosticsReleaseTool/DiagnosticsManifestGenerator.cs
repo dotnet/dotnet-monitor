@@ -60,7 +60,7 @@ namespace DiagnosticsReleaseTool.Impl
 
         private void WriteFiles(Utf8JsonWriter writer, IEnumerable<FileReleaseData> filesProcessed, FileClass fileClass)
         {
-            writer.WritePropertyName(FileMetadata.GetDefaultCatgoryForClass(fileClass));
+            writer.WritePropertyName(FileMetadata.GetDefaultCategoryForClass(fileClass));
             writer.WriteStartArray();
 
             IEnumerable<FileReleaseData> nugetFiles = filesProcessed.Where(file => file.FileMetadata.Class == fileClass);

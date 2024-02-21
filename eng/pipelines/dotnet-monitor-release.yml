@@ -163,8 +163,8 @@ stages:
           - powershell: Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
             displayName: Install NuGet PowerShell Package Provider
 
-          - powershell: Install-Module Az.Storage -Force -Scope CurrentUser -AllowClobber -Verbose
-            displayName: Install Az.Storage Module
+          - powershell: Install-Module Az.Storage -Force -Scope CurrentUser -AllowClobber -Verbose -RequiredVersion 5.10.1
+            displayName: Install Az.Storage Module 5.10.1
 
           - powershell: |
               Write-Host "##vso[task.setvariable variable=DestinationAccountName]$env:DESTINATION_ACCOUNT_NAME"

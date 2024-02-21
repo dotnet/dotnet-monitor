@@ -9,32 +9,6 @@
 
 #include <vector>
 
-//
-// SpecialCaseBoxingTypes shares the same format as other mdTokens.
-// Instrumentation requests provide special boxing instructions by using SpecialCaseBoxingTypeFlag
-// as the "token type" and the SpecialCaseBoxingTypes enum as the RID.
-//
-constexpr ULONG32 SpecialCaseBoxingTypeFlag = 0x7f000000;
-enum class SpecialCaseBoxingTypes : ULONG32
-{
-    TYPE_UNKNOWN = 0,
-    TYPE_OBJECT,
-    TYPE_BOOLEAN,
-    TYPE_CHAR,
-    TYPE_SBYTE,
-    TYPE_BYTE,
-    TYPE_INT16,
-    TYPE_UINT16,
-    TYPE_INT32,
-    TYPE_UINT32,
-    TYPE_INT64,
-    TYPE_UINT64,
-    TYPE_INTPTR,
-    TYPE_UINTPTR,
-    TYPE_SINGLE,
-    TYPE_DOUBLE
-};
-
 HRESULT ProbeInjector::InstallProbe(
     ICorProfilerInfo* pICorProfilerInfo,
     ICorProfilerFunctionControl* pICorProfilerFunctionControl,
@@ -45,7 +19,7 @@ HRESULT ProbeInjector::InstallProbe(
     ExpectedPtr(pICorProfilerFunctionControl);
     ExpectedPtr(pFaultingProbeCallback);
 
-    if (request.boxingTypes.size() > UINT32_MAX)
+    if (request.boxingInstructions.size() > UINT32_MAX)
     {
         return E_INVALIDARG;
     }
@@ -73,7 +47,7 @@ HRESULT ProbeInjector::InstallProbe(
     ILInstr* pNestedCatchBegin = nullptr;
     ILInstr* pNestedCatchEnd = nullptr;
 
-    UINT32 numArgs = static_cast<UINT32>(request.boxingTypes.size());
+    UINT32 numArgs = static_cast<UINT32>(request.boxingInstructions.size());
 
     //
     // The below IL is equivalent to:
@@ -125,8 +99,9 @@ HRESULT ProbeInjector::InstallProbe(
         rewriter.InsertBefore(pInsertProbeBeforeThisInstr, pNewInstr);
 
         // Load arg
-        ULONG32 typeInfo = request.boxingTypes.at(i);
-        if (typeInfo == (SpecialCaseBoxingTypeFlag | static_cast<ULONG32>(SpecialCaseBoxingTypes::TYPE_UNKNOWN)))
+        PARAMETER_BOXING_INSTRUCTIONS boxingInstructions = request.boxingInstructions.at(i);
+        if (boxingInstructions.instructionType == InstructionType::SPECIAL_CASE_TOKEN &&
+            boxingInstructions.token.specialCaseToken == SpecialCaseBoxingTypes::TYPE_UNKNOWN)
         {
             pNewInstr = rewriter.NewILInstr();
             pNewInstr->m_opcode = CEE_LDNULL;
@@ -141,7 +116,19 @@ HRESULT ProbeInjector::InstallProbe(
 
             // Resolve the boxing token.
             mdToken boxedTypeToken;
-            IfFailRet(GetBoxingToken(typeInfo, corLibTypeTokens, boxedTypeToken));
+            if (boxingInstructions.instructionType == InstructionType::SPECIAL_CASE_TOKEN)
+            {
+                IfFailRet(GetSpecialCaseBoxingToken(boxingInstructions.token.specialCaseToken, corLibTypeTokens, boxedTypeToken));
+            }
+            else if (boxingInstructions.instructionType == InstructionType::METADATA_TOKEN)
+            {
+                boxedTypeToken = boxingInstructions.token.mdToken;
+            }
+            else
+            {
+                return E_UNEXPECTED;
+            }
+
             if (boxedTypeToken != mdTokenNil)
             {
                 pNewInstr = rewriter.NewILInstr();
@@ -237,25 +224,14 @@ HRESULT ProbeInjector::InstallProbe(
     return S_OK;
 }
 
-HRESULT ProbeInjector::GetBoxingToken(
-    UINT32 typeInfo,
+HRESULT ProbeInjector::GetSpecialCaseBoxingToken(
+    SpecialCaseBoxingTypes specialCaseType,
     const COR_LIB_TYPE_TOKENS& corLibTypeTokens,
     mdToken& boxedType)
 {
     boxedType = mdTokenNil;
 
-    //
-    // typeInfo is either:
-    // 1. A real metadata token that is what should be used for boxing.
-    // 2. A special case (one of the SpecialCaseBoxingTypes enum values)
-    //
-    if (TypeFromToken(typeInfo) != SpecialCaseBoxingTypeFlag)
-    {
-        boxedType = static_cast<mdToken>(typeInfo);
-        return S_OK;
-    }
-
-    switch(static_cast<SpecialCaseBoxingTypes>(RidFromToken(typeInfo)))
+    switch(specialCaseType)
     {
     case SpecialCaseBoxingTypes::TYPE_BOOLEAN:
         boxedType = corLibTypeTokens.systemBooleanType;

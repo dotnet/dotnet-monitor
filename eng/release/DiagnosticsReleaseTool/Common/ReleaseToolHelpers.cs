@@ -10,7 +10,7 @@ namespace ReleaseTool.Core
     {
         internal static string GetDefaultPathForFileCategory(FileInfo file, FileClass fileClass)
         {
-            string category = FileMetadata.GetDefaultCatgoryForClass(fileClass);
+            string category = FileMetadata.GetDefaultCategoryForClass(fileClass);
             return FormattableString.Invariant($"{category}/{file.Name}");
         }
 
@@ -19,7 +19,7 @@ namespace ReleaseTool.Core
             string sha512Hash = GetSha512(fileInfo);
             FileMetadata result = new FileMetadata(
                 fileClass,
-                FileMetadata.GetDefaultCatgoryForClass(fileClass),
+                FileMetadata.GetDefaultCategoryForClass(fileClass),
                 sha512: sha512Hash);
             return result;
         }

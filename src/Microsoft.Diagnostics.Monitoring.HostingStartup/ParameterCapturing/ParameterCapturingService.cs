@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eventin
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pipeline;
 using Microsoft.Diagnostics.Monitoring.StartupHook;
+using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
@@ -34,6 +35,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public ParameterCapturingService(IServiceProvider services)
         {
+            using IDisposable _ = MonitorExecutionContextTracker.MonitorScope();
+
             try
             {
                 ArgumentNullException.ThrowIfNull(SharedInternals.MessageDispatcher);
@@ -195,6 +198,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             {
                 return;
             }
+
+            using IDisposable _ = MonitorExecutionContextTracker.MonitorScope();
 
             ChangeServiceState(ParameterCapturingEvents.ServiceState.Running);
             try
