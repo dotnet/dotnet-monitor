@@ -86,7 +86,7 @@ jobs:
         uses: ./.github/actions/open-pr
         with:
           files_to_commit: "*"
-          title: '[${{ matrix.branch }}] Sync non-code with ${{ env.base_branch }}'
+          title: '[${{ matrix.branch }}] Sync branch with ${{ env.base_branch }}'
           commit_message: Resolve merge conflicts
           body: Sync branch with ${{ env.base_branch }}. This PR was auto generated and will not be automatically merged in.
           branch_name: sync/${{ matrix.branch }}
