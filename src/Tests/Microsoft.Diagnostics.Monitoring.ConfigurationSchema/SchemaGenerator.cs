@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NJsonSchema;
 using NJsonSchema.Generation;
+using NJsonSchema.NewtonsoftJson.Generation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -273,9 +274,14 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             {
                 Schema = rootSchema;
 
-                _settings = new JsonSchemaGeneratorSettings();
-                _settings.SerializerSettings = new JsonSerializerSettings();
-                _settings.SerializerSettings.Converters.Add(new StringEnumConverter());
+                JsonSerializerSettings serializerSettings = new();
+                serializerSettings.Converters.Add(new StringEnumConverter());
+
+                _settings = new NewtonsoftJsonSchemaGeneratorSettings
+                {
+                    SerializerSettings = serializerSettings
+                };
+
                 _settings.SchemaProcessors.Add(new ExperimentalSchemaProcessor());
 
                 _resolver = new JsonSchemaResolver(rootSchema, _settings);
