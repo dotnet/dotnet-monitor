@@ -3,7 +3,8 @@
 
 # Definitions
 
->**Note**: Some features are [experimental](./../experimental.md) and are denoted as `**[Experimental]**` in this document.
+> [!NOTE]
+> Some features are [experimental](./../experimental.md) and are denoted as `**[Experimental]**` in this document.
 
 ## CallStack
 
@@ -340,16 +341,6 @@ Object describing a metric from the application.
 | `unit` | string | The unit for the metric. Can be null. |
 | `counterType` | string | The type of metric. This is typically `Rate` or `Metric`. |
 | `value` | double | The value of the metric. |
-
-## MetricType (8.0+)
-
-Enumeration that describes the type of metrics a provider consumes.
-
-| Name |
-|---|
-| `EventCounter` |
-| `Meter` |
-| `All` |
 
 ## OperationError
 

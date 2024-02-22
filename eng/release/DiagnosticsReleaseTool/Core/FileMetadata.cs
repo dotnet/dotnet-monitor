@@ -65,7 +65,7 @@ namespace ReleaseTool.Core
             Rid = rid;
         }
 
-        public static string GetDefaultCatgoryForClass(FileClass fileClass) => fileClass switch
+        public static string GetDefaultCategoryForClass(FileClass fileClass) => fileClass switch
         {
             FileClass.Blob => "BlobAssets",
             FileClass.Nuget => "NugetAssets",

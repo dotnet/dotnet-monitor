@@ -1,0 +1,166 @@
+id: 
+name: GitOps.PullRequestIssueManagement
+description: GitOps.PullRequestIssueManagement primitive
+owner: 
+resource: repository
+disabled: false
+where: 
+configuration:
+  resourceManagementConfiguration:
+    scheduledSearches:
+    - description: No Recent Activity PR Search
+      frequencies:
+      - daily:
+          time: 0:0
+      filters:
+      - isOpen
+      - isPullRequest
+      - noActivitySince:
+          days: 28
+      - isNotLabeledWith:
+          label: no-recent-activity
+      actions:
+      - addLabel:
+          label: no-recent-activity
+      - addReply:
+          reply: "The 'no-recent-activity' label has been added to this pull request due to four weeks without any activity. If there is no activity in the next six weeks, this pull request will automatically be closed. You can learn more about our stale PR policy here: https://github.com/dotnet/dotnet-monitor/blob/main/CONTRIBUTING.md#stale-pr-policy"
+    - description: Close No Recent Activity PR
+      frequencies:
+      - daily:
+          time: 0:0
+      filters:
+      - isOpen
+      - isPullRequest
+      - hasLabel:
+          label: no-recent-activity
+      - noActivitySince:
+          days: 42
+      actions:
+      - closeIssue
+    eventResponderTasks:
+    - if:
+      - payloadType: Pull_Request
+      - hasLabel:
+          label: auto-merge
+      then:
+      - enableAutoMerge:
+          mergeMethod: Squash
+      description: Automatically merge pull requests
+    - if:
+      - payloadType: Pull_Request
+      - labelRemoved:
+          label: auto-merge
+      then:
+      - disableAutoMerge
+      description: Automatically merge pull requests
+    - if:
+      - payloadType: Pull_Request
+      - isAction:
+          action: Opened
+      - titleContains:
+          pattern: Update dependencies
+          isRegex: False
+      - isActivitySender:
+          user: dotnet-maestro[bot]
+          issueAuthor: False
+      then:
+      - approvePullRequest:
+          comment: Automatically approving dependency update.
+      - addLabel:
+          label: automatic-pr
+      description: Auto approve dependencies
+    - if:
+      - payloadType: Pull_Request
+      - includesModifiedFiles:
+          files:
+          - global.json
+          - eng/Versions.props
+          - eng/Version.Details.xml
+      then:
+      - addLabel:
+          label: dependencies
+      description: Add tags (paths)
+    - if:
+      - payloadType: Pull_Request
+      - hasLabel:
+          label: no-recent-activity
+      - isOpen
+      - or:
+        - isAction:
+            action: Reopened
+        - isAction:
+            action: Synchronize
+        - isAction:
+            action: Edited
+        - isAction:
+            action: Closed
+      - not:
+          isActivitySender:
+            user: msftbot
+            issueAuthor: False
+      then:
+      - removeLabel:
+          label: no-recent-activity
+      description: Remove No Recent Activity Label
+    - if:
+      - payloadType: Pull_Request
+      - not:
+          isActivitySender:
+            user: dotnet-maestro[bot]
+            issueAuthor: False
+      - or:
+        - isAction:
+            action: Synchronize
+        - isAction:
+            action: Reopened
+        - isAction:
+            action: Opened
+      - not:
+          hasLabel:
+            label: needs-review
+      then:
+      - addLabel:
+          label: needs-review
+      description: Add needs-review Label On Change
+    - if:
+      - payloadType: Pull_Request_Review
+      - hasLabel:
+          label: needs-review
+      - isAction:
+          action: Submitted
+      - not:
+          isActivitySender:
+            issueAuthor: True
+      then:
+      - removeLabel:
+          label: needs-review
+      description: Remove needs-review Label On Review
+    - if:
+      - payloadType: Issue_Comment
+      - isAction:
+          action: Created
+      - hasLabel:
+          label: needs-review
+      - not:
+          isActivitySender:
+            issueAuthor: True
+      - not:
+          isActivitySender:
+            user: github-actions[bot]
+            issueAuthor: False
+      then:
+      - removeLabel:
+          label: needs-review
+      description: Remove needs-review Label On Comment
+    - if:
+      - payloadType: Pull_Request
+      - hasLabel:
+          label: needs-review
+      - isAction:
+          action: Closed
+      then:
+      - removeLabel:
+          label: needs-review
+      description: Remove needs-review Label On Close (merged or not)
+onFailure: 
+onSuccess:

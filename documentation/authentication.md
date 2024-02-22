@@ -10,7 +10,8 @@ Authenticated requests to `dotnet monitor` help protect sensitive diagnostic art
 
 It is also possible, although strongly not recommended, to [disable authentication](#disabling-authentication).
 
-> **Note**: Authentication is not performed on requests to the metrics endpoint (by default, http://localhost:52325).
+> [!NOTE]
+> Authentication is not performed on requests to the metrics endpoint (by default, http://localhost:52325).
 
 The recommended configuration for `dotnet monitor` is to use [Azure Active Directory Authentication](#azure-active-directory-authentication) over a channel secured with TLS.
 
@@ -25,7 +26,8 @@ Azure Active Directory integration (referred to as Azure AD) is the recommended 
 - [Assign user to role](https://learn.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-apps#assign-users-and-groups-to-roles) via the Enterprise Applications section of AAD.
 - [Configure Azure AD in dotnet monitor](./configuration/azure-ad-authentication-configuration.md).
 
-> **Note**: Azure AD B2C is currently not supported.
+> [!NOTE]
+> Azure AD B2C is currently not supported.
 
 ### Authenticating with a Managed Identity
 
@@ -58,7 +60,8 @@ If you want Azure AD users to be able to interactively authenticate with your `d
 - [Add a redirect URI to the App Registration](https://learn.microsoft.com/azure/active-directory/develop/quickstart-register-app#add-a-redirect-uri).
   1. Select `Single-page application` as the platform.
   1. For the redirect URI, enter `{dotnet monitor address}/swagger/oauth2-redirect.html`, where `{dotnet monitor address}` is the address of your `dotnet monitor` instance.
-  > **Note**: If using `localhost` for the address, you do **not** need to specify the port number. Example: `https://localhost/swagger/oauth2-redirect.html`
+> [!NOTE]
+> If using `localhost` for the address, you do **not** need to specify the port number. Example: `https://localhost/swagger/oauth2-redirect.html`
 
 ## Windows Authentication
 
@@ -66,7 +69,8 @@ We only recommend using Windows Authentication if you're running `dotnet monitor
 
 Windows authentication doesn't require explicit configuration and is enabled automatically when running `dotnet monitor` on Windows. When available, `dotnet monitor` will authorize any user authenticated as the same user that started the `dotnet monitor` process. It is not possible to disable Windows authentication.
 
-> **Note**: Windows authentication will not be attempted if you are running `dotnet monitor` as an Administrator
+> [!NOTE]
+> Windows authentication will not be attempted if you are running `dotnet monitor` as an Administrator
 
 ## API Key Authentication
 
@@ -78,13 +82,15 @@ API Keys are referred to as `MonitorApiKey` in configuration and source code but
 
 - Use the `--temp-apikey` command line option to generate a one-time API key for that instantiation of dotnet-monitor. The API key will be reported back as part of log output during the startup of the process.
 
-> **Note**: API Key Authentication should only be used when TLS is enabled to protect the key while in transit. `dotnet monitor` will emit a warning if authentication is enabled over an insecure transport medium.
+> [!IMPORTANT]
+> API Key Authentication should only be used when TLS is enabled to protect the key while in transit. `dotnet monitor` will emit a warning if authentication is enabled over an insecure transport medium.
 
 ## Authenticating requests
 
 ### Windows authentication
 
-> **Note**: Windows authentication is only supported when also using API Key authentication and not running elevated.
+> [!NOTE]
+> Windows authentication is only supported when also using API Key authentication and not running elevated.
 
 - When using a web browser, it will automatically handle the Windows authentication challenge.
 

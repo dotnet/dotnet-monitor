@@ -98,6 +98,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The provided signature blob must be for a method..
+        /// </summary>
+        internal static string ErrorMessage_SignatureIsNotForAMethod {
+            get {
+                return ResourceManager.GetString("ErrorMessage_SignatureIsNotForAMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to create an ILogger instance in the target process..
         /// </summary>
         internal static string FeatureUnsupported_NoLogger {
