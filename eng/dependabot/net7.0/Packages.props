@@ -3,6 +3,11 @@
     Packages in this file have versions updated periodically by Dependabot specifically for .NET 7.
   -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.NETCore.App.Runtime.win-x64" Version="$(MicrosoftNETCoreApp70Version)" />
+    <!--
+      We want to update "Microsoft.NETCore.App.Runtime.*" but those packages are considered platform packages and cannot be added
+      as a package reference. Use Microsoft.NETCore.DotNetHost instead which is released in lockstep with the runtime packages and
+      with the same version number.
+    -->
+    <PackageReference Include="Microsoft.NETCore.DotNetHost" Version="$(MicrosoftNETCoreApp70Version)" />
   </ItemGroup>
 </Project>
