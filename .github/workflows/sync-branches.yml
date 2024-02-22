@@ -79,6 +79,7 @@ jobs:
 
           git checkout "origin/${{ matrix.branch }}" -- \
             "global.json" \
+            "eng/branch-vscode-config" \
             "eng/common" \
             "eng/Common.props" \
             "eng/Versions.props" \
