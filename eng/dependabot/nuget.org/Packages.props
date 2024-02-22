@@ -1,0 +1,21 @@
+<Project>
+  <!--
+    Packages in this file have versions updated periodically by Dependabot specifically from nuget.org.
+  -->
+  <ItemGroup>
+    <!-- dotnet/diagnostics references -->
+    <!--
+      Keep MicrosoftDiagnosticsMonitoringShippedVersion in-sync with the latest publicly shipped version of Microsoft.Diagnostics.DbgShim:
+      - In release branches we want to only use versions of Microsoft.Diagnostics.Monitoring.* packages that
+        were built together with other packages from dotnet/diagnostics that have publicly shipped on nuget.org.
+      - Microsoft.Diagnostics.Monitoring.* packages are not shipped via nuget.org, and instead are available via
+        the dotnet-tools feed, but it contains additional (often newer) versions that don't correspond to
+        the publicly shipped related packages.
+      - Microsoft.Diagnostics.DbgShim, and select other packages from dotnet/diagnostics, share the same version tag as the
+        Microsoft.Diagnostics.Monitoring.* packages so we can use them to manage MicrosoftDiagnosticsMonitoring*LibraryVersion.
+      - This project is evaluated by dependabot using msbuild, so we have to use a package that can actually be restored,
+        so use Microsoft.Diagnostics.DbgShim.
+    -->
+    <PackageReference Include="Microsoft.Diagnostics.DbgShim" Version="$(MicrosoftDiagnosticsMonitoringVersion)" />
+  </ItemGroup>
+</Project>
