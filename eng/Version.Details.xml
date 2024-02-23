@@ -4,11 +4,11 @@
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>f26b79eb34d13648bedc5ec98e2151f8c55db978</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="8.0.0-preview.24121.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="8.0.0-preview.24122.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>d498654de4bf01e02ec689a51923e8c18b9c8d9c</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="8.0.0-preview.24121.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="8.0.0-preview.24122.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>d498654de4bf01e02ec689a51923e8c18b9c8d9c</Sha>
     </Dependency>
