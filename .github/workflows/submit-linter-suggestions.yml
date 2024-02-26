@@ -49,7 +49,7 @@ jobs:
       # The default artifact download action doesn't support cross-workflow
       # artifacts, so use a 3rd party one.
       - name: 'Download linting results'
-        uses: dawidd6/action-download-artifact@e7466d1a7587ed14867642c2ca74b5bcc1e19a2d
+        uses: dawidd6/action-download-artifact@71072fbb1229e1317f1a8de6b04206afb461bd67
         with:
           workflow: ${{env.workflow_name}}
           run_id: ${{github.event.workflow_run.id }}
@@ -57,7 +57,7 @@ jobs:
           path: ./pr-linter
 
       - name: 'Setup reviewdog'
-        uses: reviewdog/action-setup@4ada0d03764db369df4069af8fbc514388a3e4fe
+        uses: reviewdog/action-setup@1d18b2938261447f64c39f831d7395e90ef5a40e
 
       # Manually supply the triggering PR event information since when a PR is from a fork,
       # this workflow running in the base repo will not be given information about it.
