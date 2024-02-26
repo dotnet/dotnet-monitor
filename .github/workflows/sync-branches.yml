@@ -10,12 +10,12 @@ env:
   base_branch: 'origin/main'
 
 jobs:
-  sync-branch:
+  sync-non-code:
     if: github.repository == 'dotnet/dotnet-monitor'
     strategy:
       matrix:
         branch: ["release/6.x", "release/7.x", "release/8.0"]
-    name: 'Sync ${{ matrix.branch }}'
+    name: 'Sync non-code to ${{ matrix.branch }}'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -43,10 +43,57 @@ jobs:
         uses: ./.github/actions/open-pr
         with:
           files_to_commit: "*"
+          title: '[${{ matrix.branch }}] Sync non-code with ${{ env.base_branch }}'
+          commit_message: sync non-code with ${{ env.base_branch }}
+          body: Sync non-code with ${{ env.base_branch }}. This PR was auto generated and will not be automatically merged in.
+          branch_name: sync/${{ matrix.branch }}
+          fail_if_files_unchanged: false
+          labels: 'automatic-pr'
+          auth_token: ${{ secrets.GITHUB_TOKEN }}
+
+  sync-code:
+    if: github.repository == 'dotnet/dotnet-monitor'
+    strategy:
+      matrix:
+        branch: ["feature/9.x"]
+    name: 'Sync branch with ${{ matrix.branch }}'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          persist-credentials: true # We need to persist credentials to push the resulting changes upstream.
+          fetch-depth: 0 # Fetch the entire repo for the below git operations
+          ref: ${{ matrix.branch }}
+
+      - name: Sync branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git merge "$base_branch" --strategy=ort --strategy-option=theirs
+
+          git checkout "origin/${{ matrix.branch }}" -- \
+            "global.json" \
+            "eng/branch-vscode-config" \
+            "eng/common" \
+            "eng/Common.props" \
+            "eng/Versions.props" \
+            "eng/Version.Details.xml"
+
+      - name: Open PR
+        uses: ./.github/actions/open-pr
+        with:
+          files_to_commit: "*"
           title: '[${{ matrix.branch }}] Sync branch with ${{ env.base_branch }}'
-          commit_message: sync branch with ${{ env.base_branch }}
+          commit_message: Resolve merge conflicts
           body: Sync branch with ${{ env.base_branch }}. This PR was auto generated and will not be automatically merged in.
           branch_name: sync/${{ matrix.branch }}
           fail_if_files_unchanged: false
+          always_create_pr: true
           labels: 'automatic-pr'
           auth_token: ${{ secrets.GITHUB_TOKEN }}
