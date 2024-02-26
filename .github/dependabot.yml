@@ -85,6 +85,82 @@ updates:
   directory: /eng/dependabot/independent
   schedule:
     interval: daily
+  target-branch: release/8.0
+  ignore:
+  - dependency-name: Microsoft.Extensions.*
+    update-types:
+    - version-update:semver-major
+  - dependency-name: Moq
+  commit-message:
+    prefix: '[release/8.0] '
+  groups:
+    azure-storage-dependencies:
+      patterns:
+      - Azure.Storage.*
+    identity-dependencies:
+      patterns:
+      - Azure.Identity
+      - Microsoft.Identity.*
+      - Microsoft.IdentityModel.*
+- package-ecosystem: nuget
+  directory: /eng/dependabot/nuget.org
+  schedule:
+    interval: daily
+  target-branch: release/8.0
+  commit-message:
+    prefix: '[release/8.0] '
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net8.0
+  schedule:
+    interval: daily
+  target-branch: release/8.0
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+  commit-message:
+    prefix: '[release/8.0] '
+  groups:
+    runtime-dependencies:
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net7.0
+  schedule:
+    interval: daily
+  target-branch: release/8.0
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+  commit-message:
+    prefix: '[release/8.0] '
+  groups:
+    runtime-dependencies:
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net6.0
+  schedule:
+    interval: daily
+  target-branch: release/8.0
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+  commit-message:
+    prefix: '[release/8.0] '
+  groups:
+    runtime-dependencies:
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.App.Runtime.*
+- package-ecosystem: nuget
+  directory: /eng/dependabot/independent
+  schedule:
+    interval: daily
   target-branch: release/7.x
   ignore:
   - dependency-name: Microsoft.Extensions.*
