@@ -19,6 +19,7 @@
 #@ def getBranches():
 #@   return [
 #@     struct.encode({"name": "main", "majorVersion": "8"}),
+#@     struct.encode({"name": "release/8.0", "majorVersion": "8"}),
 #@     struct.encode({"name": "release/7.x", "majorVersion": "7"}),
 #@     struct.encode({"name": "release/6.x", "majorVersion": "6"}),
 #@   ]
