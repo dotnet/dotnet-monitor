@@ -25,6 +25,9 @@ inputs:
   fail_if_files_unchanged:
     description: 'Fails the action if all of the specified files_to_commit are unchanged.'
     required: false
+  always_create_pr:
+    description: 'Always try to create a PR, even if there are no uncommitted changes.'
+    required: false
   update_if_already_exists:
     description: 'Allows updating an existing PR, or re-opening it if closed.'
     required: false
@@ -61,10 +64,13 @@ runs:
             exit 1
           fi
 
-          exit 0
+          if [[ "$ALWAYS_CREATE_PR" != "true" ]]; then
+            exit 0
+          fi
+        else
+          git commit -m "$COMMIT_MESSAGE"
         fi
 
-        git commit -m "$COMMIT_MESSAGE"
         git push --force --set-upstream origin "HEAD:$pr_branch_name"
 
         extraArgs=""
@@ -81,6 +87,7 @@ runs:
         COMMIT_MESSAGE: ${{ inputs.commit_message }}
         DRAFT: ${{ inputs.draft }}
         LABELS: ${{ inputs.labels }}
+        ALWAYS_CREATE_PR: ${{ inputs.always_create_pr }}
         FAIL_IF_FILES_UNCHANGED: ${{ inputs.fail_if_files_unchanged }}
         UPDATE_IF_ALREADY_EXISTS: ${{ inputs.update_if_already_exists }}
         TITLE: ${{ inputs.title }}
