@@ -97,7 +97,7 @@ Object describing the list of methods to capture parameters for.
 |---|---|---|
 | `methods` | [MethodDescription](#methoddescription)[] | Array of methods to capture parameters for. |
 | `useDebuggerDisplayAttribute` | bool | Determines if parameters should be formatted using their [`DebuggerDisplayAttribute`](https://learn.microsoft.com/dotnet/api/system.diagnostics.debuggerdisplayattribute) if available and supported. Expressions in attributes may consist of properties, fields, methods without parameters, or any combination of these. |
-| `captureLimit` | int | The number of times to capture parameters before stopping. Note that parameters may continue to be captured for a short amount of time after this limit is reached. |
+| `captureLimit` | int | The number of times to capture parameters before stopping. If the specified duration elapses the operation will stop even if the capture limit is not yet reached. Note that parameters may continue to be captured for a short amount of time after this limit is reached. |
 
 ## DotnetMonitorInfo
 
