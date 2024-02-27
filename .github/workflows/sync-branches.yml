@@ -74,16 +74,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
+          # Activate the ours merge driver to respect any branch specific files
+          git config merge.ours.driver true
           git merge "$base_branch" --strategy=ort --strategy-option=theirs
-
-          git checkout "origin/${{ matrix.branch }}" -- \
-            "global.json" \
-            "eng/branch-vscode-config" \
-            "eng/common" \
-            "eng/Common.props" \
-            "eng/Versions.props" \
-            "eng/Version.Details.xml"
 
       - name: Open PR
         uses: ./.github/actions/open-pr
