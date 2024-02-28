@@ -197,6 +197,30 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Fact]
+        public void Request_ZeroCaptureLimit_Throws()
+        {
+            // Arrange
+            ParameterCapturingPipeline pipeline = new(new TestFunctionProbesManager(), new TestParameterCapturingCallbacks(), new TestMethodDescriptionValidator());
+            TestFunctionProbes probes = new();
+            StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan, captureLimit: 0);
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => pipeline.SubmitRequest(payload, probes));
+        }
+
+        [Fact]
+        public void Request_NegativeCaptureLimit_Throws()
+        {
+            // Arrange
+            ParameterCapturingPipeline pipeline = new(new TestFunctionProbesManager(), new TestParameterCapturingCallbacks(), new TestMethodDescriptionValidator());
+            TestFunctionProbes probes = new();
+            StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan, captureLimit: -1);
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => pipeline.SubmitRequest(payload, probes));
+        }
+
+        [Fact]
         public async Task UnresolvableMethod_DoesNotify()
         {
             // Arrange
@@ -330,8 +354,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             Assert.Equal(payload.RequestId, stoppedRequest);
         }
 
-        [Fact]
-        public async Task Request_StopsAfterCaptureLimit()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(10)]
+        public async Task Request_StopsAfterCaptureLimit(int captureLimit)
         {
             // Arrange
             using CancellationTokenSource cts = new();
@@ -360,14 +387,17 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 });
 
             ParameterCapturingPipeline pipeline = new(probeManager, callbacks, new TestMethodDescriptionValidator());
-            StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan, captureLimit: 1);
+            StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan, captureLimit: captureLimit);
 
             Task pipelineTask = pipeline.RunAsync(cts.Token);
             pipeline.SubmitRequest(payload, probes);
             IFunctionProbes pipelineProbes = await onStartCallbackSource.Task;
 
             // Act
-            pipelineProbes.EnterProbe(1, []);
+            for (int i = 0; i < captureLimit; i++)
+            {
+                pipelineProbes.EnterProbe((ulong)i, []);
+            }
 
 
             // Assert

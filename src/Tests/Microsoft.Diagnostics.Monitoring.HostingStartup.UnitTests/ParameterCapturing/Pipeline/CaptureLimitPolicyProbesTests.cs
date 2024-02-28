@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pipeline;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -79,6 +80,33 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
             // Assert
             Assert.Equal(1, invokeCount);
+        }
+
+        [Fact]
+        public void EnterProbe_PassesThroughArguments()
+        {
+            // Arrange
+            const ulong expectedUniquifier = 15;
+            object[] expectedArgs = [new Uri("https://www.example.com"), 10];
+
+            ulong? actualUniquifier = null;
+            object[] actualArgs = null;
+
+            TaskCompletionSource requestStop = new();
+            CaptureLimitPolicyProbes probes = new(new TestFunctionProbes(
+                onEnterProbe: (uniquifier, args) =>
+                {
+                    actualUniquifier = uniquifier;
+                    actualArgs = args;
+                    return true;
+                }), captureLimit: 1, requestStop);
+
+            // Act
+            probes.EnterProbe(expectedUniquifier, expectedArgs);
+
+            // Assert
+            Assert.Equal(expectedUniquifier, actualUniquifier);
+            Assert.Equal(expectedArgs, actualArgs);
         }
     }
 }
