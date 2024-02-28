@@ -4,6 +4,8 @@
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pipeline;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -83,7 +85,28 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Fact]
-        public void EnterProbe_PassesThroughArguments()
+        public void EnterProbe_PassesThrough_CacheMethods()
+        {
+            // Arrange
+            List<MethodInfo> expectedMethods = [(MethodInfo)MethodBase.GetCurrentMethod()];
+            IList<MethodInfo> actualMethods = null;
+
+            TaskCompletionSource requestStop = new();
+            CaptureLimitPolicyProbes probes = new(new TestFunctionProbes(
+                onCacheMethods: (methods) =>
+                {
+                    actualMethods = methods;
+                }), captureLimit: 1, requestStop);
+
+            // Act
+            probes.CacheMethods(expectedMethods);
+
+            // Assert
+            Assert.Equal(expectedMethods, actualMethods);
+        }
+
+        [Fact]
+        public void EnterProbe_PassesThrough_EnterProbe()
         {
             // Arrange
             const ulong expectedUniquifier = 15;
