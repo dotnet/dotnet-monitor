@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Fact]
-        public void EnterProbe_PassesThrough_CacheMethods()
+        public void CacheMethods_PassesThrough()
         {
             // Arrange
             List<MethodInfo> expectedMethods = [(MethodInfo)MethodBase.GetCurrentMethod()];
@@ -106,7 +106,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
 
         [Fact]
-        public void EnterProbe_PassesThrough_EnterProbe()
+        public void EnterProbe_PassesThrough()
         {
             // Arrange
             const ulong expectedUniquifier = 15;
