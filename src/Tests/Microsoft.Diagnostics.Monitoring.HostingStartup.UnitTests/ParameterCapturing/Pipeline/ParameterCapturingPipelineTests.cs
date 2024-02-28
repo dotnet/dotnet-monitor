@@ -196,25 +196,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             Assert.Throws<DeniedMethodsException>(() => pipeline.SubmitRequest(payload, probes));
         }
 
-        [Fact]
-        public void Request_ZeroCaptureLimit_Throws()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void Request_InvalidCaptureLimit_Throws(int captureLimit)
         {
             // Arrange
             ParameterCapturingPipeline pipeline = new(new TestFunctionProbesManager(), new TestParameterCapturingCallbacks(), new TestMethodDescriptionValidator());
             TestFunctionProbes probes = new();
-            StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan, captureLimit: 0);
-
-            // Act & Assert
-            Assert.Throws<ArgumentException>(() => pipeline.SubmitRequest(payload, probes));
-        }
-
-        [Fact]
-        public void Request_NegativeCaptureLimit_Throws()
-        {
-            // Arrange
-            ParameterCapturingPipeline pipeline = new(new TestFunctionProbesManager(), new TestParameterCapturingCallbacks(), new TestMethodDescriptionValidator());
-            TestFunctionProbes probes = new();
-            StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan, captureLimit: -1);
+            StartCapturingParametersPayload payload = CreateStartCapturingPayload(Timeout.InfiniteTimeSpan, captureLimit: captureLimit);
 
             // Act & Assert
             Assert.Throws<ArgumentException>(() => pipeline.SubmitRequest(payload, probes));
