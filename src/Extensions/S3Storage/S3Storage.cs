@@ -7,6 +7,7 @@ using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using Amazon.S3.Util;
 using Microsoft.Diagnostics.Monitoring.Extension.Common;
 using System;
 using System.Collections.Generic;
@@ -73,7 +74,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
                 throw new AmazonClientException("Failed to find AWS Credentials for constructing AWS service client");
 
             IAmazonS3 s3Client = new AmazonS3Client(awsCredentials, configuration);
-            bool exists = await s3Client.DoesS3BucketExistAsync(options.BucketName);
+            bool exists = await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, options.BucketName);
             if (!exists)
                 await s3Client.PutBucketAsync(options.BucketName, cancellationToken);
             return new S3Storage(s3Client, options.BucketName, settings.Name, settings.ContentType);
