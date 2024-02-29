@@ -37,12 +37,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
             await toolRunner.StartAsync();
 
-            // Test default URL root returns HTTP 302 meaning that its an explicit redirect rather than implicitly handled by something unexpected
+            // Test that the root route returns HTTP 200 OK
             using HttpClient defaultHttpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory, ServiceProviderFixture.HttpClientName_NoRedirect);
             ApiClient defaultApiClient = new(_outputHelper, defaultHttpClient);
 
             var rootResult = await defaultApiClient.GetRootAsync();
-            Assert.Equal(HttpStatusCode.Redirect, rootResult.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, rootResult.StatusCode);
 
 
             // Disabled as there doesn't seem to be anything different about the metrics root URL from the one above.

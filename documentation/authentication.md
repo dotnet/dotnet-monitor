@@ -53,16 +53,6 @@ curl -H "Authorization: Bearer <Token from Azure CLI>" https://localhost:52323/p
  (Invoke-WebRequest -Uri https://localhost:52323/processes -Headers @{ 'Authorization' = 'Bearer <Token from Azure CLI>' }).Content | ConvertFrom-Json
 ```
 
-### Interactively authenticating using the Swagger UI
-
-If you want Azure AD users to be able to interactively authenticate with your `dotnet monitor` instance using the in-box Swagger UI you will need to:
-- [Add a new scope](https://learn.microsoft.com/azure/active-directory/develop/quickstart-configure-app-expose-web-apis#add-a-scope). This scope will only be used to enable interactive authentication and users will still be required to be part of the configured app role. Custom Application ID URIs are supported.
-- [Add a redirect URI to the App Registration](https://learn.microsoft.com/azure/active-directory/develop/quickstart-register-app#add-a-redirect-uri).
-  1. Select `Single-page application` as the platform.
-  1. For the redirect URI, enter `{dotnet monitor address}/swagger/oauth2-redirect.html`, where `{dotnet monitor address}` is the address of your `dotnet monitor` instance.
-> [!NOTE]
-> If using `localhost` for the address, you do **not** need to specify the port number. Example: `https://localhost/swagger/oauth2-redirect.html`
-
 ## Windows Authentication
 
 We only recommend using Windows Authentication if you're running `dotnet monitor` as a local development tool on Windows; for all other environments using an [API Key](#api-key-authentication) is recommended.

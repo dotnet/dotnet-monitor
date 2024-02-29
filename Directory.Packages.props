@@ -24,7 +24,6 @@
     <PackageVersion Include="NJsonSchema" Version="$(NJsonSchemaVersion)" />
     <PackageVersion Include="NJsonSchema.NewtonsoftJson" Version="$(NJsonSchemaVersion)" />
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="$(SwashbuckleAspNetCoreVersion)" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="$(SwashbuckleAspNetCoreVersion)" />
     <PackageVersion Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
     <PackageVersion Include="System.Private.Uri" Version="$(SystemPrivateUriVersion)" />
     <PackageVersion Include="System.Security.Principal.Windows" Version="$(SystemSecurityPrincipalWindowsVersion)" />
