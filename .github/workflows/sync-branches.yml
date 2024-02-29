@@ -74,9 +74,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
+          # Activate the ours merge driver to respect any branch specific files
+          git config merge.ours.driver true
           git merge "$base_branch" --strategy=ort --strategy-option=theirs
 
+          # Must be kept in sync with .gitattributes
           git checkout "origin/${{ matrix.branch }}" -- \
             "global.json" \
             "eng/branch-vscode-config" \
@@ -90,7 +92,7 @@ jobs:
         with:
           files_to_commit: "*"
           title: '[${{ matrix.branch }}] Sync branch with ${{ env.base_branch }}'
-          commit_message: Resolve merge conflicts
+          commit_message: Restore branch-specific files
           body: Sync branch with ${{ env.base_branch }}. This PR was auto generated and will not be automatically merged in.
           branch_name: sync/${{ matrix.branch }}
           fail_if_files_unchanged: false
