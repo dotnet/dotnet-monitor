@@ -1,0 +1,66 @@
+name: 'Check Learning Path Links'
+on:
+  schedule: # Run once a month
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+
+permissions: {}
+  
+jobs:
+  check-learning-path-links:
+    if: github.repository == 'dotnet/dotnet-monitor'
+    name: 'Check Learning Path Links'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout head
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true # need this for opening a PR
+          fetch-depth: 0
+          ref: main
+
+      - name: Get previous update SHA
+        id: get_sha
+        run: |
+          prev_sha=$(cat .github/learning-path-sha.txt)
+          echo "prev_sha=$prev_sha" >> $GITHUB_ENV
+
+      - name: Checkout previous update
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref:  ${{ env.prev_sha }}
+          path: prev
+
+      - name: Get changed files
+        run: |
+          changed_source_files=$(git diff-tree --no-commit-id --name-only -r "$prev_sha" "$GITHUB_SHA" | { grep "**.cs$" || test $? = 1; })
+          echo "Files to validate: '${changed_source_files}'"
+          echo "updated_files=$(echo ${changed_source_files})" >> $GITHUB_ENV
+
+      - name: Check Learning Path Links
+        id: check-links
+        uses: ./.github/actions/learning-path-staleness-check
+        with:
+          repoURLToSearch: 'https://github.com/dotnet/dotnet-monitor'
+          learningPathsDirectory: 'documentation/learningPath'
+          changedFilePaths: ${{ env.updated_files }}
+          sourceDirectoryName: 'src'
+          oldHash: ${{ env.prev_sha }}
+          newHash: ${{ github.sha }}
+          learningPathHashFile: '.github/learning-path-sha.txt'
+
+      - name: Open PR
+        uses: ./.github/actions/open-pr
+        with:
+          files_to_commit: --all -- :!prev
+          title: "[REQUIRES MANUAL REVIEW] Update Learning Paths"
+          commit_message: Update Learning Paths
+          body: This PR was auto generated and will not be automatically merged in - adjustments should be made manually as-needed.<br />${{ steps.check-links.outputs.outputText }}
+          branch_name: learningPathUpdates/${{ github.sha }}
+          fail_if_files_unchanged: true
+          auth_token: ${{ secrets.GITHUB_TOKEN }}
