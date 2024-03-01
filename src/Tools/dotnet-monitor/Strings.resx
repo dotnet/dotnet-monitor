@@ -433,10 +433,6 @@
     <value>JWT Authorization header using bearer token authentication. Put the Authorization header value ("Bearer" prefix and the JWT value) in the textbox when prompted.</value>
     <comment>Gets a string used in the generated OpenAPI doc for the auth scheme</comment>
   </data>
-  <data name="HelpDescription_SwaggerScope_AzureAd" xml:space="preserve">
-    <value>Swagger UI permission</value>
-    <comment>Gets a string used in the generated OpenAPI doc for the auth scheme</comment>
-  </data>
   <data name="LogFormatString_ActionSettingsTokenizationNotSupported" xml:space="preserve">
     <value>Collection rule action options '{settingsType}' must implement ICloneable to support property tokenization.</value>
   </data>

@@ -780,10 +780,6 @@
     <value>The role required to be able to authenticate.</value>
     <comment>The description provided for the RequiredRole parameter on AzureAdOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_AzureAdOptions_SwaggerScope" xml:space="preserve">
-    <value>The API scope required by users to be able to interactively authenticate using the in-box Swagger UI. If not specified, users will not be able to interactively authenticate.</value>
-    <comment>The description provided for the SwaggerScope parameter on AzureAdOptions.</comment>
-  </data>
   <data name="DisplayAttributeDescription_AzureAdOptions_TenantId" xml:space="preserve">
     <value>The tenant id of the Azure Active Directory tenant, or its tenant domain.</value>
     <comment>The description provided for the TenantId parameter on AzureAdOptions.</comment>
@@ -811,5 +807,8 @@
   <data name="DisplayAttributeDescription_MonitorApiKeyOptions_Issuer" xml:space="preserve">
     <value>The expected value of the 'iss' or Issuer field in the JWT (JSON Web Token).</value>
     <comment>The description provided for the Issuer parameter on MonitorApiKeyOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectExceptionsOptions_Filters" xml:space="preserve">
+    <value>The filters that determine which exceptions should be included/excluded when collecting exceptions.</value>
   </data>
 </root>
