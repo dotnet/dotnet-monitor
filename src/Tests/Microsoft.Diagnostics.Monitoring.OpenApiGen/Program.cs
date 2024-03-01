@@ -6,8 +6,6 @@ using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Diagnostics.Tools.Monitor.Swagger;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Writers;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Globalization;
@@ -47,14 +45,10 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
                 })
                 .Build();
 
-            // Generate the OpenAPI document
-            OpenApiDocument document = host.Services
-                .GetRequiredService<ISwaggerProvider>()
-                .GetSwagger("v1");
-
-            // Serialize the document to the file
+            // Serialize the OpenApi document
             using StringWriter outputWriter = new(CultureInfo.InvariantCulture);
-            document.SerializeAsV3(new OpenApiJsonWriter(outputWriter));
+            ISwaggerProvider provider = host.Services.GetRequiredService<ISwaggerProvider>();
+            provider.WriteTo(outputWriter);
             outputWriter.Flush();
 
             // Normalize line endings before writing
