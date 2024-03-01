@@ -1,6 +1,6 @@
 <Project>
   <!-- Packages in this file have versions updated periodically by Dependabot.
-  Versions managed by Maestro should be in ..\Versions.props.
+  Versions managed by Maestro should be in ..\..\Versions.props.
   Versions managed by Dependabot should be in .\Versions.props.
   -->
 
@@ -8,7 +8,6 @@
     <PackageReference Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
     <PackageReference Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
     <PackageReference Include="Azure.Storage.Queues" Version="$(AzureStorageQueuesVersion)" />
-    <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
     <PackageReference Include="System.Private.Uri" Version="$(SystemPrivateUriVersion)" />
     <PackageReference Include="System.Security.Principal.Windows" Version="$(SystemSecurityPrincipalWindowsVersion)" />
     <PackageReference Include="Microsoft.OpenApi.Readers" Version="$(MicrosoftOpenApiReadersVersion)" />
@@ -19,5 +18,6 @@
     <PackageReference Include="NJsonSchema" Version="$(NJsonSchemaVersion)" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="$(SwashbuckleAspNetCoreVersion)" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
+    <PackageReference Include="AWSSDK.S3" Version="$(AwsSdkS3Version)" />
   </ItemGroup>
 </Project>
