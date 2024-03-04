@@ -31,7 +31,7 @@ jobs:
 
       - name: Sync branch
         run: |
-          git checkout "$base_branch" -- \
+          git checkout --no-overlay "$base_branch" -- \
             ".github" \
             ".devcontainer" \
             ".vscode" \
@@ -78,14 +78,12 @@ jobs:
           git config merge.ours.driver true
           git merge "$base_branch" --strategy=ort --strategy-option=theirs
 
-          # Must be kept in sync with .gitattributes
-          git checkout "origin/${{ matrix.branch }}" -- \
-            "global.json" \
-            "eng/branch-vscode-config" \
-            "eng/common" \
-            "eng/Common.props" \
-            "eng/Versions.props" \
-            "eng/Version.Details.xml"
+          matches=$(perl -ne '/^([^\s]+)\s+merge=ours/gm && print "$1 "' .gitattributes)
+          for match in $matches; do
+              git checkout --no-overlay "$target_branch" -- "$match"
+          done
+        env:
+          target_branch: origin/${{ matrix.branch }}
 
       - name: Open PR
         uses: ./.github/actions/open-pr
