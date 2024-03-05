@@ -746,15 +746,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Swagger UI permission.
-        /// </summary>
-        internal static string HelpDescription_SwaggerScope_AzureAd {
-            get {
-                return ResourceManager.GetString("HelpDescription_SwaggerScope_AzureAd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Collection rule action options &apos;{settingsType}&apos; must implement ICloneable to support property tokenization..
         /// </summary>
         internal static string LogFormatString_ActionSettingsTokenizationNotSupported {

@@ -205,7 +205,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options.UseAzureAd(
                 tenantId: Guid.NewGuid().ToString("D"),
                 clientId: Guid.NewGuid().ToString("D"),
-                swaggerScope: Guid.NewGuid().ToString("D"),
                 requiredRole: Guid.NewGuid().ToString("D"));
         }
 
@@ -214,18 +213,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options.UseAzureAd(
                 tenantId: Guid.NewGuid().ToString("D"),
                 clientId: Guid.NewGuid().ToString("D"),
-                swaggerScope: Guid.NewGuid().ToString("D"),
                 requiredRole: requiredRole);
         }
 
-        public static RootOptions UseAzureAd(this RootOptions options, string tenantId, string clientId, string swaggerScope, string requiredRole)
+        public static RootOptions UseAzureAd(this RootOptions options, string tenantId, string clientId, string requiredRole)
         {
             return options.UseAzureAd(new AzureAdOptions
             {
                 TenantId = tenantId,
                 ClientId = clientId,
-                RequiredRole = requiredRole,
-                SwaggerScope = swaggerScope
+                RequiredRole = requiredRole
             });
         }
 

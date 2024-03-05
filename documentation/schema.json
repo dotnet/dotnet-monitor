@@ -494,13 +494,6 @@
           "type": "string",
           "description": "The role required to be able to authenticate.",
           "minLength": 1
-        },
-        "SwaggerScope": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The API scope required by users to be able to interactively authenticate using the in-box Swagger UI. If not specified, users will not be able to interactively authenticate."
         }
       }
     },
@@ -1768,6 +1761,7 @@
           ]
         },
         "Filters": {
+          "description": "The filters that determine which exceptions should be included/excluded when collecting exceptions.",
           "oneOf": [
             {
               "type": "null"
