@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             }
         }
 
-        public void EnterProbe(ulong uniquifier, object[] args)
+        public bool EnterProbe(ulong uniquifier, object[] args)
         {
             // We allow the instrumentation of system types, but these types can also be part of an ILogger implementation.
             // In addition, certain loggers don't log directly, but into a background thread.
@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
             if (!_logger.ShouldLog())
             {
-                return;
+                return false;
             }
 
             FunctionProbesState? state = FunctionProbesStub.State;
@@ -51,12 +51,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 !state.InstrumentedMethods.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod) ||
                 args.Length != instrumentedMethod?.SupportedParameters.Length)
             {
-                return;
+                return false;
             }
 
             if (instrumentedMethod.CaptureMode == ParameterCaptureMode.Disallowed)
             {
-                return;
+                return false;
             }
 
             string[] argValues;
@@ -87,6 +87,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             }
 
             _logger.Log(instrumentedMethod.CaptureMode, instrumentedMethod.MethodTemplateString, argValues);
+
+            return true;
         }
     }
 }

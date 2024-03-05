@@ -83,14 +83,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             return exception != null;
         }
 
-        public void EnterProbe(ulong uniquifier, object[] args)
+        public bool EnterProbe(ulong uniquifier, object[] args)
         {
             if (!_perFunctionProbes.TryGetValue(uniquifier, out PerFunctionProbeWrapper probe))
             {
-                return;
+                return false;
             }
 
             probe.Invoke(args);
+
+            return true;
         }
 
         public void CacheMethods(IList<MethodInfo> methods)

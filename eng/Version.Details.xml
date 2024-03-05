@@ -1,66 +1,66 @@
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="9.0.0-preview.2.24128.4" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
+    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="9.0.0-preview.3.24151.1" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>e1ad9117a4dac3b0f5f2a7e2b10b43b7016379b9</Sha>
+      <Sha>3e5155276f3d486ef49e1f06ee875d6757983695</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="8.0.510501">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="8.0.0-preview.24151.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>8c08c89a0643d31db91e119b1adb463be3e0ffe5</Sha>
+      <Sha>831eee3a9e69dd886fa190a9914a7f66260c653a</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="8.0.510501">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="8.0.0-preview.24151.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>8c08c89a0643d31db91e119b1adb463be3e0ffe5</Sha>
+      <Sha>831eee3a9e69dd886fa190a9914a7f66260c653a</Sha>
     </Dependency>
-    <Dependency Name="System.CommandLine" Version="2.0.0-beta4.24102.1">
+    <Dependency Name="System.CommandLine" Version="2.0.0-beta4.24126.1">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
-      <Sha>46fea71e3d98dad0d676950522004b7f295dd372</Sha>
+      <Sha>5ea97af07263ea3ef68a18557c8aa3f7e3200bda</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0-preview.24075.1">
+    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0-preview.24151.1">
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
-      <Sha>bf54e2bebc28004dec0311dc4083bcff4fd44cdb</Sha>
+      <Sha>59b2d9dc38fcc17dd618e3b3af3ce692aaeedb37</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="9.0.0-beta.24105.3">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="9.0.0-beta.24151.5">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>8cfc9489d3e51071fedec9dcb99071dc912718bd</Sha>
+      <Sha>87d89025bdd8827c016e4083660d31f497670e5c</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="9.0.0-beta.24105.3">
+    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="9.0.0-beta.24151.5">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>8cfc9489d3e51071fedec9dcb99071dc912718bd</Sha>
+      <Sha>87d89025bdd8827c016e4083660d31f497670e5c</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="9.0.0-beta.24105.3">
+    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="9.0.0-beta.24151.5">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>8cfc9489d3e51071fedec9dcb99071dc912718bd</Sha>
+      <Sha>87d89025bdd8827c016e4083660d31f497670e5c</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="9.0.0-beta.24105.3">
+    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="9.0.0-beta.24151.5">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>8cfc9489d3e51071fedec9dcb99071dc912718bd</Sha>
+      <Sha>87d89025bdd8827c016e4083660d31f497670e5c</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Dotnet.Sdk.Internal" Version="9.0.100-preview.2.24154.2">
+    <Dependency Name="Microsoft.Dotnet.Sdk.Internal" Version="9.0.100-preview.3.24153.2">
       <Uri>https://github.com/dotnet/installer</Uri>
-      <Sha>1f23db25f3ebade102a338496f7d46a1128307f3</Sha>
+      <Sha>893b762b6e36d558df7ae6fccdfd8034f83a1c2e</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="9.0.0-beta.24105.3">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="9.0.0-beta.24151.5">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>8cfc9489d3e51071fedec9dcb99071dc912718bd</Sha>
+      <Sha>87d89025bdd8827c016e4083660d31f497670e5c</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.FileFormats" Version="1.0.507901">
+    <Dependency Name="Microsoft.FileFormats" Version="1.0.511901">
       <Uri>https://github.com/dotnet/symstore</Uri>
-      <Sha>0c7b75fc18db3a4f9b7737ae55a0d04e913ac40c</Sha>
+      <Sha>96a152a28e86ecc5c68ec9a73e02bb1e93163338</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="9.0.0-preview.2.24128.5" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
+    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="9.0.0-preview.3.24129.2" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>8e5e748c5c06d3e40244c725bd2124f06998f6c1</Sha>
+      <Sha>5e603d595e63ddc5cdce9777a40608279abdcc37</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.9.0" Version="9.0.0-preview.2.24128.4" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.9.0" Version="9.0.0-preview.3.24151.1" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>e1ad9117a4dac3b0f5f2a7e2b10b43b7016379b9</Sha>
+      <Sha>3e5155276f3d486ef49e1f06ee875d6757983695</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.9.0" Version="9.0.0-preview.2.24128.5" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
+    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.9.0" Version="9.0.0-preview.3.24129.2" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>8e5e748c5c06d3e40244c725bd2124f06998f6c1</Sha>
+      <Sha>5e603d595e63ddc5cdce9777a40608279abdcc37</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>

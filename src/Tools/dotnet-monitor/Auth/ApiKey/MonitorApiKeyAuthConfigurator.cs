@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Swashbuckle.AspNetCore.SwaggerUI;
 using System;
 using System.Collections.Generic;
 
@@ -65,10 +64,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
         {
             const string ApiKeySecurityDefinitionName = "ApiKeyAuth";
             options.AddBearerTokenAuthOption(ApiKeySecurityDefinitionName);
-        }
-
-        public void ConfigureSwaggerUI(SwaggerUIOptions options)
-        {
         }
 
         public IStartupLogger CreateStartupLogger(ILogger<Startup> logger, IServiceProvider serviceProvider)
