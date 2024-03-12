@@ -1,0 +1,29 @@
+# This template is a stop-gap until public project builds have 1ES PT support
+parameters:
+- name: containers
+  type: object
+  default: {}
+- name: pool
+  type: object
+  default: null
+- name: stages
+  type: stageList
+  default: []
+
+resources:
+  containers:
+  - ${{ each container in parameters.containers }}:
+    - ${{ if container.value.image }}:
+      - container: ${{ container.key }}
+        ${{ each pair in container.value }}:
+          ${{ pair.key }}: ${{ pair.value }}
+
+stages:
+- ${{ each stage in parameters.stages }}:
+  - ${{ each pair in stage }}:
+      ${{ pair.key }}: ${{ pair.value }}
+    pool:
+      name: ${{ parameters.pool.name }}
+      os: ${{ parameters.pool.os }}
+      demands:
+      - ImageOverride -equals ${{ parameters.pool.image }}
