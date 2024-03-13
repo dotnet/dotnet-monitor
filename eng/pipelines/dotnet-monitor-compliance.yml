@@ -7,7 +7,7 @@ trigger: none
 pr: none
 
 variables:
-- template: /eng/common/templates/variables/pool-providers.yml
+- template: /eng/common/templates-official/variables/pool-providers.yml@self
 - group: DotNet-ApiScan
 - group: DotNetBuilds storage account read tokens
 - group: Release-Pipeline
@@ -15,105 +15,107 @@ variables:
   value: DotNetCore
   readonly: true
 
-stages:
-- stage: Compliance
+extends:
+  template: /eng/pipelines/templates/pipeline-template.yml@self
+  parameters:
+    sdl:
+      sbom:
+        enabled: false
+    stages:
+    - stage: Compliance
 
-  pool:
-    name: $(DncEngInternalBuildPool)
-    demands: ImageOverride -equals 1es-windows-2019
+      jobs:
+      - job: Validate
+        timeoutInMinutes: 180
 
-  jobs:
-  - job: Validate
-    timeoutInMinutes: 180
+        workspace:
+          clean: all
 
-    workspace:
-      clean: all
+        steps:    
+        - task: PowerShell@2
+          displayName: Get BAR ID
+          inputs:
+            filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBarId.ps1
+            arguments: >-
+              -BuildId $(resources.pipeline.Build.runID)
+              -TaskVariableName 'BuildBarId'
+          env:
+            SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+        
+        - task: PowerShell@2
+          displayName: 'Get Build Version'
+          inputs:
+            filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
+            arguments: >-
+              -BarId $(BuildBarId)
+              -MaestroToken $(MaestroAccessToken)
+              -TaskVariableName 'BuildVersion'
 
-    steps:    
-    - task: PowerShell@2
-      displayName: Get BAR ID
-      inputs:
-        filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBarId.ps1
-        arguments: >-
-          -BuildId $(resources.pipeline.Build.runID)
-          -TaskVariableName 'BuildBarId'
-      env:
-        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-    
-    - task: PowerShell@2
-      displayName: 'Get Build Version'
-      inputs:
-        filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
-        arguments: >-
-          -BarId $(BuildBarId)
-          -MaestroToken $(MaestroAccessToken)
-          -TaskVariableName 'BuildVersion'
-    
-    # Only scan the files that are being shipped; use the same gathering procedure
-    # that the asset staging process uses.
-    - task: PowerShell@2
-      displayName: 'Download Build Assets'
-      inputs:
-        targetType: filePath
-        filePath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
-        arguments: >-
-          -BarBuildId "$(BuildBarId)"
-          -AzdoToken "$(dn-bot-all-drop-rw-code-rw-release-all)"
-          -MaestroToken "$(MaestroAccessToken)"
-          -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)"
-          -DownloadTargetPath "$(System.ArtifactsDirectory)\BuildAssets"
-          -SasSuffixes "$(dotnetbuilds-internal-checksums-container-read-token),$(dotnetbuilds-internal-container-read-token)"
-          -ReleaseVersion "$(BuildVersion)"
-          -Separated $False
-        workingDirectory: '$(Build.Repository.LocalPath)'
-      continueOnError: true
-    
-    # All of the relevant assets are packages, which must be extracted before scanning
-    - task: PowerShell@2
-      displayName: 'Extract Package Assets'
-      inputs:
-        targetType: filePath
-        filePath: '$(Build.Repository.LocalPath)/eng/pipelines/scripts/Extract-Assets.ps1'
-        arguments: >-
-          -SourcePath '$(System.ArtifactsDirectory)\BuildAssets'
-          -BinariesTargetPath '$(System.ArtifactsDirectory)\UnpackedBinaries'
-          -SymbolsTargetPath '$(System.ArtifactsDirectory)\UnpackedSymbols'
+        # Only scan the files that are being shipped; use the same gathering procedure
+        # that the asset staging process uses.
+        - task: PowerShell@2
+          displayName: 'Download Build Assets'
+          inputs:
+            targetType: filePath
+            filePath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
+            arguments: >-
+              -BarBuildId "$(BuildBarId)"
+              -AzdoToken "$(dn-bot-all-drop-rw-code-rw-release-all)"
+              -MaestroToken "$(MaestroAccessToken)"
+              -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)"
+              -DownloadTargetPath "$(System.ArtifactsDirectory)\BuildAssets"
+              -SasSuffixes "$(dotnetbuilds-internal-checksums-container-read-token),$(dotnetbuilds-internal-container-read-token)"
+              -ReleaseVersion "$(BuildVersion)"
+              -Separated $False
+            workingDirectory: '$(Build.Repository.LocalPath)'
+          continueOnError: true
 
-    # Copy eligible files to be scanned
-    - task: PowerShell@2
-      displayName: 'Copy Eligible Assets'
-      inputs:
-        pwsh: true
-        targetType: filePath
-        filePath: '$(Build.Repository.LocalPath)/eng/pipelines/scripts/Copy-ApiScanEligible.ps1'
-        arguments: >-
-          -SourcePath '$(System.ArtifactsDirectory)\UnpackedBinaries'
-          -TargetPath '$(System.ArtifactsDirectory)\ScannableBinaries'
+        # All of the relevant assets are packages, which must be extracted before scanning
+        - task: PowerShell@2
+          displayName: 'Extract Package Assets'
+          inputs:
+            targetType: filePath
+            filePath: '$(Build.Repository.LocalPath)/eng/pipelines/scripts/Extract-Assets.ps1'
+            arguments: >-
+              -SourcePath '$(System.ArtifactsDirectory)\BuildAssets'
+              -BinariesTargetPath '$(System.ArtifactsDirectory)\UnpackedBinaries'
+              -SymbolsTargetPath '$(System.ArtifactsDirectory)\UnpackedSymbols'
 
-    - task: APIScan@2
-      displayName: Run APIScan
-      inputs:
-        softwareFolder: '$(System.ArtifactsDirectory)\ScannableBinaries'
-        softwareName: 'Dotnet-Monitor'
-        softwareVersionNum: '$(BuildVersion)'
-        softwareBuildNum: '$(resources.pipeline.Build.runID)'
-        symbolsFolder: 'SRV*http://symweb;$(System.ArtifactsDirectory)\UnpackedSymbols'
-      env:
-        AzureServicesAuthConnectionString: runAs=App;AppId=$(apiscan-service-principal-app-id);TenantId=72f988bf-86f1-41af-91ab-2d7cd011db47;AppKey=$(apiscan-service-principal-app-secret)
-      continueOnError: true
+        # Copy eligible files to be scanned
+        - task: PowerShell@2
+          displayName: 'Copy Eligible Assets'
+          inputs:
+            pwsh: true
+            targetType: filePath
+            filePath: '$(Build.Repository.LocalPath)/eng/pipelines/scripts/Copy-ApiScanEligible.ps1'
+            arguments: >-
+              -SourcePath '$(System.ArtifactsDirectory)\UnpackedBinaries'
+              -TargetPath '$(System.ArtifactsDirectory)\ScannableBinaries'
 
-    - task: PublishSecurityAnalysisLogs@3
-      displayName: Publish Analysis
-      inputs:
-        ArtifactName: 'CodeAnalysisLogs'
-        ArtifactType: 'Container'
-        AllTools: false
-        ApiScan: true
-        ToolLogsNotFoundAction: 'Standard'
-    
-    - task: PostAnalysis@2
-      displayName: Fail if Issues are Detected
-      condition: succeededOrFailed()
-      inputs:
-        GdnBreakAllTools: true
-        GdnBreakGdnToolApiScanSeverity: Warning
+        - task: APIScan@2
+          displayName: Run APIScan
+          inputs:
+            softwareFolder: '$(System.ArtifactsDirectory)\ScannableBinaries'
+            softwareName: 'Dotnet-Monitor'
+            softwareVersionNum: '$(BuildVersion)'
+            softwareBuildNum: '$(resources.pipeline.Build.runID)'
+            symbolsFolder: 'SRV*http://symweb;$(System.ArtifactsDirectory)\UnpackedSymbols'
+          env:
+            AzureServicesAuthConnectionString: runAs=App;AppId=$(apiscan-service-principal-app-id);TenantId=72f988bf-86f1-41af-91ab-2d7cd011db47;AppKey=$(apiscan-service-principal-app-secret)
+          continueOnError: true
+
+        - task: PublishSecurityAnalysisLogs@3
+          displayName: Publish Analysis
+          inputs:
+            ArtifactName: 'CodeAnalysisLogs'
+            ArtifactType: 'Container'
+            AllTools: false
+            ApiScan: true
+            ToolLogsNotFoundAction: 'Standard'
+
+        - task: PostAnalysis@2
+          displayName: Fail if Issues are Detected
+          condition: succeededOrFailed()
+          inputs:
+            GdnBreakAllTools: true
+            GdnBreakGdnToolApiScanSeverity: Warning
