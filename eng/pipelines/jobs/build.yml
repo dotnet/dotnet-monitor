@@ -26,9 +26,12 @@ parameters:
   # Disable SBOM generation
   disableSbom: false
   buildArgs: ''
+  # Adjust for 1ES pipeline template
+  is1ESPipeline: true
+  commonTemplatesFolderName: 'templates-official'
 
 jobs:
-- template: /eng/common/templates/job/job.yml
+- template: /eng/common/${{ parameters.commonTemplatesFolderName }}/job/job.yml@self
   parameters:
     name: ${{ parameters.prefix }}_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
     displayName: ${{ format('{0} {1} {2} {3}', parameters.prefix, parameters.osGroup, parameters.architecture, parameters.configuration) }}
@@ -41,48 +44,47 @@ jobs:
     ${{ if eq(parameters.disableSbom, 'true') }}:
       enableSbom: false
     helixRepo: dotnet/dotnet-monitor
-    artifacts:
-      publish:
-        logs:
-          name: Logs_$(JobName)
+    # Log publishing isn't ported over in arcade yet
+    ${{ if ne(parameters.is1ESPipeline, 'true') }}:
+      artifacts:
+        publish:
+          logs:
+            name: Logs_$(JobName)
 
-    pool:
+    # Default build pool is Windows; override for Linux and MacOS
+    ${{ if in(parameters.osGroup, 'Linux', 'Linux_Musl') }}:
       # Public Linux Build Pool
-      ${{ if in(parameters.osGroup, 'Linux', 'Linux_Musl') }}:
-        ${{ if eq(variables['System.TeamProject'], 'public') }}:
+      ${{ if eq(variables['System.TeamProject'], 'public') }}:
+        pool:
           name: NetCore-Svc-Public
           demands: ImageOverride -equals Build.Ubuntu.1804.Amd64.Open
+          os: linux
 
-        # Official Build Linux Pool
-        ${{ if ne(variables['System.TeamProject'], 'public') }}:
+      # Official Build Linux Pool
+      ${{ if ne(variables['System.TeamProject'], 'public') }}:
+        pool:
           name: NetCore1ESPool-Svc-Internal
-          demands: ImageOverride -equals Build.Ubuntu.1804.Amd64
+          demands: ImageOverride -equals 1es-ubuntu-2204-pt
+          os: linux
 
-      # Build OSX Pool
-      ${{ if in(parameters.osGroup, 'MacOS') }}:
+    # Build OSX Pool
+    ${{ if in(parameters.osGroup, 'MacOS') }}:
+      pool:
+        name: Azure Pipelines
         vmImage: macos-11
-
-      # Public Windows Build Pool
-      ${{ if eq(parameters.osGroup, 'Windows') }}:
-        ${{ if eq(variables['System.TeamProject'], 'public') }}:
-          name: NetCore-Svc-Public
-          demands: ImageOverride -equals windows.vs2019.amd64.open
-
-        ${{ if ne(variables['System.TeamProject'], 'public') }}:
-          name: NetCore1ESPool-Svc-Internal
-          demands: ImageOverride -equals windows.vs2019.amd64
+        os: macOS
 
     ${{ if eq(parameters.osGroup, 'Linux') }}:
       ${{ if eq(parameters.architecture, 'arm64') }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64
+        container: build_linux_arm64_cross
       ${{ else }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7
+        container: build_linux_amd64
 
     ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
       ${{ if eq(parameters.architecture, 'arm64') }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-cross-arm64-alpine
+        container: build_linux_musl_arm64_cross
       ${{ else }}:
-        container: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-WithNode
+        container: build_linux_musl_amd64
 
     ${{ if ne(parameters.dependsOn, '') }}:
       dependsOn: ${{ parameters.dependsOn }}
@@ -100,7 +102,7 @@ jobs:
     - _InternalBuildArgs: ''
     - ${{ each variable in parameters.variables }}:
       - ${{ variable }}
-    
+
     # Cross build for arm64 non-Windows builds
     - ${{ if and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')) }}:
       - _CrossBuildArgs: '-cross'

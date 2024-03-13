@@ -9,7 +9,7 @@ parameters:
   architecture: x64
 
 jobs:
-- template: /eng/pipelines/jobs/build.yml
+- template: /eng/pipelines/jobs/build.yml@self
   parameters:
     prefix: Archive
     osGroup: ${{ parameters.osGroup }}
@@ -45,8 +45,8 @@ jobs:
         SourceFolder: '$(Build.SourcesDirectory)/artifacts/packages'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/packages'
 
-    - task: PublishBuildArtifacts@1
+    - task: 1ES.PublishBuildArtifacts@1
       displayName: Publish Artifacts (Unified)
       inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
-        artifactName: Archive_Unified_${{ parameters.configuration }}
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
+        ArtifactName: Archive_Unified_${{ parameters.configuration }}
