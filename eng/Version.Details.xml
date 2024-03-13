@@ -38,9 +38,9 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>1c8e12b71c28f5dc6626b529b08abefdbb7ca6e8</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Dotnet.Sdk.Internal" Version="9.0.100-preview.3.24162.2">
+    <Dependency Name="Microsoft.Dotnet.Sdk.Internal" Version="9.0.100-preview.3.24162.35">
       <Uri>https://github.com/dotnet/installer</Uri>
-      <Sha>2c7352096e706974f428d9d54d5aba78e9734242</Sha>
+      <Sha>aa15647b3c58f0075e4575b1e7ec010415607d39</Sha>
     </Dependency>
     <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="9.0.0-beta.24162.2">
       <Uri>https://github.com/dotnet/arcade</Uri>
