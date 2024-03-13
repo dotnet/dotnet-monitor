@@ -1,10 +1,14 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using Microsoft.Diagnostics.Monitoring.StartupHook.Eventing;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
+using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eventing
 {
@@ -79,9 +83,111 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
             WriteEventWithFlushing(ParameterCapturingEvents.EventIds.FailedToCapture, data);
         }
 
+        [NonEvent]
+        public void CapturedParameters(
+            Guid RequestId,
+            string methodName,
+            string methodModuleName,
+            string? methodDeclaringTypeName,
+            IEnumerable<ResolvedParameterInfo> parameters
+            )
+        {
+            Guid captureId = Guid.NewGuid();
+            Activity? currentActivity = Activity.Current;
+
+            CapturedParameterStart(
+                RequestId,
+                captureId,
+                currentActivity?.Id,
+                methodName,
+                methodModuleName,
+                methodDeclaringTypeName);
+
+            foreach (ResolvedParameterInfo param in parameters)
+            {
+                CapturedParameter(RequestId, captureId, param.Name, param.Type, param.TypeModuleName, param.Value, param.Attributes, param.IsByRef);
+            }
+
+            CapturedParameterStop(RequestId, captureId);
+        }
+
+        [Event(ParameterCapturingEvents.EventIds.ParameterCaptured)]
+        public void CapturedParameter(
+            Guid RequestId,
+            Guid CaptureId,
+            string? parameterName,
+            string? parameterType,
+            string? parameterTypeModuleName,
+            string? parameterValue,
+            ParameterAttributes parameterAttributes,
+            bool isParameterTypeByRef
+            )
+        {
+            Span<EventData> data = stackalloc EventData[8];
+
+            using PinnedData pinnedName = PinnedData.Create(parameterName);
+            using PinnedData pinnedType = PinnedData.Create(parameterType);
+            using PinnedData pinnedTypeModuleName = PinnedData.Create(parameterTypeModuleName);
+            using PinnedData pinnedValue = PinnedData.Create(parameterValue);
+
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.RequestId], RequestId);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.CaptureId], CaptureId);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterName], pinnedName);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterType], pinnedType);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterTypeModuleName], pinnedTypeModuleName);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterValue], pinnedValue);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterAttributes], parameterAttributes);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterTypeIsByRef], isParameterTypeByRef);
+
+            WriteEventWithFlushing(ParameterCapturingEvents.EventIds.ParameterCaptured, data);
+        }
+
+        [Event(ParameterCapturingEvents.EventIds.ParametersCapturedStart)]
+        private void CapturedParameterStart(
+            Guid RequestId,
+            Guid CaptureId,
+            string? activityId,
+            string methodName,
+            string methodModuleName,
+            string? methodDeclaringTypeName
+            )
+        {
+            Span<EventData> data = stackalloc EventData[6];
+
+            using PinnedData pinnedActivityId = PinnedData.Create(activityId);
+            using PinnedData pinnedMethodName = PinnedData.Create(methodName);
+            using PinnedData pinnedMethodModuleName = PinnedData.Create(methodModuleName);
+            using PinnedData pinnedMethodDeclaringTypeName = PinnedData.Create(methodDeclaringTypeName);
+
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.RequestId], RequestId);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.CaptureId], CaptureId);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.ActivityId], pinnedActivityId);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodName], pinnedMethodName);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodModuleName], pinnedMethodModuleName);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodDeclaringTypeName], pinnedMethodDeclaringTypeName);
+
+            WriteEventWithFlushing(ParameterCapturingEvents.EventIds.ParametersCapturedStart, data);
+        }
+
+        [Event(ParameterCapturingEvents.EventIds.ParametersCapturedStop)]
+        private void CapturedParameterStop(
+            Guid RequestId,
+            Guid CaptureId
+            )
+        {
+            Span<EventData> data = stackalloc EventData[2];
+
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStopPayloads.RequestId], RequestId);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStopPayloads.CaptureId], CaptureId);
+
+            WriteEventWithFlushing(ParameterCapturingEvents.EventIds.ParametersCapturedStop, data);
+        }
+
         [Event(ParameterCapturingEvents.EventIds.Flush)]
         protected override void Flush()
         {
+            // This method is called on a timer and we shouldn't track any calls inside so we don't flood the user with unimportant captures.
+            using NoProbeContext noProbe = new();
             WriteEvent(ParameterCapturingEvents.EventIds.Flush);
         }
     }

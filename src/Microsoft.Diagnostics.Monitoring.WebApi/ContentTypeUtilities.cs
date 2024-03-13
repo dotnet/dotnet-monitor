@@ -49,5 +49,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 ExceptionFormat.NewlineDelimitedJson => ContentTypes.ApplicationNdJson,
                 _ => throw new InvalidOperationException()
             };
+
+        public static CapturedParameterFormat? ComputeCapturedParameterFormat(IList<MediaTypeHeaderValue> acceptedHeaders)
+        {
+            // CONSIDER We currently don't factor quality into account.
+            // CONSIDER Centralize content negotiation across logs, stacks, and any other types that need it.
+
+            if (acceptedHeaders == null) return null;
+            if (acceptedHeaders.Contains(TextPlainHeader)) return CapturedParameterFormat.PlainText;
+            if (acceptedHeaders.Contains(ApplicationJsonHeader)) return CapturedParameterFormat.Json;
+            if (acceptedHeaders.Any(TextPlainHeader.IsSubsetOf)) return CapturedParameterFormat.PlainText;
+            if (acceptedHeaders.Any(ApplicationJsonHeader.IsSubsetOf)) return CapturedParameterFormat.Json;
+            return null;
+        }
     }
 }

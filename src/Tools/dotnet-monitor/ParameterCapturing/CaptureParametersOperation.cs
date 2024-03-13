@@ -4,9 +4,11 @@
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -23,6 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         private readonly ILogger _logger;
         private readonly CaptureParametersConfiguration _configuration;
         private readonly TimeSpan _duration;
+        private readonly IParameterCapturingStore _parameterCapturingStore;
 
         private readonly Guid _requestId;
 
@@ -33,15 +36,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
         public Task Started => _capturingStartedCompletionSource.Task;
 
-        public CaptureParametersOperation(IEndpointInfo endpointInfo, ProfilerChannel profilerChannel, ILogger logger, CaptureParametersConfiguration configuration, TimeSpan duration)
+        public CaptureParametersOperation(
+            Guid requestId,
+            IEndpointInfo endpointInfo,
+            ProfilerChannel profilerChannel,
+            ILogger logger,
+            CaptureParametersConfiguration configuration,
+            TimeSpan duration)
         {
             _profilerChannel = profilerChannel;
             _endpointInfo = endpointInfo;
             _logger = logger;
             _configuration = configuration;
             _duration = duration;
+            _parameterCapturingStore = endpointInfo.ServiceProvider.GetRequiredService<IParameterCapturingStore>();
 
-            _requestId = Guid.NewGuid();
+            _requestId = requestId;
         }
 
         public static bool IsEndpointRuntimeSupported(IEndpointInfo endpointInfo)
@@ -114,6 +124,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 settings.OnCapturingFailed += OnCapturingFailed;
                 settings.OnServiceStateUpdate += OnServiceStateUpdate;
                 settings.OnUnknownRequestId += OnUnknownRequestId;
+                settings.OnParametersCaptured += OnParametersCaptured;
 
                 await using EventParameterCapturingPipeline eventTracePipeline = new(_endpointInfo.Endpoint, settings);
                 Task runPipelineTask = eventTracePipeline.StartAsync(token);
@@ -217,6 +228,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             }
 
             _ = _capturingStoppedCompletionSource.TrySetException(new InvalidOperationException(nameof(requestId)));
+        }
+
+        private void OnParametersCaptured(object sender, ICapturedParameters parameters)
+        {
+            _parameterCapturingStore.AddCapturedParameters(parameters);
         }
 
         public async Task StopAsync(CancellationToken token)

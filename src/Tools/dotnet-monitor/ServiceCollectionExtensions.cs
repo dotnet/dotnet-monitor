@@ -10,6 +10,7 @@ using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.SystemDiagnosticsMetri
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
+using Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
@@ -387,6 +388,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 return authConfigurator.CreateStartupLogger(logger, services);
             });
             services.AddSingleton<IStartupLogger, EgressStartupLogger>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureParameterCapturing(this IServiceCollection services)
+        {
+            services.AddSingleton<ICaptureParametersOperationFactory, CaptureParametersOperationFactory>();
+            services.AddScoped<IParameterCapturingStore, ParameterCapturingStore>();
             return services;
         }
 

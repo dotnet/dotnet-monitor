@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
@@ -10,8 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         private delegate void EnterProbeDelegate(ulong uniquifier, object[] args);
         private static readonly EnterProbeDelegate s_fixedEnterProbeDelegate = EnterProbeStub;
 
-        [ThreadStatic]
-        private static bool s_inProbe;
+        private static readonly AsyncLocal<int> s_inProbeCount = new();
 
         internal static FunctionProbesState? State { get; set; }
 
@@ -23,20 +23,36 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         public static void EnterProbeStub(ulong uniquifier, object[] args)
         {
             IFunctionProbes? probes = State?.Probes;
-            if (probes == null || s_inProbe)
+            if (probes == null || !IsProbingEnabled())
             {
                 return;
             }
 
             try
             {
-                s_inProbe = true;
+                PauseProbing();
                 _ = probes.EnterProbe(uniquifier, args);
             }
             finally
             {
-                s_inProbe = false;
+                ResumeProbing();
             }
+        }
+
+        public static bool IsProbingEnabled() => s_inProbeCount.Value == 0;
+
+        public static void PauseProbing()
+        {
+            s_inProbeCount.Value++;
+        }
+
+        public static void ResumeProbing()
+        {
+            if (s_inProbeCount.Value == 0)
+            {
+                throw new InvalidOperationException($"{nameof(ResumeProbing)} was called more times than {nameof(PauseProbing)}!");
+            }
+            s_inProbeCount.Value--;
         }
     }
 }

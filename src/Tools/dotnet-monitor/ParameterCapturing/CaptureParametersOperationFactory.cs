@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
@@ -19,9 +20,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _logger = logger;
         }
 
-        public IInProcessOperation Create(IEndpointInfo endpointInfo, CaptureParametersConfiguration configuration, TimeSpan duration)
+        public IInProcessOperation Create(Guid requestId, IEndpointInfo endpointInfo, CaptureParametersConfiguration configuration, TimeSpan duration)
         {
-            return new CaptureParametersOperation(endpointInfo, _profilerChannel, _logger, configuration, duration);
+            return new CaptureParametersOperation(requestId, endpointInfo, _profilerChannel, _logger, configuration, duration);
+        }
+
+        public IArtifactOperation CreateCapturedParameterFetcher(IEndpointInfo endpointInfo, Guid? requestId, CapturedParameterFormat format)
+        {
+            return new CapturedParametersFetcher(endpointInfo, requestId, format);
         }
     }
 }
