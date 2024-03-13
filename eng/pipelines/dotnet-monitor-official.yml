@@ -35,6 +35,7 @@ parameters:
   default: false
 
 variables:
+- template: /eng/common/templates-official/variables/pool-providers.yml@self
 - name: _TeamName
   value: DotNetCore
 - name: _TPNFile
@@ -44,95 +45,104 @@ variables:
   # DotNet-Diagnostics-SDL-Params provides Tsa* variables for SDL checks.
   - group: DotNet-Diagnostics-SDL-Params
 
-stages:
-- stage: Build
-  displayName: Build and Test
-  jobs:
-  - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-    # Generate a TPN for only the dotnet-monitor project
-    - template: /eng/pipelines/jobs/tpn.yml
-
-  # Build and test binaries
-  - template: /eng/pipelines/jobs/platform-matrix.yml
-    parameters:
-      jobTemplate: /eng/pipelines/jobs/build-test.yml
-      includeArm64: ${{ ne(variables['System.TeamProject'], 'public') }}
-      includeDebug: true
-      jobParameters:
-        publishArtifacts: ${{ and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}
-        testGroup: ${{ parameters.testGroup }}
-
-- ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-  - stage: Archive
-    displayName: Archive
-    dependsOn:
-    - Build
-    jobs:
-    # Sign binaries before archiving
-    - template: /eng/pipelines/jobs/sign-binaries.yml
-
-    # Build RID (runtime identifier) archives
-    - template: /eng/pipelines/jobs/platform-matrix.yml
-      parameters:
-        jobTemplate: /eng/pipelines/jobs/build-archive.yml
-        includeArm64: ${{ ne(variables['System.TeamProject'], 'public') }}
-# This stage creates NuGet packages and generates the BAR manifests
-- ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-  - stage: PackSignPublish
-    displayName: Pack, Sign, and Generate Manifests
-    dependsOn:
-    - Archive
-    jobs:
-    # Pack, sign, and publish manifest
-    - template: /eng/pipelines/jobs/pack-sign-publish.yml
-
-    # Register with BAR
-    - template: /eng/common/templates/job/publish-build-assets.yml
-      parameters:
-        configuration: Release
-        dependsOn:
-        - Pack_Sign
-        publishUsingPipelines: true
-        pool:
-          name: NetCore1ESPool-Svc-Internal
-          demands: ImageOverride -equals 1es-windows-2019
-# These are the stages that perform validation of several SDL requirements and publish the bits required to the designated feed.
-  - template: /eng/common/templates/post-build/post-build.yml
-    parameters:
-      # This is to enable SDL runs part of Post-Build Validation Stage.
-      # as well as NuGet, SourceLink, and signing validation.
-      # The variables get imported from group dotnet-diagnostics-sdl-params
-      validateDependsOn:
-      - PackSignPublish
-      publishingInfraVersion: 3
-      enableSourceLinkValidation: ${{ and(not(startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/')), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}
-      enableSigningValidation: true
-      enableSymbolValidation: false
-      enableNugetValidation: true
-      publishInstallersAndChecksums: true
-      SDLValidationParameters:
-        enable: true
-        continueOnError: true
-        publishGdn: true
-        params: >-
-          -SourceToolsList @("policheck","credscan")
-          -TsaInstanceURL $(_TsaInstanceURL)
-          -TsaProjectName $(_TsaProjectName)
-          -TsaNotificationEmail $(_TsaNotificationEmail)
-          -TsaCodebaseAdmin $(_TsaCodebaseAdmin)
-          -TsaBugAreaPath $(_TsaBugAreaPath)
-          -TsaIterationPath $(_TsaIterationPath)
-          -TsaRepositoryName "dotnet-monitor"
-          -TsaCodebaseName "dotnet-monitor"
-          -TsaPublish $True
-          -PoliCheckAdditionalRunConfigParams @("UserExclusionPath < $(Build.SourcesDirectory)/eng/PoliCheckExclusions.xml")
-        artifactNames:
-        - 'PackageArtifacts'
-# This sets up the bits to do a Release.
-- template: /eng/pipelines/stages/preparerelease.yml
+extends:
+  template: /eng/pipelines/templates/pipeline-template.yml@self
   parameters:
-    ${{ if eq(parameters.updateDocker, 'true') }}:
-      updateDockerCondition: true
-    ${{ else }}:
-      # If scheduled build from main and nightly update from main enabled
-      updateDockerCondition: and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['NightlyUpdateDockerFromMain'], 'true'))
+    featureFlags:
+      autoBaseline: true
+    sdl:
+      sbom:
+        enabled: false
+    stages:
+    - stage: Build
+      displayName: Build and Test
+      jobs:
+      - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+        # Generate a TPN for only the dotnet-monitor project
+        - template: /eng/pipelines/jobs/tpn.yml@self
+
+      # Build and test binaries
+      - template: /eng/pipelines/jobs/platform-matrix.yml@self
+        parameters:
+          jobTemplate: /eng/pipelines/jobs/build-test.yml@self
+          includeArm64: ${{ ne(variables['System.TeamProject'], 'public') }}
+          includeDebug: true
+          jobParameters:
+            publishArtifacts: ${{ and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}
+            testGroup: ${{ parameters.testGroup }}
+            is1ESPipeline: true
+
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+      - stage: Archive
+        displayName: Archive
+        dependsOn:
+        - Build
+        jobs:
+        # Sign binaries before archiving
+        - template: /eng/pipelines/jobs/sign-binaries.yml@self
+
+        # Build RID (runtime identifier) archives
+        - template: /eng/pipelines/jobs/platform-matrix.yml@self
+          parameters:
+            jobTemplate: /eng/pipelines/jobs/build-archive.yml@self
+            includeArm64: ${{ ne(variables['System.TeamProject'], 'public') }}
+
+    # This stage creates NuGet packages and generates the BAR manifests
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+      - stage: PackSignPublish
+        displayName: Pack, Sign, and Generate Manifests
+        dependsOn:
+        - Archive
+        jobs:
+        # Pack, sign, and publish manifest
+        - template: /eng/pipelines/jobs/pack-sign-publish.yml@self
+
+        # Register with BAR
+        - template: /eng/common/templates-official/job/publish-build-assets.yml@self
+          parameters:
+            configuration: Release
+            dependsOn:
+            - Pack_Sign
+            publishUsingPipelines: true
+
+      # These are the stages that perform validation of several SDL requirements and publish the bits required to the designated feed.
+      - template: /eng/common/templates-official/post-build/post-build.yml@self
+        parameters:
+          # This is to enable SDL runs part of Post-Build Validation Stage.
+          # as well as NuGet, SourceLink, and signing validation.
+          # The variables get imported from group dotnet-diagnostics-sdl-params
+          validateDependsOn:
+          - PackSignPublish
+          publishingInfraVersion: 3
+          enableSourceLinkValidation: ${{ and(not(startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/')), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}
+          enableSigningValidation: true
+          enableSymbolValidation: false
+          enableNugetValidation: true
+          publishInstallersAndChecksums: true
+          SDLValidationParameters:
+            enable: true
+            continueOnError: true
+            publishGdn: true
+            params: >-
+              -SourceToolsList @("policheck","credscan")
+              -TsaInstanceURL $(_TsaInstanceURL)
+              -TsaProjectName $(_TsaProjectName)
+              -TsaNotificationEmail $(_TsaNotificationEmail)
+              -TsaCodebaseAdmin $(_TsaCodebaseAdmin)
+              -TsaBugAreaPath $(_TsaBugAreaPath)
+              -TsaIterationPath $(_TsaIterationPath)
+              -TsaRepositoryName "dotnet-monitor"
+              -TsaCodebaseName "dotnet-monitor"
+              -TsaPublish $True
+              -PoliCheckAdditionalRunConfigParams @("UserExclusionPath < $(Build.SourcesDirectory)/eng/PoliCheckExclusions.xml")
+            artifactNames:
+            - 'PackageArtifacts'
+
+    # This sets up the bits to do a Release.
+    - template: /eng/pipelines/stages/preparerelease.yml@self
+      parameters:
+        ${{ if eq(parameters.updateDocker, 'true') }}:
+          updateDockerCondition: true
+        ${{ else }}:
+          # If scheduled build from main and nightly update from main enabled
+          updateDockerCondition: and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['NightlyUpdateDockerFromMain'], 'true'))

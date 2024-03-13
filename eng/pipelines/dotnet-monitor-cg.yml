@@ -16,14 +16,21 @@ variables:
 - name: DncEngInternalBuildPool
   value: NetCore1ESPool-Svc-Internal
 
-stages:
-- stage: Build
-  displayName: Build and Scan
-  jobs:
-  - template: /eng/pipelines/jobs/platform-matrix.yml
-    parameters:
-      jobTemplate: /eng/pipelines/jobs/build.yml
-      includeArm64: true
-      jobParameters:
-        disableComponentGovernance: false
-        disableSbom: true
+extends:
+  template: /eng/pipelines/templates/pipeline-template.yml@self
+  parameters:
+    sdl:
+      sbom:
+        enabled: false
+    stages:
+    - stage: Build
+      displayName: Build and Scan
+      jobs:
+      - template: /eng/pipelines/jobs/platform-matrix.yml@self
+        parameters:
+          jobTemplate: /eng/pipelines/jobs/build-binaries.yml@self
+          includeArm64: true
+          jobParameters:
+            disableComponentGovernance: false
+            disableSbom: true
+            is1ESPipeline: true
