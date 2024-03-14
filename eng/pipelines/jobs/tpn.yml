@@ -1,13 +1,10 @@
 jobs:
-- template: /eng/common/templates/job/job.yml
+- template: /eng/common/templates-official/job/job.yml@self
   parameters:
     name: Generate_TPN
     displayName: Generate TPN
     disableComponentGovernance: true
     enableSbom: false
-    pool:
-      name: $(DncEngInternalBuildPool)
-      demands: ImageOverride -equals 1es-windows-2019
     variables:
     - _InternalInstallArgs: ''
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
@@ -16,7 +13,7 @@ jobs:
           /p:DotNetRuntimeSourceFeed=https://dotnetbuilds.blob.core.windows.net/internal
           /p:DotNetRuntimeSourceFeedKey=$(dotnetbuilds-internal-container-read-token-base64)
     steps:
-    - template: /eng/pipelines/steps/setup-nuget-sources.yml
+    - template: /eng/pipelines/steps/setup-nuget-sources.yml@self
       parameters:
         osGroup: Windows
 
@@ -32,13 +29,13 @@ jobs:
         -projects $(Build.SourcesDirectory)/src/Tools/dotnet-monitor/dotnet-monitor.csproj
         $(_InternalInstallArgs)
       displayName: Restore dotnet-monitor
-    
+
     - script: >-
         $(Build.SourcesDirectory)/restore.cmd -ci
         -projects $(Build.SourcesDirectory)/src/Extensions/S3Storage/S3Storage.csproj
         $(_InternalInstallArgs)
       displayName: Restore S3Storage
-        
+
     - task: ComponentGovernanceComponentDetection@0
       displayName: Component Detection
 
@@ -48,7 +45,7 @@ jobs:
         outputfile: '$(Build.ArtifactStagingDirectory)/$(_TPNFile)'
         outputformat: text
 
-    - task: PublishPipelineArtifact@1
+    - task: 1ES.PublishPipelineArtifact@1
       displayName: Publish TPN
       inputs:
         artifactName: 'THIRD-PARTY-NOTICES'

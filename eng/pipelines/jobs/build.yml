@@ -30,9 +30,12 @@ parameters:
   disableSbom: false
   buildArgs: ''
   buildEnv: {}
+  # Adjust for 1ES pipeline template
+  is1ESPipeline: true
+  commonTemplatesFolderName: 'templates-official'
 
 jobs:
-- template: /eng/common/templates/job/job.yml
+- template: /eng/common/${{ parameters.commonTemplatesFolderName }}/job/job.yml@self
   parameters:
     name: ${{ parameters.prefix }}_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
     displayName: ${{ format('{0} {1} {2} {3}', parameters.prefix, parameters.osGroup, parameters.architecture, parameters.configuration) }}
@@ -42,36 +45,35 @@ jobs:
     ${{ if eq(parameters.disableSbom, 'true') }}:
       enableSbom: false
     helixRepo: dotnet/dotnet-monitor
-    artifacts:
-      publish:
-        logs:
-          name: Logs_$(JobName)
+    # Log publishing isn't ported over in arcade yet
+    ${{ if ne(parameters.is1ESPipeline, 'true') }}:
+      artifacts:
+        publish:
+          logs:
+            name: Logs_$(JobName)
 
-    pool:
+    # Default build pool is Windows; override for Linux and MacOS
+    ${{ if in(parameters.osGroup, 'Linux', 'Linux_Musl') }}:
       # Public Linux Build Pool
-      ${{ if in(parameters.osGroup, 'Linux', 'Linux_Musl') }}:
-        ${{ if eq(variables['System.TeamProject'], 'public') }}:
+      ${{ if eq(variables['System.TeamProject'], 'public') }}:
+        pool:
           name: $(DncEngPublicBuildPool)
           demands: ImageOverride -equals Build.Ubuntu.1804.Amd64.Open
+          os: linux
 
-        # Official Build Linux Pool
-        ${{ if ne(variables['System.TeamProject'], 'public') }}:
+      # Official Build Linux Pool
+      ${{ if ne(variables['System.TeamProject'], 'public') }}:
+        pool:
           name: $(DncEngInternalBuildPool)
-          demands: ImageOverride -equals Build.Ubuntu.1804.Amd64
+          demands: ImageOverride -equals 1es-ubuntu-2204-pt
+          os: linux
 
-      # Build OSX Pool
-      ${{ if in(parameters.osGroup, 'MacOS') }}:
+    # Build OSX Pool
+    ${{ if in(parameters.osGroup, 'MacOS') }}:
+      pool:
+        name: Azure Pipelines
         vmImage: macos-11
-
-      # Public Windows Build Pool
-      ${{ if eq(parameters.osGroup, 'Windows') }}:
-        ${{ if eq(variables['System.TeamProject'], 'public') }}:
-          name: $(DncEngPublicBuildPool)
-          demands: ImageOverride -equals windows.vs2022.amd64.open
-
-        ${{ if ne(variables['System.TeamProject'], 'public') }}:
-          name: $(DncEngInternalBuildPool)
-          demands: ImageOverride -equals windows.vs2022.amd64
+        os: macOS
 
     ${{ if ne(parameters.container, '') }}:
       container: ${{ parameters.container }}
@@ -79,14 +81,14 @@ jobs:
       # Fallback to default Linux x64 build container that optionally support cross building
       ${{ if eq(parameters.osGroup, 'Linux') }}:
         ${{ if eq(parameters.architecture, 'arm64') }}:
-          container: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-arm64
+          container: build_linux_arm64_cross
         ${{ else }}:
-          container: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-amd64
+          container: build_linux_amd64_cross
       ${{ if eq(parameters.osGroup, 'Linux_Musl') }}:
         ${{ if eq(parameters.architecture, 'arm64') }}:
-          container: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-arm64-alpine
+          container: build_linux_musl_arm64_cross
         ${{ else }}:
-          container: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-amd64-alpine
+          container: build_linux_musl_amd64_cross
 
     ${{ if ne(parameters.dependsOn, '') }}:
       dependsOn: ${{ parameters.dependsOn }}
@@ -102,7 +104,7 @@ jobs:
     - _InternalBuildArgs: ''
     - ${{ each variable in parameters.variables }}:
       - ${{ variable }}
-    
+
     # Cross build for all Linux builds and arm64 non-Windows builds
     - ${{ if and(eq(parameters.enableCrossBuild, 'true'), or(in(parameters.osGroup, 'Linux', 'Linux_Musl'), and(eq(parameters.architecture, 'arm64'), ne(parameters.osGroup, 'Windows')))) }}:
       - _CrossBuildArgs: '-cross'
@@ -133,7 +135,7 @@ jobs:
 
     steps:
     - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-      - template: /eng/pipelines/steps/setup-nuget-sources.yml
+      - template: /eng/pipelines/steps/setup-nuget-sources.yml@self
         parameters:
           osGroup: ${{ parameters.osGroup }}
 
