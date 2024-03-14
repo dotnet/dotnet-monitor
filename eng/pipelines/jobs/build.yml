@@ -45,12 +45,10 @@ jobs:
     ${{ if eq(parameters.disableSbom, 'true') }}:
       enableSbom: false
     helixRepo: dotnet/dotnet-monitor
-    # Log publishing isn't ported over in arcade yet
-    ${{ if ne(parameters.is1ESPipeline, 'true') }}:
-      artifacts:
-        publish:
-          logs:
-            name: Logs_$(JobName)
+    artifacts:
+      publish:
+        logs:
+          name: Logs_$(JobName)
 
     # Default build pool is Windows; override for Linux and MacOS
     ${{ if in(parameters.osGroup, 'Linux', 'Linux_Musl') }}:
