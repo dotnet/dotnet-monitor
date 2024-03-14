@@ -8,10 +8,10 @@ jobs:
     name: Sign_Binaries
     displayName: Sign Binaries
     enableMicrobuild: true
-    # artifacts:
-    #   publish:
-    #     logs:
-    #       name: Logs_$(JobName) # Log publishing isn't ported over in arcade yet
+    artifacts:
+      publish:
+        logs:
+          name: Logs_$(JobName)
     variables:
     - _BuildConfig: ${{ parameters.configuration }}
     - _SignType: real
