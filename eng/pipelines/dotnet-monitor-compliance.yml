@@ -43,13 +43,23 @@ extends:
             SYSTEM_ACCESSTOKEN: $(System.AccessToken)
         
         - task: PowerShell@2
-          displayName: 'Get Build Version'
+          displayName: 'Get Build Version (Full)'
           inputs:
             filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
             arguments: >-
               -BarId $(BuildBarId)
               -MaestroToken $(MaestroAccessToken)
               -TaskVariableName 'BuildVersion'
+
+        - task: PowerShell@2
+          displayName: 'Get Build Version (Major.Minor)'
+          inputs:
+            filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
+            arguments: >-
+              -BarId $(BuildBarId)
+              -MaestroToken $(MaestroAccessToken)
+              -TaskVariableName 'BuildMajorMinorVersion'
+              -MajorMinorOnly
 
         # Only scan the files that are being shipped; use the same gathering procedure
         # that the asset staging process uses.
@@ -96,8 +106,8 @@ extends:
           displayName: Run APIScan
           inputs:
             softwareFolder: '$(System.ArtifactsDirectory)\ScannableBinaries'
-            softwareName: 'Dotnet-Monitor'
-            softwareVersionNum: '$(BuildVersion)'
+            softwareName: 'DotnetMonitor'
+            softwareVersionNum: '$(BuildMajorMinorVersion)'
             softwareBuildNum: '$(resources.pipeline.Build.runID)'
             symbolsFolder: 'SRV*http://symweb;$(System.ArtifactsDirectory)\UnpackedSymbols'
           env:
