@@ -64,7 +64,7 @@ jobs:
       ${{ if ne(variables['System.TeamProject'], 'public') }}:
         pool:
           name: NetCore1ESPool-Svc-Internal
-          demands: ImageOverride -equals 1es-ubuntu-2204-pt
+          demands: ImageOverride -equals 1es-ubuntu-2204
           os: linux
 
     # Build OSX Pool
