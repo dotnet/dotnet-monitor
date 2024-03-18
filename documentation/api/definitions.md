@@ -87,6 +87,48 @@ Enumeration that describes the current state of the collection rule.
 | `Throttled` | Indicates that the collection rule is temporarily throttled because the ActionCountLimit has been reached within the ActionCountSlidingWindowDuration. |
 | `Finished` | Indicates that the collection rule has completed and will no longer trigger. |
 
+## CapturedMethod
+
+First Available: 9.0 Preview 3
+
+Object describing a captured method and its parameters.
+
+| Name | Type | Description |
+|---|---|---|
+| `requestId` | guid | Unique identifier for the capture request operation. |
+| `activityId` | string | An identifier for the current activity at the time of the capture. For more information see [Activity.Id](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.activity.id).|
+| `capturedDateTime` | DateTime | Time when the method call was captured. |
+| `module` | string | The method module name. |
+| `type` | string | The method type name. |
+| `method` | string | The method name. |
+| `parameters` | [CapturedParameter](#capturedparameter)[] | Array of captured parameters. |
+
+## CapturedParameter
+
+First Available: 9.0 Preview 3
+
+Object describing a captured parameter.
+
+| Name | Type | Description |
+|---|---|---|
+| `name` | string | The parameter name. |
+| `value` | string | The parameter value. |
+| `type` | string | The parameter type name. |
+| `module` | string | The parameter type module name. |
+| `isIn` | bool | Whether the parameter has the [`in` modifier](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/method-parameters#in-parameter-modifier). If missing, its value is `false`. |
+| `isOut` | bool | Whether the parameter has the [`out` modifier](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/method-parameters#out-parameter-modifier). If missing, its value is `false`. |
+| `isByRef` | bool | Whether the parameter has the [`ref` modifier](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/method-parameters#ref-parameter-modifier). If missing, its value is `false`. |
+
+## CapturedParametersResult
+
+First Available: 9.0 Preview 3
+
+Object describing the list of captured methods and their parameters.
+
+| Name | Type | Description |
+|---|---|---|
+| `captures` | [CapturedMethod](#capturedmethod) | Array of captured methods. |
+
 ## CaptureParametersConfiguration
 
 First Available: 8.0 RC 1
