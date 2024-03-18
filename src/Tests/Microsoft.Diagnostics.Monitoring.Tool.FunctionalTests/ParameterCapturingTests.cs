@@ -93,9 +93,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
-        public async Task DoesProduceLogStatements(Architecture targetArchitecture)
+        public async Task DoesntProduceLogStatements(Architecture targetArchitecture)
         {
-            await RunTestCaseCore(TestAppScenarios.ParameterCapturing.SubScenarios.ExpectLogStatement, targetArchitecture, async (appRunner, apiClient) =>
+            await RunTestCaseCore(TestAppScenarios.ParameterCapturing.SubScenarios.DoNotExpectLogStatement, targetArchitecture, async (appRunner, apiClient) =>
             {
                 int processId = await appRunner.ProcessIdTask;
 
