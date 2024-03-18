@@ -57,7 +57,7 @@ jobs:
           path: ./pr-linter
 
       - name: 'Setup reviewdog'
-        uses: reviewdog/action-setup@1d18b2938261447f64c39f831d7395e90ef5a40e
+        uses: reviewdog/action-setup@3f401fe1d58fe77e10d665ab713057375e39b887
 
       # Manually supply the triggering PR event information since when a PR is from a fork,
       # this workflow running in the base repo will not be given information about it.
