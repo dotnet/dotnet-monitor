@@ -19,14 +19,6 @@ pr:
     - samples
     - '**.md'
 
-schedules:
-# Schedule before docker update pipeline
-- cron: "0 3 * * Mon-Fri"
-  displayName: M-F Scheduled Build
-  branches:
-    include:
-    - main
-
 parameters:
 - name: testGroup
   displayName: 'Test Group'
@@ -38,125 +30,48 @@ parameters:
   - None
   - CI
   - PR
-- name: updateDocker
-  displayName: 'Update dotnet-docker? (Only for release branches)'
-  type: boolean
-  default: false
-- name: useHelix
-  displayName: Use Helix Testing
-  type: boolean
-  default: true
 
 variables:
-- template: /eng/common/templates/variables/pool-providers.yml
+- template: /eng/common/templates/variables/pool-providers.yml@self
 - name: _TeamName
   value: DotNetCore
-- name: _TPNFile
-  value: THIRD-PARTY-NOTICES.TXT
 
-- ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-  # DotNet-Diagnostics-SDL-Params provides Tsa* variables for SDL checks.
-  - group: DotNet-Diagnostics-SDL-Params
-
-stages:
-- stage: Build
-  displayName: Build and Test
-  jobs:
-  - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-    # Generate a TPN for only the dotnet-monitor project
-    - template: /eng/pipelines/jobs/tpn.yml
-
-  # Build and (optionally) test binaries
-  - template: /eng/pipelines/jobs/platform-matrix.yml
-    parameters:
-      jobTemplate: /eng/pipelines/jobs/build-binaries.yml
-      includeArm64: ${{ or(ne(variables['System.TeamProject'], 'public'), eq(parameters.useHelix, 'true')) }}
-      includeDebug: true
-      jobParameters:
-        publishBinaries: true
-        publishArtifacts: ${{ and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}
-
-  - ${{ if ne(parameters.testGroup, 'None') }}:
-    - template: /eng/pipelines/jobs/platform-matrix.yml
-      parameters:
-        jobTemplate: /eng/pipelines/jobs/test-binaries.yml
-        includeArm64: ${{ parameters.useHelix }}
-        jobParameters:
-          testGroup: ${{ parameters.testGroup }}
-          useHelix: ${{ parameters.useHelix }}
-
-- ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-  - stage: Archive
-    displayName: Archive
-    dependsOn:
-    - Build
-    jobs:
-    # Sign binaries before archiving
-    - template: /eng/pipelines/jobs/sign-binaries.yml
-
-    # Build RID (runtime identifier) archives
-    - template: /eng/pipelines/jobs/platform-matrix.yml
-      parameters:
-        jobTemplate: /eng/pipelines/jobs/build-archive.yml
-        includeArm64: true
-# This stage creates NuGet packages and generates the BAR manifests
-- ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-  - stage: PackSignPublish
-    displayName: Pack, Sign, and Generate Manifests
-    dependsOn:
-    - Archive
-    jobs:
-    # Pack, sign, and publish manifest
-    - template: /eng/pipelines/jobs/pack-sign-publish.yml
-
-    # Register with BAR
-    - template: /eng/common/templates/job/publish-build-assets.yml
-      parameters:
-        configuration: Release
-        dependsOn:
-        - Pack_Sign
-        publishUsingPipelines: true
-        pool:
-          name: $(DncEngInternalBuildPool)
-          demands: ImageOverride -equals 1es-windows-2019
-# These are the stages that perform validation of several SDL requirements and publish the bits required to the designated feed.
-  - template: /eng/common/templates/post-build/post-build.yml
-    parameters:
-      # This is to enable SDL runs part of Post-Build Validation Stage.
-      # as well as NuGet, SourceLink, and signing validation.
-      # The variables get imported from group dotnet-diagnostics-sdl-params
-      validateDependsOn:
-      - PackSignPublish
-      publishingInfraVersion: 3
-      enableSourceLinkValidation: ${{ and(not(startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/')), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}
-      enableSigningValidation: true
-      enableSymbolValidation: false
-      enableNugetValidation: true
-      publishInstallersAndChecksums: true
-      SDLValidationParameters:
-        enable: true
-        continueOnError: true
-        publishGdn: true
-        params: >-
-          -SourceToolsList @("policheck","credscan")
-          -TsaInstanceURL $(_TsaInstanceURL)
-          -TsaProjectName $(_TsaProjectName)
-          -TsaNotificationEmail $(_TsaNotificationEmail)
-          -TsaCodebaseAdmin $(_TsaCodebaseAdmin)
-          -TsaBugAreaPath $(_TsaBugAreaPath)
-          -TsaIterationPath $(_TsaIterationPath)
-          -TsaRepositoryName "dotnet-monitor"
-          -TsaCodebaseName "dotnet-monitor"
-          -TsaPublish $True
-          -PoliCheckAdditionalRunConfigParams @("UserExclusionPath < $(Build.SourcesDirectory)/eng/PoliCheckExclusions.xml")
-        artifactNames:
-        - 'PackageArtifacts'
-# This sets up the bits to do a Release.
-- template: /eng/pipelines/stages/preparerelease.yml
+extends:
+  template: /eng/pipelines/templates/pipeline-template.yml@self
   parameters:
-    ${{ if eq(parameters.updateDocker, 'true') }}:
-      updateDockerCondition: true
-    ${{ else }}:
-      # If scheduled build from main and nightly update from main enabled
-      updateDockerCondition: and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['NightlyUpdateDockerFromMain'], 'true'))
+    is1ESPipeline: false
+    pool:
+      name: $(DncEngPublicBuildPool)
+      image: windows.vs2022preview.amd64.open
+      os: windows
+    stages:
+    - stage: Build
+      displayName: Build and Test
+      jobs:
+      # Build and (optionally) test binaries
+      - template: /eng/pipelines/jobs/platform-matrix.yml@self
+        parameters:
+          jobTemplate: /eng/pipelines/jobs/build-binaries.yml@self
+          includeArm64: true
+          includeDebug: true
+          jobParameters:
+            publishBinaries: true
+            is1ESPipeline: false
+            commonTemplatesFolderName: 'templates'
 
+      - ${{ if ne(parameters.testGroup, 'None') }}:
+        - template: /eng/pipelines/jobs/platform-matrix.yml@self
+          parameters:
+            jobTemplate: /eng/pipelines/jobs/test-binaries.yml@self
+            includeArm64: true
+            jobParameters:
+              testGroup: ${{ parameters.testGroup }}
+              useHelix: true
+              is1ESPipeline: false
+              commonTemplatesFolderName: 'templates'
+
+    # Build release staging tool
+    - template: /eng/pipelines/stages/preparerelease.yml@self
+      parameters:
+        updateDockerCondition: false
+        is1ESPipeline: false
