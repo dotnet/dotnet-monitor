@@ -5,11 +5,21 @@
 
 #include <vector>
 
-enum class IpcCommand : unsigned short
+enum class ProfilerCommand : unsigned short
 {
-    Unknown,
-    Status,
     Callstack
+};
+
+enum class DotnetMonitorCommand : unsigned short
+{
+    Status
+};
+
+enum class CommandSet : unsigned short
+{
+    DotnetMonitor,
+    Profiler,
+    ManagedInProc
 };
 
 struct IpcMessage

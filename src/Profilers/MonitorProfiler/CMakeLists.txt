@@ -13,7 +13,6 @@ endif(CLR_CMAKE_HOST_WIN32)
 set(SOURCES
     ${SOURCES}
     ${PROFILER_SOURCES}
-    MainProfiler/ManagedMessageCallbackLookup.cpp
     MainProfiler/ExceptionTracker.cpp
     MainProfiler/MainProfiler.cpp
     MainProfiler/ThreadData.cpp
@@ -25,6 +24,7 @@ set(SOURCES
     Communication/IpcCommServer.cpp
     Communication/IpcCommClient.cpp
     Communication/CommandServer.cpp
+    Communication/MessageDemuxer.cpp
     )
 
 # Include exceptions tracking feature

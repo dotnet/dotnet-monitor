@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 
         private void OnMessage(object? sender, MonitorMessageArgs args)
         {
-            // Artificial limitation: The MonitorMessageDispatcher will currently only dispatch commands from 1 commandset that's configured
+            // Artificial limitation: The MonitorMessageDispatcher will currently only dispatch commands from 1 command set that's configured
             // by the message source. If we ever have multiple command sets per assembly then this limitation should be lifted.
             if (args.CommandSet != _messageSource.CommandSet)
             {

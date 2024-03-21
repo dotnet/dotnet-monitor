@@ -7,11 +7,8 @@
 #include "macros.h"
 #include "assert.h"
 
-
 HRESULT IpcCommClient::Receive(IpcMessage& message)
 {
-    const int SIZEOF_PACKED_GUID = sizeof(long) + sizeof(short) + sizeof(short) + sizeof(char[8]);
-
     HRESULT hr;
 
     if (_shutdown.load())
@@ -24,7 +21,7 @@ HRESULT IpcCommClient::Receive(IpcMessage& message)
     }
 
     //CONSIDER It is generally more performant to read and buffer larger chunks, in this case we are not expecting very frequent communication.
-    char headersBuffer[SIZEOF_PACKED_GUID + sizeof(IpcCommand) + sizeof(int)];
+    char headersBuffer[sizeof(short) + sizeof(short) + sizeof(int)];
     IfFailRet(ReceiveFixedBuffer(
         headersBuffer,
         sizeof(headersBuffer)
@@ -120,11 +117,15 @@ HRESULT IpcCommClient::Send(const IpcMessage& message)
         return E_FAIL;
     }
 
-    char headersBuffer[sizeof(IpcCommand) + sizeof(int)];
+    char headersBuffer[sizeof(short) + sizeof(short) + sizeof(int)];
 
     int bufferOffset = 0;
+
+    *reinterpret_cast<unsigned short*>(&headersBuffer[bufferOffset]) = message.CommandSet;
+    bufferOffset += sizeof(short);
+
     *reinterpret_cast<unsigned short*>(&headersBuffer[bufferOffset]) = message.Command;
-    bufferOffset += sizeof(unsigned short);
+    bufferOffset += sizeof(short);
 
     int payloadSize = static_cast<int>(message.Payload.size());
     *reinterpret_cast<int*>(&headersBuffer[bufferOffset]) = payloadSize;

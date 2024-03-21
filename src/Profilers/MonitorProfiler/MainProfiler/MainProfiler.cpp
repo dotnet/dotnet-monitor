@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #include "MainProfiler.h"
-#include "ManagedMessageCallbackLookup.h"
+#include "../Communication/MessageDemuxer.h"
 #include "Environment/EnvironmentHelper.h"
 #include "Environment/ProfilerEnvironment.h"
 #include "Logging/LoggerFactory.h"
@@ -22,7 +22,7 @@ using namespace std;
 #define DLLEXPORT
 #endif
 
-ManagedMessageCallbackLookup g_managedMessageCallbacks;
+MessageDemuxer g_managedMessageCallbacks;
 
 GUID MainProfiler::GetClsid()
 {
@@ -248,22 +248,20 @@ HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 {
     m_pLogger->Log(LogLevel::Debug, _LS("Message received from client %d"), message.Command);
 
-    switch (message.Command)
+    if (message.CommandSet == (unsigned short)CommandSet::Profiler)
     {
-    case IpcCommand::Unknown:
-        return E_FAIL;
-    case IpcCommand::Callstack:
-        return ProcessCallstackMessage();
-    default:
-        HRESULT hr;
-        GUID id = {};
-        if (g_managedMessageCallbacks.Invoke(id, static_cast<INT16>(message.Command), message.Payload.data(), message.Payload.size(), hr))
+        switch (static_cast<ProfilerCommand>(message.Command))
         {
-            return hr;
+        case ProfilerCommand::Callstack:
+            return ProcessCallstackMessage();
+        default:
+            return E_FAIL;
         }
     }
-
-    return E_FAIL;
+    else
+    {
+        return g_managedMessageCallbacks.OnMessage(message);
+    }
 }
 
 HRESULT MainProfiler::ProcessCallstackMessage()
@@ -313,19 +311,22 @@ HRESULT MainProfiler::ProcessCallstackMessage()
 }
 
 STDAPI DLLEXPORT RegisterMonitorMessageCallback(
-    GUID id,
+    unsigned short commandSet,
     ManagedMessageCallback pCallback)
 {
-    g_managedMessageCallbacks.Set(id, pCallback);
+    if (g_managedMessageCallbacks.TryRegister(commandSet, pCallback))
+    {
+        return S_OK;
+    }
 
-    return S_OK;
+    return E_FAIL;
 }
 
 STDAPI DLLEXPORT UnregisterMonitorMessageCallback(
-    GUID id
+    unsigned short commandSet
 )
 {
-    g_managedMessageCallbacks.Remove(id);
+    g_managedMessageCallbacks.Unregister(commandSet);
 
     return S_OK;
 }
