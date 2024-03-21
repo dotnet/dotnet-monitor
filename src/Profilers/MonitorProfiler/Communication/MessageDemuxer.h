@@ -11,7 +11,7 @@
 #include "tstring.h"
 #include "Messages.h"
 
-typedef HRESULT (STDMETHODCALLTYPE *ManagedMessageCallback)(unsigned short, const BYTE*, UINT64);
+typedef HRESULT (STDMETHODCALLTYPE *ManagedMessageCallback)(UINT16, const BYTE*, UINT64);
 
 class MessageDemuxer
 {

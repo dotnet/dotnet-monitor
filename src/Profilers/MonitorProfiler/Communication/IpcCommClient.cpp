@@ -21,7 +21,7 @@ HRESULT IpcCommClient::Receive(IpcMessage& message)
     }
 
     //CONSIDER It is generally more performant to read and buffer larger chunks, in this case we are not expecting very frequent communication.
-    char headersBuffer[sizeof(short) + sizeof(short) + sizeof(int)];
+    char headersBuffer[sizeof(UINT16) + sizeof(UINT16) + sizeof(INT32)];
     IfFailRet(ReceiveFixedBuffer(
         headersBuffer,
         sizeof(headersBuffer)
@@ -30,13 +30,13 @@ HRESULT IpcCommClient::Receive(IpcMessage& message)
     int bufferOffset = 0;
 
     message.CommandSet = *reinterpret_cast<unsigned short*>(&headersBuffer[bufferOffset]);
-    bufferOffset += sizeof(short);
+    bufferOffset += sizeof(UINT16);
 
     message.Command = *reinterpret_cast<unsigned short*>(&headersBuffer[bufferOffset]);
-    bufferOffset += sizeof(short);
+    bufferOffset += sizeof(UINT16);
 
     int payloadSize = *reinterpret_cast<int*>(&headersBuffer[bufferOffset]);
-    bufferOffset += sizeof(int);
+    bufferOffset += sizeof(INT32);
 
     assert(bufferOffset == sizeof(headersBuffer));
 
@@ -117,19 +117,19 @@ HRESULT IpcCommClient::Send(const IpcMessage& message)
         return E_FAIL;
     }
 
-    char headersBuffer[sizeof(short) + sizeof(short) + sizeof(int)];
+    char headersBuffer[sizeof(UINT16) + sizeof(UINT16) + sizeof(INT32)];
 
     int bufferOffset = 0;
 
     *reinterpret_cast<unsigned short*>(&headersBuffer[bufferOffset]) = message.CommandSet;
-    bufferOffset += sizeof(short);
+    bufferOffset += sizeof(UINT16);
 
     *reinterpret_cast<unsigned short*>(&headersBuffer[bufferOffset]) = message.Command;
-    bufferOffset += sizeof(short);
+    bufferOffset += sizeof(UINT16);
 
     int payloadSize = static_cast<int>(message.Payload.size());
     *reinterpret_cast<int*>(&headersBuffer[bufferOffset]) = payloadSize;
-    bufferOffset += sizeof(int);
+    bufferOffset += sizeof(INT32);
 
     assert(bufferOffset == sizeof(headersBuffer));
 
