@@ -246,7 +246,7 @@ HRESULT MainProfiler::InitializeCommandServer()
 
 HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 {
-    m_pLogger->Log(LogLevel::Debug, _LS("Message received from client %d"), message.Command);
+    m_pLogger->Log(LogLevel::Debug, _LS("Message received from client %d:%d"), message.CommandSet, message.Command);
 
     if (message.CommandSet == (unsigned short)CommandSet::Profiler)
     {
@@ -311,7 +311,7 @@ HRESULT MainProfiler::ProcessCallstackMessage()
 }
 
 STDAPI DLLEXPORT RegisterMonitorMessageCallback(
-    unsigned short commandSet,
+    UINT16 commandSet,
     ManagedMessageCallback pCallback)
 {
     if (g_managedMessageCallbacks.TryRegister(commandSet, pCallback))
@@ -323,7 +323,7 @@ STDAPI DLLEXPORT RegisterMonitorMessageCallback(
 }
 
 STDAPI DLLEXPORT UnregisterMonitorMessageCallback(
-    unsigned short commandSet
+    UINT16 commandSet
 )
 {
     g_managedMessageCallbacks.Unregister(commandSet);

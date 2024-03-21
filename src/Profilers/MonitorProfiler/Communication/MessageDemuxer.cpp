@@ -22,7 +22,7 @@ HRESULT MessageDemuxer::OnMessage(const IpcMessage& message)
     std::lock_guard<std::mutex> lock(m_mutex);
 
     ManagedMessageCallback callback;
-    if (TryGetCallback(message.CommandSet, callback))
+    if (!TryGetCallback(message.CommandSet, callback))
     {
         return E_FAIL;
     }
