@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
     {
         public event EventHandler<MonitorMessageArgs>? MonitorMessage;
 
-        public delegate int ProfilerMessageCallback(ushort commandSet, ushort command, IntPtr nativeBuffer, long bufferSize);
+        public delegate int ProfilerMessageCallback(ushort command, IntPtr nativeBuffer, long bufferSize);
 
         [DllImport(ProfilerIdentifiers.NotifyOnlyProfiler.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
         private static extern void RegisterMonitorMessageCallback(ushort commandSet, IntPtr callback);
@@ -23,19 +23,21 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 
         private readonly ProfilerMessageCallback _messageCallbackDelegate;
 
+        private readonly ushort _commandSet;
+
         private long _disposedState;
 
-        public ushort CommandSet { get; }
 
         public ProfilerMessageSource(CommandSet commandSet)
             : this((ushort)commandSet) { }
 
         public ProfilerMessageSource(ushort commandSet)
         {
-            CommandSet = commandSet;
+            _commandSet = commandSet;
+
             ProfilerResolver.InitializeResolver<ProfilerMessageSource>();
             _messageCallbackDelegate = OnProfilerMessage;
-            RegisterMonitorMessageCallback(CommandSet, Marshal.GetFunctionPointerForDelegate(_messageCallbackDelegate));
+            RegisterMonitorMessageCallback(_commandSet, Marshal.GetFunctionPointerForDelegate(_messageCallbackDelegate));
         }
 
         private void RaiseMonitorMessage(MonitorMessageArgs e)
@@ -43,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             MonitorMessage?.Invoke(this, e);
         }
 
-        private int OnProfilerMessage(ushort commandSet, ushort command, IntPtr nativeBuffer, long bufferSize)
+        private int OnProfilerMessage(ushort command, IntPtr nativeBuffer, long bufferSize)
         {
             using IDisposable _ = MonitorExecutionContextTracker.MonitorScope();
 
@@ -59,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
                     throw new ArgumentException(nameof(nativeBuffer));
                 }
 
-                RaiseMonitorMessage(new MonitorMessageArgs(commandSet, command, nativeBuffer, bufferSize));
+                RaiseMonitorMessage(new MonitorMessageArgs(command, nativeBuffer, bufferSize));
             }
             catch (Exception ex)
             {
@@ -76,7 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 
             try
             {
-                UnregisterMonitorMessageCallback(CommandSet);
+                UnregisterMonitorMessageCallback(_commandSet);
             }
             catch
             {

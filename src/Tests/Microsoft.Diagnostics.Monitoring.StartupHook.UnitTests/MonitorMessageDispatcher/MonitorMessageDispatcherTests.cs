@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             // Arrange
             const ushort commandSet = 1;
             const ushort command = 2;
-            using MockMessageSource messageSource = new(commandSet);
+            using MockMessageSource messageSource = new();
             using MonitorMessageDispatcher dispatcher = new(messageSource);
 
             SamplePayload expectedPayload = new SamplePayload
@@ -68,28 +68,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
         public void Throws_OnUnhandledCommand()
         {
             // Arrange
-            const ushort commandSet = 0;
-            using MockMessageSource messageSource = new(commandSet);
+            const ushort commandSet = 1;
+            using MockMessageSource messageSource = new();
             using MonitorMessageDispatcher dispatcher = new(messageSource);
 
             // Act and Assert
             Assert.Throws<NotSupportedException>(() => messageSource.RaiseMessage(new JsonProfilerMessage(commandSet, command: 0, new object())));
-        }
-
-        [Fact]
-        public void Throws_OnUnhandledCommandSet()
-        {
-            // Arrange
-            const ushort commandSet = 1;
-            const ushort command = 2;
-            using MockMessageSource messageSource = new(commandSet);
-            using MonitorMessageDispatcher dispatcher = new(messageSource);
-            dispatcher.RegisterCallback<SamplePayload>(command, (payload) =>
-            {
-            });
-
-            // Act and Assert
-            Assert.Throws<NotSupportedException>(() => messageSource.RaiseMessage(new JsonProfilerMessage(commandSet + 1, command, new object())));
         }
     }
 }
