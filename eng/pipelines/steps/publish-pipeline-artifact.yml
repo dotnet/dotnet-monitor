@@ -1,0 +1,22 @@
+# This template is a stop-gap until public project builds have 1ES PT support
+parameters:
+  # Task display name
+  displayName: 'PublishPipelineArtifact'
+  targetPath: ''
+  artifact: ''
+  # Adjust for 1ES pipeline template
+  is1ESPipeline: true
+
+steps:
+- ${{ if eq(parameters.is1ESPipeline, 'true') }}:
+  - task: 1ES.PublishPipelineArtifact@1
+    displayName: ${{ parameters.displayName }}
+    inputs:
+      targetPath: ${{ parameters.targetPath }}
+      artifact: ${{ parameters.artifact }}
+- ${{ else }}:
+  - task: PublishPipelineArtifact@1
+    displayName: ${{ parameters.displayName }}
+    inputs:
+      targetPath: ${{ parameters.targetPath }}
+      artifact: ${{ parameters.artifact }}
