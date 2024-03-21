@@ -53,27 +53,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             // Collection Rules do not follow request limits.
 
-            EgressEntry entry = await AddOperationInternal(_ => egressOperation, RequestLimitTracker.Unlimited);
+            EgressEntry entry = await AddOperationInternal(egressOperation, RequestLimitTracker.Unlimited);
 
             await entry?.TaskCompletionSource.Task;
 
             return entry?.ExecutionResult;
         }
 
-        public Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey) => AddOperation(_ => egressOperation, limitKey);
-
-        public async Task<Guid> AddOperation(Func<Guid, IEgressOperation> operationCreator, string limitKey)
+        public async Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey)
         {
-            EgressEntry entry = await AddOperationInternal(operationCreator, limitKey);
+            EgressEntry entry = await AddOperationInternal(egressOperation, limitKey);
             return entry.OperationId;
         }
 
-        private async Task<EgressEntry> AddOperationInternal(Func<Guid, IEgressOperation> operationCreator, string limitKey)
+        private async Task<EgressEntry> AddOperationInternal(IEgressOperation egressOperation, string limitKey)
         {
-            Guid operationId = Guid.NewGuid();
-            IEgressOperation egressOperation = operationCreator(operationId);
-
             egressOperation.Validate(_serviceProvider);
+
+            Guid operationId = Guid.NewGuid();
 
             IDisposable limitTracker = _requestLimits.Increment(limitKey, out bool allowOperation);
             //We increment the limit here, and decrement it once the operation is cancelled or completed.

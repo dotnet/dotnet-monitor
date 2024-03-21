@@ -934,6 +934,13 @@
             }
           },
           {
+            "name": "egressProvider",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "tags",
             "in": "query",
             "schema": {
@@ -961,73 +968,6 @@
           },
           "required": true
         },
-        "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
-          "429": {
-            "$ref": "#/components/responses/TooManyRequestsResponse"
-          },
-          "202": {
-            "description": "Accepted"
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "Diag"
-        ],
-        "operationId": "GetCapturedParameters",
-        "parameters": [
-          {
-            "name": "pid",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "uid",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "requestId",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "egressProvider",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "tags",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"

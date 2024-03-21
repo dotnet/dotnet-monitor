@@ -38,8 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _requestLimitTable.Add(Utilities.ArtifactType_Metrics, 3);
             _requestLimitTable.Add(Utilities.ArtifactType_Stacks, 1);
             _requestLimitTable.Add(Utilities.ArtifactType_Exceptions, 1);
-            _requestLimitTable.Add(Utilities.ArtifactType_RequestParameters, 1);
-            _requestLimitTable.Add(Utilities.ArtifactType_Parameters, 3);
+            _requestLimitTable.Add(Utilities.ArtifactType_Parameters, 1);
             _requestLimitTable.Add(Unlimited, int.MaxValue);
 
             _logger = logger;

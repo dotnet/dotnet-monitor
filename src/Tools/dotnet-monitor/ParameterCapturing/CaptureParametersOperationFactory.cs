@@ -20,14 +20,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _logger = logger;
         }
 
-        public IInProcessOperation Create(Guid requestId, IEndpointInfo endpointInfo, CaptureParametersConfiguration configuration, TimeSpan duration)
+        public IArtifactOperation Create(IEndpointInfo endpointInfo, CaptureParametersConfiguration configuration, TimeSpan duration, CapturedParameterFormat format)
         {
-            return new CaptureParametersOperation(requestId, endpointInfo, _profilerChannel, _logger, configuration, duration);
-        }
-
-        public IArtifactOperation CreateCapturedParameterFetcher(IEndpointInfo endpointInfo, Guid? requestId, CapturedParameterFormat format)
-        {
-            return new CapturedParametersFetcher(endpointInfo, requestId, format);
+            return new CaptureParametersOperation(endpointInfo, _profilerChannel, _logger, configuration, duration, format);
         }
     }
 }

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing;
@@ -13,12 +14,14 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 {
-    internal sealed class CaptureParametersOperation : IInProcessOperation
+    internal sealed class CaptureParametersOperation : IArtifactOperation
     {
         private readonly ProfilerChannel _profilerChannel;
         private readonly IEndpointInfo _endpointInfo;
@@ -26,6 +29,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         private readonly CaptureParametersConfiguration _configuration;
         private readonly TimeSpan _duration;
         private readonly IParameterCapturingStore _parameterCapturingStore;
+        private readonly CapturedParameterFormat _format;
 
         private readonly Guid _requestId;
 
@@ -37,12 +41,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         public Task Started => _capturingStartedCompletionSource.Task;
 
         public CaptureParametersOperation(
-            Guid requestId,
             IEndpointInfo endpointInfo,
             ProfilerChannel profilerChannel,
             ILogger logger,
             CaptureParametersConfiguration configuration,
-            TimeSpan duration)
+            TimeSpan duration,
+            CapturedParameterFormat format)
         {
             _profilerChannel = profilerChannel;
             _endpointInfo = endpointInfo;
@@ -50,14 +54,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _configuration = configuration;
             _duration = duration;
             _parameterCapturingStore = endpointInfo.ServiceProvider.GetRequiredService<IParameterCapturingStore>();
+            _format = format;
 
-            _requestId = requestId;
+            _requestId = Guid.NewGuid();
         }
 
         public static bool IsEndpointRuntimeSupported(IEndpointInfo endpointInfo)
         {
             // net 7+ is required, see https://github.com/dotnet/runtime/issues/88924 for more information
             return endpointInfo.RuntimeVersion != null && endpointInfo.RuntimeVersion.Major >= 7;
+        }
+        public string ContentType => _format switch
+        {
+            CapturedParameterFormat.PlainText => ContentTypes.TextPlain,
+            CapturedParameterFormat.Json => ContentTypes.ApplicationJson,
+            _ => ContentTypes.TextPlain
+        };
+
+        public string GenerateFileName()
+        {
+            string extension = _format == CapturedParameterFormat.PlainText ? "txt" : "json";
+            return FormattableString.Invariant($"{Utils.GetFileNameTimeStampUtcNow()}_{_endpointInfo.ProcessId}.parameters.{extension}");
         }
 
         private async Task EnsureEndpointCanProcessRequestsAsync(CancellationToken token)
@@ -108,7 +125,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             }
         }
 
-        public async Task ExecuteAsync(CancellationToken token)
+        public async Task ExecuteAsync(Stream outputStream, CancellationToken token)
         {
             try
             {
@@ -156,6 +173,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 _ = _capturingStartedCompletionSource.TrySetException(ex);
                 _ = _capturingStoppedCompletionSource.TrySetException(ex);
                 throw;
+            }
+
+            if (!token.IsCancellationRequested)
+            {
+                IReadOnlyList<ICapturedParameters> capturedParameters = _parameterCapturingStore.GetCapturedParameters();
+                await CapturedParametersFormatter.WriteAsync(capturedParameters, _format, outputStream, token);
             }
         }
 

@@ -15,18 +15,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// <summary>
         /// Creates an operation that captures parameters.
         /// </summary>
-        IInProcessOperation Create(
-            Guid requestId,
+        IArtifactOperation Create(
             IEndpointInfo endpointInfo,
             CaptureParametersConfiguration configuration,
-            TimeSpan duration);
-
-        /// <summary>
-        /// Creates an operation that returns all captured parameters.
-        /// </summary>
-        IArtifactOperation CreateCapturedParameterFetcher(
-            IEndpointInfo endpointInfo,
-            Guid? requestId,
+            TimeSpan duration,
             CapturedParameterFormat format);
     }
 }

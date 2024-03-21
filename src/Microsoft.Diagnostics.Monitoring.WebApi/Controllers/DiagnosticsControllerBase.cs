@@ -98,23 +98,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        private protected async Task<ActionResult> InProcessResult(
-            string artifactType,
-            IProcessInfo processInfo,
-            Func<Guid, IInProcessOperation> operationCreator,
-            string tags)
-        {
-            KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
-
-            IInProcessOperation operation = operationCreator(Guid.NewGuid());
-
-            string location = await RegisterInProcessOperation(
-                operationId => new InProcessEgressOperation(processInfo, scope, tags, operationCreator(operationId)),
-                limitKey: artifactType);
-
-            return Accepted(location);
-        }
-
         private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, string tags, IArtifactOperation operation)
         {
             // While not strictly a Location redirect, use the same header as externally egressed operations for consistency.
@@ -127,15 +110,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             // Will throw TooManyRequestsException if there are too many concurrent operations.
             Guid operationId = await OperationStore.AddOperation(egressOperation, limitKey);
-            return this.Url.Action(
-                action: nameof(OperationsController.GetOperationStatus),
-                controller: OperationsController.ControllerName, new { operationId = operationId },
-                protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
-        }
-
-        private async Task<string> RegisterInProcessOperation(Func<Guid, InProcessEgressOperation> operationCreator, string limitKey)
-        {
-            Guid operationId = await OperationStore.AddOperation(operationCreator, limitKey);
             return this.Url.Action(
                 action: nameof(OperationsController.GetOperationStatus),
                 controller: OperationsController.ControllerName, new { operationId = operationId },
