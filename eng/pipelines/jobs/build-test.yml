@@ -19,6 +19,9 @@ parameters:
     value: Core 3.1
   - key: net6.0
     value: .NET 6
+  # Adjust for 1ES pipeline template
+  is1ESPipeline: true
+  commonTemplatesFolderName: ''
 
 jobs:
 - template: /eng/pipelines/jobs/build.yml
@@ -27,6 +30,9 @@ jobs:
     osGroup: ${{ parameters.osGroup }}
     configuration: ${{ parameters.configuration }}
     architecture: ${{ parameters.architecture }}
+    is1ESPipeline: ${{ parameters.is1ESPipeline }}
+    ${{ if ne(parameters.commonTemplatesFolderName, '') }}:
+      commonTemplatesFolderName: ${{ parameters.commonTemplatesFolderName }}
 
     variables:
     - ${{ if and(ne(parameters.testGroup, 'None'), ne(parameters.architecture, 'arm64')) }}:
@@ -86,11 +92,12 @@ jobs:
           SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
 
-      - task: PublishBuildArtifacts@1
-        displayName: Publish Artifacts (Published)
-        inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
-          artifactName: Build_Published_${{ parameters.configuration }}
+      - template: /eng/pipelines/steps/publish-build-artifacts.yml@self
+        parameters:
+          displayName: Publish Artifacts (Published)
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
+          ArtifactName: Build_Published_${{ parameters.configuration }}
+          is1ESPipeline: ${{ parameters.is1ESPipeline }}
 
       - ${{ if eq(parameters.targetRid, 'win-x64') }}:
         - task: CopyFiles@2
@@ -110,11 +117,12 @@ jobs:
             SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
             TargetFolder: '$(Build.ArtifactStagingDirectory)/unified/bin/${{ parameters.targetRid }}.${{ parameters.configuration }}'
       
-      - task: PublishBuildArtifacts@1
-        displayName: Publish Artifacts (Unified)
-        inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)/unified'
-          artifactName: Build_Unified_${{ parameters.configuration }}
+      - template: /eng/pipelines/steps/publish-build-artifacts.yml@self
+        parameters:
+          displayName: Publish Artifacts (Unified)
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/unified'
+          ArtifactName: Build_Unified_${{ parameters.configuration }}
+          is1ESPipeline: ${{ parameters.is1ESPipeline }}
 
     # Execute tests
     - ${{ if and(ne(parameters.testGroup, 'None'), eq(parameters.architecture, 'arm64')) }}:
@@ -150,10 +158,10 @@ jobs:
           condition: succeededOrFailed()
 
       - ${{ if ne(variables['System.TeamProject'], 'public') }}:
-        - task: PublishBuildArtifacts@1
-          displayName: Publish Test Result Files
-          inputs:
+        - template: /eng/pipelines/steps/publish-build-artifacts.yml@self
+          parameters:
+            displayName: Publish Test Result Files
             PathtoPublish: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_BuildConfig)'
             ArtifactName: TestResults_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
-          continueOnError: true
-          condition: succeededOrFailed()
+            continueOnError: true
+            condition: succeededOrFailed()
