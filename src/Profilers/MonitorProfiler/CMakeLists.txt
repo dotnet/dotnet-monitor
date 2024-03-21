@@ -13,6 +13,7 @@ endif(CLR_CMAKE_HOST_WIN32)
 set(SOURCES
     ${SOURCES}
     ${PROFILER_SOURCES}
+    MainProfiler/ManagedMessageCallbackLookup.cpp
     MainProfiler/ExceptionTracker.cpp
     MainProfiler/MainProfiler.cpp
     MainProfiler/ThreadData.cpp

@@ -7,6 +7,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 {
     internal sealed class MockMessageSource : IMonitorMessageSource
     {
+        public ushort CommandSet { get; }
+
+        public MockMessageSource(ushort commandSet)
+        {
+            CommandSet = commandSet;
+        }
+
         public event EventHandler<MonitorMessageArgs>? MonitorMessage;
 
         private void RaiseMessage(MonitorMessageArgs e)
@@ -21,6 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
                 fixed (byte* payloadPtr = message.Payload)
                 {
                     RaiseMessage(new MonitorMessageArgs(
+                        message.CommandSet,
                         message.Command,
                         new IntPtr(payloadPtr),
                         message.Payload.Length));

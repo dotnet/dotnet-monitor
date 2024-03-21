@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
                 // Check that the profiler is loaded before establishing the dispatcher, which has a dependency on the existence of the profiler
                 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(ProfilerIdentifiers.NotifyOnlyProfiler.EnvironmentVariables.ProductVersion)))
                 {
-                    SharedInternals.MessageDispatcher = new MessageDispatcher.MonitorMessageDispatcher(new MessageDispatcher.ProfilerMessageSource());
+                    SharedInternals.MessageDispatcher = new MessageDispatcher.MonitorMessageDispatcher(new MessageDispatcher.ProfilerMessageSource(CommandSet.ManagedInProc));
                     ToolIdentifiers.EnableEnvVar(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.ManagedMessaging);
                 }
             }

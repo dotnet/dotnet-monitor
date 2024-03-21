@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #include "MainProfiler.h"
+#include "ManagedMessageCallbackLookup.h"
 #include "Environment/EnvironmentHelper.h"
 #include "Environment/ProfilerEnvironment.h"
 #include "Logging/LoggerFactory.h"
@@ -21,9 +22,7 @@ using namespace std;
 #define DLLEXPORT
 #endif
 
-typedef INT32 (STDMETHODCALLTYPE *ManagedMessageCallback)(INT16, const BYTE*, UINT64);
-mutex g_managedMessageCallbackMutex; // guards g_pManagedMessageCallback
-ManagedMessageCallback g_pManagedMessageCallback = nullptr;
+ManagedMessageCallbackLookup g_managedMessageCallbacks;
 
 GUID MainProfiler::GetClsid()
 {
@@ -256,16 +255,12 @@ HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
     case IpcCommand::Callstack:
         return ProcessCallstackMessage();
     default:
-        lock_guard<mutex> lock(g_managedMessageCallbackMutex);
-        if (g_pManagedMessageCallback == nullptr)
+        HRESULT hr;
+        GUID id = {};
+        if (g_managedMessageCallbacks.Invoke(id, static_cast<INT16>(message.Command), message.Payload.data(), message.Payload.size(), hr))
         {
-            return E_FAIL;
+            return hr;
         }
-
-        return g_pManagedMessageCallback(
-            static_cast<INT16>(message.Command),
-            message.Payload.data(),
-            message.Payload.size());
     }
 
     return E_FAIL;
@@ -318,34 +313,19 @@ HRESULT MainProfiler::ProcessCallstackMessage()
 }
 
 STDAPI DLLEXPORT RegisterMonitorMessageCallback(
+    GUID id,
     ManagedMessageCallback pCallback)
 {
-    //
-    // Note: Require locking to access g_pManagedMessageCallback as it is
-    // used on another thread (in ProcessCallstackMessage).
-    //
-    // A lock-free approach could be used to safely update and observe the value of the callback,
-    // however that would introduce the edge case where the provided callback is unregistered
-    // right before it is invoked.
-    // This means that the unregistered callback would still be invoked, leading to potential issues
-    // such as calling into an instanced method that has been disposed.
-    //
-    // For simplicitly just use locking for now as it prevents the above edge case.
-    //
-    lock_guard<mutex> lock(g_managedMessageCallbackMutex);
-    if (g_pManagedMessageCallback != nullptr)
-    {
-        return E_FAIL;
-    }
-    g_pManagedMessageCallback = pCallback;
+    g_managedMessageCallbacks.Set(id, pCallback);
 
     return S_OK;
 }
 
-STDAPI DLLEXPORT UnregisterMonitorMessageCallback()
+STDAPI DLLEXPORT UnregisterMonitorMessageCallback(
+    GUID id
+)
 {
-    lock_guard<mutex> lock(g_managedMessageCallbackMutex);
-    g_pManagedMessageCallback = nullptr;
+    g_managedMessageCallbacks.Remove(id);
 
     return S_OK;
 }

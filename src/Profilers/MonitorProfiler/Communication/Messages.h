@@ -5,7 +5,7 @@
 
 #include <vector>
 
-enum class IpcCommand : short
+enum class IpcCommand : unsigned short
 {
     Unknown,
     Status,
@@ -14,6 +14,7 @@ enum class IpcCommand : short
 
 struct IpcMessage
 {
-    IpcCommand Command = IpcCommand::Unknown;
+    short CommandSet;
+    short Command;
     std::vector<BYTE> Payload;
 };

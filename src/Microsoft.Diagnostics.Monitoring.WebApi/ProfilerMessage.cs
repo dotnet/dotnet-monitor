@@ -7,28 +7,51 @@ using System.Text.Json;
 
 namespace Microsoft.Diagnostics.Monitoring
 {
-    internal enum IpcCommand : short
+    internal enum CommandSet : ushort
     {
-        Unknown,
-        Status,
-        Callstack,
+        DotnetMonitor,
+        Profiler,
+        ManagedInProc
+    }
+
+    internal enum DotnetMonitorCommand : ushort
+    {
+        Status
+    };
+
+    internal enum ProfilerCommand : ushort
+    {
+        Callstack
+    };
+
+    internal enum ManagedInProcCommand : ushort
+    {
         StartCapturingParameters,
         StopCapturingParameters
     };
 
     internal interface IProfilerMessage
     {
-        public IpcCommand Command { get; }
+        public ushort CommandSet { get; }
+        public ushort Command { get; }
         public byte[] Payload { get; }
     }
 
     internal struct JsonProfilerMessage : IProfilerMessage
     {
-        public IpcCommand Command { get; }
+        public ushort CommandSet { get; }
+        public ushort Command { get; }
         public byte[] Payload { get; }
 
-        public JsonProfilerMessage(IpcCommand command, object payloadObject)
+        public JsonProfilerMessage(ProfilerCommand command, object payloadObject)
+            : this((ushort)Monitoring.CommandSet.Profiler, (ushort)command, payloadObject) { }
+
+        public JsonProfilerMessage(ManagedInProcCommand command, object payloadObject)
+            : this((ushort)Monitoring.CommandSet.ManagedInProc, (ushort)command, payloadObject) { }
+
+        public JsonProfilerMessage(ushort commandSet, ushort command, object payloadObject)
         {
+            CommandSet = commandSet;
             Command = command;
             Payload = SerializePayload(payloadObject);
         }
@@ -42,11 +65,19 @@ namespace Microsoft.Diagnostics.Monitoring
 
     internal struct CommandOnlyProfilerMessage : IProfilerMessage
     {
-        public IpcCommand Command { get; }
+        public ushort CommandSet { get; }
+        public ushort Command { get; }
         public byte[] Payload { get; } = Array.Empty<byte>();
 
-        public CommandOnlyProfilerMessage(IpcCommand command)
+        public CommandOnlyProfilerMessage(ProfilerCommand command)
+            : this((ushort)Monitoring.CommandSet.Profiler, (ushort)command) { }
+
+        public CommandOnlyProfilerMessage(ManagedInProcCommand command)
+            : this((ushort)Monitoring.CommandSet.ManagedInProc, (ushort)command) { }
+
+        public CommandOnlyProfilerMessage(ushort commandSet, ushort command)
         {
+            CommandSet = commandSet;
             Command = command;
         }
     }
