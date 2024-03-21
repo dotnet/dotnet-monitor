@@ -6,6 +6,7 @@
 bool MessageDemuxer::TryRegister(unsigned short commandSet, ManagedMessageCallback callback)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
+
     ManagedMessageCallback existingCallback;
     if (TryGetCallback(commandSet, existingCallback))
     {
@@ -44,5 +45,6 @@ bool MessageDemuxer::TryGetCallback(unsigned short commandSet, ManagedMessageCal
 void MessageDemuxer::Unregister(unsigned short commandSet)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
+
     m_callbacks.erase(commandSet);
 }
