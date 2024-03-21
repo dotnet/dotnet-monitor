@@ -2,6 +2,9 @@ parameters:
 - name: updateDockerCondition
   type: string
   default: false
+- name: is1ESPipeline
+  type: boolean
+  default: true
 
 stages:
 - stage: StageBuildAssetsStage
@@ -12,13 +15,6 @@ stages:
   jobs:
   - job: StageBuildAssetsJob
     displayName: Stage Build Assets
-    pool:
-      ${{ if eq(variables['System.TeamProject'], 'public') }}:
-        name: $(DncEngPublicBuildPool)
-        demands: ImageOverride -equals 1es-windows-2019-open
-      ${{ if ne(variables['System.TeamProject'], 'public') }}:
-        name: $(DncEngInternalBuildPool)
-        demands: ImageOverride -equals 1es-windows-2019
     variables:
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}:
       - group: DotNet-Diagnostics-Storage
@@ -39,7 +35,7 @@ stages:
       displayName: 'Build Staging Tool'
     # Run tool for release and test release branches
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}:
-      - template: /eng/common/templates/post-build/setup-maestro-vars.yml
+      - template: /eng/common/templates-official/post-build/setup-maestro-vars.yml@self
       - task: PowerShell@2
         displayName: Get Build Version
         inputs:
@@ -78,11 +74,12 @@ stages:
           -v True
         workingDirectory: '$(System.ArtifactsDirectory)\StagingToolLogs'
         displayName: 'Stage Build Assets and Manifest'
-      - task: PublishPipelineArtifact@1
-        displayName: 'Upload Assets Layout'
-        inputs:
+      - template: /eng/pipelines/steps/publish-pipeline-artifact.yml@self
+        parameters:
+          displayName: 'Upload Assets Layout'
           targetPath: '$(System.ArtifactsDirectory)\AssetsLayout'
           artifact: 'StagingToolAssetsLayout'
+          is1ESPipeline: ${{ parameters.is1ESPipeline }}
       # Only tag build from real release branches
       - ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/')) }}:
         - task: Powershell@2
@@ -90,11 +87,12 @@ stages:
           inputs:
             targetType: inline
             script: Write-Host "##vso[build.addbuildtag]MonitorRelease"
-    - task: PublishPipelineArtifact@1
-      displayName: 'Upload Staging Tool Logs'
-      inputs:
-        targetPath: '$(System.ArtifactsDirectory)\StagingToolLogs'
-        artifact: 'StagingToolLogs'
+      - template: /eng/pipelines/steps/publish-pipeline-artifact.yml@self
+        parameters:
+          displayName: 'Upload Staging Tool Logs'
+          targetPath: '$(System.ArtifactsDirectory)\StagingToolLogs'
+          artifact: 'StagingToolLogs'
+          is1ESPipeline: ${{ parameters.is1ESPipeline }}
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
       - task: Powershell@2
         displayName: 'Tag Build with update-docker'
