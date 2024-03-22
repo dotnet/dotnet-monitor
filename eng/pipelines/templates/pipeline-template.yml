@@ -46,7 +46,7 @@ extends:
       sdl:
         sourceAnalysisPool:
           name: NetCore1ESPool-Svc-Internal
-          image: 1es-windows-2022-pt
+          image: 1es-windows-2022
           os: windows
         ${{ if parameters.sdl }}:
           ${{ each pair in parameters.sdl }}:
