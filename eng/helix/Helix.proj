@@ -86,7 +86,7 @@
     <!-- linux-musl-arm64 -->
     <HelixAvailableTargetQueue Include="ubuntu.2204.armarch$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.17-helix-arm64v8"
                                Condition="'$(HelixArchitecture)' == 'arm64'">
-      <TestRunName>Alpine 3.15 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+      <TestRunName>Alpine 3.17 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
     <!-- linux-musl-x64 -->
     <HelixAvailableTargetQueue Include="ubuntu.2204.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.17-helix-amd64"
