@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Fetch Dependabot metadata
         id: metadata
-        uses: dependabot/fetch-metadata@8348ea7f5d949b08c7f125a44b569c9626b05db3
+        uses: dependabot/fetch-metadata@0fb21704c18a42ce5aa8d720ea4b912f5e6babef
 
       - name: Check ClearlyDefined
         if: ${{steps.metadata.outputs.package-ecosystem == 'nuget'}}
