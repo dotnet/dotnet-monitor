@@ -60,16 +60,16 @@
     <!-- linux-arm64 -->
     <HelixAvailableTargetQueue Include="ubuntu.2204.armarch$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-12-helix-arm64v8"
                                Condition="'$(HelixArchitecture)' == 'arm64'">
-      <TestRunName>Debian 11 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+      <TestRunName>Debian 12 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
     <HelixAvailableTargetQueue Include="ubuntu.2204.armarch$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-20.04-helix-arm64v8"
                                Condition="'$(HelixArchitecture)' == 'arm64'">
-      <TestRunName>Ubuntu 18.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+      <TestRunName>Ubuntu 20.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
     <!-- linux-x64 -->
     <HelixAvailableTargetQueue Include="ubuntu.2204.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-12-helix-amd64"
                                Condition="'$(HelixArchitecture)' == 'x64'">
-      <TestRunName>Debian 11 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+      <TestRunName>Debian 12 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
     <HelixAvailableTargetQueue Include="ubuntu.2204.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-helix-amd64"
                                Condition="'$(HelixArchitecture)' == 'x64'">
@@ -77,7 +77,7 @@
     </HelixAvailableTargetQueue>
     <HelixAvailableTargetQueue Include="ubuntu.2204.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-20.04-helix-amd64"
                                Condition="'$(HelixArchitecture)' == 'x64'">
-      <TestRunName>Ubuntu 18.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+      <TestRunName>Ubuntu 20.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
   </ItemGroup>
 
