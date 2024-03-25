@@ -140,6 +140,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static class EnvironmentVariables
         {
             public const string Name = nameof(EnvironmentVariables);
+            public const string CustomVariableName = nameof(CustomVariableName);
             public const string IncrementVariableName = nameof(IncrementVariableName);
 
             public static class Commands
