@@ -35,9 +35,9 @@ extends:
       build_linux_musl_arm64_cross:
         image: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-arm64-alpine
       helix_linux_amd64:
-        image: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04
+        image: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-20.04
       helix_linux_musl_amd64:
-        image: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-WithNode
+        image: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.19-WithNode
 
     pool: ${{ parameters.pool }}
 
