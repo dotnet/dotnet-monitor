@@ -62,7 +62,7 @@
                                Condition="'$(HelixArchitecture)' == 'arm64'">
       <TestRunName>Debian 12 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
-    <HelixAvailableTargetQueue Include="ubuntu.2204.armarch$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-20.04-helix-arm64v8"
+    <HelixAvailableTargetQueue Include="ubuntu.2204.armarch$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-22.04-helix-arm64v8"
                                Condition="'$(HelixArchitecture)' == 'arm64'">
       <TestRunName>Ubuntu 20.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
