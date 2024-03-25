@@ -9,8 +9,8 @@ jobs:
       publish:
         artifacts:
           name: Artifacts_Pack_Sign
-        # logs:
-        #   name: Logs_Pack_Sign # Log publishing isn't ported over in arcade yet
+        logs:
+          name: Logs_Pack_Sign
         manifests: true
     variables:
     - _BuildConfig: Release
