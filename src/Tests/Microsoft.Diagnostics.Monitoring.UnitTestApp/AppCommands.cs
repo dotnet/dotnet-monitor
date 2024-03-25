@@ -25,6 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
         private static void LogEnvironmentVariables(ILogger logger)
         {
             // Only log specific variables required for testing instead of logging all environment variables
+            LogEnvironmentVariableIfExist(logger, ProfilerHelper.ProfilerEnvVarProductVersion);
             LogEnvironmentVariableIfExist(logger, TestAppScenarios.EnvironmentVariables.CustomVariableName);
             LogEnvironmentVariableIfExist(logger, TestAppScenarios.EnvironmentVariables.IncrementVariableName);
         }
