@@ -28,6 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         private string _serviceStateDetails = string.Empty;
 
         private readonly ParameterCapturingEventSource _eventSource = new();
+        private readonly AsyncParameterCapturingEventSource? _asyncEventSource;
         private readonly ParameterCapturingPipeline? _pipeline;
         private readonly ParameterCapturingLogger? _parameterCapturingLogger;
 
@@ -66,6 +67,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 FunctionProbesManager probeManager = new(_logger);
 
                 _pipeline = new ParameterCapturingPipeline(probeManager, this, _methodDescriptionValidator);
+
+                _asyncEventSource = new(_eventSource);
             }
             catch (NotSupportedException ex)
             {
@@ -80,6 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         #region IParameterCapturingPipelineCallbacks
         public void CapturingStart(StartCapturingParametersPayload request, IList<MethodInfo> methods)
         {
+            using IDisposable _ = new NoProbeScope();
             _eventSource.CapturingStart(request.RequestId);
             _logger?.LogInformation(
                 ParameterCapturingStrings.StartParameterCapturingFormatString,
@@ -89,12 +93,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public void CapturingStop(Guid requestId)
         {
+            using IDisposable _ = new NoProbeScope();
             _eventSource.CapturingStop(requestId);
             _logger?.LogInformation(ParameterCapturingStrings.StopParameterCapturing);
         }
 
         public void FailedToCapture(Guid requestId, ParameterCapturingEvents.CapturingFailedReason reason, string details)
         {
+            using IDisposable _ = new NoProbeScope();
             _eventSource.FailedToCapture(requestId, reason, details);
             if (reason == ParameterCapturingEvents.CapturingFailedReason.UnresolvedMethods)
             {
@@ -104,6 +110,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public void ProbeFault(Guid requestId, InstrumentedMethod faultingMethod)
         {
+            using IDisposable _ = new NoProbeScope();
             // TODO: Report back this fault on ParameterCapturingEventSource. 
             _logger?.LogWarning(ParameterCapturingStrings.StoppingParameterCapturingDueToProbeFault, faultingMethod.MethodTemplateString.Template);
 
@@ -125,7 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private void OnStartMessage(StartCapturingParametersPayload payload)
         {
-            if (!IsAvailable() || _pipeline == null || _parameterCapturingLogger == null)
+            if (!IsAvailable() || _pipeline == null || _parameterCapturingLogger == null || _asyncEventSource == null)
             {
                 BroadcastServiceState();
                 return;
@@ -133,7 +140,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             try
             {
-                _pipeline.SubmitRequest(payload, new EventSourceEmittingProbes(_eventSource, payload.RequestId, payload.Configuration.UseDebuggerDisplayAttribute));
+                _pipeline.SubmitRequest(payload, new EventSourceEmittingProbes(_asyncEventSource, payload.RequestId, payload.Configuration.UseDebuggerDisplayAttribute));
             }
             catch (ArgumentException ex)
             {
@@ -231,6 +238,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             _pipeline?.Dispose();
             _parameterCapturingLogger?.Dispose();
+
+            _asyncEventSource?.Dispose();
 
             base.Dispose();
         }

@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
             foreach (CapturedMethod capture in result.CapturedMethods)
             {
                 builder.AppendLine($"[{capture.CapturedDateTime}][{capture.RequestId}] {GetValueOrUnknown(capture.ActivityId)}");
-                builder.AppendLine($"{Indent}{GetValueOrUnknown(capture.ModuleName)}!{GetValueOrUnknown(capture.MethodName)}.{GetValueOrUnknown(capture.MethodName)}(");
+                builder.AppendLine($"{Indent}{GetValueOrUnknown(capture.ModuleName)}!{GetValueOrUnknown(capture.TypeName)}.{GetValueOrUnknown(capture.MethodName)}(");
 
                 foreach (CapturedParameter parameter in capture.Parameters)
                 {

@@ -12,11 +12,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 {
     internal sealed class EventSourceEmittingProbes : IFunctionProbes
     {
-        private readonly ParameterCapturingEventSource _eventSource;
+        private readonly AsyncParameterCapturingEventSource _eventSource;
         private readonly Guid _requestId;
         private readonly ObjectFormatterCache _objectFormatterCache;
 
-        public EventSourceEmittingProbes(ParameterCapturingEventSource eventSource, Guid requestId, bool useDebuggerDisplayAttribute)
+        public EventSourceEmittingProbes(AsyncParameterCapturingEventSource eventSource, Guid requestId, bool useDebuggerDisplayAttribute)
         {
             _eventSource = eventSource;
             _requestId = requestId;
@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         private bool EnterProbeInternal(ulong uniquifier, object[] args)
         {
-            if (!_eventSource.IsEnabled())
+            if (!_eventSource.IsEnabled)
             {
                 return false;
             }
@@ -95,7 +95,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 }
             }
 
-            _eventSource.CapturedParameters(
+            _eventSource.OnCapturedParameters(
                 _requestId,
                 instrumentedMethod.MethodSignature.MethodName,
                 instrumentedMethod.MethodSignature.ModuleName,

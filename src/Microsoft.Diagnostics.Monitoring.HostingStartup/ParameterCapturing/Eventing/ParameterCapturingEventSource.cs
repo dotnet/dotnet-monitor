@@ -5,8 +5,6 @@ using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Functio
 using Microsoft.Diagnostics.Monitoring.StartupHook.Eventing;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Reflection;
 
@@ -59,13 +57,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
             WriteEventWithFlushing(ParameterCapturingEvents.EventIds.UnknownRequestId, data);
         }
 
-
-        [NonEvent]
-        public void FailedToCapture(Guid RequestId, Exception ex)
-        {
-            FailedToCapture(RequestId, ParameterCapturingEvents.CapturingFailedReason.InternalError, ex.ToString());
-        }
-
         [Event(ParameterCapturingEvents.EventIds.FailedToCapture)]
         public void FailedToCapture(
             Guid RequestId,
@@ -83,42 +74,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
             WriteEventWithFlushing(ParameterCapturingEvents.EventIds.FailedToCapture, data);
         }
 
-        [NonEvent]
-        public void CapturedParameters(
-            Guid RequestId,
-            string methodName,
-            string methodModuleName,
-            string? methodDeclaringTypeName,
-            IEnumerable<ResolvedParameterInfo> parameters
-            )
-        {
-            Guid captureId = Guid.NewGuid();
-            Activity? currentActivity = Activity.Current;
-
-            CapturedParameterStart(
-                RequestId,
-                captureId,
-                currentActivity?.Id,
-                methodName,
-                methodModuleName,
-                methodDeclaringTypeName);
-
-            foreach (ResolvedParameterInfo param in parameters)
-            {
-                CapturedParameter(RequestId, captureId, param.Name, param.Type, param.TypeModuleName, param.Value, param.Attributes, param.IsByRef);
-            }
-
-            CapturedParameterStop(RequestId, captureId);
-        }
-
         [Event(ParameterCapturingEvents.EventIds.ParameterCaptured)]
         public void CapturedParameter(
             Guid RequestId,
             Guid CaptureId,
-            string? parameterName,
-            string? parameterType,
-            string? parameterTypeModuleName,
-            string? parameterValue,
+            string parameterName,
+            string parameterType,
+            string parameterTypeModuleName,
+            string parameterValue,
             ParameterAttributes parameterAttributes,
             bool isParameterTypeByRef
             )
@@ -143,13 +106,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
         }
 
         [Event(ParameterCapturingEvents.EventIds.ParametersCapturedStart)]
-        private void CapturedParameterStart(
+        public void CapturedParameterStart(
             Guid RequestId,
             Guid CaptureId,
-            string? activityId,
+            string activityId,
             string methodName,
             string methodModuleName,
-            string? methodDeclaringTypeName
+            string methodDeclaringTypeName
             )
         {
             Span<EventData> data = stackalloc EventData[6];
@@ -170,7 +133,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
         }
 
         [Event(ParameterCapturingEvents.EventIds.ParametersCapturedStop)]
-        private void CapturedParameterStop(
+        public void CapturedParameterStop(
             Guid RequestId,
             Guid CaptureId
             )
@@ -187,7 +150,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
         protected override void Flush()
         {
             // This method is called on a timer and we shouldn't track any calls inside so we don't flood the user with unimportant captures.
-            using NoProbeContext noProbe = new();
+            using IDisposable _ = new NoProbeScope();
             WriteEvent(ParameterCapturingEvents.EventIds.Flush);
         }
     }

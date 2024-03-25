@@ -110,7 +110,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pip
         // so use callbacks instead of throwing exceptions.
         private async Task<bool> TryStartCapturingAsync(CapturingRequest request, CancellationToken token)
         {
-            using NoProbeContext noProbe = new();
             try
             {
                 MethodResolver resolver = new();
