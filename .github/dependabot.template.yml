@@ -19,6 +19,7 @@
 #@ def getBranches():
 #@   return [
 #@     struct.encode({"name": "main", "majorVersion": "8"}),
+#@     struct.encode({"name": "release/8.0", "majorVersion": "8"}),
 #@     struct.encode({"name": "release/7.x", "majorVersion": "7"}),
 #@     struct.encode({"name": "release/6.x", "majorVersion": "6"}),
 #@   ]
@@ -34,13 +35,14 @@ updates:
 #@ for branch in getBranches():
 #@ commit_prefix = "[" + branch.name + "] "
   - package-ecosystem: "nuget"
-    directory: "/eng/dependabot"
+    directory: "/eng/dependabot/independent"
     schedule:
       interval: "daily"
     target-branch: #@ branch.name
     ignore:
       - dependency-name: "Microsoft.Extensions.*"
         update-types: [ "version-update:semver-major" ]
+      - dependency-name: "Moq"
     commit-message:
       prefix: #@ commit_prefix
     groups:

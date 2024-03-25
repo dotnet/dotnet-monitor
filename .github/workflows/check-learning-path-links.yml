@@ -8,6 +8,7 @@ permissions: {}
   
 jobs:
   check-learning-path-links:
+    if: github.repository == 'dotnet/dotnet-monitor'
     name: 'Check Learning Path Links'
     runs-on: ubuntu-latest
     permissions:
