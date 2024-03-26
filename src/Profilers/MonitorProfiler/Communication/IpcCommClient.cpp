@@ -27,18 +27,18 @@ HRESULT IpcCommClient::Receive(IpcMessage& message)
         sizeof(headersBuffer)
     ));
 
-    int bufferOffset = 0;
+    int headerOffset = 0;
 
-    message.CommandSet = *reinterpret_cast<unsigned short*>(&headersBuffer[bufferOffset]);
-    bufferOffset += sizeof(UINT16);
+    message.CommandSet = *reinterpret_cast<unsigned short*>(&headersBuffer[headerOffset]);
+    headerOffset += sizeof(UINT16);
 
-    message.Command = *reinterpret_cast<unsigned short*>(&headersBuffer[bufferOffset]);
-    bufferOffset += sizeof(UINT16);
+    message.Command = *reinterpret_cast<unsigned short*>(&headersBuffer[headerOffset]);
+    headerOffset += sizeof(UINT16);
 
-    int payloadSize = *reinterpret_cast<int*>(&headersBuffer[bufferOffset]);
-    bufferOffset += sizeof(INT32);
+    int payloadSize = *reinterpret_cast<int*>(&headersBuffer[headerOffset]);
+    headerOffset += sizeof(INT32);
 
-    assert(bufferOffset == sizeof(headersBuffer));
+    assert(headerOffset == sizeof(headersBuffer));
 
     if (payloadSize < 0 || payloadSize > MaxPayloadSize)
     {

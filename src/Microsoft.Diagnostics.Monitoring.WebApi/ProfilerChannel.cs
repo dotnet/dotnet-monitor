@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.Options;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
@@ -86,6 +87,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             int payloadSize = BitConverter.ToInt32(headersBuffer, startIndex: headerOffset);
+            headerOffset += sizeof(int);
+
+            Debug.Assert(headerOffset == headersBuffer.Length);
 
             //
             // End of header, headerOffset should not be used after this point
