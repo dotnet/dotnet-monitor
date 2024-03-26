@@ -43,9 +43,6 @@ namespace Microsoft.Diagnostics.Monitoring
         public ushort Command { get; }
         public byte[] Payload { get; }
 
-        public JsonProfilerMessage(ProfilerCommand command, object payloadObject)
-            : this((ushort)Monitoring.CommandSet.Profiler, (ushort)command, payloadObject) { }
-
         public JsonProfilerMessage(ManagedInProcCommand command, object payloadObject)
             : this((ushort)Monitoring.CommandSet.ManagedInProc, (ushort)command, payloadObject) { }
 
