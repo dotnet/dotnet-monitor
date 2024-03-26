@@ -248,7 +248,7 @@ HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 {
     m_pLogger->Log(LogLevel::Debug, _LS("Message received from client %hu:%hu"), message.CommandSet, message.Command);
 
-    if (message.CommandSet == (unsigned short)CommandSet::Profiler)
+    if (message.CommandSet == static_cast<unsigned short>CommandSet::Profiler)
     {
         switch (static_cast<ProfilerCommand>(message.Command))
         {
