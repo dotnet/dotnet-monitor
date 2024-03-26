@@ -4,11 +4,9 @@
 #pragma once
 
 #include <unordered_map>
-#include <string>
 #include <mutex>
 #include "cor.h"
 #include "corprof.h"
-#include "tstring.h"
 #include "Messages.h"
 
 typedef INT32 (STDMETHODCALLTYPE *ManagedMessageCallback)(UINT16, const BYTE*, UINT64);
