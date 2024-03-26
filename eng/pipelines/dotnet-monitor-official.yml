@@ -54,18 +54,21 @@ variables:
 - name: _TPNFile
   value: THIRD-PARTY-NOTICES.TXT
 
-- ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-  # DotNet-Diagnostics-SDL-Params provides Tsa* variables for SDL checks.
-  - group: DotNet-Diagnostics-SDL-Params
-
 extends:
   template: /eng/pipelines/templates/pipeline-template.yml@self
   parameters:
     featureFlags:
       autoBaseline: true
     sdl:
+      binskim:
+        enabled: true
+      policheck:
+        enabled: true
+        exclusionsFile: $(Build.SourcesDirectory)/eng/PoliCheckExclusions.xml
       sbom:
         enabled: false
+      tsa:
+        enabled: true
     stages:
     - stage: Build
       displayName: Build and Test
@@ -138,24 +141,6 @@ extends:
           enableSymbolValidation: false
           enableNugetValidation: true
           publishInstallersAndChecksums: true
-          SDLValidationParameters:
-            enable: true
-            continueOnError: true
-            publishGdn: true
-            params: >-
-              -SourceToolsList @("policheck","credscan")
-              -TsaInstanceURL $(_TsaInstanceURL)
-              -TsaProjectName $(_TsaProjectName)
-              -TsaNotificationEmail $(_TsaNotificationEmail)
-              -TsaCodebaseAdmin $(_TsaCodebaseAdmin)
-              -TsaBugAreaPath $(_TsaBugAreaPath)
-              -TsaIterationPath $(_TsaIterationPath)
-              -TsaRepositoryName "dotnet-monitor"
-              -TsaCodebaseName "dotnet-monitor"
-              -TsaPublish $True
-              -PoliCheckAdditionalRunConfigParams @("UserExclusionPath < $(Build.SourcesDirectory)/eng/PoliCheckExclusions.xml")
-            artifactNames:
-            - 'PackageArtifacts'
     # This sets up the bits to do a Release.
     - template: /eng/pipelines/stages/preparerelease.yml@self
       parameters:
