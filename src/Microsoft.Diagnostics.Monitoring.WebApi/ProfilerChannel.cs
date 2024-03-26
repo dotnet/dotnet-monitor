@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             int headerOffset = 0;
-            ushort commandSet = (ushort)BitConverter.ToInt16(headersBuffer, startIndex: headerOffset);
+            ushort commandSet = BitConverter.ToUInt16(headersBuffer, startIndex: headerOffset);
             headerOffset += sizeof(short);
 
             if (commandSet != (ushort)CommandSet.DotnetMonitor)
@@ -77,7 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new InvalidOperationException("Received unexpected command set from server.");
             }
 
-            ushort command = (ushort)BitConverter.ToInt16(headersBuffer, startIndex: headerOffset);
+            ushort command = BitConverter.ToUInt16(headersBuffer, startIndex: headerOffset);
             headerOffset += sizeof(short);
 
             if (command != (ushort)DotnetMonitorCommand.Status)
@@ -86,6 +86,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             int payloadSize = BitConverter.ToInt32(headersBuffer, startIndex: headerOffset);
+
+            //
+            // End of header, headerOffset should not be used after this point
+            //
 
             byte[] payloadBuffer = new byte[sizeof(int)];
             if (payloadSize != payloadBuffer.Length)
