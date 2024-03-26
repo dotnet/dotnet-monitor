@@ -30,8 +30,16 @@ HRESULT ManagedMessageCallbackManager::DispatchMessage(const IpcMessage& message
     return callback(message.Command, message.Payload.data(), message.Payload.size());
 }
 
+void ManagedMessageCallbackManager::Unregister(unsigned short commandSet)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+
+    m_callbacks.erase(commandSet);
+}
+
 bool ManagedMessageCallbackManager::TryGetCallback(unsigned short commandSet, ManagedMessageCallback& callback)
 {
+    // Do not lock here, this method is private and it's the responsibility of the caller to lock
     auto const& it = m_callbacks.find(commandSet);
     if (it != m_callbacks.end())
     {
@@ -40,11 +48,4 @@ bool ManagedMessageCallbackManager::TryGetCallback(unsigned short commandSet, Ma
     }
 
     return false;
-}
-
-void ManagedMessageCallbackManager::Unregister(unsigned short commandSet)
-{
-    std::lock_guard<std::mutex> lock(m_mutex);
-
-    m_callbacks.erase(commandSet);
 }
