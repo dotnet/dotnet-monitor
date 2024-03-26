@@ -147,5 +147,6 @@ extends:
         ${{ if eq(parameters.updateDocker, 'true') }}:
           updateDockerCondition: true
         ${{ else }}:
-          # If scheduled build from main and nightly update from main enabled
-          updateDockerCondition: and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['NightlyUpdateDockerFromMain'], 'true'))
+          # Scheduled builds of branches that match the variable AutoUpdateDockerBranches will update the dotnet-docker repository.
+          # For example, "refs/heads/main;refs/heads/feature/9.x" means scheduled builds of the main and feature/9.x branches trigger the update.
+          updateDockerCondition: and(contains(variables['AutoUpdateDockerBranches'], variables['Build.SourceBranch']), eq(variables['Build.Reason'], 'Schedule'))
