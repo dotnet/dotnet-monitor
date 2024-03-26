@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #include "MainProfiler.h"
-#include "../Communication/MessageDemuxer.h"
+#include "../Communication/ManagedMessageCallbackManager.h"
 #include "Environment/EnvironmentHelper.h"
 #include "Environment/ProfilerEnvironment.h"
 #include "Logging/LoggerFactory.h"
@@ -22,7 +22,7 @@ using namespace std;
 #define DLLEXPORT
 #endif
 
-MessageDemuxer g_managedMessageCallbacks;
+ManagedMessageCallbackManager g_managedMessageCallbacks;
 
 GUID MainProfiler::GetClsid()
 {
@@ -260,7 +260,7 @@ HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
     }
     else
     {
-        return g_managedMessageCallbacks.OnMessage(message);
+        return g_managedMessageCallbacks.DispatchMessage(message);
     }
 }
 

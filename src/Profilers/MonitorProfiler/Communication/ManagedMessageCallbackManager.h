@@ -13,10 +13,10 @@
 
 typedef HRESULT (STDMETHODCALLTYPE *ManagedMessageCallback)(UINT16, const BYTE*, UINT64);
 
-class MessageDemuxer
+class ManagedMessageCallbackManager
 {
     public:
-        HRESULT OnMessage(const IpcMessage& message);
+        HRESULT DispatchMessage(const IpcMessage& message);
         bool TryRegister(unsigned short commandSet, ManagedMessageCallback callback);
         void Unregister(unsigned short commandSet);
     private:
