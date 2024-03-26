@@ -29,13 +29,13 @@ HRESULT IpcCommClient::Receive(IpcMessage& message)
 
     int headerOffset = 0;
 
-    message.CommandSet = *reinterpret_cast<unsigned short*>(&headersBuffer[headerOffset]);
+    message.CommandSet = *reinterpret_cast<UINT16*>(&headersBuffer[headerOffset]);
     headerOffset += sizeof(UINT16);
 
-    message.Command = *reinterpret_cast<unsigned short*>(&headersBuffer[headerOffset]);
+    message.Command = *reinterpret_cast<UINT16*>(&headersBuffer[headerOffset]);
     headerOffset += sizeof(UINT16);
 
-    int payloadSize = *reinterpret_cast<int*>(&headersBuffer[headerOffset]);
+    int payloadSize = *reinterpret_cast<INT32*>(&headersBuffer[headerOffset]);
     headerOffset += sizeof(INT32);
 
     assert(headerOffset == sizeof(headersBuffer));
