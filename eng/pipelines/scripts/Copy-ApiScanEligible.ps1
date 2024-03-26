@@ -29,45 +29,6 @@ function Copy-File() {
   $script:copyCount++
 }
 
-# Check if the file is a ARM64 PE file
-function Test-PeArm64() {
-  param(
-    [System.IO.FileInfo] $FileInfo
-  )
-  $stream = [System.IO.File]::OpenRead($FileInfo.FullName)
-  $reader = [System.IO.BinaryReader]($stream)
-  # https://learn.microsoft.com/en-us/windows/win32/debug/pe-format
-  # MS DOS Magic Number
-  if (0x5A4D -ne $reader.ReadUInt16()) {
-    $reader.Dispose()
-    return $false
-  }
-  $stream.Position = 0x3C # NT Header offset, 4 bytes
-  $ntHeaderOffset = $reader.ReadUInt32()
-  $stream.Position = $ntHeaderOffset
-  # PE Magic Number, 4 bytes
-  if (0x00004550 -ne $reader.ReadUInt32()) {
-    $reader.Dispose()
-    return $false;
-  }
-  # Machine type, 2 bytes
-  # 0xAA64 is ARM64
-  $isArm64 = 0xAA64 -eq $reader.ReadUInt16();
-  $reader.Dispose()
-  return $isArm64
-}
-
-function Copy-Executable() {
-  param(
-    [System.IO.FileInfo] $FileInfo
-  )
-  if (Test-PeArm64 -FileInfo $fileInfo) {
-    Skip-File -FileInfo $fileInfo -Reason "ARM64 PE" # ARM64 is not supported by ApiScan
-  } else {
-    Copy-File -FileInfo $fileInfo
-  }
-}
-
 function Skip-File() {
   param(
     [System.IO.FileInfo] $FileInfo,
@@ -83,9 +44,9 @@ foreach ($fileInfo in (Get-ChildItem $SourcePath -Recurse -Attributes !Directory
   if ($fileInfo.Directory.FullName.Contains('symbols')) { # Skip symbols packages
     Skip-File -FileInfo $fileInfo -Reason "Symbols"
   } elseif ($fileInfo.Extension -eq ".dll") { # Library
-    Copy-Executable -FileInfo $fileInfo
+    Copy-File -FileInfo $fileInfo
   } elseif ($fileInfo.Extension -eq ".exe") { # Executable
-    Copy-Executable -FileInfo $fileInfo
+    Copy-File -FileInfo $fileInfo
   } elseif ($fileInfo.Extension -eq ".pdb") { # Program database
     Copy-File -FileInfo $fileInfo
   } else {
