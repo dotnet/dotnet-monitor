@@ -1,4 +1,5 @@
 variables:
+- template: /eng/common/templates-official/variables/pool-providers.yml@self
 - name: _TeamName
   value: DotNetCore
     
@@ -18,13 +19,19 @@ parameters:
   type: boolean
   default: true
 
-stages:
-- stage: Build
-  displayName: Build and Analyze
-  jobs:
-  - template: /eng/pipelines/jobs/platform-matrix.yml
-    parameters:
-      jobTemplate: /eng/pipelines/jobs/build-codeql.yml
-      includeArm64: true
-      jobParameters:
-        enableTsa: ${{ parameters.enableTsa }}
+extends:
+  template: /eng/pipelines/templates/pipeline-template.yml@self
+  parameters:
+    sdl:
+      sbom:
+        enabled: false
+    stages:
+    - stage: Build
+      displayName: Build and Analyze
+      jobs:
+      - template: /eng/pipelines/jobs/platform-matrix.yml@self
+        parameters:
+          jobTemplate: /eng/pipelines/jobs/build-codeql.yml@self
+          includeArm64: true
+          jobParameters:
+            enableTsa: ${{ parameters.enableTsa }}
