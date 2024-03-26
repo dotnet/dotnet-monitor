@@ -92,11 +92,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             };
             ClaimsPrincipal claimsPrinciple = tokenHandler.ValidateToken(tokenStr, tokenValidationParams, out SecurityToken validatedToken);
 
-            ITestOutputHelper validationHelper = new PrefixedOutputHelper(_outputHelper, "[JWT Validation] ");
-            foreach (Claim c in claimsPrinciple.Claims)
-            {
-                validationHelper.WriteLine($"Token Claim: {c.Issuer}:{c.Type}=[{c.ValueType}]{c.Value}");
-            }
             Assert.True(claimsPrinciple.HasClaim(ClaimTypes.NameIdentifier, subject));
         }
     }

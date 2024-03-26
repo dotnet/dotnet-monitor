@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             try
             {
                 s_inProbe = true;
-                probes.EnterProbe(uniquifier, args);
+                _ = probes.EnterProbe(uniquifier, args);
             }
             finally
             {

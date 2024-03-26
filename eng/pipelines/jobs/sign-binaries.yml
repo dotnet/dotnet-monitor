@@ -3,18 +3,15 @@ parameters:
   configuration: Release
 
 jobs:
-- template: /eng/common/templates/job/job.yml
+- template: /eng/common/templates-official/job/job.yml@self
   parameters:
     name: Sign_Binaries
     displayName: Sign Binaries
-    pool:
-      name: $(DncEngInternalBuildPool)
-      demands: ImageOverride -equals 1es-windows-2019
     enableMicrobuild: true
     artifacts:
       publish:
         logs:
-          name: Logs_Sign_Binaries
+          name: Logs_$(JobName)
     variables:
     - _BuildConfig: ${{ parameters.configuration }}
     - _SignType: real
@@ -27,7 +24,7 @@ jobs:
         artifactName: Build_Published_${{ parameters.configuration }}
         targetPath: '$(Build.SourcesDirectory)/artifacts'
 
-    - template: /eng/pipelines/steps/setup-nuget-sources.yml
+    - template: /eng/pipelines/steps/setup-nuget-sources.yml@self
       parameters:
         osGroup: Windows
 
@@ -53,15 +50,15 @@ jobs:
       inputs:
         SourceFolder: '$(Build.SourcesDirectory)/artifacts/bin'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/bin'
-    
+
     - task: CopyFiles@2
       displayName: Gather Artifacts (pub)
       inputs:
         SourceFolder: '$(Build.SourcesDirectory)/artifacts/pub'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/pub'
 
-    - task: PublishBuildArtifacts@1
+    - task: 1ES.PublishBuildArtifacts@1
       displayName: Publish Artifacts
       inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
-        artifactName: Build_Signed_${{ parameters.configuration }}
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
+        ArtifactName: Build_Signed_${{ parameters.configuration }}

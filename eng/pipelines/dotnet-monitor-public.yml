@@ -1,0 +1,77 @@
+trigger: none
+
+pr:
+  autoCancel: true
+  branches:
+    include:
+    - main
+    - release/*
+    - internal/release/*
+    - feature/*
+  paths:
+    exclude:
+    - .devcontainer
+    - .github
+    - .vscode
+    - .gitignore
+    - cspell.json
+    - eng/actions
+    - samples
+    - '**.md'
+
+parameters:
+- name: testGroup
+  displayName: 'Test Group'
+  type: string
+  default: Default
+  values:
+  - Default
+  - All
+  - None
+  - CI
+  - PR
+
+variables:
+- template: /eng/common/templates/variables/pool-providers.yml@self
+- name: _TeamName
+  value: DotNetCore
+
+extends:
+  template: /eng/pipelines/templates/pipeline-template.yml@self
+  parameters:
+    is1ESPipeline: false
+    pool:
+      name: $(DncEngPublicBuildPool)
+      image: windows.vs2022preview.amd64.open
+      os: windows
+    stages:
+    - stage: Build
+      displayName: Build and Test
+      jobs:
+      # Build and (optionally) test binaries
+      - template: /eng/pipelines/jobs/platform-matrix.yml@self
+        parameters:
+          jobTemplate: /eng/pipelines/jobs/build-binaries.yml@self
+          includeArm64: true
+          includeDebug: true
+          jobParameters:
+            publishBinaries: true
+            is1ESPipeline: false
+            commonTemplatesFolderName: 'templates'
+
+      - ${{ if ne(parameters.testGroup, 'None') }}:
+        - template: /eng/pipelines/jobs/platform-matrix.yml@self
+          parameters:
+            jobTemplate: /eng/pipelines/jobs/test-binaries.yml@self
+            includeArm64: true
+            jobParameters:
+              testGroup: ${{ parameters.testGroup }}
+              useHelix: true
+              is1ESPipeline: false
+              commonTemplatesFolderName: 'templates'
+
+    # Build release staging tool
+    - template: /eng/pipelines/stages/preparerelease.yml@self
+      parameters:
+        updateDockerCondition: false
+        is1ESPipeline: false

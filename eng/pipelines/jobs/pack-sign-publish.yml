@@ -1,11 +1,8 @@
 jobs:
-- template: /eng/common/templates/job/job.yml
+- template: /eng/common/templates-official/job/job.yml@self
   parameters:
     name: Pack_Sign
     displayName: Pack and Sign
-    pool:
-      name: NetCore1ESPool-Svc-Internal
-      demands: ImageOverride -equals 1es-windows-2019
     enablePublishUsingPipelines: true
     enableMicrobuild: true
     artifacts:
@@ -35,7 +32,7 @@ jobs:
       inputs:
         artifactName: 'THIRD-PARTY-NOTICES'
         targetPath: '$(Build.SourcesDirectory)'
-    - template: /eng/pipelines/steps/setup-nuget-sources.yml
+    - template: /eng/pipelines/steps/setup-nuget-sources.yml@self
       parameters:
         osGroup: Windows
     - script: >-
@@ -55,9 +52,9 @@ jobs:
       inputs:
         targetType: inline
         script: |
-            New-Item "$(Build.ArtifactStagingDirectory)/buildInfo" -Type Directory
-            Copy-Item "$(Build.SourcesDirectory)/artifacts/packages/Release/Shipping/dotnet-monitor.buildversion" "$(Build.ArtifactStagingDirectory)/buildInfo/dotnet-monitor.nupkg.buildversion"
-    - task: PublishPipelineArtifact@1
+          New-Item "$(Build.ArtifactStagingDirectory)/buildInfo" -Type Directory
+          Copy-Item "$(Build.SourcesDirectory)/artifacts/packages/Release/Shipping/dotnet-monitor.buildversion" "$(Build.ArtifactStagingDirectory)/buildInfo/dotnet-monitor.nupkg.buildversion"
+    - task: 1ES.PublishPipelineArtifact@1
       displayName: Publish Build Info
       inputs:
         artifactName: 'Build_Info'

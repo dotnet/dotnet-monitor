@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
-using Microsoft.Diagnostics.Tools.Monitor.Auth;
+using Microsoft.Diagnostics.Tools.Monitor.Swagger;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
 
@@ -84,13 +86,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             app.UseSwagger();
 
-            IAuthenticationConfigurator authConfigurator = app.ApplicationServices.GetRequiredService<IAuthenticationConfigurator>();
-            app.UseSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "dotnet-monitor v1.0");
-                authConfigurator.ConfigureSwaggerUI(options);
-            });
-
             app.UseRouting();
 
             app.UseAuthentication();
@@ -109,12 +104,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 builder.MapControllers();
 
-                // Use a redirect to the Swagger UI if the request hits the default endpoint.
-                // This means that the swagger endpoint can have a permanent address, even if we decide to host
-                // something else at the root later.
-                builder.MapGet("/", (HttpResponse response) =>
+                builder.MapGet("/", (HttpResponse response, ISwaggerProvider provider) =>
                 {
-                    response.Redirect("/swagger/index.html");
+                    using Stream stream = response.BodyWriter.AsStream(true);
+
+                    provider.WriteTo(stream);
                 });
             });
         }

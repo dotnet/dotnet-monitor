@@ -1,0 +1,57 @@
+parameters:
+- name: featureFlags
+  type: object
+  default: null
+- name: is1ESPipeline
+  type: boolean
+  default: true
+- name: pool
+  type: object
+  default:
+    name: $(DncEngInternalBuildPool)
+    image: windows.vs2022preview.amd64
+    os: windows
+- name: sdl
+  type: object
+  default: null
+- name: stages
+  type: stageList
+  default: []
+
+extends:
+  ${{ if eq(parameters.is1ESPipeline, true) }}:
+    template: /eng/pipelines/templates/pipeline-template-1es.yml@self
+  # When public project builds have 1ES PT support, the following template can be removed
+  ${{ else }}:
+    template: /eng/pipelines/templates/pipeline-template-legacy.yml@self
+  parameters:
+    containers:
+      build_linux_amd64_cross:
+        image: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-amd64
+      build_linux_arm64_cross:
+        image: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-arm64
+      build_linux_musl_amd64_cross:
+        image: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-amd64-alpine
+      build_linux_musl_arm64_cross:
+        image: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-arm64-alpine
+      helix_linux_amd64:
+        image: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-20.04
+      helix_linux_musl_amd64:
+        image: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.19-WithNode
+
+    pool: ${{ parameters.pool }}
+
+    stages: ${{ parameters.stages }}
+
+    ${{ if eq(parameters.is1ESPipeline, true) }}:
+      ${{ if parameters.featureFlags }}:
+        featureFlags: ${{ parameters.featureFlags }}
+
+      sdl:
+        sourceAnalysisPool:
+          name: $(DncEngInternalBuildPool)
+          image: 1es-windows-2022
+          os: windows
+        ${{ if parameters.sdl }}:
+          ${{ each pair in parameters.sdl }}:
+            ${{ pair.key }}: ${{ pair.value }}

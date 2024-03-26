@@ -1617,6 +1617,13 @@
           },
           "useDebuggerDisplayAttribute": {
             "type": "boolean"
+          },
+          "captureLimit": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
