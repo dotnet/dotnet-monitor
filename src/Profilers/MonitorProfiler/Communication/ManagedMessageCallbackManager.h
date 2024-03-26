@@ -11,7 +11,7 @@
 #include "tstring.h"
 #include "Messages.h"
 
-typedef HRESULT (STDMETHODCALLTYPE *ManagedMessageCallback)(UINT16, const BYTE*, UINT64);
+typedef INT32 (STDMETHODCALLTYPE *ManagedMessageCallback)(UINT16, const BYTE*, UINT64);
 
 class ManagedMessageCallbackManager
 {
