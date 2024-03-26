@@ -47,3 +47,13 @@
 ###############################################################################
 *.png				binary
 *.snk       		binary
+
+###############################################################################
+# Define branch specific files by overriding the merge driver
+###############################################################################
+global.json merge=ours
+eng/branch-vscode-config merge=ours
+eng/common merge=ours
+eng/Common.props merge=ours
+eng/Versions.props merge=ours
+eng/Version.Details.xml merge=ours

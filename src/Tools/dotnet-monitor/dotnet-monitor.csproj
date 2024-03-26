@@ -16,7 +16,6 @@
     <PackageReference Include="Microsoft.Identity.Web" />
     <PackageReference Include="System.CommandLine" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">

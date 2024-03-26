@@ -58,40 +58,40 @@
   <!-- Linux gnu libc queues -->
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform(Linux)) and !$(PackageRid.Contains(musl))">
     <!-- linux-arm64 -->
-    <HelixAvailableTargetQueue Include="ubuntu.1804.armarch$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-11-helix-arm64v8"
+    <HelixAvailableTargetQueue Include="ubuntu.2204.armarch$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-12-helix-arm64v8"
                                Condition="'$(HelixArchitecture)' == 'arm64'">
-      <TestRunName>Debian 11 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+      <TestRunName>Debian 12 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
-    <HelixAvailableTargetQueue Include="ubuntu.1804.armarch$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-helix-arm64v8"
+    <HelixAvailableTargetQueue Include="ubuntu.2204.armarch$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-22.04-helix-arm64v8"
                                Condition="'$(HelixArchitecture)' == 'arm64'">
-      <TestRunName>Ubuntu 18.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+      <TestRunName>Ubuntu 22.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
     <!-- linux-x64 -->
-    <HelixAvailableTargetQueue Include="ubuntu.1804.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-11-helix-amd64"
+    <HelixAvailableTargetQueue Include="ubuntu.2204.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-12-helix-amd64"
                                Condition="'$(HelixArchitecture)' == 'x64'">
-      <TestRunName>Debian 11 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+      <TestRunName>Debian 12 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
-    <HelixAvailableTargetQueue Include="ubuntu.1804.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-helix-amd64"
+    <HelixAvailableTargetQueue Include="ubuntu.2204.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-helix-amd64"
                                Condition="'$(HelixArchitecture)' == 'x64'">
       <TestRunName>Mariner 2.0 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
-    <HelixAvailableTargetQueue Include="ubuntu.1804.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-helix-amd64"
+    <HelixAvailableTargetQueue Include="ubuntu.2204.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-20.04-helix-amd64"
                                Condition="'$(HelixArchitecture)' == 'x64'">
-      <TestRunName>Ubuntu 18.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+      <TestRunName>Ubuntu 20.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
   </ItemGroup>
 
   <!-- Linux musl libc queues -->
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform(Linux)) and $(PackageRid.Contains(musl))">
     <!-- linux-musl-arm64 -->
-    <HelixAvailableTargetQueue Include="ubuntu.1804.armarch$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.15-helix-arm64v8"
+    <HelixAvailableTargetQueue Include="ubuntu.2204.armarch$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.17-helix-arm64v8"
                                Condition="'$(HelixArchitecture)' == 'arm64'">
-      <TestRunName>Alpine 3.15 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+      <TestRunName>Alpine 3.17 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
     <!-- linux-musl-x64 -->
-    <HelixAvailableTargetQueue Include="ubuntu.1804.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.15-helix-amd64"
+    <HelixAvailableTargetQueue Include="ubuntu.2204.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.17-helix-amd64"
                                Condition="'$(HelixArchitecture)' == 'x64'">
-      <TestRunName>Alpine 3.15 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+      <TestRunName>Alpine 3.17 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
   </ItemGroup>
 
@@ -129,7 +129,7 @@
     <AdditionalDotNetPackage Include="$(MicrosoftAspNetCoreApp70Version)">
       <PackageType>aspnetcore-runtime</PackageType>
     </AdditionalDotNetPackage>
-    <AdditionalDotNetPackage Include="$(VSRedistCommonAspNetCoreSharedFrameworkx6480Version)">
+    <AdditionalDotNetPackage Include="$(MicrosoftAspNetCoreApp80Version)">
       <PackageType>aspnetcore-runtime</PackageType>
     </AdditionalDotNetPackage>
   </ItemGroup>
