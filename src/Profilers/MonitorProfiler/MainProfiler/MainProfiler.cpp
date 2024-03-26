@@ -246,7 +246,7 @@ HRESULT MainProfiler::InitializeCommandServer()
 
 HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 {
-    m_pLogger->Log(LogLevel::Debug, _LS("Message received from client %d:%d"), message.CommandSet, message.Command);
+    m_pLogger->Log(LogLevel::Debug, _LS("Message received from client %hu:%hu"), message.CommandSet, message.Command);
 
     if (message.CommandSet == (unsigned short)CommandSet::Profiler)
     {

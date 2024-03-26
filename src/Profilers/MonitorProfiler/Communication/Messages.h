@@ -24,7 +24,7 @@ enum class CommandSet : unsigned short
 
 struct IpcMessage
 {
-    short CommandSet;
-    short Command;
+    unsigned short CommandSet;
+    unsigned short Command;
     std::vector<BYTE> Payload;
 };
