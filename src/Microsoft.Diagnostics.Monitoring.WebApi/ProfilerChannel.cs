@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             await socket.ConnectAsync(endpoint);
 
-            byte[] headersBuffer = new byte[sizeof(short) + sizeof(short) + sizeof(int)];
+            byte[] headersBuffer = new byte[sizeof(ushort) + sizeof(ushort) + sizeof(int)];
             var memoryStream = new MemoryStream(headersBuffer);
             using BinaryWriter writer = new BinaryWriter(memoryStream);
             writer.Write(message.CommandSet);
@@ -61,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static async Task<int> ReceiveStatusMessageAsync(Socket socket, CancellationToken token)
         {
-            byte[] headersBuffer = new byte[sizeof(short) + sizeof(short) + sizeof(int)];
+            byte[] headersBuffer = new byte[sizeof(ushort) + sizeof(ushort) + sizeof(int)];
             int received = await socket.ReceiveAsync(new Memory<byte>(headersBuffer), SocketFlags.None, token);
             if (received < headersBuffer.Length)
             {
@@ -71,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             int headerOffset = 0;
             ushort commandSet = BitConverter.ToUInt16(headersBuffer, startIndex: headerOffset);
-            headerOffset += sizeof(short);
+            headerOffset += sizeof(ushort);
 
             if (commandSet != (ushort)CommandSet.DotnetMonitor)
             {
@@ -79,7 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             ushort command = BitConverter.ToUInt16(headersBuffer, startIndex: headerOffset);
-            headerOffset += sizeof(short);
+            headerOffset += sizeof(ushort);
 
             if (command != (ushort)DotnetMonitorCommand.Status)
             {
