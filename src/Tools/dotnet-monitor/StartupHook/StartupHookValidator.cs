@@ -66,8 +66,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             {
                 if (logInstructions)
                 {
-                    _logger.StartupHookEnvironmentMissing(endpointInfo.ProcessId);
-                    LogInstructions(startupHookLibraryFileInfo);
+                    LogInstructions(endpointInfo, startupHookLibraryFileInfo);
                 }
 
                 return false;
@@ -77,8 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             {
                 if (logInstructions)
                 {
-                    _logger.StartupHookMissing(endpointInfo.ProcessId, startupHookLibraryFileInfo.Name);
-                    LogInstructions(startupHookLibraryFileInfo);
+                    LogInstructions(endpointInfo, startupHookLibraryFileInfo);
                 }
 
                 return false;
@@ -96,9 +94,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             return managedFileProvider.GetFileInfo(StartupHookFileName);
         }
 
-        private void LogInstructions(IFileInfo startupHookLibraryFileInfo)
+        private void LogInstructions(IEndpointInfo endpointInfo, IFileInfo startupHookLibraryFileInfo)
         {
-            _logger.StartupHookInstructions(startupHookLibraryFileInfo.PhysicalPath);
+            _logger.StartupHookInstructions(endpointInfo.ProcessId, startupHookLibraryFileInfo.PhysicalPath);
         }
     }
 }
