@@ -29,16 +29,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 return;
             }
 
-            // Don't probe our own code.
-            if (MonitorExecutionContextTracker.IsInMonitorContext())
-            {
-                return;
-            }
-
             try
             {
                 s_inProbe = true;
-                _ = probes.EnterProbe(uniquifier, args);
+                if (!MonitorExecutionContextTracker.IsInMonitorContext())
+                {
+                    _ = probes.EnterProbe(uniquifier, args);
+                }
             }
             finally
             {
