@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using Microsoft.Diagnostics.Monitoring.StartupHook;
-using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;

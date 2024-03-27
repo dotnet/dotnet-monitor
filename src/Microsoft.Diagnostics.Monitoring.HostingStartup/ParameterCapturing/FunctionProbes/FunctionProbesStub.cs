@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.StartupHook;
 using System;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
@@ -11,7 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         private static readonly EnterProbeDelegate s_fixedEnterProbeDelegate = EnterProbeStub;
 
         [ThreadStatic]
-        private static int s_inProbeCount;
+        private static bool s_inProbe;
 
         internal static FunctionProbesState? State { get; set; }
 
@@ -23,36 +24,26 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         public static void EnterProbeStub(ulong uniquifier, object[] args)
         {
             IFunctionProbes? probes = State?.Probes;
-            if (probes == null || !IsProbingEnabled())
+            if (probes == null || s_inProbe)
+            {
+                return;
+            }
+
+            // Don't probe our own code.
+            if (MonitorExecutionContextTracker.IsInMonitorContext())
             {
                 return;
             }
 
             try
             {
-                PauseProbingForCurrentThread();
+                s_inProbe = true;
                 _ = probes.EnterProbe(uniquifier, args);
             }
             finally
             {
-                ResumeProbingForCurrentThread();
+                s_inProbe = false;
             }
-        }
-
-        public static bool IsProbingEnabled() => s_inProbeCount == 0;
-
-        public static void PauseProbingForCurrentThread()
-        {
-            s_inProbeCount++;
-        }
-
-        public static void ResumeProbingForCurrentThread()
-        {
-            if (s_inProbeCount == 0)
-            {
-                throw new InvalidOperationException($"{nameof(ResumeProbingForCurrentThread)} was called more times than {nameof(PauseProbingForCurrentThread)}!");
-            }
-            s_inProbeCount--;
         }
     }
 }
