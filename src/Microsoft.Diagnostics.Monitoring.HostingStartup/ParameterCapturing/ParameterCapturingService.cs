@@ -44,11 +44,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 // Register the command callbacks (if possible) first so that dotnet-monitor
                 // can be notified of any initialization errors when it tries to invoke the commands.
                 SharedInternals.MessageDispatcher.RegisterCallback<StartCapturingParametersPayload>(
-                    ManagedInProcCommand.StartCapturingParameters,
+                    StartupHookCommand.StartCapturingParameters,
                     OnStartMessage);
 
                 SharedInternals.MessageDispatcher.RegisterCallback<StopCapturingParametersPayload>(
-                    ManagedInProcCommand.StopCapturingParameters,
+                    StartupHookCommand.StopCapturingParameters,
                     OnStopMessage);
 
                 IMethodDescriptionValidator _methodDescriptionValidator = services.GetRequiredService<IMethodDescriptionValidator>();
@@ -226,8 +226,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             if (!DisposableHelper.CanDispose(ref _disposedState))
                 return;
 
-            SharedInternals.MessageDispatcher?.UnregisterCallback(ManagedInProcCommand.StartCapturingParameters);
-            SharedInternals.MessageDispatcher?.UnregisterCallback(ManagedInProcCommand.StopCapturingParameters);
+            SharedInternals.MessageDispatcher?.UnregisterCallback(StartupHookCommand.StartCapturingParameters);
+            SharedInternals.MessageDispatcher?.UnregisterCallback(StartupHookCommand.StopCapturingParameters);
 
             _pipeline?.Dispose();
             _parameterCapturingLogger?.Dispose();

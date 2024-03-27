@@ -73,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ushort commandSet = BitConverter.ToUInt16(headersBuffer, startIndex: headerOffset);
             headerOffset += sizeof(ushort);
 
-            if (commandSet != (ushort)CommandSet.DotnetMonitor)
+            if (commandSet != (ushort)CommandSet.ServerResponse)
             {
                 throw new InvalidOperationException("Received unexpected command set from server.");
             }
@@ -81,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ushort command = BitConverter.ToUInt16(headersBuffer, startIndex: headerOffset);
             headerOffset += sizeof(ushort);
 
-            if (command != (ushort)DotnetMonitorCommand.Status)
+            if (command != (ushort)ServerResponseCommand.Status)
             {
                 throw new InvalidOperationException("Received unexpected command from server.");
             }

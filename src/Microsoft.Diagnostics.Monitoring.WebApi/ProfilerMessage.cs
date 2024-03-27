@@ -9,12 +9,12 @@ namespace Microsoft.Diagnostics.Monitoring
 {
     internal enum CommandSet : ushort
     {
-        DotnetMonitor,
+        ServerResponse,
         Profiler,
-        ManagedInProc
+        StartupHook
     }
 
-    internal enum DotnetMonitorCommand : ushort
+    internal enum ServerResponseCommand : ushort
     {
         Status
     };
@@ -24,7 +24,10 @@ namespace Microsoft.Diagnostics.Monitoring
         Callstack
     };
 
-    internal enum ManagedInProcCommand : ushort
+    /// <summary>
+    /// Shared between the StartupHook and HostingStartup assembly.
+    /// </summary>
+    internal enum StartupHookCommand : ushort
     {
         StartCapturingParameters,
         StopCapturingParameters
@@ -43,8 +46,8 @@ namespace Microsoft.Diagnostics.Monitoring
         public ushort Command { get; }
         public byte[] Payload { get; }
 
-        public JsonProfilerMessage(ManagedInProcCommand command, object payloadObject)
-            : this((ushort)Monitoring.CommandSet.ManagedInProc, (ushort)command, payloadObject) { }
+        public JsonProfilerMessage(StartupHookCommand command, object payloadObject)
+            : this((ushort)Monitoring.CommandSet.StartupHook, (ushort)command, payloadObject) { }
 
         public JsonProfilerMessage(ushort commandSet, ushort command, object payloadObject)
         {
@@ -69,8 +72,8 @@ namespace Microsoft.Diagnostics.Monitoring
         public CommandOnlyProfilerMessage(ProfilerCommand command)
             : this((ushort)Monitoring.CommandSet.Profiler, (ushort)command) { }
 
-        public CommandOnlyProfilerMessage(ManagedInProcCommand command)
-            : this((ushort)Monitoring.CommandSet.ManagedInProc, (ushort)command) { }
+        public CommandOnlyProfilerMessage(StartupHookCommand command)
+            : this((ushort)Monitoring.CommandSet.StartupHook, (ushort)command) { }
 
         public CommandOnlyProfilerMessage(ushort commandSet, ushort command)
         {

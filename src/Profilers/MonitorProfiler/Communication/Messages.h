@@ -10,16 +10,20 @@ enum class ProfilerCommand : unsigned short
     Callstack
 };
 
-enum class DotnetMonitorCommand : unsigned short
+enum class ServerResponseCommand : unsigned short
 {
     Status
 };
 
+//
+// Kept in sync with src\Microsoft.Diagnostics.Monitoring.WebApi\ProfilerMessage.cs even though not all
+// command sets will be used by the profiler.
+//
 enum class CommandSet : unsigned short
 {
-    DotnetMonitor,
+    ServerResponse,
     Profiler,
-    ManagedInProc
+    StartupHook
 };
 
 struct IpcMessage

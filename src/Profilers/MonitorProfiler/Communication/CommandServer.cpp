@@ -55,8 +55,8 @@ void CommandServer::ListeningThread()
 {
     // TODO: Handle oom scenarios
     IpcMessage response;
-    response.CommandSet = static_cast<unsigned short>(CommandSet::DotnetMonitor);
-    response.Command = static_cast<unsigned short>(DotnetMonitorCommand::Status);
+    response.CommandSet = static_cast<unsigned short>(CommandSet::ServerResponse);
+    response.Command = static_cast<unsigned short>(ServerResponseCommand::Status);
     response.Payload.resize(sizeof(HRESULT));
 
     while (true)

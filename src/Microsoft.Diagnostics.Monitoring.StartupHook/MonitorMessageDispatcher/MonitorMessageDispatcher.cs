@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             _messageSource.MonitorMessage += OnMessage;
         }
 
-        public void RegisterCallback<T>(ManagedInProcCommand command, Action<T> callback)
+        public void RegisterCallback<T>(StartupHookCommand command, Action<T> callback)
             => RegisterCallback((ushort)command, callback);
 
         public void RegisterCallback<T>(ushort command, Action<T> callback)
@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             }
         }
 
-        public void UnregisterCallback(ManagedInProcCommand command)
+        public void UnregisterCallback(StartupHookCommand command)
             => UnregisterCallback((ushort)command);
 
         public void UnregisterCallback(ushort command)

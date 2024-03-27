@@ -9,7 +9,7 @@
 #include "corprof.h"
 #include "Messages.h"
 
-typedef INT32 (STDMETHODCALLTYPE *ManagedMessageCallback)(UINT16, const BYTE*, UINT64);
+typedef HRESULT (STDMETHODCALLTYPE *ManagedMessageCallback)(UINT16, const BYTE*, UINT64);
 
 class ManagedMessageCallbackManager
 {
