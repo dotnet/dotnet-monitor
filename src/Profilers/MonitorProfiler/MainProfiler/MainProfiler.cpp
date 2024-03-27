@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #include "MainProfiler.h"
-#include "../Communication/ManagedMessageCallbackManager.h"
+#include "../Communication/MessageCallbackManager.h"
 #include "Environment/EnvironmentHelper.h"
 #include "Environment/ProfilerEnvironment.h"
 #include "Logging/LoggerFactory.h"
@@ -22,7 +22,7 @@ using namespace std;
 #define DLLEXPORT
 #endif
 
-ManagedMessageCallbackManager g_managedMessageCallbacks;
+MessageCallbackManager g_MessageCallbacks;
 
 GUID MainProfiler::GetClsid()
 {
@@ -51,6 +51,8 @@ STDMETHODIMP MainProfiler::Shutdown()
 
     _commandServer->Shutdown();
     _commandServer.reset();
+
+    g_MessageCallbacks.Unregister(static_cast<unsigned short>(CommandSet::Profiler));
 
     return ProfilerBase::Shutdown();
 }
@@ -239,7 +241,18 @@ HRESULT MainProfiler::InitializeCommandServer()
     _commandServer = std::unique_ptr<CommandServer>(new CommandServer(m_pLogger, m_pCorProfilerInfo));
     tstring socketPath = sharedPath + separator + instanceId + _T(".sock");
 
-    IfFailRet(_commandServer->Start(to_string(socketPath), [this](const IpcMessage& message)-> HRESULT { return this->MessageCallback(message); }));
+    if (!g_MessageCallbacks.TryRegister(static_cast<unsigned short>(CommandSet::Profiler), [this](const IpcMessage& message)-> HRESULT { return this->ProfilerCommandSetCallback(message); }))
+    {
+        m_pLogger->Log(LogLevel::Error, _LS("Unable to register Profiler CommandSet callback."));
+        return E_FAIL;
+    }
+
+    hr = _commandServer->Start(to_string(socketPath), [this](const IpcMessage& message)-> HRESULT { return this->MessageCallback(message); });
+    if (FAILED(hr))
+    {
+        g_MessageCallbacks.Unregister(static_cast<unsigned short>(CommandSet::Profiler));
+        return hr;
+    }
 
     return S_OK;
 }
@@ -247,20 +260,17 @@ HRESULT MainProfiler::InitializeCommandServer()
 HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 {
     m_pLogger->Log(LogLevel::Debug, _LS("Message received from client %hu:%hu"), message.CommandSet, message.Command);
+    return g_MessageCallbacks.DispatchMessage(message);
+}
 
-    if (message.CommandSet == static_cast<unsigned short>(CommandSet::Profiler))
+HRESULT MainProfiler::ProfilerCommandSetCallback(const IpcMessage& message)
+{
+    switch (static_cast<ProfilerCommand>(message.Command))
     {
-        switch (static_cast<ProfilerCommand>(message.Command))
-        {
-        case ProfilerCommand::Callstack:
-            return ProcessCallstackMessage();
-        default:
-            return E_FAIL;
-        }
-    }
-    else
-    {
-        return g_managedMessageCallbacks.DispatchMessage(message);
+    case ProfilerCommand::Callstack:
+        return ProcessCallstackMessage();
+    default:
+        return E_FAIL;
     }
 }
 
@@ -314,7 +324,7 @@ STDAPI DLLEXPORT RegisterMonitorMessageCallback(
     UINT16 commandSet,
     ManagedMessageCallback pCallback)
 {
-    if (g_managedMessageCallbacks.TryRegister(commandSet, pCallback))
+    if (g_MessageCallbacks.TryRegister(commandSet, pCallback))
     {
         return S_OK;
     }
@@ -326,7 +336,7 @@ STDAPI DLLEXPORT UnregisterMonitorMessageCallback(
     UINT16 commandSet
 )
 {
-    g_managedMessageCallbacks.Unregister(commandSet);
+    g_MessageCallbacks.Unregister(commandSet);
 
     return S_OK;
 }
