@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         private static readonly EnterProbeDelegate s_fixedEnterProbeDelegate = EnterProbeStub;
 
         [ThreadStatic]
-        private static bool s_inProbe;
+        private static int s_inProbeCount;
 
         internal static FunctionProbesState? State { get; set; }
 
@@ -23,20 +23,36 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         public static void EnterProbeStub(ulong uniquifier, object[] args)
         {
             IFunctionProbes? probes = State?.Probes;
-            if (probes == null || s_inProbe)
+            if (probes == null || !IsProbingEnabled())
             {
                 return;
             }
 
             try
             {
-                s_inProbe = true;
+                PauseProbingForCurrentThread();
                 _ = probes.EnterProbe(uniquifier, args);
             }
             finally
             {
-                s_inProbe = false;
+                ResumeProbingForCurrentThread();
             }
+        }
+
+        public static bool IsProbingEnabled() => s_inProbeCount == 0;
+
+        public static void PauseProbingForCurrentThread()
+        {
+            s_inProbeCount++;
+        }
+
+        public static void ResumeProbingForCurrentThread()
+        {
+            if (s_inProbeCount == 0)
+            {
+                throw new InvalidOperationException($"{nameof(ResumeProbingForCurrentThread)} was called more times than {nameof(PauseProbingForCurrentThread)}!");
+            }
+            s_inProbeCount--;
         }
     }
 }
