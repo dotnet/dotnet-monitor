@@ -83,9 +83,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
         [Event(ParameterCapturingEvents.EventIds.Flush)]
         protected override void Flush()
         {
-            // This method is called on a timer and we shouldn't track any calls inside so we don't flood the user with unimportant captures.
-            using IDisposable _ = MonitorExecutionContextTracker.MonitorScope();
-
             WriteEvent(ParameterCapturingEvents.EventIds.Flush);
         }
     }
