@@ -121,14 +121,14 @@ HRESULT IpcCommClient::Send(const IpcMessage& message)
 
     int bufferOffset = 0;
 
-    *reinterpret_cast<unsigned short*>(&headersBuffer[bufferOffset]) = message.CommandSet;
+    *reinterpret_cast<UINT16*>(&headersBuffer[bufferOffset]) = message.CommandSet;
     bufferOffset += sizeof(UINT16);
 
-    *reinterpret_cast<unsigned short*>(&headersBuffer[bufferOffset]) = message.Command;
+    *reinterpret_cast<UINT16*>(&headersBuffer[bufferOffset]) = message.Command;
     bufferOffset += sizeof(UINT16);
 
     int payloadSize = static_cast<int>(message.Payload.size());
-    *reinterpret_cast<int*>(&headersBuffer[bufferOffset]) = payloadSize;
+    *reinterpret_cast<INT32*>(&headersBuffer[bufferOffset]) = payloadSize;
     bufferOffset += sizeof(INT32);
 
     assert(bufferOffset == sizeof(headersBuffer));
