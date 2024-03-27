@@ -60,12 +60,12 @@
     <MicrosoftDiagnosticsMonitoringVersion>8.0.0-preview.24172.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>8.0.0-preview.24172.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/installer references -->
-    <MicrosoftDotnetSdkInternalVersion>9.0.100-preview.4.24175.4</MicrosoftDotnetSdkInternalVersion>
+    <MicrosoftDotnetSdkInternalVersion>9.0.100-preview.4.24177.2</MicrosoftDotnetSdkInternalVersion>
     <!-- dotnet/roslyn-analyzers -->
     <MicrosoftCodeAnalysisNetAnalyzersVersion>9.0.0-preview.24170.2</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
-    <MicrosoftNETCoreAppRuntimewinx64Version>9.0.0-preview.4.24173.6</MicrosoftNETCoreAppRuntimewinx64Version>
-    <VSRedistCommonNetCoreSharedFrameworkx6490Version>9.0.0-preview.4.24173.6</VSRedistCommonNetCoreSharedFrameworkx6490Version>
+    <MicrosoftNETCoreAppRuntimewinx64Version>9.0.0-preview.4.24176.9</MicrosoftNETCoreAppRuntimewinx64Version>
+    <VSRedistCommonNetCoreSharedFrameworkx6490Version>9.0.0-preview.4.24176.9</VSRedistCommonNetCoreSharedFrameworkx6490Version>
     <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>1.0.517001</MicrosoftFileFormatsVersion>
   </PropertyGroup>
