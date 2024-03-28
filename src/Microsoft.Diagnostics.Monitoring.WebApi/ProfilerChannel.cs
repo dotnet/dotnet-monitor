@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.Options;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
@@ -40,10 +41,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             await socket.ConnectAsync(endpoint);
 
-            byte[] headersBuffer = new byte[sizeof(short) + sizeof(int)];
+            byte[] headersBuffer = new byte[sizeof(ushort) + sizeof(ushort) + sizeof(int)];
             var memoryStream = new MemoryStream(headersBuffer);
             using BinaryWriter writer = new BinaryWriter(memoryStream);
-            writer.Write((short)message.Command);
+            writer.Write(message.CommandSet);
+            writer.Write(message.Command);
             writer.Write(message.Payload.Length);
             writer.Dispose();
             await socket.SendAsync(new ReadOnlyMemory<byte>(headersBuffer), SocketFlags.None, token);
@@ -59,7 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static async Task<int> ReceiveStatusMessageAsync(Socket socket, CancellationToken token)
         {
-            byte[] headersBuffer = new byte[sizeof(short) + sizeof(int)];
+            byte[] headersBuffer = new byte[sizeof(ushort) + sizeof(ushort) + sizeof(int)];
             int received = await socket.ReceiveAsync(new Memory<byte>(headersBuffer), SocketFlags.None, token);
             if (received < headersBuffer.Length)
             {
@@ -67,14 +69,31 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new InvalidOperationException("Could not receive message from server.");
             }
 
-            IpcCommand command = (IpcCommand)BitConverter.ToInt16(headersBuffer, startIndex: 0);
+            int headerOffset = 0;
+            ushort commandSet = BitConverter.ToUInt16(headersBuffer, startIndex: headerOffset);
+            headerOffset += sizeof(ushort);
 
-            if (command != IpcCommand.Status)
+            if (commandSet != (ushort)CommandSet.ServerResponse)
+            {
+                throw new InvalidOperationException("Received unexpected command set from server.");
+            }
+
+            ushort command = BitConverter.ToUInt16(headersBuffer, startIndex: headerOffset);
+            headerOffset += sizeof(ushort);
+
+            if (command != (ushort)ServerResponseCommand.Status)
             {
                 throw new InvalidOperationException("Received unexpected command from server.");
             }
 
-            int payloadSize = BitConverter.ToInt32(headersBuffer, startIndex: sizeof(short));
+            int payloadSize = BitConverter.ToInt32(headersBuffer, startIndex: headerOffset);
+            headerOffset += sizeof(int);
+
+            Debug.Assert(headerOffset == headersBuffer.Length);
+
+            //
+            // End of header, headerOffset should not be used after this point
+            //
 
             byte[] payloadBuffer = new byte[sizeof(int)];
             if (payloadSize != payloadBuffer.Length)
