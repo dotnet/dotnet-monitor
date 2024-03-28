@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
         // If necessary, the startup hook should dynamically access APIs for higher version TFMs and handle
         // all exceptions appropriately.
         private const string Tfm = "net6.0";
-        private const string FileName = "Microsoft.Diagnostics.Monitoring.StartupHook2.dll";
+        private const string FileName = "Microsoft.Diagnostics.Monitoring.StartupHook.dll";
 
         private readonly IInProcessFeatures _inProcessFeatures;
         private readonly StartupHookApplicator _startupHookApplicator;
