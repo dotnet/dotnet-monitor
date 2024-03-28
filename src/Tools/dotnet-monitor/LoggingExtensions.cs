@@ -470,20 +470,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_StartCollectArtifact);
 
-        private static readonly Action<ILogger, int, Exception> _startupHookEnvironmentMissing =
-            LoggerMessage.Define<int>(
-                eventId: LoggingEventIds.StartupHookEnvironmentMissing.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_StartupHookEnvironmentMissing);
-
-        private static readonly Action<ILogger, int, string, Exception> _startupHookMissing =
+        private static readonly Action<ILogger, int, string, Exception> _startupHookInstructions =
             LoggerMessage.Define<int, string>(
-                eventId: LoggingEventIds.StartupHookMissing.EventId(),
-                logLevel: LogLevel.Warning,
-                formatString: Strings.LogFormatString_StartupHookMissing);
-
-        private static readonly Action<ILogger, string, Exception> _startupHookInstructions =
-            LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.StartupHookInstructions.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_StartupHookInstructions);
@@ -931,19 +919,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _startCollectArtifact(logger, artifactType, null);
         }
 
-        public static void StartupHookEnvironmentMissing(this ILogger logger, int processId)
+        public static void StartupHookInstructions(this ILogger logger, int processId, string startupHookLibraryPath)
         {
-            _startupHookEnvironmentMissing(logger, processId, null);
-        }
-
-        public static void StartupHookMissing(this ILogger logger, int processId, string startupHookLibraryName)
-        {
-            _startupHookMissing(logger, processId, startupHookLibraryName, null);
-        }
-
-        public static void StartupHookInstructions(this ILogger logger, string startupHookLibraryPath)
-        {
-            _startupHookInstructions(logger, startupHookLibraryPath, null);
+            _startupHookInstructions(logger, processId, startupHookLibraryPath, null);
         }
 
         public static void UnableToWatchForDisconnect(this ILogger logger, Exception exception)
