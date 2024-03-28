@@ -25,6 +25,7 @@ schedules:
   displayName: M-F Scheduled Build
   branches:
     include:
+    - feature/9.x
     - main
 
 parameters:
