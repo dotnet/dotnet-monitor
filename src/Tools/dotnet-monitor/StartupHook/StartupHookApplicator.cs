@@ -20,8 +20,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
         private readonly IEndpointInfo _endpointInfo;
         private readonly ISharedLibraryService _sharedLibraryService;
 
-        public const int MinMajorVersionForAutomaticApplication = 8;
-
         public StartupHookApplicator(
             ILogger<StartupHookApplicator> logger,
             IEndpointInfo endpointInfo,
@@ -51,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             }
 
 
-            if (_endpointInfo.RuntimeVersion.Major < MinMajorVersionForAutomaticApplication)
+            if (_endpointInfo.RuntimeVersion.Major < 8)
             {
                 _logger.StartupHookInstructions(_endpointInfo.ProcessId, fileInfo.Name, fileInfo.PhysicalPath);
                 return false;
