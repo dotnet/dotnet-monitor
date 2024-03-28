@@ -815,7 +815,7 @@
     <value>Started capturing {artifactType} artifact.</value>
   </data>
   <data name="LogFormatString_StartupHookInstructions" xml:space="preserve">
-    <value>Exception-based features require that the DOTNET_STARTUP_HOOKS environment variable is set on the target process {processId} and must contain the path to the .NET Monitor startup hook library. The path to the library is "{path}".</value>
+    <value>Certain in process features require that the DOTNET_STARTUP_HOOKS environment variable is set on the target process {processId} and must contain the path to the "{startupHookFileName}" startup hook library. The path to the library is "{path}".</value>
   </data>
   <data name="LogFormatString_UnableToApplyProfiler" xml:space="preserve">
     <value>Unable to apply profiler.</value>
@@ -916,8 +916,7 @@
     <value>Unable to fully remove endpoint for process {processId}.</value>
   </data>
   <data name="LogFormatString_StartupHookApplyFailed" xml:space="preserve">
-    <value>Failed to apply the startup hook. Not all in process features will be available.</value>
-    <comment>Gets a string similar to "Failed to apply the startup hook. Not all in process features will be available."</comment>
+    <value>Failed to apply the startup hook "{startupHookFileName}". Not all in process features will be available.</value>
   </data>
   <data name="ErrorMessage_SharedFileDiffersFromSource" xml:space="preserve">
     <value>The shared file '{0}' is different from source file '{1}'.</value>

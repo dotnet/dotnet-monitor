@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (!_options.Value.GetEnabled() || !await _startupHookService.CheckHasStartupHookAsync(stoppingToken))
+            if (!_options.Value.GetEnabled() || !await _startupHookService.Applied.WaitAsync(stoppingToken))
             {
                 return;
             }
