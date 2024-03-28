@@ -614,10 +614,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
-        public async Task<OperationResponse> CaptureParametersAsync(int processId, TimeSpan duration, CaptureParametersConfiguration config, CancellationToken token)
+        public async Task<OperationResponse> CaptureParametersAsync(int processId, TimeSpan duration, string egressProvider, CaptureParametersConfiguration config, CancellationToken token)
         {
             bool isInfinite = (duration == Timeout.InfiniteTimeSpan);
             string uri = FormattableString.Invariant($"/parameters?pid={processId}&durationSeconds={(isInfinite ? -1 : duration.Seconds)}");
+            if (!string.IsNullOrEmpty(egressProvider))
+            {
+                uri += FormattableString.Invariant($"&egressProvider={egressProvider}");
+            }
+
             using HttpRequestMessage request = new(HttpMethod.Post, uri);
 
             string content = JsonSerializer.Serialize(config, DefaultJsonSerializeOptions);
@@ -628,6 +633,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             switch (response.StatusCode)
             {
                 case HttpStatusCode.Accepted:
+                case HttpStatusCode.OK:
                     return new OperationResponse(response.StatusCode, response.Headers.Location);
                 case HttpStatusCode.BadRequest:
                 case HttpStatusCode.TooManyRequests:

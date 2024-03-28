@@ -1,12 +1,12 @@
 
 ### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fparameters)
 
-# Parameters - Post (experimental feature)
+# Parameters (experimental feature)
 
-Captures parameters for one or more methods each time they are called. Parameters are logged inside the target application using its [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger).
+Captures parameters for one or more methods each time they are called.
 
 > [!NOTE]
-> Unlike other artifacts, parameters do **not** support being sent to an egress provider.
+> Before version 8.0 Preview 3, parameters were logged inside the target application using its [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger).
 
 > [!IMPORTANT]
 > This feature is not enabled by default and requires configuration to be enabled. See [Enabling](#enabling) for more information.
@@ -26,7 +26,7 @@ This feature is currently marked as experimental and so needs to be explicitly e
 ## HTTP Route
 
 ```http
-POST /parameters?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&tags={tags} HTTP/1.1
+POST /parameters?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider}&tags={tags} HTTP/1.1
 ```
 
 > [!NOTE]
@@ -44,6 +44,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `uid` | query | false | guid | A value that uniquely identifies a runtime instance within a process. |
 | `name` | query | false | string | The name of the process. |
 | `durationSeconds` | query | false | int | The duration of the parameters operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
+| `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the captured parameters. When not specified, the parameters are written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
 | `tags` | query | false | string | A comma-separated list of user-readable identifiers for the operation. |
 
 See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
@@ -68,7 +69,9 @@ The expected content type is `application/json`.
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 202 Accepted | | The artifact has begun being collected. | |
+| 200 OK | [CapturedParametersResult](definitions.md#capturedparametersresult)  | The captured parameters. | application/json |
+| 200 OK | text | Text representation of the captured parameters. | text/plain |
+| 202 Accepted | | When an egress provider is specified, the artifact has begun being collected. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many parameters requests at this time. Try to request parameters at a later time. | `application/problem+json` |
@@ -90,8 +93,6 @@ The [examples](#examples) include a mixture of `UserCode` and `SystemCode` to he
 The following logger categories are used inside the target application when capturing parameters:
 | Category Name | Description |
 | -- | -- |
-| `DotnetMonitor.ParameterCapture.UserCode` | Parameters captured in methods considered `UserCode`. |
-| `DotnetMonitor.ParameterCapture.SystemCode` | Parameters captured in methods considered `SystemCode`. |
 | `DotnetMonitor.ParameterCapture.Service` | Diagnostic messages by `dotnet-monitor`, such as when parameter capturing starts, stops, or is unable to find a requested method. |
 
 ## Examples
@@ -102,6 +103,7 @@ The following logger categories are used inside the target application when capt
 POST /parameters?pid=21632&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
+Accept: application/json
 
 {
     "methods": [
@@ -123,23 +125,62 @@ Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 ### Sample Response
 
 ```http
-HTTP/1.1 202 Accepted
+HTTP/1.1 200 OK
 Content-Type: application/json
-Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
-```
-
-### Sample Output (Target Application)
-
-```
-info: DotnetMonitor.ParameterCapture.UserCode[0]
-      => SpanId:e40e62cffe1cf1cb, TraceId:c76b911969aa8abcf335907e96c62b33, ParentId:0000000000000000 => ConnectionId:0HMT2D6L8GT2Q => RequestPath:/ RequestId:0HMT2D6L8GT2Q:00000003 => SampleWebApp.Controllers.HomeController.Index (SampleWebApp)
-      SampleWebApp.Controllers.HomeController.Index(
-        this: 'SampleWebApp.Controllers.HomeController',
-        number: 10)
-info: DotnetMonitor.ParameterCapture.SystemCode[0]
-      System.String.Concat(
-        str0: 'firstString',
-        str1: '.secondString')
+{
+    "captures": [
+        {
+            "requestId": "ca17b977-e5f4-46c5-98ca-17046ece998a",
+            "activityId": "00-17657ab99a51e3e46cf5bb3fd583daab-03c903f46b511852-00",
+            "capturedDateTime": "2024-03-15T14:47:51.2129742-04:00",
+            "module": "System.Private.CoreLib.dll",
+            "type": "System.String",
+            "method": "Concat",
+            "parameters": [
+                {
+                    "name": "str0",
+                    "type": "System.String",
+                    "module": "System.Private.CoreLib.dll",
+                    "value": "\u0027localhost\u0027"
+                },
+                {
+                "name": "str1",
+                    "type": "System.String",
+                    "module": "System.Private.CoreLib.dll",
+                    "value": "\u0027:\u0027"
+                },
+                {
+                    "name": "str2",
+                    "type": "System.String",
+                    "module": "System.Private.CoreLib.dll",
+                    "value": "\u00277290\u0027"
+                }
+            ]
+        },
+        {
+            "requestId": "d8cbec93-3fb8-4aae-82f6-fe9bdda20c34",
+            "activityId": "00-9838f17b20cd76c2df3bdaa0fcd716c9-7ce53ae1e886e236-00",
+            "capturedDateTime": "2024-03-15T14:48:42.5997554-04:00",
+            "module": "System.Private.CoreLib.dll",
+            "type": "System.String",
+            "method": "Concat",
+            "parameters": [
+                {
+                    "name": "str0",
+                    "type": "System.String",
+                    "module": "System.Private.CoreLib.dll",
+                    "value": "\u0027\u0027"
+                },
+                {
+                    "name": "str1",
+                    "type": "System.String",
+                    "module": "System.Private.CoreLib.dll",
+                    "value": "\u0027/Account/SignIn\u0027"
+                }
+            ]
+        }
+    ]
+}
 ```
 
 ## Supported Runtimes
@@ -174,3 +215,4 @@ Currently some types of parameters are unable to be captured. When a method cont
 ### When to use `pid` vs `uid`
 
 See [Process ID `pid` vs Unique ID `uid`](pidvsuid.md) for clarification on when it is best to use either parameter.
+
