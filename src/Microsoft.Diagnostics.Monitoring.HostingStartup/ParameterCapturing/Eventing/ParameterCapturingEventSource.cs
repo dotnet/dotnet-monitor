@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using Microsoft.Diagnostics.Monitoring.StartupHook.Eventing;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using System;
@@ -149,8 +148,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
         [Event(ParameterCapturingEvents.EventIds.Flush)]
         protected override void Flush()
         {
-            // This method is called on a timer and we shouldn't track any calls inside so we don't flood the user with unimportant captures.
-            using IDisposable _ = new NoProbeScope();
             WriteEvent(ParameterCapturingEvents.EventIds.Flush);
         }
     }

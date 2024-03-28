@@ -1,8 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
-using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions;
+using Microsoft.Diagnostics.Monitoring.StartupHook;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using System;
 using System.Collections.Concurrent;
@@ -108,8 +107,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
         private void ThreadLoop()
         {
             using IDisposable _ = MonitorExecutionContextTracker.MonitorScope();
-            using IDisposable __ = new NoProbeScope();
-
             try
             {
                 while (_pendingEvents.TryTake(out Action<CancellationToken>? eventAction, Timeout.Infinite, _cts.Token))

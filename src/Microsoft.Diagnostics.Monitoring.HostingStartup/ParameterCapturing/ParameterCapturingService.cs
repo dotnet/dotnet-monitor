@@ -82,7 +82,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         #region IParameterCapturingPipelineCallbacks
         public void CapturingStart(StartCapturingParametersPayload request, IList<MethodInfo> methods)
         {
-            using IDisposable _ = new NoProbeScope();
             _eventSource.CapturingStart(request.RequestId);
             _logger?.LogInformation(
                 ParameterCapturingStrings.StartParameterCapturingFormatString,
@@ -92,14 +91,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public void CapturingStop(Guid requestId)
         {
-            using IDisposable _ = new NoProbeScope();
             _eventSource.CapturingStop(requestId);
             _logger?.LogInformation(ParameterCapturingStrings.StopParameterCapturing);
         }
 
         public void FailedToCapture(Guid requestId, ParameterCapturingEvents.CapturingFailedReason reason, string details)
         {
-            using IDisposable _ = new NoProbeScope();
             _eventSource.FailedToCapture(requestId, reason, details);
             if (reason == ParameterCapturingEvents.CapturingFailedReason.UnresolvedMethods)
             {
@@ -109,7 +106,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public void ProbeFault(Guid requestId, InstrumentedMethod faultingMethod)
         {
-            using IDisposable _ = new NoProbeScope();
             // TODO: Report back this fault on ParameterCapturingEventSource. 
             _logger?.LogWarning(ParameterCapturingStrings.StoppingParameterCapturingDueToProbeFault, faultingMethod.MethodTemplateString.Template);
 
