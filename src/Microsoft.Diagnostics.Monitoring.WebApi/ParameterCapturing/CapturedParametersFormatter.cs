@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
 #endif
         }
 
-        private static string GetValueOrUnknown(string value) => string.IsNullOrEmpty(value) ? " <unknown>" : value;
+        private static string GetValueOrUnknown(string value) => string.IsNullOrEmpty(value) ? "<unknown>" : value;
 
         private static CapturedParametersResult BuildResultModel(IEnumerable<ICapturedParameters> parameters)
         {

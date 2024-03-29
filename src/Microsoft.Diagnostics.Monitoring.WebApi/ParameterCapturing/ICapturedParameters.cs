@@ -10,15 +10,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
     {
         Guid RequestId { get; }
 
-        public string ActivityId { get; }
+        string ActivityId { get; }
 
-        public DateTime CapturedDateTime { get; }
+        DateTime CapturedDateTime { get; }
 
-        public string ModuleName { get; }
+        string ModuleName { get; }
 
-        public string TypeName { get; }
+        string TypeName { get; }
 
-        public string MethodName { get; }
+        string MethodName { get; }
 
         IReadOnlyList<ParameterInfo> Parameters { get; }
     }

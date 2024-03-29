@@ -56,6 +56,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
             WriteEventWithFlushing(ParameterCapturingEvents.EventIds.UnknownRequestId, data);
         }
 
+        [NonEvent]
+        public void FailedToCapture(Guid RequestId, Exception ex)
+        {
+            FailedToCapture(RequestId, ParameterCapturingEvents.CapturingFailedReason.InternalError, ex.ToString());
+        }
+
         [Event(ParameterCapturingEvents.EventIds.FailedToCapture)]
         public void FailedToCapture(
             Guid RequestId,

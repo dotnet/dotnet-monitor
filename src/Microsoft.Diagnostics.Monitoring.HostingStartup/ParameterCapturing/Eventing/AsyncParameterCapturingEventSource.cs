@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.StartupHook;
-using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -37,7 +36,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
         public void Dispose()
         {
             _pendingEvents.CompleteAdding();
-            _cts.Cancel();
+            try
+            {
+                _cts.Cancel();
+            }
+            catch
+            {
+            }
 
             _thread.Join();
 
@@ -90,14 +95,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
                 _eventSource.CapturedParameterStop(requestId, captureId);
             });
         }
-
-        public void FailedToCapture(
-            Guid requestId,
-            ParameterCapturingEvents.CapturingFailedReason reason,
-            string details) => ScheduleAction(_ =>
-        {
-            _eventSource.FailedToCapture(requestId, reason, details);
-        });
 
         private void ScheduleAction(Action<CancellationToken> action)
         {

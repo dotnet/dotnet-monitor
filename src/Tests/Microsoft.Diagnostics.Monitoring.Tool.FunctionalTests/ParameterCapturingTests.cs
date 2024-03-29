@@ -92,7 +92,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
-        public async Task DoesntProduceLogStatements(Architecture targetArchitecture)
+        public async Task DoesNotProduceLogStatements(Architecture targetArchitecture)
         {
             await RunTestCaseCore(TestAppScenarios.ParameterCapturing.SubScenarios.DoNotExpectLogStatement, targetArchitecture, async (appRunner, apiClient) =>
             {
@@ -158,7 +158,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 CapturedParametersResult captureResult = await JsonSerializer.DeserializeAsync<CapturedParametersResult>(outputStream);
 
                 Assert.NotNull(captureResult);
-                Assert.Equal(1, captureResult.CapturedMethods.Count);
+                Assert.Single(captureResult.CapturedMethods);
                 Assert.Equal(config.Methods[0].TypeName, captureResult.CapturedMethods[0].TypeName);
                 Assert.Equal(config.Methods[0].MethodName, captureResult.CapturedMethods[0].MethodName);
             });

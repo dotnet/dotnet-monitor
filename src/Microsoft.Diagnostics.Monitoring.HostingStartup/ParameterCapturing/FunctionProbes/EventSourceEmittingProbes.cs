@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eventing;
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting;
-using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -32,19 +31,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
         }
 
         public bool EnterProbe(ulong uniquifier, object[] args)
-        {
-            try
-            {
-                return EnterProbeInternal(uniquifier, args);
-            }
-            catch (Exception ex)
-            {
-                _eventSource.FailedToCapture(_requestId, ParameterCapturingEvents.CapturingFailedReason.InternalError, ex.Message);
-                return false;
-            }
-        }
-
-        private bool EnterProbeInternal(ulong uniquifier, object[] args)
         {
             if (!_eventSource.IsEnabled)
             {

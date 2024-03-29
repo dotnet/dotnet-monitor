@@ -6,7 +6,7 @@
 Captures parameters for one or more methods each time they are called.
 
 > [!NOTE]
-> Before version 8.0 Preview 3, parameters were logged inside the target application using its [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger).
+> Before version 9.0 Preview 3, parameters were logged inside the target application using its [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger).
 
 > [!IMPORTANT]
 > This feature is not enabled by default and requires configuration to be enabled. See [Enabling](#enabling) for more information.
