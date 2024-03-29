@@ -5,7 +5,7 @@
 
 ## Prepare the release branch
 
-1. Update the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) variables to prevent consumption of nightly builds into dotnet-docker. Set `NightlyUpdateDockerFromMain` variable to `false` on the pipeline itself, not just on a new build.
+1. Update the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) variables to prevent consumption of nightly builds into dotnet-docker. Update `AutoUpdateDockerBranches` variable on the pipeline itself, not just on a new build, to the list of branch references (e.g. `refs/heads/main`) that you want to automatically update dotnet/dotnet-docker when scheduled builds are run; likely want to clear the variable when preparing for release.
 1. Merge from the `main` branch to the appropriate release branch (e.g. `release/5.0`). Note that for patch releases, fixes should be made directly to the appropriate release branch and we do not merge from the `main` branch. Note that it is acceptable to use a release/major.x branch. Alternatively, you can create a new release branch for the minor version. See [additional branch steps](#additional-steps-when-creating-a-new-release-branch) below.
 1. Review and merge in any outstanding dependabot PRs for the release branch.
 1. Run the [Update release version](https://github.com/dotnet/dotnet-monitor/actions/workflows/update-release-version.yml) workflow, setting `Use workflow from` to the release branch and correctly setting the `Release type` and `Release version` options. (*NOTE:* Release version should include only major.minor.patch, without any extra labels). Review and merge in the PR created by this workflow.
@@ -127,7 +127,7 @@ The release image is `mcr.microsoft.com/dotnet/monitor`. The tag list is https:/
 
 ## After the Release
 
-1. Change the `NightlyUpdateDockerFromMain` variable to `true` in the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) to begin the consumption of nightly builds into dotnet-docker. Note this should not necessarily be done right after the release, but after the merge from main to nightly in the dotnet-docker repo (such as https://github.com/dotnet/dotnet-docker/pull/4741).
+1. Update the `AutoUpdateDockerBranches` variable to `refs/heads/main` in the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) to begin the consumption of nightly builds into dotnet-docker. Note this should not necessarily be done right after the release, but after the merge from main to nightly in the dotnet-docker repo (such as https://github.com/dotnet/dotnet-docker/pull/4741). Include additional branch references and semi-colon delimit each value e.g. `refs/heads/main;refs/heads/feature/9.x`.
 1. Review and merge the automatically create `Register new release information` PR.
 1. For each release, push its corresponding tag to the `shipped/v<version>` branch in the [internal repository](https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet-monitor) e.g `v8.0.0-rc.1.23458.6 -> shipped/v8.0`. If done correctly, this should be a fast-forward merge.
 1. When necessary, update this document if its instructions were unclear or incorrect.
