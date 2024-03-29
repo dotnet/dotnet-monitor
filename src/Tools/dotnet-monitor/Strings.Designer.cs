@@ -1484,7 +1484,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to apply the startup hook. Not all in process features will be available..
+        ///   Looks up a localized string similar to Failed to apply the startup hook &quot;{startupHookFileName}&quot;. Not all in process features will be available..
         /// </summary>
         internal static string LogFormatString_StartupHookApplyFailed {
             get {
@@ -1493,7 +1493,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exception-based features require that the DOTNET_STARTUP_HOOKS environment variable is set on the target process {processId} and must contain the path to the .NET Monitor startup hook library. The path to the library is &quot;{path}&quot;..
+        ///   Looks up a localized string similar to Certain in process features require that the DOTNET_STARTUP_HOOKS environment variable is set on the target process {processId} and must contain the path to the &quot;{startupHookFileName}&quot; startup hook library. The path to the library is &quot;{path}&quot;..
         /// </summary>
         internal static string LogFormatString_StartupHookInstructions {
             get {

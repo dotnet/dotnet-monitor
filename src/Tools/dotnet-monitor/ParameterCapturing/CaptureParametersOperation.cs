@@ -148,7 +148,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
                 await _profilerChannel.SendMessage(
                     _endpointInfo,
-                    new JsonProfilerMessage(IpcCommand.StartCapturingParameters, new StartCapturingParametersPayload
+                    new JsonProfilerMessage(StartupHookCommand.StartCapturingParameters, new StartCapturingParametersPayload
                     {
                         RequestId = _requestId,
                         Duration = _duration,
@@ -262,7 +262,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         {
             await _profilerChannel.SendMessage(
                 _endpointInfo,
-                new JsonProfilerMessage(IpcCommand.StopCapturingParameters, new StopCapturingParametersPayload()
+                new JsonProfilerMessage(StartupHookCommand.StopCapturingParameters, new StopCapturingParametersPayload()
                 {
                     RequestId = _requestId
                 }),

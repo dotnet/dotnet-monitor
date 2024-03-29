@@ -470,8 +470,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_StartCollectArtifact);
 
-        private static readonly Action<ILogger, int, string, Exception> _startupHookInstructions =
-            LoggerMessage.Define<int, string>(
+        private static readonly Action<ILogger, int, string, string, Exception> _startupHookInstructions =
+            LoggerMessage.Define<int, string, string>(
                 eventId: LoggingEventIds.StartupHookInstructions.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_StartupHookInstructions);
@@ -494,8 +494,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_ProfilerRuntimeIdentifier);
 
-        private static readonly Action<ILogger, Exception> _startupHookApplyFailed =
-            LoggerMessage.Define(
+        private static readonly Action<ILogger, string, Exception> _startupHookApplyFailed =
+            LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.StartupHookApplyFailed.EventId(),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_StartupHookApplyFailed);
@@ -919,9 +919,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _startCollectArtifact(logger, artifactType, null);
         }
 
-        public static void StartupHookInstructions(this ILogger logger, int processId, string startupHookLibraryPath)
+        public static void StartupHookInstructions(this ILogger logger, int processId, string startupHookFileName, string startupHookLibraryPath)
         {
-            _startupHookInstructions(logger, processId, startupHookLibraryPath, null);
+            _startupHookInstructions(logger, processId, startupHookFileName, startupHookLibraryPath, null);
         }
 
         public static void UnableToWatchForDisconnect(this ILogger logger, Exception exception)
@@ -939,9 +939,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _profilerRuntimeIdentifier(logger, runtimeIdentifier, source, null);
         }
 
-        public static void StartupHookApplyFailed(this ILogger logger, Exception ex)
+        public static void StartupHookApplyFailed(this ILogger logger, string startupHookFileName, Exception ex)
         {
-            _startupHookApplyFailed(logger, ex);
+            _startupHookApplyFailed(logger, startupHookFileName, ex);
         }
 
         public static void EndpointInitializationFailed(this ILogger logger, int processId, Exception ex)
