@@ -24,6 +24,7 @@ set(SOURCES
     Communication/IpcCommServer.cpp
     Communication/IpcCommClient.cpp
     Communication/CommandServer.cpp
+    Communication/MessageCallbackManager.cpp
     )
 
 # Include exceptions tracking feature

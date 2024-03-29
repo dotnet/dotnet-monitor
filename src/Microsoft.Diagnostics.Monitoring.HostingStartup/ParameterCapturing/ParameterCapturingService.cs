@@ -5,7 +5,6 @@ using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eventin
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Pipeline;
 using Microsoft.Diagnostics.Monitoring.StartupHook;
-using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
@@ -44,11 +43,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 // Register the command callbacks (if possible) first so that dotnet-monitor
                 // can be notified of any initialization errors when it tries to invoke the commands.
                 SharedInternals.MessageDispatcher.RegisterCallback<StartCapturingParametersPayload>(
-                    IpcCommand.StartCapturingParameters,
+                    StartupHookCommand.StartCapturingParameters,
                     OnStartMessage);
 
                 SharedInternals.MessageDispatcher.RegisterCallback<StopCapturingParametersPayload>(
-                    IpcCommand.StopCapturingParameters,
+                    StartupHookCommand.StopCapturingParameters,
                     OnStopMessage);
 
                 IMethodDescriptionValidator _methodDescriptionValidator = services.GetRequiredService<IMethodDescriptionValidator>();
@@ -226,8 +225,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             if (!DisposableHelper.CanDispose(ref _disposedState))
                 return;
 
-            SharedInternals.MessageDispatcher?.UnregisterCallback(IpcCommand.StartCapturingParameters);
-            SharedInternals.MessageDispatcher?.UnregisterCallback(IpcCommand.StopCapturingParameters);
+            SharedInternals.MessageDispatcher?.UnregisterCallback(StartupHookCommand.StartCapturingParameters);
+            SharedInternals.MessageDispatcher?.UnregisterCallback(StartupHookCommand.StopCapturingParameters);
 
             _pipeline?.Dispose();
             _parameterCapturingLogger?.Dispose();

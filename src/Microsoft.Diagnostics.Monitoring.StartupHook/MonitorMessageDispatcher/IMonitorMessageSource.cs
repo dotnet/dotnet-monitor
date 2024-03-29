@@ -7,14 +7,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 {
     internal sealed class MonitorMessageArgs : EventArgs
     {
-        public MonitorMessageArgs(IpcCommand command, IntPtr nativeBuffer, long bufferSize)
+        public MonitorMessageArgs(ushort command, IntPtr nativeBuffer, long bufferSize)
         {
             Command = command;
             NativeBuffer = nativeBuffer;
             BufferSize = bufferSize;
         }
 
-        public IpcCommand Command { get; private set; }
+        public ushort Command { get; private set; }
         public IntPtr NativeBuffer { get; private set; }
         public long BufferSize { get; private set; }
     }

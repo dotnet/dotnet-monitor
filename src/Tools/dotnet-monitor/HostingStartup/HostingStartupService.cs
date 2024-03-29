@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
             try
             {
                 // Hosting startup requires the startup hook
-                if (!await _startupHookService.CheckHasStartupHookAsync(cancellationToken))
+                if (!await _startupHookService.Applied.WaitAsync(cancellationToken))
                 {
                     return;
                 }
