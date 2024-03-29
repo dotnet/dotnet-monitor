@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,49 +10,40 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
     internal sealed class StartupHookService :
         IDiagnosticLifetimeService
     {
-        private readonly IEndpointInfo _endpointInfo;
+        // Intent is to ship a single TFM of the startup hook, which should be the lowest supported version.
+        // If necessary, the startup hook should dynamically access APIs for higher version TFMs and handle
+        // all exceptions appropriately.
+        private const string Tfm = "net6.0";
+        private const string FileName = "Microsoft.Diagnostics.Monitoring.StartupHook.dll";
+
         private readonly IInProcessFeatures _inProcessFeatures;
-        private readonly TaskCompletionSource<bool> _resultSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly StartupHookValidator _startupHookValidator;
+        private readonly StartupHookApplicator _startupHookApplicator;
+        private readonly TaskCompletionSource<bool> _appliedSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public Task<bool> Applied => _appliedSource.Task;
 
         public StartupHookService(
-            IEndpointInfo endpointInfo,
             IInProcessFeatures inProcessFeatures,
-            StartupHookValidator startupHookValidator)
+            StartupHookApplicator startupHookApplicator)
         {
-            _endpointInfo = endpointInfo ?? throw new ArgumentNullException(nameof(endpointInfo));
-            _inProcessFeatures = inProcessFeatures ?? throw new ArgumentNullException(nameof(inProcessFeatures));
-            _startupHookValidator = startupHookValidator ?? throw new ArgumentNullException(nameof(startupHookValidator));
+            _inProcessFeatures = inProcessFeatures;
+            _startupHookApplicator = startupHookApplicator;
         }
 
         public async ValueTask StartAsync(CancellationToken cancellationToken)
         {
-            if (_inProcessFeatures.IsStartupHookRequired)
+            if (!_inProcessFeatures.IsStartupHookRequired)
             {
-                if (await _startupHookValidator.CheckEnvironmentAsync(_endpointInfo, cancellationToken))
-                {
-                    _resultSource.SetResult(true);
-                    return;
-                }
-
-                if (await _startupHookValidator.ApplyStartupHook(_endpointInfo, cancellationToken))
-                {
-                    _resultSource.SetResult(true);
-                    return;
-                }
-
-                await _startupHookValidator.CheckEnvironmentAsync(_endpointInfo, cancellationToken, logInstructions: true);
+                _appliedSource.TrySetResult(false);
+                return;
             }
 
-            _resultSource.SetResult(false);
+            _appliedSource.TrySetResult(await _startupHookApplicator.ApplyAsync(Tfm, FileName, cancellationToken));
         }
 
         public ValueTask StopAsync(CancellationToken cancellationToken)
         {
             return ValueTask.CompletedTask;
         }
-
-        public Task<bool> CheckHasStartupHookAsync(CancellationToken cancellationToken)
-            => _resultSource.Task.WaitAsync(cancellationToken);
     }
 }

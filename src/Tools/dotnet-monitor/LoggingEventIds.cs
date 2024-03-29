@@ -89,8 +89,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ConnectionModeListen = 77,
         ExperimentalFeatureEnabled = 78,
         StartCollectArtifact = 79,
-        StartupHookEnvironmentMissing = 80,
-        StartupHookMissing = 81,
+        StartupHookEnvironmentMissing = 80, // Unused
+        StartupHookMissing = 81, // Unused
         StartupHookInstructions = 82,
         ExtensionProbeStart = 83,
         ExtensionProbeRepo = 84,

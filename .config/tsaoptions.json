@@ -2,9 +2,9 @@
     "instanceUrl": "https://devdiv.visualstudio.com/",
     "template": "TFSDEVDIV",
     "projectName": "DEVDIV",
-    "areaPath": "DevDiv\\NET Runtime\\Diagnostics\\SDL",
+    "areaPath": "DevDiv\\VS Diagnostics\\Production Diagnostics\\Dotnet Monitor",
     "iterationPath": "DevDiv",
-    "notificationAliases": [ "clrdiag-sdl@microsoft.com" ],
-    "repositoryName": "diagnostics",
-    "codebaseName": "diagnostics"
-  }
+    "notificationAliases": [ "dotnetmonitorsdl@microsoft.com" ],
+    "repositoryName": "dotnet-dotnet-monitor",
+    "codebaseName": "dotnet-dotnet-monitor"
+}

@@ -4,7 +4,8 @@ Param(
     [Parameter(Mandatory=$true)][string] $MaestroToken,
     [Parameter(Mandatory=$false)][string] $MaestroApiEndPoint = 'https://maestro-prod.westus2.cloudapp.azure.com',
     [Parameter(Mandatory=$false)][string] $MaestroApiVersion = '2020-02-20',
-    [Parameter(Mandatory=$false)][string] $TaskVariableName = $null
+    [Parameter(Mandatory=$false)][string] $TaskVariableName = $null,
+    [Parameter(Mandatory=$false)][switch] $MajorMinorOnly
 )
 
 $ErrorActionPreference = 'Stop'
@@ -26,6 +27,10 @@ if ($matchingData.Length -ne 1) {
 }
 
 $version = $matchingData[0].Version
+
+if ($MajorMinorOnly) {
+    $version = ($version -split '\.')[0..1] -join '.'
+}
 
 Write-Verbose "Build Version: $version"
 

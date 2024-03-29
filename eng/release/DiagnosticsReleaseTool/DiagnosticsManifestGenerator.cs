@@ -69,7 +69,6 @@ namespace DiagnosticsReleaseTool.Impl
             {
                 writer.WriteStartObject();
                 writer.WriteString("PublishRelativePath", fileToRelease.FileMap.RelativeOutputPath);
-                writer.WriteString("PublishedPath", fileToRelease.PublishUri);
                 writer.WriteString("Sha512", fileToRelease.FileMetadata.Sha512);
                 writer.WriteEndObject();
             }

@@ -27,7 +27,6 @@ namespace CollectionRuleActions.UnitTests
         private readonly EndpointUtilities _endpointUtilities;
 
         private const string DefaultRuleName = "StartupRule";
-        private const string DefaultVarName = "MyCustomVariable";
         private const string DefaultVarValue = "TheValueStoredIn the environment";
 
         public EnvironmentVariableActionTests(ITestOutputHelper outputHelper)
@@ -52,7 +51,7 @@ namespace CollectionRuleActions.UnitTests
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddSetEnvironmentVariableAction(DefaultVarName, DefaultVarValue);
+                        .AddSetEnvironmentVariableAction(TestAppScenarios.EnvironmentVariables.CustomVariableName, DefaultVarValue);
                 },
                 hostCallback: async (IHost host) =>
                 {
@@ -76,7 +75,7 @@ namespace CollectionRuleActions.UnitTests
 
                         await ActionTestsHelper.ExecuteAndDisposeAsync(setAction, CommonTestTimeouts.EnvVarsTimeout);
 
-                        Assert.Equal(DefaultVarValue, await runner.GetEnvironmentVariable(DefaultVarName, CommonTestTimeouts.EnvVarsTimeout));
+                        Assert.Equal(DefaultVarValue, await runner.GetEnvironmentVariable(TestAppScenarios.EnvironmentVariables.CustomVariableName, CommonTestTimeouts.EnvVarsTimeout));
 
                         await runner.SendCommandAsync(TestAppScenarios.EnvironmentVariables.Commands.ShutdownScenario);
                     });
@@ -166,8 +165,8 @@ namespace CollectionRuleActions.UnitTests
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddSetEnvironmentVariableAction(DefaultVarName, DefaultVarValue)
-                        .AddGetEnvironmentVariableAction(DefaultVarName);
+                        .AddSetEnvironmentVariableAction(TestAppScenarios.EnvironmentVariables.CustomVariableName, DefaultVarValue)
+                        .AddGetEnvironmentVariableAction(TestAppScenarios.EnvironmentVariables.CustomVariableName);
                 },
                 hostCallback: async (IHost host) =>
                 {

@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
         }
 
         private readonly object _dispatchTableLocker = new();
-        private readonly Dictionary<IpcCommand, MessageDispatchEntry> _dispatchTable = new();
+        private readonly Dictionary<ushort, MessageDispatchEntry> _dispatchTable = new();
 
         private readonly IMonitorMessageSource _messageSource;
 
@@ -30,7 +30,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             _messageSource.MonitorMessage += OnMessage;
         }
 
-        public void RegisterCallback<T>(IpcCommand command, Action<T> callback)
+        public void RegisterCallback<T>(StartupHookCommand command, Action<T> callback)
+            => RegisterCallback((ushort)command, callback);
+
+        public void RegisterCallback<T>(ushort command, Action<T> callback)
         {
             MessageDispatchEntry dispatchEntry = new()
             {
@@ -50,7 +53,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             }
         }
 
-        public void UnregisterCallback(IpcCommand command)
+        public void UnregisterCallback(StartupHookCommand command)
+            => UnregisterCallback((ushort)command);
+
+        public void UnregisterCallback(ushort command)
         {
             lock (_dispatchTableLocker)
             {

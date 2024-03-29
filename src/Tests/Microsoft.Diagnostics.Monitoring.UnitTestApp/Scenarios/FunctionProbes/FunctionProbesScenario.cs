@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
+using Microsoft.Diagnostics.Monitoring.StartupHook;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using SampleMethods;
 using System;
@@ -56,6 +57,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 { TestAppScenarios.FunctionProbes.SubScenarios.ExceptionThrownByProbe, Test_ExceptionThrownByProbeAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.RecursingProbe, Test_RecursingProbeAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.RequestInstallationOnProbeFunction, Test_RequestInstallationOnProbeFunctionAsync},
+
+                /* Monitor context */
+                { TestAppScenarios.FunctionProbes.SubScenarios.ProbeInMonitorContext, Test_DontProbeInMonitorContextAsync}, 
 
                 /* Self tests */
                 { TestAppScenarios.FunctionProbes.SubScenarios.AssertsInProbesAreCaught, Test_AssertsInProbesAreCaughtAsync},
@@ -363,6 +367,23 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 },
                 thisObj: null, thisParameterSupported: false, token);
             });
+        }
+
+        private static async Task Test_DontProbeInMonitorContextAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.NoArgs));
+            probeProxy.RegisterPerFunctionProbe(method, (object[] actualArgs) =>
+            {
+            });
+
+            await probeManager.StartCapturingAsync(new[] { method }, probeProxy, token);
+
+            using (IDisposable _ = MonitorExecutionContextTracker.MonitorScope())
+            {
+                StaticTestMethodSignatures.NoArgs();
+            }
+
+            Assert.Equal(0, probeProxy.GetProbeInvokeCount(method));
         }
 
 
