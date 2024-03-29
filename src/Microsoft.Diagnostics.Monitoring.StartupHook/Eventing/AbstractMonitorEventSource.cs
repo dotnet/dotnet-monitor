@@ -68,6 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Eventing
         [NonEvent]
         private void FlushTimerTick(object? state)
         {
+            using IDisposable _ = MonitorExecutionContextTracker.MonitorScope();
             Flush();
         }
 

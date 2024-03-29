@@ -109,6 +109,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string RecursingProbe = nameof(RecursingProbe);
                 public const string RequestInstallationOnProbeFunction = nameof(RequestInstallationOnProbeFunction);
 
+                /* Monitor context */
+                public const string ProbeInMonitorContext = nameof(ProbeInMonitorContext);
+
                 /* Self tests */
                 public const string AssertsInProbesAreCaught = nameof(AssertsInProbesAreCaught);
 #else // NET7_0_OR_GREATER
@@ -142,6 +145,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static class EnvironmentVariables
         {
             public const string Name = nameof(EnvironmentVariables);
+            public const string CustomVariableName = nameof(CustomVariableName);
             public const string IncrementVariableName = nameof(IncrementVariableName);
 
             public static class Commands
