@@ -3,14 +3,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
 {
     internal interface ICapturedParameters
     {
-        Guid RequestId { get; }
-
         string ActivityId { get; }
+
+        ActivityIdFormat ActivityIdFormat { get; }
+
+        int ThreadId { get; }
 
         DateTime CapturedDateTime { get; }
 

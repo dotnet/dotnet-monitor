@@ -61,6 +61,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
             )
         {
             Activity? currentActivity = Activity.Current;
+            int currentThreadId = Environment.CurrentManagedThreadId;
 
             ScheduleAction((cancellationToken) =>
             {
@@ -72,6 +73,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
                     requestId,
                     captureId,
                     currentActivity?.Id ?? string.Empty,
+                    currentActivity?.IdFormat ?? ActivityIdFormat.Unknown,
+                    currentThreadId,
                     methodName,
                     methodModuleName,
                     methodDeclaringTypeName ?? string.Empty);

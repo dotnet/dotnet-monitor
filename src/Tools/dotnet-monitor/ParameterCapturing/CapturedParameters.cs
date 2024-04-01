@@ -4,17 +4,19 @@
 using Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 {
     internal sealed class CapturedParameters : ICapturedParameters
     {
-        private List<ParameterInfo> _parameters = [];
+        private readonly List<ParameterInfo> _parameters = [];
 
-        public CapturedParameters(Guid requestId, string activityId, DateTime capturedDateTime, string methodName, string methodTypeName, string methodModuleName)
+        public CapturedParameters(string activityId, ActivityIdFormat activityIdFormat, int threadId, DateTime capturedDateTime, string methodName, string methodTypeName, string methodModuleName)
         {
-            RequestId = requestId;
             ActivityId = activityId;
+            ActivityIdFormat = activityIdFormat;
+            ThreadId = threadId;
             MethodName = methodName;
             TypeName = methodTypeName;
             ModuleName = methodModuleName;
@@ -26,9 +28,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _parameters.Add(parameter);
         }
 
-        public Guid RequestId { get; }
-
         public string ActivityId { get; }
+
+        public ActivityIdFormat ActivityIdFormat { get; }
+
+        public int ThreadId { get; }
 
         public string ModuleName { get; }
 

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
@@ -36,13 +37,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
     public class CapturedMethod
     {
-        [JsonPropertyName("requestId")]
-        public Guid RequestId { get; set; }
-
         [JsonPropertyName("activityId")]
         public string ActivityId { get; set; }
 
-        [JsonPropertyName("capturedDateTime")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        [JsonPropertyName("activityIdFormat")]
+        public ActivityIdFormat ActivityIdFormat { get; set; }
+
+        [JsonPropertyName("threadId")]
+        public int ThreadId { get; set; }
+
+        [JsonPropertyName("dateTime")]
         public DateTime CapturedDateTime { get; set; }
 
         [JsonPropertyName("module")]

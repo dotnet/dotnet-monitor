@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 {
@@ -11,9 +12,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
     {
         private readonly Dictionary<Guid, CapturedParameters> _capturedParameters = new();
 
-        public bool TryStartNewCaptureResponse(Guid requestId, Guid captureId, string activityId, DateTime capturedDateTime, string methodName, string methodTypeName, string methodModuleName)
+        public bool TryStartNewCaptureResponse(Guid captureId, string activityId, ActivityIdFormat activityIdFormat, int threadId, DateTime capturedDateTime, string methodName, string methodTypeName, string methodModuleName)
         {
-            return _capturedParameters.TryAdd(captureId, new CapturedParameters(requestId, activityId, capturedDateTime, methodName, methodTypeName, methodModuleName));
+            return _capturedParameters.TryAdd(captureId, new CapturedParameters(activityId, activityIdFormat, threadId, capturedDateTime, methodName, methodTypeName, methodModuleName));
         }
 
         public bool TryGetCapturedParameters(Guid captureId, out ICapturedParameters capturedParameters)

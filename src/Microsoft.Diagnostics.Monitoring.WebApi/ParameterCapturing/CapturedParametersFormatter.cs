@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
 
             foreach (CapturedMethod capture in result.CapturedMethods)
             {
-                builder.AppendLine($"[{capture.CapturedDateTime}][{capture.RequestId}] {GetValueOrUnknown(capture.ActivityId)}");
+                builder.AppendLine($"[{capture.CapturedDateTime}][thread {capture.ThreadId}] {GetValueOrUnknown(capture.ActivityId)}[format: {capture.ActivityIdFormat}]");
                 builder.AppendLine($"{Indent}{GetValueOrUnknown(capture.ModuleName)}!{GetValueOrUnknown(capture.TypeName)}.{GetValueOrUnknown(capture.MethodName)}(");
 
                 foreach (CapturedParameter parameter in capture.Parameters)
@@ -92,8 +92,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
             {
                 CapturedMethods = parameters.Select(capture => new CapturedMethod()
                 {
-                    RequestId = capture.RequestId,
                     ActivityId = capture.ActivityId,
+                    ActivityIdFormat = capture.ActivityIdFormat,
+                    ThreadId = capture.ThreadId,
                     CapturedDateTime = capture.CapturedDateTime,
                     ModuleName = capture.ModuleName,
                     TypeName = capture.TypeName,

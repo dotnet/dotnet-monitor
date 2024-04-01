@@ -67,9 +67,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             public const int RequestId = 0;
             public const int CaptureId = 1;
             public const int ActivityId = 2;
-            public const int MethodName = 3;
-            public const int MethodModuleName = 4;
-            public const int MethodDeclaringTypeName = 5;
+            public const int ActivityIdFormat = 3;
+            public const int ThreadId = 4;
+            public const int MethodName = 5;
+            public const int MethodModuleName = 6;
+            public const int MethodDeclaringTypeName = 7;
         }
 
         public static class CapturedParametersStopPayloads

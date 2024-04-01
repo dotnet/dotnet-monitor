@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tracing;
 using System;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Reflection;
 using System.Threading;
@@ -107,11 +108,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                         Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturedParametersStartPayloads.RequestId);
                         Guid captureId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturedParametersStartPayloads.CaptureId);
                         string activityId = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParametersStartPayloads.ActivityId);
+                        ActivityIdFormat activityIdFormat = traceEvent.GetPayload<ActivityIdFormat>(ParameterCapturingEvents.CapturedParametersStartPayloads.ActivityIdFormat);
+                        int threadId = traceEvent.GetPayload<int>(ParameterCapturingEvents.CapturedParametersStartPayloads.ThreadId);
                         string methodName = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParametersStartPayloads.MethodName);
                         string methodModuleName = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParametersStartPayloads.MethodModuleName);
                         string methodDeclaringTypeName = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParametersStartPayloads.MethodDeclaringTypeName);
 
-                        _ = _cache.TryStartNewCaptureResponse(requestId, captureId, activityId, traceEvent.TimeStamp, methodName: methodName, methodTypeName: methodDeclaringTypeName, methodModuleName: methodModuleName);
+                        _ = _cache.TryStartNewCaptureResponse(captureId, activityId, activityIdFormat, threadId, traceEvent.TimeStamp, methodName: methodName, methodTypeName: methodDeclaringTypeName, methodModuleName: methodModuleName);
 
                         break;
                     }

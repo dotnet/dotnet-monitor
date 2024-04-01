@@ -95,9 +95,10 @@ Object describing a captured method and its parameters.
 
 | Name | Type | Description |
 |---|---|---|
-| `requestId` | guid | Unique identifier for the capture request operation. |
 | `activityId` | string | An identifier for the current activity at the time of the capture. For more information see [Activity.Id](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.activity.id).|
-| `capturedDateTime` | DateTime | Time when the method call was captured. |
+| `activityIdFormat` | string | The activity Id format. For more information see [Activity.IdFormat](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.activity.idformat).|
+| `threadId` | int | The managed thread id where the method was called.|
+| `dateTime` | DateTime | Time when the method call was captured. |
 | `module` | string | The method module name. |
 | `type` | string | The method type name. |
 | `method` | string | The method name. |
