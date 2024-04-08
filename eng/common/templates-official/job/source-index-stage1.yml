@@ -34,6 +34,7 @@ jobs:
       ${{ if eq(variables['System.TeamProject'], 'internal') }}:
         name: $(DncEngInternalBuildPool)
         image: windows.vs2022.amd64
+        os: windows
 
   steps:
   - ${{ each preStep in parameters.preSteps }}:
