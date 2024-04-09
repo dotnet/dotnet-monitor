@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     public partial class DiagController : DiagnosticsControllerBase
     {
-        private const TraceProfile DefaultTraceProfiles = TraceProfile.Cpu | TraceProfile.Http | TraceProfile.Metrics;
+        private const TraceProfile DefaultTraceProfiles = TraceProfile.Cpu | TraceProfile.Http | TraceProfile.Metrics | TraceProfile.GcCollect;
 
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
         private readonly IOptions<CallStacksOptions> _callStacksOptions;
