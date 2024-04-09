@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
         {
             return format switch
             {
-                CapturedParameterFormat.PlainText => WriteParametersAsPlainText(parameters, outputStream, token),
+                CapturedParameterFormat.PlainText => WriteParametersAsPlainTextAsync(parameters, outputStream, token),
                 CapturedParameterFormat.Json => WriteParametersAsJson(parameters, outputStream, token),
                 _ => throw new InvalidOperationException(),
             };
@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
 
         private const string Indent = "  ";
 
-        private static async Task WriteParametersAsPlainText(IEnumerable<ICapturedParameters> parameters, Stream outputStream, CancellationToken token)
+        private static async Task WriteParametersAsPlainTextAsync(IEnumerable<ICapturedParameters> parameters, Stream outputStream, CancellationToken token)
         {
             CapturedParametersResult result = BuildResultModel(parameters);
 
@@ -50,12 +50,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
 
             foreach (CapturedMethod capture in result.CapturedMethods)
             {
-                builder.AppendLine($"[{capture.CapturedDateTime}][thread {capture.ThreadId}] {GetValueOrUnknown(capture.ActivityId)}[format: {capture.ActivityIdFormat}]");
-                builder.AppendLine($"{Indent}{GetValueOrUnknown(capture.ModuleName)}!{GetValueOrUnknown(capture.TypeName)}.{GetValueOrUnknown(capture.MethodName)}(");
+                builder.AppendLine(FormattableString.Invariant($"[{capture.CapturedDateTime}][thread {capture.ThreadId}] {GetValueOrUnknown(capture.ActivityId)}[format: {capture.ActivityIdFormat}]"));
+                builder.AppendLine(FormattableString.Invariant($"{Indent}{GetValueOrUnknown(capture.ModuleName)}!{GetValueOrUnknown(capture.TypeName)}.{GetValueOrUnknown(capture.MethodName)}("));
 
                 foreach (CapturedParameter parameter in capture.Parameters)
                 {
-                    builder.Append($"{Indent}{Indent}{GetValueOrUnknown(parameter.TypeModuleName)}!{GetValueOrUnknown(parameter.Type)} ");
+                    builder.Append(FormattableString.Invariant($"{Indent}{Indent}{GetValueOrUnknown(parameter.TypeModuleName)}!{GetValueOrUnknown(parameter.Type)} "));
                     if (parameter.IsInParameter)
                     {
                         builder.Append("in ");
@@ -68,10 +68,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
                     {
                         builder.Append("ref ");
                     }
-                    builder.AppendLine($"{GetValueOrUnknown(parameter.Name)}: {GetValueOrUnknown(parameter.Value)}");
+                    builder.AppendLine(FormattableString.Invariant($"{GetValueOrUnknown(parameter.Name)}: {GetValueOrUnknown(parameter.Value)}"));
                 }
 
-                builder.AppendLine($"{Indent})");
+                builder.AppendLine(FormattableString.Invariant($"{Indent})"));
                 builder.AppendLine();
             }
 

@@ -9,7 +9,6 @@ using Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -46,14 +45,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             ILogger logger,
             CaptureParametersConfiguration configuration,
             TimeSpan duration,
-            CapturedParameterFormat format)
+            CapturedParameterFormat format,
+            IParameterCapturingStore parameterCapturingStore)
         {
             _profilerChannel = profilerChannel;
             _endpointInfo = endpointInfo;
             _logger = logger;
             _configuration = configuration;
             _duration = duration;
-            _parameterCapturingStore = endpointInfo.ServiceProvider.GetRequiredService<IParameterCapturingStore>();
+            _parameterCapturingStore = parameterCapturingStore;
             _format = format;
 
             _requestId = Guid.NewGuid();

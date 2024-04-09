@@ -89,7 +89,7 @@ Enumeration that describes the current state of the collection rule.
 
 ## CapturedMethod
 
-First Available: 9.0 Preview 3
+First Available: 9.0 Preview 4
 
 Object describing a captured method and its parameters.
 

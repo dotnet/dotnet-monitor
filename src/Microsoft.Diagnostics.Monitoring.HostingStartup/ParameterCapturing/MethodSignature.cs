@@ -87,7 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     Type: EmitTypeName(method.DeclaringType),
                     TypeModuleName: method.DeclaringType?.Module.Name,
                     ParameterAttributes.None,
-                    false));
+                    IsByRef: false));
             }
 
             foreach (ParameterInfo paramInfo in explicitParameters)

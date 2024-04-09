@@ -118,9 +118,9 @@ Content-Type: application/json
 {
     "captures": [
         {
-            "requestId": "ca17b977-e5f4-46c5-98ca-17046ece998a",
             "activityId": "00-17657ab99a51e3e46cf5bb3fd583daab-03c903f46b511852-00",
-            "capturedDateTime": "2024-03-15T14:47:51.2129742-04:00",
+            "activityIdFormat": "W3C",
+            "dateTime": "2024-03-15T14:47:51.2129742-04:00",
             "module": "System.Private.CoreLib.dll",
             "type": "System.String",
             "method": "Concat",
@@ -146,8 +146,8 @@ Content-Type: application/json
             ]
         },
         {
-            "requestId": "d8cbec93-3fb8-4aae-82f6-fe9bdda20c34",
             "activityId": "00-9838f17b20cd76c2df3bdaa0fcd716c9-7ce53ae1e886e236-00",
+            "activityIdFormat": "W3C",
             "capturedDateTime": "2024-03-15T14:48:42.5997554-04:00",
             "module": "System.Private.CoreLib.dll",
             "type": "System.String",

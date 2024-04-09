@@ -5,7 +5,6 @@ using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using SampleMethods;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using Xunit;
 
@@ -14,47 +13,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     public class MethodSignatureTests
     {
-        [Theory]
-        [MemberData(nameof(GetMethodSignatureTestData))]
-        public void MethodSignature(
-            MethodInfo methodInfo,
-            string expectedMethodName,
-            string expectedDeclaringType,
-            string expectedDeclaringTypeModuleName,
-            ExpectedParameterSignature[] expectedParameters)
-        {
-            // Arrange
-            Assert.NotNull(methodInfo);
-
-            // Act
-            MethodSignature methodSignature = new MethodSignature(methodInfo);
-
-            // Assert
-            Assert.NotNull(methodSignature);
-            Assert.Equal(expectedMethodName, methodSignature.MethodName);
-            Assert.Equal(expectedDeclaringType, methodSignature.TypeName);
-            Assert.Equal(expectedDeclaringTypeModuleName, methodSignature.ModuleName);
-            Assert.Equal(expectedParameters.Length, methodSignature.Parameters.Count);
-            for (var idx = 0; idx < expectedParameters.Length; idx++)
-            {
-                Assert.Equal(expectedParameters[idx].Name, methodSignature.Parameters[idx].Name);
-                Assert.Equal(expectedParameters[idx].Type, methodSignature.Parameters[idx].Type);
-                Assert.Equal(expectedParameters[idx].TypeModuleName, methodSignature.Parameters[idx].TypeModuleName);
-                Assert.Equal(expectedParameters[idx].Attributes, methodSignature.Parameters[idx].Attributes);
-                Assert.Equal(expectedParameters[idx].IsByRef, methodSignature.Parameters[idx].IsByRef);
-            }
-        }
-
-        public static IEnumerable<object[]> GetMethodSignatureTestData()
-        {
-            yield return new object[]
-            {
+        [Fact]
+        public void ImplicitThisParameter() => TestCore(
                 typeof(TestMethodSignatures).GetMethod(nameof(TestMethodSignatures.ImplicitThis)),
                 "ImplicitThis",
                 "SampleMethods.TestMethodSignatures",
                 typeof(TestMethodSignatures).Module.Name,
-                new ExpectedParameterSignature[]
-                {
+                [
                     new(typeof(TestMethodSignatures))
                     {
                         Name = "this",
@@ -62,16 +27,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                         Attributes = ParameterAttributes.None,
                         IsByRef = false
                     }
-                }
-            };
-            yield return new object[]
-            {
+                ]);
+
+        [Fact]
+        public void ArrayTypes() => TestCore(
                 typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.Arrays)),
                 "Arrays",
                 "SampleMethods.StaticTestMethodSignatures",
                 typeof(StaticTestMethodSignatures).Module.Name,
-                new ExpectedParameterSignature[]
-                {
+                [
                     new(typeof(int[]))
                     {
                         Name = "intArray",
@@ -86,16 +50,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                         Attributes = ParameterAttributes.None,
                         IsByRef = false
                     }
-                }
-            };
-            yield return new object[]
-            {
+                ]);
+
+        [Fact]
+        public void DelegateTypes() => TestCore(
                 typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.Delegate)),
                 "Delegate",
                 "SampleMethods.StaticTestMethodSignatures",
                 typeof(StaticTestMethodSignatures).Module.Name,
-                new ExpectedParameterSignature[]
-                {
+                [
                     new(typeof(StaticTestMethodSignatures.MyDelegate))
                     {
                         Name = "func",
@@ -103,149 +66,141 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                         Attributes = ParameterAttributes.None,
                         IsByRef = false
                     },
-                }
-            };
-            yield return new object[]
-            {
+                ]);
+
+        [Fact]
+        public void InParameterAttribute() => TestCore(
                 typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.InParam)),
                 "InParam",
                 "SampleMethods.StaticTestMethodSignatures",
                 typeof(StaticTestMethodSignatures).Module.Name,
-                new ExpectedParameterSignature[]
-                {
-                    new(typeof(int))
+                [
+                    new (typeof(int))
                     {
                         Name = "i",
                         Type = "System.Int32&",
                         Attributes = ParameterAttributes.In,
                         IsByRef = true
                     },
-                }
-            };
-            yield return new object[]
-            {
+                ]);
+
+        [Fact]
+        public void OutParameterAttribute() => TestCore(
                 typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.OutParam)),
                 "OutParam",
                 "SampleMethods.StaticTestMethodSignatures",
                 typeof(StaticTestMethodSignatures).Module.Name,
-                new ExpectedParameterSignature[]
-                {
-                    new(typeof(int))
+                [
+                    new (typeof(int))
                     {
                         Name = "i",
                         Type = "System.Int32&",
                         Attributes = ParameterAttributes.Out,
                         IsByRef = true
                     },
-                }
-            };
-            yield return new object[]
-            {
-                typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.RefParam)),
+                ]);
+
+        [Fact]
+        public void RefParameterAttribute() => TestCore(
+            typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.RefParam)),
                 "RefParam",
                 "SampleMethods.StaticTestMethodSignatures",
                 typeof(StaticTestMethodSignatures).Module.Name,
-                new ExpectedParameterSignature[]
-                {
-                    new(typeof(int))
+                [
+                    new (typeof(int))
                     {
                         Name = "i",
                         Type = "System.Int32&",
                         Attributes = ParameterAttributes.None,
                         IsByRef = true
                     },
-                }
-            };
-            yield return new object[]
-            {
-                typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.RefStruct)),
+                ]);
+
+        [Fact]
+        public void RefStruct() => TestCore(
+                 typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.RefStruct)),
                 "RefStruct",
                 "SampleMethods.StaticTestMethodSignatures",
                 typeof(StaticTestMethodSignatures).Module.Name,
-                new ExpectedParameterSignature[]
-                {
-                    new(typeof(MyRefStruct))
+                [
+                    new (typeof(MyRefStruct))
                     {
                         Name = "myRefStruct",
                         Type = "SampleMethods.MyRefStruct&",
                         Attributes = ParameterAttributes.None,
                         IsByRef = true
                     },
-                }
-            };
-            yield return new object[]
-            {
+                ]);
+
+        [Fact]
+        public void GenericParameters() => TestCore(
                 typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.GenericParameters)),
                 "GenericParameters<T, K>",
                 "SampleMethods.StaticTestMethodSignatures",
                 typeof(StaticTestMethodSignatures).Module.Name,
-                new ExpectedParameterSignature[]
-                {
-                    new(typeof(MethodSignatureTests))
+                [
+                    new (typeof(MethodSignatureTests))
                     {
                         Name = "t",
                         Type = null,
                         Attributes = ParameterAttributes.None,
                         IsByRef = false
                     },
-                    new(typeof(MethodSignatureTests))
+                    new (typeof(MethodSignatureTests))
                     {
                         Name = "k",
                         Type = null,
                         Attributes = ParameterAttributes.None,
                         IsByRef = false
                     },
-                }
-            };
-            yield return new object[]
-            {
+                ]);
+
+        [Fact]
+        public void VarArgs() => TestCore(
                 typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.VarArgs)),
                 "VarArgs",
                 "SampleMethods.StaticTestMethodSignatures",
                 typeof(StaticTestMethodSignatures).Module.Name,
-                new ExpectedParameterSignature[]
-                {
-                    new(typeof(bool))
+                [
+                    new (typeof(bool))
                     {
                         Name = "b",
                         Type = "System.Boolean",
                         Attributes = ParameterAttributes.None,
                         IsByRef = false
                     },
-                    new(typeof(int[]))
+                    new (typeof(int[]))
                     {
                         Name = "myInts",
                         Type = "System.Int32[]",
                         Attributes = ParameterAttributes.None,
                         IsByRef = false
                     },
-                }
-            };
-            yield return new object[]
-            {
+                ]);
+
+        [Fact]
+        public void UnicodeParameters() => TestCore(
                 typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.Unicode_ΦΨ)),
                 "Unicode_ΦΨ",
                 "SampleMethods.StaticTestMethodSignatures",
                 typeof(StaticTestMethodSignatures).Module.Name,
-                new ExpectedParameterSignature[]
-                {
-                    new(typeof(bool))
+                [
+                    new (typeof(bool))
                     {
                         Name = "δ",
                         Type = "System.Boolean",
                         Attributes = ParameterAttributes.None,
                         IsByRef = false
                     },
-                }
-            };
-            yield return new object[]
-            {
+                ]);
+
+        [Fact]
+        public void NestedStructs() => TestCore(
                 typeof(StaticTestMethodSignatures.SampleNestedStruct).GetMethod(nameof(StaticTestMethodSignatures.SampleNestedStruct.DoWork)),
                 "DoWork",
                 "SampleMethods.StaticTestMethodSignatures+SampleNestedStruct",
                 typeof(StaticTestMethodSignatures).Module.Name,
-                new ExpectedParameterSignature[]
-                {
+                [
                     new(typeof(StaticTestMethodSignatures.SampleNestedStruct))
                     {
                         Name = "this",
@@ -260,11 +215,38 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                         Attributes = ParameterAttributes.None,
                         IsByRef = false
                     },
-                }
-            };
+                ]);
+
+        private static void TestCore(
+                                                                    MethodInfo methodInfo,
+                                                                    string expectedMethodName,
+                                                                    string expectedDeclaringType,
+                                                                    string expectedDeclaringTypeModuleName,
+                                                                    ExpectedParameterSignature[] expectedParameters)
+        {
+            // Arrange
+            Assert.NotNull(methodInfo);
+
+            // Act
+            MethodSignature methodSignature = new MethodSignature(methodInfo);
+
+            // Assert
+            Assert.NotNull(methodSignature);
+            Assert.Equal(expectedMethodName, methodSignature.MethodName);
+            Assert.Equal(expectedDeclaringType, methodSignature.TypeName);
+            Assert.Equal(expectedDeclaringTypeModuleName, methodSignature.ModuleName);
+            Assert.Equal(expectedParameters.Length, methodSignature.Parameters.Count);
+            for (int idx = 0; idx < expectedParameters.Length; idx++)
+            {
+                Assert.Equal(expectedParameters[idx].Name, methodSignature.Parameters[idx].Name);
+                Assert.Equal(expectedParameters[idx].Type, methodSignature.Parameters[idx].Type);
+                Assert.Equal(expectedParameters[idx].TypeModuleName, methodSignature.Parameters[idx].TypeModuleName);
+                Assert.Equal(expectedParameters[idx].Attributes, methodSignature.Parameters[idx].Attributes);
+                Assert.Equal(expectedParameters[idx].IsByRef, methodSignature.Parameters[idx].IsByRef);
+            }
         }
 
-        public sealed record ExpectedParameterSignature(Type paramType)
+        private sealed record ExpectedParameterSignature(Type paramType)
         {
             public string Name;
 

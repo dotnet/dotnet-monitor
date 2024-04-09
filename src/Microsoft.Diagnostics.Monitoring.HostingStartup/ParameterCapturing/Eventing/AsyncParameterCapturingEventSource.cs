@@ -13,15 +13,15 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
     {
         private readonly Thread _thread;
         private readonly CancellationTokenSource _cts = new();
-        private readonly BlockingCollection<Action<CancellationToken>> _pendingEvents;
+        private readonly BlockingCollection<Action<CancellationToken>> _pendingEvents = new(MaxPendingEventsCollectionCapacity);
         private readonly ParameterCapturingEventSource _eventSource;
 
         private const int MaxPendingEventsCollectionCapacity = 1024;
-        private const string BackgroundLoggingThreadName = "[dotnet-monitor] Probe EventSource Thread";
+        private const string BackgroundLoggingThreadName = "[dotnet-monitor] Parameter Capturing EventSource";
+        private long _disposedState;
 
         public AsyncParameterCapturingEventSource(ParameterCapturingEventSource eventSource)
         {
-            _pendingEvents = new BlockingCollection<Action<CancellationToken>>(MaxPendingEventsCollectionCapacity);
             _eventSource = eventSource;
 
             _thread = new(ThreadLoop)
@@ -35,6 +35,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
 
         public void Dispose()
         {
+            if (!DisposableHelper.CanDispose(ref _disposedState))
+            {
+                return;
+            }
+
             _pendingEvents.CompleteAdding();
             try
             {

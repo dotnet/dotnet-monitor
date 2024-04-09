@@ -393,7 +393,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureParameterCapturing(this IServiceCollection services)
         {
-            services.AddSingleton<ICaptureParametersOperationFactory, CaptureParametersOperationFactory>();
+            services.AddTransient<ICaptureParametersOperationFactory, CaptureParametersOperationFactory>();
             services.AddScoped<IParameterCapturingStore, ParameterCapturingStore>();
             return services;
         }
