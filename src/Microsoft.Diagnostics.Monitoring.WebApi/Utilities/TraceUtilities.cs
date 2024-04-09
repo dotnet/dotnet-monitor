@@ -11,30 +11,6 @@ using System.Linq;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal sealed class GcCollectConfiguration : MonitoringSourceConfiguration
-    {
-        public GcCollectConfiguration()
-        {
-            RequestRundown = false;
-        }
-
-        public override IList<EventPipeProvider> GetProviders() =>            
-            new EventPipeProvider[] {
-                    new EventPipeProvider(
-                        name: "Microsoft-Windows-DotNETRuntime",
-                        eventLevel: System.Diagnostics.Tracing.EventLevel.Informational,
-                        // keywords: (long)ClrTraceEventParser.Keywords.GC
-                        keywords: 1
-                    ),
-                    new EventPipeProvider(
-                        name: "Microsoft-Windows-DotNETRuntimePrivate",
-                        eventLevel: System.Diagnostics.Tracing.EventLevel.Informational,
-                        // keywords: (long)ClrTraceEventParser.Keywords.GC
-                        keywords: 1
-                    )
-            };
-    }
-
     internal static class TraceUtilities
     {
         public static MonitoringSourceConfiguration GetTraceConfiguration(Models.TraceProfile profile, GlobalCounterOptions options)

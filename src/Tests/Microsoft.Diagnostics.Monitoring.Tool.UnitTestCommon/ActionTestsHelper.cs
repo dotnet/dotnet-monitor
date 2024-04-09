@@ -57,6 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 yield return new object[] { tfm, TraceProfile.Metrics };
                 yield return new object[] { tfm, TraceProfile.Http };
                 yield return new object[] { tfm, TraceProfile.Cpu };
+                yield return new object[] { tfm, TraceProfile.GcCollect };
             }
         }
 
