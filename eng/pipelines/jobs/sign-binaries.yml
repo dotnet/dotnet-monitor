@@ -11,7 +11,7 @@ jobs:
     artifacts:
       publish:
         logs:
-          name: Logs_$(JobName)
+          name: Logs_Sign_Binaries
     variables:
     - _BuildConfig: ${{ parameters.configuration }}
     - _SignType: real
