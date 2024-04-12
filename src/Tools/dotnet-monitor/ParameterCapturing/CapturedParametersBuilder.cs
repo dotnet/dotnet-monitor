@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 {
-    internal sealed class EventParameterCapturingPipelineCache
+    internal sealed class CapturedParametersBuilder
     {
         private readonly Dictionary<Guid, CapturedParameters> _capturedParameters = new();
 
@@ -17,9 +17,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             return _capturedParameters.TryAdd(captureId, new CapturedParameters(activityId, activityIdFormat, threadId, capturedDateTime, methodName, methodTypeName, methodModuleName));
         }
 
-        public bool TryGetCapturedParameters(Guid captureId, out ICapturedParameters capturedParameters)
+        public bool TryFinalizeParameters(Guid captureId, out ICapturedParameters capturedParameters)
         {
-            if (_capturedParameters.TryGetValue(captureId, out CapturedParameters captured))
+            if (_capturedParameters.Remove(captureId, out CapturedParameters captured))
             {
                 capturedParameters = captured;
                 return true;

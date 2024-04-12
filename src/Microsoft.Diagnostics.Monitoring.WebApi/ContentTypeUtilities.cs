@@ -58,8 +58,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             if (acceptedHeaders == null) return null;
             if (acceptedHeaders.Contains(TextPlainHeader)) return CapturedParameterFormat.PlainText;
             if (acceptedHeaders.Contains(ApplicationJsonHeader)) return CapturedParameterFormat.Json;
+            if (acceptedHeaders.Contains(NdJsonHeader)) return CapturedParameterFormat.NewlineDelimitedJson;
             if (acceptedHeaders.Any(TextPlainHeader.IsSubsetOf)) return CapturedParameterFormat.PlainText;
             if (acceptedHeaders.Any(ApplicationJsonHeader.IsSubsetOf)) return CapturedParameterFormat.Json;
+            if (acceptedHeaders.Any(NdJsonHeader.IsSubsetOf)) return CapturedParameterFormat.NewlineDelimitedJson;
             return null;
         }
     }

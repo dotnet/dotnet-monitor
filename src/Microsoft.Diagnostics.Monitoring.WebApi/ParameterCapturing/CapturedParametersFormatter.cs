@@ -1,116 +1,73 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
 {
-    internal static class CapturedParametersFormatter
+    internal abstract class CapturedParametersFormatter : IAsyncDisposable
     {
-        public static Task WriteAsync(
-            IEnumerable<ICapturedParameters> parameters,
-            CapturedParameterFormat format,
-            Stream outputStream,
-            CancellationToken token)
+        private bool _isFirstItem = true;
+
+        public CapturedParametersFormatter(Stream outputStream)
         {
-            return format switch
-            {
-                CapturedParameterFormat.PlainText => WriteParametersAsPlainTextAsync(parameters, outputStream, token),
-                CapturedParameterFormat.Json => WriteParametersAsJson(parameters, outputStream, token),
-                _ => throw new InvalidOperationException(),
-            };
+            OutputStream = outputStream;
         }
 
-        private static Task WriteParametersAsJson(IEnumerable<ICapturedParameters> parameters, Stream outputStream, CancellationToken token)
+        public Task StartAsync(CancellationToken cancellationToken) => WritePrologAsync(cancellationToken);
+
+        public async Task WriteParameters(ICapturedParameters parameters, CancellationToken token)
         {
-            CapturedParametersResult result = BuildResultModel(parameters);
+            CapturedMethod capturedMethod = BuildResultModel(parameters);
 
-            return JsonSerializer.SerializeAsync(outputStream, result, cancellationToken: token);
-        }
-
-        private const string Indent = "  ";
-
-        private static async Task WriteParametersAsPlainTextAsync(IEnumerable<ICapturedParameters> parameters, Stream outputStream, CancellationToken token)
-        {
-            CapturedParametersResult result = BuildResultModel(parameters);
-
-            await using StreamWriter writer = new StreamWriter(outputStream, Encoding.UTF8, leaveOpen: true);
-            await writer.WriteLineAsync("Captured Parameters:");
-
-            StringBuilder builder = new();
-
-            foreach (CapturedMethod capture in result.CapturedMethods)
+            if (!_isFirstItem)
             {
-                builder.AppendLine(FormattableString.Invariant($"[{capture.CapturedDateTime}][thread {capture.ThreadId}] {GetValueOrUnknown(capture.ActivityId)}[format: {capture.ActivityIdFormat}]"));
-                builder.AppendLine(FormattableString.Invariant($"{Indent}{GetValueOrUnknown(capture.ModuleName)}!{GetValueOrUnknown(capture.TypeName)}.{GetValueOrUnknown(capture.MethodName)}("));
-
-                foreach (CapturedParameter parameter in capture.Parameters)
-                {
-                    builder.Append(FormattableString.Invariant($"{Indent}{Indent}{GetValueOrUnknown(parameter.TypeModuleName)}!{GetValueOrUnknown(parameter.Type)} "));
-                    if (parameter.IsInParameter)
-                    {
-                        builder.Append("in ");
-                    }
-                    else if (parameter.IsOutParameter)
-                    {
-                        builder.Append("out ");
-                    }
-                    else if (parameter.IsByRefParameter)
-                    {
-                        builder.Append("ref ");
-                    }
-                    builder.AppendLine(FormattableString.Invariant($"{GetValueOrUnknown(parameter.Name)}: {GetValueOrUnknown(parameter.Value)}"));
-                }
-
-                builder.AppendLine(FormattableString.Invariant($"{Indent})"));
-                builder.AppendLine();
+                await WriteItemSeparatorAsync(token);
+            }
+            else
+            {
+                _isFirstItem = false;
             }
 
-            await writer.WriteAsync(builder, token);
-
-#if NET8_0_OR_GREATER
-            await writer.FlushAsync(token);
-#else
-            await writer.FlushAsync();
-#endif
+            await WriteCapturedMethodAsync(capturedMethod, token);
         }
 
-        private static string GetValueOrUnknown(string value) => string.IsNullOrEmpty(value) ? "<unknown>" : value;
+        public ValueTask DisposeAsync() => DisposeInternalAsync();
 
-        private static CapturedParametersResult BuildResultModel(IEnumerable<ICapturedParameters> parameters)
+        protected Stream OutputStream { get; }
+
+        protected abstract Task WritePrologAsync(CancellationToken token);
+
+        protected abstract Task WriteCapturedMethodAsync(CapturedMethod capturedMethod, CancellationToken token);
+
+        protected abstract Task WriteItemSeparatorAsync(CancellationToken token);
+
+        protected abstract ValueTask DisposeInternalAsync();
+
+        private static CapturedMethod BuildResultModel(ICapturedParameters capture) => new CapturedMethod()
         {
-            return new CapturedParametersResult
+            ActivityId = capture.ActivityId,
+            ActivityIdFormat = capture.ActivityIdFormat,
+            ThreadId = capture.ThreadId,
+            CapturedDateTime = capture.CapturedDateTime,
+            ModuleName = capture.ModuleName,
+            TypeName = capture.TypeName,
+            MethodName = capture.MethodName,
+            Parameters = capture.Parameters.Select(param => new CapturedParameter()
             {
-                CapturedMethods = parameters.Select(capture => new CapturedMethod()
-                {
-                    ActivityId = capture.ActivityId,
-                    ActivityIdFormat = capture.ActivityIdFormat,
-                    ThreadId = capture.ThreadId,
-                    CapturedDateTime = capture.CapturedDateTime,
-                    ModuleName = capture.ModuleName,
-                    TypeName = capture.TypeName,
-                    MethodName = capture.MethodName,
-                    Parameters = capture.Parameters.Select(param => new CapturedParameter()
-                    {
-                        Name = param.Name,
-                        Type = param.Type,
-                        TypeModuleName = param.TypeModuleName,
-                        Value = param.Value,
-                        IsInParameter = param.IsIn,
-                        IsOutParameter = param.IsOut,
-                        IsByRefParameter = param.IsByRef
-                    }).ToList()
-                }).ToList()
-            };
-        }
+                Name = param.Name,
+                Type = param.Type,
+                TypeModuleName = param.TypeModuleName,
+                Value = param.Value,
+                IsInParameter = param.IsIn,
+                IsOutParameter = param.IsOut,
+                IsByRefParameter = param.IsByRef
+            }).ToList()
+        };
     }
 }

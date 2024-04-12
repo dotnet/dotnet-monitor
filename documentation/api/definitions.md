@@ -106,7 +106,7 @@ Object describing a captured method and its parameters.
 
 ## CapturedParameter
 
-First Available: 9.0 Preview 3
+First Available: 9.0 Preview 4
 
 Object describing a captured parameter.
 
@@ -119,16 +119,6 @@ Object describing a captured parameter.
 | `isIn` | bool | Whether the parameter has the [`in` modifier](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/method-parameters#in-parameter-modifier). If missing, its value is `false`. |
 | `isOut` | bool | Whether the parameter has the [`out` modifier](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/method-parameters#out-parameter-modifier). If missing, its value is `false`. |
 | `isByRef` | bool | Whether the parameter has the [`ref` modifier](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/method-parameters#ref-parameter-modifier). If missing, its value is `false`. |
-
-## CapturedParametersResult
-
-First Available: 9.0 Preview 3
-
-Object describing the list of captured methods and their parameters.
-
-| Name | Type | Description |
-|---|---|---|
-| `captures` | [CapturedMethod](#capturedmethod) | Array of captured methods. |
 
 ## CaptureParametersConfiguration
 

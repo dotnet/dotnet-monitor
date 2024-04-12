@@ -5,7 +5,6 @@ using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
-using Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
@@ -27,7 +26,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         private readonly ILogger _logger;
         private readonly CaptureParametersConfiguration _configuration;
         private readonly TimeSpan _duration;
-        private readonly IParameterCapturingStore _parameterCapturingStore;
         private readonly CapturedParameterFormat _format;
 
         private readonly Guid _requestId;
@@ -45,15 +43,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             ILogger logger,
             CaptureParametersConfiguration configuration,
             TimeSpan duration,
-            CapturedParameterFormat format,
-            IParameterCapturingStore parameterCapturingStore)
+            CapturedParameterFormat format)
         {
             _profilerChannel = profilerChannel;
             _endpointInfo = endpointInfo;
             _logger = logger;
             _configuration = configuration;
             _duration = duration;
-            _parameterCapturingStore = parameterCapturingStore;
             _format = format;
 
             _requestId = Guid.NewGuid();
@@ -64,10 +60,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             // net 7+ is required, see https://github.com/dotnet/runtime/issues/88924 for more information
             return endpointInfo.RuntimeVersion != null && endpointInfo.RuntimeVersion.Major >= 7;
         }
+
         public string ContentType => _format switch
         {
             CapturedParameterFormat.PlainText => ContentTypes.TextPlain,
             CapturedParameterFormat.Json => ContentTypes.ApplicationJson,
+            CapturedParameterFormat.NewlineDelimitedJson => ContentTypes.ApplicationNdJson,
             _ => ContentTypes.TextPlain
         };
 
@@ -132,6 +130,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 // Check if the endpoint is capable of responding to our requests
                 await EnsureEndpointCanProcessRequestsAsync(token);
 
+                await using CapturedParametersWriter parametersWriter = new(outputStream, _format, token);
+
                 EventParameterCapturingPipelineSettings settings = new()
                 {
                     Duration = Timeout.InfiniteTimeSpan
@@ -141,7 +141,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 settings.OnCapturingFailed += OnCapturingFailed;
                 settings.OnServiceStateUpdate += OnServiceStateUpdate;
                 settings.OnUnknownRequestId += OnUnknownRequestId;
-                settings.OnParametersCaptured += OnParametersCaptured;
+                settings.OnParametersCaptured += (_, parameters) =>
+                {
+                    parametersWriter.AddCapturedParameters(parameters);
+                };
 
                 await using EventParameterCapturingPipeline eventTracePipeline = new(_endpointInfo.Endpoint, settings);
                 Task runPipelineTask = eventTracePipeline.StartAsync(token);
@@ -173,12 +176,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 _ = _capturingStartedCompletionSource.TrySetException(ex);
                 _ = _capturingStoppedCompletionSource.TrySetException(ex);
                 throw;
-            }
-
-            if (!token.IsCancellationRequested)
-            {
-                IReadOnlyList<ICapturedParameters> capturedParameters = _parameterCapturingStore.GetCapturedParameters();
-                await CapturedParametersFormatter.WriteAsync(capturedParameters, _format, outputStream, token);
             }
         }
 
@@ -251,11 +248,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             }
 
             _ = _capturingStoppedCompletionSource.TrySetException(new InvalidOperationException(nameof(requestId)));
-        }
-
-        private void OnParametersCaptured(object sender, ICapturedParameters parameters)
-        {
-            _parameterCapturingStore.AddCapturedParameters(parameters);
         }
 
         public async Task StopAsync(CancellationToken token)

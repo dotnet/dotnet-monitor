@@ -62,10 +62,4 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [JsonPropertyName("parameters")]
         public IList<CapturedParameter> Parameters { get; set; } = [];
     }
-
-    public class CapturedParametersResult
-    {
-        [JsonPropertyName("captures")]
-        public IList<CapturedMethod> CapturedMethods { get; set; } = [];
-    }
 }
