@@ -20,5 +20,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [RegularExpression("[0-9a-zA-Z_-]+")]
         [Required]
         public string PublicKey { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MonitorApiKeyOptions_Issuer))]
+        public string Issuer { get; set; }
     }
 }

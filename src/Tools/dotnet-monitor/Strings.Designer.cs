@@ -232,6 +232,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The expiration offset must be a positive time span value..
+        /// </summary>
+        internal static string ErrorMessage_ExpirationMustBePositive {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ExpirationMustBePositive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The extension file &apos;{0}&apos; for extension &apos;{1}&apos; could not be found..
         /// </summary>
         internal static string ErrorMessage_ExtensionFileNotFound {
@@ -625,6 +634,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string HelpDescription_CommandShow {
             get {
                 return ResourceManager.GetString("HelpDescription_CommandShow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The expiration time on or after the generated key will no longer be accepted. This is a time span offset (e.g. &quot;1:00:00&quot; for one-hour) that will be added to the current date time to create the expiration date time..
+        /// </summary>
+        internal static string HelpDescription_Expiration {
+            get {
+                return ResourceManager.GetString("HelpDescription_Expiration", resourceCulture);
             }
         }
         

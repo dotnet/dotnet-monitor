@@ -77,8 +77,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 ValidAlgorithms = JwtAlgorithmChecker.GetAllowedJwsAlgorithmList(),
 
                 // Issuer Settings
-                ValidateIssuer = true, // This setting differs from actual token validation in the product because we want to make sure we set our Issuer
+                ValidateIssuer = true,
                 ValidIssuer = AuthConstants.ApiKeyJwtInternalIssuer,
+
+                // Issuer Signing Key Settings
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKeys = new SecurityKey[] { validatingKey },
                 TryAllIssuerSigningKeys = true,
@@ -89,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                 // Other Settings
                 ValidateActor = false,
-                ValidateLifetime = false,
+                ValidateLifetime = true,
             };
             // Required for CodeQL. 
             tokenValidationParams.EnableAadSigningKeyIssuerValidation();
