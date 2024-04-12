@@ -981,6 +981,11 @@
           "200": {
             "description": "Success",
             "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                }
+              },
               "application/json": {
                 "schema": {
                   "type": "string"
