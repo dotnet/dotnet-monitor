@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// <summary>
     /// Communicates with the profiler, using a Unix Domain Socket.
     /// </summary>
-    internal sealed class ProfilerChannel
+    public sealed class ProfilerChannel
     {
         private const int MaxPayloadSize = 4 * 1024 * 1024; // 4 MiB
 
@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             if (message.Payload.Length > MaxPayloadSize)
             {
-                throw new ArgumentException(nameof(message));
+                throw new ArgumentException(null, nameof(message));
             }
 
             string channelPath = ComputeChannelPath(endpointInfo);

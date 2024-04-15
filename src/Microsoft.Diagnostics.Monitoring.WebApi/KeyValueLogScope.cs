@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     // - Event Log Logger: checks for IEnumerable<KeyValuePair<string, object>> and formats each value
     //   in the enumeration; otherwise falls back to ToString.
     // - Structured Logger: expects a IReadOnlyList<KeyValuePair<string, object>> and formats each value in the enumeration.
-    internal class KeyValueLogScope : IReadOnlyList<KeyValuePair<string, object>>
+    public class KeyValueLogScope : IReadOnlyList<KeyValuePair<string, object>>
     {
         public List<KeyValuePair<string, object>> Values = new();
 
