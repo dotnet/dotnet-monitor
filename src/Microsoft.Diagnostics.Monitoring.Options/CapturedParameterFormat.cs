@@ -6,7 +6,7 @@ namespace Microsoft.Diagnostics.Monitoring.Options
     internal enum CapturedParameterFormat
     {
         PlainText = 1,
-        Json = 2,
+        JsonSequence = 2,
         NewlineDelimitedJson = 3,
     }
 }

@@ -1,7 +1,9 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using System;
 using System.IO;
 using System.Text.Json;
 using System.Threading;
@@ -9,49 +11,39 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
 {
-    internal sealed class CapturedParametersJsonFormatter: CapturedParametersFormatter
+    internal sealed class CapturedParametersJsonFormatter : CapturedParametersFormatter
     {
         private static readonly byte[] NewLineDelimiter = [(byte)'\n'];
-        private static readonly byte[] ArrayItemDelimiter = [(byte)','];
-        private static readonly byte[] ArrayStartToken = [(byte)'['];
-        private static readonly byte[] ArrayEndToken = [(byte)']'];
+        private static readonly byte[] JsonSequenceRecordSeparator = [0x1E];
 
-        private readonly bool _writeNdJson;
+        private readonly CapturedParameterFormat _format;
 
-        public CapturedParametersJsonFormatter(Stream outputStream, bool writeNdJson) : base(outputStream)
+        public CapturedParametersJsonFormatter(Stream outputStream, CapturedParameterFormat format) : base(outputStream)
         {
-            _writeNdJson = writeNdJson;
+            if (format is not CapturedParameterFormat.JsonSequence and not CapturedParameterFormat.NewlineDelimitedJson)
+            {
+                throw new ArgumentException(FormattableString.Invariant($"The {nameof(format)} value has to be a JSON variant."));
+            }
+            _format = format;
         }
 
-        protected override Task WriteCapturedMethodAsync(CapturedMethod capturedMethod, CancellationToken token) =>
-            JsonSerializer.SerializeAsync(OutputStream, capturedMethod, cancellationToken: token);
+        protected override async Task WriteCapturedMethodAsync(CapturedMethod capturedMethod, CancellationToken token)
+        {
+            if (_format == CapturedParameterFormat.JsonSequence)
+            {
+                await OutputStream.WriteAsync(JsonSequenceRecordSeparator, token);
+            }
+
+            await JsonSerializer.SerializeAsync(OutputStream, capturedMethod, cancellationToken: token);
+        }
 
         protected override async Task WriteItemSeparatorAsync(CancellationToken token)
         {
-            if (_writeNdJson)
-            {
-                await OutputStream.WriteAsync(NewLineDelimiter, token);
-            }
-            else
-            {
-                await OutputStream.WriteAsync(ArrayItemDelimiter, token);
-            }
+            await OutputStream.WriteAsync(NewLineDelimiter, token);
         }
 
-        protected override async Task WritePrologAsync(CancellationToken token)
-        {
-            if (!_writeNdJson)
-            {
-                await OutputStream.WriteAsync(ArrayStartToken, token);
-            }
-        }
+        protected override Task WritePrologAsync(CancellationToken token) => Task.CompletedTask;
 
-        protected override async ValueTask DisposeInternalAsync()
-        {
-            if (!_writeNdJson)
-            {
-                await OutputStream.WriteAsync(ArrayEndToken);
-            }
-        }
+        protected override ValueTask DisposeInternalAsync() => ValueTask.CompletedTask;
     }
 }

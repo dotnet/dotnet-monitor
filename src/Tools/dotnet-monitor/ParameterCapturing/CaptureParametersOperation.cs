@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         public string ContentType => _format switch
         {
             CapturedParameterFormat.PlainText => ContentTypes.TextPlain,
-            CapturedParameterFormat.Json => ContentTypes.ApplicationJson,
+            CapturedParameterFormat.JsonSequence => ContentTypes.ApplicationJsonSequence,
             CapturedParameterFormat.NewlineDelimitedJson => ContentTypes.ApplicationNdJson,
             _ => ContentTypes.TextPlain
         };

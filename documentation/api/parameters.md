@@ -69,8 +69,8 @@ The expected content type is `application/json`.
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 200 OK | [CapturedMethod](definitions.md#capturedmethod) array | The captured parameters. | application/json |
-| 200 OK | [CapturedMethod](definitions.md#capturedmethod) array | The captured parameters. | application/x-ndjson |
+| 200 OK | [CapturedMethod](definitions.md#capturedmethod)[] | Separator-delimited JSON representation of the captured parameters. | application/json-seq |
+| 200 OK | [CapturedMethod](definitions.md#capturedmethod)[] | Newline-delimited JSON representation of the captured parameters. | application/x-ndjson |
 | 200 OK | text | Text representation of the captured parameters. | text/plain |
 | 202 Accepted | | When an egress provider is specified, the artifact has begun being collected. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |

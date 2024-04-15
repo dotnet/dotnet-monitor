@@ -24,8 +24,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _formatter = format switch
             {
                 CapturedParameterFormat.PlainText => new CapturedParametersTextFormatter(outputStream),
-                CapturedParameterFormat.Json => new CapturedParametersJsonFormatter(outputStream, writeNdJson: false),
-                CapturedParameterFormat.NewlineDelimitedJson => new CapturedParametersJsonFormatter(outputStream, writeNdJson: true),
+                CapturedParameterFormat.JsonSequence => new CapturedParametersJsonFormatter(outputStream, format),
+                CapturedParameterFormat.NewlineDelimitedJson => new CapturedParametersJsonFormatter(outputStream, format),
                 _ => throw new ArgumentException(nameof(format)),
             };
             _writerTask = WriterLoop();
