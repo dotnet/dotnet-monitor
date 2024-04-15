@@ -4,6 +4,7 @@
 using Microsoft.Extensions.Options;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
@@ -30,7 +31,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             if (message.Payload.Length > MaxPayloadSize)
             {
-                throw new ArgumentException(null, nameof(message));
+                throw new ArgumentException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        Strings.ErrorMessage_ProfilerPayloadTooLarge,
+                        message.Payload.Length,
+                        MaxPayloadSize),
+                    nameof(message));
             }
 
             string channelPath = ComputeChannelPath(endpointInfo);
