@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Validators;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
@@ -31,6 +32,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
                 ValidateActor = false,
                 ValidateLifetime = false,
             };
+
+            // Required for CodeQL. 
+            tokenValidationParameters.EnableAadSigningKeyIssuerValidation();
+
             options.TokenValidationParameters = tokenValidationParameters;
         }
     }
