@@ -2174,7 +2174,8 @@
           "Cpu",
           "Http",
           "Logs",
-          "Metrics"
+          "Metrics",
+          "GcCollect"
         ],
         "type": "string"
       },
