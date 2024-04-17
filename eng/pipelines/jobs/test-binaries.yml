@@ -76,12 +76,13 @@ jobs:
       inputs:
         artifactName: Build_Binaries_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
         targetPath: '$(Build.SourcesDirectory)/artifacts'
+        pipelineId: 646778
 
     - ${{ if eq(parameters.useHelix, 'true')}}:
       - ${{ if ne(parameters.osGroup, 'Linux_Musl')}}:
         # Linux builds (of all variants) run in Mariner containers and do not include pwsh by default
         - ${{ if eq(parameters.osGroup, 'Linux') }}:
-          - script: sudo -n tdnf install -y --refresh powershell
+          - script: dotnet tool install --global PowerShell
             displayName: Install pwsh
 
         # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
