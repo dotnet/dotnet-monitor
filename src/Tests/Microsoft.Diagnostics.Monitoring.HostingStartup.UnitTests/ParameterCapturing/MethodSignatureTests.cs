@@ -195,7 +195,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 ]);
 
         [Fact]
-        public void NestedStructs() => TestCore(
+        public void NestedStructs() =>
+            TestCore(
                 typeof(StaticTestMethodSignatures.SampleNestedStruct).GetMethod(nameof(StaticTestMethodSignatures.SampleNestedStruct.DoWork)),
                 "DoWork",
                 "SampleMethods.StaticTestMethodSignatures+SampleNestedStruct",

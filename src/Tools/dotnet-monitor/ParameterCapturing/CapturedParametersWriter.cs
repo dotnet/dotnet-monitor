@@ -43,6 +43,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             await _formatter.DisposeAsync();
         }
 
+        public Task WaitAsync() => _writerTask;
+
         private async Task WriterLoop()
         {
             await _formatter.StartAsync(_cancellationToken);
