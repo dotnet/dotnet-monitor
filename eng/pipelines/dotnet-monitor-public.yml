@@ -48,17 +48,6 @@ extends:
     - stage: Build
       displayName: Build and Test
       jobs:
-      # Build and (optionally) test binaries
-      - template: /eng/pipelines/jobs/platform-matrix.yml@self
-        parameters:
-          jobTemplate: /eng/pipelines/jobs/build-binaries.yml@self
-          includeArm64: true
-          includeDebug: true
-          jobParameters:
-            publishBinaries: true
-            is1ESPipeline: false
-            commonTemplatesFolderName: 'templates'
-
       - ${{ if ne(parameters.testGroup, 'None') }}:
         - template: /eng/pipelines/jobs/platform-matrix.yml@self
           parameters:
