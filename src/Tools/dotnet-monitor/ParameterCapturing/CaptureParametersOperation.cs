@@ -164,9 +164,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 /* parametersWriter.WaitAsync() successfully completes only after parametersWriter.DisposeAsync() is called.
                    It will only complete earlier if there's a fault and in that case we want to catch the exception and stop capturing.
                 */
-                await Task.WhenAny([
+                await Task.WhenAny(
                         _capturingStoppedCompletionSource.Task.WaitAsync(token),
-                        parametersWriter.WaitAsync()])
+                        parametersWriter.WaitAsync())
+                    .Unwrap()
                     .ConfigureAwait(false);
             }
             catch (OperationCanceledException)
