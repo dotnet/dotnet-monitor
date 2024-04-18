@@ -94,7 +94,7 @@ jobs:
               $(Build.SourcesDirectory)/.dotnet/dotnet tool install --global PowerShell
               echo "After Pwsh"
               ls -a
-              export PATH="$PATH:/home/cloudtest_azpcontainer/.dotnet/tools"
+              ##vso[task.prependpath]/home/cloudtest_azpcontainer/.dotnet/tools
               echo "After PATH"
               echo "$PATH"
               ls -a
@@ -102,9 +102,12 @@ jobs:
 
         # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
         - script: |
-            cd $Build.SourcesDirectory/.dotnet
+            pwd
+            ls -a
+            cd .dotnet
+            ls -a
             pwsh ../eng/helix/GetNodejsVersion.ps1 -MajorVersion $(NodeMajorVersion) -TaskVariableName 'FqNodejsVersion'
-            cd $Build.SourcesDirectory
+            cd ..
           displayName: Calculate Node.js version
 
         - task: Cache@2
@@ -115,9 +118,12 @@ jobs:
             path: $(HelixNodejsPayloadPath)
 
         - script: |
-            cd $Build.SourcesDirectory/.dotnet
+            pwd
+            ls -a
+            cd .dotnet
+            ls -a
             pwsh ../eng/helix/InstallNodejs.ps1 -Version $(FqNodejsVersion) -Architecture ${{ parameters.architecture }} -DestinationFolder "$(HelixNodejsPayloadPath)"
-            cd $Build.SourcesDirectory
+            cd ..
           displayName: Hydrate Node.js Installation
 
     - ${{ else }}:
