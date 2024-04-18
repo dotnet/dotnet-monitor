@@ -100,7 +100,8 @@ jobs:
         # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
         - script: |
             echo "$PATH"
-            export DOTNET_ROOT="$Build.SourcesDirectory/.dotnet"
+            export DOTNET_ROOT="$(Build.SourcesDirectory)/.dotnet"
+            echo "$DOTNET_ROOT"
             export PATH="$PATH:/home/cloudtest_azpcontainer/.dotnet/tools"
             echo "$PATH"
             pwd
@@ -120,7 +121,8 @@ jobs:
 
         - script: |
             echo "$PATH"
-            export DOTNET_ROOT="$Build.SourcesDirectory/.dotnet"
+            export DOTNET_ROOT="$(Build.SourcesDirectory)/.dotnet"
+            echo "$DOTNET_ROOT"
             export PATH="$PATH:/home/cloudtest_azpcontainer/.dotnet/tools"
             echo "$PATH"
             pwd
