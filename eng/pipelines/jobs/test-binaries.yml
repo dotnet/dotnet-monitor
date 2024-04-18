@@ -83,10 +83,25 @@ jobs:
         # Linux builds (of all variants) run in Mariner containers and do not include pwsh by default
         - ${{ if eq(parameters.osGroup, 'Linux') }}:
           - script: |
-              $(Build.SourcesDirectory)/artifacts/restore.sh
-              export DOTNET_ROOT="$Build.SourcesDirectory/artifacts/.dotnet"
-              $(Build.SourcesDirectory)/artifacts/.dotnet/dotnet tool install PowerShell --tool-path $(Build.SourcesDirectory)/artifacts/tools
-              export PATH=$PATH:$(Build.SourcesDirectory)/artifacts/tools
+              echo "Before Restore"
+              ls
+              $(Build.SourcesDirectory)/restore.sh
+              echo "After Restore"
+              ls
+              export DOTNET_ROOT="$Build.SourcesDirectory/.dotnet"
+              echo "After Dotnet Root"
+              ls
+              $(Build.SourcesDirectory)/.dotnet/dotnet tool install PowerShell --tool-path $(Build.SourcesDirectory)/tools
+              echo "After Pwsh"
+              ls
+              cd tools
+              echo "After CD 1"
+              ls
+              echo "After CD 2"
+              cd ..
+              export PATH=$PATH:$(Build.SourcesDirectory)/tools
+              echo "After PATH"
+              echo "$PATH"
 
             const branchName = `bot/${process.env.TARGET_BRANCH_POSTFIX}`;
 
