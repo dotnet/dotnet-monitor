@@ -102,32 +102,6 @@ jobs:
               export PATH=$PATH:$(Build.SourcesDirectory)/tools
               echo "After PATH"
               echo "$PATH"
-
-            const branchName = `bot/${process.env.TARGET_BRANCH_POSTFIX}`;
-
-            const prs = await github.paginate(github.rest.pulls.list, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              head: `${context.repo.owner}:${branchName}`,
-              base: process.env.BASE_BRANCH
-            });
-
-            if (prs !== undefined && prs.length > 0) {
-              return;
-            }
-
-            const baseRefName = `heads/${process.env.BASE_BRANCH}`
-
-            const baseRef = await github.rest.git.getRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: baseRefName
-            });
-
-            const createOrUpdateRef = require('./.github/actions/gh-script-utils/create-or-update-ref.js');
-            await createOrUpdateRef(github, context, baseRef.data.object.sha, branchName);
-
             displayName: Install pwsh
 
         # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
