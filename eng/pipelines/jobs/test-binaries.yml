@@ -82,6 +82,7 @@ jobs:
         # Linux builds (of all variants) run in Mariner containers and do not include pwsh by default
         - ${{ if eq(parameters.osGroup, 'Linux') }}:
           - script: |
+              pwd
               echo "Before Restore"
               ls
               $(Build.SourcesDirectory)/restore.sh
@@ -90,17 +91,9 @@ jobs:
               export DOTNET_ROOT="$Build.SourcesDirectory/.dotnet"
               echo "After Dotnet Root"
               ls
-              $(Build.SourcesDirectory)/.dotnet/dotnet tool install PowerShell --tool-path $(Build.SourcesDirectory)/tools
+              $(Build.SourcesDirectory)/.dotnet/dotnet tool install --global PowerShell
               echo "After Pwsh"
               ls
-              cd tools
-              echo "After CD 1"
-              ls
-              echo "After CD 2"
-              cd ..
-              export PATH=$PATH:$(Build.SourcesDirectory)/tools
-              echo "After PATH"
-              echo "$PATH"
             displayName: Install pwsh
 
         # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
