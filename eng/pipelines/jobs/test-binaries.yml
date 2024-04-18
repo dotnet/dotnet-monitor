@@ -94,6 +94,10 @@ jobs:
               $(Build.SourcesDirectory)/.dotnet/dotnet tool install --global PowerShell
               echo "After Pwsh"
               ls
+              export PATH="$PATH:/home/cloudtest_azpcontainer/.dotnet/tools"
+              echo "After PATH"
+              echo "$PATH"
+              ls
             displayName: Install pwsh
 
         # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
