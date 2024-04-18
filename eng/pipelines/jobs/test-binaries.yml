@@ -75,7 +75,7 @@ jobs:
       inputs:
         buildType: 'specific'
         artifactName: Build_Binaries_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
-        project: 'dotnet-monitor'
+        project: 'dotnet/dotnet-monitor'
         targetPath: '$(Build.SourcesDirectory)/artifacts'
         buildVersionToDownload: 'specific'
         pipelineId: 645559
