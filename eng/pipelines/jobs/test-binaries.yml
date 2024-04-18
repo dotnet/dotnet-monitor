@@ -84,26 +84,27 @@ jobs:
           - script: |
               pwd
               echo "Before Restore"
-              ls
+              ls -a
               $(Build.SourcesDirectory)/restore.sh
               echo "After Restore"
-              ls
+              ls -a
               export DOTNET_ROOT="$Build.SourcesDirectory/.dotnet"
               echo "After Dotnet Root"
-              ls
+              ls -a
               $(Build.SourcesDirectory)/.dotnet/dotnet tool install --global PowerShell
               echo "After Pwsh"
-              ls
+              ls -a
               export PATH="$PATH:/home/cloudtest_azpcontainer/.dotnet/tools"
               echo "After PATH"
               echo "$PATH"
-              ls
+              ls -a
             displayName: Install pwsh
 
         # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
-        - pwsh: eng/helix/GetNodejsVersion.ps1
-              -MajorVersion $(NodeMajorVersion)
-              -TaskVariableName 'FqNodejsVersion'
+        - script: |
+            cd $Build.SourcesDirectory/.dotnet
+            pwsh ../eng/helix/GetNodejsVersion.ps1 -MajorVersion $(NodeMajorVersion) -TaskVariableName 'FqNodejsVersion'
+            cd $Build.SourcesDirectory
           displayName: Calculate Node.js version
 
         - task: Cache@2
@@ -113,10 +114,10 @@ jobs:
             key: 'nodejs | ${{ parameters.osGroup }} | ${{ parameters.architecture }} | "$(FqNodejsVersion)"'
             path: $(HelixNodejsPayloadPath)
 
-        - pwsh: eng/helix/InstallNodejs.ps1
-            -Version $(FqNodejsVersion)
-            -Architecture ${{ parameters.architecture }}
-            -DestinationFolder "$(HelixNodejsPayloadPath)"
+        - script: |
+            cd $Build.SourcesDirectory/.dotnet
+            pwsh ../eng/helix/InstallNodejs.ps1 -Version $(FqNodejsVersion) -Architecture ${{ parameters.architecture }} -DestinationFolder "$(HelixNodejsPayloadPath)"
+            cd $Build.SourcesDirectory
           displayName: Hydrate Node.js Installation
 
     - ${{ else }}:
