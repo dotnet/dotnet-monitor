@@ -79,6 +79,7 @@ jobs:
         targetPath: '$(Build.SourcesDirectory)/artifacts'
         buildVersionToDownload: 'specific'
         pipelineId: 645559
+        definition: 78
 
     - ${{ if eq(parameters.useHelix, 'true')}}:
       - ${{ if ne(parameters.osGroup, 'Linux_Musl')}}:
