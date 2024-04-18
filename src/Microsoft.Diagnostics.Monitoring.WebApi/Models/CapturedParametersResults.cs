@@ -10,29 +10,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
     public class CapturedParameter
     {
-        [JsonPropertyName("name")]
+        [JsonPropertyName("parameterName")]
         public string Name { get; set; }
 
-        [JsonPropertyName("type")]
+        [JsonPropertyName("typeName")]
         public string Type { get; set; }
 
-        [JsonPropertyName("module")]
+        [JsonPropertyName("moduleName")]
         public string TypeModuleName { get; set; }
 
         [JsonPropertyName("value")]
         public string Value { get; set; }
-
-        [JsonPropertyName("isIn")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public bool IsInParameter { get; set; }
-
-        [JsonPropertyName("isOut")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public bool IsOutParameter { get; set; }
-
-        [JsonPropertyName("isByRef")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public bool IsByRefParameter { get; set; }
     }
 
     public class CapturedMethod
@@ -47,16 +35,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [JsonPropertyName("threadId")]
         public int ThreadId { get; set; }
 
-        [JsonPropertyName("dateTime")]
+        [JsonPropertyName("timestamp")]
         public DateTime CapturedDateTime { get; set; }
 
-        [JsonPropertyName("module")]
+        [JsonPropertyName("moduleName")]
         public string ModuleName { get; set; }
 
-        [JsonPropertyName("type")]
+        [JsonPropertyName("typeName")]
         public string TypeName { get; set; }
 
-        [JsonPropertyName("method")]
+        [JsonPropertyName("methodName")]
         public string MethodName { get; set; }
 
         [JsonPropertyName("parameters")]

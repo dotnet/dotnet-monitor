@@ -63,10 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
                 Name = param.Name,
                 Type = param.Type,
                 TypeModuleName = param.TypeModuleName,
-                Value = param.Value,
-                IsInParameter = param.IsIn,
-                IsOutParameter = param.IsOut,
-                IsByRefParameter = param.IsByRef
+                Value = param.Value
             }).ToList()
         };
     }

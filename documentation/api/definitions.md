@@ -98,10 +98,10 @@ Object describing a captured method and its parameters.
 | `activityId` | string | An identifier for the current activity at the time of the capture. For more information see [Activity.Id](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.activity.id).|
 | `activityIdFormat` | string | The activity Id format. For more information see [Activity.IdFormat](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.activity.idformat).|
 | `threadId` | int | The managed thread id where the method was called.|
-| `dateTime` | DateTime | Time when the method call was captured. |
-| `module` | string | The method module name. |
-| `type` | string | The method type name. |
-| `method` | string | The method name. |
+| `timestamp` | DateTime | Time when the method call was captured. |
+| `moduleName` | string | The method module name. |
+| `typeName` | string | The method type name. |
+| `methodName` | string | The method name. |
 | `parameters` | [CapturedParameter](#capturedparameter)[] | Array of captured parameters. |
 
 ## CapturedParameter
@@ -112,13 +112,10 @@ Object describing a captured parameter.
 
 | Name | Type | Description |
 |---|---|---|
-| `name` | string | The parameter name. |
+| `parameterName` | string | The parameter name. |
 | `value` | string | The parameter value. |
-| `type` | string | The parameter type name. |
-| `module` | string | The parameter type module name. |
-| `isIn` | bool | Whether the parameter has the [`in` modifier](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/method-parameters#in-parameter-modifier). If missing, its value is `false`. |
-| `isOut` | bool | Whether the parameter has the [`out` modifier](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/method-parameters#out-parameter-modifier). If missing, its value is `false`. |
-| `isByRef` | bool | Whether the parameter has the [`ref` modifier](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/method-parameters#ref-parameter-modifier). If missing, its value is `false`. |
+| `typeName` | string | The parameter type name. |
+| `moduleName` | string | The parameter type module name. |
 
 ## CaptureParametersConfiguration
 

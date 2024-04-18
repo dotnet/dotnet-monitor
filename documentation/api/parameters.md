@@ -89,7 +89,7 @@ The following logger categories are used inside the target application when capt
 POST /parameters?pid=21632&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
-Accept: application/json
+Accept: application/x-ndjson
 
 {
     "methods": [
@@ -112,61 +112,10 @@ Accept: application/json
 
 ```http
 HTTP/1.1 200 OK
-Content-Type: application/json
-{
-    "captures": [
-        {
-            "activityId": "00-17657ab99a51e3e46cf5bb3fd583daab-03c903f46b511852-00",
-            "activityIdFormat": "W3C",
-            "dateTime": "2024-03-15T14:47:51.2129742-04:00",
-            "module": "System.Private.CoreLib.dll",
-            "type": "System.String",
-            "method": "Concat",
-            "parameters": [
-                {
-                    "name": "str0",
-                    "type": "System.String",
-                    "module": "System.Private.CoreLib.dll",
-                    "value": "\u0027localhost\u0027"
-                },
-                {
-                "name": "str1",
-                    "type": "System.String",
-                    "module": "System.Private.CoreLib.dll",
-                    "value": "\u0027:\u0027"
-                },
-                {
-                    "name": "str2",
-                    "type": "System.String",
-                    "module": "System.Private.CoreLib.dll",
-                    "value": "\u00277290\u0027"
-                }
-            ]
-        },
-        {
-            "activityId": "00-9838f17b20cd76c2df3bdaa0fcd716c9-7ce53ae1e886e236-00",
-            "activityIdFormat": "W3C",
-            "capturedDateTime": "2024-03-15T14:48:42.5997554-04:00",
-            "module": "System.Private.CoreLib.dll",
-            "type": "System.String",
-            "method": "Concat",
-            "parameters": [
-                {
-                    "name": "str0",
-                    "type": "System.String",
-                    "module": "System.Private.CoreLib.dll",
-                    "value": "\u0027\u0027"
-                },
-                {
-                    "name": "str1",
-                    "type": "System.String",
-                    "module": "System.Private.CoreLib.dll",
-                    "value": "\u0027/Account/SignIn\u0027"
-                }
-            ]
-        }
-    ]
-}
+Content-Type: application/x-ndjson
+
+{"activityId":"00-aeacc84edb640c5dc72477747729a975-42f991d5c79b02d8-00","activityIdFormat":"W3C","threadId":13,"timestamp":"2024-04-18T08:49:54.1957076-04:00","moduleName":"System.Private.CoreLib.dll","typeName":"System.String","methodName":"Concat","parameters":[{"parameterName":"str0","typeName":"System.String","moduleName":"System.Private.CoreLib.dll","value":"\u0027localhost\u0027"},{"parameterName":"str1","typeName":"System.String","moduleName":"System.Private.CoreLib.dll","value":"\u0027:\u0027"},{"parameterName":"str2","typeName":"System.String","moduleName":"System.Private.CoreLib.dll","value":"\u00277290\u0027"}]}
+{"activityId":"00-aeacc84edb640c5dc72477747729a975-42f991d5c79b02d8-00","activityIdFormat":"W3C","threadId":13,"timestamp":"2024-04-18T08:49:54.196018-04:00","moduleName":"System.Private.CoreLib.dll","typeName":"System.String","methodName":"Concat","parameters":[{"parameterName":"str0","typeName":"System.String","moduleName":"System.Private.CoreLib.dll","value":"\u0027\u0027"},{"parameterName":"str1","typeName":"System.String","moduleName":"System.Private.CoreLib.dll","value":"\u0027/Account/SignIn\u0027"}]}
 ```
 
 ## Supported Runtimes

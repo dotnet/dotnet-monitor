@@ -26,18 +26,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
             foreach (CapturedParameter parameter in capture.Parameters)
             {
                 builder.Append(FormattableString.Invariant($"{Indent}{Indent}{GetValueOrUnknown(parameter.TypeModuleName)}!{GetValueOrUnknown(parameter.Type)} "));
-                if (parameter.IsInParameter)
-                {
-                    builder.Append("in ");
-                }
-                else if (parameter.IsOutParameter)
-                {
-                    builder.Append("out ");
-                }
-                else if (parameter.IsByRefParameter)
-                {
-                    builder.Append("ref ");
-                }
                 builder.AppendLine(FormattableString.Invariant($"{GetValueOrUnknown(parameter.Name)}: {GetValueOrUnknown(parameter.Value)}"));
             }
 
