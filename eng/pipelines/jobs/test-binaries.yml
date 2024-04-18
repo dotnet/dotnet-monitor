@@ -94,8 +94,8 @@ jobs:
               $(Build.SourcesDirectory)/.dotnet/dotnet tool install --global PowerShell
               echo "After Pwsh"
               ls -a
-              echo ##vso[task.prependpath]/home/cloudtest_azpcontainer/.dotnet/tools
-              echo ##vso[task.prependpath]home/cloudtest_azpcontainer/.dotnet/tools
+              echo "##vso[task.prependpath]/home/cloudtest_azpcontainer/.dotnet/tools"
+              echo "##vso[task.prependpath]home/cloudtest_azpcontainer/.dotnet/tools"
               echo "After PATH"
               echo "$PATH"
               ls -a
@@ -103,6 +103,8 @@ jobs:
 
         # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
         - script: |
+            echo "$PATH"
+            export PATH="$PATH:/home/cloudtest_azpcontainer/.dotnet/tools"
             echo "$PATH"
             pwd
             ls -a
@@ -120,6 +122,8 @@ jobs:
             path: $(HelixNodejsPayloadPath)
 
         - script: |
+            echo "$PATH"
+            export PATH="$PATH:/home/cloudtest_azpcontainer/.dotnet/tools"
             echo "$PATH"
             pwd
             ls -a
