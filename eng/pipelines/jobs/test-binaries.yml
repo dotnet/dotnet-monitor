@@ -33,6 +33,7 @@ jobs:
     architecture: ${{ parameters.architecture }}
     enableCrossBuild: ${{ parameters.useHelix }}
     timeoutInMinutes: 120
+    dependsOn: Build_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
     disableComponentGovernance: true
     disableSbom: true
     is1ESPipeline: ${{ parameters.is1ESPipeline }}
@@ -73,13 +74,8 @@ jobs:
     - task: DownloadPipelineArtifact@2
       displayName: Download Binaries
       inputs:
-        buildType: 'specific'
         artifactName: Build_Binaries_${{ parameters.configuration }}_${{ parameters.osGroup }}_${{ parameters.architecture }}
-        project: 'public'
         targetPath: '$(Build.SourcesDirectory)/artifacts'
-        buildVersionToDownload: 'specific'
-        pipelineId: 645559
-        definition: 78
 
     - ${{ if eq(parameters.useHelix, 'true')}}:
       - ${{ if ne(parameters.osGroup, 'Linux_Musl')}}:
