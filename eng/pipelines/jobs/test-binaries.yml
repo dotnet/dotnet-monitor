@@ -82,34 +82,17 @@ jobs:
         # Linux builds (of all variants) run in Mariner containers and do not include pwsh by default
         - ${{ if eq(parameters.osGroup, 'Linux') }}:
           - script: |
-              pwd
-              echo "Before Restore"
-              ls -a
               $(Build.SourcesDirectory)/restore.sh
-              echo "After Restore"
-              ls -a
               $(Build.SourcesDirectory)/.dotnet/dotnet tool install --global PowerShell
-              echo "After Pwsh"
-              ls -a
               echo "##vso[task.prependpath]/home/cloudtest_azpcontainer/.dotnet/tools"
-              echo "After PATH"
-              echo "$PATH"
-              ls -a
             displayName: Install pwsh
 
-        # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
-        - script: |
-            echo "$PATH"
-            export DOTNET_ROOT="$(Build.SourcesDirectory)/.dotnet"
-            echo "$DOTNET_ROOT"
-            export PATH="$PATH:/home/cloudtest_azpcontainer/.dotnet/tools"
-            echo "$PATH"
-            pwd
-            ls -a
-            cd .dotnet
-            ls -a
-            pwsh ../eng/helix/GetNodejsVersion.ps1 -MajorVersion $(NodeMajorVersion) -TaskVariableName 'FqNodejsVersion'
-            cd ..
+        - pwsh: eng/helix/GetNodejsVersion.ps1
+              -MajorVersion $(NodeMajorVersion)
+              -TaskVariableName 'FqNodejsVersion'
+          ${{ if eq(parameters.osGroup, 'Linux') }}:
+            env:
+              DOTNET_ROOT: "$(Build.SourcesDirectory)/.dotnet"
           displayName: Calculate Node.js version
 
         - task: Cache@2
@@ -119,18 +102,13 @@ jobs:
             key: 'nodejs | ${{ parameters.osGroup }} | ${{ parameters.architecture }} | "$(FqNodejsVersion)"'
             path: $(HelixNodejsPayloadPath)
 
-        - script: |
-            echo "$PATH"
-            export DOTNET_ROOT="$(Build.SourcesDirectory)/.dotnet"
-            echo "$DOTNET_ROOT"
-            export PATH="$PATH:/home/cloudtest_azpcontainer/.dotnet/tools"
-            echo "$PATH"
-            pwd
-            ls -a
-            cd .dotnet
-            ls -a
-            pwsh ../eng/helix/InstallNodejs.ps1 -Version $(FqNodejsVersion) -Architecture ${{ parameters.architecture }} -DestinationFolder "$(HelixNodejsPayloadPath)"
-            cd ..
+        - pwsh: eng/helix/InstallNodejs.ps1
+            -Version $(FqNodejsVersion)
+            -Architecture ${{ parameters.architecture }}
+            -DestinationFolder "$(HelixNodejsPayloadPath)"
+          ${{ if eq(parameters.osGroup, 'Linux') }}:
+            env:
+              DOTNET_ROOT: "$(Build.SourcesDirectory)/.dotnet"
           displayName: Hydrate Node.js Installation
 
     - ${{ else }}:
