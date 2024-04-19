@@ -3,7 +3,7 @@
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal static class StreamDefaults
+    public static class StreamDefaults
     {
         // Matches FileStream.DefaultBufferSize
         public const int BufferSize = 4096;
