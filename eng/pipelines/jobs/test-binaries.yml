@@ -87,29 +87,45 @@ jobs:
               echo "##vso[task.prependpath]/home/cloudtest_azpcontainer/.dotnet/tools"
             displayName: Install pwsh
 
-        - pwsh: eng/helix/GetNodejsVersion.ps1
-              -MajorVersion $(NodeMajorVersion)
-              -TaskVariableName 'FqNodejsVersion'
-          ${{ if eq(parameters.osGroup, 'Linux') }}:
-            env:
-              DOTNET_ROOT: "$(Build.SourcesDirectory)/.dotnet"
-          displayName: Calculate Node.js version
-
-        - task: Cache@2
-          displayName: Node.js Cache
-          inputs:
-            # Wrap FqNodejsVersion in quotes to prevent it being interpreted as a file
-            key: 'nodejs | ${{ parameters.osGroup }} | ${{ parameters.architecture }} | "$(FqNodejsVersion)"'
-            path: $(HelixNodejsPayloadPath)
-
-        - pwsh: eng/helix/InstallNodejs.ps1
-            -Version $(FqNodejsVersion)
-            -Architecture ${{ parameters.architecture }}
-            -DestinationFolder "$(HelixNodejsPayloadPath)"
-          ${{ if eq(parameters.osGroup, 'Linux') }}:
-            env:
-              DOTNET_ROOT: "$(Build.SourcesDirectory)/.dotnet"
-          displayName: Hydrate Node.js Installation
+          # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
+          - script: |
+              export DOTNET_ROOT="$(Build.SourcesDirectory)/.dotnet"
+              cd .dotnet
+              pwsh ../eng/helix/GetNodejsVersion.ps1 -MajorVersion $(NodeMajorVersion) -TaskVariableName 'FqNodejsVersion'
+              cd ..
+            displayName: Calculate Node.js version Linux
+  
+          - task: Cache@2
+            displayName: Node.js Cache Linux
+            inputs:
+              # Wrap FqNodejsVersion in quotes to prevent it being interpreted as a file
+              key: 'nodejs | ${{ parameters.osGroup }} | ${{ parameters.architecture }} | "$(FqNodejsVersion)"'
+              path: $(HelixNodejsPayloadPath)
+  
+          - script: |
+              export DOTNET_ROOT="$(Build.SourcesDirectory)/.dotnet"
+              cd .dotnet
+              pwsh ../eng/helix/InstallNodejs.ps1 -Version $(FqNodejsVersion) -Architecture ${{ parameters.architecture }} -DestinationFolder "$(HelixNodejsPayloadPath)"
+              cd ..
+            displayName: Hydrate Node.js Installation Linux
+        - ${{ else }}:
+          - pwsh: eng/helix/GetNodejsVersion.ps1
+                -MajorVersion $(NodeMajorVersion)
+                -TaskVariableName 'FqNodejsVersion'
+            displayName: Calculate Node.js version Non-Linux
+  
+          - task: Cache@2
+            displayName: Node.js Cache Non-Linux
+            inputs:
+              # Wrap FqNodejsVersion in quotes to prevent it being interpreted as a file
+              key: 'nodejs | ${{ parameters.osGroup }} | ${{ parameters.architecture }} | "$(FqNodejsVersion)"'
+              path: $(HelixNodejsPayloadPath)
+  
+          - pwsh: eng/helix/InstallNodejs.ps1
+              -Version $(FqNodejsVersion)
+              -Architecture ${{ parameters.architecture }}
+              -DestinationFolder "$(HelixNodejsPayloadPath)"
+            displayName: Hydrate Node.js Installation Non-Linux
 
     - ${{ else }}:
       - ${{ if ne(parameters.osGroup, 'Windows') }}:
