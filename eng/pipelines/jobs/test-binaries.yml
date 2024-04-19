@@ -91,6 +91,7 @@ jobs:
           - script: |
               pwsh ../eng/helix/GetNodejsVersion.ps1 -MajorVersion $(NodeMajorVersion) -TaskVariableName 'FqNodejsVersion'
             displayName: Calculate Node.js version Linux
+            workingDirectory: "$(Build.SourcesDirectory)/.dotnet"
             env:
               DOTNET_ROOT: "$(Build.SourcesDirectory)/.dotnet"
   
@@ -104,6 +105,7 @@ jobs:
           - script: |
               pwsh ../eng/helix/InstallNodejs.ps1 -Version $(FqNodejsVersion) -Architecture ${{ parameters.architecture }} -DestinationFolder "$(HelixNodejsPayloadPath)"
             displayName: Hydrate Node.js Installation Linux
+            workingDirectory: "$(Build.SourcesDirectory)/.dotnet"
             env:
               DOTNET_ROOT: "$(Build.SourcesDirectory)/.dotnet"
 
