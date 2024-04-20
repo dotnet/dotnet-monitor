@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal static class Utilities
+    public static class Utilities
     {
         public const string ArtifactType_Dump = "dump";
         public const string ArtifactType_GCDump = "gcdump";

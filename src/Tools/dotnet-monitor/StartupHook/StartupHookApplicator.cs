@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
 {
-    internal sealed class StartupHookApplicator
+    public sealed class StartupHookApplicator
     {
         private readonly ILogger _logger;
         private readonly IEndpointInfo _endpointInfo;
