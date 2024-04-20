@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;
@@ -824,7 +825,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             if (expiration.HasValue)
             {
                 long expirationSecondsSinceEpoch = EpochTime.GetIntDate(expiration.Value);
-                Claim expClaim = new Claim(AuthConstants.ClaimExpirationStr, expirationSecondsSinceEpoch.ToString());
+                Claim expClaim = new Claim(AuthConstants.ClaimExpirationStr, expirationSecondsSinceEpoch.ToString(CultureInfo.InvariantCulture));
                 claims.Add(expClaim);
             }
 

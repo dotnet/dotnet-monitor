@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -21,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             string subjectStr = subject.ToString("D");
             Claim audClaim = new Claim(AuthConstants.ClaimAudienceStr, AuthConstants.ApiKeyJwtAudience);
             long expirationSecondsSinceEpoch = EpochTime.GetIntDate(DateTime.UtcNow + AuthConstants.ApiKeyJwtDefaultExpiration);
-            Claim expClaim = new Claim(AuthConstants.ClaimExpirationStr, expirationSecondsSinceEpoch.ToString());
+            Claim expClaim = new Claim(AuthConstants.ClaimExpirationStr, expirationSecondsSinceEpoch.ToString(CultureInfo.InvariantCulture));
             Claim issClaim = new Claim(AuthConstants.ClaimIssuerStr, AuthConstants.ApiKeyJwtInternalIssuer);
             Claim subClaim = new Claim(AuthConstants.ClaimSubjectStr, subjectStr);
             JwtPayload newPayload = new JwtPayload(new Claim[] { audClaim, expClaim, issClaim, subClaim });

@@ -638,7 +638,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The expiration time on or after the generated key will no longer be accepted. This is a time span offset (e.g. &quot;1:00:00&quot; for one-hour) that will be added to the current date time to create the expiration date time..
+        ///   Looks up a localized string similar to The expiration time on or after the generated key will no longer be accepted. This is a time span offset (e.g. &quot;7.00:00:00&quot; for 7 days) that will be added to the current date time to create the expiration date time..
         /// </summary>
         internal static string HelpDescription_Expiration {
             get {
