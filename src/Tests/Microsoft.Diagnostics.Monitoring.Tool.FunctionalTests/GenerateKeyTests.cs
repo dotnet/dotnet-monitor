@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Validators;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading;
@@ -90,6 +91,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 ValidateActor = false,
                 ValidateLifetime = false,
             };
+            // Required for CodeQL. 
+            tokenValidationParams.EnableAadSigningKeyIssuerValidation();
+
             ClaimsPrincipal claimsPrinciple = tokenHandler.ValidateToken(tokenStr, tokenValidationParams, out SecurityToken validatedToken);
 
             Assert.True(claimsPrinciple.HasClaim(ClaimTypes.NameIdentifier, subject));
