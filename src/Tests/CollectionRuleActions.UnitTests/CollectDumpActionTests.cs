@@ -53,13 +53,6 @@ namespace CollectionRuleActions.UnitTests
                 return;
             }
 
-            // TODO net9.0temporary Linux dump collection does not work properly for .net90
-            if (tfm == TargetFrameworkMoniker.Net90
-                && !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                return;
-            }
-
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
