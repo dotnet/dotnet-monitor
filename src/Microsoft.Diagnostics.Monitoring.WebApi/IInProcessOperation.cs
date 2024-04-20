@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// Represents an operation that can produce a diagnostic
     /// artifact inside the target process
     /// </summary>
-    internal interface IInProcessOperation : IStartable
+    public interface IInProcessOperation : IStartable
     {
         /// <summary>
         /// Produces a diagnostic artifact inside the target process

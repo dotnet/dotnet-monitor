@@ -4,7 +4,7 @@
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal static class AuthConstants
+    public static class AuthConstants
     {
         public const string PolicyName = "AuthorizedUserPolicy";
         public const string NegotiateSchema = "Negotiate";
