@@ -10,11 +10,11 @@
     <RollForward>Major</RollForward>
     <!-- File locking warnings (that are typically resolved with automatic retries) are failing builds
          quite frequently with messages such as:
-         
+
          error MSB3026: (NETCORE_ENGINEERING_TELEMETRY=Build) Could not copy "...\dotnet-monitor.dll" to
          "...\dotnet-monitor.dll". Beginning retry 1 in 1000ms. The process cannot access the file
          '...\dotnet-monitor.dll' because it is being used by another process.
-         
+
          work around this problem by telling the compiler to not warn about the issue. A file lock that
          actually prevents the build from completing correctly should still fail the compilation with
          an MSB3027 error. -->
@@ -27,6 +27,7 @@
     <PackageReference Include="Azure.Storage.Queues" Version="$(AzureStorageQueuesVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiateVersion)" />
+    <PackageReference Include="Microsoft.IdentityModel.Validators" Version="$(MicrosoftIdentityModelValidatorsVersion)" />
     <!-- Used to upgrade to a higher version than what is provided from indirect dependencies. -->
     <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
