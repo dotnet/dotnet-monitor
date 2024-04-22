@@ -10,11 +10,11 @@
     <RollForward>Major</RollForward>
     <!-- File locking warnings (that are typically resolved with automatic retries) are failing builds
          quite frequently with messages such as:
-         
+
          error MSB3026: (NETCORE_ENGINEERING_TELEMETRY=Build) Could not copy "...\dotnet-monitor.dll" to
          "...\dotnet-monitor.dll". Beginning retry 1 in 1000ms. The process cannot access the file
          '...\dotnet-monitor.dll' because it is being used by another process.
-         
+
          work around this problem by telling the compiler to not warn about the issue. A file lock that
          actually prevents the build from completing correctly should still fail the compilation with
          an MSB3027 error. -->
@@ -31,6 +31,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(MicrosoftIdentityModelTokensVersion)" />
+    <PackageReference Include="System.IdentityModel.Validators" Version="$(MicrosoftIdentityModelValidatorsVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
