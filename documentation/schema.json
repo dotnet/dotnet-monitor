@@ -2702,6 +2702,9 @@
         },
         "SkipValidation": {
           "type": "boolean"
+        },
+        "NewLine": {
+          "type": "string"
         }
       }
     },
