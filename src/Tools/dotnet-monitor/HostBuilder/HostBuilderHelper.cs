@@ -98,7 +98,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                     if (settings.AuthenticationMode == StartupAuthenticationMode.TemporaryKey)
                     {
-                        GeneratedJwtKey jwtKey = GeneratedJwtKey.Create();
+                        GeneratedJwtKey jwtKey = GeneratedJwtKey.Create(AuthConstants.ApiKeyJwtDefaultExpiration);
                         context.Properties.Add(typeof(GeneratedJwtKey), jwtKey);
 
                         // These are configured via the command line configuration source so that
