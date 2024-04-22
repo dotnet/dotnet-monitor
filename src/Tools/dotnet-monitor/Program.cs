@@ -1,8 +1,10 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Commands;
 using System.CommandLine;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -16,13 +18,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 name: "generatekey",
                 description: Strings.HelpDescription_CommandGenerateKey)
             {
-                OutputOption
+                OutputOption,
+                ExpirationOption
             };
 
             command.SetAction((result) =>
             {
                 GenerateApiKeyCommandHandler.Invoke(
                     result.GetValue(OutputOption),
+                    result.GetValue(ExpirationOption),
                     result.Configuration.Output);
             });
 
@@ -173,6 +177,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 DefaultValueFactory = (_) => OutputFormat.Json,
                 Description = Strings.HelpDescription_OutputFormat,
                 HelpName = "output"
+            };
+
+        private static CliOption<TimeSpan> ExpirationOption =
+            new CliOption<TimeSpan>("--expiration", "-e")
+            {
+                DefaultValueFactory = (_) => AuthConstants.ApiKeyJwtDefaultExpiration,
+                Description = Strings.HelpDescription_Expiration,
+                HelpName = "expiration"
             };
 
         private static CliOption<ConfigDisplayLevel> ConfigLevelOption =

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
-using System.CommandLine;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -22,9 +21,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
     /// </summary>
     internal static class GenerateApiKeyCommandHandler
     {
-        public static void Invoke(OutputFormat output, TextWriter outputWriter)
+        public static void Invoke(OutputFormat output, TimeSpan expiration, TextWriter outputWriter)
         {
-            GeneratedJwtKey newJwt = GeneratedJwtKey.Create();
+            GeneratedJwtKey newJwt = GeneratedJwtKey.Create(expiration);
 
             RootOptions opts = new()
             {
