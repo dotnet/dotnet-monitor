@@ -27,11 +27,11 @@
     <PackageReference Include="Azure.Storage.Queues" Version="$(AzureStorageQueuesVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiateVersion)" />
+    <PackageReference Include="Microsoft.IdentityModel.Validators" Version="$(MicrosoftIdentityModelValidatorsVersion)" />
     <!-- Used to upgrade to a higher version than what is provided from indirect dependencies. -->
     <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(MicrosoftIdentityModelTokensVersion)" />
-    <PackageReference Include="System.IdentityModel.Validators" Version="$(MicrosoftIdentityModelValidatorsVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
