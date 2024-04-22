@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// Represents an operation that can produce a diagnostic
     /// artifact to the provided output stream.
     /// </summary>
-    internal interface IArtifactOperation : IStartable
+    public interface IArtifactOperation : IStartable
     {
         /// <summary>
         /// Produces a diagnostic artifact to the output stream.

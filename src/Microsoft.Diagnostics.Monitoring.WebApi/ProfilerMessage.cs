@@ -5,21 +5,26 @@ using System;
 using System.Text;
 using System.Text.Json;
 
+
+#if STARTUPHOOK || HOSTINGSTARTUP
+namespace Microsoft.Diagnostics.Monitoring.StartupHook.Monitoring
+#else
 namespace Microsoft.Diagnostics.Monitoring
+#endif
 {
-    internal enum CommandSet : ushort
+    public enum CommandSet : ushort
     {
         ServerResponse,
         Profiler,
         StartupHook
     }
 
-    internal enum ServerResponseCommand : ushort
+    public enum ServerResponseCommand : ushort
     {
         Status
     };
 
-    internal enum ProfilerCommand : ushort
+    public enum ProfilerCommand : ushort
     {
         Callstack
     };
@@ -27,20 +32,20 @@ namespace Microsoft.Diagnostics.Monitoring
     /// <summary>
     /// Shared between the StartupHook and HostingStartup assembly.
     /// </summary>
-    internal enum StartupHookCommand : ushort
+    public enum StartupHookCommand : ushort
     {
         StartCapturingParameters,
         StopCapturingParameters
     };
 
-    internal interface IProfilerMessage
+    public interface IProfilerMessage
     {
         public ushort CommandSet { get; }
         public ushort Command { get; }
         public byte[] Payload { get; }
     }
 
-    internal struct JsonProfilerMessage : IProfilerMessage
+    public struct JsonProfilerMessage : IProfilerMessage
     {
         public ushort CommandSet { get; }
         public ushort Command { get; }
@@ -63,7 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring
         }
     }
 
-    internal struct CommandOnlyProfilerMessage : IProfilerMessage
+    public struct CommandOnlyProfilerMessage : IProfilerMessage
     {
         public ushort CommandSet { get; }
         public ushort Command { get; }
