@@ -28,6 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         private string _serviceStateDetails = string.Empty;
 
         private readonly ParameterCapturingEventSource _eventSource = new();
+        private readonly AsyncParameterCapturingEventSource? _asyncEventSource;
         private readonly ParameterCapturingPipeline? _pipeline;
         private readonly ParameterCapturingLogger? _parameterCapturingLogger;
 
@@ -66,6 +67,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                 FunctionProbesManager probeManager = new(_logger);
 
                 _pipeline = new ParameterCapturingPipeline(probeManager, this, _methodDescriptionValidator);
+
+                _asyncEventSource = new(_eventSource);
             }
             catch (NotSupportedException ex)
             {
@@ -125,7 +128,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private void OnStartMessage(StartCapturingParametersPayload payload)
         {
-            if (!IsAvailable() || _pipeline == null || _parameterCapturingLogger == null)
+            if (!IsAvailable() || _pipeline == null || _parameterCapturingLogger == null || _asyncEventSource == null)
             {
                 BroadcastServiceState();
                 return;
@@ -133,7 +136,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             try
             {
-                _pipeline.SubmitRequest(payload, new LogEmittingProbes(_parameterCapturingLogger, payload.Configuration.UseDebuggerDisplayAttribute));
+                _pipeline.SubmitRequest(payload, new EventSourceEmittingProbes(_asyncEventSource, payload.RequestId, payload.Configuration.UseDebuggerDisplayAttribute));
             }
             catch (ArgumentException ex)
             {
@@ -231,6 +234,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
             _pipeline?.Dispose();
             _parameterCapturingLogger?.Dispose();
+
+            _asyncEventSource?.Dispose();
 
             base.Dispose();
         }

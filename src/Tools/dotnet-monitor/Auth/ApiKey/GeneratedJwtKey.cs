@@ -25,8 +25,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
             PublicKey = publicKey;
         }
 
-        public static GeneratedJwtKey Create()
+        public static GeneratedJwtKey Create(TimeSpan expirationOffset)
         {
+            if (expirationOffset.TotalSeconds <= 0)
+            {
+                throw new ArgumentException(Strings.ErrorMessage_ExpirationMustBePositive, nameof(expirationOffset));
+            }
+
             Guid subjectId = Guid.NewGuid();
             string subjectStr = subjectId.ToString("D");
 
@@ -36,10 +41,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
             SigningCredentials signingCreds = new SigningCredentials(secKey, SecurityAlgorithms.EcdsaSha384);
             JwtHeader newHeader = new JwtHeader(signingCreds, null, JwtConstants.HeaderType);
 
+            long expirationSecondsSinceEpoch = EpochTime.GetIntDate(DateTime.UtcNow + expirationOffset);
+
             Claim audClaim = new Claim(AuthConstants.ClaimAudienceStr, AuthConstants.ApiKeyJwtAudience);
+            Claim expClaim = new Claim(AuthConstants.ClaimExpirationStr, expirationSecondsSinceEpoch.ToString());
             Claim issClaim = new Claim(AuthConstants.ClaimIssuerStr, AuthConstants.ApiKeyJwtInternalIssuer);
             Claim subClaim = new Claim(AuthConstants.ClaimSubjectStr, subjectStr);
-            JwtPayload newPayload = new JwtPayload(new Claim[] { audClaim, issClaim, subClaim });
+            JwtPayload newPayload = new JwtPayload(new Claim[] { audClaim, expClaim, issClaim, subClaim });
 
             JwtSecurityToken newToken = new JwtSecurityToken(newHeader, newPayload);
 

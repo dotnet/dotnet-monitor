@@ -4,7 +4,9 @@
 using Microsoft.Diagnostics.Monitoring.StartupHook.Eventing;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using System;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
+using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eventing
 {
@@ -55,7 +57,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
             WriteEventWithFlushing(ParameterCapturingEvents.EventIds.UnknownRequestId, data);
         }
 
-
         [NonEvent]
         public void FailedToCapture(Guid RequestId, Exception ex)
         {
@@ -77,6 +78,82 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
             SetValue(ref data[ParameterCapturingEvents.CapturingFailedPayloads.Details], detailsPinned);
 
             WriteEventWithFlushing(ParameterCapturingEvents.EventIds.FailedToCapture, data);
+        }
+
+        [Event(ParameterCapturingEvents.EventIds.ParameterCaptured)]
+        public void CapturedParameter(
+            Guid RequestId,
+            Guid CaptureId,
+            string parameterName,
+            string parameterType,
+            string parameterTypeModuleName,
+            string parameterValue,
+            ParameterAttributes parameterAttributes,
+            bool isParameterTypeByRef
+            )
+        {
+            Span<EventData> data = stackalloc EventData[8];
+
+            using PinnedData pinnedName = PinnedData.Create(parameterName);
+            using PinnedData pinnedType = PinnedData.Create(parameterType);
+            using PinnedData pinnedTypeModuleName = PinnedData.Create(parameterTypeModuleName);
+            using PinnedData pinnedValue = PinnedData.Create(parameterValue);
+
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.RequestId], RequestId);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.CaptureId], CaptureId);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterName], pinnedName);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterType], pinnedType);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterTypeModuleName], pinnedTypeModuleName);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterValue], pinnedValue);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterAttributes], parameterAttributes);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterTypeIsByRef], isParameterTypeByRef);
+
+            WriteEventWithFlushing(ParameterCapturingEvents.EventIds.ParameterCaptured, data);
+        }
+
+        [Event(ParameterCapturingEvents.EventIds.ParametersCapturedStart)]
+        public void CapturedParameterStart(
+            Guid RequestId,
+            Guid CaptureId,
+            string activityId,
+            ActivityIdFormat activityIdFormat,
+            int managedThreadId,
+            string methodName,
+            string methodModuleName,
+            string methodDeclaringTypeName
+            )
+        {
+            Span<EventData> data = stackalloc EventData[8];
+
+            using PinnedData pinnedActivityId = PinnedData.Create(activityId);
+            using PinnedData pinnedMethodName = PinnedData.Create(methodName);
+            using PinnedData pinnedMethodModuleName = PinnedData.Create(methodModuleName);
+            using PinnedData pinnedMethodDeclaringTypeName = PinnedData.Create(methodDeclaringTypeName);
+
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.RequestId], RequestId);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.CaptureId], CaptureId);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.ActivityId], pinnedActivityId);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.ActivityIdFormat], activityIdFormat);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.ThreadId], managedThreadId);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodName], pinnedMethodName);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodModuleName], pinnedMethodModuleName);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodDeclaringTypeName], pinnedMethodDeclaringTypeName);
+
+            WriteEventWithFlushing(ParameterCapturingEvents.EventIds.ParametersCapturedStart, data);
+        }
+
+        [Event(ParameterCapturingEvents.EventIds.ParametersCapturedStop)]
+        public void CapturedParameterStop(
+            Guid RequestId,
+            Guid CaptureId
+            )
+        {
+            Span<EventData> data = stackalloc EventData[2];
+
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStopPayloads.RequestId], RequestId);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStopPayloads.CaptureId], CaptureId);
+
+            WriteEventWithFlushing(ParameterCapturingEvents.EventIds.ParametersCapturedStop, data);
         }
 
         [Event(ParameterCapturingEvents.EventIds.Flush)]

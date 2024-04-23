@@ -19,5 +19,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
         public string Subject { get; set; }
         public SecurityKey PublicKey { get; set; }
         public IEnumerable<ValidationResult> ValidationErrors { get; set; }
+        public string Issuer { get; set; }
     }
 }
