@@ -516,16 +516,24 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         /// </summary>
         public static Task<OperationResponse> CaptureParametersAsync(this ApiClient client, int pid, TimeSpan duration, CaptureParametersConfiguration config)
         {
-            return client.CaptureParametersAsync(pid, duration, config, TestTimeouts.HttpApi);
+            return client.CaptureParametersAsync(pid, duration, config, string.Empty, TestTimeouts.HttpApi);
         }
 
         /// <summary>
         /// POST /parameters
         /// </summary>
-        public static async Task<OperationResponse> CaptureParametersAsync(this ApiClient client, int pid, TimeSpan duration, CaptureParametersConfiguration config, TimeSpan timeout)
+        public static Task<OperationResponse> CaptureParametersAsync(this ApiClient client, int pid, TimeSpan duration, CaptureParametersConfiguration config, string egressProvider)
+        {
+            return client.CaptureParametersAsync(pid, duration, config, egressProvider, TestTimeouts.HttpApi);
+        }
+
+        /// <summary>
+        /// POST /parameters
+        /// </summary>
+        public static async Task<OperationResponse> CaptureParametersAsync(this ApiClient client, int pid, TimeSpan duration, CaptureParametersConfiguration config, string egressProvider, TimeSpan timeout)
         {
             using CancellationTokenSource timeoutSource = new(timeout);
-            return await client.CaptureParametersAsync(pid, duration, config, timeoutSource.Token).ConfigureAwait(false);
+            return await client.CaptureParametersAsync(pid, duration, egressProvider, config, timeoutSource.Token).ConfigureAwait(false);
         }
 
         public static Task<OperationStatusResponse> WaitForOperationToStart(this ApiClient apiClient, Uri operationUrl)

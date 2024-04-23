@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eventing;
 using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting;
 using System;
 using System.Collections.Generic;
@@ -8,14 +9,16 @@ using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
 {
-    internal sealed class LogEmittingProbes : IFunctionProbes
+    internal sealed class EventSourceEmittingProbes : IFunctionProbes
     {
-        private readonly ParameterCapturingLogger _logger;
+        private readonly AsyncParameterCapturingEventSource _eventSource;
+        private readonly Guid _requestId;
         private readonly ObjectFormatterCache _objectFormatterCache;
 
-        public LogEmittingProbes(ParameterCapturingLogger logger, bool useDebuggerDisplayAttribute)
+        public EventSourceEmittingProbes(AsyncParameterCapturingEventSource eventSource, Guid requestId, bool useDebuggerDisplayAttribute)
         {
-            _logger = logger;
+            _eventSource = eventSource;
+            _requestId = requestId;
             _objectFormatterCache = new ObjectFormatterCache(useDebuggerDisplayAttribute);
         }
 
@@ -29,18 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
 
         public bool EnterProbe(ulong uniquifier, object[] args)
         {
-            // We allow the instrumentation of system types, but these types can also be part of an ILogger implementation.
-            // In addition, certain loggers don't log directly, but into a background thread.
-            // We guard against reentrancy on the same thread.
-            // All types that start with System & Microsoft do not invoke ILogger directly. Rather, they queue a message to a dedicated background thread.
-            // All probes that are triggered from the dedicated background thread do not log.
-            // All probes from the known console logger processor thread do not log.
-
-            // Possible additional guards in the future:
-            // If we instrument Modules instead of specific methods, we may need to exclude certain types to prevent noise. (such as System.String)
-            // If other custom loggers create background threads, we may need a way to specify exclusions for those threads.
-
-            if (!_logger.ShouldLog())
+            if (!_eventSource.IsEnabled)
             {
                 return false;
             }
@@ -49,7 +41,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
             if (state == null ||
                 args == null ||
                 !state.InstrumentedMethods.TryGetValue(uniquifier, out InstrumentedMethod? instrumentedMethod) ||
-                args.Length != instrumentedMethod?.SupportedParameters.Length)
+                args.Length != instrumentedMethod?.SupportedParameters.Length ||
+                args.Length != instrumentedMethod?.MethodSignature.Parameters.Count)
             {
                 return false;
             }
@@ -59,14 +52,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 return false;
             }
 
-            string[] argValues;
-            if (args.Length == 0)
+            ResolvedParameterInfo[] resolvedArgs = [];
+            if (args.Length > 0)
             {
-                argValues = Array.Empty<string>();
-            }
-            else
-            {
-                argValues = new string[args.Length];
+                resolvedArgs = new ResolvedParameterInfo[args.Length];
                 for (int i = 0; i < args.Length; i++)
                 {
                     string value;
@@ -82,11 +71,22 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                     {
                         value = ObjectFormatter.FormatObject(_objectFormatterCache.GetFormatter(args[i].GetType()), args[i]);
                     }
-                    argValues[i] = value;
+                    resolvedArgs[i] = new ResolvedParameterInfo(
+                        instrumentedMethod.MethodSignature.Parameters[i].Name,
+                        instrumentedMethod.MethodSignature.Parameters[i].Type,
+                        instrumentedMethod.MethodSignature.Parameters[i].TypeModuleName,
+                        value,
+                        instrumentedMethod.MethodSignature.Parameters[i].Attributes,
+                        instrumentedMethod.MethodSignature.Parameters[i].IsByRef);
                 }
             }
 
-            _logger.Log(instrumentedMethod.CaptureMode, instrumentedMethod.MethodTemplateString, argValues);
+            _eventSource.OnCapturedParameters(
+                _requestId,
+                instrumentedMethod.MethodSignature.MethodName,
+                instrumentedMethod.MethodSignature.ModuleName,
+                instrumentedMethod.MethodSignature.TypeName,
+                resolvedArgs);
 
             return true;
         }

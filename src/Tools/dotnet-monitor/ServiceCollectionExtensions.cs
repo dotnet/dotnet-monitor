@@ -390,6 +390,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
+        public static IServiceCollection ConfigureParameterCapturing(this IServiceCollection services)
+        {
+            services.AddTransient<ICaptureParametersOperationFactory, CaptureParametersOperationFactory>();
+            return services;
+        }
+
         public static void AddScopedForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
         {
             services.AddScoped<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
