@@ -416,6 +416,13 @@
           "description": "The public key used to sign the JWT (JSON Web Token) used for authentication. This field is a JSON Web Key serialized as JSON encoded with base64Url encoding. The JWK must have a kty field of RSA or EC and should not have the private key information.",
           "minLength": 1,
           "pattern": "[0-9a-zA-Z_-]+"
+        },
+        "Issuer": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The expected value of the 'iss' or Issuer field in the JWT (JSON Web Token)."
         }
       }
     },

@@ -40,7 +40,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ValidAlgorithms = JwtAlgorithmChecker.GetAllowedJwsAlgorithmList(),
 
                 // Issuer Settings
-                ValidateIssuer = false,
+                ValidateIssuer = true,
+                ValidIssuer = configSnapshot.Issuer,
+
+                // Issuer Signing Key Settings
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKeys = new SecurityKey[] { configSnapshot.PublicKey },
                 TryAllIssuerSigningKeys = true,
@@ -51,7 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 // Other Settings
                 ValidateActor = false,
-                ValidateLifetime = false,
+                ValidateLifetime = true,
             };
 
             // Required for CodeQL.

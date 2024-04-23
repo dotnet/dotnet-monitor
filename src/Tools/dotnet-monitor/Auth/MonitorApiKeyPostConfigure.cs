@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -113,11 +114,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 options.Subject = string.Empty;
                 options.PublicKey = null;
+                options.Issuer = string.Empty;
             }
             else
             {
                 options.Subject = sourceOptions.Subject;
                 options.PublicKey = jwk;
+                options.Issuer = string.IsNullOrEmpty(sourceOptions.Issuer) ?
+                    AuthConstants.ApiKeyJwtInternalIssuer :
+                    sourceOptions.Issuer;
             }
         }
     }
