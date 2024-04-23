@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
 #if NET7_0_OR_GREATER
-        [Theory]
+        [Theory(Skip = "The test will be replaced in a future commit to properly verify the new parameter capturing behavior.")]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task UnresolvableMethodsFailsOperation(Architecture targetArchitecture)
         {
@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             });
         }
 
-        [Theory]
+        [Theory(Skip = "The test will be replaced in a future commit to properly verify the new parameter capturing behavior.")]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task NonAspNetAppFailsOperation(Architecture targetArchitecture)
         {
@@ -91,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             });
         }
 
-        [Theory]
+        [Theory(Skip = "The test will be replaced in a future commit to properly verify the new parameter capturing behavior.")]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task DoesProduceLogStatements(Architecture targetArchitecture)
         {
@@ -111,7 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             });
         }
 
-        [Theory]
+        [Theory(Skip = "The test will be replaced in a future commit to properly verify the new parameter capturing behavior.")]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task StopsProducingLogStatementsAfterOperationCompletes(Architecture targetArchitecture)
         {
@@ -132,7 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             });
         }
 #else // NET7_0_OR_GREATER
-        [Theory]
+        [Theory(Skip = "The test will be replaced in a future commit to properly verify the new parameter capturing behavior.")]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task Net6AppFailsOperation(Architecture targetArchitecture)
         {

@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         protected DiagnosticsControllerBase(IServiceProvider serviceProvider, ILogger logger) :
             this(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<EgressOperationStore>(), logger)
         { }
-        
+
         private protected DiagnosticsControllerBase(IDiagnosticServices diagnosticServices, EgressOperationStore operationStore, ILogger logger)
         {
             DiagnosticServices = diagnosticServices ?? throw new ArgumentNullException(nameof(diagnosticServices));
@@ -101,20 +101,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     tags),
                     limitKey: artifactType);
             }
-        }
-
-        protected async Task<ActionResult> InProcessResult(
-            string artifactType,
-            IProcessInfo processInfo,
-            IInProcessOperation operation,
-            string tags)
-        {
-            KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
-            string location = await RegisterOperation(
-                new InProcessEgressOperation(processInfo, scope, tags, operation),
-                limitKey: artifactType);
-
-            return Accepted(location);
         }
 
         private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, string tags, IArtifactOperation operation)

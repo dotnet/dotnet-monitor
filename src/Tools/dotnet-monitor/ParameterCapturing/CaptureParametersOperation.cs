@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.NETCore.Client;
@@ -11,18 +12,21 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 {
-    internal sealed class CaptureParametersOperation : IInProcessOperation
+    internal sealed class CaptureParametersOperation : IArtifactOperation
     {
         private readonly ProfilerChannel _profilerChannel;
         private readonly IEndpointInfo _endpointInfo;
         private readonly ILogger _logger;
         private readonly CaptureParametersConfiguration _configuration;
         private readonly TimeSpan _duration;
+        private readonly CapturedParameterFormat _format;
 
         private readonly Guid _requestId;
 
@@ -33,13 +37,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
         public Task Started => _capturingStartedCompletionSource.Task;
 
-        public CaptureParametersOperation(IEndpointInfo endpointInfo, ProfilerChannel profilerChannel, ILogger logger, CaptureParametersConfiguration configuration, TimeSpan duration)
+        public CaptureParametersOperation(
+            IEndpointInfo endpointInfo,
+            ProfilerChannel profilerChannel,
+            ILogger logger,
+            CaptureParametersConfiguration configuration,
+            TimeSpan duration,
+            CapturedParameterFormat format)
         {
             _profilerChannel = profilerChannel;
             _endpointInfo = endpointInfo;
             _logger = logger;
             _configuration = configuration;
             _duration = duration;
+            _format = format;
 
             _requestId = Guid.NewGuid();
         }
@@ -48,6 +59,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         {
             // net 7+ is required, see https://github.com/dotnet/runtime/issues/88924 for more information
             return endpointInfo.RuntimeVersion != null && endpointInfo.RuntimeVersion.Major >= 7;
+        }
+
+        public string ContentType => _format switch
+        {
+            CapturedParameterFormat.PlainText => ContentTypes.TextPlain,
+            CapturedParameterFormat.JsonSequence => ContentTypes.ApplicationJsonSequence,
+            CapturedParameterFormat.NewlineDelimitedJson => ContentTypes.ApplicationNdJson,
+            _ => ContentTypes.TextPlain
+        };
+
+        public string GenerateFileName()
+        {
+            string extension = _format == CapturedParameterFormat.PlainText ? "txt" : "json";
+            return FormattableString.Invariant($"{Utils.GetFileNameTimeStampUtcNow()}_{_endpointInfo.ProcessId}.parameters.{extension}");
         }
 
         private async Task EnsureEndpointCanProcessRequestsAsync(CancellationToken token)
@@ -98,12 +123,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             }
         }
 
-        public async Task ExecuteAsync(CancellationToken token)
+        public async Task ExecuteAsync(Stream outputStream, CancellationToken token)
         {
             try
             {
                 // Check if the endpoint is capable of responding to our requests
                 await EnsureEndpointCanProcessRequestsAsync(token);
+
+                await using CapturedParametersWriter parametersWriter = new(outputStream, _format, token);
 
                 EventParameterCapturingPipelineSettings settings = new()
                 {
@@ -114,6 +141,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 settings.OnCapturingFailed += OnCapturingFailed;
                 settings.OnServiceStateUpdate += OnServiceStateUpdate;
                 settings.OnUnknownRequestId += OnUnknownRequestId;
+                settings.OnParametersCaptured += (_, parameters) =>
+                {
+                    parametersWriter.AddCapturedParameters(parameters);
+                };
 
                 await using EventParameterCapturingPipeline eventTracePipeline = new(_endpointInfo.Endpoint, settings);
                 Task runPipelineTask = eventTracePipeline.StartAsync(token);
@@ -129,7 +160,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                     token);
 
                 await _capturingStartedCompletionSource.Task.WaitAsync(token).ConfigureAwait(false);
-                await _capturingStoppedCompletionSource.Task.WaitAsync(token).ConfigureAwait(false);
+
+                /* parametersWriter.WaitAsync() successfully completes only after parametersWriter.DisposeAsync() is called.
+                   It will only complete earlier if there's a fault and in that case we want to catch the exception and stop capturing.
+                */
+                await Task.WhenAny(
+                        _capturingStoppedCompletionSource.Task.WaitAsync(token),
+                        parametersWriter.WaitAsync())
+                    .Unwrap()
+                    .ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {

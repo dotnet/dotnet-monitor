@@ -3,10 +3,13 @@
 
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tracing;
 using System;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,6 +30,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
     internal sealed class EventParameterCapturingPipeline : EventSourcePipeline<EventParameterCapturingPipelineSettings>
     {
+        private readonly CapturedParametersBuilder _parameterBuilder = new();
+
         public EventParameterCapturingPipeline(IpcEndpoint endpoint, EventParameterCapturingPipelineSettings settings)
             : base(new DiagnosticsClient(endpoint), settings)
 
@@ -98,6 +103,55 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                         });
                         break;
                     }
+                case "CapturedParameter/Start":
+                    {
+                        Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturedParametersStartPayloads.RequestId);
+                        Guid captureId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturedParametersStartPayloads.CaptureId);
+                        string activityId = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParametersStartPayloads.ActivityId);
+                        ActivityIdFormat activityIdFormat = traceEvent.GetPayload<ActivityIdFormat>(ParameterCapturingEvents.CapturedParametersStartPayloads.ActivityIdFormat);
+                        int threadId = traceEvent.GetPayload<int>(ParameterCapturingEvents.CapturedParametersStartPayloads.ThreadId);
+                        string methodName = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParametersStartPayloads.MethodName);
+                        string methodModuleName = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParametersStartPayloads.MethodModuleName);
+                        string methodDeclaringTypeName = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParametersStartPayloads.MethodDeclaringTypeName);
+
+                        _ = _parameterBuilder.TryStartNewCaptureResponse(captureId, activityId, activityIdFormat, threadId, traceEvent.TimeStamp, methodName: methodName, methodTypeName: methodDeclaringTypeName, methodModuleName: methodModuleName);
+
+                        break;
+                    }
+                case "CapturedParameter":
+                    {
+                        Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturedParameterPayloads.RequestId);
+                        Guid captureId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturedParameterPayloads.CaptureId);
+                        string parameterName = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterName);
+                        string parameterType = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterType);
+                        string parameterTypeModuleName = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterTypeModuleName);
+                        string parameterValue = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterValue);
+                        ParameterAttributes parameterAttributes = traceEvent.GetPayload<ParameterAttributes>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterAttributes);
+                        bool isByRefParameter = traceEvent.GetPayload<bool>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterTypeIsByRef);
+
+                        _ = _parameterBuilder.TryAddParameter(
+                            captureId: captureId,
+                            parameterName: parameterName,
+                            parameterType: parameterType,
+                            parameterTypeModuleName: parameterTypeModuleName,
+                            parameterValue: parameterValue,
+                            isInParameter: (parameterAttributes & ParameterAttributes.In) != 0,
+                            isOutParameter: (parameterAttributes & ParameterAttributes.Out) != 0,
+                            isByRefParameter: isByRefParameter);
+
+                        break;
+                    }
+                case "CapturedParameter/Stop":
+                    {
+                        Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturedParametersStopPayloads.RequestId);
+                        Guid captureId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturedParametersStopPayloads.CaptureId);
+
+                        if (_parameterBuilder.TryFinalizeParameters(captureId, out ICapturedParameters capturedParameters))
+                        {
+                            Settings.OnParametersCaptured.Invoke(this, capturedParameters);
+                        }
+                        break;
+                    }
                 case "Flush":
                     break;
 #if DEBUG
@@ -121,6 +175,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
         public EventHandler<CapturingFailedArgs> OnCapturingFailed;
         public EventHandler<ServiceStateUpdateArgs> OnServiceStateUpdate;
+
+        public EventHandler<ICapturedParameters> OnParametersCaptured;
 
         public EventParameterCapturingPipelineSettings()
         {
