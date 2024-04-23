@@ -5,7 +5,6 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
-using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options

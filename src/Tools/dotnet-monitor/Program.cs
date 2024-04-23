@@ -3,8 +3,8 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Commands;
-using System.CommandLine;
 using System;
+using System.CommandLine;
 using System.IO;
 using System.Threading.Tasks;
 
