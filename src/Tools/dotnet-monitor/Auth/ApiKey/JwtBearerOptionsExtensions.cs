@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
     internal static class JwtBearerOptionsExtensions
     {
-        public static void ConfigureApiKeyTokenValidation(this JwtBearerOptions options, SecurityKey publicKey)
+        public static void ConfigureApiKeyTokenValidation(this JwtBearerOptions options, SecurityKey publicKey, string issuer)
         {
             TokenValidationParameters tokenValidationParameters = new TokenValidationParameters
             {
@@ -19,7 +19,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
                 ValidAlgorithms = JwtAlgorithmChecker.GetAllowedJwsAlgorithmList(),
 
                 // Issuer Settings
-                ValidateIssuer = false,
+                ValidateIssuer = true,
+                ValidIssuer = issuer,
+
+                // Issuer Signing Key Settings
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKeys = new SecurityKey[] { publicKey },
                 TryAllIssuerSigningKeys = true,
@@ -30,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 
                 // Other Settings
                 ValidateActor = false,
-                ValidateLifetime = false,
+                ValidateLifetime = true,
             };
 
             // Required for CodeQL. 

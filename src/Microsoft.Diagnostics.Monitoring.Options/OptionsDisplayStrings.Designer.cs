@@ -1262,6 +1262,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The expected value of the &apos;iss&apos; or Issuer field in the JWT (JSON Web Token)..
+        /// </summary>
+        public static string DisplayAttributeDescription_MonitorApiKeyOptions_Issuer {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_MonitorApiKeyOptions_Issuer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The public key used to sign the JWT (JSON Web Token) used for authentication. This field is a JSON Web Key serialized as JSON encoded with base64Url encoding. The JWK must have a kty field of RSA or EC and should not have the private key information..
         /// </summary>
         public static string DisplayAttributeDescription_MonitorApiKeyOptions_PublicKey {
