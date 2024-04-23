@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    public abstract class AbstractEventSourcePipeline : IAsyncDisposable
+    public abstract class EventSourcePipelineProxy : IAsyncDisposable
     {
         private sealed class PipelineSettings : EventSourcePipelineSettings { }
 
@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private readonly EventSourcePipelineWrapper _pipeline;
 
-        public AbstractEventSourcePipeline(IEndpointInfo endpointInfo, TimeSpan duration)
+        public EventSourcePipelineProxy(IEndpointInfo endpointInfo, TimeSpan duration)
         {
             _pipeline = new EventSourcePipelineWrapper(endpointInfo.Endpoint, CreateConfiguration, OnEventSourceAvailable, new PipelineSettings()
             {
