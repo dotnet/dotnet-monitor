@@ -6,12 +6,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System.CommandLine;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
@@ -19,61 +16,21 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
     {
         public static CliCommand Command()
         {
-            CliCommand expectLogStatementsCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.ExpectLogStatement);
-            expectLogStatementsCommand.SetAction(ExpectLogStatementAsync);
-
-            CliCommand doNotExpectLogStatementsCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.DoNotExpectLogStatement);
-            doNotExpectLogStatementsCommand.SetAction(DoNotExpectLogStatementAsync);
-
             CliCommand aspNetAppCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp);
             aspNetAppCommand.SetAction(AspNetAppAsync);
 
             CliCommand nonAspNetAppCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.NonAspNetApp);
             nonAspNetAppCommand.SetAction(NonAspNetAppAsync);
 
+            CliCommand aspNetAppWithSampleCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetAppWithSampleMethod);
+            aspNetAppWithSampleCommand.SetAction(AspNetAppWithSampleMethodAsync);
+
             CliCommand scenarioCommand = new(TestAppScenarios.ParameterCapturing.Name);
-            scenarioCommand.Subcommands.Add(expectLogStatementsCommand);
-            scenarioCommand.Subcommands.Add(doNotExpectLogStatementsCommand);
             scenarioCommand.Subcommands.Add(aspNetAppCommand);
             scenarioCommand.Subcommands.Add(nonAspNetAppCommand);
+            scenarioCommand.Subcommands.Add(aspNetAppWithSampleCommand);
 
             return scenarioCommand;
-        }
-
-        public static Task<int> ExpectLogStatementAsync(ParseResult result, CancellationToken token)
-        {
-            return LogStatementCoreAsync(result, expectLogs: true, token);
-        }
-
-        public static Task<int> DoNotExpectLogStatementAsync(ParseResult result, CancellationToken token)
-        {
-            return LogStatementCoreAsync(result, expectLogs: false, token);
-        }
-
-        private static Task<int> LogStatementCoreAsync(ParseResult result, bool expectLogs, CancellationToken token)
-        {
-            LogRecord logRecord = new();
-
-            return ScenarioHelpers.RunWebScenarioAsync<Startup>(
-                func: async logger =>
-                {
-                    await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Validate, logger);
-
-                    SampleMethods.StaticTestMethodSignatures.NoArgs();
-
-                    bool didFindLogs = logRecord.Events.Where(e => e.Category == typeof(DotnetMonitor.ParameterCapture.UserCode).FullName).Any();
-                    Assert.Equal(expectLogs, didFindLogs);
-                    return 0;
-
-                },
-                token,
-                configureServices: (services) =>
-                {
-                    services.AddLogging(builder =>
-                    {
-                        builder.AddProvider(new TestLoggerProvider(logRecord));
-                    });
-                });
         }
 
         public static Task<int> AspNetAppAsync(ParseResult result, CancellationToken token)
@@ -91,6 +48,20 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             return ScenarioHelpers.RunScenarioAsync(
                 func: async logger =>
                 {
+                    await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue, logger);
+                    return 0;
+                }, token);
+        }
+
+        public static Task<int> AspNetAppWithSampleMethodAsync(ParseResult result, CancellationToken token)
+        {
+            return ScenarioHelpers.RunWebScenarioAsync<Startup>(
+                func: async logger =>
+                {
+                    await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.CallMethod, logger);
+
+                    SampleMethods.StaticTestMethodSignatures.NoArgs();
+
                     await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue, logger);
                     return 0;
                 }, token);
