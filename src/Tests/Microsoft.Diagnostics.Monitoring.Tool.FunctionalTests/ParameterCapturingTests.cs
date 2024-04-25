@@ -124,11 +124,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         private async Task CapturesParametersCore(Architecture targetArchitecture, CapturedParameterFormat format)
         {
-            await RunTestCaseCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetAppWithSampleMethod, targetArchitecture, async (appRunner, apiClient) =>
+            await RunTestCaseCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, async (appRunner, apiClient) =>
             {
                 int processId = await appRunner.ProcessIdTask;
 
                 CaptureParametersConfiguration config = GetValidConfiguration();
+                MethodDescription expectedCapturedMethod = config.Methods[0];
 
                 OperationResponse response = await apiClient.CaptureParametersAsync(processId, TimeSpan.FromSeconds(2), config, format, FileProviderName);
                 Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
@@ -136,23 +137,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 OperationStatusResponse operationStatus = await apiClient.WaitForOperationToStart(response.OperationUri);
                 Assert.Equal(OperationState.Running, operationStatus.OperationStatus.Status);
 
-                await appRunner.SendCommandAsync(TestAppScenarios.ParameterCapturing.Commands.CallMethod);
+                await appRunner.SendCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue);
 
                 OperationStatusResponse operationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
                 Assert.Equal(HttpStatusCode.Created, operationResult.StatusCode);
                 Assert.Equal(OperationState.Succeeded, operationResult.OperationStatus.Status);
 
-                await appRunner.SendCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue);
-
+                Assert.NotNull(operationResult.OperationStatus.ResourceLocation);
                 Assert.True(File.Exists(operationResult.OperationStatus.ResourceLocation));
                 using FileStream resultStream = new(operationResult.OperationStatus.ResourceLocation, FileMode.Open);
 
                 List<CapturedMethod> capturedMethods = await DeserializeCapturedMethodsAsync(resultStream, format);
 
                 Assert.NotNull(capturedMethods);
-                Assert.Single(capturedMethods);
-                Assert.Equal(config.Methods[0].TypeName, capturedMethods[0].TypeName);
-                Assert.Equal(config.Methods[0].MethodName, capturedMethods[0].MethodName);
+                CapturedMethod actualMethod = Assert.Single(capturedMethods);
+
+                Assert.Equal(expectedCapturedMethod.TypeName, actualMethod.TypeName);
+                Assert.Equal(expectedCapturedMethod.MethodName, actualMethod.MethodName);
             });
         }
 

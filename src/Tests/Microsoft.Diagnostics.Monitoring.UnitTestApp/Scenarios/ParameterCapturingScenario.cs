@@ -22,13 +22,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             CliCommand nonAspNetAppCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.NonAspNetApp);
             nonAspNetAppCommand.SetAction(NonAspNetAppAsync);
 
-            CliCommand aspNetAppWithSampleCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetAppWithSampleMethod);
-            aspNetAppWithSampleCommand.SetAction(AspNetAppWithSampleMethodAsync);
-
             CliCommand scenarioCommand = new(TestAppScenarios.ParameterCapturing.Name);
             scenarioCommand.Subcommands.Add(aspNetAppCommand);
             scenarioCommand.Subcommands.Add(nonAspNetAppCommand);
-            scenarioCommand.Subcommands.Add(aspNetAppWithSampleCommand);
 
             return scenarioCommand;
         }
@@ -39,6 +35,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 func: async logger =>
                 {
                     await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue, logger);
+
+                    SampleMethods.StaticTestMethodSignatures.NoArgs();
+
                     return 0;
                 }, token);
         }
@@ -52,21 +51,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                     return 0;
                 }, token);
         }
-
-        public static Task<int> AspNetAppWithSampleMethodAsync(ParseResult result, CancellationToken token)
-        {
-            return ScenarioHelpers.RunWebScenarioAsync<Startup>(
-                func: async logger =>
-                {
-                    await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.CallMethod, logger);
-
-                    SampleMethods.StaticTestMethodSignatures.NoArgs();
-
-                    await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue, logger);
-                    return 0;
-                }, token);
-        }
-
 
         private sealed class Startup
         {
