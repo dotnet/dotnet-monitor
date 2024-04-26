@@ -62,7 +62,7 @@
     <!-- dotnet/installer references -->
     <MicrosoftDotnetSdkInternalVersion>9.0.100-preview.4.24223.1</MicrosoftDotnetSdkInternalVersion>
     <!-- dotnet/roslyn-analyzers -->
-    <MicrosoftCodeAnalysisNetAnalyzersVersion>9.0.0-preview.24216.2</MicrosoftCodeAnalysisNetAnalyzersVersion>
+    <MicrosoftCodeAnalysisNetAnalyzersVersion>9.0.0-preview.24225.1</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
     <MicrosoftNETCoreAppRuntimewinx64Version>9.0.0-preview.4.24218.7</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6490Version>9.0.0-preview.4.24218.7</VSRedistCommonNetCoreSharedFrameworkx6490Version>
