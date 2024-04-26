@@ -1734,6 +1734,7 @@
           ]
         },
         "Filters": {
+          "description": "The filters that determine which exceptions should be included/excluded when collecting exceptions.",
           "oneOf": [
             {
               "type": "null"
