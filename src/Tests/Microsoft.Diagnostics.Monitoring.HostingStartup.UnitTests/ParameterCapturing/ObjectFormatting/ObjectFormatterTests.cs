@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectF
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System;
 using Xunit;
+using static Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing.ParameterCapturingEvents;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing
 {
@@ -21,23 +22,25 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             };
 
             // Act
-            string actual = ObjectFormatter.FormatObject(formatter, 5);
+            ObjectFormatterResult actual = ObjectFormatter.FormatObject(formatter, 5);
 
             // Assert
-            Assert.Equal(ObjectFormatter.Tokens.Exception, actual);
+            Assert.Equal(ObjectFormatter.Tokens.Exception, actual.FormattedValue);
+            Assert.Equal(ParameterEvaluationFlags.FailedEval, actual.Flags);
         }
 
         [Fact]
         public void FormatObject_Handles_NoSideEffects()
         {
             // Arrange
-            ObjectFormatterFunc formatter = (object _, FormatSpecifier _) => { return string.Empty; };
+            ObjectFormatterFunc formatter = (object _, FormatSpecifier _) => { return ObjectFormatterResult.Empty; };
 
             // Act
-            string actual = ObjectFormatter.FormatObject(formatter, 5, FormatSpecifier.NoSideEffects);
+            ObjectFormatterResult actual = ObjectFormatter.FormatObject(formatter, 5, FormatSpecifier.NoSideEffects);
 
             // Assert
-            Assert.Equal(ObjectFormatter.Tokens.CannotFormatWithoutSideEffects, actual);
+            Assert.Equal(ObjectFormatter.Tokens.CannotFormatWithoutSideEffects, actual.FormattedValue);
+            Assert.Equal(ParameterEvaluationFlags.EvalHasSideEffects, actual.Flags);
         }
 
         [Fact]
@@ -48,11 +51,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             ObjectFormatterFunc formatter = (object obj, FormatSpecifier specifier) =>
             {
                 actualSpecifier = specifier;
-                return string.Empty;
+                return ObjectFormatterResult.Empty;
             };
 
             // Act
-            string actual = ObjectFormatter.FormatObject(formatter, 10, FormatSpecifier.NoQuotes);
+            ObjectFormatterResult actual = ObjectFormatter.FormatObject(formatter, 10, FormatSpecifier.NoQuotes);
 
             // Assert
             Assert.Equal(FormatSpecifier.NoQuotes, actualSpecifier);

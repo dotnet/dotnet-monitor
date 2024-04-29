@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             string parameterType,
             string parameterTypeModuleName,
             string parameterValue,
+            EvaluationFailureReason evalFailReason,
+            bool isNull,
             bool isInParameter,
             bool isOutParameter,
             bool isByRefParameter)
@@ -46,6 +49,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                     Type: parameterType,
                     TypeModuleName: parameterTypeModuleName,
                     Value: parameterValue,
+                    EvalFailReason: evalFailReason,
+                    IsNull: isNull,
                     IsIn: isInParameter,
                     IsOut: isOutParameter,
                     IsByRef: isByRefParameter));

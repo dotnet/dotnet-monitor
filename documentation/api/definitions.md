@@ -116,6 +116,8 @@ Object describing a captured parameter.
 | `value` | string | The parameter value. |
 | `typeName` | string | The parameter type name. |
 | `moduleName` | string | The parameter type module name. |
+| `evalFailReason` | string | The reason why evaluation failed. If missing the evaluation was successful. |
+| `isNull` | bool | Whether the evaluated parameter is null (value is omitted if false). |
 
 ## CaptureParametersConfiguration
 

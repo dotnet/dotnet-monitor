@@ -2,10 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using static Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing.ParameterCapturingEvents;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting
 {
-    internal delegate string ObjectFormatterFunc(object obj, FormatSpecifier formatSpecifier = FormatSpecifier.None);
+    internal delegate ObjectFormatterResult ObjectFormatterFunc(object obj, FormatSpecifier formatSpecifier = FormatSpecifier.None);
 
     // A subset of https://learn.microsoft.com/visualstudio/debugger/format-specifiers-in-csharp#format-specifiers
     [Flags]
@@ -15,6 +16,19 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
         NoQuotes = 1,
         NoSideEffects = 2
     }
+
+    internal readonly struct ObjectFormatterResult
+    {
+        public string FormattedValue { get; init; }
+
+        public ParameterEvaluationFlags Flags { get; init; }
+
+        public static readonly ObjectFormatterResult Empty = new() { FormattedValue = string.Empty, Flags = ParameterEvaluationFlags.None };
+        public static readonly ObjectFormatterResult Null = new() { FormattedValue = ObjectFormatter.Tokens.Null, Flags = ParameterEvaluationFlags.IsNull };
+        public static readonly ObjectFormatterResult Unsupported = new() { FormattedValue = ObjectFormatter.Tokens.Unsupported, Flags = ParameterEvaluationFlags.UnsupportedEval };
+        public static readonly ObjectFormatterResult EvalException = new() { FormattedValue = ObjectFormatter.Tokens.Exception, Flags = ParameterEvaluationFlags.FailedEval };
+        public static readonly ObjectFormatterResult EvalWithSideEffects = new() { FormattedValue = ObjectFormatter.Tokens.CannotFormatWithoutSideEffects, Flags = ParameterEvaluationFlags.EvalHasSideEffects };
+    };
 
     internal static class ObjectFormatter
     {
@@ -41,11 +55,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
              Tokens.WrappedEnd);
 
 
-        public static string FormatObject(ObjectFormatterFunc formatterFunc, object obj, FormatSpecifier formatSpecifier = FormatSpecifier.None)
+        public static ObjectFormatterResult FormatObject(ObjectFormatterFunc formatterFunc, object obj, FormatSpecifier formatSpecifier = FormatSpecifier.None)
         {
             if ((formatSpecifier & FormatSpecifier.NoSideEffects) != 0)
             {
-                return Tokens.CannotFormatWithoutSideEffects;
+                return ObjectFormatterResult.EvalWithSideEffects;
             }
 
             try
@@ -54,7 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
             }
             catch
             {
-                return Tokens.Exception;
+                return ObjectFormatterResult.EvalException;
             }
         }
     }

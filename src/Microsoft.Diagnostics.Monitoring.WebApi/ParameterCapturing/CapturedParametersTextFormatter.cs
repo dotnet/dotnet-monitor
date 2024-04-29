@@ -25,8 +25,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
 
             foreach (CapturedParameter parameter in capture.Parameters)
             {
-                builder.Append(FormattableString.Invariant($"{Indent}{Indent}{GetValueOrUnknown(parameter.TypeModuleName)}!{GetValueOrUnknown(parameter.Type)} "));
-                builder.AppendLine(FormattableString.Invariant($"{GetValueOrUnknown(parameter.Name)}: {GetValueOrUnknown(parameter.Value)}"));
+                builder.Append(FormattableString.Invariant($"{Indent}{Indent}{GetValueOrUnknown(parameter.TypeModuleName)}!{GetValueOrUnknown(parameter.Type)} {GetValueOrUnknown(parameter.Name)}: "));
+                string paramValue = parameter.EvalFailReason switch
+                {
+                    EvaluationFailureReason.None => parameter.IsNull ? "null" : GetValueOrUnknown(parameter.Value),
+                    EvaluationFailureReason.HasSideEffects => "<evaluation has side effects>",
+                    EvaluationFailureReason.NotSupported => "<evaluation not supported>",
+                    _ => "<unknown evaluation failure>",
+                };
+                builder.AppendLine(paramValue);
             }
 
             builder.AppendLine(FormattableString.Invariant($"{Indent})"));

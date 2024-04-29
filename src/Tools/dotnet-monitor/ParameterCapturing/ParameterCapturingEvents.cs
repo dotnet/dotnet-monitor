@@ -1,6 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System;
+
 namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 {
     internal static class ParameterCapturingEvents
@@ -88,8 +90,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             public const int ParameterType = 3;
             public const int ParameterTypeModuleName = 4;
             public const int ParameterValue = 5;
-            public const int ParameterAttributes = 6;
-            public const int ParameterTypeIsByRef = 7;
+            public const int ParameterValueEvaluationFlags = 6;
+            public const int ParameterAttributes = 7;
+            public const int ParameterTypeIsByRef = 8;
+        }
+
+        [Flags]
+        public enum ParameterEvaluationFlags
+        {
+            None = 0,
+            IsNull = 1,
+            FailedEval = 2,
+            UnsupportedEval = 4,
+            EvalHasSideEffects = 8
         }
     }
 }

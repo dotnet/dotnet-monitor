@@ -12,6 +12,8 @@ using System.Diagnostics.Tracing;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using static Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing.ParameterCapturingEvents;
+using Models = Microsoft.Diagnostics.Monitoring.WebApi.Models;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 {
@@ -126,8 +128,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                         string parameterType = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterType);
                         string parameterTypeModuleName = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterTypeModuleName);
                         string parameterValue = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterValue);
+                        ParameterEvaluationFlags parameterValueEvaluationFlags = traceEvent.GetPayload<ParameterEvaluationFlags>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterValueEvaluationFlags);
                         ParameterAttributes parameterAttributes = traceEvent.GetPayload<ParameterAttributes>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterAttributes);
                         bool isByRefParameter = traceEvent.GetPayload<bool>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterTypeIsByRef);
+
+                        Models.EvaluationFailureReason evalFailReason = Models.EvaluationFailureReason.None;
+                        if (parameterValueEvaluationFlags.HasFlag(ParameterEvaluationFlags.UnsupportedEval))
+                        {
+                            evalFailReason = Models.EvaluationFailureReason.NotSupported;
+                        }
+                        else if (parameterValueEvaluationFlags.HasFlag(ParameterEvaluationFlags.EvalHasSideEffects))
+                        {
+                            evalFailReason = Models.EvaluationFailureReason.HasSideEffects;
+                        }
+                        else if (parameterValueEvaluationFlags.HasFlag(ParameterEvaluationFlags.FailedEval))
+                        {
+                            evalFailReason = Models.EvaluationFailureReason.Unknown;
+                        }
 
                         _ = _parameterBuilder.TryAddParameter(
                             captureId: captureId,
@@ -135,6 +152,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                             parameterType: parameterType,
                             parameterTypeModuleName: parameterTypeModuleName,
                             parameterValue: parameterValue,
+                            evalFailReason: evalFailReason,
+                            isNull: parameterValueEvaluationFlags.HasFlag(ParameterEvaluationFlags.IsNull),
                             isInParameter: (parameterAttributes & ParameterAttributes.In) != 0,
                             isOutParameter: (parameterAttributes & ParameterAttributes.Out) != 0,
                             isByRefParameter: isByRefParameter);

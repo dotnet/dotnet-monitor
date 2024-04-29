@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using static Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting.Formatters.DebuggerDisplay.DebuggerDisplayParser;
+using static Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing.ParameterCapturingEvents;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting.Formatters.DebuggerDisplay
 {
@@ -26,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
 
             if (debuggerDisplay.Expressions.Count == 0)
             {
-                return (_, _) => debuggerDisplay.FormatString;
+                return (_, _) => new() { FormattedValue = debuggerDisplay.FormatString, Flags = ParameterEvaluationFlags.None };
             }
 
             ExpressionEvaluator[] evaluators = new ExpressionEvaluator[debuggerDisplay.Expressions.Count];
@@ -58,10 +59,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
                     evaluationResults[i] = ObjectFormatter.FormatObject(
                         evaluatorFormatters[i],
                         evaluationResult,
-                        debuggerDisplay.Expressions[i].FormatSpecifier);
+                        debuggerDisplay.Expressions[i].FormatSpecifier).FormattedValue;
                 }
 
-                return ObjectFormatter.WrapValue(string.Format(debuggerDisplay.FormatString, evaluationResults));
+                return new() { FormattedValue = ObjectFormatter.WrapValue(string.Format(debuggerDisplay.FormatString, evaluationResults)), Flags = ParameterEvaluationFlags.None };
             };
         }
 
