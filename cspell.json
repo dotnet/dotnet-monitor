@@ -1,6 +1,7 @@
 {
     "version": "0.2",
     "ignorePaths": [
+        "eng/common",
         "eng/release/DiagnosticsReleaseTool",
         "src/external",
         "src/inc",
