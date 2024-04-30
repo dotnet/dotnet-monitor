@@ -241,15 +241,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The API scope required by users to be able to interactively authenticate using the in-box Swagger UI. If not specified, users will not be able to interactively authenticate..
-        /// </summary>
-        public static string DisplayAttributeDescription_AzureAdOptions_SwaggerScope {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_AzureAdOptions_SwaggerScope", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The tenant id of the Azure Active Directory tenant, or its tenant domain..
         /// </summary>
         public static string DisplayAttributeDescription_AzureAdOptions_TenantId {
