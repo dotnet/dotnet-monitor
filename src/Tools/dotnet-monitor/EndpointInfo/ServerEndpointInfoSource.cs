@@ -220,7 +220,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
 
                 EndpointInfo endpointInfo = await EndpointInfo.FromIpcEndpointInfoAsync(info, scope.ServiceProvider, token);
-                _activeEndpointServiceScopes.Add(endpointInfo.RuntimeInstanceCookie, scope);
+                await _activeEndpointsSemaphore.WaitAsync(token);
+                try
+                {
+                    _activeEndpointServiceScopes.Add(endpointInfo.RuntimeInstanceCookie, scope);
+                }
+                finally
+                {
+                    _activeEndpointsSemaphore.Release();
+                }
 
                 // Initialize endpoint information within the service scope
                 endpointInfo.ServiceProvider.GetRequiredService<ScopedEndpointInfo>().Set(endpointInfo);
