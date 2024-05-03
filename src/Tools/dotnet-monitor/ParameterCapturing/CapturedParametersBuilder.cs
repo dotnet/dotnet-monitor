@@ -7,20 +7,22 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
+#nullable enable
+
 namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 {
     internal sealed class CapturedParametersBuilder
     {
         private readonly Dictionary<Guid, CapturedParameters> _capturedParameters = new();
 
-        public bool TryStartNewCaptureResponse(Guid captureId, string activityId, ActivityIdFormat activityIdFormat, int threadId, DateTime capturedDateTime, string methodName, string methodTypeName, string methodModuleName)
+        public bool TryStartNewCaptureResponse(Guid captureId, string? activityId, ActivityIdFormat activityIdFormat, int threadId, DateTime capturedDateTime, string methodName, string methodTypeName, string methodModuleName)
         {
             return _capturedParameters.TryAdd(captureId, new CapturedParameters(activityId, activityIdFormat, threadId, capturedDateTime, methodName, methodTypeName, methodModuleName));
         }
 
-        public bool TryFinalizeParameters(Guid captureId, out ICapturedParameters capturedParameters)
+        public bool TryFinalizeParameters(Guid captureId, out ICapturedParameters? capturedParameters)
         {
-            if (_capturedParameters.Remove(captureId, out CapturedParameters captured))
+            if (_capturedParameters.Remove(captureId, out CapturedParameters? captured))
             {
                 capturedParameters = captured;
                 return true;
@@ -35,14 +37,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             string parameterName,
             string parameterType,
             string parameterTypeModuleName,
-            string parameterValue,
+            string? parameterValue,
             EvaluationFailureReason evalFailReason,
-            bool isNull,
             bool isInParameter,
             bool isOutParameter,
             bool isByRefParameter)
         {
-            if (_capturedParameters.TryGetValue(captureId, out CapturedParameters captured))
+            if (_capturedParameters.TryGetValue(captureId, out CapturedParameters? captured))
             {
                 captured.AddParameter(new ParameterInfo(
                     Name: parameterName,
@@ -50,7 +51,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                     TypeModuleName: parameterTypeModuleName,
                     Value: parameterValue,
                     EvalFailReason: evalFailReason,
-                    IsNull: isNull,
                     IsIn: isInParameter,
                     IsOut: isOutParameter,
                     IsByRef: isByRefParameter));

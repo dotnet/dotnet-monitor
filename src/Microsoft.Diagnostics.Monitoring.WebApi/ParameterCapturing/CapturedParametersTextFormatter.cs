@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
                 builder.Append(FormattableString.Invariant($"{Indent}{Indent}{GetValueOrUnknown(parameter.TypeModuleName)}!{GetValueOrUnknown(parameter.Type)} {GetValueOrUnknown(parameter.Name)}: "));
                 string paramValue = parameter.EvalFailReason switch
                 {
-                    EvaluationFailureReason.None => parameter.IsNull ? "null" : GetValueOrUnknown(parameter.Value),
+                    EvaluationFailureReason.None => parameter.Value ?? "null",
                     EvaluationFailureReason.HasSideEffects => "<evaluation has side effects>",
                     EvaluationFailureReason.NotSupported => "<evaluation not supported>",
                     _ => "<unknown evaluation failure>",

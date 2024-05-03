@@ -151,9 +151,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                             parameterName: parameterName,
                             parameterType: parameterType,
                             parameterTypeModuleName: parameterTypeModuleName,
-                            parameterValue: parameterValue,
+                            parameterValue: parameterValueEvaluationFlags.HasFlag(ParameterEvaluationFlags.IsNull) ? null : parameterValue,
                             evalFailReason: evalFailReason,
-                            isNull: parameterValueEvaluationFlags.HasFlag(ParameterEvaluationFlags.IsNull),
                             isInParameter: (parameterAttributes & ParameterAttributes.In) != 0,
                             isOutParameter: (parameterAttributes & ParameterAttributes.Out) != 0,
                             isByRefParameter: isByRefParameter);
