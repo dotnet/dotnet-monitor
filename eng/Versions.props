@@ -52,20 +52,20 @@
     <MicrosoftDotNetCodeAnalysisVersion>9.0.0-beta.24229.1</MicrosoftDotNetCodeAnalysisVersion>
     <MicrosoftDotNetXUnitExtensionsVersion>9.0.0-beta.24229.1</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
-    <MicrosoftAspNetCoreAppRuntimewinx64Version>9.0.0-preview.5.24225.4</MicrosoftAspNetCoreAppRuntimewinx64Version>
-    <VSRedistCommonAspNetCoreSharedFrameworkx6490Version>9.0.0-preview.5.24225.4</VSRedistCommonAspNetCoreSharedFrameworkx6490Version>
+    <MicrosoftAspNetCoreAppRuntimewinx64Version>9.0.0-preview.5.24251.4</MicrosoftAspNetCoreAppRuntimewinx64Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx6490Version>9.0.0-preview.5.24251.4</VSRedistCommonAspNetCoreSharedFrameworkx6490Version>
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta4.24209.3</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>8.0.0-preview.24251.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>8.0.0-preview.24251.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/installer references -->
-    <MicrosoftDotnetSdkInternalVersion>9.0.100-preview.5.24253.2</MicrosoftDotnetSdkInternalVersion>
+    <MicrosoftDotnetSdkInternalVersion>9.0.100-preview.5.24253.16</MicrosoftDotnetSdkInternalVersion>
     <!-- dotnet/roslyn-analyzers -->
     <MicrosoftCodeAnalysisNetAnalyzersVersion>9.0.0-preview.24225.1</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
-    <MicrosoftNETCoreAppRuntimewinx64Version>9.0.0-preview.4.24225.8</MicrosoftNETCoreAppRuntimewinx64Version>
-    <VSRedistCommonNetCoreSharedFrameworkx6490Version>9.0.0-preview.4.24225.8</VSRedistCommonNetCoreSharedFrameworkx6490Version>
+    <MicrosoftNETCoreAppRuntimewinx64Version>9.0.0-preview.4.24251.3</MicrosoftNETCoreAppRuntimewinx64Version>
+    <VSRedistCommonNetCoreSharedFrameworkx6490Version>9.0.0-preview.4.24251.3</VSRedistCommonNetCoreSharedFrameworkx6490Version>
     <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>8.0.0-preview.24251.1</MicrosoftFileFormatsVersion>
   </PropertyGroup>
