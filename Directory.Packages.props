@@ -2,6 +2,7 @@
   <ItemGroup>
     <PackageVersion Include="AWSSDK.S3" Version="$(AwsSdkS3Version)" />
     <PackageVersion Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
+    <PackageVersion Include="Azure.Messaging.EventHubs.Processor" Version="5.11.2" />
     <PackageVersion Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
     <PackageVersion Include="Azure.Storage.Queues" Version="$(AzureStorageQueuesVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerVersion)" />

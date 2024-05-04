@@ -1,0 +1,5 @@
+{
+    "Name": "AzureEventHubsStorage",
+    "AssemblyFileName": "dotnet-monitor-egress-azureeventhubsstorage",
+    "Modes": [ "Validate" ]
+}
