@@ -2,7 +2,7 @@
   <!-- Import references updated by Dependabot. -->
 
   <PropertyGroup>
-    <AzureIdentityVersion>1.11.2</AzureIdentityVersion>
+    <AzureIdentityVersion>1.11.3</AzureIdentityVersion>
     <AzureStorageBlobsVersion>12.19.1</AzureStorageBlobsVersion>
     <AzureStorageQueuesVersion>12.17.1</AzureStorageQueuesVersion>
     <MicrosoftExtensionsConfigurationAbstractionsVersion>7.0.0</MicrosoftExtensionsConfigurationAbstractionsVersion>
