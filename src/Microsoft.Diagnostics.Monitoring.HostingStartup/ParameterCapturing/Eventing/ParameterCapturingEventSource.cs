@@ -89,7 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
             string parameterType,
             string parameterTypeModuleName,
             string parameterValue,
-            ParameterEvaluationFlags parameterValueEvaluationFlags,
+            ParameterEvaluationResult parameterValueEvaluationResult,
             ParameterAttributes parameterAttributes,
             bool isParameterTypeByRef
             )
@@ -107,7 +107,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
             SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterType], pinnedType);
             SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterTypeModuleName], pinnedTypeModuleName);
             SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterValue], pinnedValue);
-            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterValueEvaluationFlags], parameterValueEvaluationFlags);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterValueEvaluationResult], parameterValueEvaluationResult);
             SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterAttributes], parameterAttributes);
             SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterTypeIsByRef], isParameterTypeByRef);
 

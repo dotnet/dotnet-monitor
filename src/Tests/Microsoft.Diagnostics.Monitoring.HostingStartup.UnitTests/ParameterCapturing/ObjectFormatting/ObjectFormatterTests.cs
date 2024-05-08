@@ -26,21 +26,21 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
             // Assert
             Assert.Equal(ObjectFormatter.Tokens.Exception, actual.FormattedValue);
-            Assert.Equal(ParameterEvaluationFlags.FailedEval, actual.Flags);
+            Assert.Equal(ParameterEvaluationResult.FailedEval, actual.EvalResult);
         }
 
         [Fact]
         public void FormatObject_Handles_NoSideEffects()
         {
             // Arrange
-            ObjectFormatterFunc formatter = (object _, FormatSpecifier _) => { return ObjectFormatterResult.Empty; };
+            ObjectFormatterFunc formatter = (object _, FormatSpecifier _) => { return new(string.Empty); };
 
             // Act
             ObjectFormatterResult actual = ObjectFormatter.FormatObject(formatter, 5, FormatSpecifier.NoSideEffects);
 
             // Assert
             Assert.Equal(ObjectFormatter.Tokens.CannotFormatWithoutSideEffects, actual.FormattedValue);
-            Assert.Equal(ParameterEvaluationFlags.EvalHasSideEffects, actual.Flags);
+            Assert.Equal(ParameterEvaluationResult.EvalHasSideEffects, actual.EvalResult);
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             ObjectFormatterFunc formatter = (object obj, FormatSpecifier specifier) =>
             {
                 actualSpecifier = specifier;
-                return ObjectFormatterResult.Empty;
+                return new(string.Empty);
             };
 
             // Act

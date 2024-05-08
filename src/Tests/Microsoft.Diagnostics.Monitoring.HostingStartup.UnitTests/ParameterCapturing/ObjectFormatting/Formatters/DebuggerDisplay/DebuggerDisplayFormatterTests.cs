@@ -88,7 +88,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
             // Assert
             Assert.Equal(FormattableString.Invariant($"'Count = {testObj.Count}'"), formattedResult.FormattedValue);
-            Assert.Equal(ParameterEvaluationFlags.None, formattedResult.Flags);
+            Assert.Equal(ParameterEvaluationResult.Success, formattedResult.EvalResult);
         }
 
         [Fact]
@@ -108,7 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
             // Assert
             Assert.Equal(FormattableString.Invariant($"'Count = {testObj.Count} NullField = null'"), formattedResult.FormattedValue);
-            Assert.Equal(ParameterEvaluationFlags.None, formattedResult.Flags);
+            Assert.Equal(ParameterEvaluationResult.Success, formattedResult.EvalResult);
         }
     }
 }

@@ -3,7 +3,6 @@
 
 using System;
 using System.Globalization;
-using static Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing.ParameterCapturingEvents;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting
 {
@@ -17,37 +16,19 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
             }
 
             string formatted = ((IConvertible)obj).ToString(CultureInfo.InvariantCulture);
-            return new()
-            {
-                FormattedValue = (formatSpecifier & FormatSpecifier.NoQuotes) == 0
-                    ? ObjectFormatter.WrapValue(formatted)
-                    : formatted,
-                Flags = ParameterEvaluationFlags.None
-            };
+            return new(formatSpecifier.HasFlag(FormatSpecifier.NoQuotes) ? formatted : ObjectFormatter.WrapValue(formatted));
         }
 
         public static ObjectFormatterResult IFormattableFormatter(object obj, FormatSpecifier formatSpecifier)
         {
             string formatted = ((IFormattable)obj).ToString(format: null, CultureInfo.InvariantCulture);
-            return new()
-            {
-                FormattedValue = (formatSpecifier & FormatSpecifier.NoQuotes) == 0
-                    ? ObjectFormatter.WrapValue(formatted)
-                    : formatted,
-                Flags = ParameterEvaluationFlags.None
-            };
+            return new(formatSpecifier.HasFlag(FormatSpecifier.NoQuotes) ? formatted : ObjectFormatter.WrapValue(formatted));
         }
 
         public static ObjectFormatterResult GeneralFormatter(object obj, FormatSpecifier formatSpecifier)
         {
             string formatted = obj.ToString() ?? string.Empty;
-            return new()
-            {
-                FormattedValue = (formatSpecifier & FormatSpecifier.NoQuotes) == 0
-                    ? ObjectFormatter.WrapValue(formatted)
-                    : formatted,
-                Flags = ParameterEvaluationFlags.None
-            };
+            return new(formatSpecifier.HasFlag(FormatSpecifier.NoQuotes) ? formatted : ObjectFormatter.WrapValue(formatted));
         }
     }
 }

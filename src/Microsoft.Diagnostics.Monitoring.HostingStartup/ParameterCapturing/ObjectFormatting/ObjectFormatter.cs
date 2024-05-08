@@ -17,17 +17,20 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Obj
         NoSideEffects = 2
     }
 
-    internal readonly struct ObjectFormatterResult
+    internal readonly struct ObjectFormatterResult(string value, ParameterEvaluationResult evalResult)
     {
-        public string FormattedValue { get; init; }
+        public ObjectFormatterResult(string value) : this(value, ParameterEvaluationResult.Success)
+        {
+        }
 
-        public ParameterEvaluationFlags Flags { get; init; }
+        public string FormattedValue { get; } = value;
 
-        public static readonly ObjectFormatterResult Empty = new() { FormattedValue = string.Empty, Flags = ParameterEvaluationFlags.None };
-        public static readonly ObjectFormatterResult Null = new() { FormattedValue = ObjectFormatter.Tokens.Null, Flags = ParameterEvaluationFlags.IsNull };
-        public static readonly ObjectFormatterResult Unsupported = new() { FormattedValue = ObjectFormatter.Tokens.Unsupported, Flags = ParameterEvaluationFlags.UnsupportedEval };
-        public static readonly ObjectFormatterResult EvalException = new() { FormattedValue = ObjectFormatter.Tokens.Exception, Flags = ParameterEvaluationFlags.FailedEval };
-        public static readonly ObjectFormatterResult EvalWithSideEffects = new() { FormattedValue = ObjectFormatter.Tokens.CannotFormatWithoutSideEffects, Flags = ParameterEvaluationFlags.EvalHasSideEffects };
+        public ParameterEvaluationResult EvalResult { get; } = evalResult;
+
+        public static readonly ObjectFormatterResult Null = new(ObjectFormatter.Tokens.Null, ParameterEvaluationResult.IsNull);
+        public static readonly ObjectFormatterResult Unsupported = new(ObjectFormatter.Tokens.Unsupported, ParameterEvaluationResult.UnsupportedEval);
+        public static readonly ObjectFormatterResult EvalException = new(ObjectFormatter.Tokens.Exception, ParameterEvaluationResult.FailedEval);
+        public static readonly ObjectFormatterResult EvalWithSideEffects = new(ObjectFormatter.Tokens.CannotFormatWithoutSideEffects, ParameterEvaluationResult.EvalHasSideEffects);
     };
 
     internal static class ObjectFormatter

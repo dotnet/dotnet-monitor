@@ -14,39 +14,39 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
     public class RuntimeFormattersTests
     {
         [Theory]
-        [InlineData("test", "'test'", ParameterEvaluationFlags.None, FormatSpecifier.None)]
-        [InlineData("test", "test", ParameterEvaluationFlags.None, FormatSpecifier.NoQuotes)]
-        [InlineData(5, "5", ParameterEvaluationFlags.None, FormatSpecifier.None)]
-        [InlineData(true, "True", ParameterEvaluationFlags.None, FormatSpecifier.None)]
-        [InlineData(MyEnum.ValueA, nameof(MyEnum.ValueA), ParameterEvaluationFlags.None, FormatSpecifier.None)]
-        internal void IConvertibleFormatter(object obj, string expectedFormattedValue, ParameterEvaluationFlags expectedEvaluationFlags, FormatSpecifier formatSpecifier)
+        [InlineData("test", "'test'", ParameterEvaluationResult.Success, FormatSpecifier.None)]
+        [InlineData("test", "test", ParameterEvaluationResult.Success, FormatSpecifier.NoQuotes)]
+        [InlineData(5, "5", ParameterEvaluationResult.Success, FormatSpecifier.None)]
+        [InlineData(true, "True", ParameterEvaluationResult.Success, FormatSpecifier.None)]
+        [InlineData(MyEnum.ValueA, nameof(MyEnum.ValueA), ParameterEvaluationResult.Success, FormatSpecifier.None)]
+        internal void IConvertibleFormatter(object obj, string expectedFormattedValue, ParameterEvaluationResult expectedEvaluationResult, FormatSpecifier formatSpecifier)
         {
             // Act
             ObjectFormatterResult actual = RuntimeFormatters.IConvertibleFormatter(obj, formatSpecifier);
 
             // Assert
             Assert.Equal(expectedFormattedValue, actual.FormattedValue);
-            Assert.Equal(expectedEvaluationFlags, actual.Flags);
+            Assert.Equal(expectedEvaluationResult, actual.EvalResult);
         }
 
 
         [Theory]
-        [InlineData("test", "'test'", ParameterEvaluationFlags.None, FormatSpecifier.None)]
-        [InlineData("test", "test", ParameterEvaluationFlags.None, FormatSpecifier.NoQuotes)]
-        internal void GeneralFormatter(object obj, string expectedFormattedValue, ParameterEvaluationFlags expectedEvaluationFlags, FormatSpecifier formatSpecifier)
+        [InlineData("test", "'test'", ParameterEvaluationResult.Success, FormatSpecifier.None)]
+        [InlineData("test", "test", ParameterEvaluationResult.Success, FormatSpecifier.NoQuotes)]
+        internal void GeneralFormatter(object obj, string expectedFormattedValue, ParameterEvaluationResult expectedEvaluationResult, FormatSpecifier formatSpecifier)
         {
             // Act
             ObjectFormatterResult actual = RuntimeFormatters.GeneralFormatter(obj, formatSpecifier);
 
             // Assert
             Assert.Equal(expectedFormattedValue, actual.FormattedValue);
-            Assert.Equal(expectedEvaluationFlags, actual.Flags);
+            Assert.Equal(expectedEvaluationResult, actual.EvalResult);
         }
 
         [Theory]
-        [InlineData("'test 1000'", ParameterEvaluationFlags.None, FormatSpecifier.None)]
-        [InlineData("test 1000", ParameterEvaluationFlags.None, FormatSpecifier.NoQuotes)]
-        internal void IFormattableFormatter(string expectedFormattedValue, ParameterEvaluationFlags expectedEvaluationFlags, FormatSpecifier formatSpecifier)
+        [InlineData("'test 1000'", ParameterEvaluationResult.Success, FormatSpecifier.None)]
+        [InlineData("test 1000", ParameterEvaluationResult.Success, FormatSpecifier.NoQuotes)]
+        internal void IFormattableFormatter(string expectedFormattedValue, ParameterEvaluationResult expectedEvaluationResult, FormatSpecifier formatSpecifier)
         {
             // Arrange
             int testFormatValue = 1000;
@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
             // Assert
             Assert.Equal(expectedFormattedValue, actual.FormattedValue);
-            Assert.Equal(expectedEvaluationFlags, actual.Flags);
+            Assert.Equal(expectedEvaluationResult, actual.EvalResult);
         }
     }
 }

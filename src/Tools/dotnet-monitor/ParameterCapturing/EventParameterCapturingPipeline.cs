@@ -116,7 +116,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                         string methodModuleName = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParametersStartPayloads.MethodModuleName);
                         string methodDeclaringTypeName = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParametersStartPayloads.MethodDeclaringTypeName);
 
-                        _ = _parameterBuilder.TryStartNewCaptureResponse(captureId, activityId, activityIdFormat, threadId, traceEvent.TimeStamp, methodName: methodName, methodTypeName: methodDeclaringTypeName, methodModuleName: methodModuleName);
+                        _ = _parameterBuilder.TryStartNewCaptureResponse(
+                                captureId,
+                                string.IsNullOrEmpty(activityId) ? null : activityId,
+                                activityIdFormat,
+                                threadId,
+                                traceEvent.TimeStamp,
+                                methodName: methodName,
+                                methodTypeName: methodDeclaringTypeName,
+                                methodModuleName: methodModuleName);
 
                         break;
                     }
@@ -128,30 +136,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                         string parameterType = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterType);
                         string parameterTypeModuleName = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterTypeModuleName);
                         string parameterValue = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterValue);
-                        ParameterEvaluationFlags parameterValueEvaluationFlags = traceEvent.GetPayload<ParameterEvaluationFlags>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterValueEvaluationFlags);
+                        ParameterEvaluationResult parameterValueEvaluationResult = traceEvent.GetPayload<ParameterEvaluationResult>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterValueEvaluationResult);
                         ParameterAttributes parameterAttributes = traceEvent.GetPayload<ParameterAttributes>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterAttributes);
                         bool isByRefParameter = traceEvent.GetPayload<bool>(ParameterCapturingEvents.CapturedParameterPayloads.ParameterTypeIsByRef);
 
-                        Models.EvaluationFailureReason evalFailReason = Models.EvaluationFailureReason.None;
-                        if (parameterValueEvaluationFlags.HasFlag(ParameterEvaluationFlags.UnsupportedEval))
+                        Models.EvaluationFailureReason evalFailReason = parameterValueEvaluationResult switch
                         {
-                            evalFailReason = Models.EvaluationFailureReason.NotSupported;
-                        }
-                        else if (parameterValueEvaluationFlags.HasFlag(ParameterEvaluationFlags.EvalHasSideEffects))
-                        {
-                            evalFailReason = Models.EvaluationFailureReason.HasSideEffects;
-                        }
-                        else if (parameterValueEvaluationFlags.HasFlag(ParameterEvaluationFlags.FailedEval))
-                        {
-                            evalFailReason = Models.EvaluationFailureReason.Unknown;
-                        }
+                            ParameterEvaluationResult.UnsupportedEval => Models.EvaluationFailureReason.NotSupported,
+                            ParameterEvaluationResult.EvalHasSideEffects => Models.EvaluationFailureReason.HasSideEffects,
+                            ParameterEvaluationResult.FailedEval => Models.EvaluationFailureReason.Unknown,
+                            _ => Models.EvaluationFailureReason.None,
+                        };
 
                         _ = _parameterBuilder.TryAddParameter(
                             captureId: captureId,
                             parameterName: parameterName,
                             parameterType: parameterType,
                             parameterTypeModuleName: parameterTypeModuleName,
-                            parameterValue: parameterValueEvaluationFlags.HasFlag(ParameterEvaluationFlags.IsNull) ? null : parameterValue,
+                            parameterValue: parameterValueEvaluationResult == ParameterEvaluationResult.IsNull ? null : parameterValue,
                             evalFailReason: evalFailReason,
                             isInParameter: (parameterAttributes & ParameterAttributes.In) != 0,
                             isOutParameter: (parameterAttributes & ParameterAttributes.Out) != 0,
