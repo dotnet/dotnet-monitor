@@ -6,13 +6,15 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
+#nullable enable
+
 namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 {
     internal sealed class CapturedParameters : ICapturedParameters
     {
         private readonly List<ParameterInfo> _parameters = [];
 
-        public CapturedParameters(string activityId, ActivityIdFormat activityIdFormat, int threadId, DateTime capturedDateTime, string methodName, string methodTypeName, string methodModuleName)
+        public CapturedParameters(string? activityId, ActivityIdFormat activityIdFormat, int threadId, DateTime capturedDateTime, string methodName, string methodTypeName, string methodModuleName)
         {
             ActivityId = activityId;
             ActivityIdFormat = activityIdFormat;
@@ -28,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _parameters.Add(parameter);
         }
 
-        public string ActivityId { get; }
+        public string? ActivityId { get; }
 
         public ActivityIdFormat ActivityIdFormat { get; }
 

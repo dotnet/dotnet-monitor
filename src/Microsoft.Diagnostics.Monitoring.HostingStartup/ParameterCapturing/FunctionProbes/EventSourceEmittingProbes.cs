@@ -58,24 +58,24 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Fun
                 resolvedArgs = new ResolvedParameterInfo[args.Length];
                 for (int i = 0; i < args.Length; i++)
                 {
-                    string value;
+                    ObjectFormatterResult evalResult;
                     if (!instrumentedMethod.SupportedParameters[i])
                     {
-                        value = ObjectFormatter.Tokens.Unsupported;
+                        evalResult = ObjectFormatterResult.Unsupported;
                     }
                     else if (args[i] == null)
                     {
-                        value = ObjectFormatter.Tokens.Null;
+                        evalResult = ObjectFormatterResult.Null;
                     }
                     else
                     {
-                        value = ObjectFormatter.FormatObject(_objectFormatterCache.GetFormatter(args[i].GetType()), args[i]);
+                        evalResult = ObjectFormatter.FormatObject(_objectFormatterCache.GetFormatter(args[i].GetType()), args[i], FormatSpecifier.NoQuotes);
                     }
                     resolvedArgs[i] = new ResolvedParameterInfo(
                         instrumentedMethod.MethodSignature.Parameters[i].Name,
                         instrumentedMethod.MethodSignature.Parameters[i].Type,
                         instrumentedMethod.MethodSignature.Parameters[i].TypeModuleName,
-                        value,
+                        evalResult,
                         instrumentedMethod.MethodSignature.Parameters[i].Attributes,
                         instrumentedMethod.MethodSignature.Parameters[i].IsByRef);
                 }
