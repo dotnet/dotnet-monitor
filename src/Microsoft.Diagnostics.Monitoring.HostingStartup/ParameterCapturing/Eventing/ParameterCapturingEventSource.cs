@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Reflection;
+using static Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing.ParameterCapturingEvents;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eventing
 {
@@ -88,11 +89,12 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
             string parameterType,
             string parameterTypeModuleName,
             string parameterValue,
+            ParameterEvaluationResult parameterValueEvaluationResult,
             ParameterAttributes parameterAttributes,
             bool isParameterTypeByRef
             )
         {
-            Span<EventData> data = stackalloc EventData[8];
+            Span<EventData> data = stackalloc EventData[9];
 
             using PinnedData pinnedName = PinnedData.Create(parameterName);
             using PinnedData pinnedType = PinnedData.Create(parameterType);
@@ -105,6 +107,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
             SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterType], pinnedType);
             SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterTypeModuleName], pinnedTypeModuleName);
             SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterValue], pinnedValue);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterValueEvaluationResult], parameterValueEvaluationResult);
             SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterAttributes], parameterAttributes);
             SetValue(ref data[ParameterCapturingEvents.CapturedParameterPayloads.ParameterTypeIsByRef], isParameterTypeByRef);
 
