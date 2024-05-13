@@ -88,8 +88,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             public const int ParameterType = 3;
             public const int ParameterTypeModuleName = 4;
             public const int ParameterValue = 5;
-            public const int ParameterAttributes = 6;
-            public const int ParameterTypeIsByRef = 7;
+            public const int ParameterValueEvaluationResult = 6;
+            public const int ParameterAttributes = 7;
+            public const int ParameterTypeIsByRef = 8;
+        }
+
+        public enum ParameterEvaluationResult : uint
+        {
+            Success = 0,
+            IsNull,
+            FailedEval,
+            UnsupportedEval,
+            EvalHasSideEffects
         }
     }
 }
