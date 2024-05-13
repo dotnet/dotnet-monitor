@@ -95,7 +95,7 @@ Object describing a captured method and its parameters.
 
 | Name | Type | Description |
 |---|---|---|
-| `activityId` | string | An identifier for the current activity at the time of the capture. For more information see [Activity.Id](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.activity.id).|
+| `activityId` | string? | An identifier for the current activity at the time of the capture. For more information see [Activity.Id](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.activity.id).|
 | `activityIdFormat` | string | The activity Id format. For more information see [Activity.IdFormat](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.activity.idformat).|
 | `threadId` | int | The managed thread id where the method was called.|
 | `timestamp` | DateTime | Time when the method call was captured. |
@@ -113,9 +113,10 @@ Object describing a captured parameter.
 | Name | Type | Description |
 |---|---|---|
 | `parameterName` | string | The parameter name. |
-| `value` | string | The parameter value. |
+| `value` | string? | The parameter value. |
 | `typeName` | string | The parameter type name. |
 | `moduleName` | string | The parameter type module name. |
+| `evalFailReason` | string | The reason why evaluation failed. If missing the evaluation was successful. |
 
 ## CaptureParametersConfiguration
 
