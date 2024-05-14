@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         protected override MonitoringSourceConfiguration CreateConfiguration()
         {
-            return new EventPipeProviderSourceConfiguration(requestRundown: false, bufferSizeInMB: 64, new[]
+            return new EventPipeProviderSourceConfiguration(rundownKeyword: 0, bufferSizeInMB: 64, new[]
             {
                 new EventPipeProvider(ExceptionEvents.SourceName, EventLevel.Informational, (long)EventKeywords.All)
             });
