@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
         protected override MonitoringSourceConfiguration CreateConfiguration()
         {
-            return new EventPipeProviderSourceConfiguration(requestRundown: false, bufferSizeInMB: 256, new[]
+            return new EventPipeProviderSourceConfiguration(rundownKeyword: 0, bufferSizeInMB: 256, new[]
             {
                 new EventPipeProvider(CallStackEvents.Provider, EventLevel.LogAlways)
             });
