@@ -196,6 +196,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The message payload is {1} bytes which exceeds the maximum size of {0} bytes. .
+        /// </summary>
+        internal static string ErrorMessage_ProfilerPayloadTooLarge {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ProfilerPayloadTooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Resource {0} cannot be found.
         /// </summary>
         internal static string ErrorMessage_ResourceNotFound {

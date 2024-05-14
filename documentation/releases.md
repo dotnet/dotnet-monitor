@@ -7,9 +7,9 @@
 
 | Version | Original Release Date | Latest Patch Version | Patch Release Date | End of Support | Runtime Frameworks |
 | --- | --- | --- | --- | --- | --- |
-| 8.0 | November 14, 2023 | [8.0.1](https://github.com/dotnet/dotnet-monitor/releases/tag/v8.0.1) | February 13, 2024 |  | net8.0 |
-| 7.3 | August 8, 2023 | [7.3.3](https://github.com/dotnet/dotnet-monitor/releases/tag/v7.3.3) | February 13, 2024 |  | net6.0<br/>net7.0 |
-| 6.3 | October 11, 2022 | [6.3.5](https://github.com/dotnet/dotnet-monitor/releases/tag/v6.3.5) | February 13, 2024 |  | net6.0<br/>netcoreapp3.1 |
+| 8.0 | November 14, 2023 | [8.0.2](https://github.com/dotnet/dotnet-monitor/releases/tag/v8.0.2) | May 14, 2024 |  | net8.0 |
+| 7.3 | August 8, 2023 | [7.3.4](https://github.com/dotnet/dotnet-monitor/releases/tag/v7.3.4) | May 14, 2024 |  | net6.0<br/>net7.0 |
+| 6.3 | October 11, 2022 | [6.3.6](https://github.com/dotnet/dotnet-monitor/releases/tag/v6.3.6) | May 14, 2024 |  | net6.0<br/>netcoreapp3.1 |
 
 
 ## Out of support versions
@@ -25,6 +25,6 @@
 
 | Version | Release Date | Latest Version | Runtime Frameworks |
 | --- | --- | --- | --- |
-| 9.0 | March 12, 2024 | [9.0.0 preview 2](https://github.com/dotnet/dotnet-monitor/releases/tag/v9.0.0-preview.2.24155.3) | net9.0 |
+| 9.0 | April 11, 2024 | [9.0.0 preview 3](https://github.com/dotnet/dotnet-monitor/releases/tag/v9.0.0-preview.3.24205.3) | net9.0 |
 
 

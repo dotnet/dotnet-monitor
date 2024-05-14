@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     public partial class DiagController : DiagnosticsControllerBase
     {
-        private const TraceProfile DefaultTraceProfiles = TraceProfile.Cpu | TraceProfile.Http | TraceProfile.Metrics;
+        private const TraceProfile DefaultTraceProfiles = TraceProfile.Cpu | TraceProfile.Http | TraceProfile.Metrics | TraceProfile.GcCollect;
 
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
         private readonly IOptions<CallStacksOptions> _callStacksOptions;
@@ -564,8 +564,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         [HttpPost("parameters", Name = nameof(CaptureParameters))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
+        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [EgressValidation]
         public async Task<ActionResult> CaptureParameters(
@@ -580,6 +581,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string name = null,
             [FromQuery]
+            string egressProvider = null,
+            [FromQuery]
             string tags = null)
         {
             if (!_parameterCapturingOptions.Value.GetEnabled())
@@ -590,10 +593,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
             TimeSpan duration = Utilities.ConvertSecondsToTimeSpan(durationSeconds);
 
-            return await InvokeForProcess(async processInfo =>
+            return await InvokeForProcess(processInfo =>
             {
-                IInProcessOperation operation = _captureParametersFactory.Create(processInfo.EndpointInfo, configuration, duration);
-                return await InProcessResult(Utilities.ArtifactType_Parameters, processInfo, operation, tags);
+                CapturedParameterFormat format = ContentTypeUtilities.ComputeCapturedParameterFormat(Request.GetTypedHeaders().Accept) ?? CapturedParameterFormat.JsonSequence;
+
+                IArtifactOperation operation = _captureParametersFactory.Create(processInfo.EndpointInfo, configuration, duration, format);
+
+                return Result(
+                    Utilities.ArtifactType_Parameters,
+                    egressProvider,
+                    operation,
+                    processInfo,
+                    tags,
+                    format != CapturedParameterFormat.PlainText);
             }, processKey, Utilities.ArtifactType_Parameters);
         }
 

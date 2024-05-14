@@ -4,6 +4,7 @@
 using Microsoft.Extensions.Options;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
@@ -15,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// <summary>
     /// Communicates with the profiler, using a Unix Domain Socket.
     /// </summary>
-    internal sealed class ProfilerChannel
+    public sealed class ProfilerChannel
     {
         private const int MaxPayloadSize = 4 * 1024 * 1024; // 4 MiB
 
@@ -30,7 +31,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             if (message.Payload.Length > MaxPayloadSize)
             {
-                throw new ArgumentException(nameof(message));
+                throw new ArgumentException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        Strings.ErrorMessage_ProfilerPayloadTooLarge,
+                        message.Payload.Length,
+                        MaxPayloadSize),
+                    nameof(message));
             }
 
             string channelPath = ComputeChannelPath(endpointInfo);

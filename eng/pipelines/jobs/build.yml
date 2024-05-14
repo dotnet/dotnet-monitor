@@ -30,6 +30,7 @@ parameters:
   disableSbom: false
   buildArgs: ''
   buildEnv: {}
+  buildContinueOnError: false
   # Adjust for 1ES pipeline template
   is1ESPipeline: true
   commonTemplatesFolderName: 'templates-official'
@@ -70,7 +71,7 @@ jobs:
     ${{ if in(parameters.osGroup, 'MacOS') }}:
       pool:
         name: Azure Pipelines
-        vmImage: macos-11
+        vmImage: macos-12
         os: macOS
 
     ${{ if ne(parameters.container, '') }}:
@@ -154,6 +155,7 @@ jobs:
         # Set ROOTFS_DIR for Linux cross builds
         ${{ if and(eq(parameters.enableCrossBuild, 'true'), in(parameters.osGroup, 'Linux', 'Linux_Musl')) }}:
           ROOTFS_DIR: '/crossrootfs/${{ parameters.architecture }}'
+      continueOnError: ${{ parameters.buildContinueOnError }}
 
     - ${{ each step in parameters.postBuildSteps }}:
       - ${{ step }}

@@ -11,6 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         Cpu = 0x1,
         Http = 0x2,
         Logs = 0x4,
-        Metrics = 0x8
+        Metrics = 0x8,
+        GcCollect = 0x10,
     }
 }

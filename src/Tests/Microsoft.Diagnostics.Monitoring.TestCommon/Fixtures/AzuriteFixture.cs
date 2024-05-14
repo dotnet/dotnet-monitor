@@ -186,12 +186,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
             {
                 throw new SkipTestException(_startupErrorMessage);
             }
-
-            // TODO net9.0temporary Azure for net9.0 Linux arm64 does not work correctly
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && (RuntimeInformation.ProcessArchitecture == Architecture.Arm64))
-            {
-                throw new SkipTestException("Azure for net9.0 Linux arm64 does not work correctly");
-            }
         }
 
         private void ParseAzuriteStartupOutput(object sender, DataReceivedEventArgs e)
