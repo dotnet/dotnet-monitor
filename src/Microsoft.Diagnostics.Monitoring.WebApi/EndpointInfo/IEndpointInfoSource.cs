@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal interface IEndpointInfo
+    public interface IEndpointInfo
     {
-        IpcEndpoint Endpoint { get; }
+        internal IpcEndpoint Endpoint { get; }
 
         int ProcessId { get; }
 

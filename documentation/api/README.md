@@ -24,6 +24,6 @@ The following are the root routes on the HTTP API surface.
 | [`/info`](info.md) | Gets info about `dotnet monitor`. | 6.0 |
 | [`/operations`](operations.md) | Gets egress operation status or cancels operations. | 6.0 |
 | [`/collectionrules`](collectionrules.md) | Gets the current state of collection rules. | 6.3 |
-|  [`/parameters`](parameters.md) | Captures parameters for one or more methods each time they are called. | 8.0 RC 1 |
+| [`/parameters`](parameters.md) | Captures parameters for one or more methods each time they are called. | 8.0 RC 1 |
 
 The `dotnet monitor` tool is able to detect .NET Core 3.1 and .NET 5+ applications. When connecting to a .NET Core 3.1 application, some information may not be available and is called out in the documentation.

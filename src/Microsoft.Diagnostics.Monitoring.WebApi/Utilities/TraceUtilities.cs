@@ -44,6 +44,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 configurations.Add(new MetricSourceConfiguration(options.GetIntervalSeconds(), defaultProviders));
             }
+            if (profile.HasFlag(Models.TraceProfile.GcCollect))
+            {
+                configurations.Add(new GcCollectConfiguration());
+            }
 
             return new AggregateSourceConfiguration(configurations.ToArray());
         }
@@ -69,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             return new EventPipeProviderSourceConfiguration(
                 providers: providers.ToArray(),
-                requestRundown: requestRundown,
+                rundownKeyword: requestRundown ? EventPipeSession.DefaultRundownKeyword : 0,
                 bufferSizeInMB: bufferSizeInMB);
         }
     }

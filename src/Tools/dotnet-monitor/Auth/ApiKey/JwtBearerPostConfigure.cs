@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
                 return;
             }
 
-            options.ConfigureApiKeyTokenValidation(configSnapshot.PublicKey);
+            options.ConfigureApiKeyTokenValidation(configSnapshot.PublicKey, configSnapshot.Issuer);
         }
     }
 }

@@ -196,15 +196,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             public static class SubScenarios
             {
-                public const string ExpectLogStatement = nameof(ExpectLogStatement);
-                public const string DoNotExpectLogStatement = nameof(DoNotExpectLogStatement);
                 public const string AspNetApp = nameof(AspNetApp);
                 public const string NonAspNetApp = nameof(NonAspNetApp);
             }
 
             public static class Commands
             {
-                public const string Validate = nameof(Validate);
                 public const string Continue = nameof(Continue);
             }
         }

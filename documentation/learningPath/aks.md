@@ -9,7 +9,7 @@ In addition to its availability as a .NET CLI tool, the `dotnet monitor` tool is
 
 This workflow takes your local development copy of `dotnet-monitor`, patches it with a local development copy of the [.NET Core Diagnostics Repo](https://github.com/dotnet/diagnostics#net-core-diagnostics-repo), and makes it available as an image for you to consume in an ACR (Azure Container Registry). Note that there are many other ways to do this - this is meant to serve as a basic template that can be adapted to match your needs.
 
-1. Open `pwsh` and run the [generate-dev-sln script](https://github.com/dotnet/dotnet-monitor/blob/963f5824e2e4cef8fb6a969a03abb7d26e7eec56/generate-dev-sln.ps1), providing a path to your local copy of the diagnostics repo.
+1. Open `pwsh` and run the [generate-dev-sln script](https://github.com/dotnet/dotnet-monitor/blob/8e99fe93461686b50ea276b406c5046b252b05e4/generate-dev-sln.ps1), providing a path to your local copy of the diagnostics repo.
 
 > [!NOTE]
 > If your changes do not involve the [.NET Core Diagnostics Repo](https://github.com/dotnet/diagnostics#net-core-diagnostics-repo), you don't need to complete this step.

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal class StorageOptions
+    public class StorageOptions
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics;
 using Xunit;
 using static Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.ObjectFormatting.Formatters.DebuggerDisplay.DebuggerDisplayFormatter;
+using static Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing.ParameterCapturingEvents;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCapturing.ObjectFormatting.Formatters.DebuggerDisplay
 {
@@ -21,6 +22,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         }
         private sealed class DerivedWithBaseDebuggerDisplay : DebuggerDisplayClass { }
         private sealed class NoDebuggerDisplay { }
+
+        [DebuggerDisplay("Count = {Count} NullField = {NullField}")]
+        private sealed class DebuggerDisplayClassWithNullField
+        {
+            public int Count { get; set; }
+
+            public static string NullField => null;
+        }
 
         [Theory]
         [InlineData(typeof(NoDebuggerDisplay), null)]
@@ -75,10 +84,31 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             Assert.NotNull(factoryResult);
 
             // Act
-            string formattedResult = factoryResult.Formatter(testObj);
+            ObjectFormatterResult formattedResult = factoryResult.Formatter(testObj);
 
             // Assert
-            Assert.Equal(FormattableString.Invariant($"'Count = {testObj.Count}'"), formattedResult);
+            Assert.Equal(FormattableString.Invariant($"'Count = {testObj.Count}'"), formattedResult.FormattedValue);
+            Assert.Equal(ParameterEvaluationResult.Success, formattedResult.EvalResult);
+        }
+
+        [Fact]
+        public void GetDebuggerDisplayFormatter_FormatsNull()
+        {
+            // Arrange
+            DebuggerDisplayClassWithNullField testObj = new()
+            {
+                Count = 10
+            };
+
+            FormatterFactoryResult factoryResult = DebuggerDisplayFormatter.GetDebuggerDisplayFormatter(testObj.GetType());
+            Assert.NotNull(factoryResult);
+
+            // Act
+            ObjectFormatterResult formattedResult = factoryResult.Formatter(testObj);
+
+            // Assert
+            Assert.Equal(FormattableString.Invariant($"'Count = {testObj.Count} NullField = null'"), formattedResult.FormattedValue);
+            Assert.Equal(ParameterEvaluationResult.Success, formattedResult.EvalResult);
         }
     }
 }
