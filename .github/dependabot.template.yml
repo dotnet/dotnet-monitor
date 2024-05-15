@@ -9,7 +9,6 @@
 #@ def getTfms():
 #@   return {
 #@     "8": [ "net8.0", "net7.0", "net6.0" ],
-#@     "7": [ "net7.0", "net6.0" ],
 #@     "6": [ "net6.0", "netcoreapp3.1" ]
 #@   }
 #@ end
@@ -20,7 +19,6 @@
 #@   return [
 #@     struct.encode({"name": "main", "majorVersion": "8"}),
 #@     struct.encode({"name": "release/8.0", "majorVersion": "8"}),
-#@     struct.encode({"name": "release/7.x", "majorVersion": "7"}),
 #@     struct.encode({"name": "release/6.x", "majorVersion": "6"}),
 #@   ]
 #@ end
