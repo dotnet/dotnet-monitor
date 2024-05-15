@@ -198,6 +198,14 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
  ```
 </details>
 
+### Authenticating to S3 using service accounts
+If running workloads in kubernetes it is common to authenticate with AWS via kubernetes service accounts ([AWS Documentation](https://docs.aws.amazon.com/eks/latest/userguide/pod-configuration.html)). This is supported in dotnet monitor if none of: `accessKeyId`, `secretAccessKey`, `awsProfileName` are specified. In this case dotnet monitor will fallback to load credentials to login using AWS default defined environment variables, this means that workloads running in EKS can utilise service accounts as discussed in the above AWS documentation.
+
+Specifically the use of service accounts set the following environment variables which are detected by AWS SDK and used for authentication as a fallback:
+ - AWS_REGION
+ - AWS_ROLE_ARN
+ - AWS_WEB_IDENTITY_TOKEN_FILE
+
 ## Filesystem egress provider
 
 | Name | Type | Description |
