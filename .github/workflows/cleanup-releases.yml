@@ -1,4 +1,4 @@
-run-name: 'Cleanup releases'
+name: 'Cleanup releases'
 
 on:
   schedule: # Run once a week to detect and manage out-of-support versions.
