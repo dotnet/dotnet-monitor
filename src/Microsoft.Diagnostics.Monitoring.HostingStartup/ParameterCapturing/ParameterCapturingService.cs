@@ -9,9 +9,7 @@ using Microsoft.Diagnostics.Monitoring.StartupHook.Monitoring;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -30,11 +28,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         private readonly ParameterCapturingEventSource _eventSource = new();
         private readonly AsyncParameterCapturingEventSource? _asyncEventSource;
         private readonly ParameterCapturingPipeline? _pipeline;
-        private readonly ParameterCapturingLogger? _parameterCapturingLogger;
 
-        private readonly ILogger? _logger;
-
-        public ParameterCapturingService(IServiceProvider services)
+        public ParameterCapturingService()
         {
             using IDisposable _ = MonitorExecutionContextTracker.MonitorScope();
 
@@ -52,19 +47,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
                     StartupHookCommand.StopCapturingParameters,
                     OnStopMessage);
 
-                IMethodDescriptionValidator _methodDescriptionValidator = services.GetRequiredService<IMethodDescriptionValidator>();
+                IMethodDescriptionValidator _methodDescriptionValidator = new MethodDescriptionValidator();
 
-                _logger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.Service>>()
-                    ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
-
-                ILogger userLogger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.UserCode>>()
-                    ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
-
-                ILogger systemLogger = services.GetService<ILogger<DotnetMonitor.ParameterCapture.SystemCode>>()
-                    ?? throw new NotSupportedException(ParameterCapturingStrings.FeatureUnsupported_NoLogger);
-
-                _parameterCapturingLogger = new(userLogger, systemLogger);
-                FunctionProbesManager probeManager = new(_logger);
+                FunctionProbesManager probeManager = new();
 
                 _pipeline = new ParameterCapturingPipeline(probeManager, this, _methodDescriptionValidator);
 
@@ -84,32 +69,21 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
         public void CapturingStart(StartCapturingParametersPayload request, IList<MethodInfo> methods)
         {
             _eventSource.CapturingStart(request.RequestId);
-            _logger?.LogInformation(
-                ParameterCapturingStrings.StartParameterCapturingFormatString,
-                request.Duration,
-                methods.Count);
         }
 
         public void CapturingStop(Guid requestId)
         {
             _eventSource.CapturingStop(requestId);
-            _logger?.LogInformation(ParameterCapturingStrings.StopParameterCapturing);
         }
 
         public void FailedToCapture(Guid requestId, ParameterCapturingEvents.CapturingFailedReason reason, string details)
         {
             _eventSource.FailedToCapture(requestId, reason, details);
-            if (reason == ParameterCapturingEvents.CapturingFailedReason.UnresolvedMethods)
-            {
-                _logger?.LogWarning(details);
-            }
         }
 
         public void ProbeFault(Guid requestId, InstrumentedMethod faultingMethod)
         {
-            // TODO: Report back this fault on ParameterCapturingEventSource. 
-            _logger?.LogWarning(ParameterCapturingStrings.StoppingParameterCapturingDueToProbeFault, faultingMethod.MethodTemplateString.Template);
-
+            // TODO: Report back this fault on ParameterCapturingEventSource.
             try
             {
                 _pipeline?.RequestStop(requestId);
@@ -128,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         private void OnStartMessage(StartCapturingParametersPayload payload)
         {
-            if (!IsAvailable() || _pipeline == null || _parameterCapturingLogger == null || _asyncEventSource == null)
+            if (!IsAvailable() || _pipeline == null || _asyncEventSource == null)
             {
                 BroadcastServiceState();
                 return;
@@ -233,7 +207,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
             SharedInternals.MessageDispatcher?.UnregisterCallback(StartupHookCommand.StopCapturingParameters);
 
             _pipeline?.Dispose();
-            _parameterCapturingLogger?.Dispose();
 
             _asyncEventSource?.Dispose();
 
