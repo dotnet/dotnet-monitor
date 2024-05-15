@@ -71,7 +71,8 @@
       "supportedFrameworks": [
         "net6.0",
         "net7.0"
-      ]
+      ],
+      "outOfSupportDate": "2024-05-14T00:00:00.000Z"
     },
     "9.0": {
       "tag": "v9.0.0-preview.3.24205.3",
