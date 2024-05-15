@@ -1,6 +1,7 @@
 <Project>
   <ItemGroup>
     <PackageVersion Include="AWSSDK.S3" Version="$(AwsSdkS3Version)" />
+    <PackageVersion Include="AWSSDK.SecurityToken" Version="$(AwsSdkSecurityTokenVersion)" />
     <PackageVersion Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
     <PackageVersion Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
     <PackageVersion Include="Azure.Storage.Queues" Version="$(AzureStorageQueuesVersion)" />
