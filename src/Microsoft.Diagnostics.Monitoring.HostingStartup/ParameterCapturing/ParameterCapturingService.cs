@@ -12,6 +12,7 @@ using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -83,7 +84,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 
         public void ProbeFault(Guid requestId, InstrumentedMethod faultingMethod)
         {
-            // TODO: Report back this fault on ParameterCapturingEventSource.
+            _eventSource.FailedToCapture(
+                requestId,
+                ParameterCapturingEvents.CapturingFailedReason.ProbeFaulted,
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    ParameterCapturingStrings.StoppingParameterCapturingDueToProbeFault,
+                    faultingMethod.MethodSignature.ModuleName,
+                    faultingMethod.MethodSignature.TypeName,
+                    faultingMethod.MethodSignature.MethodName
+                ));
             try
             {
                 _pipeline?.RequestStop(requestId);
