@@ -219,7 +219,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             {
                 case ParameterCapturingEvents.CapturingFailedReason.UnresolvedMethods:
                 case ParameterCapturingEvents.CapturingFailedReason.InvalidRequest:
-                case ParameterCapturingEvents.CapturingFailedReason.ProbeFaulted:
                     ex = new MonitoringException(args.Details);
                     break;
                 default:
