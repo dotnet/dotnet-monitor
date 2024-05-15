@@ -62,15 +62,6 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cancellation has been requested during probe installation. Cancellation tokens request state (Provided:{isProvidedTokenCancelled}, Disposal:{isDisposalTokenCancelled})..
-        /// </summary>
-        internal static string CancellationRequestedDuringProbeInstallation {
-            get {
-                return ResourceManager.GetString("CancellationRequestedDuringProbeInstallation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The following method descriptions are not allowed: {0}.
         /// </summary>
         internal static string DeniedMethodsFormatString {
@@ -107,43 +98,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to create an ILogger instance in the target process..
-        /// </summary>
-        internal static string FeatureUnsupported_NoLogger {
-            get {
-                return ResourceManager.GetString("FeatureUnsupported_NoLogger", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {callbackName}, hr={hr}.
-        /// </summary>
-        internal static string ProbeManagementCallback {
-            get {
-                return ResourceManager.GetString("ProbeManagementCallback", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Started parameter capturing for {duration} on {numberOfMethods} method(s)..
-        /// </summary>
-        internal static string StartParameterCapturingFormatString {
-            get {
-                return ResourceManager.GetString("StartParameterCapturingFormatString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stopped parameter capturing..
-        /// </summary>
-        internal static string StopParameterCapturing {
-            get {
-                return ResourceManager.GetString("StopParameterCapturing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parameter capturing encountered an internal error when processing &apos;{method}&apos;, stopping..
+        ///   Looks up a localized string similar to Parameter capturing encountered an internal error when processing &apos;{0}!{1}.{2}&apos;, stopping..
         /// </summary>
         internal static string StoppingParameterCapturingDueToProbeFault {
             get {
