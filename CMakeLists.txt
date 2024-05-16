@@ -41,9 +41,4 @@ if(CLR_CMAKE_HOST_WIN32)
         )
 endif(CLR_CMAKE_HOST_WIN32)
 
-if (MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Qspectre")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Qspectre")
-endif()
-
 add_subdirectory(src/Profilers)
