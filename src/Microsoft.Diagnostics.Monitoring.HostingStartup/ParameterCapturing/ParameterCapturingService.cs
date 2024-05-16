@@ -9,13 +9,13 @@ using Microsoft.Diagnostics.Monitoring.StartupHook.Monitoring;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
-using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using BackgroundService = Microsoft.Extensions.Hosting.BackgroundService;
 
 namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing
 {
