@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             {
                 try
                 {
-                    await ExecuteAsync(_cts.Token);
+                    await ExecuteAsync(_cts.Token).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
                 {
