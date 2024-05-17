@@ -10,43 +10,38 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
     internal abstract class BackgroundService : IDisposable
     {
         private readonly CancellationTokenSource _cts = new();
-        private Task? _executeTask;
         private long _disposedState;
+
+        public Task? ExecutingTask { get; private set; }
 
         public void Start()
         {
-            _executeTask = Task.Run(async () =>
+            ExecutingTask = Task.Run(async () =>
             {
-                try
-                {
-                    await ExecuteAsync(_cts.Token).ConfigureAwait(false);
-                }
-                catch (OperationCanceledException)
-                {
-                    // Ignore
-                }
-                catch (Exception ex)
-                {
-                    BackgroundTaskException = ex;
-                }
-            });
+                await ExecuteAsync(_cts.Token).ConfigureAwait(false);
+            }, _cts.Token);
         }
 
         public void Stop()
         {
             _cts.Cancel();
-        }
 
-        public Exception? BackgroundTaskException { get; private set; }
+            try
+            {
+                ExecutingTask?.Wait(TimeSpan.FromSeconds(1));
+            }
+            catch
+            {
+                // ignore
+            }
+        }
 
         public virtual void Dispose()
         {
             if (!DisposableHelper.CanDispose(ref _disposedState))
                 return;
 
-            _executeTask?.Wait();
-            _executeTask = null;
-
+            _cts.Cancel();
             _cts.Dispose();
         }
 

@@ -9,56 +9,30 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 {
     internal sealed class MockBackgroundService : BackgroundService, IDisposable
     {
-        private readonly Task _backgroundTask;
-        private readonly Action _postDisposeAction;
+        private readonly Func<CancellationToken, Task> _backgroundFunc;
 
         public MockBackgroundService()
         {
-            _backgroundTask = Task.CompletedTask;
-            _postDisposeAction = () => { };
+            _backgroundFunc = _ => Task.CompletedTask;
         }
 
-        public MockBackgroundService(Task backgroundTaskInput)
+        public MockBackgroundService(Func<CancellationToken, Task> backgroundFunc)
         {
-            _backgroundTask = backgroundTaskInput;
-            _postDisposeAction = () => { };
-        }
-
-        public MockBackgroundService(Task backgroundTaskInput, Action postDisposeAction)
-        {
-            _backgroundTask = backgroundTaskInput;
-            _postDisposeAction = postDisposeAction;
+            _backgroundFunc = backgroundFunc;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             BackgroundTaskStarted.SetResult();
 
-            await _backgroundTask;
-
-            if (stoppingToken.IsCancellationRequested)
-            {
-                BackgroundTaskWasCancelled = true;
-            }
-
-            BackgroundTaskEnded.SetResult();
+            await _backgroundFunc(stoppingToken);
         }
 
         public override void Dispose()
         {
-            DisposeStarted.SetResult();
-
             base.Dispose();
-
-            _postDisposeAction();
         }
 
         public TaskCompletionSource BackgroundTaskStarted { get; } = new();
-
-        public TaskCompletionSource BackgroundTaskEnded { get; } = new();
-
-        public TaskCompletionSource DisposeStarted { get; } = new();
-
-        public bool BackgroundTaskWasCancelled { get; private set; }
     }
 }

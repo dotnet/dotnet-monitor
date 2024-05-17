@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -34,81 +35,78 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         public async Task StopTriggersCancellation()
         {
             // Arrange
-            TaskCompletionSource backgroundTaskCompletion = new();
-            using MockBackgroundService service = new MockBackgroundService(backgroundTaskCompletion.Task);
+            using MockBackgroundService service = new MockBackgroundService(async (CancellationToken stoppingToken) =>
+            {
+                await Task.Delay(Timeout.Infinite, stoppingToken);
+            });
 
             // Act
             service.Start();
             await service.BackgroundTaskStarted.Task;
+            service.Stop();
 
             // Assert
-            Assert.False(service.BackgroundTaskWasCancelled);
-
-            service.Stop();
-            backgroundTaskCompletion.SetResult();
-            await service.BackgroundTaskEnded.Task;
-
-            Assert.True(service.BackgroundTaskWasCancelled);
-            Assert.Null(service.BackgroundTaskException);
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => service.ExecutingTask!);
         }
 
         [Fact]
-        public async Task DisposeWaitsForTheBackgroundTask()
+        public async Task StopWaitsForTheBackgroundTask()
         {
             // Arrange
             object lockObj = new();
-            int callOrderMarker = 1;
+            bool stopCompleted = false;
+            bool taskCompleted = false;
             TaskCompletionSource backgroundTaskCompletion = new();
+            TaskCompletionSource beforeStopCompletion = new();
 
-            // If Dispose() completes first, callOrderMarker will be 10
-            // Otherwise, callOrderMarker will be 20
-            void OnDisposeCompleted()
-            {
-                lock (lockObj)
-                {
-                    callOrderMarker *= 10;
-                }
-            }
-
-            async Task BackgroundWork()
+            MockBackgroundService service = new MockBackgroundService(async _ =>
             {
                 await backgroundTaskCompletion.Task;
                 lock (lockObj)
                 {
-                    callOrderMarker += 1;
+                    Assert.False(stopCompleted, "Stop completed before the background task.");
+                    taskCompleted = true;
                 }
-            }
-
-            MockBackgroundService service = new MockBackgroundService(BackgroundWork(), OnDisposeCompleted);
+            });
 
             // Act
             service.Start();
             await service.BackgroundTaskStarted.Task;
-            service.Stop();
 
-            Task disposeTask = Task.Run(service.Dispose);
+            Task stopTask = Task.Run(async () =>
+            {
+                await Task.Yield();
+                beforeStopCompletion.SetResult();
+                service.Stop();
 
-            await service.DisposeStarted.Task;
-            await Task.Delay(100); // Ensure that Dispose is waiting for the background task to complete
+                lock (lockObj)
+                {
+                    Assert.True(taskCompleted, "Stop completed before the background task.");
+                    stopCompleted = true;
+                }
+            });
+
+            await beforeStopCompletion.Task;
+            // Wait a bit to ensure Stop() is waiting for the background task to complete
+            await Task.Delay(TimeSpan.FromMilliseconds(100));
+
             backgroundTaskCompletion.SetResult();
 
-            await disposeTask;
+            await stopTask;
 
             // Assert
-            Assert.Null(service.BackgroundTaskException);
-            Assert.Equal(20, callOrderMarker);
+            Assert.False(service.ExecutingTask?.IsFaulted);
         }
 
         [Fact]
         public async Task BackgroundTaskExceptionIsCaptured()
         {
             // Arrange
-            static async Task BackgroundWork()
+            MockBackgroundService service = new MockBackgroundService(async _ =>
             {
                 await Task.Yield();
                 throw new NotImplementedException();
-            }
-            MockBackgroundService service = new MockBackgroundService(BackgroundWork());
+            });
 
             // Act
             service.Start();
@@ -118,7 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             service.Dispose();
 
             // Assert
-            Assert.IsType<NotImplementedException>(service.BackgroundTaskException);
+            await Assert.ThrowsAsync<NotImplementedException>(() => service.ExecutingTask!);
         }
     }
 }
