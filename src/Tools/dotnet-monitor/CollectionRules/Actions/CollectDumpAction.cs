@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Dump, EndpointInfo);
 
-                IArtifactOperation dumpOperation = _dumpOperationFactory.Create(EndpointInfo, dumpType);
+                IArtifactOperation dumpOperation = _dumpOperationFactory.Create(ProcessInfo, dumpType);
 
                 EgressOperation egressOperation = new EgressOperation(
                     dumpOperation,

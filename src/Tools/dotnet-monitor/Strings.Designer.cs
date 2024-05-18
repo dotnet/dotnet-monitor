@@ -367,6 +367,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DumpFileTemplate contains an invalid template specifier {0}..
+        /// </summary>
+        internal static string ErrorMessage_InvalidDumpFileTemplateSpecifier {
+            get {
+                return ResourceManager.GetString("ErrorMessage_InvalidDumpFileTemplateSpecifier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The configuration parameter {0} must be contain a valid jwk, the value &apos;{1}&apos; could not be parsed as a Json Web Key. The expected format is a Json Web Key written as JSON which is base64Url encoded. {2}.
         /// </summary>
         internal static string ErrorMessage_InvalidJwk {

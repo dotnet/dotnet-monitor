@@ -1442,6 +1442,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The template used for the name of dump files. Defaults to a name based on the current time and OS..
+        /// </summary>
+        public static string DisplayAttributeDescription_StorageOptions_DumpFileNameTemplate {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_StorageOptions_DumpFileNameTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The location for temporary dump files. Defaults to the temp folder..
         /// </summary>
         public static string DisplayAttributeDescription_StorageOptions_DumpTempFolder {

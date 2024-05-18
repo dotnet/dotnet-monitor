@@ -18,6 +18,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_StorageOptions_DumpTempFolder))]
         public string DumpTempFolder { get; set; }
 
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_StorageOptions_DumpFileNameTemplate))]
+        public string DumpFileNameTemplate { get; set; }
+
         [Experimental]
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
