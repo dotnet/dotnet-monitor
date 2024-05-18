@@ -26,10 +26,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 TimeSpan.FromSeconds(durationSeconds);
         }
 
-        public static string GetFileNameTimeStampUtcNow()
+        public static string GetFileNameTimeStamp(DateTimeOffset dt)
         {
             // spell-checker:disable-next
-            return DateTime.UtcNow.ToString("yyyyMMdd_HHmmss_fff");
+            return dt.ToString("yyyyMMdd_HHmmss_fff");
+        }
+
+        public static string GetFileNameTimeStampUtcNow()
+        {
+            return GetFileNameTimeStamp(DateTimeOffset.UtcNow);
         }
 
         public static KeyValueLogScope CreateArtifactScope(string artifactType, IEndpointInfo endpointInfo)
