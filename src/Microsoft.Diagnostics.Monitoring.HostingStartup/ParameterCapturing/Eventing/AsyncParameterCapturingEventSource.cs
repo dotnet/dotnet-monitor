@@ -94,7 +94,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.Eve
                         param.Name ?? string.Empty,
                         param.Type ?? string.Empty,
                         param.TypeModuleName ?? string.Empty,
-                        param.Value,
+                        param.Value.FormattedValue,
+                        param.Value.EvalResult,
                         param.Attributes,
                         param.IsByRef);
                 }

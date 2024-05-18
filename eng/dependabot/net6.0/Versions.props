@@ -10,6 +10,6 @@
     <!-- Microsoft.Extensions.Logging.Console -->
     <MicrosoftExtensionsLoggingConsole60Version>6.0.0</MicrosoftExtensionsLoggingConsole60Version>
     <!-- Microsoft.NETCore.App -->
-    <MicrosoftNETCoreApp60Version>6.0.29</MicrosoftNETCoreApp60Version>
+    <MicrosoftNETCoreApp60Version>6.0.30</MicrosoftNETCoreApp60Version>
   </PropertyGroup>
 </Project>

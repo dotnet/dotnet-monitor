@@ -11,12 +11,13 @@
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" />
+    <PackageReference Include="AWSSDK.SecurityToken" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Extension.Common\Microsoft.Diagnostics.Monitoring.Extension.Common.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Compile Update="OptionsDisplayStrings.Designer.cs">
       <DependentUpon>OptionsDisplayStrings.resx</DependentUpon>
