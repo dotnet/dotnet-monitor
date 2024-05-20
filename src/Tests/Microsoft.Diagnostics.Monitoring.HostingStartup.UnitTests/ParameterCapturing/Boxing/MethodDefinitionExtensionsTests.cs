@@ -21,14 +21,16 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.ValueType_TypeSpec), 6, 17)]
         public void GetParameterBoxingInstructions_Captures_MemoryRegion_ForTypeSpecs(Type declaringType, string methodName, params int[] parameterSignatureLengths)
         {
-            MethodInfo method = declaringType.GetMethod(methodName);
+            MethodInfo? method = declaringType.GetMethod(methodName);
+            Assert.NotNull(method);
             TestCore(method, parameterSignatureLengths);
         }
 
         [Fact]
         public void GetParameterBoxingInstructions_Captures_MemoryRegion_ForTypeGenerics()
         {
-            MethodInfo method = Type.GetType($"{nameof(SampleMethods)}.GenericTestMethodSignatures`2").GetMethod("GenericParameters");
+            MethodInfo? method = Type.GetType($"{nameof(SampleMethods)}.GenericTestMethodSignatures`2")?.GetMethod("GenericParameters");
+            Assert.NotNull(method);
             int[] parameterSignatureLengths = [2, 2, 2];
             TestCore(method, parameterSignatureLengths);
         }

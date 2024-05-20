@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         {
             public int Count { get; set; }
 
-            public static string NullField => null;
+            public static string? NullField => null;
         }
 
         [Theory]
@@ -80,7 +80,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 Count = 10
             };
 
-            FormatterFactoryResult factoryResult = DebuggerDisplayFormatter.GetDebuggerDisplayFormatter(testObj.GetType());
+            FormatterFactoryResult? factoryResult = DebuggerDisplayFormatter.GetDebuggerDisplayFormatter(testObj.GetType());
             Assert.NotNull(factoryResult);
 
             // Act
@@ -100,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 Count = 10
             };
 
-            FormatterFactoryResult factoryResult = DebuggerDisplayFormatter.GetDebuggerDisplayFormatter(testObj.GetType());
+            FormatterFactoryResult? factoryResult = DebuggerDisplayFormatter.GetDebuggerDisplayFormatter(testObj.GetType());
             Assert.NotNull(factoryResult);
 
             // Act

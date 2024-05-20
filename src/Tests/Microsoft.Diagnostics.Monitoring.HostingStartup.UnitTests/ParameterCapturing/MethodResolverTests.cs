@@ -162,7 +162,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             return new MethodDescription
             {
                 ModuleName = declaringType.Module.Name,
-                TypeName = declaringType.FullName,
+                TypeName = declaringType.FullName ?? string.Empty,
                 MethodName = methodName
             };
         }

@@ -88,8 +88,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public void CacheMethods_PassesThrough()
         {
             // Arrange
-            List<MethodInfo> expectedMethods = [(MethodInfo)MethodBase.GetCurrentMethod()];
-            IList<MethodInfo> actualMethods = null;
+            List<MethodInfo> expectedMethods = [(MethodInfo)MethodBase.GetCurrentMethod()!];
+            IList<MethodInfo> actualMethods = [];
 
             TaskCompletionSource requestStop = new();
             CaptureLimitPolicyProbes probes = new(new TestFunctionProbes(
@@ -113,7 +113,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             object[] expectedArgs = [new Uri("https://www.example.com"), 10];
 
             ulong? actualUniquifier = null;
-            object[] actualArgs = null;
+            object[] actualArgs = [];
 
             TaskCompletionSource requestStop = new();
             CaptureLimitPolicyProbes probes = new(new TestFunctionProbes(
