@@ -68,7 +68,6 @@ extends:
         parameters:
           jobTemplate: /eng/pipelines/jobs/build-test.yml@self
           includeArm64: ${{ ne(variables['System.TeamProject'], 'public') }}
-          includeDebug: true
           jobParameters:
             publishArtifacts: ${{ and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}
             testGroup: ${{ parameters.testGroup }}
