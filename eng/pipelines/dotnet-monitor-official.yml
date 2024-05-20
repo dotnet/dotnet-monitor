@@ -83,7 +83,6 @@ extends:
         parameters:
           jobTemplate: /eng/pipelines/jobs/build-binaries.yml@self
           includeArm64: ${{ or(ne(variables['System.TeamProject'], 'public'), eq(parameters.useHelix, 'true')) }}
-          includeDebug: true
           jobParameters:
             publishBinaries: true
             publishArtifacts: ${{ and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}
