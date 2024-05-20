@@ -28,9 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         {
             public int Count { get; set; }
 
-#pragma warning disable CS8603 // Possible null reference return.
-            public static string NullField => null;
-#pragma warning restore CS8603 // Possible null reference return.
+            public static string? NullField => null;
         }
 
         [Theory]
