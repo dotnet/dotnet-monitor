@@ -219,11 +219,11 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 ]);
 
         private static void TestCore(
-                                                                    MethodInfo methodInfo,
-                                                                    string expectedMethodName,
-                                                                    string expectedDeclaringType,
-                                                                    string expectedDeclaringTypeModuleName,
-                                                                    ExpectedParameterSignature[] expectedParameters)
+            MethodInfo? methodInfo,
+            string expectedMethodName,
+            string expectedDeclaringType,
+            string expectedDeclaringTypeModuleName,
+            ExpectedParameterSignature[] expectedParameters)
         {
             // Arrange
             Assert.NotNull(methodInfo);
@@ -249,9 +249,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 
         private sealed record ExpectedParameterSignature(Type paramType)
         {
-            public string Name;
+            public string? Name;
 
-            public string Type;
+            public string? Type;
 
             public string TypeModuleName = paramType.Module.Name;
 

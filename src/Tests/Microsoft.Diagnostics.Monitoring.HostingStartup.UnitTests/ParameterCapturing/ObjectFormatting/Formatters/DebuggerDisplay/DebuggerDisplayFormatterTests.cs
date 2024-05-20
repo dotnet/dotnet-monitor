@@ -28,7 +28,9 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         {
             public int Count { get; set; }
 
+#pragma warning disable CS8603 // Possible null reference return.
             public static string NullField => null;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         [Theory]
@@ -80,7 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 Count = 10
             };
 
-            FormatterFactoryResult factoryResult = DebuggerDisplayFormatter.GetDebuggerDisplayFormatter(testObj.GetType());
+            FormatterFactoryResult? factoryResult = DebuggerDisplayFormatter.GetDebuggerDisplayFormatter(testObj.GetType());
             Assert.NotNull(factoryResult);
 
             // Act
@@ -100,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 Count = 10
             };
 
-            FormatterFactoryResult factoryResult = DebuggerDisplayFormatter.GetDebuggerDisplayFormatter(testObj.GetType());
+            FormatterFactoryResult? factoryResult = DebuggerDisplayFormatter.GetDebuggerDisplayFormatter(testObj.GetType());
             Assert.NotNull(factoryResult);
 
             // Act

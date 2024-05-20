@@ -79,7 +79,7 @@ namespace SampleMethods
         {
             try
             {
-                return myObject.ToString();
+                return myObject.ToString() ?? string.Empty;
             }
             catch
             {

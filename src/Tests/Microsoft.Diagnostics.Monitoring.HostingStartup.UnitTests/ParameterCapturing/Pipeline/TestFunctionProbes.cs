@@ -10,10 +10,10 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
 {
     internal sealed class TestFunctionProbes : IFunctionProbes
     {
-        private readonly Func<ulong, object[], bool> _onEnterProbe;
-        private readonly Action<IList<MethodInfo>> _onCacheMethods;
+        private readonly Func<ulong, object[], bool>? _onEnterProbe;
+        private readonly Action<IList<MethodInfo>>? _onCacheMethods;
 
-        public TestFunctionProbes(Func<ulong, object[], bool> onEnterProbe = null, Action<IList<MethodInfo>> onCacheMethods = null)
+        public TestFunctionProbes(Func<ulong, object[], bool>? onEnterProbe = null, Action<IList<MethodInfo>>? onCacheMethods = null)
         {
             _onEnterProbe = onEnterProbe;
             _onCacheMethods = onCacheMethods;

@@ -49,7 +49,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public void GetBoxingInstructions_Detects_UnsupportedParameters(Type declaringType, string methodName, params bool[] supported)
         {
             // Arrange
-            MethodInfo method = declaringType.GetMethod(methodName);
+            MethodInfo? method = declaringType.GetMethod(methodName);
+            Assert.NotNull(method);
 
             // Act
             bool[] supportedParameters = BoxingInstructions.AreParametersSupported(BoxingInstructions.GetBoxingInstructions(method));
@@ -62,7 +63,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         public void GetBoxingInstructions_Handles_GenericParameters()
         {
             // Arrange
-            MethodInfo method = Type.GetType($"{nameof(SampleMethods)}.GenericTestMethodSignatures`2").GetMethod("GenericParameters");
+            MethodInfo? method = Type.GetType($"{nameof(SampleMethods)}.GenericTestMethodSignatures`2")?.GetMethod("GenericParameters");
+            Assert.NotNull(method);
             bool[] supported = new bool[] { true, true, true, true };
 
             // Act
@@ -90,7 +92,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 SpecialCaseBoxingTypes.Single,
                 SpecialCaseBoxingTypes.Double,
             ];
-            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.Primitives));
+            MethodInfo? method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.Primitives));
+            Assert.NotNull(method);
 
             // Act
             ParameterBoxingInstructions[] actualInstructions = BoxingInstructions.GetBoxingInstructions(method);
@@ -108,7 +111,8 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
                 SpecialCaseBoxingTypes.Object,
                 SpecialCaseBoxingTypes.Object,
             ];
-            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.BuiltInReferenceTypes));
+            MethodInfo? method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.BuiltInReferenceTypes));
+            Assert.NotNull(method);
 
             // Act
             ParameterBoxingInstructions[] actualInstructions = BoxingInstructions.GetBoxingInstructions(method);
@@ -140,14 +144,14 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         [InlineData(typeof(StaticTestMethodSignatures), nameof(StaticTestMethodSignatures.VarArgs))]
         public void ReflectionAndSignatureDecoder_Contract_InSync(Type declaringType, string methodName)
         {
-            MethodInfo method = declaringType.GetMethod(methodName);
+            MethodInfo? method = declaringType.GetMethod(methodName);
             ReflectionAndSignatureDecoder_Contract_InSyncCore(method);
         }
 
         [Fact]
         public void ReflectionAndSignatureDecoder_Contract_Generics_InSync()
         {
-            MethodInfo method = Type.GetType($"{nameof(SampleMethods)}.GenericTestMethodSignatures`2").GetMethod("GenericParameters");
+            MethodInfo? method = Type.GetType($"{nameof(SampleMethods)}.GenericTestMethodSignatures`2")?.GetMethod("GenericParameters");
             ReflectionAndSignatureDecoder_Contract_InSyncCore(method);
         }
 
@@ -155,13 +159,13 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
         /// Tests if GetBoxingInstructionsFromReflection is in sync with the signature decoder support for a given method's parameters.
         /// </summary>
         /// <param name="method">The method whose parameters to test.</param>
-        private static void ReflectionAndSignatureDecoder_Contract_InSyncCore(MethodInfo method)
+        private static void ReflectionAndSignatureDecoder_Contract_InSyncCore(MethodInfo? method)
         {
             Assert.NotNull(method);
 
             ParameterInfo[] parameters = method.GetParameters();
 
-            ParameterBoxingInstructions[] signatureDecoderInstructions = BoxingInstructions.GetAncillaryBoxingInstructionsFromMethodSignature(method); ;
+            ParameterBoxingInstructions[]? signatureDecoderInstructions = BoxingInstructions.GetAncillaryBoxingInstructionsFromMethodSignature(method);
             Assert.NotNull(signatureDecoderInstructions);
             Assert.Equal(parameters.Length, signatureDecoderInstructions.Length);
 

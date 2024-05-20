@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests.ParameterCap
             }
             Assert.NotNull(evaluator);
 
-            object result = evaluator.Value.Evaluate(obj);
+            object? result = evaluator.Value.Evaluate(obj);
 
             // Assert
             Assert.Equal(expected, result);
