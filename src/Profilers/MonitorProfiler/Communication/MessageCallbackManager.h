@@ -4,7 +4,7 @@
 #pragma once
 
 #include <unordered_map>
-#include <mutex>
+#include <shared_mutex>
 #include <functional>
 #include "cor.h"
 #include "corprof.h"
@@ -16,11 +16,12 @@ class MessageCallbackManager
 {
     public:
         HRESULT DispatchMessage(const IpcMessage& message);
+        bool IsRegistered(unsigned short commandSet);
         bool TryRegister(unsigned short commandSet, std::function<HRESULT (const IpcMessage& message)> callback);
         bool TryRegister(unsigned short commandSet, ManagedMessageCallback pCallback);
         void Unregister(unsigned short commandSet);
     private:
         bool TryGetCallback(unsigned short commandSet, std::function<HRESULT (const IpcMessage& message)>& callback);
         std::unordered_map<unsigned short, std::function<HRESULT (const IpcMessage& message)>> m_callbacks;
-        std::mutex m_mutex;
+        std::shared_mutex m_mutex;
 };
