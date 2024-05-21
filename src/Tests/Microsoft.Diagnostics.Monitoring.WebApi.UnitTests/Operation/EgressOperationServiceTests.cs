@@ -138,7 +138,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
                 throw testException;
             });
 
-            TaskCompletionSource<ExecutionResult<EgressResult>> egressResultCompletionSource = new();
+            TaskCompletionSource<ExecutionResult<EgressResult>> egressResultCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
             _ = mockStore
                 .Setup(m => m.CompleteOperation(request.OperationId, It.IsAny<ExecutionResult<EgressResult>>()))
