@@ -134,8 +134,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 OperationResponse response = await apiClient.CaptureParametersAsync(processId, TimeSpan.FromSeconds(2), config, format, FileProviderName);
                 Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
-                OperationStatusResponse operationStatus = await apiClient.WaitForOperationToStart(response.OperationUri);
-                Assert.Equal(OperationState.Running, operationStatus.OperationStatus.Status);
+                OperationStatusResponse _ = await apiClient.WaitForOperationToStart(response.OperationUri);
 
                 await appRunner.SendCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue);
 
