@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 
         public void Stop()
         {
-            _cts.Cancel();
+            SafeCancel();
 
             try
             {
@@ -41,8 +41,20 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             if (!DisposableHelper.CanDispose(ref _disposedState))
                 return;
 
-            _cts.Cancel();
+            SafeCancel();
             _cts.Dispose();
+        }
+
+        private void SafeCancel()
+        {
+            try
+            {
+                _cts.Cancel();
+            }
+            catch (AggregateException)
+            {
+                //  Ignore all exceptions thrown by registered callbacks on the associated CancellationToken.
+            }
         }
 
         protected abstract Task ExecuteAsync(CancellationToken stoppingToken);
