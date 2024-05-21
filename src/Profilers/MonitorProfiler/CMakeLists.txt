@@ -33,7 +33,7 @@ set(SOURCES
 # Build library and split symbols
 add_library_clr(MonitorProfiler SHARED ${SOURCES})
 # cxx_std_17 is required for std::shared_mutex
-target_compile_features(MonitorProfiler PRIVATE cxx_std_17)
+# target_compile_features(MonitorProfiler PRIVATE cxx_std_17)
 target_link_libraries(MonitorProfiler CommonMonitorProfiler)
 
 if(CLR_CMAKE_HOST_WIN32)

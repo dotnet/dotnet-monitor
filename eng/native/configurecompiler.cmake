@@ -3,9 +3,9 @@ include(${CMAKE_CURRENT_LIST_DIR}/configuretools.cmake)
 # Set initial flags for each configuration
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(CheckCCompilerFlag)
@@ -522,7 +522,7 @@ if (CLR_CMAKE_HOST_UNIX)
 
   # We mark the function which needs exporting with DLLEXPORT
   add_compile_options(-fvisibility=hidden)
-  
+
   # Separate functions so linker can remove them.
   add_compile_options(-ffunction-sections)
 
