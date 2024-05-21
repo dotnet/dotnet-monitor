@@ -147,7 +147,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 };
 
                 await using EventParameterCapturingPipeline eventTracePipeline = new(_endpointInfo.Endpoint, settings);
-                Task runPipelineTask = eventTracePipeline.StartAsync(token);
+                await eventTracePipeline.StartAsync(token);
 
                 await _profilerChannel.SendMessage(
                     _endpointInfo,
