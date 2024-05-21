@@ -13,6 +13,10 @@ include_directories(
 
 include_directories(${PROJECT_BINARY_DIR})
 if(CLR_CMAKE_HOST_UNIX)
+    SET(CFLAGS
+        ${CFLAGS}
+        -std=c++11
+    )
     include_directories(
         src/external/runtime/src/coreclr/pal/inc/rt
         src/external/runtime/src/coreclr/pal/inc
