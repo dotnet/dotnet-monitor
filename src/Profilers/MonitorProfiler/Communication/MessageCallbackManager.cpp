@@ -20,7 +20,7 @@ bool MessageCallbackManager::TryRegister(unsigned short commandSet, ManagedMessa
 bool MessageCallbackManager::TryRegister(unsigned short commandSet, std::function<HRESULT (const IpcMessage& message)> callback)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    std::lock_guard<std::mutex> lock(m_commandSetsMutex);
+    std::lock_guard<std::mutex> commandSetsLock(m_commandSetsMutex);
 
     std::function<HRESULT (const IpcMessage& message)> existingCallback;
     if (TryGetCallback(commandSet, existingCallback))
@@ -48,7 +48,7 @@ HRESULT MessageCallbackManager::DispatchMessage(const IpcMessage& message)
 void MessageCallbackManager::Unregister(unsigned short commandSet)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    std::lock_guard<std::mutex> lock(m_commandSetsMutex);
+    std::lock_guard<std::mutex> commandSetsLock(m_commandSetsMutex);
 
     m_callbacks.erase(commandSet);
     m_commandSets.erase(commandSet);
