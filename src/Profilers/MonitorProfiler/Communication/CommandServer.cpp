@@ -13,7 +13,10 @@ CommandServer::CommandServer(const std::shared_ptr<ILogger>& logger, ICorProfile
 {
 }
 
-HRESULT CommandServer::Start(const std::string& path, std::function<HRESULT(const IpcMessage& message)> callback, std::function<HRESULT(const IpcMessage& message)> validateMessage)
+HRESULT CommandServer::Start(
+    const std::string& path,
+    std::function<HRESULT(const IpcMessage& message)> callback,
+    std::function<HRESULT(const IpcMessage& message)> validateMessageCallback)
 {
     if (_shutdown.load())
     {
@@ -31,7 +34,7 @@ HRESULT CommandServer::Start(const std::string& path, std::function<HRESULT(cons
 #endif
 
     _callback = callback;
-    _validateMessage = validateMessage;
+    _validateMessageCallback = validateMessageCallback;
 
     IfFailLogRet_(_logger, _server.Bind(path));
     _listeningThread = std::thread(&CommandServer::ListeningThread, this);
@@ -82,7 +85,7 @@ void CommandServer::ListeningThread()
         }
 
         bool doEnqueueMessage = true;
-        hr = _validateMessage(message);
+        hr = _validateMessageCallback(message);
         if (FAILED(hr))
         {
             _logger->Log(LogLevel::Error, _LS("Failed to validate message: 0x%08x"), hr);
