@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         public ExceptionsController(
             IServiceProvider serviceProvider,
             ILogger<ExceptionsController> logger)
-            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<EgressOperationStore>(), logger)
+            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger)
         {
             _options = serviceProvider.GetRequiredService<IOptions<ExceptionsOptions>>();
         }
