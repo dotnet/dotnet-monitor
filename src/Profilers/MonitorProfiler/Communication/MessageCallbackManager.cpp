@@ -6,7 +6,7 @@
 bool MessageCallbackManager::IsRegistered(unsigned short commandSet)
 {
     std::lock_guard<std::mutex> lock(m_commandSetsMutex);
-    return m_commandSets.find(commandSet) != currentCommandSets.end();
+    return m_commandSets.find(commandSet) != m_commandSets.end();
 }
 
 bool MessageCallbackManager::TryRegister(unsigned short commandSet, ManagedMessageCallback pCallback)
