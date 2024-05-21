@@ -4,7 +4,8 @@
 #pragma once
 
 #include <unordered_map>
-#include <shared_mutex>
+#include <unordered_set>
+#include <mutex>
 #include <functional>
 #include "cor.h"
 #include "corprof.h"
@@ -23,5 +24,7 @@ class MessageCallbackManager
     private:
         bool TryGetCallback(unsigned short commandSet, std::function<HRESULT (const IpcMessage& message)>& callback);
         std::unordered_map<unsigned short, std::function<HRESULT (const IpcMessage& message)>> m_callbacks;
-        std::shared_mutex m_mutex;
+        std::unordered_set<unsigned short> m_commandSets;
+        std::mutex m_mutex;
+        std::mutex m_commandSetsMutex;
 };
