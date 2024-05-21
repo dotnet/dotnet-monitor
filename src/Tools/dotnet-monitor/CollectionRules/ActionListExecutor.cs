@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -83,7 +84,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                         if (!_actionOperations.TryCreateFactory(actionOption.Type, out factory))
                         {
-                            throw new InvalidOperationException(Strings.ErrorMessage_CouldNotMapToAction);
+                            throw new InvalidOperationException(string.Format(
+                                CultureInfo.InvariantCulture,
+                                Strings.ErrorMessage_CouldNotMapToAction,
+                                actionOption.Type
+                                ));
                         }
 
                         object newSettings = dependencyAnalyzer.SubstituteOptionValues(actionResults, actionIndex, actionOption.Settings);
