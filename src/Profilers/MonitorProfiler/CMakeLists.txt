@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.14)
 
 project(MonitorProfiler)
 
-target_compile_features(MonitorProfiler PUBLIC cxx_std_17)
-
 if(CLR_CMAKE_HOST_WIN32)
     set(SOURCES
         ${SOURCES}
@@ -34,6 +32,7 @@ set(SOURCES
 
 # Build library and split symbols
 add_library_clr(MonitorProfiler SHARED ${SOURCES})
+target_compile_features(MonitorProfiler PRIVATE cxx_std_17)
 target_link_libraries(MonitorProfiler CommonMonitorProfiler)
 
 if(CLR_CMAKE_HOST_WIN32)
