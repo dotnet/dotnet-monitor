@@ -22,19 +22,21 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         public async Task StartBackgroundTask()
         {
             // Arrange
+            using CancellationTokenSource cts = new(CommonTestTimeouts.GeneralTimeout);
             using MockBackgroundService service = new MockBackgroundService();
 
             // Act
             service.Start();
 
             // Assert
-            await service.BackgroundTaskStarted.Task;
+            await service.BackgroundTaskStarted.Task.WaitAsync(cts.Token);
         }
 
         [Fact]
         public async Task StopTriggersCancellation()
         {
             // Arrange
+            using CancellationTokenSource cts = new(CommonTestTimeouts.GeneralTimeout);
             using MockBackgroundService service = new MockBackgroundService(async (CancellationToken stoppingToken) =>
             {
                 await Task.Delay(Timeout.Infinite, stoppingToken);
@@ -42,26 +44,28 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 
             // Act
             service.Start();
-            await service.BackgroundTaskStarted.Task;
+            await service.BackgroundTaskStarted.Task.WaitAsync(cts.Token);
             service.Stop();
 
             // Assert
-            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => service.ExecutingTask!);
+            Assert.NotNull(service.ExecutingTask);
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => service.ExecutingTask);
         }
 
         [Fact]
         public async Task StopWaitsForTheBackgroundTask()
         {
             // Arrange
+            using CancellationTokenSource cts = new(CommonTestTimeouts.GeneralTimeout);
             object lockObj = new();
             bool stopCompleted = false;
             bool taskCompleted = false;
-            TaskCompletionSource backgroundTaskCompletion = new();
-            TaskCompletionSource beforeStopCompletion = new();
+            TaskCompletionSource backgroundTaskCompletion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            TaskCompletionSource beforeStopCompletion = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
             MockBackgroundService service = new MockBackgroundService(async _ =>
             {
-                await backgroundTaskCompletion.Task;
+                await backgroundTaskCompletion.Task.WaitAsync(cts.Token);
                 lock (lockObj)
                 {
                     Assert.False(stopCompleted, "Stop completed before the background task.");
@@ -71,7 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 
             // Act
             service.Start();
-            await service.BackgroundTaskStarted.Task;
+            await service.BackgroundTaskStarted.Task.WaitAsync(cts.Token);
 
             Task stopTask = Task.Run(async () =>
             {
@@ -86,22 +90,24 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
                 }
             });
 
-            await beforeStopCompletion.Task;
+            await beforeStopCompletion.Task.WaitAsync(cts.Token);
             // Wait a bit to ensure Stop() is waiting for the background task to complete
             await Task.Delay(TimeSpan.FromMilliseconds(100));
 
             backgroundTaskCompletion.SetResult();
 
-            await stopTask;
+            await stopTask.WaitAsync(cts.Token);
 
             // Assert
-            Assert.False(service.ExecutingTask?.IsFaulted);
+            Assert.NotNull(service.ExecutingTask);
+            Assert.False(service.ExecutingTask.IsFaulted);
         }
 
         [Fact]
         public async Task BackgroundTaskExceptionIsCaptured()
         {
             // Arrange
+            using CancellationTokenSource cts = new(CommonTestTimeouts.GeneralTimeout);
             MockBackgroundService service = new MockBackgroundService(async _ =>
             {
                 await Task.Yield();
@@ -110,13 +116,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
 
             // Act
             service.Start();
-            await service.BackgroundTaskStarted.Task;
+            await service.BackgroundTaskStarted.Task.WaitAsync(cts.Token);
 
             service.Stop();
             service.Dispose();
 
             // Assert
-            await Assert.ThrowsAsync<NotImplementedException>(() => service.ExecutingTask!);
+            Assert.NotNull(service.ExecutingTask);
+            await Assert.ThrowsAsync<NotImplementedException>(() => service.ExecutingTask);
         }
     }
 }

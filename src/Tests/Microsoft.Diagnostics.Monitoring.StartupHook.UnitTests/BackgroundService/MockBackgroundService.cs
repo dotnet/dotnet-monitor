@@ -33,6 +33,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
             base.Dispose();
         }
 
-        public TaskCompletionSource BackgroundTaskStarted { get; } = new();
+        public TaskCompletionSource BackgroundTaskStarted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
     }
 }
