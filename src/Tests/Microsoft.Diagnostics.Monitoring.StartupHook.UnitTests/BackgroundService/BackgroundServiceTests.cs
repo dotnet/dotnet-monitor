@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         }
 
         [Fact]
-        public async Task StartBackgroundTask()
+        public async Task Start_RunsBackgroundTask()
         {
             // Arrange
             using CancellationTokenSource cts = new(CommonTestTimeouts.GeneralTimeout);
@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         }
 
         [Fact]
-        public async Task StopTriggersCancellation()
+        public async Task Stop_TriggersCancellation()
         {
             // Arrange
             using CancellationTokenSource cts = new(CommonTestTimeouts.GeneralTimeout);
@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         }
 
         [Fact]
-        public async Task StopWaitsForTheBackgroundTask()
+        public async Task Stop_WaitsForTheBackgroundTask()
         {
             // Arrange
             using CancellationTokenSource cts = new(CommonTestTimeouts.GeneralTimeout);
@@ -104,7 +104,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         }
 
         [Fact]
-        public async Task BackgroundTaskExceptionIsCaptured()
+        public async Task WorkerThrows_TaskExceptionIsCaptured()
         {
             // Arrange
             using CancellationTokenSource cts = new(CommonTestTimeouts.GeneralTimeout);
