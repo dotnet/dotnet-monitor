@@ -4,13 +4,13 @@
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>da3aa27233a2cec2f6780884f71934b2f5e686ce</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="8.0.0-preview.24270.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="8.0.0-preview.24271.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>35998bc24f3ce093f3cef0cc50e224f9b07847ca</Sha>
+      <Sha>4a64bc5c0fd3abf17f5b10efbc91051c186db4d3</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="8.0.0-preview.24270.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="8.0.0-preview.24271.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>35998bc24f3ce093f3cef0cc50e224f9b07847ca</Sha>
+      <Sha>4a64bc5c0fd3abf17f5b10efbc91051c186db4d3</Sha>
     </Dependency>
     <Dependency Name="System.CommandLine" Version="2.0.0-beta4.24209.3">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
@@ -46,9 +46,9 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>1cf3eaa1f6ada43ab988145a3f3efddb1ffa3b10</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.FileFormats" Version="1.0.527001">
+    <Dependency Name="Microsoft.FileFormats" Version="1.0.527101">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>35998bc24f3ce093f3cef0cc50e224f9b07847ca</Sha>
+      <Sha>4a64bc5c0fd3abf17f5b10efbc91051c186db4d3</Sha>
     </Dependency>
     <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="9.0.0-preview.5.24256.1" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
       <Uri>https://github.com/dotnet/runtime</Uri>
