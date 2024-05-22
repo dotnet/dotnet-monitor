@@ -3,10 +3,8 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.HostingStartup;
-using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
-using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
 
 [assembly: HostingStartup(typeof(HostingStartup))]
@@ -24,10 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.HostingStartup
                 // validation in tests.
                 Interlocked.Increment(ref InvocationCount);
 
-                if (ToolIdentifiers.IsEnvVarEnabled(InProcessFeaturesIdentifiers.EnvironmentVariables.ParameterCapturing.Enable))
-                {
-                    services.AddHostedService<ParameterCapturingService>();
-                }
+                // TODO: remove the HostingStartup project.
             });
 
             ToolIdentifiers.EnableEnvVar(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.HostingStartup);
