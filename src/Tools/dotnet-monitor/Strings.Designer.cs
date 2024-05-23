@@ -1682,7 +1682,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This feature requires that the DOTNET_STARTUP_HOOKS environment variable is set on the target process..
+        ///   Looks up a localized string similar to This feature requires the startup hook to be loaded in the target process..
         /// </summary>
         internal static string ParameterCapturingNotAvailable_Reason_StartupHookDidNotLoad {
             get {
