@@ -65,7 +65,7 @@
     <MicrosoftNETCoreAppRuntimewinx64Version>9.0.0-preview.5.24272.2</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6490Version>9.0.0-preview.5.24272.2</VSRedistCommonNetCoreSharedFrameworkx6490Version>
     <!-- dotnet/sdk references -->
-    <MicrosoftNETSdkVersion>9.0.100-preview.6.24277.6</MicrosoftNETSdkVersion>
+    <VSRedistCommonNetCoreSdkPlaceholderx6490Version>9.0.100-preview.6.24277.6</VSRedistCommonNetCoreSdkPlaceholderx6490Version>
     <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>1.0.527701</MicrosoftFileFormatsVersion>
   </PropertyGroup>
@@ -78,6 +78,10 @@
     <MicrosoftAspNetCoreApp70Version>$(MicrosoftNETCoreApp70Version)</MicrosoftAspNetCoreApp70Version>
     <MicrosoftAspNetCoreApp80Version>$(MicrosoftNETCoreApp80Version)</MicrosoftAspNetCoreApp80Version>
     <MicrosoftAspNetCoreApp90Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp90Version>
+  </PropertyGroup>
+  <PropertyGroup Label="SDK Versions">
+    <!-- Use a non-final versioned sentinel package for installation of specific SDK version. -->
+    <InstallableSdkVersion>$(VSRedistCommonNetCoreSdkPlaceholderx6490Version)</InstallableSdkVersion>
   </PropertyGroup>
   <PropertyGroup Label="Dev Workflow">
     <!-- These versions are not used directly. For Dev workflows, nuget requires these to properly follow
