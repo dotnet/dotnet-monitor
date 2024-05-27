@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public static IServiceCollection ConfigureOperationStore(this IServiceCollection services)
         {
             services.AddSingleton<IEgressOperationQueue, EgressOperationQueue>();
-            services.AddSingleton<EgressOperationStore>();
+            services.AddSingleton<IEgressOperationStore, EgressOperationStore>();
             services.AddHostedService<EgressOperationService>();
             return services;
         }
