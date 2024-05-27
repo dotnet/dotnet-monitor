@@ -46,9 +46,9 @@
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>47a8d48ecc8d320682f1d22fdbbce71528d32a3b</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.NET.Sdk" Version="9.0.100-preview.6.24274.13">
+    <Dependency Name="Microsoft.NET.Sdk" Version="9.0.100-preview.6.24277.1">
       <Uri>https://github.com/dotnet/sdk</Uri>
-      <Sha>685b52ba06b3acb3658eed68a77891a28041457c</Sha>
+      <Sha>29b15d1fca51ca7f1d4db87c2b15e39dcaf7bb53</Sha>
     </Dependency>
     <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="9.0.0-preview.5.24272.2" CoherentParentDependency="Microsoft.NET.Sdk">
       <Uri>https://github.com/dotnet/runtime</Uri>
