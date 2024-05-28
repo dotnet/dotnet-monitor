@@ -41,6 +41,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.IO;
+using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -362,6 +363,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             services.AddScoped<HostingStartupService>();
             services.AddScopedForwarder<IDiagnosticLifetimeService, HostingStartupService>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureRequestLimits(this IServiceCollection services)
+        {
+            services.AddSingleton<IRequestLimitTracker, RequestLimitTracker>();
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_Dump, 1); });
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_GCDump, 1); });
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_Logs, 3); });
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_Trace, 3); });
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_Metrics, 3); });
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_Stacks, 1); });
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_Exceptions, 1); });
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_Parameters, 1); });
+            services.AddSingleton((_) => { return new RequestLimit(RequestLimitTracker.Unlimited, int.MaxValue); });
+
             return services;
         }
 
