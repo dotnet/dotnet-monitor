@@ -162,7 +162,7 @@
           BeforeTargets="AddAdditionalRuntimes">
     <!-- Correlation Payload: SDK (to use "dotnet test") -->
     <ItemGroup>
-      <AdditionalDotNetPackage Include="$(MicrosoftNETSdkVersion)">
+      <AdditionalDotNetPackage Include="$(InstallableSdkVersion)">
         <PackageType>sdk</PackageType>
       </AdditionalDotNetPackage>
     </ItemGroup>
