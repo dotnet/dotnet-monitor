@@ -4,6 +4,10 @@ schedules:
   branches:
     include:
     - shipped/*
+    exclude:
+    - shipped/7.3
+    - shipped/7.2
+    - shipped/7.1
   always: true
 
 trigger: none
