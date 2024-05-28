@@ -247,7 +247,10 @@ HRESULT MainProfiler::InitializeCommandServer()
         return E_FAIL;
     }
 
-    hr = _commandServer->Start(to_string(socketPath), [this](const IpcMessage& message)-> HRESULT { return this->MessageCallback(message); });
+    hr = _commandServer->Start(
+        to_string(socketPath),
+        [this](const IpcMessage& message)-> HRESULT { return this->MessageCallback(message); },
+        [this](const IpcMessage& message)-> HRESULT { return this->ValidateMessage(message); });
     if (FAILED(hr))
     {
         g_MessageCallbacks.Unregister(static_cast<unsigned short>(CommandSet::Profiler));
@@ -261,6 +264,16 @@ HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 {
     m_pLogger->Log(LogLevel::Debug, _LS("Message received from client %hu:%hu"), message.CommandSet, message.Command);
     return g_MessageCallbacks.DispatchMessage(message);
+}
+
+HRESULT MainProfiler::ValidateMessage(const IpcMessage& message)
+{
+    if (g_MessageCallbacks.IsRegistered(message.CommandSet))
+    {
+        return S_OK;
+    }
+
+    return E_NOT_SUPPORTED;
 }
 
 HRESULT MainProfiler::ProfilerCommandSetCallback(const IpcMessage& message)
