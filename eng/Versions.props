@@ -52,8 +52,8 @@
     <MicrosoftDotNetCodeAnalysisVersion>9.0.0-beta.24272.5</MicrosoftDotNetCodeAnalysisVersion>
     <MicrosoftDotNetXUnitExtensionsVersion>9.0.0-beta.24272.5</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
-    <MicrosoftAspNetCoreAppRuntimewinx64Version>9.0.0-preview.6.24272.7</MicrosoftAspNetCoreAppRuntimewinx64Version>
-    <VSRedistCommonAspNetCoreSharedFrameworkx6490Version>9.0.0-preview.6.24272.7</VSRedistCommonAspNetCoreSharedFrameworkx6490Version>
+    <MicrosoftAspNetCoreAppRuntimewinx64Version>9.0.0-preview.6.24277.5</MicrosoftAspNetCoreAppRuntimewinx64Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx6490Version>9.0.0-preview.6.24277.5</VSRedistCommonAspNetCoreSharedFrameworkx6490Version>
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta4.24209.3</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
@@ -65,7 +65,7 @@
     <MicrosoftNETCoreAppRuntimewinx64Version>9.0.0-preview.5.24272.2</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6490Version>9.0.0-preview.5.24272.2</VSRedistCommonNetCoreSharedFrameworkx6490Version>
     <!-- dotnet/sdk references -->
-    <MicrosoftNETSdkVersion>9.0.100-preview.6.24277.1</MicrosoftNETSdkVersion>
+    <MicrosoftNETSdkVersion>9.0.100-preview.6.24277.6</MicrosoftNETSdkVersion>
     <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>1.0.527403</MicrosoftFileFormatsVersion>
   </PropertyGroup>
