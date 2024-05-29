@@ -83,6 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             appRunner.Environment.Add(ProfilerHelper.ClrEnvVarEnableProfiling, ProfilerHelper.ClrEnvVarEnabledValue);
             appRunner.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.MutatingProfiler.Clsid.StringWithBraces);
             appRunner.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath, profilerPath);
+            appRunner.Environment.Add(ProfilerIdentifiers.MutatingProfiler.EnvironmentVariables.ModulePath, profilerPath);
 
             // The profiler checks this env variable to enable parameter capturing features.
             appRunner.Environment.Add(InProcessFeaturesIdentifiers.EnvironmentVariables.ParameterCapturing.Enable, "1");
