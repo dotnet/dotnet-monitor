@@ -133,7 +133,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureLibrarySharing();
                 services.ConfigureProfiler();
                 services.ConfigureStartupHook();
-                services.ConfigureHostingStartup();
                 services.ConfigureExceptions();
                 services.ConfigureStartupLoggers(authConfigurator);
                 services.ConfigureInProcessFeatures(context.Configuration);

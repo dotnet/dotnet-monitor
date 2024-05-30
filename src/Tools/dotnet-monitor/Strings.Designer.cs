@@ -539,15 +539,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to find hosting startup assembly at determined path..
-        /// </summary>
-        internal static string ErrorMessage_UnableToFindHostingStartupAssembly {
-            get {
-                return ResourceManager.GetString("ErrorMessage_UnableToFindHostingStartupAssembly", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to find profiler assembly at determined path..
         /// </summary>
         internal static string ErrorMessage_UnableToFindProfilerAssembly {
@@ -1520,15 +1511,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to apply hosting startup..
-        /// </summary>
-        internal static string LogFormatString_UnableToApplyHostingStartup {
-            get {
-                return ResourceManager.GetString("LogFormatString_UnableToApplyHostingStartup", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to apply in process feature flags..
         /// </summary>
         internal static string LogFormatString_UnableToApplyInProcessFeatureFlags {
@@ -1669,15 +1651,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad {
             get {
                 return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The process has prevented hosting startup assemblies from loading using the ASPNETCORE_PREVENTHOSTINGSTARTUP environment variable..
-        /// </summary>
-        internal static string ParameterCapturingNotAvailable_Reason_PreventedHostingStartup {
-            get {
-                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_PreventedHostingStartup", resourceCulture);
             }
         }
         
