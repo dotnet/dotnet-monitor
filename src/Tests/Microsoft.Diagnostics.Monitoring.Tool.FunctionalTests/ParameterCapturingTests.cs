@@ -78,30 +78,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
-        public async Task NonAspNetAppFailsOperation(Architecture targetArchitecture)
-        {
-            await RunTestCaseCore(TestAppScenarios.ParameterCapturing.SubScenarios.NonAspNetApp, targetArchitecture, async (appRunner, apiClient) =>
-            {
-                int processId = await appRunner.ProcessIdTask;
-
-                CaptureParametersConfiguration config = GetValidConfiguration();
-
-                ValidationProblemDetailsException validationException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(() => apiClient.CaptureParametersAsync(processId, Timeout.InfiniteTimeSpan, config));
-                Assert.Equal(HttpStatusCode.BadRequest, validationException.StatusCode);
-
-                await appRunner.SendCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue);
-            });
-        }
+        public Task CapturesParametersInNonAspNetApps(Architecture targetArchitecture) =>
+            CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.NonAspNetApp, targetArchitecture, CapturedParameterFormat.JsonSequence);
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task CapturesParametersAndOutputJsonSequence(Architecture targetArchitecture) =>
-                CapturesParametersCore(targetArchitecture, CapturedParameterFormat.JsonSequence);
+                CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, CapturedParameterFormat.JsonSequence);
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task CapturesParametersAndOutputNewlineDelimitedJson(Architecture targetArchitecture) =>
-                CapturesParametersCore(targetArchitecture, CapturedParameterFormat.NewlineDelimitedJson);
+                CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, CapturedParameterFormat.NewlineDelimitedJson);
 
 #else // NET7_0_OR_GREATER
         [Theory]
@@ -122,9 +110,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 #endif // NET7_0_OR_GREATER
 
-        private async Task CapturesParametersCore(Architecture targetArchitecture, CapturedParameterFormat format)
+        private async Task CapturesParametersCore(string subScenarioName,Architecture targetArchitecture, CapturedParameterFormat format)
         {
-            await RunTestCaseCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, async (appRunner, apiClient) =>
+            await RunTestCaseCore(subScenarioName, targetArchitecture, async (appRunner, apiClient) =>
             {
                 int processId = await appRunner.ProcessIdTask;
 

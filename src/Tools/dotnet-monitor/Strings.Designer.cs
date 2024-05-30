@@ -1655,15 +1655,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This feature is only available on processes using ASP.NET Core. If the process is using ASP.NET Core and has successfully started, ensure that it has not been configured to prevent hosting startup assemblies from loading..
-        /// </summary>
-        internal static string ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad {
-            get {
-                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The process has Hot Reload enabled..
         /// </summary>
         internal static string ParameterCapturingNotAvailable_Reason_HotReload {
@@ -1687,6 +1678,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string ParameterCapturingNotAvailable_Reason_PreventedHostingStartup {
             get {
                 return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_PreventedHostingStartup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This feature requires the startup hook to be loaded in the target process..
+        /// </summary>
+        internal static string ParameterCapturingNotAvailable_Reason_StartupHookDidNotLoad {
+            get {
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_StartupHookDidNotLoad", resourceCulture);
             }
         }
         

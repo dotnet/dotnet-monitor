@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions;
 using Microsoft.Diagnostics.Monitoring.StartupHook.Monitoring;
+using Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
@@ -18,6 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
     {
         private readonly CurrentAppDomainExceptionProcessor _exceptionProcessor;
         private readonly AspNetHostingStartupLoader? _hostingStartupLoader;
+        private readonly ParameterCapturingService? _parameterCapturingService;
 
         private long _disposedState;
 
@@ -44,6 +46,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
                         new MessageDispatcher.ProfilerMessageSource(CommandSet.StartupHook));
                     ToolIdentifiers.EnableEnvVar(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.ManagedMessaging);
                 }
+
+                if (ToolIdentifiers.IsEnvVarEnabled(InProcessFeaturesIdentifiers.EnvironmentVariables.ParameterCapturing.Enable))
+                {
+                    _parameterCapturingService = new();
+                    _parameterCapturingService.Start();
+                }
             }
             catch
             {
@@ -58,6 +66,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
                 return;
 
             _exceptionProcessor.Dispose();
+            _parameterCapturingService?.Stop();
+            _parameterCapturingService?.Dispose();
             _hostingStartupLoader?.Dispose();
             SharedInternals.MessageDispatcher?.Dispose();
         }

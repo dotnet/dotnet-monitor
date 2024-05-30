@@ -17,6 +17,7 @@
     <Compile Include="..\Tools\dotnet-monitor\StartupHook\StartupHookIdentifiers.cs" Link="StartupHookIdentifiers.cs" />
     <Compile Include="..\Tools\dotnet-monitor\ToolIdentifiers.cs" Link="ToolIdentifiers.cs" />
     <Compile Include="..\Tools\dotnet-monitor\InProcessFeatures\InProcessFeaturesIdentifiers.cs" Link="InProcessFeaturesIdentifiers.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\ParameterCapturing\ParameterCapturingEvents.cs" Link="ParameterCapturing\Eventing\ParameterCapturingEvents.cs" />
     <Compile Include="..\Tools\dotnet-monitor\Profiler\ProfilerIdentifiers.cs" />
     <Compile Include="..\Tools\dotnet-monitor\Profiler\ProfilerMessagePayloads.cs" Link="MonitorMessageDispatcher\ProfilerMessagePayloads.cs" />
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\ProfilerMessage.cs" Link="MonitorMessageDispatcher\ProfilerMessage.cs" />
@@ -30,6 +31,21 @@
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.HostingStartup" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.UnitTestApp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ParameterCapturing\ParameterCapturingStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ParameterCapturingStrings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="ParameterCapturing\ParameterCapturingStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ParameterCapturingStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

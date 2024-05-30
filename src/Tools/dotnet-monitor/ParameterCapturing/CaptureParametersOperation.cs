@@ -107,10 +107,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad);
             }
 
-            if (!env.TryGetValue(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.HostingStartup, out string isHostingStartupAvailable) ||
-                !ToolIdentifiers.IsEnvVarValueEnabled(isHostingStartupAvailable))
+            if (!env.TryGetValue(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.StartupHook, out string isStartupHookAvailable) ||
+                !ToolIdentifiers.IsEnvVarValueEnabled(isStartupHookAvailable))
             {
-                throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad);
+                throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_StartupHookDidNotLoad);
             }
 
             const string EditAndContinueEnvName = "COMPLUS_ForceEnc";
