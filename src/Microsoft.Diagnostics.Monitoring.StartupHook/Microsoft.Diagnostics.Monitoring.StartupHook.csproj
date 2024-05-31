@@ -14,7 +14,6 @@
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.WebApi\Stacks\NameIdentificationEvents.cs" Link="Exceptions\Eventing\NameIdentificationEvents.cs" />
     <Compile Include="..\Tools\dotnet-monitor\DisposableHelper.cs" Link="DisposableHelper.cs" />
     <Compile Include="..\Tools\dotnet-monitor\Exceptions\ExceptionEvents.cs" Link="Exceptions\Eventing\ExceptionEvents.cs" />
-    <Compile Include="..\Tools\dotnet-monitor\StartupHook\StartupHookIdentifiers.cs" Link="StartupHookIdentifiers.cs" />
     <Compile Include="..\Tools\dotnet-monitor\ToolIdentifiers.cs" Link="ToolIdentifiers.cs" />
     <Compile Include="..\Tools\dotnet-monitor\InProcessFeatures\InProcessFeaturesIdentifiers.cs" Link="InProcessFeaturesIdentifiers.cs" />
     <Compile Include="..\Tools\dotnet-monitor\ParameterCapturing\ParameterCapturingEvents.cs" Link="ParameterCapturing\Eventing\ParameterCapturingEvents.cs" />
@@ -27,9 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests" />
-    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.HostingStartup" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.UnitTestApp" />
   </ItemGroup>
 
