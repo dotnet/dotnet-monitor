@@ -21,9 +21,8 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-#if NET7_0_OR_GREATER
 using System.Threading;
-#endif
+
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -114,7 +113,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                 CaptureParametersConfiguration config = GetValidConfiguration();
 
-                ValidationProblemDetailsException validationException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(() => apiClient.CaptureParametersAsync(processId, TimeSpan.FromSeconds(1), config));
+                ValidationProblemDetailsException validationException = await Assert.ThrowsAsync<ValidationProblemDetailsException>(() => apiClient.CaptureParametersAsync(processId, Timeout.InfiniteTimeSpan, config));
                 Assert.Equal(HttpStatusCode.BadRequest, validationException.StatusCode);
 
                 await appRunner.SendCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue);
@@ -131,7 +130,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 CaptureParametersConfiguration config = GetValidConfiguration();
                 MethodDescription expectedCapturedMethod = config.Methods[0];
 
-                OperationResponse response = await apiClient.CaptureParametersAsync(processId, TimeSpan.FromSeconds(2), config, format, FileProviderName);
+                OperationResponse response = await apiClient.CaptureParametersAsync(processId, CommonTestTimeouts.GeneralTimeout, config, format, FileProviderName);
                 Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
 
                 OperationStatusResponse _ = await apiClient.WaitForOperationToStart(response.OperationUri);
@@ -194,7 +193,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         TypeName = "SampleMethods.StaticTestMethodSignatures",
                         MethodName = "NoArgs"
                     }
-                }
+                },
+                CaptureLimit = 1
             };
         }
 

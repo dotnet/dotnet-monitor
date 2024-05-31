@@ -628,7 +628,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             }
 
             bool isInfinite = (duration == Timeout.InfiniteTimeSpan);
-            string uri = FormattableString.Invariant($"/parameters?pid={processId}&durationSeconds={(isInfinite ? -1 : duration.Seconds)}");
+            string uri = FormattableString.Invariant($"/parameters?pid={processId}&durationSeconds={(isInfinite ? -1 : duration.TotalSeconds)}");
             if (!string.IsNullOrEmpty(egressProvider))
             {
                 uri += FormattableString.Invariant($"&egressProvider={egressProvider}");
