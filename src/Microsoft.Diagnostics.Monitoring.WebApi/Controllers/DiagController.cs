@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly IStacksOperationFactory _stacksOperationFactory;
 
         public DiagController(IServiceProvider serviceProvider, ILogger<DiagController> logger)
-            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<EgressOperationStore>(), logger)
+            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger)
         {
             _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
             _callStacksOptions = serviceProvider.GetRequiredService<IOptions<CallStacksOptions>>();

@@ -12,10 +12,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     public abstract class DiagnosticsControllerBase : ControllerBase
     {
         protected DiagnosticsControllerBase(IServiceProvider serviceProvider, ILogger logger) :
-            this(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<EgressOperationStore>(), logger)
+            this(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger)
         { }
 
-        private protected DiagnosticsControllerBase(IDiagnosticServices diagnosticServices, EgressOperationStore operationStore, ILogger logger)
+        private protected DiagnosticsControllerBase(IDiagnosticServices diagnosticServices, IEgressOperationStore operationStore, ILogger logger)
         {
             DiagnosticServices = diagnosticServices ?? throw new ArgumentNullException(nameof(diagnosticServices));
             OperationStore = operationStore ?? throw new ArgumentNullException(nameof(operationStore));
@@ -129,7 +129,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
         private protected IDiagnosticServices DiagnosticServices { get; }
 
-        private protected EgressOperationStore OperationStore { get; }
+        private protected IEgressOperationStore OperationStore { get; }
 
         protected ILogger Logger { get; }
     }

@@ -20,7 +20,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -78,7 +78,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -133,7 +133,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -218,7 +218,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -296,7 +296,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -394,7 +394,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -503,7 +503,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -601,7 +601,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/x-ndjson": {
                 "schema": {
@@ -718,7 +718,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/x-ndjson": {
                 "schema": {
@@ -758,7 +758,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -813,7 +813,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -880,7 +880,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -979,7 +979,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/x-ndjson": {
                 "schema": {
@@ -1060,7 +1060,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1159,7 +1159,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json-seq": {
                 "schema": {
@@ -1267,7 +1267,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json-seq": {
                 "schema": {
@@ -1338,7 +1338,7 @@
             "$ref": "#/components/responses/BadRequestResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/x-ndjson": {
                 "schema": {
@@ -1437,7 +1437,7 @@
             "$ref": "#/components/responses/BadRequestResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/x-ndjson": {
                 "schema": {
@@ -1471,7 +1471,7 @@
             "$ref": "#/components/responses/BadRequestResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain; version=0.0.4": {
                 "schema": {
@@ -1531,7 +1531,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1578,7 +1578,7 @@
             }
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1618,7 +1618,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success"
+            "description": "OK"
           },
           "202": {
             "description": "Accepted"
