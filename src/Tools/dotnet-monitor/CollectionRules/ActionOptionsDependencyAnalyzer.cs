@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 
@@ -159,7 +160,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 RuntimeId = _ruleContext.EndpointInfo?.RuntimeInstanceCookie ?? Guid.Empty,
                 ProcessId = _ruleContext.EndpointInfo?.ProcessId ?? 0,
                 CommandLine = commandLine,
-                ProcessName = _ruleContext.ProcessInfo?.ProcessName ?? string.Empty
+                ProcessName = _ruleContext.ProcessInfo?.ProcessName ?? string.Empty,
+                Hostname = Dns.GetHostName(),
+                Timestamp = _ruleContext.TimeProvider.GetUtcNow(),
             });
 
             return settings;
