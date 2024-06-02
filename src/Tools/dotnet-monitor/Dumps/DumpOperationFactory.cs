@@ -3,25 +3,24 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class DumpOperationFactory : IDumpOperationFactory
     {
         private readonly IDumpService _dumpService;
-        private readonly IOptionsMonitor<StorageOptions> _options;
+        private readonly ILogger<DumpOperation> _logger;
 
-        public DumpOperationFactory(IDumpService dumpService, IOptionsMonitor<StorageOptions> options)
+        public DumpOperationFactory(IDumpService dumpService, ILogger<DumpOperation> logger)
         {
             _dumpService = dumpService;
-            _options = options;
+            _logger = logger;
         }
 
-        public IArtifactOperation Create(IProcessInfo processInfo, DumpType dumpType)
+        public IArtifactOperation Create(IEndpointInfo endpointInfo, DumpType dumpType)
         {
-            StorageOptions options = _options.CurrentValue;
-            return new DumpOperation(processInfo, _dumpService, dumpType, DumpFilePathTemplate.Parse(options.DumpFileNameTemplate));
+            return new DumpOperation(endpointInfo, _dumpService, dumpType, _logger);
         }
     }
 }

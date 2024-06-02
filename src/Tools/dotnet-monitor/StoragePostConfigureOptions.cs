@@ -4,7 +4,6 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Options;
 using System.IO;
-using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -34,11 +33,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     options.SharedLibraryPath = Path.Combine(options.DefaultSharedPath, DefaultSharedPathLibrariesFolderName);
                 }
-            }
-
-            if (string.IsNullOrEmpty(options.DumpFileNameTemplate))
-            {
-                options.DumpFileNameTemplate = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "dump_%t.dmp" : "core_%t";
             }
         }
     }

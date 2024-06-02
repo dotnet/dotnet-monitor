@@ -773,8 +773,4 @@
     <value>The expected value of the 'iss' or Issuer field in the JWT (JSON Web Token).</value>
     <comment>The description provided for the Issuer parameter on MonitorApiKeyOptions.</comment>
   </data>
-  <data name="DisplayAttributeDescription_StorageOptions_DumpFileNameTemplate" xml:space="preserve">
-    <value>The template used for the name of dump files. Defaults to a name based on the current time and OS.</value>
-    <comment>The description provided for the DumpFileNameTemplate parameter on StorageOptions.</comment>
-  </data>
 </root>

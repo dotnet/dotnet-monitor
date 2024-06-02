@@ -227,7 +227,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 processInfo => Result(
                     Utilities.ArtifactType_Dump,
                     egressProvider,
-                    _dumpOperationFactory.Create(processInfo, type),
+                    _dumpOperationFactory.Create(processInfo.EndpointInfo, type),
                     processInfo,
                     tags),
                 processKey,

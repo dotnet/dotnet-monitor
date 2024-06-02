@@ -13,9 +13,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// <summary>
         /// Creates an operation that produces a dump artifact.
         /// </summary>
-        /// <param name="processInfo">The target of the dump artifact.</param>
-        /// <param name="dumpType">Specifies the type of dump.</param>
-        /// <returns>The corresponding operation responsible for producing the artifact.</returns>
-        IArtifactOperation Create(IProcessInfo processInfo, DumpType dumpType);
+        IArtifactOperation Create(
+            IEndpointInfo endpointInfo,
+            DumpType dumpType);
     }
 }

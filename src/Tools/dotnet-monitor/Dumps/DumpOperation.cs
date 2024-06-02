@@ -4,9 +4,13 @@
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -14,28 +18,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         private readonly IDumpService _dumpService;
         private readonly DumpType _dumpType;
-        private readonly IProcessInfo _processInfo;
-        private readonly DumpFilePathTemplate _filePathTemplate;
+        private readonly IEndpointInfo _endpointInfo;
+        private readonly ILogger _logger;
         private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        public DumpOperation(IProcessInfo processInfo, IDumpService dumpService, DumpType dumpType, DumpFilePathTemplate filePathTemplate)
+        public DumpOperation(IEndpointInfo endpointInfo, IDumpService dumpService, DumpType dumpType, ILogger logger)
         {
             _dumpService = dumpService;
             _dumpType = dumpType;
-            _processInfo = processInfo;
-            _filePathTemplate = filePathTemplate;
+            _endpointInfo = endpointInfo;
+            _logger = logger;
         }
 
         public string GenerateFileName()
         {
-            return _filePathTemplate.ToString(_processInfo);
+            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+                FormattableString.Invariant($"dump_{Utils.GetFileNameTimeStampUtcNow()}.dmp") :
+                FormattableString.Invariant($"core_{Utils.GetFileNameTimeStampUtcNow()}");
         }
 
         public async Task ExecuteAsync(Stream outputStream, CancellationToken token)
         {
             _startCompletionSource.TrySetResult();
 
-            using Stream dumpStream = await _dumpService.DumpAsync(_processInfo.EndpointInfo, _dumpType, token);
+            using Stream dumpStream = await _dumpService.DumpAsync(_endpointInfo, _dumpType, token);
 
             await dumpStream.CopyToAsync(outputStream, token);
         }
