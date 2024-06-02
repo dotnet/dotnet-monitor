@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             if (string.IsNullOrEmpty(options.DumpFileNameTemplate))
             {
-                options.DumpFileNameTemplate = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "dump_%d.dmp" : "core_%d";
+                options.DumpFileNameTemplate = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "dump_%t.dmp" : "core_%t";
             }
         }
     }
