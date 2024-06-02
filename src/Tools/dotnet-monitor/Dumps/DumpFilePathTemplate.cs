@@ -17,14 +17,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const char ExecutableSpecifier = 'e';
         private const char HostSpecifier = 'h';
         private const char TimeSpecifier = 't';
-        private const char DateTimeSpecifier = 'd';
 
         private const int PercentPosition = 0;
         private const int ProcessIdPosition = 1;
         private const int ExecutablePosition = 2;
         private const int HostPosition = 3;
         private const int TimePosition = 4;
-        private const int DateTimePosition = 5;
 
         private readonly CompositeFormat _format;
 
@@ -60,7 +58,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             ExecutableSpecifier => ExecutablePosition,
                             HostSpecifier => HostPosition,
                             TimeSpecifier => TimePosition,
-                            DateTimeSpecifier => DateTimePosition,
                             _ => throw new FormatException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_InvalidDumpFileTemplateSpecifier, "%" + specifier)),
                         };
 
@@ -79,12 +76,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public string ToString(IProcessInfo processInfo)
         {
-            return ToString(processInfo, TimeProvider.System);
-        }
-
-        internal string ToString(IProcessInfo processInfo, TimeProvider timeProvider)
-        {
-            DateTimeOffset utcNow = timeProvider.GetUtcNow();
             return string.Format(
                 CultureInfo.InvariantCulture,
                 _format,
@@ -92,8 +83,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 processInfo.EndpointInfo.ProcessId,
                 processInfo.ProcessName,
                 Dns.GetHostName(),
-                utcNow.ToUnixTimeSeconds(),
-                Utils.GetFileNameTimeStamp(utcNow));
+                Utils.GetFileNameTimeStampUtcNow());
         }
     }
 }
