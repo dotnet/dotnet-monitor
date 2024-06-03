@@ -11,6 +11,9 @@
         },
         {
             "pattern": "^https://www\\.dotnetfoundation.org/.*"
+        },
+        {
+            "pattern": "^https://hub\\.docker\\.com/.*"
         }
     ],
     "aliveStatusCodes": [
