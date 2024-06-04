@@ -131,13 +131,13 @@ HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const GUI
 
     int offset = 0;
 
-    memcpy(&buffer[offset], &first.Data1, sizeof(INT64));
-    offset += sizeof(INT64);
+    memcpy(&buffer[offset], &first.Data1, sizeof(INT32));
+    offset += sizeof(INT32);
     memcpy(&buffer[offset], &first.Data2, sizeof(INT16));
     offset += sizeof(INT16);
     memcpy(&buffer[offset], &first.Data3, sizeof(INT16));
     offset += sizeof(INT16);
-    memcpy(&buffer[offset], first.Data4, sizeof(INT32));
+    memcpy(&buffer[offset], first.Data4, sizeof(INT64));
 
     data[index].ptr = reinterpret_cast<UINT64>(buffer);
     data[index].size = static_cast<UINT32>(GUID_SIZE_BYTES);

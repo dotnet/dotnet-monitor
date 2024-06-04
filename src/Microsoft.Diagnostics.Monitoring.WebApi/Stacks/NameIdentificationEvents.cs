@@ -33,6 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         {
             public const int ModuleId = 0;
             public const int Name = 1;
+            public const int Mvid = 2;
         }
 
         public static class TokenDescPayloads
