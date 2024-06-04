@@ -142,6 +142,7 @@ HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const tst
      }
      return WritePayload<index + 1, TArgs...>(data, rest...);
  }
+
 template<typename... Args>
 template<size_t index, typename T, typename... TArgs>
 HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const GUID& first, TArgs... rest)
