@@ -63,7 +63,7 @@ HRESULT StacksEventProvider::WriteFunctionData(FunctionID functionId, const Func
 
 HRESULT StacksEventProvider::WriteModuleData(ModuleID moduleId, const ModuleData& moduleData)
 {
-    return _moduleEvent->WritePayload(moduleId, moduleData.GetName(), moduleData.GetMvid());
+    return _moduleEvent->WritePayload(moduleId, moduleData.GetName());
 }
 
 HRESULT StacksEventProvider::WriteTokenData(ModuleID moduleId, mdTypeDef typeDef, const TokenData& tokenData)
