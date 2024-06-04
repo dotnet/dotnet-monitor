@@ -255,7 +255,7 @@ HRESULT TypeNameUtilities::GetModuleInfo(NameCache& nameCache, ModuleID moduleId
     GUID mvid = {0};
     IfFailRet(pIMDImport->GetScopeProps(
         moduleFullName,
-        255,
+        256,
         &nameLength,
         &mvid));
 
