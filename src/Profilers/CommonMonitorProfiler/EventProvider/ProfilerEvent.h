@@ -43,6 +43,9 @@ private:
     template<size_t index, typename T = tstring, typename... TArgs>
     HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const tstring& first, TArgs... rest);
 
+    template<size_t index, typename T = GUID, typename... TArgs>
+    HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const GUID& first, TArgs... rest);
+
     template<size_t index, typename T, typename... TArgs>
     HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const std::vector<typename T::value_type>& first, TArgs... rest);
 
@@ -117,28 +120,54 @@ HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const tst
     return WritePayload<index + 1, TArgs...>(data, rest...);
 }
 
- template<typename... Args>
- template<size_t index, typename T, typename... TArgs>
- HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const std::vector<typename T::value_type>& first, TArgs... rest)
- {
-     // This value must stay in scope during all the WritePayload functions.
-     std::vector<BYTE> buffer(0);
+template<typename... Args>
+template<size_t index, typename T, typename... TArgs>
+HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const GUID& first, TArgs... rest)
+{
+    // Manually copy the GUID into a buffer and pass the buffer address.
+    // We can't pass the GUID address directly (or use sizeof(GUID)) because the GUID may have padding between its different data segments.
+    const int GUID_SIZE_BYTES = 128 / 4;
+    BYTE buffer[GUID_SIZE_BYTES] = {0};
 
-     if (first.size() == 0)
-     {
-         data[index].ptr = 0;
-         data[index].size = 0;
-         data[index].reserved = 0;
-     }
-     else
-     {
-         buffer = std::move(GetEventBuffer(first));
-         data[index].ptr = reinterpret_cast<UINT64>(buffer.data());
-         data[index].size = static_cast<UINT32>(buffer.size());
-         data[index].reserved = 0;
-     }
-     return WritePayload<index + 1, TArgs...>(data, rest...);
- }
+    int offset = 0;
+
+    memcpy(&buffer[offset], &first.Data1, sizeof(INT64));
+    offset += sizeof(INT64);
+    memcpy(&buffer[offset], &first.Data2, sizeof(INT16));
+    offset += sizeof(INT16);
+    memcpy(&buffer[offset], &first.Data3, sizeof(INT16));
+    offset += sizeof(INT16);
+    memcpy(&buffer[offset], first.Data4, sizeof(INT32));
+
+    data[index].ptr = reinterpret_cast<UINT64>(buffer);
+    data[index].size = static_cast<UINT32>(GUID_SIZE_BYTES);
+    data[index].reserved = 0;
+
+    return WritePayload<index + 1, TArgs...>(data, rest...);
+}
+
+template<typename... Args>
+template<size_t index, typename T, typename... TArgs>
+HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const std::vector<typename T::value_type>& first, TArgs... rest)
+{
+    // This value must stay in scope during all the WritePayload functions.
+    std::vector<BYTE> buffer(0);
+
+    if (first.size() == 0)
+    {
+        data[index].ptr = 0;
+        data[index].size = 0;
+        data[index].reserved = 0;
+    }
+    else
+    {
+        buffer = std::move(GetEventBuffer(first));
+        data[index].ptr = reinterpret_cast<UINT64>(buffer.data());
+        data[index].size = static_cast<UINT32>(buffer.size());
+        data[index].reserved = 0;
+    }
+    return WritePayload<index + 1, TArgs...>(data, rest...);
+}
 
 template<typename... Args>
 template<typename T>

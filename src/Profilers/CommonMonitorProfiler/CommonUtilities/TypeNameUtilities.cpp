@@ -244,18 +244,20 @@ HRESULT TypeNameUtilities::GetModuleInfo(NameCache& nameCache, ModuleID moduleId
         return S_OK;
     }
 
+    ComPtr<IMetaDataImport> pIMDImport;
+    IfFailRet(_profilerInfo->GetModuleMetaData(moduleId,
+        ofRead,
+        IID_IMetaDataImport,
+        (IUnknown**)&pIMDImport));
+
     WCHAR moduleFullName[256];
     ULONG nameLength = 0;
-    AssemblyID assemblyID;
-
-    IfFailRet(_profilerInfo->GetModuleInfo(moduleId,
-        nullptr,
-        256,
-        &nameLength,
+    GUID mvid = {0};
+    IfFailRet(pIMDImport->GetScopeProps(
         moduleFullName,
-        &assemblyID));
-
-    WCHAR* ptr = nullptr;
+        255,
+        &nameLength,
+        &mvid));
 
     int pathSeparatorIndex = nameLength - 1;
     while (pathSeparatorIndex >= 0)
@@ -277,7 +279,7 @@ HRESULT TypeNameUtilities::GetModuleInfo(NameCache& nameCache, ModuleID moduleId
         moduleName = tstring(moduleFullName, pathSeparatorIndex + 1, nameLength - pathSeparatorIndex - 1);
     }
 
-    nameCache.AddModuleData(moduleId, std::move(moduleName));
+    nameCache.AddModuleData(moduleId, std::move(moduleName), mvid);
 
     return S_OK;
 }

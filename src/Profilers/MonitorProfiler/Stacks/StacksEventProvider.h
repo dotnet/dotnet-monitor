@@ -37,7 +37,7 @@ class StacksEventProvider
 
         ComPtr<ICorProfilerInfo12> _profilerInfo;
         std::unique_ptr<ProfilerEventProvider> _provider;
-        
+
         const WCHAR* CallstackPayloads[4] = { _T("ThreadId"), _T("ThreadName"), _T("FunctionIds"), _T("IpOffsets")};
         std::unique_ptr<ProfilerEvent<UINT32, tstring, std::vector<UINT64>, std::vector<UINT64>>> _callstackEvent;
 
@@ -52,8 +52,8 @@ class StacksEventProvider
         const WCHAR* TokenPayloads[5] = { _T("ModuleId"), _T("Token"), _T("OuterToken"), _T("Name"), _T("Namespace") };
         std::unique_ptr<ProfilerEvent<UINT64, UINT32, UINT32, tstring, tstring>> _tokenEvent;
 
-        const WCHAR* ModulePayloads[2] = { _T("ModuleId"), _T("Name") };
-        std::unique_ptr<ProfilerEvent<UINT64, tstring>> _moduleEvent;
+        const WCHAR* ModulePayloads[3] = { _T("ModuleId"), _T("Name"), _T("Mvid") };
+        std::unique_ptr<ProfilerEvent<UINT64, tstring, GUID>> _moduleEvent;
 
         //TODO Once ProfilerEvent supports it, use an event with no payload.
         const WCHAR* EndPayloads[1] = { _T("Unused") };
