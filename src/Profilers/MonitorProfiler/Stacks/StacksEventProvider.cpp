@@ -53,7 +53,6 @@ HRESULT StacksEventProvider::WriteFunctionData(FunctionID functionId, const Func
 {
     return _functionEvent->WritePayload(
         static_cast<UINT64>(functionId),
-        functionData.GetMethodToken(),
         static_cast<UINT64>(functionData.GetClass()),
         functionData.GetClassToken(),
         static_cast<UINT64>(functionData.GetModuleId()),
