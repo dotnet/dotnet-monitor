@@ -66,6 +66,7 @@
         "msbuild",
         "msdata",
         "MSRC",
+        "mvid",
         "ndjson",
         "netcoreapp",
         "newtonsoft",
