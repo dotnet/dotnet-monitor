@@ -122,6 +122,29 @@ HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const tst
 
 template<typename... Args>
 template<size_t index, typename T, typename... TArgs>
+HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const std::vector<typename T::value_type>& first, TArgs... rest)
+{
+    // This value must stay in scope during all the WritePayload functions.
+    std::vector<BYTE> buffer(0);
+
+    if (first.size() == 0)
+    {
+        data[index].ptr = 0;
+        data[index].size = 0;
+        data[index].reserved = 0;
+    }
+    else
+    {
+        buffer = std::move(GetEventBuffer(first));
+        data[index].ptr = reinterpret_cast<UINT64>(buffer.data());
+        data[index].size = static_cast<UINT32>(buffer.size());
+        data[index].reserved = 0;
+    }
+    return WritePayload<index + 1, TArgs...>(data, rest...);
+}
+
+template<typename... Args>
+template<size_t index, typename T, typename... TArgs>
 HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const GUID& first, TArgs... rest)
 {
     // Manually copy the GUID into a buffer and pass the buffer address.
@@ -144,29 +167,6 @@ HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const GUI
     data[index].size = static_cast<UINT32>(GUID_FLAT_SIZE);
     data[index].reserved = 0;
 
-    return WritePayload<index + 1, TArgs...>(data, rest...);
-}
-
-template<typename... Args>
-template<size_t index, typename T, typename... TArgs>
-HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const std::vector<typename T::value_type>& first, TArgs... rest)
-{
-    // This value must stay in scope during all the WritePayload functions.
-    std::vector<BYTE> buffer(0);
-
-    if (first.size() == 0)
-    {
-        data[index].ptr = 0;
-        data[index].size = 0;
-        data[index].reserved = 0;
-    }
-    else
-    {
-        buffer = std::move(GetEventBuffer(first));
-        data[index].ptr = reinterpret_cast<UINT64>(buffer.data());
-        data[index].size = static_cast<UINT32>(buffer.size());
-        data[index].reserved = 0;
-    }
     return WritePayload<index + 1, TArgs...>(data, rest...);
 }
 
