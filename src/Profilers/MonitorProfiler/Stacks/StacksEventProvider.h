@@ -37,7 +37,7 @@ class StacksEventProvider
 
         ComPtr<ICorProfilerInfo12> _profilerInfo;
         std::unique_ptr<ProfilerEventProvider> _provider;
-
+        
         const WCHAR* CallstackPayloads[4] = { _T("ThreadId"), _T("ThreadName"), _T("FunctionIds"), _T("IpOffsets")};
         std::unique_ptr<ProfilerEvent<UINT32, tstring, std::vector<UINT64>, std::vector<UINT64>>> _callstackEvent;
 
