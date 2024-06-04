@@ -126,9 +126,10 @@ HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const GUI
 {
     // Manually copy the GUID into a buffer and pass the buffer address.
     // We can't pass the GUID address directly (or use sizeof(GUID)) because the GUID may have padding between its different data segments.
-    const int GUID_SIZE_BYTES = 128 / 4;
-    BYTE buffer[GUID_SIZE_BYTES] = {0};
+    const int GUID_FLAT_SIZE = sizeof(INT32) + sizeof(INT16) + sizeof(INT16) + sizeof(INT64);
+    static_assert(GUID_FLAT_SIZE == 128 / 8, "Incorrect flat GUID size.");
 
+    BYTE buffer[GUID_FLAT_SIZE] = {0};
     int offset = 0;
 
     memcpy(&buffer[offset], &first.Data1, sizeof(INT32));
@@ -140,7 +141,7 @@ HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const GUI
     memcpy(&buffer[offset], first.Data4, sizeof(INT64));
 
     data[index].ptr = reinterpret_cast<UINT64>(buffer);
-    data[index].size = static_cast<UINT32>(GUID_SIZE_BYTES);
+    data[index].size = static_cast<UINT32>(GUID_FLAT_SIZE);
     data[index].reserved = 0;
 
     return WritePayload<index + 1, TArgs...>(data, rest...);
