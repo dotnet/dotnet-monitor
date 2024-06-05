@@ -119,7 +119,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
                 services.AddSingleton<IDumpService, DumpService>();
                 services.AddSingleton<IEndpointInfoSourceCallbacks, OperationTrackerServiceEndpointInfoSourceCallback>();
-                services.AddSingleton<IRequestLimitTracker, RequestLimitTracker>();
+                services.ConfigureRequestLimits();
                 services.ConfigureOperationStore();
                 services.ConfigureExtensions();
                 services.ConfigureExtensionLocations(settings);

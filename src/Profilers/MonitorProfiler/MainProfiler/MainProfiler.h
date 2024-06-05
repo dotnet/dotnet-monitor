@@ -54,6 +54,7 @@ private:
     HRESULT InitializeEnvironmentHelper();
     HRESULT InitializeCommandServer();
     HRESULT MessageCallback(const IpcMessage& message);
+    HRESULT ValidateMessage(const IpcMessage& message);
     HRESULT ProfilerCommandSetCallback(const IpcMessage& message);
     HRESULT ProcessCallstackMessage();
 private:
