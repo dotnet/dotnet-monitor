@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task UnresolvableMethodsFailsOperation(Architecture targetArchitecture)
         {
-            await RunTestCaseCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, async (appRunner, apiClient) =>
+            await RunTestCaseCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, shouldSuspendTargetApp: true, async (appRunner, apiClient) =>
             {
                 int processId = await appRunner.ProcessIdTask;
 
@@ -79,24 +79,29 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task CapturesParametersInNonAspNetApps(Architecture targetArchitecture) =>
-            CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.NonAspNetApp, targetArchitecture, CapturedParameterFormat.JsonSequence);
+            CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.NonAspNetApp, targetArchitecture, CapturedParameterFormat.JsonSequence, shouldSuspendTargetApp: true);
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task CapturesParametersAndOutputJsonSequence(Architecture targetArchitecture) =>
-                CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, CapturedParameterFormat.JsonSequence);
+                CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, CapturedParameterFormat.JsonSequence, shouldSuspendTargetApp: true);
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task CapturesParametersAndOutputNewlineDelimitedJson(Architecture targetArchitecture) =>
-                CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, CapturedParameterFormat.NewlineDelimitedJson);
+                CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, CapturedParameterFormat.NewlineDelimitedJson, shouldSuspendTargetApp: true);
+
+                [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public Task CapturesParametersNoSuspend(Architecture targetArchitecture) =>
+                CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, CapturedParameterFormat.JsonSequence, shouldSuspendTargetApp: false);
 
 #else // NET7_0_OR_GREATER
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task Net6AppFailsOperation(Architecture targetArchitecture)
         {
-            await RunTestCaseCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, async (appRunner, apiClient) =>
+            await RunTestCaseCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, shouldSuspendTargetApp: true, async (appRunner, apiClient) =>
             {
                 int processId = await appRunner.ProcessIdTask;
 
@@ -110,9 +115,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 #endif // NET7_0_OR_GREATER
 
-        private async Task CapturesParametersCore(string subScenarioName,Architecture targetArchitecture, CapturedParameterFormat format)
+        private async Task CapturesParametersCore(string subScenarioName,Architecture targetArchitecture, CapturedParameterFormat format, bool shouldSuspendTargetApp)
         {
-            await RunTestCaseCore(subScenarioName, targetArchitecture, async (appRunner, apiClient) =>
+            await RunTestCaseCore(subScenarioName, targetArchitecture, shouldSuspendTargetApp, async (appRunner, apiClient) =>
             {
                 int processId = await appRunner.ProcessIdTask;
 
@@ -144,7 +149,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             });
         }
 
-        private async Task RunTestCaseCore(string subScenarioName, Architecture targetArchitecture, Func<AppRunner, ApiClient, Task> appValidate)
+        private async Task RunTestCaseCore(string subScenarioName, Architecture targetArchitecture, bool shouldSuspendTargetApp, Func<AppRunner, ApiClient, Task> appValidate)
         {
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
@@ -167,7 +172,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
                 },
                 profilerLogLevel: LogLevel.Trace,
-                subScenarioName: subScenarioName);
+                subScenarioName: subScenarioName,
+                shouldSuspendProcess: shouldSuspendTargetApp);
         }
 
         private static CaptureParametersConfiguration GetValidConfiguration()
