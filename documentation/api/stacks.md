@@ -62,7 +62,7 @@ Allowed schemes:
 ### Sample Request
 
 ```http
-GET /stack?pid=21632 HTTP/1.1
+GET /stacks?pid=21632 HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 Accept: application/json
@@ -100,7 +100,7 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
 ### Sample Request
 
 ```http
-GET /stack?pid=21632 HTTP/1.1
+GET /stacks?pid=21632 HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 Accept: text/plain
