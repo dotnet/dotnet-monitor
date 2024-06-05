@@ -61,5 +61,6 @@
     <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.9.0" Version="9.0.0-preview.4.24266.19" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0">
       <Uri>https://github.com/dotnet/runtime</Uri>
       <Sha>d0d6fed6c0eedd962ddc0f68554682064e9e11ca</Sha>
+    </Dependency>
   </ToolsetDependencies>
 </Dependencies>
