@@ -1,6 +1,6 @@
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="9.0.0-preview.4.24267.6" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
+    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="9.0.0-preview.4.24267.6" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>ada5ad97d2114250a05550cb28cc18b9cf9f8993</Sha>
     </Dependency>
