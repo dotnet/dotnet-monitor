@@ -161,6 +161,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     runner.EnableMonitorStartupHook = true;
                     runner.Architecture = targetArchitecture;
+                    runner.DiagnosticPortSuspend = shouldSuspendTargetApp;
                 },
                 configureTool: (toolRunner) =>
                 {
@@ -172,8 +173,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
                 },
                 profilerLogLevel: LogLevel.Trace,
-                subScenarioName: subScenarioName,
-                shouldSuspendProcess: shouldSuspendTargetApp);
+                subScenarioName: subScenarioName);
         }
 
         private static CaptureParametersConfiguration GetValidConfiguration()
