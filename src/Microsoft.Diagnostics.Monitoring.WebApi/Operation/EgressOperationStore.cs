@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal sealed class EgressOperationStore
+    internal sealed class EgressOperationStore : IEgressOperationStore
     {
         private sealed class EgressEntry
         {
