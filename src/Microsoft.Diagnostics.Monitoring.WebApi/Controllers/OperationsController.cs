@@ -19,14 +19,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     public class OperationsController : ControllerBase
     {
         private readonly ILogger<OperationsController> _logger;
-        private readonly EgressOperationStore _operationsStore;
+        private readonly IEgressOperationStore _operationsStore;
 
         public const string ControllerName = "operations";
 
         public OperationsController(ILogger<OperationsController> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _operationsStore = serviceProvider.GetRequiredService<EgressOperationStore>();
+            _operationsStore = serviceProvider.GetRequiredService<IEgressOperationStore>();
         }
 
         /// <summary>

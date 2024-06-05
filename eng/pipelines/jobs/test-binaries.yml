@@ -184,12 +184,6 @@ jobs:
         HelixAccessToken: $(HelixApiAccessToken)
         DotNetBuildsInternalContainerReadToken: $(dotnetbuilds-internal-container-read-token)
 
-    # .NET 9 Windows ARM64 dotnet test currently stalls and times out without error. Allow
-    # the test step to continue on error for this configuration.
-    # Issue: https://github.com/dotnet/dotnet-monitor/issues/6531
-    ${{ if eq(parameters.targetRid, 'win-arm64') }}:
-      buildContinueOnError: true
-
     postBuildSteps:
     - ${{ if ne(parameters.useHelix, 'true')}}:
       # Publish test results to Azure Pipelines
