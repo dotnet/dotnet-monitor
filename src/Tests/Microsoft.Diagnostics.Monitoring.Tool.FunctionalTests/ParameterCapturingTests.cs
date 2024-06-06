@@ -51,7 +51,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task UnresolvableMethodsFailsOperation(Architecture targetArchitecture)
         {
-            await RunTestCaseCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, shouldSuspendTargetApp: true, async (appRunner, apiClient) =>
+            await RunTestCaseCore(
+                TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp,
+                targetArchitecture,
+                shouldSuspendTargetApp: true,
+                enableStartupHook: true,
+                async (appRunner, apiClient) =>
             {
                 int processId = await appRunner.ProcessIdTask;
 
@@ -78,29 +83,83 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task CapturesParametersInNonAspNetApps(Architecture targetArchitecture) =>
-            CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.NonAspNetApp, targetArchitecture, CapturedParameterFormat.JsonSequence, shouldSuspendTargetApp: true);
+            CapturesParametersCore(
+                TestAppScenarios.ParameterCapturing.SubScenarios.NonAspNetApp,
+                targetArchitecture, CapturedParameterFormat.JsonSequence,
+                shouldSuspendTargetApp: true,
+                enableStartupHook: true);
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task CapturesParametersAndOutputJsonSequence(Architecture targetArchitecture) =>
-                CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, CapturedParameterFormat.JsonSequence, shouldSuspendTargetApp: true);
+                CapturesParametersCore(
+                    TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp,
+                    targetArchitecture,
+                    CapturedParameterFormat.JsonSequence,
+                    shouldSuspendTargetApp: true,
+                    enableStartupHook: true);
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task CapturesParametersAndOutputNewlineDelimitedJson(Architecture targetArchitecture) =>
-                CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, CapturedParameterFormat.NewlineDelimitedJson, shouldSuspendTargetApp: true);
+                CapturesParametersCore(
+                    TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp,
+                    targetArchitecture, CapturedParameterFormat.NewlineDelimitedJson,
+                    shouldSuspendTargetApp: true,
+                    enableStartupHook: true);
 
-                [Theory]
+#if NET8_0_OR_GREATER
+        [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task CapturesParametersNoSuspend(Architecture targetArchitecture) =>
-                CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, CapturedParameterFormat.JsonSequence, shouldSuspendTargetApp: false);
+                CapturesParametersCore(
+                    TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp,
+                    targetArchitecture,
+                    CapturedParameterFormat.JsonSequence,
+                    shouldSuspendTargetApp: false,
+                    enableStartupHook: false);
+#endif // NET8_0_OR_GREATER
+
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public async Task CapturesParametersNoSuspendDoesntWorkWithManuallyEnabledStartupHook(Architecture targetArchitecture)
+        {
+            await RunTestCaseCore(
+                TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp,
+                targetArchitecture,
+                shouldSuspendTargetApp: false,
+                enableStartupHook: true,
+                async (appRunner, apiClient) =>
+                {
+                    int processId = await appRunner.ProcessIdTask;
+                    CaptureParametersConfiguration config = GetValidConfiguration();
+
+                    OperationResponse response = await apiClient.CaptureParametersAsync(processId, CommonTestTimeouts.GeneralTimeout, config, CapturedParameterFormat.JsonSequence, FileProviderName);
+                    Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
+
+                    OperationStatusResponse _ = await apiClient.WaitForOperationToStart(response.OperationUri);
+
+                    await appRunner.SendCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue);
+
+                    OperationStatusResponse operationResult = await apiClient.PollOperationToCompletion(response.OperationUri);
+
+                    Assert.Equal(HttpStatusCode.OK, operationResult.StatusCode);
+                    Assert.Equal(OperationState.Failed, operationResult.OperationStatus.Status);
+                    Assert.Equal(((int)HttpStatusCode.BadRequest).ToString(), operationResult.OperationStatus.Error.Code);
+                });
+        }
 
 #else // NET7_0_OR_GREATER
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task Net6AppFailsOperation(Architecture targetArchitecture)
         {
-            await RunTestCaseCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, shouldSuspendTargetApp: true, async (appRunner, apiClient) =>
+            await RunTestCaseCore(
+                TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp,
+                targetArchitecture,
+                shouldSuspendTargetApp: true,
+                enableStartupHook: true,
+                async (appRunner, apiClient) =>
             {
                 int processId = await appRunner.ProcessIdTask;
 
@@ -114,9 +173,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 #endif // NET7_0_OR_GREATER
 
-        private async Task CapturesParametersCore(string subScenarioName,Architecture targetArchitecture, CapturedParameterFormat format, bool shouldSuspendTargetApp)
+        private async Task CapturesParametersCore(
+            string subScenarioName,
+            Architecture targetArchitecture,
+            CapturedParameterFormat format,
+            bool shouldSuspendTargetApp,
+            bool enableStartupHook)
         {
-            await RunTestCaseCore(subScenarioName, targetArchitecture, shouldSuspendTargetApp, async (appRunner, apiClient) =>
+            await RunTestCaseCore(
+                subScenarioName,
+                targetArchitecture,
+                shouldSuspendTargetApp: shouldSuspendTargetApp,
+                enableStartupHook: enableStartupHook,
+                async (appRunner, apiClient) =>
             {
                 int processId = await appRunner.ProcessIdTask;
 
@@ -148,7 +217,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             });
         }
 
-        private async Task RunTestCaseCore(string subScenarioName, Architecture targetArchitecture, bool shouldSuspendTargetApp, Func<AppRunner, ApiClient, Task> appValidate)
+        private async Task RunTestCaseCore(
+            string subScenarioName,
+            Architecture targetArchitecture,
+            bool shouldSuspendTargetApp,
+            bool enableStartupHook,
+            Func<AppRunner, ApiClient, Task> appValidate)
         {
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
@@ -158,7 +232,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 appValidate: appValidate,
                 configureApp: runner =>
                 {
-                    runner.EnableMonitorStartupHook = true;
+                    runner.EnableMonitorStartupHook = enableStartupHook;
                     runner.Architecture = targetArchitecture;
                     runner.DiagnosticPortSuspend = shouldSuspendTargetApp;
                 },
@@ -172,7 +246,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
                 },
                 profilerLogLevel: LogLevel.Trace,
-                subScenarioName: subScenarioName);
+                subScenarioName: subScenarioName,
+                startAppBeforeTool: !shouldSuspendTargetApp);
         }
 
         private static CaptureParametersConfiguration GetValidConfiguration()
