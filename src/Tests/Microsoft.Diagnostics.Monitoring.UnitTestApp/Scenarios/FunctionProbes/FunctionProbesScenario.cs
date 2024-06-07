@@ -1,8 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
-using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
+using Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing;
+using Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.FunctionProbes;
 using Microsoft.Diagnostics.Monitoring.StartupHook;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using SampleMethods;
@@ -70,10 +70,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 CliCommand testCaseCommand = new(subCommand);
                 testCaseCommand.SetAction((result, token) =>
                 {
-                    return ScenarioHelpers.RunScenarioAsync(async logger =>
+                    return ScenarioHelpers.RunScenarioAsync(async _ =>
                     {
                         PerFunctionProbeProxy probeProxy = new PerFunctionProbeProxy();
-                        using FunctionProbesManager probeManager = new(logger);
+                        using FunctionProbesManager probeManager = new();
 
                         await testCase(probeManager, probeProxy, token);
 
@@ -389,9 +389,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
         public static Task<int> ValidateNoMutatingProfilerAsync(ParseResult result, CancellationToken token)
         {
-            return ScenarioHelpers.RunScenarioAsync(logger =>
+            return ScenarioHelpers.RunScenarioAsync(_ =>
             {
-                Assert.Throws<DllNotFoundException>(() => new FunctionProbesManager(logger));
+                Assert.Throws<DllNotFoundException>(() => new FunctionProbesManager());
 
                 return Task.FromResult(0);
             }, token);
