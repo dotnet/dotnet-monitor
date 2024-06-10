@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Threading;
 using Xunit.Sdk;
 
-namespace Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes
+namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.FunctionProbes
 {
     internal sealed class PerFunctionProbeWrapper
     {

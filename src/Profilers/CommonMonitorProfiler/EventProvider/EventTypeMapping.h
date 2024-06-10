@@ -60,6 +60,17 @@ public:
 };
 
 template<>
+class EventTypeMapping<GUID>
+{
+public:
+    void GetType(COR_PRF_EVENTPIPE_PARAM_DESC& descriptor)
+    {
+        descriptor.type = COR_PRF_EVENTPIPE_GUID;
+        descriptor.elementType = 0;
+    }
+};
+
+template<>
 class EventTypeMapping<std::vector<UINT64>>
 {
 public:
