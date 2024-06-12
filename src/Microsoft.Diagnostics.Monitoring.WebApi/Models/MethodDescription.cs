@@ -4,7 +4,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-#if STARTUPHOOK || HOSTINGSTARTUP
+#if STARTUPHOOK
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher.Models
 #else
 using Microsoft.Diagnostics.Monitoring.Options;
