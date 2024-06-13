@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 
 
-#if STARTUPHOOK || HOSTINGSTARTUP
+#if STARTUPHOOK
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Monitoring
 #else
 namespace Microsoft.Diagnostics.Monitoring
@@ -29,9 +29,6 @@ namespace Microsoft.Diagnostics.Monitoring
         Callstack
     };
 
-    /// <summary>
-    /// Shared between the StartupHook and HostingStartup assembly.
-    /// </summary>
     public enum StartupHookCommand : ushort
     {
         StartCapturingParameters,

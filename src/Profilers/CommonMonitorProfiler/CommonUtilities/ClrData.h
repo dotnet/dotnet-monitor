@@ -11,15 +11,17 @@
 class ModuleData
 {
 public:
-    ModuleData(tstring&& name) :
-        _moduleName(name)
+    ModuleData(tstring&& name, GUID mvid) :
+        _moduleName(name), _mvid(mvid)
     {
     }
 
     const tstring& GetName() const { return _moduleName; }
+    const GUID GetMvid() const { return _mvid; }
 
 private:
     tstring _moduleName;
+    GUID _mvid;
 };
 
 enum class ClassFlags : UINT32

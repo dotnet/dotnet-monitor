@@ -4,6 +4,10 @@
 
 First Available: 8.0 Preview 7
 
+> [!NOTE]
+> In-process features are only supported when running dotnet-monitor in `Listen` mode. 
+> See [Diagnostic Port](./diagnostic-port-configuration.md) configuration for details.
+
 Some features of `dotnet monitor` require loading libraries into target applications. These libraries ship with `dotnet monitor` and are provisioned to be available to target applications using the `DefaultSharedPath` option in the [storage configuration](./storage-configuration.md) section. The following features require these in-process libraries to be used:
 
 - [Call Stacks](#call-stacks)
