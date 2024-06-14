@@ -52,7 +52,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             UnresolvedMethods = 0,
             InvalidRequest,
             TooManyRequests,
-            InternalError
+            InternalError,
+            ProbeFaulted
         }
 
         public static class CapturingFailedPayloads

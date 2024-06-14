@@ -11,7 +11,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.HostingStartup
+namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
 {
     internal sealed class InProcessFeaturesService
     {
