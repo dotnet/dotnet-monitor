@@ -32,7 +32,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         public static class ModuleDescPayloads
         {
             public const int ModuleId = 0;
-            public const int Name = 1;
+            public const int ModuleVersionId = 1;
+            public const int Name = 2;
         }
 
         public static class TokenDescPayloads

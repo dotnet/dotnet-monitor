@@ -128,7 +128,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             if (!GetOrCreateIdentifier(_moduleIds, module, ref _nextModuleId, out ulong moduleId))
                 return moduleId;
 
-            ModuleData data = new(module.Name);
+            ModuleData data = new(module.Name, module.ModuleVersionId);
 
             if (_nameCache.ModuleData.TryAdd(moduleId, data))
             {

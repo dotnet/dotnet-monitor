@@ -125,12 +125,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         [Event(ExceptionEvents.EventIds.ModuleDescription)]
         public void ModuleDescription(
             ulong ModuleId,
+            Guid ModuleVersionId,
             string Name)
         {
             Span<EventData> data = stackalloc EventData[2];
             using PinnedData namePinned = PinnedData.Create(Name);
 
             SetValue(ref data[NameIdentificationEvents.ModuleDescPayloads.ModuleId], ModuleId);
+            SetValue(ref data[NameIdentificationEvents.ModuleDescPayloads.ModuleVersionId], ModuleVersionId);
             SetValue(ref data[NameIdentificationEvents.ModuleDescPayloads.Name], namePinned);
 
             WriteEventWithFlushing(ExceptionEvents.EventIds.ModuleDescription, data);

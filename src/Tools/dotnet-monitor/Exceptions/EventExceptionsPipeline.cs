@@ -105,6 +105,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 case "ModuleDescription":
                     _cache.AddModule(
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.ModuleDescPayloads.ModuleId),
+                        traceEvent.GetPayload<Guid>(NameIdentificationEvents.ModuleDescPayloads.ModuleVersionId),
                         traceEvent.GetPayload<string>(NameIdentificationEvents.ModuleDescPayloads.Name)
                         );
                     break;

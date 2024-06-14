@@ -36,9 +36,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _stackFrames.Add(id, new StackFrameInstance(functionId, ilOffset));
         }
 
-        public void AddModule(ulong id, string moduleName)
+        public void AddModule(ulong id, Guid moduleVersionId, string moduleName)
         {
-            _nameCache.ModuleData.TryAdd(id, new ModuleData(moduleName));
+            _nameCache.ModuleData.TryAdd(id, new ModuleData(moduleName, moduleVersionId));
         }
 
         public void AddToken(ulong moduleId, uint token, uint outerToken, string name, string @namespace)

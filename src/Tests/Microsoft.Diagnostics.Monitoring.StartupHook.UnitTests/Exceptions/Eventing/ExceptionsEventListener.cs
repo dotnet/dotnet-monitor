@@ -78,7 +78,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                         NameCache.ModuleData.TryAdd(
                             ToUInt64(eventData.Payload[NameIdentificationEvents.ModuleDescPayloads.ModuleId]),
                             new ModuleData(
-                                ToString(eventData.Payload[NameIdentificationEvents.ModuleDescPayloads.Name])));
+                                ToString(eventData.Payload[NameIdentificationEvents.ModuleDescPayloads.Name]),
+                                ToGuid(eventData.Payload[NameIdentificationEvents.ModuleDescPayloads.ModuleVersionId])
+                                ));
                         break;
                     case ExceptionEvents.EventIds.StackFrameDescription:
                         StackFrameIdentifiers.TryAdd(
@@ -102,6 +104,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                         throw new NotSupportedException();
                 }
             }
+        }
+
+        private static Guid ToGuid(object? value)
+        {
+            return ToType<Guid>(value);
         }
 
         private static int ToInt32(object? value)

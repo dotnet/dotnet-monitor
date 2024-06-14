@@ -50,6 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         {
             _source.ModuleDescription(
                 moduleId,
+                data.ModuleVersionId,
                 data.Name);
         }
 

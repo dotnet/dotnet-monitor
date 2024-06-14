@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 
@@ -55,8 +56,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
     internal sealed record class FunctionData(string Name, ulong ParentClass, uint ParentToken, ulong ModuleId, ulong[] TypeArgs, ulong[] ParameterTypes);
 
     /// <param name="Name">The name of the module.</param>
+    /// <param name="ModuleVersionId">The version identifier of the module.</param>
     [DebuggerDisplay("{Name}")]
-    internal sealed record class ModuleData(string Name);
+    internal sealed record class ModuleData(string Name, Guid ModuleVersionId);
 
     internal sealed record class ModuleScopedToken(ulong ModuleId, uint Token);
 }

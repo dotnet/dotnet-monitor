@@ -119,7 +119,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             {
                 ulong id = action.GetPayload<ulong>(NameIdentificationEvents.ModuleDescPayloads.ModuleId);
                 var moduleData = new ModuleData(
-                    action.GetPayload<string>(NameIdentificationEvents.ModuleDescPayloads.Name)
+                    action.GetPayload<string>(NameIdentificationEvents.ModuleDescPayloads.Name),
+                    action.GetPayload<Guid>(NameIdentificationEvents.ModuleDescPayloads.ModuleVersionId)
                     );
 
                 _result.NameCache.ModuleData.TryAdd(id, moduleData);
