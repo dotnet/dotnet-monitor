@@ -5,11 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-#if HOSTINGSTARTUP
-namespace Microsoft.Diagnostics.Monitoring.HostingStartup
-#else
 namespace Microsoft.Diagnostics.Monitoring.WebApi
-#endif
 {
     // Logger implementations have different ways of serializing log scopes. This class helps those loggers
     // serialize the scope information in the best way possible for each of the implementations.

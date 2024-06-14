@@ -120,18 +120,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             }
         }
 
-        public static class HostingStartup
-        {
-            public const string Name = nameof(HostingStartup);
-
-            public static class SubScenarios
-            {
-                public const string VerifyAspNetAppWithoutHostingStartup = nameof(VerifyAspNetAppWithoutHostingStartup);
-                public const string VerifyAspNetApp = nameof(VerifyAspNetApp);
-                public const string VerifyNonAspNetAppNotImpacted = nameof(VerifyNonAspNetAppNotImpacted);
-            }
-        }
-
         public static class Stacks
         {
             public const string Name = nameof(Stacks);
