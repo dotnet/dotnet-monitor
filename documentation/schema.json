@@ -2989,12 +2989,16 @@
           "maximum": 2147483647.0,
           "minimum": 1.0
         },
+        "UseKmsEncryption": {
+          "type": "boolean",
+          "description": "A boolean flag which controls whether the Egress should use KMS server side encryption."
+        },
         "KmsEncryptionKey": {
           "type": [
             "null",
             "string"
           ],
-          "description": "The arn of the KMS encryption key to be used for server side encryption"
+          "description": "If UseKmsEncryption is true, this specifies the arn of the \"customer managed\" KMS encryption key to be used for server side encryption. If no value is set for this field then S3 will use an AWS managed key for KMS encryption."
         }
       }
     }
