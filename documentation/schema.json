@@ -2988,6 +2988,13 @@
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 1.0
+        },
+        "KmsEncryptionKey": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The arn of the KMS encryption key to be used for server side encryption"
         }
       }
     }
