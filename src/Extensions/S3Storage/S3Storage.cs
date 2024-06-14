@@ -77,6 +77,12 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             if (awsCredentials == null)
                 throw new AmazonClientException("Failed to find AWS Credentials for constructing AWS service client");
 
+            if (options.UseKmsEncryption)
+            {
+                // Required for generating pre-signed URLs with KMS encryption
+                AWSConfigsS3.UseSignatureVersion4 = true;
+            }
+
             IAmazonS3 s3Client = new AmazonS3Client(awsCredentials, configuration);
             bool exists = await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, options.BucketName);
             if (!exists)
