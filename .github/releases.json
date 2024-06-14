@@ -76,8 +76,8 @@
     },
     "9.0": {
       "tag": "v9.0.0-preview.5.24307.6",
-      "minorReleaseDate": "2024-06-13T00:00:00.000Z",
-      "patchReleaseDate": "2024-06-13T00:00:00.000Z",
+      "minorReleaseDate": "2024-06-11T00:00:00.000Z",
+      "patchReleaseDate": "2024-06-11T00:00:00.000Z",
       "supportedFrameworks": [
         "net9.0"
       ]
