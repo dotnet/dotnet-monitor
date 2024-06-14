@@ -157,6 +157,10 @@
     <value>The boolean flag set for AWS connection configuration ForcePathStyle option.</value>
     <comment>The description provided for the ForcePathStyle parameter on S3StorageEgressProviderOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_KmsEncryptionKey" xml:space="preserve">
+    <value>The arn of the KMS encryption key to be used for server side encryption</value>
+    <comment>The description provided for the KmsEncryptionKey parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
   <data name="DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize" xml:space="preserve">
     <value>Buffer size used when copying data from an egress callback returning a stream to the egress callback that is provided a stream to which data is written.</value>
     <comment>The description provided for the CopyBufferSize parameter on all egress provider options.</comment>
