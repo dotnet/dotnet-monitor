@@ -23,13 +23,15 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
         private readonly string _bucketName;
         private readonly string _objectId;
         private readonly string _contentType;
+        private readonly string _kmsEncryptionKey;
 
-        public S3Storage(IAmazonS3 client, string bucketName, string objectId, string contentType)
+        public S3Storage(IAmazonS3 client, string bucketName, string objectId, string contentType, string kmsEncryptionKey)
         {
             _s3Client = client;
             _bucketName = bucketName;
             _objectId = objectId;
             _contentType = contentType;
+            _kmsEncryptionKey = kmsEncryptionKey;
         }
 
         public static async Task<IS3Storage> CreateAsync(S3StorageEgressProviderOptions options, EgressArtifactSettings settings, CancellationToken cancellationToken)
@@ -77,7 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             bool exists = await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, options.BucketName);
             if (!exists)
                 await s3Client.PutBucketAsync(options.BucketName, cancellationToken);
-            return new S3Storage(s3Client, options.BucketName, settings.Name, settings.ContentType);
+            return new S3Storage(s3Client, options.BucketName, settings.Name, settings.ContentType, options.KmsEncryptionKey);
         }
 
         public async Task PutAsync(Stream inputStream, CancellationToken token)
@@ -90,6 +92,13 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
                 InputStream = inputStream,
                 AutoCloseStream = false,
             };
+
+            if (!string.IsNullOrEmpty(_kmsEncryptionKey))
+            {
+                request.ServerSideEncryptionMethod = ServerSideEncryptionMethod.AWSKMS;
+                request.ServerSideEncryptionKeyManagementServiceKeyId = _kmsEncryptionKey;
+            }
+
             await _s3Client.PutObjectAsync(request, token);
         }
 
@@ -102,6 +111,13 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
         public async Task<string> InitMultiPartUploadAsync(IDictionary<string, string> metadata, CancellationToken cancellationToken)
         {
             var request = new InitiateMultipartUploadRequest { BucketName = _bucketName, Key = _objectId, ContentType = _contentType };
+
+            if (!string.IsNullOrEmpty(_kmsEncryptionKey))
+            {
+                request.ServerSideEncryptionMethod = ServerSideEncryptionMethod.AWSKMS;
+                request.ServerSideEncryptionKeyManagementServiceKeyId = _kmsEncryptionKey;
+            }
+
             foreach (var metaData in metadata)
                 request.Metadata[metaData.Key] = metaData.Value;
             var response = await _s3Client.InitiateMultipartUploadAsync(request, cancellationToken);
