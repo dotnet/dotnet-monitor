@@ -105,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             ulong[] TypeArgs,
             ulong[] ParameterTypes)
         {
-            Span<EventData> data = stackalloc EventData[7];
+            Span<EventData> data = stackalloc EventData[8];
             using PinnedData namePinned = PinnedData.Create(Name);
             Span<byte> typeArgsSpan = stackalloc byte[GetArrayDataSize(TypeArgs)];
             FillArrayData(typeArgsSpan, TypeArgs);
@@ -130,7 +130,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             Guid ModuleVersionId,
             string Name)
         {
-            Span<EventData> data = stackalloc EventData[2];
+            Span<EventData> data = stackalloc EventData[3];
             using PinnedData namePinned = PinnedData.Create(Name);
 
             SetValue(ref data[NameIdentificationEvents.ModuleDescPayloads.ModuleId], ModuleId);
