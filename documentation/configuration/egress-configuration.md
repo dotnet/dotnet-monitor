@@ -159,6 +159,7 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 | preSignedUrlExpiry | TimeStamp? | false | When specified, a pre-signed url is returned after successful upload; this value specifies the amount of time the generated pre-signed url should be accessible. The value has to be between 1 minute and 1 day. |
 | forcePathStyle | bool | false | The boolean flag set for AWS connection configuration ForcePathStyle option. |
 | copyBufferSize | int | false | The buffer size to use when copying data from the original artifact to the blob stream. There is a minimum size of 5 MB which is set when the given value is lower.|
+| kmsEncryptionKey | string | false | If present this is the ARN of the KMS encryption key to request for use by server side encryption of the upload to S3. |
 
 ### Example S3 storage provider
 
@@ -177,6 +178,24 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
                   "regionName": "us-east-1",
                   "preSignedUrlExpiry" : "00:15:00",
                   "copyBufferSize": 1024
+              }
+          }
+      }
+  }
+  ```
+</details>
+
+<details>
+  <summary>JSON with KMS encryption</summary>
+
+  ```json
+  {
+      "Egress": {
+          "S3Storage": {
+              "monitorS3Blob": {
+                  "endpoint": "http://localhost:9000",
+                  "bucketName": "myS3Bucket",
+                  "kmsEncryptionKey": "arn:aws:kms:eu-west-1:012345678900:key/bb16676b-5cef-4eab-aa4c-ac6cd7961047"
               }
           }
       }
