@@ -12,12 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.HostingStartup\Microsoft.Diagnostics.Monitoring.HostingStartup.csproj" />
+    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.StartupHook\Microsoft.Diagnostics.Monitoring.StartupHook.csproj" />
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests\ParameterCapturing\SampleMethods.cs" Link="Scenarios\FunctionProbes\SampleMethods.cs"/>
+    <Compile Include="..\Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests\ParameterCapturing\SampleMethods.cs" Link="Scenarios\FunctionProbes\SampleMethods.cs"/>
   </ItemGroup>
 
 </Project>

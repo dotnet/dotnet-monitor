@@ -26,7 +26,6 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.Extension;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
-using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
@@ -356,13 +355,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddScoped<IExceptionsStore, ExceptionsStore>();
             services.AddScoped<IExceptionsStoreCallbackFactory, ExceptionsStoreLimitsCallbackFactory>();
             services.AddScoped<IDiagnosticLifetimeService, ExceptionsService>();
-            return services;
-        }
-
-        public static IServiceCollection ConfigureHostingStartup(this IServiceCollection services)
-        {
-            services.AddScoped<HostingStartupService>();
-            services.AddScopedForwarder<IDiagnosticLifetimeService, HostingStartupService>();
             return services;
         }
 
