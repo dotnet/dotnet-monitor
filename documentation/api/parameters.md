@@ -128,13 +128,10 @@ Content-Type: application/x-ndjson
 
 ## Additional Requirements
 
-- The target application must use ASP.NET Core.
 - The target application cannot have [Hot Reload](https://learn.microsoft.com/visualstudio/debugger/hot-reload) enabled.
-- `dotnet-monitor` must be set to `Listen` mode, and the target application must start suspended. See [diagnostic port configuration](../configuration/diagnostic-port-configuration.md) for information on how to do this.
-- The target application must have [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger) available via [ASP.NET Core's dependency injection](https://learn.microsoft.com/aspnet/core/fundamentals/dependency-injection).
-- This feature relies on a hosting startup assembly. If the target application [disabled automatic loading](https://learn.microsoft.com/aspnet/core/fundamentals/host/platform-specific-configuration#disable-automatic-loading-of-hosting-startup-assemblies) of these, this feature will not be available.
+- `dotnet-monitor` must be set to `Listen` mode. See [diagnostic port configuration](../configuration/diagnostic-port-configuration.md) for information on how to do this.
+- If the target application is using .NET 7 then the dotnet-monitor startup hook must be manually configured and the target application must start suspended. In .NET 8+ this is not a requirement.
 - This feature relies on a [ICorProfilerCallback](https://docs.microsoft.com/dotnet/framework/unmanaged-api/profiling/icorprofilercallback-interface) implementation. If the target application is already using an `ICorProfiler` that isn't notify-only, this feature will not be available.
-- If a target application is using .NET 7 then the `dotnet-monitor` startup hook must be configured. This is automatically done in .NET 8+.
 
 ## Additional Notes
 

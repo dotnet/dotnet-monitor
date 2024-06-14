@@ -6,8 +6,8 @@ using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.NETCore.Client;
-using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
+using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -94,23 +94,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
             IDictionary<string, string> env = await client.GetProcessEnvironmentAsync(token);
 
-            const string PreventHostingStartupEnvName = "ASPNETCORE_PREVENTHOSTINGSTARTUP";
-            if (env.TryGetValue(PreventHostingStartupEnvName, out string preventHostingStartupEnvValue) &&
-                ToolIdentifiers.IsEnvVarValueEnabled(preventHostingStartupEnvValue))
-            {
-                throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_PreventedHostingStartup);
-            }
-
             if (!env.TryGetValue(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.ManagedMessaging, out string isManagedMessagingAvailable) ||
                 !ToolIdentifiers.IsEnvVarValueEnabled(isManagedMessagingAvailable))
             {
                 throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad);
             }
 
-            if (!env.TryGetValue(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.HostingStartup, out string isHostingStartupAvailable) ||
-                !ToolIdentifiers.IsEnvVarValueEnabled(isHostingStartupAvailable))
+            if (!env.TryGetValue(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.StartupHook, out string isStartupHookAvailable) ||
+                !ToolIdentifiers.IsEnvVarValueEnabled(isStartupHookAvailable))
             {
-                throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad);
+                throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_StartupHookDidNotLoad);
             }
 
             const string EditAndContinueEnvName = "COMPLUS_ForceEnc";

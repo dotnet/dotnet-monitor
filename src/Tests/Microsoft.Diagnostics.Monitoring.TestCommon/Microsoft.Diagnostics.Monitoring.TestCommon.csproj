@@ -33,7 +33,6 @@
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests" />
-    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.HostingStartup.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.UnitTestApp" />
   </ItemGroup>
 
