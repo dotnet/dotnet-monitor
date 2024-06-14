@@ -85,7 +85,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 {
                     for (int i = 0; i < functionIds.Length; i++)
                     {
-                        stack.Frames.Add(new CallStackFrame { FunctionId = functionIds[i], Offset = offsets[i] });
+                        CallStackFrame stackFrame = new CallStackFrame
+                        {
+                            FunctionId = functionIds[i],
+                            Offset = offsets[i]
+                        };
+
+                        if (_result.NameCache.FunctionData.TryGetValue(stackFrame.FunctionId, out FunctionData functionData))
+                        {
+                            stackFrame.MethodToken = functionData.MethodToken;
+                            if (_result.NameCache.ModuleData.TryGetValue(functionData.ModuleId, out ModuleData moduleData))
+                            {
+                                stackFrame.ModuleVersionId = moduleData.ModuleVersionId;
+                            }
+                        }
+
+                        stack.Frames.Add(stackFrame);
                     }
                 }
             }

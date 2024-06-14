@@ -195,6 +195,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                             assembledMethodName += builder.ToString();
                         }
                         writer.WriteString("methodName", assembledMethodName);
+                        writer.WriteNumber("methodToken", frame.MethodToken);
                         writer.WriteStartArray("parameterTypes");
                         foreach (string parameterType in frame.FullParameterTypes)
                         {
@@ -203,6 +204,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         writer.WriteEndArray(); // end parameterTypes
                         writer.WriteString("typeName", frame.TypeName);
                         writer.WriteString("moduleName", frame.ModuleName);
+                        writer.WriteString("moduleVersionId", frame.ModuleVersionId);
 
                         writer.WriteEndObject();
                     }
