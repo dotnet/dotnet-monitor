@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests.ParameterCaptur
         [InlineData("Test: {prop1} - {prop2} - {method()}", "Test: {0} - {1} - {2}", "prop1", "prop2", "method()")]
         // Complex expressions
         [InlineData("Test: {propertyName - 2}", "Test: {0}", "propertyName - 2")]
-        public void ParseDebuggerDisplay(string debuggerDisplay, string formatString, params string[] expressions)
+        public void ParseDebuggerDisplay(string debuggerDisplay, string? formatString, params string[] expressions)
         {
             // Act
             ParsedDebuggerDisplay? parsed = DebuggerDisplayParser.ParseDebuggerDisplay(debuggerDisplay);
@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests.ParameterCaptur
         [InlineData("{((a)}", null, FormatSpecifier.None)]
         [InlineData("{\\}}", null, FormatSpecifier.None)]
         [InlineData("{a}", "a", FormatSpecifier.None)]
-        internal void ParseExpression(string rawExpression, string expressionString, FormatSpecifier formatSpecifier)
+        internal void ParseExpression(string rawExpression, string? expressionString, FormatSpecifier formatSpecifier)
         {
             // Act
             Expression? expression = DebuggerDisplayParser.ParseExpression(rawExpression.AsMemory(), out _);
