@@ -23,14 +23,16 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
         private readonly string _bucketName;
         private readonly string _objectId;
         private readonly string _contentType;
+        private readonly bool _useKmsEncryption;
         private readonly string _kmsEncryptionKey;
 
-        public S3Storage(IAmazonS3 client, string bucketName, string objectId, string contentType, string kmsEncryptionKey)
+        public S3Storage(IAmazonS3 client, string bucketName, string objectId, string contentType, bool useKmsEncryption, string kmsEncryptionKey)
         {
             _s3Client = client;
             _bucketName = bucketName;
             _objectId = objectId;
             _contentType = contentType;
+            _useKmsEncryption = useKmsEncryption;
             _kmsEncryptionKey = kmsEncryptionKey;
         }
 
@@ -79,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             bool exists = await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, options.BucketName);
             if (!exists)
                 await s3Client.PutBucketAsync(options.BucketName, cancellationToken);
-            return new S3Storage(s3Client, options.BucketName, settings.Name, settings.ContentType, options.KmsEncryptionKey);
+            return new S3Storage(s3Client, options.BucketName, settings.Name, settings.ContentType, options.UseKmsEncryption, options.KmsEncryptionKey);
         }
 
         public async Task PutAsync(Stream inputStream, CancellationToken token)
@@ -93,10 +95,13 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
                 AutoCloseStream = false,
             };
 
-            if (!string.IsNullOrEmpty(_kmsEncryptionKey))
+            if (_useKmsEncryption)
             {
                 request.ServerSideEncryptionMethod = ServerSideEncryptionMethod.AWSKMS;
-                request.ServerSideEncryptionKeyManagementServiceKeyId = _kmsEncryptionKey;
+                if (!string.IsNullOrEmpty(_kmsEncryptionKey))
+                {
+                    request.ServerSideEncryptionKeyManagementServiceKeyId = _kmsEncryptionKey;
+                }
             }
 
             await _s3Client.PutObjectAsync(request, token);
@@ -112,10 +117,13 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
         {
             var request = new InitiateMultipartUploadRequest { BucketName = _bucketName, Key = _objectId, ContentType = _contentType };
 
-            if (!string.IsNullOrEmpty(_kmsEncryptionKey))
+            if (_useKmsEncryption)
             {
                 request.ServerSideEncryptionMethod = ServerSideEncryptionMethod.AWSKMS;
-                request.ServerSideEncryptionKeyManagementServiceKeyId = _kmsEncryptionKey;
+                if (!string.IsNullOrEmpty(_kmsEncryptionKey))
+                {
+                    request.ServerSideEncryptionKeyManagementServiceKeyId = _kmsEncryptionKey;
+                }
             }
 
             foreach (var metaData in metadata)
