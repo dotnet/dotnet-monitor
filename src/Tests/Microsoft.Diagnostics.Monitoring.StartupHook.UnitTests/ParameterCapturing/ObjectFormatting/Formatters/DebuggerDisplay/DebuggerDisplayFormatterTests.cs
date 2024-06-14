@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests.ParameterCaptur
         [InlineData(typeof(NoDebuggerDisplay), null)]
         [InlineData(typeof(DebuggerDisplayClass), "Count = {Count}")]
         [InlineData(typeof(DerivedWithBaseDebuggerDisplay), "Count = {Count}")]
-        public void GetDebuggerDisplayAttribute(Type type, string expected)
+        public void GetDebuggerDisplayAttribute(Type type, string? expected)
         {
             // Act
             DebuggerDisplayAttributeValue? attribute = DebuggerDisplayFormatter.GetDebuggerDisplayAttribute(type);
