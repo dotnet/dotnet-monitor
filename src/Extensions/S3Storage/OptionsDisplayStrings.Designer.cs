@@ -132,7 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The arn of the KMS encryption key to be used for server side encryption.
+        ///   Looks up a localized string similar to If UseKmsEncryption is true, this specifies the arn of the &quot;customer managed&quot; KMS encryption key to be used for server side encryption. If no value is set for this field then S3 will use an AWS managed key for KMS encryption.
         /// </summary>
         public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_KmsEncryptionKey {
             get {
@@ -164,6 +164,15 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage {
         public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A boolean flag which controls whether the Egress should use KMS server side encryption..
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_UseKmsEncryption {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_UseKmsEncryption", resourceCulture);
             }
         }
     }

@@ -66,6 +66,11 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_UseKmsEncryption))]
+        public bool UseKmsEncryption { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_KmsEncryptionKey))]
         public string KmsEncryptionKey { get; set; }
     }
