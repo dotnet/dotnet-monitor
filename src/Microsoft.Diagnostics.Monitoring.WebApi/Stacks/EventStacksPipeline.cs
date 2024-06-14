@@ -94,6 +94,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 ulong id = action.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.FunctionId);
                 var functionData = new FunctionData(
                     action.GetPayload<string>(NameIdentificationEvents.FunctionDescPayloads.Name),
+                    action.GetPayload<uint>(NameIdentificationEvents.FunctionDescPayloads.MethodToken),
                     action.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ClassId),
                     action.GetPayload<uint>(NameIdentificationEvents.FunctionDescPayloads.ClassToken),
                     action.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ModuleId),

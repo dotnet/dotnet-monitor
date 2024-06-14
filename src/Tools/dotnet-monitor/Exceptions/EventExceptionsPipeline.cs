@@ -94,6 +94,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 case "FunctionDescription":
                     _cache.AddFunction(
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.FunctionId),
+                        traceEvent.GetPayload<uint>(NameIdentificationEvents.FunctionDescPayloads.MethodToken),
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ClassId),
                         traceEvent.GetPayload<uint>(NameIdentificationEvents.FunctionDescPayloads.ClassToken),
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ModuleId),

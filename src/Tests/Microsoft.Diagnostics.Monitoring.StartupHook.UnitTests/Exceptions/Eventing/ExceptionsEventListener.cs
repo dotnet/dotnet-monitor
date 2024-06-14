@@ -68,6 +68,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                             ToUInt64(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.FunctionId]),
                             new FunctionData(
                                 ToString(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.Name]),
+                                ToUInt32(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.MethodToken]),
                                 ToUInt64(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ClassId]),
                                 ToUInt32(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ClassToken]),
                                 ToUInt64(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ModuleId]),

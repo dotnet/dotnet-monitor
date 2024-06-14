@@ -44,16 +44,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
     internal sealed record class TokenData(string Name, string Namespace, uint OuterToken);
 
     /// <param name="Name">The name of the function.</param>
+    /// <param name="MethodToken">The method token of the function (methodDef token).</param>
     /// <param name="ParentClass">The parent class identifier of the function.</param>
-    /// <param name="ParentToken">The parent metadata token of the function.</param>
+    /// <param name="ParentClassToken">The parent metadata token of the function (typeDef token).</param>
     /// <param name="ModuleId">The identifier of the module that contains the function.</param>
     /// <param name="TypeArgs">The class identifiers of the generic type arguments of the function.</param>
     /// <param name="ParameterTypes">The class identifiers of the parameter types of the function.</param>
     /// <remarks>
-    /// If <paramref name="ParentClass"/> is 0, then use <paramref name="ParentToken"/>.
+    /// If <paramref name="ParentClass"/> is 0, then use <paramref name="ParentClassToken"/>.
     /// </remarks>
     [DebuggerDisplay("{Name}")]
-    internal sealed record class FunctionData(string Name, ulong ParentClass, uint ParentToken, ulong ModuleId, ulong[] TypeArgs, ulong[] ParameterTypes);
+    internal sealed record class FunctionData(string Name, uint MethodToken, ulong ParentClass, uint ParentClassToken, ulong ModuleId, ulong[] TypeArgs, ulong[] ParameterTypes);
 
     /// <param name="Name">The name of the module.</param>
     /// <param name="ModuleVersionId">The version identifier of the module.</param>

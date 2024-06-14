@@ -97,6 +97,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         [Event(ExceptionEvents.EventIds.FunctionDescription)]
         public void FunctionDescription(
             ulong FunctionId,
+            uint MethodToken,
             ulong ClassId,
             uint ClassToken,
             ulong ModuleId,
@@ -112,6 +113,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             FillArrayData(parameterTypesSpan, ParameterTypes);
 
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.FunctionId], FunctionId);
+            SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.MethodToken], MethodToken);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ClassId], ClassId);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ClassToken], ClassToken);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ModuleId], ModuleId);
