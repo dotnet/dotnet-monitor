@@ -197,7 +197,7 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
                   "endpoint": "http://localhost:9000",
                   "bucketName": "myS3Bucket",
                   "useKmsEncryption": true,
-                  "kmsEncryptionKey": "arn:aws:kms:eu-west-1:012345678900:key/bb16676b-5cef-4eab-aa4c-ac6cd7961047"
+                  "kmsEncryptionKey": "arn:aws:kms:{region}:{account-id}:key/{resource-id}"
               }
           }
       }
