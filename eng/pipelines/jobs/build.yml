@@ -69,7 +69,7 @@ jobs:
     ${{ if in(parameters.osGroup, 'MacOS') }}:
       pool:
         name: Azure Pipelines
-        vmImage: macos-11
+        vmImage: macos-12
         os: macOS
 
     ${{ if eq(parameters.osGroup, 'Linux') }}:
