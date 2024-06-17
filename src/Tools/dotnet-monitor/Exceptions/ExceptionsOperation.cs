@@ -204,7 +204,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         writer.WriteEndArray(); // end parameterTypes
                         writer.WriteString("typeName", frame.TypeName);
                         writer.WriteString("moduleName", frame.ModuleName);
-                        writer.WriteString("moduleVersionId", frame.ModuleVersionId);
+                        writer.WriteString("moduleVersionId", frame.ModuleVersionId.ToString("D"));
 
                         writer.WriteEndObject();
                     }
