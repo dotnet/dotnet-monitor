@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests.ParameterCaptur
         [InlineData("Recursion().RecursionProp.MyUri.Host", true, "www.example.com")]
         // Chained expression with static property
         [InlineData("Recursion().StaticProperty.Host", true, "www.example.com")]
-        public void BindExpression(string expression, bool doesBind, object expected)
+        public void BindExpression(string expression, bool doesBind, object? expected)
         {
             // Arrange
             DebuggerDisplayClass obj = new("https://www.example.com/abc");
