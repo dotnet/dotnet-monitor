@@ -33,10 +33,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private readonly TemporaryDirectory _tempDirectory;
 
         private const string ExpectedModule = @"Microsoft.Diagnostics.Monitoring.UnitTestApp.dll";
+        private static readonly Guid ExpectedModuleVersionId = new Guid("b271d014-2be3-4972-9835-7523a19ecff8");
         private const string ExpectedClass = @"Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.StacksWorker+StacksWorkerNested`1[System.Int32]";
         private const string ExpectedFunction = @"DoWork[System.Int64]";
         private const string ExpectedTextFunction = @"DoWork[Int64]";
+        private const uint ExpectedFunctionMethodToken = 100663577;
         private const string ExpectedCallbackFunction = @"Callback";
+        private const uint ExpectedCallbackMethodToken = 100663578;
         private const string NativeFrame = "[NativeFrame]";
         private const string ExpectedThreadName = "TestThread";
 
@@ -453,7 +456,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             FormattableString.Invariant($"{module}!{@class}.{function}");
 
         private static bool AreFramesEqual(WebApi.Models.CallStackFrame left, WebApi.Models.CallStackFrame right) =>
-            (left.ModuleName == right.ModuleName) && (left.TypeName == right.TypeName) && (left.MethodName == right.MethodName);
+            (left.ModuleName == right.ModuleName) &&
+            (left.TypeName == right.TypeName) &&
+            (left.MethodName == right.MethodName) &&
+            (left.MethodToken == right.MethodToken) &&
+            (left.ModuleVersionId == right.ModuleVersionId);
 
         private static bool AreFramesEqual(WebApi.Models.ProfileEvent left, WebApi.Models.ProfileEvent right) =>
             (left.Frame == right.Frame) && (left.At == right.At) && (left.Type == right.Type);
@@ -535,24 +542,30 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         private static WebApi.Models.CallStackFrame[] ExpectedFrames() => new WebApi.Models.CallStackFrame[]
             {
-                        new WebApi.Models.CallStackFrame
-                        {
-                            ModuleName = ExpectedModule,
-                            TypeName = ExpectedClass,
-                            MethodName = ExpectedCallbackFunction
-                        },
-                        new WebApi.Models.CallStackFrame
-                        {
-                            ModuleName = NativeFrame,
-                            TypeName = NativeFrame,
-                            MethodName = NativeFrame
-                        },
-                        new WebApi.Models.CallStackFrame
-                        {
-                            ModuleName = ExpectedModule,
-                            TypeName = ExpectedClass,
-                            MethodName = ExpectedFunction
-                        }
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    MethodToken = ExpectedCallbackMethodToken,
+                    TypeName = ExpectedClass,
+                    MethodName = ExpectedCallbackFunction,
+                    ModuleVersionId = ExpectedModuleVersionId,
+                },
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = NativeFrame,
+                    MethodToken = 0,
+                    TypeName = NativeFrame,
+                    MethodName = NativeFrame,
+                    ModuleVersionId = Guid.Empty,
+                },
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    MethodToken = ExpectedFunctionMethodToken,
+                    TypeName = ExpectedClass,
+                    MethodName = ExpectedFunction,
+                    ModuleVersionId = ExpectedModuleVersionId,
+                }
             };
     }
 }
