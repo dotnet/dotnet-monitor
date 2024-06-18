@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -39,8 +40,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private const string CustomGenericsException = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomGenericsException`2[System.Int32,System.String]";
         private const string SystemArgumentNullException = "System.ArgumentNullException";
         private const string FilteringExceptionsScenario = TestAppScenarios.Exceptions.Name + " " + TestAppScenarios.Exceptions.SubScenarios.MultipleExceptions;
-        private const uint FrameMethodToken = 100663402;
-        private static readonly Guid FrameModuleVersionId = new Guid("e6e30857-0497-47d0-93e2-c983d91c534a");
 
         private string exceptionsResult = string.Empty;
 
@@ -132,14 +131,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     var topFrame = callStackResultsRootElement.GetProperty("frames").EnumerateArray().FirstOrDefault();
 
+                    MethodInfo methodInfo = typeof(Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario).GetMethod(
+                        FrameMethodName,
+                        BindingFlags.Static | BindingFlags.NonPublic,
+                        [typeof(bool), typeof(bool)]);
+                    Assert.NotNull(methodInfo);
+
                     Assert.Equal(FrameMethodName, topFrame.GetProperty("methodName").ToString());
-                    Assert.Equal(FrameMethodToken, topFrame.GetProperty("methodToken").GetUInt32());
+                    Assert.Equal((uint)methodInfo.MetadataToken, topFrame.GetProperty("methodToken").GetUInt32());
                     Assert.Equal(2, topFrame.GetProperty("parameterTypes").GetArrayLength());
                     Assert.Equal(FrameParameterType, topFrame.GetProperty("parameterTypes")[0].ToString());
                     Assert.Equal(FrameParameterType, topFrame.GetProperty("parameterTypes")[1].ToString());
                     Assert.Equal(FrameTypeName, topFrame.GetProperty("typeName").ToString());
                     Assert.Equal(UnitTestAppModule, topFrame.GetProperty("moduleName").ToString());
-                    Assert.Equal(FrameModuleVersionId, topFrame.GetProperty("moduleVersionId").GetGuid());
+                    Assert.Equal(methodInfo.Module.ModuleVersionId, topFrame.GetProperty("moduleVersionId").GetGuid());
                 },
                 configureApp: runner =>
                 {
