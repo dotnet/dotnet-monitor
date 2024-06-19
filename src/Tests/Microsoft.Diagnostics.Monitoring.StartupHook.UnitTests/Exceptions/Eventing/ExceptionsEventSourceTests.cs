@@ -176,7 +176,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
         [Theory]
         [InlineData(0, "00000000-0000-0000-0000-000000000000", "")]
-        [InlineData(1, "792ce009-1dbd-46d7-9e47-0a55bff0f5a4", "Module")]
+        [InlineData(1, NonEmptyGuidString, "Module")]
         public void ExceptionsEventSource_WriteModule_Event(
             ulong moduleId,
             Guid moduleVersionId,

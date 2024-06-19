@@ -42,10 +42,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         private static MethodInfo GetMethodInfo(string methodName)
         {
-            // Strip off any generic type information. Pseudo frames (eg. [NativeFrame]) will return null anyways.
+            // Strip off any generic type information.
             if (methodName.Contains('['))
             {
                 methodName = methodName[..methodName.IndexOf('[')];
+            }
+
+            // Return null on psuedo frames (e.g. [NativeFrame])
+            if (methodName.Length == 0)
+            {
+                return null;
             }
 
             return typeof(Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.StacksWorker.StacksWorkerNested<int>).GetMethod(methodName);

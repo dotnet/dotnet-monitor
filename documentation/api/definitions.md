@@ -39,7 +39,7 @@ First Available: 8.0 Preview 7
 | `parameterTypes` | string[] | Array of parameter types. Empty array if none. |
 | `typeName` | string | Name of the class for this frame. This includes generic parameters. |
 | `moduleName` | string | Name of the module for this frame. |
-| `moduleVersionId` | guid | Unique identifier used to distinguish between two versions of the same module. Format: `00000000-0000-0000-0000-000000000000`. |
+| `moduleVersionId` | guid | Unique identifier used to distinguish between two versions of the same module. An empty value: `00000000-0000-0000-0000-000000000000`. |
 
 ## CallStackResult
 
