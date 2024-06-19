@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -130,12 +131,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     var topFrame = callStackResultsRootElement.GetProperty("frames").EnumerateArray().FirstOrDefault();
 
+                    MethodInfo methodInfo = typeof(Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario).GetMethod(
+                        FrameMethodName,
+                        BindingFlags.Static | BindingFlags.NonPublic,
+                        [typeof(bool), typeof(bool)]);
+                    Assert.NotNull(methodInfo);
+
                     Assert.Equal(FrameMethodName, topFrame.GetProperty("methodName").ToString());
+                    Assert.Equal((uint)methodInfo.MetadataToken, topFrame.GetProperty("methodToken").GetUInt32());
                     Assert.Equal(2, topFrame.GetProperty("parameterTypes").GetArrayLength());
                     Assert.Equal(FrameParameterType, topFrame.GetProperty("parameterTypes")[0].ToString());
                     Assert.Equal(FrameParameterType, topFrame.GetProperty("parameterTypes")[1].ToString());
                     Assert.Equal(FrameTypeName, topFrame.GetProperty("typeName").ToString());
                     Assert.Equal(UnitTestAppModule, topFrame.GetProperty("moduleName").ToString());
+                    Assert.Equal(methodInfo.Module.ModuleVersionId, topFrame.GetProperty("moduleVersionId").GetGuid());
                 },
                 configureApp: runner =>
                 {

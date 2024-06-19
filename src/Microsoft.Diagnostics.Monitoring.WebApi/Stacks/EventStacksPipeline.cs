@@ -85,7 +85,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 {
                     for (int i = 0; i < functionIds.Length; i++)
                     {
-                        stack.Frames.Add(new CallStackFrame { FunctionId = functionIds[i], Offset = offsets[i] });
+                        CallStackFrame stackFrame = new CallStackFrame
+                        {
+                            FunctionId = functionIds[i],
+                            Offset = offsets[i]
+                        };
+
+                        if (_result.NameCache.FunctionData.TryGetValue(stackFrame.FunctionId, out FunctionData functionData))
+                        {
+                            stackFrame.MethodToken = functionData.MethodToken;
+                            if (_result.NameCache.ModuleData.TryGetValue(functionData.ModuleId, out ModuleData moduleData))
+                            {
+                                stackFrame.ModuleVersionId = moduleData.ModuleVersionId;
+                            }
+                        }
+
+                        stack.Frames.Add(stackFrame);
                     }
                 }
             }
@@ -94,6 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 ulong id = action.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.FunctionId);
                 var functionData = new FunctionData(
                     action.GetPayload<string>(NameIdentificationEvents.FunctionDescPayloads.Name),
+                    action.GetPayload<uint>(NameIdentificationEvents.FunctionDescPayloads.MethodToken),
                     action.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ClassId),
                     action.GetPayload<uint>(NameIdentificationEvents.FunctionDescPayloads.ClassToken),
                     action.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ModuleId),
@@ -119,7 +135,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             {
                 ulong id = action.GetPayload<ulong>(NameIdentificationEvents.ModuleDescPayloads.ModuleId);
                 var moduleData = new ModuleData(
-                    action.GetPayload<string>(NameIdentificationEvents.ModuleDescPayloads.Name)
+                    action.GetPayload<string>(NameIdentificationEvents.ModuleDescPayloads.Name),
+                    action.GetPayload<Guid>(NameIdentificationEvents.ModuleDescPayloads.ModuleVersionId)
                     );
 
                 _result.NameCache.ModuleData.TryAdd(id, moduleData);

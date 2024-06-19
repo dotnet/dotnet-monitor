@@ -38,8 +38,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         {
             _source.FunctionDescription(
                 functionId,
+                data.MethodToken,
                 data.ParentClass,
-                data.ParentToken,
+                data.ParentClassToken,
                 data.ModuleId,
                 data.Name,
                 data.TypeArgs,
@@ -50,6 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         {
             _source.ModuleDescription(
                 moduleId,
+                data.ModuleVersionId,
                 data.Name);
         }
 
