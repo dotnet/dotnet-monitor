@@ -12,7 +12,7 @@ using System.Text.Json;
 
 namespace DiagnosticsReleaseTool.Impl
 {
-    internal class DiagnosticsManifestGenerator : IManifestGenerator
+    internal sealed class DiagnosticsManifestGenerator : IManifestGenerator
     {
         private readonly ReleaseMetadata _productReleaseMetadata;
         private readonly JsonDocument _assetManifestManifestDom;
@@ -58,7 +58,7 @@ namespace DiagnosticsReleaseTool.Impl
             return stream;
         }
 
-        private void WriteFiles(Utf8JsonWriter writer, IEnumerable<FileReleaseData> filesProcessed, FileClass fileClass)
+        private static void WriteFiles(Utf8JsonWriter writer, IEnumerable<FileReleaseData> filesProcessed, FileClass fileClass)
         {
             writer.WritePropertyName(FileMetadata.GetDefaultCategoryForClass(fileClass));
             writer.WriteStartArray();

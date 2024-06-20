@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ReleaseTool.Core
 {
-    internal class SkipPublisher : IPublisher
+    internal sealed class SkipPublisher : IPublisher
     {
         private readonly HashSet<string> _relativeOutputPaths = new(StringComparer.OrdinalIgnoreCase);
 
