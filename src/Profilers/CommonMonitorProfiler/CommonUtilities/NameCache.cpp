@@ -40,9 +40,9 @@ bool NameCache::TryGetTokenData(ModuleID modId, mdTypeDef token, std::shared_ptr
     return false;
 }
 
-void NameCache::AddModuleData(ModuleID moduleId, tstring&& name)
+void NameCache::AddModuleData(ModuleID moduleId, tstring&& name, GUID mvid)
 {
-    _moduleNames.emplace(moduleId, std::make_shared<ModuleData>(std::move(name)));
+    _moduleNames.emplace(moduleId, std::make_shared<ModuleData>(std::move(name), mvid));
 }
 
 HRESULT NameCache::GetFullyQualifiedName(FunctionID id, tstring& name)

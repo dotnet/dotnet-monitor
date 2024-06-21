@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
             else
             {
-                BuildTypeName(builder, cache, functionData.ModuleId, functionData.ParentToken, TypeFormat.Full);
+                BuildTypeName(builder, cache, functionData.ModuleId, functionData.ParentClassToken, TypeFormat.Full);
             }
         }
 
@@ -80,11 +80,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        private static void BuildTypeName(StringBuilder builder, NameCache cache, ulong moduleId, uint token, TypeFormat typeFormat)
+        private static void BuildTypeName(StringBuilder builder, NameCache cache, ulong moduleId, uint classToken, TypeFormat typeFormat)
         {
             var typeNames = new Stack<string>();
 
-            uint currentToken = token;
+            uint currentToken = classToken;
             while (currentToken != 0 && cache.TokenData.TryGetValue(new ModuleScopedToken(moduleId, currentToken), out TokenData? tokenData))
             {
                 string typeName = tokenData.Name;
