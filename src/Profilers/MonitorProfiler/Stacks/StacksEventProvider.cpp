@@ -53,6 +53,7 @@ HRESULT StacksEventProvider::WriteFunctionData(FunctionID functionId, const Func
 {
     return _functionEvent->WritePayload(
         static_cast<UINT64>(functionId),
+        functionData.GetMethodToken(),
         static_cast<UINT64>(functionData.GetClass()),
         functionData.GetClassToken(),
         static_cast<UINT64>(functionData.GetModuleId()),
@@ -63,7 +64,10 @@ HRESULT StacksEventProvider::WriteFunctionData(FunctionID functionId, const Func
 
 HRESULT StacksEventProvider::WriteModuleData(ModuleID moduleId, const ModuleData& moduleData)
 {
-    return _moduleEvent->WritePayload(moduleId, moduleData.GetName());
+    return _moduleEvent->WritePayload(
+        moduleId,
+        moduleData.GetMvid(),
+        moduleData.GetName());
 }
 
 HRESULT StacksEventProvider::WriteTokenData(ModuleID moduleId, mdTypeDef typeDef, const TokenData& tokenData)

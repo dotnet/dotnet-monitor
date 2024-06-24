@@ -94,6 +94,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 case "FunctionDescription":
                     _cache.AddFunction(
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.FunctionId),
+                        traceEvent.GetPayload<uint>(NameIdentificationEvents.FunctionDescPayloads.MethodToken),
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ClassId),
                         traceEvent.GetPayload<uint>(NameIdentificationEvents.FunctionDescPayloads.ClassToken),
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ModuleId),
@@ -105,6 +106,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 case "ModuleDescription":
                     _cache.AddModule(
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.ModuleDescPayloads.ModuleId),
+                        traceEvent.GetPayload<Guid>(NameIdentificationEvents.ModuleDescPayloads.ModuleVersionId),
                         traceEvent.GetPayload<string>(NameIdentificationEvents.ModuleDescPayloads.Name)
                         );
                     break;
