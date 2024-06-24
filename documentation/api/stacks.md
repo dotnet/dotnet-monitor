@@ -81,19 +81,33 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
     "frames": [
         {
             "methodName": "GetQueuedCompletionStatus",
+            "methodToken": 100663634,
+            "parameterTypes": [],
             "typeName": "Interop\u002BKernel32",
             "moduleName": "System.Private.CoreLib.dll",
+            "moduleVersionId": "194ddabd-a802-4520-90ef-854e2f1cd606"
         },
         {
             "methodName": "WaitForSignal",
+            "methodToken": 100663639,
+            "parameterTypes": [
+                "System.Threading.ExecutionContext",
+                "System.Threading.ContextCallback",
+                "System.Object"
+            ],
             "typeName": "System.Threading.LowLevelLifoSemaphore",
             "moduleName": "System.Private.CoreLib.dll",
+            "moduleVersionId": "194ddabd-a802-4520-90ef-854e2f1cd606"
         },
         {
             "methodName": "Wait",
+            "methodToken": 100663643,
+            "parameterTypes": [],
             "typeName": "System.Threading.LowLevelLifoSemaphore",
             "moduleName": "System.Private.CoreLib.dll",
+            "moduleVersionId": "194ddabd-a802-4520-90ef-854e2f1cd606"
         }
+    ]
 }
 ```
 
