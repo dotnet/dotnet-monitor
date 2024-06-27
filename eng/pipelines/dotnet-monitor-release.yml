@@ -116,7 +116,6 @@ extends:
             value: dotnetcli
           - name: ChecksumsAccountName
             value: dotnetclichecksums
-        - group: DotNet-DotNetStage-Storage
 
         workspace:
           clean: all
