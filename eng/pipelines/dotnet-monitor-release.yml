@@ -98,7 +98,7 @@ extends:
 
       jobs:
       - deployment: PublishToStorageAccounts
-        displayName: Publish to Storage Accounts WIF
+        displayName: Publish to Storage Accounts
 
         ${{ if eq(parameters.IsTestRun, 'true') }}:
           environment: Diagnostics-Monitor-Storage-Test
