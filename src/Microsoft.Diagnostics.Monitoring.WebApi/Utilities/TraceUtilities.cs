@@ -69,8 +69,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             return new EventPipeProviderSourceConfiguration(
+                rundownKeyword: requestRundown ? EventPipeSession.DefaultRundownKeyword : 0,
                 providers: providers.ToArray(),
-                requestRundown: requestRundown,
                 bufferSizeInMB: bufferSizeInMB);
         }
 
