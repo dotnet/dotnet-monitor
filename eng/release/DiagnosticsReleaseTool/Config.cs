@@ -14,9 +14,8 @@ namespace DiagnosticsReleaseTool.Impl
         public string ReleaseName { get; }
         public string BuildVersion { get; }
         public string AccountName { get; }
-        public string AccountKey { get; }
+        public string ClientId { get; }
         public string ContainerName { get; }
-        public int SasValidDays { get; }
 
         public Config(
             FileInfo toolManifest,
@@ -26,9 +25,8 @@ namespace DiagnosticsReleaseTool.Impl
             string releaseName,
             string buildVersion,
             string accountName,
-            string accountKey,
-            string containerName,
-            int sasValidDays)
+            string clientId,
+            string containerName)
         {
             ToolManifest = toolManifest;
             ShouldVerifyManifest = verifyToolManifest;
@@ -37,9 +35,8 @@ namespace DiagnosticsReleaseTool.Impl
             ReleaseName = releaseName;
             BuildVersion = buildVersion;
             AccountName = accountName;
-            AccountKey = accountKey;
+            ClientId = clientId;
             ContainerName = containerName;
-            SasValidDays = sasValidDays;
         }
     }
 }
