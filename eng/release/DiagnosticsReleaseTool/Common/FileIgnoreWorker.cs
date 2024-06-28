@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ReleaseTool.Core
 {
-    internal sealed class SkipLayoutWorker : ILayoutWorker
+    internal class SkipLayoutWorker : ILayoutWorker
     {
         private readonly Func<FileInfo, bool> _shouldHandleFileFunc;
 

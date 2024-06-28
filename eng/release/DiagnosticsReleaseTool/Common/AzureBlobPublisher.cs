@@ -1,17 +1,17 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Azure.Core;
+using Azure.Identity;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Core;
-using Azure.Identity;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using Microsoft.Extensions.Logging;
 
 namespace ReleaseTool.Core
 {
@@ -51,7 +51,7 @@ namespace ReleaseTool.Core
             }
         }
 
-        private static BlobClientOptions BlobOptions
+        private BlobClientOptions BlobOptions
         {
             get
             {
@@ -102,7 +102,7 @@ namespace ReleaseTool.Core
                         return null;
                     }
 
-                    using FileStream srcStream = new(fileMap.LocalSourcePath, FileMode.Open, FileAccess.Read);
+                    using var srcStream = new FileStream(fileMap.LocalSourcePath, FileMode.Open, FileAccess.Read);
 
                     BlobClient blobClient = client.GetBlobClient(GetBlobName(_buildVersion, fileMap.RelativeOutputPath));
 
@@ -114,7 +114,7 @@ namespace ReleaseTool.Core
 
                     result = blobClient.Uri;
                 }
-                catch (IOException ioEx) when (ioEx is not PathTooLongException)
+                catch (IOException ioEx) when (!(ioEx is PathTooLongException))
                 {
                     _logger.LogWarning(ioEx, $"Failed to publish {fileMap.LocalSourcePath}, retries remaining: {retriesLeft}.");
 
@@ -147,7 +147,7 @@ namespace ReleaseTool.Core
         {
             if (_client == null)
             {
-                BlobServiceClient serviceClient = new(AccountBlobUri, Credentials, BlobOptions);
+                BlobServiceClient serviceClient = new BlobServiceClient(AccountBlobUri, Credentials, BlobOptions);
                 _logger.LogInformation($"Attempting to connect to {serviceClient.Uri} to store blobs.");
 
                 BlobContainerClient newClient;
@@ -157,9 +157,9 @@ namespace ReleaseTool.Core
                     try
                     {
                         newClient = serviceClient.GetBlobContainerClient(_containerName);
-                        if (!await newClient.ExistsAsync(ct))
+                        if (!(await newClient.ExistsAsync(ct)).Value)
                         {
-                            newClient = await serviceClient.CreateBlobContainerAsync(_containerName, PublicAccessType.None, metadata: null, ct);
+                            newClient = (await serviceClient.CreateBlobContainerAsync(_containerName, PublicAccessType.None, metadata: null, ct));
                         }
                     }
                     catch (Exception ex)
@@ -181,7 +181,7 @@ namespace ReleaseTool.Core
             return _client;
         }
 
-        private static async Task<bool> VerifyFileStreamsMatchAsync(FileStream srcStream, BlobDownloadStreamingResult destBlobDownloadStream, CancellationToken ct)
+        private async Task<bool> VerifyFileStreamsMatchAsync(FileStream srcStream, BlobDownloadStreamingResult destBlobDownloadStream, CancellationToken ct)
         {
             if (srcStream.Length != destBlobDownloadStream.Details.ContentLength)
             {

@@ -77,7 +77,7 @@ namespace ReleaseTool.Core
 
         public override string ToString()
         {
-            return $"Class: {Class}, Category: {AssetCategory}, CDN: {ShouldPublishToCdn}, RID: {Rid}";
+            return $"Class: {Class}, Category: {AssetCategory}, CDN: {ShouldPublishToCdn}, RID: {Rid}, Sha512: {Sha512}";
         }
     }
 }

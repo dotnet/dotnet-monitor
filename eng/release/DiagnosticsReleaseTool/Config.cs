@@ -5,17 +5,17 @@ using System.IO;
 
 namespace DiagnosticsReleaseTool.Impl
 {
-    internal sealed class Config
+    internal class Config
     {
         public FileInfo ToolManifest { get; }
         public bool ShouldVerifyManifest { get; }
         public DirectoryInfo DropPath { get; }
         public DirectoryInfo StagingDirectory { get; }
         public string ReleaseName { get; }
+        public string BuildVersion { get; }
         public string AccountName { get; }
         public string ClientId { get; }
         public string ContainerName { get; }
-        public string BuildVersion { get; }
 
         public Config(
             FileInfo toolManifest,

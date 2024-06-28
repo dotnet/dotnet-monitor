@@ -44,7 +44,7 @@ namespace ReleaseTool.Core
                 return new LayoutWorkerResult(LayoutResultStatus.FileNotHandled);
             }
 
-            DirectoryInfo unzipDirInfo;
+            DirectoryInfo unzipDirInfo = null;
 
             try
             {
@@ -58,13 +58,13 @@ namespace ReleaseTool.Core
                 // TODO: Do we really want to block because of unzipping. We could use ZipArchive.
                 System.IO.Compression.ZipFile.ExtractToDirectory(file.FullName, unzipDirInfo.FullName);
             }
-            catch (Exception ex) when (ex is IOException or System.Security.SecurityException)
+            catch (Exception ex) when (ex is IOException || ex is System.Security.SecurityException)
             {
                 return new LayoutWorkerResult(LayoutResultStatus.Error);
             }
 
 
-            List<(FileMapping, FileMetadata)> filesInToolBundleToPublish = new();
+            var filesInToolBundleToPublish = new List<(FileMapping, FileMetadata)>();
 
             foreach (FileInfo extractedFile in unzipDirInfo.EnumerateFiles("*", SearchOption.AllDirectories))
             {
@@ -80,14 +80,14 @@ namespace ReleaseTool.Core
                 {
                     localPath = Path.Combine(_stagingPath, relativePath);
                     Directory.CreateDirectory(Path.GetDirectoryName(localPath));
-                    using (FileStream srcStream = new(extractedFile.FullName, FileMode.Open, FileAccess.Read))
-                    using (FileStream destStream = new(localPath, FileMode.Create, FileAccess.Write))
+                    using (FileStream srcStream = new FileStream(extractedFile.FullName, FileMode.Open, FileAccess.Read))
+                    using (FileStream destStream = new FileStream(localPath, FileMode.Create, FileAccess.Write))
                     {
                         await srcStream.CopyToAsync(destStream, ct);
                     }
                 }
 
-                FileMapping fileMap = new(localPath, relativePath);
+                var fileMap = new FileMapping(localPath, relativePath);
                 FileMetadata metadata = _getMetadataForInnerFileFunc(file, extractedFile);
                 filesInToolBundleToPublish.Add((fileMap, metadata));
             }
