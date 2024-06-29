@@ -46,6 +46,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             EgressOperation egressOperation = new EgressOperation(
                 operation,
                 Options.Egress,
+                Options.ArtifactName,
                 ProcessInfo,
                 scope,
                 tags: null,

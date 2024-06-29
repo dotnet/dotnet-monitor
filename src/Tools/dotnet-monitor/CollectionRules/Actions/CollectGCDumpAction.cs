@@ -51,6 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 return new EgressOperation(
                     _operationFactory.Create(ProcessInfo.EndpointInfo),
                     Options.Egress,
+                    Options.ArtifactName,
                     ProcessInfo,
                     scope,
                     tags: null,
