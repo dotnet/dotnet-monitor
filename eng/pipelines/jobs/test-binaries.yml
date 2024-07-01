@@ -82,7 +82,7 @@ jobs:
         - ${{ if eq(parameters.osGroup, 'Linux') }}:
           # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
           - script: |
-              pwsh ../eng/helix/GetNodejsVersion.ps1 -MajorVersion $(NodeMajorVersion) -TaskVariableName 'FqNodejsVersion'
+              pwsh ./eng/helix/GetNodejsVersion.ps1 -MajorVersion $(NodeMajorVersion) -TaskVariableName 'FqNodejsVersion'
             displayName: Calculate Node.js version Linux
   
           - task: Cache@2
@@ -93,7 +93,7 @@ jobs:
               path: $(HelixNodejsPayloadPath)
   
           - script: |
-              pwsh ../eng/helix/InstallNodejs.ps1 -Version $(FqNodejsVersion) -Architecture ${{ parameters.architecture }} -DestinationFolder "$(HelixNodejsPayloadPath)"
+              pwsh ./eng/helix/InstallNodejs.ps1 -Version $(FqNodejsVersion) -Architecture ${{ parameters.architecture }} -DestinationFolder "$(HelixNodejsPayloadPath)"
             displayName: Hydrate Node.js Installation Linux
 
         - ${{ else }}:
