@@ -19,11 +19,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Filters))]
         public List<ProcessFilterDescriptor>? Filters { get; } = new List<ProcessFilterDescriptor>(0);
 
+#nullable disable
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Trigger))]
         [Required]
-        public CollectionRuleTriggerOptions Trigger { get; set; } = new();
+        public CollectionRuleTriggerOptions Trigger { get; set; }
+#nullable enable
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

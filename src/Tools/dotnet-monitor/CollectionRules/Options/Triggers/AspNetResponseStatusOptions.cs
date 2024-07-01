@@ -19,6 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         private const string StatusCodeRegex = "[1-5][0-9]{2}";
         private const string StatusCodesRegex = StatusCodeRegex + "(-" + StatusCodeRegex + ")?";
 
+#nullable disable
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_StatusCodes))]
@@ -27,7 +28,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         [RegularExpressions(StatusCodesRegex,
             ErrorMessageResourceType = typeof(OptionsDisplayStrings),
             ErrorMessageResourceName = nameof(OptionsDisplayStrings.ErrorMessage_StatusCodesRegularExpressionDoesNotMatch))]
-        public string[] StatusCodes { get; set; } = [];
+        public string[] StatusCodes { get; set; }
+#nullable enable
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
