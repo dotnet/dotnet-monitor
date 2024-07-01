@@ -47,7 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             string dumpFilePath = Path.Combine(dumpTempFolder, FormattableString.Invariant($"{Guid.NewGuid()}_{endpointInfo.ProcessId}"));
             DumpType dumpType = MapDumpType(mode);
 
-            IDisposable operationRegistration = null;
+            IDisposable? operationRegistration = null;
             // Only track operation status for endpoints from a listening server because:
             // 1) Each process only ever has a single instance of an IEndpointInfo
             // 2) Only the listening server will query the dump service for the operation status of an endpoint.

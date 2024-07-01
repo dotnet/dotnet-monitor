@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             string fileName,
             string contentType,
             IEndpointInfo source,
-            CollectionRuleMetadata collectionRuleMetadata,
+            CollectionRuleMetadata? collectionRuleMetadata,
             CancellationToken token);
 
         Task ValidateProviderOptionsAsync(

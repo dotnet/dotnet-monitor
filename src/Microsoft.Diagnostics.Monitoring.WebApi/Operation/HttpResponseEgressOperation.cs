@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly TaskCompletionSource<int> _responseFinishedCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         public EgressProcessInfo ProcessInfo { get; private set; }
-        public string EgressProviderName { get { return null; } }
+        public string? EgressProviderName { get { return null; } }
         public bool IsStoppable { get { return _operation?.IsStoppable ?? false; } }
         public ISet<string> Tags { get; private set; }
 
@@ -25,7 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private readonly IArtifactOperation _operation;
 
-        public HttpResponseEgressOperation(HttpContext context, IProcessInfo processInfo, string tags, IArtifactOperation operation)
+        public HttpResponseEgressOperation(HttpContext context, IProcessInfo processInfo, string? tags, IArtifactOperation operation)
         {
             _httpContext = context;
             _httpContext.Response.OnCompleted(() =>

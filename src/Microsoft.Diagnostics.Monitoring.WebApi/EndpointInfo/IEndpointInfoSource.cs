@@ -17,13 +17,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         Guid RuntimeInstanceCookie { get; }
 
-        string CommandLine { get; }
+        string? CommandLine { get; }
 
-        string OperatingSystem { get; }
+        string? OperatingSystem { get; }
 
-        string ProcessArchitecture { get; }
+        string? ProcessArchitecture { get; }
 
-        Version RuntimeVersion { get; }
+        Version? RuntimeVersion { get; }
 
         IServiceProvider ServiceProvider { get; }
     }
@@ -42,11 +42,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public abstract int ProcessId { get; protected set; }
         public abstract Guid RuntimeInstanceCookie { get; protected set; }
-        public abstract string CommandLine { get; protected set; }
-        public abstract string OperatingSystem { get; protected set; }
-        public abstract string ProcessArchitecture { get; protected set; }
+        public abstract string? CommandLine { get; protected set; }
+        public abstract string? OperatingSystem { get; protected set; }
+        public abstract string? ProcessArchitecture { get; protected set; }
 
-        public abstract Version RuntimeVersion { get; protected set; }
+        public abstract Version? RuntimeVersion { get; protected set; }
 
         public abstract IServiceProvider ServiceProvider { get; protected set; }
     }

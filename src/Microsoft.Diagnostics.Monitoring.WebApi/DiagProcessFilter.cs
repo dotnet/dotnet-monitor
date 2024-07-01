@@ -130,7 +130,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         public DiagProcessFilterCriteria Criteria { get; set; }
 
-        public string Value { get; set; }
+        public string Value { get; set; } = string.Empty;
 
         public DiagProcessFilterMatchType MatchType { get; set; }
 
