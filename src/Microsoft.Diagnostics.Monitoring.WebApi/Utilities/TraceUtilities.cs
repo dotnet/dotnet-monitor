@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             foreach (Models.EventPipeProvider providerModel in configurationProviders)
             {
-                if (!IntegerOrHexStringAttribute.TryParse(providerModel.Keywords, out long keywords, out string parseError))
+                if (!IntegerOrHexStringAttribute.TryParse(providerModel.Keywords, out long keywords, out string? parseError))
                 {
                     throw new InvalidOperationException(parseError);
                 }

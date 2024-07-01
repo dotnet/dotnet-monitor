@@ -15,31 +15,31 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_RequestFailed);
 
-        private static readonly Action<ILogger, Exception> _requestCanceled =
+        private static readonly Action<ILogger, Exception?> _requestCanceled =
             LoggerMessage.Define(
                 eventId: new EventId(2, "RequestCanceled"),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_RequestCanceled);
 
-        private static readonly Action<ILogger, Exception> _resolvedTargetProcess =
+        private static readonly Action<ILogger, Exception?> _resolvedTargetProcess =
             LoggerMessage.Define(
                 eventId: new EventId(3, "ResolvedTargetProcess"),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_ResolvedTargetProcess);
 
-        private static readonly Action<ILogger, string, Exception> _egressedArtifact =
+        private static readonly Action<ILogger, string, Exception?> _egressedArtifact =
             LoggerMessage.Define<string>(
                 eventId: new EventId(4, "EgressedArtifact"),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_EgressedArtifact);
 
-        private static readonly Action<ILogger, Exception> _writtenToHttpStream =
+        private static readonly Action<ILogger, Exception?> _writtenToHttpStream =
             LoggerMessage.Define(
                 eventId: new EventId(5, "WrittenToHttpStream"),
                 logLevel: LogLevel.Information,
                 formatString: Strings.LogFormatString_WrittenToHttpStream);
 
-        private static readonly Action<ILogger, int, int, Exception> _throttledEndpoint =
+        private static readonly Action<ILogger, int, int, Exception?> _throttledEndpoint =
             LoggerMessage.Define<int, int>(
                 eventId: new EventId(6, "ThrottledEndpoint"),
                 logLevel: LogLevel.Warning,
@@ -51,13 +51,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_DefaultProcessUnexpectedFailure);
 
-        private static readonly Action<ILogger, string, string, Exception> _stoppingTraceEventHit =
+        private static readonly Action<ILogger, string, string, Exception?> _stoppingTraceEventHit =
             LoggerMessage.Define<string, string>(
                 eventId: new EventId(8, "StoppingTraceEventHit"),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_StoppingTraceEventHit);
 
-        private static readonly Action<ILogger, string, string, string, Exception> _stoppingTraceEventPayloadFilterMismatch =
+        private static readonly Action<ILogger, string, string, string, Exception?> _stoppingTraceEventPayloadFilterMismatch =
             LoggerMessage.Define<string, string, string>(
                 eventId: new EventId(9, "StoppingTraceEventPayloadFilterMismatch"),
                 logLevel: LogLevel.Warning,
@@ -75,7 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_StopOperationFailed);
 
-        private static readonly Action<ILogger, long, Exception> _metricsDropped =
+        private static readonly Action<ILogger, long, Exception?> _metricsDropped =
             LoggerMessage.Define<long>(
                 eventId: new EventId(12, "MetricsDropped"),
                 logLevel: LogLevel.Warning,
@@ -87,31 +87,31 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 logLevel: LogLevel.Error,
                 formatString: Strings.LogFormatString_MetricsWriteFailed);
 
-        private static readonly Action<ILogger, Exception> _metricsAbandonCompletion =
+        private static readonly Action<ILogger, Exception?> _metricsAbandonCompletion =
             LoggerMessage.Define(
                 eventId: new EventId(14, "MetricsAbandonCompletion"),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_MetricsAbandonCompletion);
 
-        private static readonly Action<ILogger, int, Exception> _metricsUnprocessed =
+        private static readonly Action<ILogger, int, Exception?> _metricsUnprocessed =
             LoggerMessage.Define<int>(
                 eventId: new EventId(15, "MetricsUnprocessed"),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_MetricsUnprocessed);
 
-        private static readonly Action<ILogger, string, Exception> _counterEndedPayload =
+        private static readonly Action<ILogger, string, Exception?> _counterEndedPayload =
             LoggerMessage.Define<string>(
                 eventId: new EventId(16, "CounterEndedPayload"),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_CounterEndedPayload);
 
-        private static readonly Action<ILogger, string, Exception> _errorPayload =
+        private static readonly Action<ILogger, string, Exception?> _errorPayload =
             LoggerMessage.Define<string>(
                 eventId: new EventId(17, "ErrorPayload"),
                 logLevel: LogLevel.Warning,
                 formatString: Strings.LogFormatString_ErrorPayload);
 
-        private static readonly Action<ILogger, Exception> _generatedInProcessArtifact =
+        private static readonly Action<ILogger, Exception?> _generatedInProcessArtifact =
             LoggerMessage.Define(
                 eventId: new EventId(18, "GeneratedInProcessArtifact"),
                 logLevel: LogLevel.Information,

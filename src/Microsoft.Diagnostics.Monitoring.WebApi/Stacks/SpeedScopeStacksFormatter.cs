@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                         profile.Events.Add(NativeProfileEvent);
 
                     }
-                    else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
+                    else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData? functionData))
                     {
                         if (!functionToSharedFrameMap.TryGetValue(frame.FunctionId, out int mapping))
                         {

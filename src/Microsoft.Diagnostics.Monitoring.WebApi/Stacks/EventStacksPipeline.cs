@@ -91,10 +91,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                             Offset = offsets[i]
                         };
 
-                        if (_result.NameCache.FunctionData.TryGetValue(stackFrame.FunctionId, out FunctionData functionData))
+                        if (_result.NameCache.FunctionData.TryGetValue(stackFrame.FunctionId, out FunctionData? functionData))
                         {
                             stackFrame.MethodToken = functionData.MethodToken;
-                            if (_result.NameCache.ModuleData.TryGetValue(functionData.ModuleId, out ModuleData moduleData))
+                            if (_result.NameCache.ModuleData.TryGetValue(functionData.ModuleId, out ModuleData? moduleData))
                             {
                                 stackFrame.ModuleVersionId = moduleData.ModuleVersionId;
                             }

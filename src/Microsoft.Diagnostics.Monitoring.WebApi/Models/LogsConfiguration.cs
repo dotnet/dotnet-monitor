@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         /// The logger categories and levels at which logs are collected. Setting the log level to null will have logs collected from the corresponding category at the level set in the LogLevel property.
         /// </summary>
         [JsonPropertyName("filterSpecs")]
-        public Dictionary<string, LogLevel?> FilterSpecs { get; set; }
+        public Dictionary<string, LogLevel?>? FilterSpecs { get; set; }
 
         /// <summary>
         /// Set to true to collect logs at the application-defined categories and levels.

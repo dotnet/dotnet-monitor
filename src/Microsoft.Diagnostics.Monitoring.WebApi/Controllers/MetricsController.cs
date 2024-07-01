@@ -21,7 +21,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private const string ArtifactType_Metrics = "metrics";
 
         private readonly ILogger<MetricsController> _logger;
+#nullable disable
         private readonly MetricsStoreService _metricsStore;
+#nullable restore
         private readonly MetricsOptions _metricsOptions;
 
         public MetricsController(ILogger<MetricsController> logger,
