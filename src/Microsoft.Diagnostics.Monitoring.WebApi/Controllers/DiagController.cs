@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
 #nullable disable
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
-#nullable enable
+#nullable restore
         private readonly IOptions<CallStacksOptions> _callStacksOptions;
         private readonly IOptions<ParameterCapturingOptions> _parameterCapturingOptions;
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
