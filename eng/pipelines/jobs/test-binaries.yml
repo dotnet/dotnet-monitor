@@ -81,12 +81,6 @@ jobs:
       - ${{ if ne(parameters.osGroup, 'Linux_Musl')}}:
         # Linux builds (of all variants) run in Mariner containers and do not include pwsh by default
         - ${{ if eq(parameters.osGroup, 'Linux') }}:
-          - script: |
-              $(Build.SourcesDirectory)/restore.sh
-              $(Build.SourcesDirectory)/.dotnet/dotnet tool install --global PowerShell
-              echo "##vso[task.prependpath]/home/cloudtest_azpcontainer/.dotnet/tools"
-            displayName: Install pwsh
-
           # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
           - script: |
               pwsh ../eng/helix/GetNodejsVersion.ps1 -MajorVersion $(NodeMajorVersion) -TaskVariableName 'FqNodejsVersion'
