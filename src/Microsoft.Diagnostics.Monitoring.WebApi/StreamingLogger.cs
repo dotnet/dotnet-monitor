@@ -39,6 +39,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
     public sealed class StreamingLogger : ILogger
     {
+        private sealed class EmptyScope : IDisposable
+        {
+            public void Dispose()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         private readonly ScopeState _scopes = new ScopeState();
         private readonly Stream _outputStream;
         private readonly string _categoryName;
@@ -68,18 +76,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _logLevel = logLevel;
         }
 
-        public IDisposable BeginScope<TState>(TState state)
+        IDisposable ILogger.BeginScope<TState>(TState state)
         {
             if (state is LogObject logObject)
             {
                 return _scopes.Push(logObject);
             }
-            return null;
+            return new EmptyScope();
         }
 
         public bool IsEnabled(LogLevel logLevel) => (_logLevel == null) ? true : logLevel <= _logLevel.Value;
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
             if (_logFormat == LogFormat.NewlineDelimitedJson)
             {
@@ -95,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        private void LogJson<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter, LogFormat jsonFormat = LogFormat.NewlineDelimitedJson)
+        private void LogJson<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter, LogFormat jsonFormat = LogFormat.NewlineDelimitedJson)
         {
             Stream outputStream = _outputStream;
 
@@ -161,7 +169,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             outputStream.Flush();
         }
 
-        private void LogText<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        private void LogText<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
             Stream outputStream = _outputStream;
 

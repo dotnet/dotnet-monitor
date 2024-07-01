@@ -45,9 +45,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null,
+            string? name = null,
             [FromQuery]
-            string tags = null)
+            string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 

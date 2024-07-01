@@ -29,8 +29,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public ProcessInfoImpl(
             IEndpointInfo endpointInfo,
-            string commandLine,
-            string processName)
+            string? commandLine,
+            string? processName)
         {
             EndpointInfo = endpointInfo;
 
@@ -60,7 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             DiagnosticsClient client = new(endpointInfo.Endpoint);
 
-            string commandLine = endpointInfo.CommandLine;
+            string? commandLine = endpointInfo.CommandLine;
             if (string.IsNullOrEmpty(commandLine))
             {
                 // The EventProcessInfoPipeline will frequently block during disposal of its
@@ -70,10 +70,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 // not cancellable and hangs the entire operation for at least 30 seconds. To
                 // mitigate, start the pipeline, get the command line, and they start the disposal
                 // on a separate Task that is not awaited.
-                EventProcessInfoPipeline pipeline = null;
+                EventProcessInfoPipeline? pipeline = null;
                 try
                 {
-                    TaskCompletionSource<string> commandLineSource =
+                    TaskCompletionSource<string?> commandLineSource =
                         new(TaskCreationOptions.RunContinuationsAsynchronously);
 
                     using IDisposable registration = extendedInfoCancellationToken.Register(
@@ -106,7 +106,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
             }
 
-            string processName = GetProcessName(commandLine, endpointInfo.OperatingSystem);
+            string? processName = GetProcessName(commandLine, endpointInfo.OperatingSystem);
 
             return new ProcessInfoImpl(
                 endpointInfo,
@@ -114,9 +114,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 processName);
         }
 
-        internal static string GetProcessName(string commandLine, string operatingSystem)
+        internal static string? GetProcessName(string? commandLine, string? operatingSystem)
         {
-            string processName = null;
+            string? processName = null;
             if (!string.IsNullOrEmpty(commandLine))
             {
                 // Get the process name from the command line

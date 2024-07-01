@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Validation
@@ -10,11 +11,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Validation
     {
         public static bool ValidateProvider(GlobalCounterOptions counterOptions,
             EventPipeProvider provider,
-            out string errorMessage)
+            [NotNullWhen(false)] out string? errorMessage)
         {
             errorMessage = null;
 
-            if (provider.Arguments?.TryGetValue("EventCounterIntervalSec", out string intervalValue) == true)
+            if (provider.Arguments?.TryGetValue("EventCounterIntervalSec", out string? intervalValue) == true)
             {
                 if (float.TryParse(intervalValue, out float intervalSeconds) &&
                     intervalSeconds != counterOptions.GetProviderSpecificInterval(provider.Name))

@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     {
         [JsonPropertyName("providers")]
         [Required, MinLength(1)]
-        public EventPipeProvider[] Providers { get; set; }
+        public EventPipeProvider[] Providers { get; set; } = [];
 
         [JsonPropertyName("requestRundown")]
         public bool RequestRundown { get; set; } = true;
