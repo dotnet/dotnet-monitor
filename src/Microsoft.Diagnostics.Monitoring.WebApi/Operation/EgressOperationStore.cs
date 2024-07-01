@@ -27,13 +27,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             public ExecutionResult<EgressResult> ExecutionResult { get; set; }
 #nullable restore
 
-            public Models.OperationState State { get; set; }
+            public required Models.OperationState State { get; set; }
 
             public required EgressRequest EgressRequest { get; set; }
 
             public DateTime CreatedDateTime { get; } = DateTime.UtcNow;
 
-            public Guid OperationId { get; set; }
+            public required Guid OperationId { get; set; }
 
             public required ISet<string> Tags { get; set; }
 
