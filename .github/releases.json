@@ -13,8 +13,7 @@
   "unsupported": [
     "7.3",
     "7.2",
-    "7.1",
-    "7.0"
+    "7.1"
   ],
   "releases": {
     "6.3": {
@@ -25,16 +24,6 @@
         "net6.0",
         "netcoreapp3.1"
       ]
-    },
-    "7.0": {
-      "tag": "v7.0.2",
-      "minorReleaseDate": "2022-11-11T00:00:00.000Z",
-      "patchReleaseDate": "2023-02-14T00:00:00.000Z",
-      "supportedFrameworks": [
-        "net6.0",
-        "net7.0"
-      ],
-      "outOfSupportDate": "2023-06-14T00:00:00.000Z"
     },
     "7.1": {
       "tag": "v7.1.3",
@@ -75,9 +64,9 @@
       "outOfSupportDate": "2024-05-14T00:00:00.000Z"
     },
     "9.0": {
-      "tag": "v9.0.0-preview.4.24270.1",
-      "minorReleaseDate": "2024-05-21T00:00:00.000Z",
-      "patchReleaseDate": "2024-05-21T00:00:00.000Z",
+      "tag": "v9.0.0-preview.5.24307.6",
+      "minorReleaseDate": "2024-06-11T00:00:00.000Z",
+      "patchReleaseDate": "2024-06-11T00:00:00.000Z",
       "supportedFrameworks": [
         "net9.0"
       ]

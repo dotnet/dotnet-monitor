@@ -26,9 +26,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _exceptionGroupMap.Add(id, new ExceptionGroup(exceptionClassId, throwingMethodId, ilOffset));
         }
 
-        public void AddFunction(ulong id, ulong classId, uint classToken, ulong moduleId, string name, ulong[] typeArgs, ulong[] parameterTypes)
+        public void AddFunction(ulong id, uint methodToken, ulong classId, uint classToken, ulong moduleId, string name, ulong[] typeArgs, ulong[] parameterTypes)
         {
-            _nameCache.FunctionData.TryAdd(id, new FunctionData(name, classId, classToken, moduleId, typeArgs ?? Array.Empty<ulong>(), parameterTypes ?? Array.Empty<ulong>()));
+            _nameCache.FunctionData.TryAdd(id, new FunctionData(name, methodToken, classId, classToken, moduleId, typeArgs ?? Array.Empty<ulong>(), parameterTypes ?? Array.Empty<ulong>()));
         }
 
         public void AddStackFrame(ulong id, ulong functionId, int ilOffset)
@@ -36,9 +36,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _stackFrames.Add(id, new StackFrameInstance(functionId, ilOffset));
         }
 
-        public void AddModule(ulong id, string moduleName)
+        public void AddModule(ulong id, Guid moduleVersionId, string moduleName)
         {
-            _nameCache.ModuleData.TryAdd(id, new ModuleData(moduleName));
+            _nameCache.ModuleData.TryAdd(id, new ModuleData(moduleName, moduleVersionId));
         }
 
         public void AddToken(ulong moduleId, uint token, uint outerToken, string name, string @namespace)

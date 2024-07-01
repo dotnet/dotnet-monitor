@@ -35,8 +35,11 @@ First Available: 8.0 Preview 7
 | Name | Type | Description |
 |---|---|---|
 | `methodName` | string | Name of the method for this frame. This includes generic parameters. |
+| `methodToken` | int | TypeDef token for the method. |
+| `parameterTypes` | string[] | Array of parameter types. Empty array if none. |
 | `typeName` | string | Name of the class for this frame. This includes generic parameters. |
 | `moduleName` | string | Name of the module for this frame. |
+| `moduleVersionId` | guid | Unique identifier used to distinguish between two versions of the same module. An empty value: `00000000-0000-0000-0000-000000000000`. |
 
 ## CallStackResult
 
@@ -54,7 +57,7 @@ Object describing the basic state of a collection rule for the executing instanc
 
 | Name | Type | Description |
 |---|---|---|
-| State | [CollectionRuleState](#collectionrulestate-63) | Indicates what state the collection rule is in for the current process. |
+| State | [CollectionRuleState](#collectionrulestate) | Indicates what state the collection rule is in for the current process. |
 | StateReason | string | Human-readable explanation for the current state of the collection rule. |
 
 ## CollectionRuleDetailedDescription
@@ -65,7 +68,7 @@ Object describing the detailed state of a collection rule for the executing inst
 
 | Name | Type | Description |
 |---|---|---|
-| State | [CollectionRuleState](#collectionrulestate-63) | Indicates what state the collection rule is in for the current process. |
+| State | [CollectionRuleState](#collectionrulestate) | Indicates what state the collection rule is in for the current process. |
 | StateReason | string | Human-readable explanation for the current state of the collection rule. |
 | LifetimeOccurrences | int | The number of times the trigger has executed for a process in its lifetime. |
 | SlidingWindowOccurrences | int | The number of times the trigger has executed within the current sliding window. |

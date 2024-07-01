@@ -71,8 +71,6 @@ extends:
             arguments: >-
               -BarBuildId "$(BuildBarId)"
               -AzdoToken "$(dn-bot-all-drop-rw-code-rw-release-all)"
-              -MaestroToken "$(MaestroAccessToken)"
-              -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)"
               -DownloadTargetPath "$(System.ArtifactsDirectory)\BuildAssets"
               -SasSuffixes "$(dotnetbuilds-internal-checksums-container-read-token),$(dotnetbuilds-internal-container-read-token)"
               -ReleaseVersion "$(BuildVersion)"

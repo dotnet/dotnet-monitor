@@ -145,6 +145,58 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             Assert.Equal(ilOffset, frameIdentifier.ILOffset);
         }
 
+        [Theory]
+        [InlineData(0, 0, 0, 0, 0, "", new ulong[0], new ulong[0])]
+        [InlineData(1, 100663639, 128, 256, 512, "ThrowObjectDisposedException", new ulong[1] { 1024 }, new ulong[2] { 2048, 4096 })]
+        public void ExceptionsEventSource_WriteFunction_Event(
+            ulong functionId,
+            uint methodToken,
+            ulong classId,
+            uint classToken,
+            ulong moduleId,
+            string name,
+            ulong[] typeArgs,
+            ulong[] parameterTypes)
+        {
+            using ExceptionsEventSource source = new();
+
+            using ExceptionsEventListener listener = new();
+            listener.EnableEvents(source, EventLevel.Informational);
+
+            source.FunctionDescription(functionId, methodToken, classId, classToken, moduleId, name, typeArgs, parameterTypes);
+
+            Assert.True(listener.NameCache.FunctionData.TryGetValue(functionId, out FunctionData? function));
+            Assert.Equal(methodToken, function.MethodToken);
+            Assert.Equal(classId, function.ParentClass);
+            Assert.Equal(classToken, function.ParentClassToken);
+            Assert.Equal(moduleId, function.ModuleId);
+            Assert.Equal(name, function.Name);
+            // We would normally expect the following to return an array of the stack frame IDs
+            // but in-process listener doesn't decode non-byte arrays correctly.
+            Assert.Equal(Array.Empty<ulong>(), function.TypeArgs);
+            Assert.Equal(Array.Empty<ulong>(), function.ParameterTypes);
+        }
+
+        [Theory]
+        [InlineData(0, "00000000-0000-0000-0000-000000000000", "")]
+        [InlineData(1, NonEmptyGuidString, "Module")]
+        public void ExceptionsEventSource_WriteModule_Event(
+            ulong moduleId,
+            Guid moduleVersionId,
+            string name)
+        {
+            using ExceptionsEventSource source = new();
+
+            using ExceptionsEventListener listener = new();
+            listener.EnableEvents(source, EventLevel.Informational);
+
+            source.ModuleDescription(moduleId, moduleVersionId, name);
+
+            Assert.True(listener.NameCache.ModuleData.TryGetValue(moduleId, out ModuleData? module));
+            Assert.Equal(moduleVersionId, module.ModuleVersionId);
+            Assert.Equal(name, module.Name);
+        }
+
         private static string CoalesceNull(string? value)
         {
             return value ?? ExceptionsEventListener.NullValue;
