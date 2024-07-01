@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new ArgumentNullException(nameof(endpointInfo));
             }
 
-            // Guarenteed to not be null by StoragePostConfigureOptions.PostConfigure. https://github.com/dotnet/dotnet-monitor/issues/6929.
+            // Guaranteed to not be null by StoragePostConfigureOptions.PostConfigure. https://github.com/dotnet/dotnet-monitor/issues/6929.
             string dumpTempFolder = _storageOptions.CurrentValue.DumpTempFolder!;
 
             // Ensure folder exists before issue command.
