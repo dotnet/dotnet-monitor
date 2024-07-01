@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public async Task<IEnumerable<IProcessInfo>> GetProcessesAsync(DiagProcessFilter? processFilterConfig, CancellationToken token)
         {
-            IEnumerable<IProcessInfo>? processes = null;
+            IEnumerable<IProcessInfo> processes = [];
 
             try
             {
