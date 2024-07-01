@@ -40,6 +40,23 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private const string NativeFrame = "[NativeFrame]";
         private const string ExpectedThreadName = "TestThread";
 
+        private static MethodInfo GetMethodInfo(string methodName)
+        {
+            // Strip off any generic type information.
+            if (methodName.Contains('['))
+            {
+                methodName = methodName[..methodName.IndexOf('[')];
+            }
+
+            // Return null on psuedo frames (e.g. [NativeFrame])
+            if (methodName.Length == 0)
+            {
+                return null;
+            }
+
+            return typeof(Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.StacksWorker.StacksWorkerNested<int>).GetMethod(methodName);
+        }
+
         public StacksTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
             _httpClientFactory = serviceProviderFixture.ServiceProvider.GetService<IHttpClientFactory>();
@@ -452,8 +469,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private static string FormatFrame(string module, string @class, string function) =>
             FormattableString.Invariant($"{module}!{@class}.{function}");
 
-        private static bool AreFramesEqual(WebApi.Models.CallStackFrame left, WebApi.Models.CallStackFrame right) =>
-            (left.ModuleName == right.ModuleName) && (left.TypeName == right.TypeName) && (left.MethodName == right.MethodName);
+        private static bool AreFramesEqual(WebApi.Models.CallStackFrame expected, WebApi.Models.CallStackFrame actual)
+        {
+            MethodInfo expectedMethodInfo = GetMethodInfo(expected.MethodName);
+
+            return (expected.ModuleName == actual.ModuleName) &&
+                (expected.TypeName == actual.TypeName) &&
+                (expected.MethodName == actual.MethodName) &&
+                ((expectedMethodInfo?.MetadataToken ?? 0) == actual.MethodToken) &&
+                ((expectedMethodInfo?.Module.ModuleVersionId ?? Guid.Empty) == actual.ModuleVersionId);
+
+        }
 
         private static bool AreFramesEqual(WebApi.Models.ProfileEvent left, WebApi.Models.ProfileEvent right) =>
             (left.Frame == right.Frame) && (left.At == right.At) && (left.Type == right.Type);
@@ -535,24 +561,24 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         private static WebApi.Models.CallStackFrame[] ExpectedFrames() => new WebApi.Models.CallStackFrame[]
             {
-                        new WebApi.Models.CallStackFrame
-                        {
-                            ModuleName = ExpectedModule,
-                            TypeName = ExpectedClass,
-                            MethodName = ExpectedCallbackFunction
-                        },
-                        new WebApi.Models.CallStackFrame
-                        {
-                            ModuleName = NativeFrame,
-                            TypeName = NativeFrame,
-                            MethodName = NativeFrame
-                        },
-                        new WebApi.Models.CallStackFrame
-                        {
-                            ModuleName = ExpectedModule,
-                            TypeName = ExpectedClass,
-                            MethodName = ExpectedFunction
-                        }
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    TypeName = ExpectedClass,
+                    MethodName = ExpectedCallbackFunction,
+                },
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = NativeFrame,
+                    TypeName = NativeFrame,
+                    MethodName = NativeFrame,
+                },
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    TypeName = ExpectedClass,
+                    MethodName = ExpectedFunction,
+                }
             };
     }
 }

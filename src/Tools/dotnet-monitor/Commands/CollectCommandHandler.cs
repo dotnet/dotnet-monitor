@@ -131,12 +131,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<ProfilerChannel>();
                 services.ConfigureCollectionRules();
                 services.ConfigureLibrarySharing();
+                /*
+                 * ConfigureInProcessFeatures needs to be called before ConfigureProfiler
+                 * because the profiler needs to have access to environment variables set by in process features.
+                 */
+                services.ConfigureInProcessFeatures(context.Configuration);
                 services.ConfigureProfiler();
                 services.ConfigureStartupHook();
-                services.ConfigureHostingStartup();
                 services.ConfigureExceptions();
                 services.ConfigureStartupLoggers(authConfigurator);
-                services.ConfigureInProcessFeatures(context.Configuration);
                 services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
                 services.AddSingleton<IDumpOperationFactory, DumpOperationFactory>();
                 services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();

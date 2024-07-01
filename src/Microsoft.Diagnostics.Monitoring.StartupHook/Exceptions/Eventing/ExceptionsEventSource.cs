@@ -97,6 +97,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         [Event(ExceptionEvents.EventIds.FunctionDescription)]
         public void FunctionDescription(
             ulong FunctionId,
+            uint MethodToken,
             ulong ClassId,
             uint ClassToken,
             ulong ModuleId,
@@ -104,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             ulong[] TypeArgs,
             ulong[] ParameterTypes)
         {
-            Span<EventData> data = stackalloc EventData[7];
+            Span<EventData> data = stackalloc EventData[8];
             using PinnedData namePinned = PinnedData.Create(Name);
             Span<byte> typeArgsSpan = stackalloc byte[GetArrayDataSize(TypeArgs)];
             FillArrayData(typeArgsSpan, TypeArgs);
@@ -112,6 +113,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             FillArrayData(parameterTypesSpan, ParameterTypes);
 
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.FunctionId], FunctionId);
+            SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.MethodToken], MethodToken);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ClassId], ClassId);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ClassToken], ClassToken);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ModuleId], ModuleId);
@@ -125,12 +127,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         [Event(ExceptionEvents.EventIds.ModuleDescription)]
         public void ModuleDescription(
             ulong ModuleId,
+            Guid ModuleVersionId,
             string Name)
         {
-            Span<EventData> data = stackalloc EventData[2];
+            Span<EventData> data = stackalloc EventData[3];
             using PinnedData namePinned = PinnedData.Create(Name);
 
             SetValue(ref data[NameIdentificationEvents.ModuleDescPayloads.ModuleId], ModuleId);
+            SetValue(ref data[NameIdentificationEvents.ModuleDescPayloads.ModuleVersionId], ModuleVersionId);
             SetValue(ref data[NameIdentificationEvents.ModuleDescPayloads.Name], namePinned);
 
             WriteEventWithFlushing(ExceptionEvents.EventIds.ModuleDescription, data);

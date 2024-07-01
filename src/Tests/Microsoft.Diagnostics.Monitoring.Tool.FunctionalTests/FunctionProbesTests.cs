@@ -2,19 +2,25 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
-using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
-using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+
+#if !NET7_0_OR_GREATER
+using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
+using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
+using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Extensions.Logging;
+#endif
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
@@ -38,7 +44,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         public static IEnumerable<object[]> GetAllTestScenarios()
         {
             List<object[]> arguments = new();
-
             IEnumerable<object[]> testArchitectures = ProfilerHelper.GetArchitecture();
             List<string> commands = typeof(TestAppScenarios.FunctionProbes.SubScenarios).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
                 .Select(p => p.Name)
@@ -57,9 +62,41 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             return arguments;
         }
 
+#if !NET7_0_OR_GREATER
+        [Theory(Skip ="This test installs the mutating profiler which is not enabled on net6 or lower.")]
+#else
         [Theory]
+#endif
         [MemberData(nameof(FunctionProbesTests.GetAllTestScenarios), MemberType = typeof(FunctionProbesTests))]
         public async Task RunTestScenario(Architecture targetArchitecture, string subScenario)
+        {
+            await using AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly())
+            {
+                Architecture = targetArchitecture,
+                ScenarioName = TestAppScenarios.FunctionProbes.Name,
+                SubScenarioName = subScenario
+            };
+
+            // Enable the mutating profiler
+            string profilerPath = NativeLibraryHelper.GetSharedLibraryPath(targetArchitecture, ProfilerIdentifiers.MutatingProfiler.LibraryRootFileName);
+            appRunner.Environment.Add(ProfilerHelper.ClrEnvVarEnableNotificationProfilers, ProfilerHelper.ClrEnvVarEnabledValue);
+            appRunner.Environment.Add(ProfilerHelper.ClrEnvVarEnableProfiling, ProfilerHelper.ClrEnvVarEnabledValue);
+            appRunner.Environment.Add(ProfilerHelper.ClrEnvVarProfiler, ProfilerIdentifiers.MutatingProfiler.Clsid.StringWithBraces);
+            appRunner.Environment.Add(ProfilerHelper.ClrEnvVarProfilerPath, profilerPath);
+            appRunner.Environment.Add(ProfilerIdentifiers.MutatingProfiler.EnvironmentVariables.ModulePath, profilerPath);
+
+            // The profiler checks this env variable to enable parameter capturing features.
+            appRunner.Environment.Add(InProcessFeaturesIdentifiers.EnvironmentVariables.ParameterCapturing.Enable, "1");
+
+            await appRunner.ExecuteAsync(() => Task.CompletedTask);
+
+            Assert.Equal(0, appRunner.ExitCode);
+        }
+
+#if !NET7_0_OR_GREATER
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public async Task ValidateProfilerIsNotInstalledOnNet6(Architecture targetArchitecture)
         {
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
@@ -80,7 +117,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     };
                 },
                 profilerLogLevel: LogLevel.Trace,
-                subScenarioName: subScenario);
+                subScenarioName: TestAppScenarios.FunctionProbes.SubScenarios.ValidateNoMutatingProfiler);
         }
+#endif // NET7_0_OR_GREATER
     }
 }

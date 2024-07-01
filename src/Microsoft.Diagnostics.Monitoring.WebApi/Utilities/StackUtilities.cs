@@ -48,9 +48,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 TypeName = NameFormatter.UnknownClass,
                 MethodName = StacksFormatter.UnknownFunction,
+                MethodToken = 0,
                 //TODO Bring this back once we have a useful offset value
                 //Offset = frame.Offset,
-                ModuleName = NameFormatter.UnknownModule
+                ModuleName = NameFormatter.UnknownModule,
+                ModuleVersionId = Guid.Empty
             };
             if (frame.FunctionId == 0)
             {
@@ -60,7 +62,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
             {
+                frameModel.MethodToken = functionData.MethodToken;
                 frameModel.ModuleName = NameFormatter.GetModuleName(cache, functionData.ModuleId);
+
+                if (cache.ModuleData.TryGetValue(functionData.ModuleId, out ModuleData moduleData))
+                {
+                    frameModel.ModuleVersionId = moduleData.ModuleVersionId;
+                }
 
                 builder.Clear();
                 builder.Append(functionData.Name);

@@ -48,6 +48,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 func: async logger =>
                 {
                     await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.ParameterCapturing.Commands.Continue, logger);
+
+                    SampleMethods.StaticTestMethodSignatures.NoArgs();
+
                     return 0;
                 }, token);
         }

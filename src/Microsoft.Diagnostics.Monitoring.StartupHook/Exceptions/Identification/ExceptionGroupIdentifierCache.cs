@@ -83,12 +83,18 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                 return methodId;
 
             // Dynamic methods do not have metadata tokens
-            uint metadataToken = 0;
+            uint methodToken = 0;
             try
             {
-                metadataToken = Convert.ToUInt32(method.MetadataToken);
+                methodToken = Convert.ToUInt32(method.MetadataToken);
             }
             catch (Exception) { }
+
+            uint parentClassToken = 0;
+            if (null != method.DeclaringType)
+            {
+                parentClassToken = Convert.ToUInt32(method.DeclaringType.MetadataToken);
+            }
 
             // RTDynamicMethod does not implement GetGenericArguments.
             Type[] genericArguments = Array.Empty<Type>();
@@ -100,8 +106,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
 
             FunctionData data = new(
                 method.Name,
+                methodToken,
                 AddOrDefault(method.DeclaringType),
-                metadataToken,
+                parentClassToken,
                 GetOrAdd(method.Module),
                 GetOrAdd(genericArguments),
                 GetOrAdd(method.GetParameters())
@@ -128,7 +135,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             if (!GetOrCreateIdentifier(_moduleIds, module, ref _nextModuleId, out ulong moduleId))
                 return moduleId;
 
-            ModuleData data = new(module.Name);
+            ModuleData data = new(module.Name, module.ModuleVersionId);
 
             if (_nameCache.ModuleData.TryAdd(moduleId, data))
             {
@@ -212,16 +219,16 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                 ModuleScopedToken key = new(moduleId, typeToken);
                 if (!_nameCache.TokenData.ContainsKey(key))
                 {
-                    uint parentToken = 0;
+                    uint parentClassToken = 0;
                     if (null != type.DeclaringType)
                     {
-                        parentToken = Convert.ToUInt32(type.DeclaringType.MetadataToken);
+                        parentClassToken = Convert.ToUInt32(type.DeclaringType.MetadataToken);
                     }
 
                     TokenData tokenData = new(
                         type.Name,
                         null == type.DeclaringType ? type.Namespace ?? string.Empty : string.Empty,
-                        parentToken);
+                        parentClassToken);
 
                     if (!_nameCache.TokenData.TryAdd(key, tokenData))
                         break;
