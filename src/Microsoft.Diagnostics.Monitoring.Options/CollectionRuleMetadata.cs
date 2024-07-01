@@ -5,7 +5,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal class CollectionRuleMetadata
     {
-        public string CollectionRuleName { get; set; } = string.Empty; // JSFIX
+        public string CollectionRuleName { get; set; } = string.Empty;
 
         public int ActionListIndex { get; set; }
 
