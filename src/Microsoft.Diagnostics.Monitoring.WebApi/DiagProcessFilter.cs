@@ -96,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 };
             }
 
-            string filterValue = processFilterDescriptor.Value!; // Guaranteed not to be null by ProcessFilterDescriptor.Validate. https://github.com/dotnet/dotnet-monitor/issues/6929.
+            string filterValue = processFilterDescriptor.Value!; // Guaranteed not to be null by ProcessFilterDescriptor.Validate.
             switch (processFilterDescriptor.Key)
             {
                 case ProcessFilterKey.ProcessId:
