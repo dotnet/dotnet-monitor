@@ -21,17 +21,17 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_InProcessFeaturesOptions_CallStacks))]
-        public CallStacksOptions CallStacks { get; set; }
+        public CallStacksOptions? CallStacks { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_InProcessFeaturesOptions_Exceptions))]
-        public ExceptionsOptions Exceptions { get; set; }
+        public ExceptionsOptions? Exceptions { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_InProcessFeaturesOptions_ParameterCapturing))]
         [Experimental]
-        public ParameterCapturingOptions ParameterCapturing { get; set; }
+        public ParameterCapturingOptions? ParameterCapturing { get; set; }
     }
 }
