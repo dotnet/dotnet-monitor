@@ -35,9 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     {
         private const TraceProfile DefaultTraceProfiles = TraceProfile.Cpu | TraceProfile.Http | TraceProfile.Metrics | TraceProfile.GcCollect;
 
-#nullable disable
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
-#nullable restore
         private readonly IOptions<CallStacksOptions> _callStacksOptions;
         private readonly IOptions<ParameterCapturingOptions> _parameterCapturingOptions;
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
@@ -54,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         public DiagController(IServiceProvider serviceProvider, ILogger<DiagController> logger)
             : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger)
         {
-            _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
+            _diagnosticPortOptions = serviceProvider.GetRequiredService<IOptions<DiagnosticPortOptions>>();
             _callStacksOptions = serviceProvider.GetRequiredService<IOptions<CallStacksOptions>>();
             _parameterCapturingOptions = serviceProvider.GetRequiredService<IOptions<ParameterCapturingOptions>>();
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
