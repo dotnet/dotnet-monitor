@@ -43,7 +43,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             public void Dispose()
             {
-                throw new NotImplementedException();
             }
         }
 
