@@ -31,6 +31,8 @@ jobs:
       inputs:
         artifactName: 'THIRD-PARTY-NOTICES'
         targetPath: '$(Build.SourcesDirectory)'
+    # Populate internal runtime access variables
+    - template: /eng/common/templates/steps/enable-internal-runtimes.yml
     - script: >-
         $(Build.SourcesDirectory)/eng/cipacksignpublish.cmd
         /p:TeamName=$(_TeamName)

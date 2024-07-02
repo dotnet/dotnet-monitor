@@ -23,6 +23,9 @@ jobs:
         artifactName: Build_Published_${{ parameters.configuration }}
         targetPath: '$(Build.SourcesDirectory)/artifacts'
 
+    # Populate internal runtime access variables
+    - template: /eng/common/templates/steps/enable-internal-runtimes.yml
+
     - script: >-
         $(Build.SourcesDirectory)/restore.cmd
         -configuration ${{ parameters.configuration }}
