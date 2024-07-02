@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Filters))]
-        public List<ProcessFilterDescriptor>? Filters { get; } = new List<ProcessFilterDescriptor>(0);
+        public List<ProcessFilterDescriptor> Filters { get; } = new List<ProcessFilterDescriptor>(0);
 
 #nullable disable
         [Display(
@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Actions))]
-        public List<CollectionRuleActionOptions>? Actions { get; } = new List<CollectionRuleActionOptions>(0);
+        public List<CollectionRuleActionOptions> Actions { get; } = new List<CollectionRuleActionOptions>(0);
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
