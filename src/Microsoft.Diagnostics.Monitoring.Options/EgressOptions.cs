@@ -13,11 +13,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EgressOptions_FileSystem))]
-        public IDictionary<string, FileSystemEgressProviderOptions> FileSystem { get; set; }
+        public IDictionary<string, FileSystemEgressProviderOptions>? FileSystem { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EgressOptions_Properties))]
-        public IDictionary<string, string> Properties { get; set; }
+        public IDictionary<string, string>? Properties { get; set; }
     }
 }

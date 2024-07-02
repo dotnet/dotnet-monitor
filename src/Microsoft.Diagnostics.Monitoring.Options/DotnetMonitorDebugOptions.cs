@@ -9,6 +9,6 @@ namespace Microsoft.Diagnostics.Monitoring.Options
     /// </summary>
     internal sealed class DotnetMonitorDebugOptions
     {
-        public ExceptionsDebugOptions Exceptions { get; set; }
+        public ExceptionsDebugOptions? Exceptions { get; set; }
     }
 }

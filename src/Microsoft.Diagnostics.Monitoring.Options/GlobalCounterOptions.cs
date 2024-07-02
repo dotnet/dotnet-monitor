@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_GlobalCounterOptions_Providers))]
-        public System.Collections.Generic.IDictionary<string, GlobalProviderOptions> Providers { get; set; } = new Dictionary<string, GlobalProviderOptions>(StringComparer.OrdinalIgnoreCase);
+        public System.Collections.Generic.IDictionary<string, GlobalProviderOptions>? Providers { get; set; } = new Dictionary<string, GlobalProviderOptions>(StringComparer.OrdinalIgnoreCase);
     }
 
     public class GlobalProviderOptions
@@ -53,15 +53,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var results = new List<ValidationResult>();
-            var providerResults = new List<ValidationResult>();
-            foreach ((string provider, GlobalProviderOptions options) in Providers)
+
+            if (Providers != null)
             {
-                providerResults.Clear();
-                if (!Validator.TryValidateObject(options, new ValidationContext(options), providerResults, true))
+                var providerResults = new List<ValidationResult>();
+                foreach ((string provider, GlobalProviderOptions options) in Providers)
                 {
-                    // We prefix the validation error with the provider.
-                    results.AddRange(providerResults.Select(r => new ValidationResult(
-                        string.Format(CultureInfo.CurrentCulture, OptionsDisplayStrings.ErrorMessage_NestedProviderValidationError, provider, r.ErrorMessage))));
+                    providerResults.Clear();
+                    if (!Validator.TryValidateObject(options, new ValidationContext(options), providerResults, true))
+                    {
+                        // We prefix the validation error with the provider.
+                        results.AddRange(providerResults.Select(r => new ValidationResult(
+                            string.Format(CultureInfo.CurrentCulture, OptionsDisplayStrings.ErrorMessage_NestedProviderValidationError, provider, r.ErrorMessage))));
+                    }
                 }
             }
 
@@ -81,6 +85,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             options.MaxTimeSeries.GetValueOrDefault(GlobalCounterOptionsDefaults.MaxTimeSeries);
 
         public static float GetProviderSpecificInterval(this GlobalCounterOptions options, string providerName) =>
-            options.Providers.TryGetValue(providerName, out GlobalProviderOptions providerOptions) ? providerOptions.IntervalSeconds ?? options.GetIntervalSeconds() : options.GetIntervalSeconds();
+            options.Providers?.TryGetValue(providerName, out GlobalProviderOptions? providerOptions) == true ? providerOptions.IntervalSeconds ?? options.GetIntervalSeconds() : options.GetIntervalSeconds();
     }
 }

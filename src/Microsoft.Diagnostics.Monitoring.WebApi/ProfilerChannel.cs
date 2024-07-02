@@ -119,8 +119,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private string ComputeChannelPath(IEndpointInfo endpointInfo)
         {
-            string defaultSharedPath = _storageOptions.CurrentValue.DefaultSharedPath;
-            if (string.IsNullOrEmpty(_storageOptions.CurrentValue.DefaultSharedPath))
+            string? defaultSharedPath = _storageOptions.CurrentValue.DefaultSharedPath;
+            if (string.IsNullOrEmpty(defaultSharedPath))
             {
                 //Note this fallback does not work well for sidecar scenarios.
                 defaultSharedPath = Path.GetTempPath();
