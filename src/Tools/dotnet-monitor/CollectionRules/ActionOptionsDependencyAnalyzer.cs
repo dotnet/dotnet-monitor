@@ -158,15 +158,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 }
 #nullable restore
             }
-            string commandLine = _ruleContext.EndpointInfo?.CommandLine ?? string.Empty;
+            string? commandLine = _ruleContext.EndpointInfo.CommandLine;
 
             settings = _tokenParser.SubstituteOptionValues(settings, new TokenContext
             {
                 CloneOnSubstitution = ReferenceEquals(originalSettings, settings),
-                RuntimeId = _ruleContext.EndpointInfo?.RuntimeInstanceCookie ?? Guid.Empty,
-                ProcessId = _ruleContext.EndpointInfo?.ProcessId ?? 0,
-                CommandLine = commandLine,
-                ProcessName = _ruleContext.ProcessInfo?.ProcessName ?? string.Empty
+                RuntimeId = _ruleContext.EndpointInfo.RuntimeInstanceCookie,
+                ProcessId = _ruleContext.EndpointInfo.ProcessId,
+                CommandLine = commandLine ?? string.Empty,
+                ProcessName = _ruleContext.ProcessInfo.ProcessName ?? string.Empty
             });
 
             return settings;
