@@ -51,7 +51,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
 
             if (_endpointInfo.RuntimeVersion?.Major < 8)
             {
+#nullable disable
                 _logger.StartupHookInstructions(_endpointInfo.ProcessId, fileInfo.Name, fileInfo.PhysicalPath);
+#nullable restore
                 return false;
             }
 

@@ -97,7 +97,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
                 else
                 {
+#nullable disable
                     _logger.ActionSettingsTokenizationNotSupported(settings.GetType().FullName);
+#nullable restore
                     settings = originalSettings;
                     return false;
                 }
