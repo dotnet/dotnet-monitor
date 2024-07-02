@@ -36,7 +36,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new ArgumentNullException(nameof(endpointInfo));
             }
 
-            string dumpTempFolder = _storageOptions.CurrentValue.DumpTempFolder;
+            // Guaranteed to not be null by StoragePostConfigureOptions.PostConfigure.
+            string dumpTempFolder = _storageOptions.CurrentValue.DumpTempFolder!;
 
             // Ensure folder exists before issue command.
             if (!Directory.Exists(dumpTempFolder))
