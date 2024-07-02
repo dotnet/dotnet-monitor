@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
     <TargetFrameworks>$(SchemaTargetFramework)</TargetFrameworks>
     <DefineConstants>$(DefineConstants);SCHEMAGEN</DefineConstants>
   </PropertyGroup>

@@ -275,7 +275,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             string discriminatingPropertyName,
             string discriminatingPropertyValue,
             string discriminatedPropertyName,
-            JsonSchema subSchema = null)
+            JsonSchema? subSchema = null)
         {
             if (null == subSchema)
             {
@@ -283,7 +283,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             }
 
             JsonSchemaProperty discriminatingProperty = new JsonSchemaProperty();
-            discriminatingProperty.ExtensionData = new Dictionary<string, object>();
+            discriminatingProperty.ExtensionData = new Dictionary<string, object?>();
             discriminatingProperty.ExtensionData.Add("const", discriminatingPropertyValue);
 
             subSchema.Properties.Add(discriminatingPropertyName, discriminatingProperty);

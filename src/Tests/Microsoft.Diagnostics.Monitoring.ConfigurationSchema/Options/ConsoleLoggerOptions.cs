@@ -25,11 +25,11 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleLoggerOptions_FormatterOptions))]
-        public object FormatterOptions { get; set; }
+        public object? FormatterOptions { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleLoggerOptions_LogLevel))]
-        public IDictionary<string, LogLevel?> LogLevel { get; set; }
+        public IDictionary<string, LogLevel?>? LogLevel { get; set; }
     }
 }

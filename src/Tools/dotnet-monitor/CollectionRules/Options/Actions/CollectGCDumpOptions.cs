@@ -26,6 +26,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 #if !UNITTEST && !SCHEMAGEN
         [ValidateEgressProvider]
 #endif
-        public string Egress { get; set; }
+        public string Egress { get; set; } = string.Empty;
     }
 }

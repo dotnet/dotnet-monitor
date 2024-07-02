@@ -17,13 +17,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_ProviderName))]
         [Required]
-        public string ProviderName { get; set; }
+        public string ProviderName { get; set; } = string.Empty;
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_CounterName))]
         [Required]
-        public string CounterName { get; set; }
+        public string CounterName { get; set; } = string.Empty;
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
