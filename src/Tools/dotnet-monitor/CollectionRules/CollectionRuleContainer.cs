@@ -181,21 +181,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             {
                 CollectionRuleOptions options = _optionsMonitor.Get(ruleName);
 
-                if (null != options.Filters)
+                DiagProcessFilter filter = DiagProcessFilter.FromConfiguration(options.Filters);
+
+                if (!filter.Filters.All(f => f.MatchFilter(_processInfo)))
                 {
-                    DiagProcessFilter filter = DiagProcessFilter.FromConfiguration(options.Filters);
+                    // Collection rule filter does not match target process
+                    _logger.CollectionRuleUnmatchedFilters(ruleName);
 
-                    if (!filter.Filters.All(f => f.MatchFilter(_processInfo)))
-                    {
-                        // Collection rule filter does not match target process
-                        _logger.CollectionRuleUnmatchedFilters(ruleName);
+                    // Signal rule has "started" in order to not block
+                    // resumption of the runtime instance.
+                    startedSource.TrySetResult(null);
 
-                        // Signal rule has "started" in order to not block
-                        // resumption of the runtime instance.
-                        startedSource.TrySetResult(null);
-
-                        return;
-                    }
+                    return;
                 }
 
                 _logger.CollectionRuleStarted(ruleName);

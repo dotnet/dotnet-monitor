@@ -46,9 +46,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             };
 
             int actionIndex = 0;
-#nullable disable
             List<ActionCompletionEntry> deferredCompletions = new(context.Options.Actions.Count);
-#nullable restore
+
             var actionResults = new Dictionary<string, CollectionRuleActionResult>(StringComparer.Ordinal);
             var dependencyAnalyzer = ActionOptionsDependencyAnalyzer.Create(context);
 
