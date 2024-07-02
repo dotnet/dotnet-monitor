@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             }
 
 
-            if (_endpointInfo?.RuntimeVersion?.Major < 8)
+            if (_endpointInfo.RuntimeVersion?.Major < 8)
             {
                 _logger.StartupHookInstructions(_endpointInfo.ProcessId, fileInfo.Name, fileInfo.PhysicalPath);
                 return false;
