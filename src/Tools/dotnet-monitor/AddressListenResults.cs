@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// </summary>
         private bool Listen(KestrelServerOptions options, string url, bool isAuthEnabled)
         {
-            BindingAddress address = null;
+            BindingAddress? address = null;
             try
             {
                 address = BindingAddress.Parse(url);
@@ -95,7 +95,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                     options.ListenLocalhost(address.Port, configureListenOptions);
                 }
-                else if (IPAddress.TryParse(address.Host, out IPAddress ipAddress))
+                else if (IPAddress.TryParse(address.Host, out IPAddress? ipAddress))
                 {
                     options.Listen(ipAddress, address.Port, configureListenOptions);
                 }

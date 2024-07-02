@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _enabledByDefault = enabledByDefault;
         }
 
-        void IPostConfigureOptions<T>.PostConfigure(string name, T options)
+        void IPostConfigureOptions<T>.PostConfigure(string? name, T options)
         {
             InProcessFeatureOptionsBinder.BindEnabled(
                 options,

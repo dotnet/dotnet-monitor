@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
         private readonly ILogger<MonitorApiKeyConfigurationObserver> _logger;
         private readonly IOptionsMonitor<MonitorApiKeyConfiguration> _options;
 
-        private IDisposable _changeRegistration;
+        private IDisposable? _changeRegistration;
 
         public MonitorApiKeyConfigurationObserver(
             ILogger<MonitorApiKeyConfigurationObserver> logger,

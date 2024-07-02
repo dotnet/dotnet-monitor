@@ -46,8 +46,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             };
 
             int actionIndex = 0;
+#nullable disable
             List<ActionCompletionEntry> deferredCompletions = new(context.Options.Actions.Count);
-
+#nullable restore
             var actionResults = new Dictionary<string, CollectionRuleActionResult>(StringComparer.Ordinal);
             var dependencyAnalyzer = ActionOptionsDependencyAnalyzer.Create(context);
 
@@ -58,7 +59,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 {
                     KeyValueLogScope actionScope = new();
                     actionScope.AddCollectionRuleAction(actionOption.Type, actionIndex);
-                    using IDisposable actionScopeRegistration = _logger.BeginScope(actionScope);
+                    using IDisposable? actionScopeRegistration = _logger.BeginScope(actionScope);
 
                     _logger.CollectionRuleActionStarted(context.Name, actionOption.Type);
 
@@ -91,8 +92,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                                 ));
                         }
 
-                        object newSettings = dependencyAnalyzer.SubstituteOptionValues(actionResults, actionIndex, actionOption.Settings);
-                        ICollectionRuleAction action = factory.Create(context.ProcessInfo, newSettings);
+                        object? newSettings = dependencyAnalyzer.SubstituteOptionValues(actionResults, actionIndex, actionOption.Settings);
+                        ICollectionRuleAction? action = factory.Create(context.ProcessInfo, newSettings);
 
                         try
                         {
@@ -158,7 +159,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         private async Task WaitForCompletion(CollectionRuleContext context,
-            Action startCallback,
+            Action? startCallback,
             IDictionary<string, CollectionRuleActionResult> allResults,
             ICollectionRuleAction action,
             CollectionRuleActionOptions actionOption,
@@ -178,7 +179,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         private async Task WaitForCompletion(CollectionRuleContext context,
-            Action startCallback,
+            Action? startCallback,
             IDictionary<string, CollectionRuleActionResult> allResults,
             ActionCompletionEntry entry,
             CancellationToken cancellationToken)

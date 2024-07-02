@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _storageOptions = storageOptions;
         }
 
-        public void PostConfigure(string name, DiagnosticPortOptions options)
+        public void PostConfigure(string? name, DiagnosticPortOptions options)
         {
             IConfigurationSection diagPortSection = _configuration.GetSection(nameof(RootOptions.DiagnosticPort));
 

@@ -42,34 +42,34 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + ProductFolderName) :
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ProductFolderName));
 
-        public string[] Urls { get; set; }
+        public string[]? Urls { get; set; }
 
-        public string[] MetricsUrls { get; set; }
+        public string[]? MetricsUrls { get; set; }
 
         public bool EnableMetrics { get; set; }
 
-        public string DiagnosticPort { get; set; }
+        public string? DiagnosticPort { get; set; }
 
         public StartupAuthenticationMode AuthenticationMode { get; set; }
 
-        public string ContentRootDirectory { get; set; }
+        public required string ContentRootDirectory { get; set; }
 
-        public string SharedConfigDirectory { get; set; }
+        public required string SharedConfigDirectory { get; set; }
 
-        public string UserConfigDirectory { get; set; }
+        public required string UserConfigDirectory { get; set; }
 
-        public FileInfo UserProvidedConfigFilePath { get; set; }
+        public FileInfo? UserProvidedConfigFilePath { get; set; }
 
         /// <summary>
         /// Create settings for dotnet-monitor hosting.
         /// </summary>
         public static HostBuilderSettings CreateMonitor(
-            string[] urls,
-            string[] metricUrls,
+            string[]? urls,
+            string[]? metricUrls,
             bool metrics,
-            string diagnosticPort,
+            string? diagnosticPort,
             StartupAuthenticationMode startupAuthMode,
-            FileInfo userProvidedConfigFilePath)
+            FileInfo? userProvidedConfigFilePath)
         {
             return new HostBuilderSettings()
             {

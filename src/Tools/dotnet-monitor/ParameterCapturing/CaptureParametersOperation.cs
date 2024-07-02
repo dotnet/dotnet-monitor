@@ -94,20 +94,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
             IDictionary<string, string> env = await client.GetProcessEnvironmentAsync(token);
 
-            if (!env.TryGetValue(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.ManagedMessaging, out string isManagedMessagingAvailable) ||
+            if (!env.TryGetValue(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.ManagedMessaging, out string? isManagedMessagingAvailable) ||
                 !ToolIdentifiers.IsEnvVarValueEnabled(isManagedMessagingAvailable))
             {
                 throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad);
             }
 
-            if (!env.TryGetValue(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.StartupHook, out string isStartupHookAvailable) ||
+            if (!env.TryGetValue(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.StartupHook, out string? isStartupHookAvailable) ||
                 !ToolIdentifiers.IsEnvVarValueEnabled(isStartupHookAvailable))
             {
                 throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_StartupHookDidNotLoad);
             }
 
             const string EditAndContinueEnvName = "COMPLUS_ForceEnc";
-            if (env.TryGetValue(EditAndContinueEnvName, out string editAndContinueEnvValue) &&
+            if (env.TryGetValue(EditAndContinueEnvName, out string? editAndContinueEnvValue) &&
                 ToolIdentifiers.IsEnvVarValueEnabled(editAndContinueEnvValue))
             {
                 // Having Enc enabled results in methods belonging to debug modules to silently fail being instrumented.
@@ -180,7 +180,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             }
         }
 
-        private void OnStartedCapturing(object sender, Guid requestId)
+        private void OnStartedCapturing(object? sender, Guid requestId)
         {
             if (requestId != _requestId)
             {
@@ -190,7 +190,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _ = _capturingStartedCompletionSource.TrySetResult();
         }
 
-        private void OnStoppedCapturing(object sender, Guid requestId)
+        private void OnStoppedCapturing(object? sender, Guid requestId)
         {
             if (requestId != _requestId)
             {
@@ -200,7 +200,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _ = _capturingStoppedCompletionSource.TrySetResult();
         }
 
-        private void OnCapturingFailed(object sender, CapturingFailedArgs args)
+        private void OnCapturingFailed(object? sender, CapturingFailedArgs args)
         {
             if (args.RequestId != _requestId)
             {
@@ -222,7 +222,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _ = _capturingStartedCompletionSource.TrySetException(ex);
         }
 
-        private void OnServiceStateUpdate(object sender, ServiceStateUpdateArgs args)
+        private void OnServiceStateUpdate(object? sender, ServiceStateUpdateArgs args)
         {
             Exception ex;
             switch (args.ServiceState)
@@ -241,7 +241,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             _ = _capturingStoppedCompletionSource.TrySetException(ex);
         }
 
-        private void OnUnknownRequestId(object sender, Guid requestId)
+        private void OnUnknownRequestId(object? sender, Guid requestId)
         {
             if (requestId != _requestId)
             {

@@ -7,7 +7,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class ActivityExtensions
     {
-        public static string GetSpanId(this Activity activity)
+        public static string? GetSpanId(this Activity activity)
         {
             switch (activity.IdFormat)
             {
@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return string.Empty;
         }
 
-        public static string GetParentId(this Activity activity)
+        public static string? GetParentId(this Activity activity)
         {
             switch (activity.IdFormat)
             {
@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return string.Empty;
         }
 
-        public static string GetTraceId(this Activity activity)
+        public static string? GetTraceId(this Activity activity)
         {
             switch (activity.IdFormat)
             {

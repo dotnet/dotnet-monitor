@@ -13,6 +13,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         [Required]
         public string AllowedOrigins { get; set; } = string.Empty;
 
-        public string[]? GetOrigins() => AllowedOrigins?.Split(';');
+        public string[] GetOrigins() => AllowedOrigins.Split(';');
     }
 }

@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IHostBuilder CreateHostBuilder(HostBuilderSettings settings)
         {
-            string aspnetUrls = string.Empty;
+            string? aspnetUrls = string.Empty;
             ServerUrlsBlockingConfigurationManager manager = new();
             manager.IsBlocking = true;
 
@@ -63,7 +63,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     //in Kubernetes.
                     //We get around this by watching the target folder of the symlink instead.
                     //See https://github.com/kubernetes/kubernetes/master/pkg/volume/util/atomic_writer.go
-                    string path = settings.SharedConfigDirectory;
+                    string? path = settings.SharedConfigDirectory;
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && RuntimeInfo.IsInKubernetes)
                     {
                         string symlinkTarget = Path.Combine(settings.SharedConfigDirectory, "..data");
@@ -78,7 +78,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     builder.AddEnvironmentVariables(ToolIdentifiers.StandardPrefix);
 
                     // User-specified configuration file path is considered highest precedence, but does NOT override other configuration sources
-                    FileInfo userFilePath = settings.UserProvidedConfigFilePath;
+                    FileInfo? userFilePath = settings.UserProvidedConfigFilePath;
 
                     if (null != userFilePath)
                     {
@@ -146,6 +146,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                         // Unblock reading of the Urls option from configuration, read it, and block it again so that Kestrel
                         // is unable to read this option when it starts.
+#nullable disable
                         manager.IsBlocking = false;
                         string[] urls = ConfigurationHelper.SplitValue(context.Configuration[WebHostDefaults.ServerUrlsKey]);
                         manager.IsBlocking = true;
@@ -155,7 +156,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                         string metricHostingUrls = metricsOptions.Endpoints;
                         string[] metricUrls = ConfigurationHelper.SplitValue(metricHostingUrls);
-
+#nullable restore
                         //Workaround for lack of default certificate. See https://github.com/dotnet/aspnetcore/issues/28120
                         options.Configure(context.Configuration.GetSection("Kestrel")).Load();
 
@@ -175,7 +176,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // Restore the Urls option to the configuration provider that originally provided the value
                     // before it was cleared during the IWebHostBuilder configuration callback.
                     if (!string.IsNullOrEmpty(aspnetUrls) &&
-                        builder.TryGetProvider(WebHostDefaults.ServerUrlsKey, out IConfigurationProvider provider))
+                        builder.TryGetProvider(WebHostDefaults.ServerUrlsKey, out IConfigurationProvider? provider))
                     {
                         provider.Set(WebHostDefaults.ServerUrlsKey, aspnetUrls);
                     }
@@ -237,7 +238,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static void ConfigureMetricsDefaults(IConfigurationBuilder builder)
         {
-            builder.AddInMemoryCollection(new Dictionary<string, string>
+            builder.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.MetricCount)), MetricsOptionsDefaults.MetricCount.ToString()},
                 {ConfigurationPath.Combine(ConfigurationKeys.Metrics, nameof(MetricsOptions.IncludeDefaultProviders)), MetricsOptionsDefaults.IncludeDefaultProviders.ToString()}
@@ -246,7 +247,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static void ConfigureGlobalMetricsDefaults(IConfigurationBuilder builder)
         {
-            builder.AddInMemoryCollection(new Dictionary<string, string>
+            builder.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 {ConfigurationPath.Combine(ConfigurationKeys.GlobalCounter, nameof(GlobalCounterOptions.IntervalSeconds)), GlobalCounterOptionsDefaults.IntervalSeconds.ToString() }
             });

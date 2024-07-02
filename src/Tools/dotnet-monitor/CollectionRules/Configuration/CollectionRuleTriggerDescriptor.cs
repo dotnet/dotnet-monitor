@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         public Type FactoryType => typeof(TFactory);
 
-        public Type OptionsType => null;
+        public Type? OptionsType => null;
 
         public string TriggerName { get; }
     }

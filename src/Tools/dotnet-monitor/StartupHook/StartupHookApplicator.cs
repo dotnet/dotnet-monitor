@@ -49,13 +49,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             }
 
 
-            if (_endpointInfo.RuntimeVersion.Major < 8)
+            if (_endpointInfo?.RuntimeVersion?.Major < 8)
             {
                 _logger.StartupHookInstructions(_endpointInfo.ProcessId, fileInfo.Name, fileInfo.PhysicalPath);
                 return false;
             }
 
-            return await ApplyUsingDiagnosticClientAsync(fileInfo, _endpointInfo, client, token);
+            return await ApplyUsingDiagnosticClientAsync(fileInfo, client, token);
         }
 
         private async Task<IFileInfo> GetFileInfoAsync(string tfm, string fileName, CancellationToken token)
@@ -66,10 +66,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
         }
 
         private static bool IsEnvironmentConfiguredForStartupHook(IFileInfo fileInfo, IDictionary<string, string> env)
-            => env.TryGetValue(ToolIdentifiers.EnvironmentVariables.StartupHooks, out string startupHookPaths) &&
+            => env.TryGetValue(ToolIdentifiers.EnvironmentVariables.StartupHooks, out string? startupHookPaths) &&
             startupHookPaths?.Contains(fileInfo.Name, StringComparison.OrdinalIgnoreCase) == true;
 
-        private async Task<bool> ApplyUsingDiagnosticClientAsync(IFileInfo fileInfo, IEndpointInfo endpointInfo, DiagnosticsClient client, CancellationToken token)
+        private async Task<bool> ApplyUsingDiagnosticClientAsync(IFileInfo fileInfo, DiagnosticsClient client, CancellationToken token)
         {
             try
             {

@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             // Make sure all of the inner exceptions are no longer top-level exceptions.
             foreach (ulong innerExceptionId in instance.InnerExceptionIds)
             {
-                if (_outerExceptionMap.TryGetValue(innerExceptionId, out List<ulong> outerExceptions))
+                if (_outerExceptionMap.TryGetValue(innerExceptionId, out List<ulong>? outerExceptions))
                 {
                     outerExceptions.Add(instance.Id);
                 }
@@ -65,9 +65,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             // exceptions that are not shared with any current top-level exception.
             if (_topLevelExceptions.Count > _topLevelLimit)
             {
-                LinkedListNode<ulong> lastNode = _topLevelExceptions.Last;
+                // The linked list is guaranteed to have an entry due to the above check and constraints on _topLevelLimit
+                LinkedListNode<ulong> lastNode = _topLevelExceptions.Last!;
                 _topLevelExceptions.RemoveLast();
-
                 RemoveIfNoOuterExceptions(lastNode.Value);
             }
         }
@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         {
             // Remove the exception if it no longer belongs to any other exception in the store
             // as an inner exception.
-            if (_outerExceptionMap.TryGetValue(exceptionId, out List<ulong> outerExceptionIds))
+            if (_outerExceptionMap.TryGetValue(exceptionId, out List<ulong>? outerExceptionIds))
             {
                 if (outerExceptionIds.Count == 0)
                 {
@@ -85,11 +85,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
                     // Check the inner exceptions of this exception, decouple them from this exception,
                     // and remove them if they are not shared with any current top-level exception.
-                    if (_innerExceptionMap.Remove(exceptionId, out List<ulong> innerExceptionIds))
+                    if (_innerExceptionMap.Remove(exceptionId, out List<ulong>? innerExceptionIds))
                     {
                         foreach (ulong innerExceptionId in innerExceptionIds)
                         {
-                            if (_outerExceptionMap.TryGetValue(innerExceptionId, out List<ulong> innerOuterExceptionIds))
+                            if (_outerExceptionMap.TryGetValue(innerExceptionId, out List<ulong>? innerOuterExceptionIds))
                             {
                                 innerOuterExceptionIds.Remove(exceptionId);
                             }

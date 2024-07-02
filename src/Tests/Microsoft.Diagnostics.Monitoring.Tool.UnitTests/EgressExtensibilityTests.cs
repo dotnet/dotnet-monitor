@@ -39,7 +39,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             HostBuilderSettings settings = new()
             {
                 SharedConfigDirectory = sharedConfigDir.FullName,
-                UserConfigDirectory = userConfigDir.FullName
+                UserConfigDirectory = userConfigDir.FullName,
+                ContentRootDirectory = AppContext.BaseDirectory
             };
 
             IHost host = TestHostHelper.CreateHost(_outputHelper, rootOptions => { }, host => { }, settings: settings);
@@ -61,7 +62,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             HostBuilderSettings settings = new()
             {
                 SharedConfigDirectory = sharedConfigDir.FullName,
-                UserConfigDirectory = userConfigDir.FullName
+                UserConfigDirectory = userConfigDir.FullName,
+                ContentRootDirectory = AppContext.BaseDirectory
             };
 
             IEgressExtension extension = FindEgressExtension(configDirectory, settings);
@@ -96,7 +98,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             HostBuilderSettings settings = new()
             {
                 SharedConfigDirectory = sharedConfigDir.FullName,
-                UserConfigDirectory = userConfigDir.FullName
+                UserConfigDirectory = userConfigDir.FullName,
+                ContentRootDirectory = AppContext.BaseDirectory
             };
 
             EgressExtension extension = (EgressExtension)FindEgressExtension(ConfigDirectory.UserConfigDirectory, settings);

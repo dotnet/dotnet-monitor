@@ -12,8 +12,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     internal sealed class ValidateEgressProviderAttribute :
         ValidationAttribute
     {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
+            if (!(value is string))
+            {
+                return new ValidationResult(
+                    FormatErrorMessage(validationContext.DisplayName));
+            }
+
             string egressProvider = (string)value;
 
             IEgressService egressService = validationContext.GetRequiredService<IEgressService>();

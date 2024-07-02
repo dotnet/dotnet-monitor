@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -20,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             public string ExecutableName => ExecutableRootName;
 
-            public bool TryGetDefaultInstallationDirectory(out string dotnetRoot)
+            public bool TryGetDefaultInstallationDirectory([NotNullWhen(true)] out string? dotnetRoot)
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
@@ -38,13 +39,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 return false;
             }
 
-            public bool TryGetSelfRegisteredDirectory(out string dotnetRoot)
+            public bool TryGetSelfRegisteredDirectory([NotNullWhen(true)] out string? dotnetRoot)
             {
                 return TryReadFileFirstLine(CurrentArchInstallationFilePath, out dotnetRoot) ||
                     TryReadFileFirstLine(InstallationFilePath, out dotnetRoot);
             }
 
-            private static bool TryReadFileFirstLine(string filePath, out string content)
+            private static bool TryReadFileFirstLine(string filePath, [NotNullWhen(true)] out string? content)
             {
                 try
                 {

@@ -77,7 +77,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 // and where to provide any additional files to dotnet-monitor.
                 // CONSIDER: Include the runtime instance identifier in the path in order to keep
                 // target processes assets separated from one another.
-                string defaultSharedPath = _storageOptions.Value.DefaultSharedPath;
+                string? defaultSharedPath = _storageOptions.Value.DefaultSharedPath;
                 if (!string.IsNullOrEmpty(defaultSharedPath))
                 {
                     // Create sharing directory in case it doesn't exist.
@@ -115,7 +115,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
             Dictionary<string, string> env = await client.GetProcessEnvironmentAsync(cancellationToken);
 
             string runtimeIdentifierSource = RuntimeIdentifierSource.ProcessEnvironment;
-            if (!env.TryGetValue(ToolIdentifiers.EnvironmentVariables.RuntimeIdentifier, out string runtimeIdentifier))
+            if (!env.TryGetValue(ToolIdentifiers.EnvironmentVariables.RuntimeIdentifier, out string? runtimeIdentifier))
             {
                 ProcessInfo processInfo = await client.GetProcessInfoAsync(cancellationToken);
 
@@ -210,6 +210,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
             return profilerFileInfo;
         }
 
+#nullable disable
         private async Task ApplyNotifyOnlyProfilerAsync(DiagnosticsClient client, IFileProvider nativeFileProvider, CancellationToken cancellationToken)
         {
             IFileInfo profilerFileInfo = GetProfilerFileInfo(ProfilerIdentifiers.NotifyOnlyProfiler.LibraryRootFileName, nativeFileProvider);
@@ -231,6 +232,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 ProfilerIdentifiers.MutatingProfiler.Clsid.Guid,
                 cancellationToken);
         }
+#nullable restore
 
         private async Task ApplyProfilerCoreAsync(DiagnosticsClient client, string physicalPath, string moduleEnvVarName, Guid clsid, CancellationToken cancellationToken)
         {

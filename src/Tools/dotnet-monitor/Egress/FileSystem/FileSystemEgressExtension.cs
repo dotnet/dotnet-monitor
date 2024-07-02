@@ -58,7 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
                     WrapException(() => Directory.CreateDirectory(options.IntermediateDirectoryPath));
                 }
 
-                string intermediateFilePath = null;
+                string? intermediateFilePath = null;
                 try
                 {
                     int remainingAttempts = 10;
@@ -92,7 +92,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
                     }
                     catch (Exception ex)
                     {
-                        _logger.IntermediateFileDeletionFailed(intermediateFilePath, ex);
+                        if (intermediateFilePath != null)
+                        {
+                            _logger.IntermediateFileDeletionFailed(intermediateFilePath, ex);
+                        }
                     }
                 }
             }
