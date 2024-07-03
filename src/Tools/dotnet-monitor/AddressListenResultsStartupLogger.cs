@@ -58,6 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private void OnStarted()
         {
             IServerAddressesFeature serverAddresses = _server.Features.Get<IServerAddressesFeature>();
+
             // This logging allows the tool to differentiate which addresses
             // are default address and which are metrics addresses.
 

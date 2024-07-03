@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                 return;
             }
 
-            foreach (var action in options.Actions ?? [])
+            foreach (var action in options.Actions)
             {
                 if (action.Settings is IEgressProviderProperties egressProviderProperties)
                 {

@@ -26,7 +26,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizedUserRequirement requirement)
         {
-            if (context.User?.Identity?.AuthenticationType == AuthConstants.FederationAuthType)
+            if (context.User?.Identity == null)
+            {
+                return Task.CompletedTask;
+            }
+
+            if (context.User.Identity.AuthenticationType == AuthConstants.FederationAuthType)
             {
                 // If we get a FederationAuthType (Bearer from a Jwt Token) we need to check that the user has the specified subject claim.
                 MonitorApiKeyConfiguration configSnapshot = _apiKeyConfig.CurrentValue;
@@ -37,9 +42,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
                 }
 #nullable restore
             }
-            else if ((context.User?.Identity?.AuthenticationType == AuthConstants.NtlmSchema) ||
-                    (context.User?.Identity?.AuthenticationType == AuthConstants.KerberosSchema) ||
-                    (context.User?.Identity?.AuthenticationType == AuthConstants.NegotiateSchema))
+            else if ((context.User.Identity.AuthenticationType == AuthConstants.NtlmSchema) ||
+                    (context.User.Identity.AuthenticationType == AuthConstants.KerberosSchema) ||
+                    (context.User.Identity.AuthenticationType == AuthConstants.NegotiateSchema))
             {
                 // Only supported on Windows
                 if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
