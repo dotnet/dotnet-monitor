@@ -1568,6 +1568,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0} option was not configured correctly..
+        /// </summary>
+        public static string ErrorMessage_OptionNotConfigured {
+            get {
+                return ResourceManager.GetString("ErrorMessage_OptionNotConfigured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The field {0} must be a status code or status code range between 1xx and 5xx. E.g. 200, 400-500..
         /// </summary>
         public static string ErrorMessage_StatusCodesRegularExpressionDoesNotMatch {

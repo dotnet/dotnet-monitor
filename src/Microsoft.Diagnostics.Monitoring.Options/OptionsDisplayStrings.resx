@@ -773,4 +773,7 @@
     <value>The expected value of the 'iss' or Issuer field in the JWT (JSON Web Token).</value>
     <comment>The description provided for the Issuer parameter on MonitorApiKeyOptions.</comment>
   </data>
+  <data name="ErrorMessage_OptionNotConfigured" xml:space="preserve">
+    <value>The '{0} option was not configured correctly.</value>
+  </data>
 </root>

@@ -34,6 +34,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     options.SharedLibraryPath = Path.Combine(options.DefaultSharedPath, DefaultSharedPathLibrariesFolderName);
                 }
             }
+
+            options.Configured = true;
         }
     }
 }

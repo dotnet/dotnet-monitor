@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Options;
 using System;
@@ -36,8 +37,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 throw new ArgumentNullException(nameof(endpointInfo));
             }
 
-            // Guaranteed to not be null by StoragePostConfigureOptions.PostConfigure.
-            string dumpTempFolder = _storageOptions.CurrentValue.DumpTempFolder!;
+            StorageOptions options = _storageOptions.CurrentValue;
+            OptionUtils.ThrowIfNotConfigured<StorageOptions>(options.Configured);
+
+            string dumpTempFolder = options.DumpTempFolder;
 
             // Ensure folder exists before issue command.
             if (!Directory.Exists(dumpTempFolder))
