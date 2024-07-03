@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
             _apiKeyOptions = apiKeyOptions;
         }
 
-        public void PostConfigure(string name, MonitorApiKeyConfiguration options)
+        public void PostConfigure(string? name, MonitorApiKeyConfiguration options)
         {
             MonitorApiKeyOptions sourceOptions = _apiKeyOptions.CurrentValue;
 
@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
                 errors,
                 validateAllProperties: true);
 
-            string jwkJson = null;
+            string? jwkJson = null;
             try
             {
                 jwkJson = Base64UrlEncoder.Decode(sourceOptions.PublicKey);
@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
                         new string[] { nameof(MonitorApiKeyOptions.PublicKey) }));
             }
 
-            JsonWebKey jwk = null;
+            JsonWebKey? jwk = null;
             if (!string.IsNullOrEmpty(jwkJson))
             {
                 try

@@ -29,9 +29,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _logger = logger;
             _server = server;
 
+#nullable disable
             _applicationStartedRegistration = lifetime.ApplicationStarted.Register(
                 l => ((AddressListenResultsStartupLogger)l).OnStarted(),
                 this);
+#nullable restore
         }
 
         public void Dispose()
@@ -52,6 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
+#nullable disable
         private void OnStarted()
         {
             IServerAddressesFeature serverAddresses = _server.Features.Get<IServerAddressesFeature>();
@@ -69,5 +72,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 _logger.BoundMetricsAddress(metricAddress);
             }
         }
+#nullable restore
     }
 }

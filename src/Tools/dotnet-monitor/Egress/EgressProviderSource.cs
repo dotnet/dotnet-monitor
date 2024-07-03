@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private readonly ILogger _logger;
         private readonly IDictionary<string, string> _providerNameToTypeMap;
         public IReadOnlyCollection<string> ProviderNames { get; set; } = new List<string>();
-        public event EventHandler ProvidersChanged;
+        public event EventHandler? ProvidersChanged;
 
         public EgressProviderSource(
             IEgressConfigurationProvider configurationProvider,
@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
         public IEgressExtension GetEgressProvider(string name)
         {
-            if (!_providerNameToTypeMap.TryGetValue(name, out string providerType))
+            if (!_providerNameToTypeMap.TryGetValue(name, out string? providerType))
             {
                 throw new EgressException(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_EgressProviderDoesNotExist, name));
             }
@@ -90,7 +90,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 foreach (IConfigurationSection optionsSection in typeSection.GetChildren())
                 {
                     string providerName = optionsSection.Key;
-                    if (_providerNameToTypeMap.TryGetValue(providerName, out string existingProviderType))
+                    if (_providerNameToTypeMap.TryGetValue(providerName, out string? existingProviderType))
                     {
                         _logger.DuplicateEgressProviderIgnored(providerName, providerType, existingProviderType);
                     }

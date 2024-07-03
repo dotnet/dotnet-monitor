@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             _defaultOptions = defaultOptions;
         }
 
-        public void PostConfigure(string name, CollectionRuleOptions options)
+        public void PostConfigure(string? name, CollectionRuleOptions options)
         {
             ConfigureEgress(options);
             ConfigureLimits(options);
@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
         private void ConfigureEgress(CollectionRuleOptions options)
         {
-            CollectionRuleActionDefaultsOptions actionDefaults = _defaultOptions.CurrentValue.Actions;
+            CollectionRuleActionDefaultsOptions? actionDefaults = _defaultOptions.CurrentValue.Actions;
 
             if (actionDefaults == null)
             {
@@ -45,7 +45,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                 {
                     if (string.IsNullOrEmpty(egressProviderProperties.Egress))
                     {
+#nullable disable
                         egressProviderProperties.Egress = actionDefaults.Egress;
+#nullable restore
                     }
                 }
             }
@@ -53,7 +55,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
         private void ConfigureLimits(CollectionRuleOptions options)
         {
-            CollectionRuleLimitsDefaultsOptions limitsDefaults = _defaultOptions.CurrentValue.Limits;
+            CollectionRuleLimitsDefaultsOptions? limitsDefaults = _defaultOptions.CurrentValue.Limits;
 
             if (limitsDefaults == null)
             {
@@ -90,7 +92,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
         private void ConfigureRequestCounts(CollectionRuleOptions options)
         {
-            CollectionRuleTriggerDefaultsOptions triggerDefaults = _defaultOptions.CurrentValue.Triggers;
+            CollectionRuleTriggerDefaultsOptions? triggerDefaults = _defaultOptions.CurrentValue.Triggers;
 
             if (triggerDefaults == null)
             {
@@ -111,7 +113,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
         private void ConfigureResponseCounts(CollectionRuleOptions options)
         {
-            CollectionRuleTriggerDefaultsOptions triggerDefaults = _defaultOptions.CurrentValue.Triggers;
+            CollectionRuleTriggerDefaultsOptions? triggerDefaults = _defaultOptions.CurrentValue.Triggers;
 
             if (triggerDefaults == null)
             {
@@ -132,7 +134,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
         private void ConfigureSlidingWindowDurations(CollectionRuleOptions options)
         {
-            CollectionRuleTriggerDefaultsOptions triggerDefaults = _defaultOptions.CurrentValue.Triggers;
+            CollectionRuleTriggerDefaultsOptions? triggerDefaults = _defaultOptions.CurrentValue.Triggers;
 
             if (triggerDefaults == null)
             {

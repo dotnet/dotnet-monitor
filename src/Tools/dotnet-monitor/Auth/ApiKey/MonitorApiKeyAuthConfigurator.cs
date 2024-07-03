@@ -17,11 +17,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
     internal sealed class MonitorApiKeyAuthConfigurator : IAuthenticationConfigurator
     {
-        private readonly GeneratedJwtKey _pinnedJwtKey;
+        private readonly GeneratedJwtKey? _pinnedJwtKey;
         private readonly bool _enableNegotiation;
 
 
-        public MonitorApiKeyAuthConfigurator(GeneratedJwtKey pinnedJwtKey = null)
+        public MonitorApiKeyAuthConfigurator(GeneratedJwtKey? pinnedJwtKey = null)
         {
             _pinnedJwtKey = pinnedJwtKey;
 

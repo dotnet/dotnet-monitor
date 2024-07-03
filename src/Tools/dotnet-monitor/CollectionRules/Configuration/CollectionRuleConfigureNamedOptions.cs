@@ -19,6 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             _configurationProvider = configurationProvider;
         }
 
+#nullable disable
         public void Configure(string name, CollectionRuleOptions options)
         {
             IConfigurationSection ruleSection = _configurationProvider.GetCollectionRuleSection(name);
@@ -27,6 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 ruleSection.Bind(options);
             }
         }
+#nullable restore
 
         public void Configure(CollectionRuleOptions options)
         {

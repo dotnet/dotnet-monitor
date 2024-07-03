@@ -67,7 +67,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                         {
                             // Create configuration from object model.
                             MemoryConfigurationSource source = new();
-                            source.InitialData = opts.ToConfigurationValues();
+                            source.InitialData = (IDictionary<string, string?>)opts.ToConfigurationValues(); // Cast the values as nullable, since they are reference types we can safely do this.
                             ConfigurationBuilder builder = new();
                             builder.Add(source);
                             IConfigurationRoot configuration = builder.Build();
@@ -141,8 +141,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
         /// </remarks>
         internal class MachineOutputFormat
         {
-            public AuthenticationOptions Authentication { get; set; }
-            public string AuthorizationHeader { get; set; }
+            public required AuthenticationOptions Authentication { get; set; }
+            public required string AuthorizationHeader { get; set; }
         }
     }
 }

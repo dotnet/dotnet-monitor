@@ -18,9 +18,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         IDiagnosticLifetimeService,
         IAsyncDisposable
     {
-        private Task _executingTask;
+        private Task? _executingTask;
         private object _executionLock = new object();
-        private CancellationTokenSource _stoppingSource;
+        private CancellationTokenSource? _stoppingSource;
 
         public virtual ValueTask DisposeAsync()
         {
@@ -72,7 +72,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
 
             // Signal to the execution that it should stop.
-            _stoppingSource.SafeCancel();
+            _stoppingSource?.SafeCancel();
 
             // Safe await the execution regardless of the completion type,
             // but allow cancelling waiting for it to finish.

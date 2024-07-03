@@ -159,7 +159,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return false;
         }
 
-        private bool Compare(string value)
+        private bool Compare(string? value)
         {
             if (MatchType == DiagProcessFilterMatchType.Exact)
             {
@@ -174,12 +174,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return false;
         }
 
-        private bool ExactCompare(string value)
+        private bool ExactCompare(string? value)
         {
             return string.Equals(Value, value, StringComparison.OrdinalIgnoreCase);
         }
 
-        private bool ContainsCompare(string value)
+        private bool ContainsCompare(string? value)
         {
             return value?.IndexOf(Value, StringComparison.OrdinalIgnoreCase) > -1;
         }

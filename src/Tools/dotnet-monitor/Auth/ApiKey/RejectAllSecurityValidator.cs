@@ -24,7 +24,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 
         public bool CanReadToken(string securityToken) => true;
 
-        public ClaimsPrincipal ValidateToken(string securityToken, TokenValidationParameters validationParameters, out SecurityToken validatedToken)
+        public ClaimsPrincipal ValidateToken(string securityToken, TokenValidationParameters validationParameters, out SecurityToken? validatedToken)
         {
             validatedToken = null;
             throw new InvalidOperationException(Strings.ErrorMessage_ApiKeyNotConfigured);

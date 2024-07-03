@@ -26,14 +26,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizedUserRequirement requirement)
         {
+            if (context.User?.Identity == null)
+            {
+                return Task.CompletedTask;
+            }
+
             if (context.User.Identity.AuthenticationType == AuthConstants.FederationAuthType)
             {
                 // If we get a FederationAuthType (Bearer from a Jwt Token) we need to check that the user has the specified subject claim.
                 MonitorApiKeyConfiguration configSnapshot = _apiKeyConfig.CurrentValue;
+#nullable disable
                 if (context.User.HasClaim(ClaimTypes.NameIdentifier, configSnapshot.Subject))
                 {
                     context.Succeed(requirement);
                 }
+#nullable restore
             }
             else if ((context.User.Identity.AuthenticationType == AuthConstants.NtlmSchema) ||
                     (context.User.Identity.AuthenticationType == AuthConstants.KerberosSchema) ||
@@ -57,7 +64,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
                 }
 
                 using WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
-                Claim currentUserClaim = currentUser.Claims.FirstOrDefault(claim => string.Equals(claim.Type, ClaimTypes.PrimarySid));
+                Claim? currentUserClaim = currentUser.Claims.FirstOrDefault(claim => string.Equals(claim.Type, ClaimTypes.PrimarySid));
                 if ((currentUserClaim != null) && context.User.HasClaim(currentUserClaim.Type, currentUserClaim.Value))
                 {
                     context.Succeed(requirement);

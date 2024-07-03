@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
         IDisposable
     {
         private readonly IOptionsMonitor<MonitorApiKeyConfiguration> _optionsMonitor;
-        private readonly IDisposable _changeRegistration;
+        private readonly IDisposable? _changeRegistration;
 
         private ConfigurationReloadToken _reloadToken = new ConfigurationReloadToken();
 
@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 
         public void Dispose()
         {
-            _changeRegistration.Dispose();
+            _changeRegistration?.Dispose();
         }
 
         private void OnReload(MonitorApiKeyConfiguration options)

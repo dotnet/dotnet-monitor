@@ -9,7 +9,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal sealed class ScopedEndpointInfo : IEndpointInfo
     {
+#nullable disable
         private IEndpointInfo _endpointInfo;
+#nullable restore
 
         public void Set(IEndpointInfo endpointInfo)
         {
@@ -20,13 +22,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public Guid RuntimeInstanceCookie => _endpointInfo.RuntimeInstanceCookie;
 
-        public string CommandLine => _endpointInfo.CommandLine;
+        public string? CommandLine => _endpointInfo.CommandLine;
 
-        public string OperatingSystem => _endpointInfo.OperatingSystem;
+        public string? OperatingSystem => _endpointInfo.OperatingSystem;
 
-        public string ProcessArchitecture => _endpointInfo.ProcessArchitecture;
+        public string? ProcessArchitecture => _endpointInfo.ProcessArchitecture;
 
-        public Version RuntimeVersion => _endpointInfo.RuntimeVersion;
+        public Version? RuntimeVersion => _endpointInfo.RuntimeVersion;
 
         IpcEndpoint IEndpointInfo.Endpoint => _endpointInfo.Endpoint;
 

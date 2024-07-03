@@ -55,6 +55,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         public IConfigurationSection Configuration => _section;
 
-        public event EventHandler RulesChanged;
+        public event EventHandler? RulesChanged;
     }
 }

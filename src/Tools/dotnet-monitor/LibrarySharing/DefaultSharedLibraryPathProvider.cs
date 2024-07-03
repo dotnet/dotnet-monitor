@@ -14,10 +14,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
         /// <summary>
         /// Provides libraries from the 'shared' folder under the .NET Monitor installation.
         /// </summary>
+        #nullable disable
         public DefaultSharedLibraryPathProvider(IOptions<StorageOptions> _storageOptions)
             : this(Path.Combine(AppContext.BaseDirectory, "shared"), ComputeTargetPath(_storageOptions))
         {
         }
+#nullable restore
 
         public DefaultSharedLibraryPathProvider(string sourcePath, string targetPath)
         {
@@ -25,13 +27,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
             TargetPath = targetPath;
         }
 
-        private static string ComputeTargetPath(IOptions<StorageOptions> options)
+        private static string? ComputeTargetPath(IOptions<StorageOptions> options)
         {
-            string rootPath = options.Value.SharedLibraryPath;
+            string? rootPath = options.Value.SharedLibraryPath;
             if (string.IsNullOrEmpty(rootPath))
                 return null;
 
-            string expectedVersion = Assembly.GetExecutingAssembly().GetInformationalVersionString();
+            string? expectedVersion = Assembly.GetExecutingAssembly()?.GetInformationalVersionString();
+            if (expectedVersion == null)
+                return null;
+
             // Remove '+' and commit hash from version string
             int hashSeparatorIndex = expectedVersion.IndexOf('+');
             if (hashSeparatorIndex > 0)

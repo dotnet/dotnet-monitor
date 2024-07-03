@@ -26,6 +26,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             }
         }
 
+#nullable disable
         public static bool TryValidateOptions(Type optionsType, object options, ValidationContext validationContext, ICollection<ValidationResult> results)
         {
             RequiredAttribute requiredAttribute = new();
@@ -58,5 +59,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                 return false;
             }
         }
+#nullable restore
     }
 }

@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         }
 
         /// <inheritdoc/>
-        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, object options)
+        public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, object? options)
         {
             return _factory.Create(endpointInfo, callback);
         }
@@ -48,6 +48,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
             _factory = factory;
         }
 
+#nullable disable
         /// <inheritdoc/>
         public ICollectionRuleTrigger Create(IEndpointInfo endpointInfo, Action callback, object options)
         {
@@ -60,5 +61,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
 
             return _factory.Create(endpointInfo, callback, typedOptions);
         }
+#nullable restore
     }
 }

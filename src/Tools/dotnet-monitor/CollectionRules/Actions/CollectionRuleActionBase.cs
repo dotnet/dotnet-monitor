@@ -16,10 +16,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         private readonly CancellationTokenSource _disposalTokenSource = new();
         private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
+#nullable disable
         private Task<CollectionRuleActionResult> _completionTask;
+#nullable restore
         private long _disposedState;
 
-        protected IEndpointInfo EndpointInfo => ProcessInfo?.EndpointInfo;
+        protected IEndpointInfo EndpointInfo => ProcessInfo.EndpointInfo;
 
         protected IProcessInfo ProcessInfo { get; }
 
@@ -53,7 +55,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             _disposalTokenSource.Dispose();
         }
 
-        public async Task StartAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
+        public async Task StartAsync(CollectionRuleMetadata? collectionRuleMetadata, CancellationToken token)
         {
             ThrowIfDisposed();
 
@@ -82,7 +84,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
 
         private async Task<CollectionRuleActionResult> ExecuteAsync(
-            CollectionRuleMetadata collectionRuleMetadata,
+            CollectionRuleMetadata? collectionRuleMetadata,
             CancellationToken token)
         {
             try
@@ -108,7 +110,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         protected abstract Task<CollectionRuleActionResult> ExecuteCoreAsync(
-            CollectionRuleMetadata collectionRuleMetadata,
+            CollectionRuleMetadata? collectionRuleMetadata,
             CancellationToken token);
     }
 }

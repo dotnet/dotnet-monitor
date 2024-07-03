@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal sealed class ConfigurationJsonWriter : IDisposable
     {
         private readonly Utf8JsonWriter _writer;
-        private IConfiguration _configuration;
+        private IConfiguration? _configuration;
         public ConfigurationJsonWriter(Stream outputStream)
         {
             JsonWriterOptions options = new() { Indented = true };
@@ -39,17 +39,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             using (new JsonObjectContext(_writer))
             {
                 ProcessChildSection(configuration, WebHostDefaults.ServerUrlsKey, skipNotPresent, showSources: showSources);
-                IConfigurationSection kestrel = ProcessChildSection(configuration, "Kestrel", skipNotPresent, includeChildSections: false, showSources: showSources);
+                IConfigurationSection? kestrel = ProcessChildSection(configuration, "Kestrel", skipNotPresent, includeChildSections: false, showSources: showSources);
                 if (kestrel != null)
                 {
                     using (new JsonObjectContext(_writer))
                     {
-                        IConfigurationSection certificates = ProcessChildSection(kestrel, "Certificates", skipNotPresent, includeChildSections: false, showSources: showSources);
+                        IConfigurationSection? certificates = ProcessChildSection(kestrel, "Certificates", skipNotPresent, includeChildSections: false, showSources: showSources);
                         if (certificates != null)
                         {
                             using (new JsonObjectContext(_writer))
                             {
-                                IConfigurationSection defaultCert = ProcessChildSection(certificates, "Default", skipNotPresent, includeChildSections: false, showSources: showSources);
+                                IConfigurationSection? defaultCert = ProcessChildSection(certificates, "Default", skipNotPresent, includeChildSections: false, showSources: showSources);
                                 if (defaultCert != null)
                                 {
                                     using (new JsonObjectContext(_writer))
@@ -84,12 +84,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
                 else
                 {
-                    IConfigurationSection auth = ProcessChildSection(configuration, ConfigurationKeys.Authentication, skipNotPresent, includeChildSections: false, showSources: showSources);
+                    IConfigurationSection? auth = ProcessChildSection(configuration, ConfigurationKeys.Authentication, skipNotPresent, includeChildSections: false, showSources: showSources);
                     if (null != auth)
                     {
                         using (new JsonObjectContext(_writer))
                         {
-                            IConfigurationSection monitorApiKey = ProcessChildSection(auth, ConfigurationKeys.MonitorApiKey, skipNotPresent, includeChildSections: false, showSources: showSources);
+                            IConfigurationSection? monitorApiKey = ProcessChildSection(auth, ConfigurationKeys.MonitorApiKey, skipNotPresent, includeChildSections: false, showSources: showSources);
                             if (null != monitorApiKey)
                             {
                                 using (new JsonObjectContext(_writer))
@@ -102,11 +102,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             }
 
                             // No sensitive information
-                            IConfigurationSection azureAd = ProcessChildSection(auth, ConfigurationKeys.AzureAd, skipNotPresent, includeChildSections: true, showSources: showSources);
+                            IConfigurationSection? azureAd = ProcessChildSection(auth, ConfigurationKeys.AzureAd, skipNotPresent, includeChildSections: true, showSources: showSources);
                         }
                     }
 
-                    IConfigurationSection egress = ProcessChildSection(configuration, ConfigurationKeys.Egress, skipNotPresent, includeChildSections: false, showSources: showSources);
+                    IConfigurationSection? egress = ProcessChildSection(configuration, ConfigurationKeys.Egress, skipNotPresent, includeChildSections: false, showSources: showSources);
                     if (egress != null)
                     {
                         using (new JsonObjectContext(_writer))
@@ -123,13 +123,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             IList<string> processedSectionPaths = new List<string>();
 
             // Redact all the properties since they could include secrets such as storage keys
-            IConfigurationSection propertiesSection = ProcessChildSection(egress, ConfigurationKeys.Egress_Properties, skipNotPresent, includeChildSections: true, redact: true, showSources: showSources);
+            IConfigurationSection? propertiesSection = ProcessChildSection(egress, ConfigurationKeys.Egress_Properties, skipNotPresent, includeChildSections: true, redact: true, showSources: showSources);
             if (null != propertiesSection)
             {
                 processedSectionPaths.Add(propertiesSection.Path);
             }
 
-            IConfigurationSection fileSystemProviderSection = ProcessChildSection(egress, EgressProviderTypes.FileSystem, skipNotPresent, includeChildSections: false, showSources: showSources);
+            IConfigurationSection? fileSystemProviderSection = ProcessChildSection(egress, EgressProviderTypes.FileSystem, skipNotPresent, includeChildSections: false, showSources: showSources);
             if (fileSystemProviderSection != null)
             {
                 processedSectionPaths.Add(fileSystemProviderSection.Path);
@@ -159,7 +159,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
-        private IConfigurationSection ProcessChildSection(IConfiguration parentSection, string key, bool skipNotPresent, bool includeChildSections = true, bool redact = false, bool showSources = false)
+        private IConfigurationSection? ProcessChildSection(IConfiguration parentSection, string key, bool skipNotPresent, bool includeChildSections = true, bool redact = false, bool showSources = false)
         {
             IConfigurationSection section = parentSection.GetSection(key);
             if (!section.Exists())
@@ -238,16 +238,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
             }
         }
-
+#nullable disable
         private string GetConfigurationProvider(IConfigurationSection section, bool showSources)
         {
             if (showSources && _configuration.TryGetProviderAndValue(section.Path, out IConfigurationProvider provider, out _))
             {
                 return provider.ToString();
             }
-
             return string.Empty;
         }
+#nullable restore
 
         private static bool CanWriteChildren(IConfigurationSection section, IEnumerable<IConfigurationSection> children)
         {
@@ -259,9 +259,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return children.Any();
         }
 
-        private void WriteValue(string value, bool redact)
+        private void WriteValue(string? value, bool redact)
         {
-            string valueToWrite = redact ? Strings.Placeholder_Redacted : value;
+            string? valueToWrite = redact ? Strings.Placeholder_Redacted : value;
 
             _writer.WriteStringValue(valueToWrite);
         }

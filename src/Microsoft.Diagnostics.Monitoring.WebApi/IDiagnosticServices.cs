@@ -33,11 +33,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         IEndpointInfo EndpointInfo { get; }
 
-        string CommandLine { get; }
+        string? CommandLine { get; }
 
-        public string OperatingSystem { get; }
+        public string? OperatingSystem { get; }
 
-        public string ProcessArchitecture { get; }
+        public string? ProcessArchitecture { get; }
 
         string ProcessName { get; }
     }
