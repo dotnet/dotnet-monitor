@@ -43,12 +43,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_Providers))]
-        public List<MetricProvider>? Providers { get; set; } = new List<MetricProvider>(0);
+        public List<MetricProvider> Providers { get; set; } = [];
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_Meters))]
-        public List<MeterConfiguration>? Meters { get; set; } = new List<MeterConfiguration>(0);
+        public List<MeterConfiguration> Meters { get; set; } = [];
     }
 
     public class MetricProvider
@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricProvider_CounterNames))]
-        public List<string>? CounterNames { get; set; } = new List<string>(0);
+        public List<string> CounterNames { get; set; } = [];
     }
 
     public class MeterConfiguration
@@ -75,6 +75,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MeterConfiguration_InstrumentNames))]
-        public List<string>? InstrumentNames { get; set; } = new List<string>(0);
+        public List<string> InstrumentNames { get; set; } = [];
     }
 }
