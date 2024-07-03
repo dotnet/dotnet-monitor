@@ -10,9 +10,9 @@ namespace Microsoft.Diagnostics.Monitoring.Options
 {
     internal static class OptionUtils
     {
-        public static void ThrowIfNotConfigured<T>([DoesNotReturnIf(false)] bool IsValid)
+        public static void ThrowIfNotConfigured<T>([DoesNotReturnIf(false)] bool isConfigured)
         {
-            if (!IsValid)
+            if (!isConfigured)
             {
                 throw new InvalidOperationException(string.Format(
                     CultureInfo.InvariantCulture,
