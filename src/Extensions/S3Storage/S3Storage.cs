@@ -20,13 +20,13 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
     internal sealed class S3Storage : IS3Storage
     {
         private readonly IAmazonS3 _s3Client;
-        private readonly string? _bucketName;
+        private readonly string _bucketName;
         private readonly string _objectId;
         private readonly string _contentType;
         private readonly bool _useKmsEncryption;
         private readonly string? _kmsEncryptionKey;
 
-        public S3Storage(IAmazonS3 client, string? bucketName, string objectId, string contentType, bool useKmsEncryption, string? kmsEncryptionKey)
+        public S3Storage(IAmazonS3 client, string bucketName, string objectId, string contentType, bool useKmsEncryption, string? kmsEncryptionKey)
         {
             _s3Client = client;
             _bucketName = bucketName;

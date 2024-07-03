@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_BucketName))]
         [Required(AllowEmptyStrings = false)]
-        public string? BucketName { get; set; }
+        public string BucketName { get; set; } = string.Empty;
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

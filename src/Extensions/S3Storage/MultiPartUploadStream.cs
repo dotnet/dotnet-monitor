@@ -16,7 +16,7 @@ internal sealed class MultiPartUploadStream : Stream
 {
     private readonly byte[] _buffer;
     private int _offset;
-    private readonly string? _bucketName;
+    private readonly string _bucketName;
     private readonly string _objectKey;
     private readonly string _uploadId;
     private readonly IS3Storage _client;
@@ -27,7 +27,7 @@ internal sealed class MultiPartUploadStream : Stream
     public const int MinimumSize = 5 * 1024 * 1024; // the minimum size of an upload part (except for the last part)
     private readonly int _bufferSize;
 
-    public MultiPartUploadStream(IS3Storage client, string? bucketName, string objectKey, string uploadId, int? bufferSize)
+    public MultiPartUploadStream(IS3Storage client, string bucketName, string objectKey, string uploadId, int? bufferSize)
     {
         _bufferSize = Math.Max(bufferSize ?? 0, MinimumSize);
         _buffer = ArrayPool<byte>.Shared.Rent(_bufferSize);
