@@ -774,6 +774,6 @@
     <comment>The description provided for the Issuer parameter on MonitorApiKeyOptions.</comment>
   </data>
   <data name="ErrorMessage_OptionNotConfigured" xml:space="preserve">
-    <value>The '{0} option was not configured correctly.</value>
+    <value>The '{0}' option was not configured correctly.</value>
   </data>
 </root>

@@ -1568,7 +1568,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The &apos;{0} option was not configured correctly..
+        ///   Looks up a localized string similar to The &apos;{0}&apos; option was not configured correctly..
         /// </summary>
         public static string ErrorMessage_OptionNotConfigured {
             get {
