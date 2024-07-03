@@ -4,7 +4,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class ValidationResultExtensions

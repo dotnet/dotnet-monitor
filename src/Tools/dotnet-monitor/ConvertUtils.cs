@@ -4,13 +4,12 @@
 #nullable enable
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Diagnostics.Tools.Monitor;
 
 internal static class ConvertUtils
 {
-    public static string ToString([NotNull] object value, IFormatProvider? provider)
+    public static string ToString(object value, IFormatProvider? provider)
     {
         return Convert.ToString(value, provider)!; // Since value is not null this will never return null.
     }
