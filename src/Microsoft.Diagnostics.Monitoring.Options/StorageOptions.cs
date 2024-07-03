@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         internal bool Configured
         {
-            [MemberNotNullWhen(true, nameof(DumpTempFolder), nameof(SharedLibraryPath))]
+            [MemberNotNullWhen(true, nameof(DumpTempFolder))]
             get;
             set;
         }
