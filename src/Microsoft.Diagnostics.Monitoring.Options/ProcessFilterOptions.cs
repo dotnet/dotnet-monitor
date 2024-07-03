@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterOptions_Filters))]
-        public List<ProcessFilterDescriptor>? Filters { get; set; } = new List<ProcessFilterDescriptor>(0);
+        public List<ProcessFilterDescriptor> Filters { get; set; } = [];
     }
 
     public sealed partial class ProcessFilterDescriptor

@@ -19,20 +19,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
                 return configurationSettings;
             }
 
-            if (configuration.Include != null)
+            foreach (var filter in configuration.Include)
             {
-                foreach (var filter in configuration.Include)
-                {
-                    configurationSettings.Include.Add(ConvertExceptionFilter(filter));
-                }
+                configurationSettings.Include.Add(ConvertExceptionFilter(filter));
             }
 
-            if (configuration.Exclude != null)
+            foreach (var filter in configuration.Exclude)
             {
-                foreach (var filter in configuration.Exclude)
-                {
-                    configurationSettings.Exclude.Add(ConvertExceptionFilter(filter));
-                }
+                configurationSettings.Exclude.Add(ConvertExceptionFilter(filter));
             }
 
             return configurationSettings;
