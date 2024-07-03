@@ -8,7 +8,7 @@ using System.Globalization;
 
 namespace Microsoft.Diagnostics.Monitoring.Options
 {
-    internal static class OptionUtils
+    internal static class OptionsUtils
     {
         public static void ThrowIfNotConfigured<T>([DoesNotReturnIf(false)] bool isConfigured)
         {

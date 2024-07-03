@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             StorageOptions options = _storageOptions.CurrentValue;
-            OptionUtils.ThrowIfNotConfigured<StorageOptions>(options.Configured);
+            OptionsUtils.ThrowIfNotConfigured<StorageOptions>(options.Configured);
 
             string dumpTempFolder = options.DumpTempFolder;
 
