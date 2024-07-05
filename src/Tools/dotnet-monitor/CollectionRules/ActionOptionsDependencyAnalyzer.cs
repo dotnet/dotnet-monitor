@@ -7,7 +7,6 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Text;
 
@@ -161,14 +160,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 ProcessId = _ruleContext.EndpointInfo?.ProcessId ?? 0,
                 CommandLine = commandLine,
                 ProcessName = _ruleContext.ProcessInfo?.ProcessName ?? string.Empty,
-                Hostname = Dns.GetHostName(),
-                Timestamp = _ruleContext.TimeProvider.GetUtcNow(),
+                MonitorHostName = _ruleContext.HostInfo.HostName,
+                Timestamp = _ruleContext.HostInfo.TimeProvider.GetUtcNow(),
             });
 
             return settings;
         }
-
-
 
         private void EnsureDependencies()
         {
@@ -285,7 +282,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             return ConfigurationTokenParser.GetPropertiesFromSettings(options.Settings, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
         }
-
-
     }
 }

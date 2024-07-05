@@ -70,8 +70,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                             collectionRuleName,
                             optionsMonitor.Get(collectionRuleName),
                             processInfo,
+                            HostInfo.GetCurrent(timeProvider),
                             logger,
-                            timeProvider,
                             callbacks.NotifyActionsThrottled);
 
                         await using CollectionRulePipeline pipeline = new(

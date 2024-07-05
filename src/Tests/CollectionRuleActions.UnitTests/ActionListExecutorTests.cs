@@ -54,7 +54,7 @@ namespace CollectionRuleActions.UnitTests
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
                 TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, timeProvider);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, HostInfo.GetCurrent(timeProvider), logger);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;
@@ -95,7 +95,7 @@ namespace CollectionRuleActions.UnitTests
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
                 TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, timeProvider);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, HostInfo.GetCurrent(timeProvider), logger);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;
@@ -141,7 +141,7 @@ namespace CollectionRuleActions.UnitTests
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
                 TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, timeProvider);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, HostInfo.GetCurrent(timeProvider), logger);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;
