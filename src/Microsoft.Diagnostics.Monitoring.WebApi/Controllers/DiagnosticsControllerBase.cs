@@ -96,7 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return await SendToEgress(new EgressOperation(
                     operation,
                     providerName,
-                    null, // Use the default artifact name
+                    default, // Use default artifact name
                     processInfo,
                     scope,
                     tags),
