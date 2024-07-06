@@ -7,7 +7,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     internal static class AssemblyExtensions
     {
-        public static string GetInformationalVersionString(this Assembly assembly)
+        public static string? GetInformationalVersionString(this Assembly assembly)
         {
             if (assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
                 is AssemblyInformationalVersionAttribute assemblyVersionAttribute)
@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             else
             {
-                return assembly.GetName().Version.ToString();
+                return assembly.GetName().Version?.ToString();
             }
         }
     }

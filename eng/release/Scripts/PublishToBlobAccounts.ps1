@@ -3,22 +3,19 @@ Param(
     [Parameter(Mandatory=$true)][string]$AzCopyPath,
     [Parameter(Mandatory=$true)][string]$BuildVersion,
     [Parameter(Mandatory=$true)][string]$ReleaseVersion,
-    [Parameter(Mandatory=$true)][string]$DotnetStageAccountKey,
     [Parameter(Mandatory=$true)][string]$DestinationAccountName,
-    [Parameter(Mandatory=$true)][string]$DestinationSasTokenBase64,
-    [Parameter(Mandatory=$true)][string]$ChecksumsAccountName,
-    [Parameter(Mandatory=$true)][string]$ChecksumsSasTokenBase64
+    [Parameter(Mandatory=$true)][string]$ChecksumsAccountName
 )
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
 
+# Use the OAuth token that was obtained by the az cli when it logged in.
+$Env:AZCOPY_AUTO_LOGIN_TYPE="AZCLI"
+
 $sourceAccountName = 'dotnetstage'
 $sourceContainerName = 'dotnet-monitor'
 $destinationContainerName = 'dotnet'
-
-$destinationSasToken = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($DestinationSasTokenBase64))
-$checksumsSasToken = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($ChecksumsSasTokenBase64))
 
 function Generate-Source-Uri{
     [CmdletBinding()]
@@ -38,34 +35,11 @@ function Generate-Destination-Uri{
     return "https://$AccountName.blob.core.windows.net/$destinationContainerName/diagnostics/monitor/$ReleaseVersion"
 }
 
-function Generate-Sas-Token{
-    [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true)][string]$StorageAccountName,
-        [Parameter(Mandatory=$true)][string]$ContainerName,
-        [Parameter(Mandatory=$true)][string]$AccountKey,
-        [Parameter(Mandatory=$true)][string]$Permissions
-    )
-
-    $context = New-AzStorageContext `
-        -StorageAccountName $StorageAccountName `
-        -StorageAccountKey $AccountKey
-
-    return New-AzStorageContainerSASToken `
-        -Container $ContainerName `
-        -Context $context `
-        -Permission $Permissions `
-        -StartTime (Get-Date).AddMinutes(-15.0) `
-        -ExpiryTime (Get-Date).AddHours(1.0)
-}
-
 function Transfer-File{
     [CmdletBinding(SupportsShouldProcess)]
     Param(
         [Parameter(Mandatory=$true)][string]$From,
-        [Parameter(Mandatory=$true)][string]$To,
-        [Parameter(Mandatory=$true)][string]$FromToken,
-        [Parameter(Mandatory=$true)][string]$ToToken
+        [Parameter(Mandatory=$true)][string]$To
     )
 
     Write-Host "Copy $From -> $To"
@@ -73,8 +47,8 @@ function Transfer-File{
     if ($From -eq $to) {
         Write-Host 'Skipping copy because source and destination are the same.'
     } else {
-        [array]$azCopyArgs = "$From$FromToken"
-        $azCopyArgs += "$To$ToToken"
+        [array]$azCopyArgs = "$From"
+        $azCopyArgs += "$To"
         $azCopyArgs += "--s2s-preserve-properties"
         $azCopyArgs += "--s2s-preserve-access-tier=false"
         if ($WhatIfPreference) {
@@ -84,14 +58,9 @@ function Transfer-File{
     }
 }
 
-# Create source URI and SAS token
+# Create source URI
 $sourceUri = Generate-Source-Uri `
     -AssetType 'Blob'
-$soureSasToken = Generate-Sas-Token `
-    -StorageAccountName $sourceAccountName `
-    -ContainerName $sourceContainerName `
-    -AccountKey $DotnetStageAccountKey `
-    -Permissions 'rl'
 
 # Create destination URI
 $destinationUri = Generate-Destination-Uri `
@@ -100,9 +69,7 @@ $destinationUri = Generate-Destination-Uri `
 # Copy files to destination account
 Transfer-File `
     -From $sourceUri `
-    -FromToken $soureSasToken `
     -To $destinationUri `
-    -ToToken $destinationSasToken `
     -WhatIf:$WhatIfPreference
 
 # Create source checksums URI
@@ -116,7 +83,5 @@ $checksumsDestinationUri = Generate-Destination-Uri `
 # Copy checksums to checksum account
 Transfer-File `
     -From $checksumsSourceUri `
-    -FromToken $soureSasToken `
     -To $checksumsDestinationUri `
-    -ToToken $checksumsSasToken `
     -WhatIf:$WhatIfPreference

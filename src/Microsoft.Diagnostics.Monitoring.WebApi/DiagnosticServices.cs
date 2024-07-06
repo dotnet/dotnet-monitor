@@ -26,14 +26,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _logger = logger;
         }
 
-        public async Task<IEnumerable<IProcessInfo>> GetProcessesAsync(DiagProcessFilter processFilterConfig, CancellationToken token)
+        public async Task<IEnumerable<IProcessInfo>> GetProcessesAsync(DiagProcessFilter? processFilterConfig, CancellationToken token)
         {
-            IEnumerable<IProcessInfo> processes = null;
+            IEnumerable<IProcessInfo> processes = [];
 
             try
             {
                 using CancellationTokenSource extendedInfoCancellation = CancellationTokenSource.CreateLinkedTokenSource(token);
-                IList<Task<IProcessInfo>> processInfoTasks = new List<Task<IProcessInfo>>();
+                IList<Task<IProcessInfo?>> processInfoTasks = new List<Task<IProcessInfo?>>();
                 foreach (IEndpointInfo endpointInfo in await _endpointInfoSource.GetEndpointInfoAsync(token))
                 {
                     // CONSIDER: Can this processing be pushed into the IEndpointInfoSource implementation and cached
@@ -71,7 +71,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 processes = processInfoTasks
                     .Where(t => t.Result != null)
-                    .Select(t => t.Result);
+                    .Select(t => t.Result)
+                    .Cast<IProcessInfo>();
             }
             catch (UnauthorizedAccessException)
             {

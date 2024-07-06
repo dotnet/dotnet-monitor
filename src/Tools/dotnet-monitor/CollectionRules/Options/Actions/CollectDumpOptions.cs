@@ -35,11 +35,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 #if !UNITTEST && !SCHEMAGEN
         [ValidateEgressProvider]
 #endif
-        public string Egress { get; set; }
+        public string Egress { get; set; } = string.Empty;
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_ArtifactName))]
-        public string ArtifactName { get; set; }
+        public string? ArtifactName { get; set; }
     }
 }

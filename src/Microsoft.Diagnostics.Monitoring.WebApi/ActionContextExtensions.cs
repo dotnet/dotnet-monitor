@@ -17,9 +17,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         private static readonly ExecutionResult<T> _empty = new ExecutionResult<T>();
 
-        public Exception Exception { get; private set; }
-        public T Result { get; private set; }
-        public ProblemDetails ProblemDetails { get; private set; }
+        public Exception? Exception { get; private set; }
+        public T? Result { get; private set; }
+        public ProblemDetails? ProblemDetails { get; private set; }
 
         private ExecutionResult() { }
 
@@ -95,7 +95,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         public static Task ProblemAsync(this ActionContext context, BadRequestObjectResult result)
         {
-            if (context.HttpContext.Features.Get<IHttpResponseFeature>().HasStarted)
+            if (context.HttpContext.Features.Get<IHttpResponseFeature>()?.HasStarted == true)
             {
                 // If already started writing response, do not rewrite
                 // as this will throw an InvalidOperationException.

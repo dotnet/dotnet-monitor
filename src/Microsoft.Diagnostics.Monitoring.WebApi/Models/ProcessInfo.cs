@@ -15,15 +15,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public Guid Uid { get; set; }
 
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [JsonPropertyName("commandLine")]
-        public string CommandLine { get; set; }
+        public string? CommandLine { get; set; }
 
         [JsonPropertyName("operatingSystem")]
-        public string OperatingSystem { get; set; }
+        public string? OperatingSystem { get; set; }
 
         [JsonPropertyName("processArchitecture")]
-        public string ProcessArchitecture { get; set; }
+        public string? ProcessArchitecture { get; set; }
     }
 }
