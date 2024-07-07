@@ -259,7 +259,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name of the created artifact..
+        ///   Looks up a localized string similar to The name of the generated artifact..
         /// </summary>
         public static string DisplayAttributeDescription_CollectArtifactOptions_ArtifactName {
             get {
