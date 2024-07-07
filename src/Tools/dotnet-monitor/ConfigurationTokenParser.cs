@@ -40,7 +40,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private const string MonitorInfoReference = "Monitor";
         private const string ProcessInfoReference = "Process";
-        private const string TriggerInfoReference = "Trigger";
 
         private const string RuntimeId = "RuntimeId";
         private const string ProcessId = "ProcessId";
@@ -54,7 +53,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static readonly string ProcessNameReference = CreateTokenReference(ProcessInfoReference, ProcessName);
         public static readonly string CommandLineReference = CreateTokenReference(ProcessInfoReference, CommandLine);
         public static readonly string HostNameReference = CreateTokenReference(MonitorInfoReference, HostName);
-        public static readonly string UnixTimeReference = CreateTokenReference(TriggerInfoReference, UnixTime);
+        public static readonly string UnixTimeReference = CreateTokenReference(MonitorInfoReference, UnixTime);
 
         public ConfigurationTokenParser(ILogger logger)
         {

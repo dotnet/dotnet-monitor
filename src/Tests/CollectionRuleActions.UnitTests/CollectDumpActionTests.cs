@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -45,7 +46,17 @@ namespace CollectionRuleActions.UnitTests
                 outputHelper: _outputHelper);
         }
 
-        private async Task CollectDumpAction_SuccessCore(TargetFrameworkMoniker tfm, DumpType dumpType)
+        [Fact]
+        public Task CollectDumpAction_CustomArtifactName()
+        {
+            // Code path should be unchanged between TFM and dump type
+            return RetryUtilities.RetryAsync(
+                func: () => CollectDumpAction_SuccessCore(TargetFrameworkMoniker.Current, DumpType.Mini, artifactName: Guid.NewGuid().ToString("n")),
+                shouldRetry: (Exception ex) => ex is TaskCanceledException,
+                outputHelper: _outputHelper);
+        }
+
+        private async Task CollectDumpAction_SuccessCore(TargetFrameworkMoniker tfm, DumpType dumpType, string artifactName = null)
         {
             // MacOS dumps inconsistently segfault the runtime on .NET 5: https://github.com/dotnet/dotnet-monitor/issues/174
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && tfm == TargetFrameworkMoniker.Net50)
@@ -59,8 +70,12 @@ namespace CollectionRuleActions.UnitTests
             {
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
-                rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider, dumpType)
+                CollectionRuleOptions options = rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectDumpAction(ActionTestsConstants.ExpectedEgressProvider, o =>
+                    {
+                        o.ArtifactName = artifactName;
+                        o.Type = dumpType;
+                    })
                     .SetStartupTrigger();
             }, async host =>
             {
@@ -84,7 +99,7 @@ namespace CollectionRuleActions.UnitTests
 
                     CollectionRuleActionResult result = await ActionTestsHelper.ExecuteAndDisposeAsync(action, CommonTestTimeouts.DumpTimeout);
 
-                    string egressPath = ActionTestsHelper.ValidateEgressPath(result);
+                    string egressPath = ActionTestsHelper.ValidateEgressPath(result, artifactName);
 
                     using FileStream dumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
                     Assert.NotNull(dumpStream);

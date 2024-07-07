@@ -62,10 +62,10 @@ namespace CollectionRuleActions.UnitTests
         [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public async Task CollectTraceAction_ProvidersSuccess(TargetFrameworkMoniker tfm)
         {
-            List<EventPipeProvider> ExpectedProviders = new()
-            {
+            List<EventPipeProvider> ExpectedProviders =
+            [
                 new() { Name = "Microsoft-Extensions-Logging" }
-            };
+            ];
 
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
@@ -79,13 +79,30 @@ namespace CollectionRuleActions.UnitTests
                         options.Duration = TimeSpan.FromSeconds(2);
                     })
                     .SetStartupTrigger();
-            }, async host =>
-            {
-                await PerformTrace(host, tfm);
-            });
+            }, host => PerformTrace(host, tfm));
         }
 
-        private async Task PerformTrace(IHost host, TargetFrameworkMoniker tfm)
+        [Fact]
+        public async Task CollectTraceAction_CustomArtifactName()
+        {
+            string artifactName = Guid.NewGuid().ToString("n");
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
+
+                rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddCollectTraceAction(TraceProfile.Logs, ActionTestsConstants.ExpectedEgressProvider, options =>
+                    {
+                        options.ArtifactName = artifactName;
+                        options.Duration = TimeSpan.FromSeconds(2);
+                    })
+                    .SetStartupTrigger();
+            }, host => PerformTrace(host, TargetFrameworkMoniker.Current, artifactName));
+        }
+
+        private async Task PerformTrace(IHost host, TargetFrameworkMoniker tfm, string artifactName = null)
         {
             CollectTraceOptions options = ActionTestsHelper.GetActionOptions<CollectTraceOptions>(host, DefaultRuleName);
 
@@ -107,7 +124,7 @@ namespace CollectionRuleActions.UnitTests
 
                 CollectionRuleActionResult result = await ActionTestsHelper.ExecuteAndDisposeAsync(action, CommonTestTimeouts.TraceTimeout);
 
-                string egressPath = ActionTestsHelper.ValidateEgressPath(result);
+                string egressPath = ActionTestsHelper.ValidateEgressPath(result, artifactName);
 
                 using FileStream traceStream = new(egressPath, FileMode.Open, FileAccess.Read);
                 Assert.NotNull(traceStream);

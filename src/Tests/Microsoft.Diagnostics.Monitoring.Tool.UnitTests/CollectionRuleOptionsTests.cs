@@ -945,7 +945,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddCollectDumpAction(ExpectedEgressProvider, ExpectedDumpType);
+                        .AddCollectDumpAction(ExpectedEgressProvider, o => o.Type = ExpectedDumpType);
                     rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp");
                 },
                 ruleOptions =>
@@ -962,7 +962,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddCollectDumpAction(UnknownEgressName, (DumpType)20);
+                        .AddCollectDumpAction(UnknownEgressName, o => o.Type = (DumpType)20);
                 },
                 ex =>
                 {
@@ -1661,7 +1661,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
                         .AddLoadProfilerAction(
-                        configureOptions: opts =>
+                        callback: opts =>
                         {
                             opts.Path = ExpectedTargetPath;
                             opts.Clsid = ExpectedClsid;
@@ -1684,7 +1684,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
                         .AddLoadProfilerAction(
-                        configureOptions: opts =>
+                        callback: opts =>
                         {
                             opts.Path = null;
                             opts.Clsid = ExpectedClsid;
@@ -1703,7 +1703,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
                         .AddLoadProfilerAction(
-                        configureOptions: opts =>
+                        callback: opts =>
                         {
                             opts.Path = string.Empty;
                             opts.Clsid = ExpectedClsid;
@@ -1722,7 +1722,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
                         .AddLoadProfilerAction(
-                        configureOptions: opts =>
+                        callback: opts =>
                         {
                             opts.Path = "   "; // White space is not allowed by the [Required] Attribute
                             opts.Clsid = ExpectedClsid;
@@ -1746,7 +1746,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
                         .AddLoadProfilerAction(
-                        configureOptions: opts =>
+                        callback: opts =>
                         {
                             opts.Path = ExpectedTargetPath;
                             opts.Clsid = Guid.Empty;
@@ -2056,7 +2056,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     rootOptions.CreateCollectionRule(DefaultRuleName)
                         .SetStartupTrigger()
-                        .AddCollectExceptionsAction(ExpectedEgressProvider, ExpectedFormat, ExpectedFilters);
+                        .AddCollectExceptionsAction(ExpectedEgressProvider, o =>
+                        {
+                            o.Filters = ExpectedFilters;
+                            o.Format = ExpectedFormat;
+                        });
                     rootOptions.AddFileSystemEgress(ExpectedEgressProvider, "/tmp")
                         .EnableExceptions();
                 },

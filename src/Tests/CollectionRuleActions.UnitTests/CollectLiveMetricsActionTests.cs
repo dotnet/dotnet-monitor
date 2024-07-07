@@ -38,7 +38,15 @@ namespace CollectionRuleActions.UnitTests
 
         [Theory]
         [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
-        public async Task CollectLiveMetricsAction_CustomProviders(TargetFrameworkMoniker tfm)
+        public Task CollectLiveMetricsAction_CustomProviders(TargetFrameworkMoniker tfm) =>
+            CollectLiveMetricsAction_CustomProvidersCore(tfm);
+
+        [Theory]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
+        public Task CollectLiveMetricsAction_CustomArtifactName(TargetFrameworkMoniker tfm) =>
+            CollectLiveMetricsAction_CustomProvidersCore(tfm, artifactName: Guid.NewGuid().ToString("n"));
+
+        private async Task CollectLiveMetricsAction_CustomProvidersCore(TargetFrameworkMoniker tfm, string artifactName = null)
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
@@ -55,16 +63,17 @@ namespace CollectionRuleActions.UnitTests
                 rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddCollectLiveMetricsAction(ActionTestsConstants.ExpectedEgressProvider, options =>
                     {
+                        options.ArtifactName = artifactName;
                         options.Duration = TimeSpan.FromSeconds(CommonTestTimeouts.LiveMetricsDurationSeconds);
                         options.IncludeDefaultProviders = false;
-                        options.Providers = new[]
-                        {
+                        options.Providers =
+                        [
                             new EventMetricsProvider
                             {
                                 ProviderName = providerName,
                                 CounterNames = counterNames,
                             }
-                        };
+                        ];
                     })
                     .SetStartupTrigger();
             }, async host =>
@@ -89,7 +98,7 @@ namespace CollectionRuleActions.UnitTests
 
                     CollectionRuleActionResult result = await ActionTestsHelper.ExecuteAndDisposeAsync(action, CommonTestTimeouts.LiveMetricsTimeout);
 
-                    string egressPath = ActionTestsHelper.ValidateEgressPath(result);
+                    string egressPath = ActionTestsHelper.ValidateEgressPath(result, artifactName);
 
                     using FileStream liveMetricsStream = new(egressPath, FileMode.Open, FileAccess.Read);
                     Assert.NotNull(liveMetricsStream);

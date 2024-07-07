@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
@@ -55,28 +54,27 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
-        public static CollectionRuleOptions AddCollectDumpAction(this CollectionRuleOptions options, string egress = null, DumpType? type = null)
+        public static CollectionRuleOptions AddCollectDumpAction(this CollectionRuleOptions options, string egress = null, Action<CollectDumpOptions> callback = null)
         {
             return options.AddAction(
                 KnownCollectionRuleActions.CollectDump,
                 actionOptions =>
                 {
-                    CollectDumpOptions collectDumpOptions = new();
-                    collectDumpOptions.Egress = egress;
-                    collectDumpOptions.Type = type;
+                    CollectDumpOptions collectDumpOptions = new() { Egress = egress };
+                    callback?.Invoke(collectDumpOptions);
 
                     actionOptions.Settings = collectDumpOptions;
                 });
         }
 
-        public static CollectionRuleOptions AddCollectGCDumpAction(this CollectionRuleOptions options, string egress)
+        public static CollectionRuleOptions AddCollectGCDumpAction(this CollectionRuleOptions options, string egress, Action<CollectGCDumpOptions> callback = null)
         {
             return options.AddAction(
                 KnownCollectionRuleActions.CollectGCDump,
                 actionOptions =>
                 {
-                    CollectGCDumpOptions collectGCDumpOptions = new();
-                    collectGCDumpOptions.Egress = egress;
+                    CollectGCDumpOptions collectGCDumpOptions = new() { Egress = egress };
+                    callback?.Invoke(collectGCDumpOptions);
 
                     actionOptions.Settings = collectGCDumpOptions;
                 });
@@ -88,9 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 KnownCollectionRuleActions.CollectLogs,
                 actionOptions =>
                 {
-                    CollectLogsOptions collectLogsOptions = new();
-                    collectLogsOptions.Egress = egress;
-
+                    CollectLogsOptions collectLogsOptions = new() { Egress = egress };
                     callback?.Invoke(collectLogsOptions);
 
                     actionOptions.Settings = collectLogsOptions;
@@ -103,9 +99,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 KnownCollectionRuleActions.CollectTrace,
                 actionOptions =>
                 {
-                    CollectTraceOptions collectTraceOptions = new();
-                    collectTraceOptions.Profile = profile;
-                    collectTraceOptions.Egress = egress;
+                    CollectTraceOptions collectTraceOptions = new()
+                    {
+                        Egress = egress,
+                        Profile = profile,
+                    };
 
                     callback?.Invoke(collectTraceOptions);
 
@@ -119,9 +117,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 KnownCollectionRuleActions.CollectTrace,
                 actionOptions =>
                 {
-                    CollectTraceOptions collectTraceOptions = new();
-                    collectTraceOptions.Providers = new List<EventPipeProvider>(providers);
-                    collectTraceOptions.Egress = egress;
+                    CollectTraceOptions collectTraceOptions = new()
+                    {
+                        Egress = egress,
+                        Providers = new List<EventPipeProvider>(providers),
+                    };
 
                     callback?.Invoke(collectTraceOptions);
 
@@ -135,24 +135,22 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 KnownCollectionRuleActions.CollectLiveMetrics,
                 actionOptions =>
                 {
-                    CollectLiveMetricsOptions collectLiveMetricsOptions = new();
-                    collectLiveMetricsOptions.Egress = egress;
-
+                    CollectLiveMetricsOptions collectLiveMetricsOptions = new() { Egress = egress };
                     callback?.Invoke(collectLiveMetricsOptions);
 
                     actionOptions.Settings = collectLiveMetricsOptions;
                 });
         }
 
-        public static CollectionRuleOptions AddCollectStacksAction(this CollectionRuleOptions options, string egress, CallStackFormat? format = null)
+        public static CollectionRuleOptions AddCollectStacksAction(this CollectionRuleOptions options, string egress, Action<CollectStacksOptions> callback = null)
         {
             return options.AddAction(
                 KnownCollectionRuleActions.CollectStacks,
                 actionOptions =>
                 {
-                    CollectStacksOptions collectStacksOptions = new();
-                    collectStacksOptions.Egress = egress;
-                    collectStacksOptions.Format = format;
+                    CollectStacksOptions collectStacksOptions = new() { Egress = egress };
+                    callback?.Invoke(collectStacksOptions);
+
                     actionOptions.Settings = collectStacksOptions;
                 });
         }
@@ -186,14 +184,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
-        public static CollectionRuleOptions AddLoadProfilerAction(this CollectionRuleOptions options, Action<LoadProfilerOptions> configureOptions)
+        public static CollectionRuleOptions AddLoadProfilerAction(this CollectionRuleOptions options, Action<LoadProfilerOptions> callback = null)
         {
             return options.AddAction(
                  KnownCollectionRuleActions.LoadProfiler,
                  callback: actionOptions =>
                  {
                      LoadProfilerOptions loadProfilerOptions = new();
-                     configureOptions?.Invoke(loadProfilerOptions);
+                     callback?.Invoke(loadProfilerOptions);
                      actionOptions.Settings = loadProfilerOptions;
                  });
         }
@@ -227,16 +225,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                  });
         }
 
-        public static CollectionRuleOptions AddCollectExceptionsAction(this CollectionRuleOptions options, string egress, ExceptionFormat? format = null, ExceptionsConfiguration filters = null)
+        public static CollectionRuleOptions AddCollectExceptionsAction(this CollectionRuleOptions options, string egress, Action<CollectExceptionsOptions> callback = null)
         {
             return options.AddAction(
                 KnownCollectionRuleActions.CollectExceptions,
                 actionOptions =>
                 {
-                    CollectExceptionsOptions collectExceptionsOptions = new();
-                    collectExceptionsOptions.Egress = egress;
-                    collectExceptionsOptions.Format = format;
-                    collectExceptionsOptions.Filters = filters;
+                    CollectExceptionsOptions collectExceptionsOptions = new() { Egress = egress };
+                    callback?.Invoke(collectExceptionsOptions);
 
                     actionOptions.Settings = collectExceptionsOptions;
                 });

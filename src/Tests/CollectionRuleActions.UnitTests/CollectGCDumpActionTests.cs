@@ -51,7 +51,18 @@ namespace CollectionRuleActions.UnitTests
                 outputHelper: _outputHelper);
         }
 
-        private async Task CollectGCDumpAction_SuccessCore(TargetFrameworkMoniker tfm)
+        [Fact]
+        public Task CollectGCDumpAction_CustomArtifactName()
+        {
+            return RetryUtilities.RetryAsync(
+                func: () => CollectGCDumpAction_SuccessCore(TargetFrameworkMoniker.Current, artifactName: Guid.NewGuid().ToString("n")),
+                shouldRetry: (Exception ex) => (
+                    ex is TaskCanceledException ||
+                    (ex is CollectionRuleActionException && ex.InnerException is InvalidOperationException)),
+                outputHelper: _outputHelper);
+        }
+
+        private async Task CollectGCDumpAction_SuccessCore(TargetFrameworkMoniker tfm, string artifactName = null)
         {
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
@@ -60,7 +71,7 @@ namespace CollectionRuleActions.UnitTests
                 rootOptions.AddFileSystemEgress(ActionTestsConstants.ExpectedEgressProvider, tempDirectory.FullName);
 
                 rootOptions.CreateCollectionRule(DefaultRuleName)
-                    .AddCollectGCDumpAction(ActionTestsConstants.ExpectedEgressProvider)
+                    .AddCollectGCDumpAction(ActionTestsConstants.ExpectedEgressProvider, o => o.ArtifactName = artifactName)
                     .SetStartupTrigger();
             }, async host =>
             {
@@ -84,7 +95,7 @@ namespace CollectionRuleActions.UnitTests
 
                     CollectionRuleActionResult result = await ActionTestsHelper.ExecuteAndDisposeAsync(action, CommonTestTimeouts.GCDumpTimeout);
 
-                    string egressPath = ActionTestsHelper.ValidateEgressPath(result);
+                    string egressPath = ActionTestsHelper.ValidateEgressPath(result, artifactName);
 
                     using FileStream gcdumpStream = new(egressPath, FileMode.Open, FileAccess.Read);
                     Assert.NotNull(gcdumpStream);
