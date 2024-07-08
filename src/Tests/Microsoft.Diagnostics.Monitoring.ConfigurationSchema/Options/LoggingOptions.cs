@@ -14,27 +14,27 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_LogLevel))]
-        public IDictionary<string, LogLevel?> LogLevel { get; set; }
+        public IDictionary<string, LogLevel?>? LogLevel { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_Console))]
-        public ConsoleLoggerOptions Console { get; set; }
+        public ConsoleLoggerOptions? Console { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_EventLog))]
-        public LogLevelOptions EventLog { get; set; }
+        public LogLevelOptions? EventLog { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_Debug))]
-        public LogLevelOptions Debug { get; set; }
+        public LogLevelOptions? Debug { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_EventSource))]
-        public LogLevelOptions EventSource { get; set; }
+        public LogLevelOptions? EventSource { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

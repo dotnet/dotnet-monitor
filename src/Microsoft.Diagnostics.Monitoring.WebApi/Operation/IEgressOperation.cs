@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public ISet<string> Tags { get; }
 
-        public string EgressProviderName { get; }
+        public string? EgressProviderName { get; }
 
         public EgressProcessInfo ProcessInfo { get; }
 

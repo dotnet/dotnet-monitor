@@ -22,16 +22,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public OperationState Status { get; set; }
 
         [JsonPropertyName("process")]
-        public OperationProcessInfo Process { get; set; }
+        public OperationProcessInfo? Process { get; set; }
 
         [JsonPropertyName("egressProviderName")]
-        public string EgressProviderName { get; set; }
+        public string? EgressProviderName { get; set; }
 
         [JsonPropertyName("isStoppable")]
         public bool IsStoppable { get; set; }
 
         [JsonPropertyName("tags")]
-        public ISet<string> Tags { get; set; }
+        public ISet<string>? Tags { get; set; }
     }
 
     /// <summary>
@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public Guid Uid { get; set; }
 
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
     }
 
     /// <summary>
@@ -58,11 +58,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         //Success cases
         [JsonPropertyName("resourceLocation")]
-        public string ResourceLocation { get; set; }
+        public string? ResourceLocation { get; set; }
 
         //Failure cases
         [JsonPropertyName("error")]
-        public OperationError Error { get; set; }
+        public OperationError? Error { get; set; }
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -79,9 +79,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     public class OperationError
     {
         [JsonPropertyName("code")]
-        public string Code { get; set; }
+        public string? Code { get; set; }
 
         [JsonPropertyName("message")]
-        public string Message { get; set; }
+        public string? Message { get; set; }
     }
 }
