@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private static MetricsPipelineSettings CreateSettings(bool includeDefaults,
             int durationSeconds,
             float counterInterval,
-            IDictionary<string, GlobalProviderOptions> intervalMap,
+            IDictionary<string, GlobalProviderOptions>? intervalMap,
             int maxHistograms,
             int maxTimeSeries,
             Func<List<EventPipeCounterGroup>> createCounterGroups)
@@ -68,12 +68,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 eventPipeCounterGroups.Add(new EventPipeCounterGroup { ProviderName = MonitoringSourceConfiguration.GrpcAspNetCoreServer, Type = CounterGroupType.EventCounter });
             }
 
-            foreach (EventPipeCounterGroup counterGroup in eventPipeCounterGroups)
+            if (intervalMap != null)
             {
-                if (intervalMap.TryGetValue(counterGroup.ProviderName, out GlobalProviderOptions providerInterval))
+                foreach (EventPipeCounterGroup counterGroup in eventPipeCounterGroups)
                 {
-                    Debug.Assert(counterGroup.IntervalSeconds == null, "Unexpected value for provider interval");
-                    counterGroup.IntervalSeconds = providerInterval.IntervalSeconds;
+                    if (intervalMap.TryGetValue(counterGroup.ProviderName, out GlobalProviderOptions? providerInterval))
+                    {
+                        Debug.Assert(counterGroup.IntervalSeconds == null, "Unexpected value for provider interval");
+                        counterGroup.IntervalSeconds = providerInterval.IntervalSeconds;
+                    }
                 }
             }
 
@@ -87,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             };
         }
 
-        private static List<EventPipeCounterGroup> ConvertCounterGroups(IList<MetricProvider> providers, IList<MeterConfiguration> meters)
+        private static List<EventPipeCounterGroup> ConvertCounterGroups(IList<MetricProvider>? providers, IList<MeterConfiguration>? meters)
         {
             List<EventPipeCounterGroup> counterGroups = new();
 
@@ -120,7 +123,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return counterGroups;
         }
 
-        private static List<EventPipeCounterGroup> ConvertCounterGroups(IList<Models.EventMetricsProvider> providers, IList<Models.EventMetricsMeter> meters)
+        private static List<EventPipeCounterGroup> ConvertCounterGroups(IList<Models.EventMetricsProvider>? providers, IList<Models.EventMetricsMeter>? meters)
         {
             List<EventPipeCounterGroup> counterGroups = new();
 

@@ -15,7 +15,6 @@ jobs:
     variables:
     - _BuildConfig: Release
     - _SignType: real
-    - group: DotNetBuilds storage account read tokens
     steps:
     - task: DownloadPipelineArtifact@2
       displayName: Download Binaries
@@ -35,6 +34,8 @@ jobs:
     - template: /eng/pipelines/steps/setup-nuget-sources.yml@self
       parameters:
         osGroup: Windows
+    # Populate internal runtime access variables
+    - template: /eng/common/templates/steps/enable-internal-runtimes.yml
     - script: >-
         $(Build.SourcesDirectory)/eng/cipacksignpublish.cmd
         /p:TeamName=$(_TeamName)

@@ -60,12 +60,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 frameModel.ModuleName = StacksFormatter.NativeFrame;
                 frameModel.TypeName = StacksFormatter.NativeFrame;
             }
-            else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
+            else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData? functionData))
             {
                 frameModel.MethodToken = functionData.MethodToken;
                 frameModel.ModuleName = NameFormatter.GetModuleName(cache, functionData.ModuleId);
 
-                if (cache.ModuleData.TryGetValue(functionData.ModuleId, out ModuleData moduleData))
+                if (cache.ModuleData.TryGetValue(functionData.ModuleId, out ModuleData? moduleData))
                 {
                     frameModel.ModuleVersionId = moduleData.ModuleVersionId;
                 }

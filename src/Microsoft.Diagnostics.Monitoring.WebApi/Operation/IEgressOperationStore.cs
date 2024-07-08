@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         void CompleteOperation(Guid operationId, ExecutionResult<EgressResult> result);
 
-        IEnumerable<Models.OperationSummary> GetOperations(ProcessKey? processKey, string tags);
+        IEnumerable<Models.OperationSummary> GetOperations(ProcessKey? processKey, string? tags);
 
         Models.OperationStatus GetOperationStatus(Guid operationId);
     }
