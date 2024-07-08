@@ -8,13 +8,13 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 {
     public static class LoggingExtensions
     {
-        private static readonly Action<ILogger, string, Exception> _egressProviderInvokeStreamAction =
+        private static readonly Action<ILogger, string, Exception?> _egressProviderInvokeStreamAction =
             LoggerMessage.Define<string>(
                 eventId: LoggingEventIds.EgressProviderInvokeStreamAction.EventId(),
                 logLevel: LogLevel.Debug,
                 formatString: Strings.LogFormatString_EgressProviderInvokeStreamAction);
 
-        private static readonly Action<ILogger, string, string, Exception> _egressProviderSavedStream =
+        private static readonly Action<ILogger, string, string, Exception?> _egressProviderSavedStream =
             LoggerMessage.Define<string, string>(
                 eventId: LoggingEventIds.EgressProviderSavedStream.EventId(),
                 logLevel: LogLevel.Debug,

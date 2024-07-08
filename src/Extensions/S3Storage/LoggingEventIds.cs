@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
     {
         public static EventId EventId(this LoggingEventIds enumVal)
         {
-            string name = Enum.GetName(typeof(LoggingEventIds), enumVal);
+            string? name = Enum.GetName(typeof(LoggingEventIds), enumVal);
             int id = enumVal.Id();
             return new EventId(id, name);
         }
