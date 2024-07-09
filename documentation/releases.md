@@ -8,7 +8,7 @@
 | Version | Original Release Date | Latest Patch Version | Patch Release Date | End of Support | Runtime Frameworks |
 | --- | --- | --- | --- | --- | --- |
 | 8.0 | November 14, 2023 | [8.0.2](https://github.com/dotnet/dotnet-monitor/releases/tag/v8.0.2) | May 14, 2024 |  | net8.0 |
-| 6.3 | October 11, 2022 | [6.3.6](https://github.com/dotnet/dotnet-monitor/releases/tag/v6.3.6) | May 14, 2024 |  | net6.0<br/>netcoreapp3.1 |
+| 6.3 | October 11, 2022 | [6.3.7](https://github.com/dotnet/dotnet-monitor/releases/tag/v6.3.7) | July 9, 2024 |  | net6.0<br/>netcoreapp3.1 |
 
 
 ## Out of support versions
