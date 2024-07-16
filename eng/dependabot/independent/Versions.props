@@ -11,8 +11,8 @@
     <MicrosoftExtensionsLoggingAbstractionsVersion>6.0.4</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>6.0.0</MicrosoftExtensionsLoggingConsoleVersion>
     <MicrosoftExtensionsLoggingEventSourceVersion>6.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
-    <MicrosoftIdentityModelTokensVersion>7.6.3</MicrosoftIdentityModelTokensVersion>
-    <MicrosoftIdentityModelValidatorsVersion>7.6.3</MicrosoftIdentityModelValidatorsVersion>
+    <MicrosoftIdentityModelTokensVersion>8.0.0</MicrosoftIdentityModelTokensVersion>
+    <MicrosoftIdentityModelValidatorsVersion>8.0.0</MicrosoftIdentityModelValidatorsVersion>
     <MicrosoftOpenApiReadersVersion>1.6.15</MicrosoftOpenApiReadersVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
