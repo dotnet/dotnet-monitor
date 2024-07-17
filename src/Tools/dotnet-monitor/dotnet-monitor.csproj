@@ -109,7 +109,7 @@
     </ItemGroup>
     <ItemGroup>
       <!-- Pack the file if it exists. -->
-      <TfmSpecificPackageFile Include="@(AdditionalPackageFile-&gt;Exists())" />
+      <TfmSpecificPackageFile Include="@(AdditionalPackageFile->Exists())" />
       <!-- Pack startup hook files -->
       <TfmSpecificPackageFile Include="$(StartupHookLibraryPath)">
         <PackagePath>tools/$(TargetFramework)/any/shared/any/$(StartupHookTargetFramework)</PackagePath>
