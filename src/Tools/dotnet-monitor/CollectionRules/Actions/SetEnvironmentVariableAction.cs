@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
-                CollectionRuleMetadata collectionRuleMetadata,
+                CollectionRuleMetadata? collectionRuleMetadata,
                 CancellationToken token)
             {
                 DiagnosticsClient client = new DiagnosticsClient(EndpointInfo.Endpoint);

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Extensions.Configuration;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 #if !NET7_0_OR_GREATER
 using System.Reflection;
@@ -11,7 +12,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class ConfigurationExtensions
     {
-        public static bool TryGetProvider(this IConfigurationBuilder builder, string key, out IConfigurationProvider provider)
+        public static bool TryGetProvider(this IConfigurationBuilder builder, string key, [NotNullWhen(true)] out IConfigurationProvider? provider)
         {
             foreach (IConfigurationSource source in builder.Sources.Reverse())
             {
@@ -27,7 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return false;
         }
 
-        public static bool TryGetProviderAndValue(this IConfiguration configuration, string key, out IConfigurationProvider provider, out string value)
+        public static bool TryGetProviderAndValue(this IConfiguration configuration, string key, [NotNullWhen(true)] out IConfigurationProvider? provider, out string? value)
         {
             if (configuration is IConfigurationRoot configurationRoot)
             {
@@ -39,7 +40,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return false;
         }
 
-        public static bool TryGetProviderAndValue(this IConfigurationRoot configurationRoot, string key, out IConfigurationProvider provider, out string value)
+        public static bool TryGetProviderAndValue(this IConfigurationRoot configurationRoot, string key, [NotNullWhen(true)] out IConfigurationProvider? provider, out string? value)
         {
             foreach (IConfigurationProvider candidate in configurationRoot.Providers.Reverse())
             {

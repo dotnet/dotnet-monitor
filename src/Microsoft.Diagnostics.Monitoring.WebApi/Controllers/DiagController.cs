@@ -547,7 +547,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [HttpGet("collectionrules/{collectionRuleName}", Name = nameof(GetCollectionRuleDetailedDescription))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(CollectionRuleDetailedDescription), StatusCodes.Status200OK)]
-        public Task<ActionResult<CollectionRuleDetailedDescription>> GetCollectionRuleDetailedDescription(
+        public Task<ActionResult<CollectionRuleDetailedDescription?>> GetCollectionRuleDetailedDescription(
             string collectionRuleName,
             [FromQuery]
             int? pid = null,
@@ -556,7 +556,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             string? name = null)
         {
-            return InvokeForProcess<CollectionRuleDetailedDescription>(processInfo =>
+            return InvokeForProcess<CollectionRuleDetailedDescription?>(processInfo =>
             {
                 return _collectionRuleService.GetCollectionRuleDetailedDescription(collectionRuleName, processInfo.EndpointInfo);
             },
