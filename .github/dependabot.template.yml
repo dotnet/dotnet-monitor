@@ -40,6 +40,14 @@ updates:
     ignore:
       - dependency-name: "Microsoft.Extensions.*"
         update-types: [ "version-update:semver-major" ]
+#@ if branch.majorVersion == "6":
+      #! The IdentityModel libraries bring in System.Text.Json 8+ starting with 7.7.0.
+      #! Keep the major and minor version pinned to avoid incompatible versions.
+      - dependency-name: "Microsoft.IdentityModel.*"
+        update-types:
+        - "version-update:semver-major"
+        - "version-update:semver-minor"
+#@ end
       - dependency-name: "Moq"
     commit-message:
       prefix: #@ commit_prefix
