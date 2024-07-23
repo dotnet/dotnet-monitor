@@ -10,6 +10,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public static bool IsSuccess([NotNullWhen(false)] this ValidationResult? result)
         {
+            // ValidationResult.Success is null, and a null value indicates there are no validation errors.
             return result == ValidationResult.Success;
         }
     }
