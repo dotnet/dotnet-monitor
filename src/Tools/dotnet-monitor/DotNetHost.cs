@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -27,7 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private static string GetPath()
         {
             // If current executable is already dotnet, return its path
-            string executablePath = Environment.ProcessPath;
+            string? executablePath = Environment.ProcessPath;
             if (!string.IsNullOrEmpty(executablePath) &&
                 executablePath.EndsWith(Helper.ExecutableName, StringComparison.OrdinalIgnoreCase))
             {
@@ -39,7 +40,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             // Get dotnet root from environment variable
             // TODO: check architecture specific environment variables (e.g. *_X86, *_X64, *_ARM64)
-            string dotnetRoot = Environment.GetEnvironmentVariable("DOTNET_ROOT");
+            string? dotnetRoot = Environment.GetEnvironmentVariable("DOTNET_ROOT");
 
             if (string.IsNullOrEmpty(dotnetRoot) &&
                 !Helper.TryGetSelfRegisteredDirectory(out dotnetRoot) &&
@@ -58,9 +59,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private interface IDotNetHostHelper
         {
-            bool TryGetSelfRegisteredDirectory(out string dotnetRoot);
+            bool TryGetSelfRegisteredDirectory([NotNullWhen(true)] out string? dotnetRoot);
 
-            bool TryGetDefaultInstallationDirectory(out string dotnetRoot);
+            bool TryGetDefaultInstallationDirectory([NotNullWhen(true)] out string? dotnetRoot);
 
             string ExecutableName { get; }
         }

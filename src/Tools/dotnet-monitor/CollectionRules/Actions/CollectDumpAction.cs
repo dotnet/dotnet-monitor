@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 _dumpOperationFactory = serviceProvider.GetRequiredService<IDumpOperationFactory>();
             }
 
-            protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata collectionRuleMetadata)
+            protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata? collectionRuleMetadata)
             {
                 DumpType dumpType = Options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
                 string egressProvider = Options.Egress;

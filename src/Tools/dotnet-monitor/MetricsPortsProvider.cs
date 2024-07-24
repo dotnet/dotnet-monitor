@@ -14,7 +14,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal class MetricsPortsProvider : IMetricsPortsProvider
     {
         private readonly AddressListenResults _results;
+#nullable disable
         private readonly IServerAddressesFeature _serverAddresses;
+#nullable restore
 
         public MetricsPortsProvider(AddressListenResults results, IServer server)
         {

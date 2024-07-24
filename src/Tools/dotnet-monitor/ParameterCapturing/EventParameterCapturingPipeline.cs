@@ -19,15 +19,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 {
     internal sealed class CapturingFailedArgs
     {
-        public Guid RequestId { get; set; }
-        public ParameterCapturingEvents.CapturingFailedReason Reason { get; set; }
-        public string Details { get; set; }
+        public required Guid RequestId { get; set; }
+        public required ParameterCapturingEvents.CapturingFailedReason Reason { get; set; }
+        public required string Details { get; set; }
     }
 
     internal sealed class ServiceStateUpdateArgs
     {
-        public ParameterCapturingEvents.ServiceState ServiceState { get; set; }
-        public string Details { get; set; }
+        public required ParameterCapturingEvents.ServiceState ServiceState { get; set; }
+        public required string Details { get; set; }
     }
 
     internal sealed class EventParameterCapturingPipeline : EventSourcePipeline<EventParameterCapturingPipelineSettings>
@@ -65,19 +65,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 case "Capturing/Start":
                     {
                         Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
-                        Settings.OnStartedCapturing.Invoke(this, requestId);
+                        Settings.OnStartedCapturing?.Invoke(this, requestId);
                         break;
                     }
                 case "Capturing/Stop":
                     {
                         Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturingActivityPayload.RequestId);
-                        Settings.OnStoppedCapturing.Invoke(this, requestId);
+                        Settings.OnStoppedCapturing?.Invoke(this, requestId);
                         break;
                     }
                 case "UnknownRequestId":
                     {
                         Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.UnknownRequestIdPayload.RequestId);
-                        Settings.OnUnknownRequestId.Invoke(this, requestId);
+                        Settings.OnUnknownRequestId?.Invoke(this, requestId);
                         break;
                     }
                 case "FailedToCapture":
@@ -86,7 +86,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                         ParameterCapturingEvents.CapturingFailedReason reason = traceEvent.GetPayload<ParameterCapturingEvents.CapturingFailedReason>(ParameterCapturingEvents.CapturingFailedPayloads.Reason);
                         string details = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturingFailedPayloads.Details);
 
-                        Settings.OnCapturingFailed.Invoke(this, new CapturingFailedArgs()
+                        Settings.OnCapturingFailed?.Invoke(this, new CapturingFailedArgs()
                         {
                             RequestId = requestId,
                             Reason = reason,
@@ -98,7 +98,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                     {
                         ParameterCapturingEvents.ServiceState state = traceEvent.GetPayload<ParameterCapturingEvents.ServiceState>(ParameterCapturingEvents.ServiceStatePayload.State);
                         string details = traceEvent.GetPayload<string>(ParameterCapturingEvents.ServiceStatePayload.Details);
-                        Settings.OnServiceStateUpdate.Invoke(this, new ServiceStateUpdateArgs()
+                        Settings.OnServiceStateUpdate?.Invoke(this, new ServiceStateUpdateArgs()
                         {
                             ServiceState = state,
                             Details = details
@@ -166,9 +166,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                         Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturedParametersStopPayloads.RequestId);
                         Guid captureId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturedParametersStopPayloads.CaptureId);
 
-                        if (_parameterBuilder.TryFinalizeParameters(captureId, out ICapturedParameters capturedParameters))
+                        if (_parameterBuilder.TryFinalizeParameters(captureId, out ICapturedParameters? capturedParameters))
                         {
-                            Settings.OnParametersCaptured.Invoke(this, capturedParameters);
+                            Settings.OnParametersCaptured?.Invoke(this, capturedParameters);
                         }
                         break;
                     }
@@ -189,14 +189,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
     internal sealed class EventParameterCapturingPipelineSettings : EventSourcePipelineSettings
     {
-        public EventHandler<Guid> OnStartedCapturing;
-        public EventHandler<Guid> OnStoppedCapturing;
-        public EventHandler<Guid> OnUnknownRequestId;
+        public EventHandler<Guid>? OnStartedCapturing;
+        public EventHandler<Guid>? OnStoppedCapturing;
+        public EventHandler<Guid>? OnUnknownRequestId;
 
-        public EventHandler<CapturingFailedArgs> OnCapturingFailed;
-        public EventHandler<ServiceStateUpdateArgs> OnServiceStateUpdate;
+        public EventHandler<CapturingFailedArgs>? OnCapturingFailed;
+        public EventHandler<ServiceStateUpdateArgs>? OnServiceStateUpdate;
 
-        public EventHandler<ICapturedParameters> OnParametersCaptured;
+        public EventHandler<ICapturedParameters>? OnParametersCaptured;
 
         public EventParameterCapturingPipelineSettings()
         {

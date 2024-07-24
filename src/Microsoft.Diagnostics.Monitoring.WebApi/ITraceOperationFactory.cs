@@ -29,6 +29,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             TimeSpan duration,
             string providerName,
             string eventName,
-            IDictionary<string, string> payloadFilter);
+            IDictionary<string, string>? payloadFilter);
     }
 }
