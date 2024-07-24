@@ -57,10 +57,8 @@
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta4.24324.3</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>8.0.0-preview.24373.1</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>8.0.0-preview.24373.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
-    <!-- dotnet/installer references -->
-    <MicrosoftDotnetSdkInternalVersion>8.0.103-servicing.24114.15</MicrosoftDotnetSdkInternalVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>8.0.0-preview.24372.1</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>8.0.0-preview.24372.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/roslyn-analyzers -->
     <MicrosoftCodeAnalysisNetAnalyzersVersion>9.0.0-preview.24324.1</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
@@ -69,7 +67,7 @@
     <!-- dotnet/sdk references -->
     <VSRedistCommonNetCoreSdkPlaceholderx6490Version>9.0.100-preview.7.24374.4</VSRedistCommonNetCoreSdkPlaceholderx6490Version>
     <!-- dotnet/symstore references -->
-    <MicrosoftFileFormatsVersion>1.0.537301</MicrosoftFileFormatsVersion>
+    <MicrosoftFileFormatsVersion>1.0.537201</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
