@@ -82,7 +82,7 @@ jobs:
           # Don't fail if the automatic merge fails, we'll try to handle it later
           git merge "$base_branch" --strategy=ort --strategy-option=theirs || MERGE_RESULT=$?
 
-          # If the merge failed it's likely do a (modify/delete) conflict. Try to auto-resolve it by accepting the results.
+          # If the merge failed it's likely due to a (modify/delete) conflict. Try to auto-resolve it by accepting the results.
           # If we've deviated more than that the below commands will fail and it requires manual intervention.
           if [ $MERGE_RESULT -ne 0 ]; then
               for match in $ourFiles; do
