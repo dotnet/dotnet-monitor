@@ -72,14 +72,26 @@ jobs:
 
       - name: Sync branch
         run: |
+          ourFiles=$(perl -ne '/^([^\s]+)\s+merge=ours/gm && print "$1 "' .gitattributes)
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # Activate the ours merge driver to respect any branch specific files
           git config merge.ours.driver true
-          git merge "$base_branch" --strategy=ort --strategy-option=theirs
+          MERGE_RESULT=0
+          # Don't fail if the automatic merge fails, we'll try to handle it later
+          git merge "$base_branch" --strategy=ort --strategy-option=theirs || MERGE_RESULT=$?
 
-          matches=$(perl -ne '/^([^\s]+)\s+merge=ours/gm && print "$1 "' .gitattributes)
-          for match in $matches; do
+          # If the merge failed it's likely do a (modify/delete) conflict. Try to auto-resolve it by accepting the results.
+          # If we've deviated more than that the below commands will fail and it requires manual intervention.
+          if [ $MERGE_RESULT -ne 0 ]; then
+              for match in $ourFiles; do
+                  git add -- "$match"
+              done
+              git commit --no-edit
+          fi
+
+          for match in $ourFiles; do
               git checkout --no-overlay "$target_branch" -- "$match"
           done
         env:
