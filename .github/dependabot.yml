@@ -166,6 +166,10 @@ updates:
   - dependency-name: Microsoft.Extensions.*
     update-types:
     - version-update:semver-major
+  - dependency-name: Microsoft.IdentityModel.*
+    update-types:
+    - version-update:semver-major
+    - version-update:semver-minor
   - dependency-name: Moq
   commit-message:
     prefix: '[release/6.x] '
