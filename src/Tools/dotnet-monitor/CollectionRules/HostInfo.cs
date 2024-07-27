@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public TimeProvider TimeProvider { get; }
 
-        public static HostInfo GetCurrent(TimeProvider timeProvider = null) =>
+        public static HostInfo GetCurrent(TimeProvider? timeProvider = null) =>
             new HostInfo(Dns.GetHostName(), timeProvider ?? TimeProvider.System);
     }
 }

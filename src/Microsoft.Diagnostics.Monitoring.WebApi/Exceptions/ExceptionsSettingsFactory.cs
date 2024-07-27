@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
     /// </summary>
     internal static class ExceptionsSettingsFactory
     {
-        public static ExceptionsConfigurationSettings ConvertExceptionsConfiguration(ExceptionsConfiguration configuration)
+        public static ExceptionsConfigurationSettings ConvertExceptionsConfiguration(ExceptionsConfiguration? configuration)
         {
             ExceptionsConfigurationSettings configurationSettings = new();
 

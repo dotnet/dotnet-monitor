@@ -26,6 +26,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _options = options.Value;
         }
 
+#nullable disable
         public void Log()
         {
             switch (_options.GetConnectionMode())
@@ -48,5 +49,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     break;
             }
         }
+#nullable restore
     }
 }

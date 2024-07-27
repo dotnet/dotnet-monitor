@@ -74,6 +74,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\LoggingEventIds.cs" Link="LoggingEventIds.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\OutputFormat.cs" Link="Options\OutputFormat.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\RootOptions.cs" Link="Options\RootOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\ConvertUtils.cs" Link="ConvertUtils.cs" />
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon\ExecuteActionTestHelper.cs" Link="ExecuteActionTestHelper.cs" />
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon\Options\CollectionRuleOptionsExtensions.cs" Link="Options\CollectionRuleOptionsExtensions.cs" />
   </ItemGroup>

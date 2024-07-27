@@ -47,13 +47,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
             }
 
-            protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata collectionRuleMetadata)
+            protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata? collectionRuleMetadata)
             {
                 TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectTraceOptionsDefaults.Duration));
 
                 MonitoringSourceConfiguration configuration;
 
-                TraceEventFilter stoppingEvent = null;
+                TraceEventFilter? stoppingEvent = null;
 
                 if (Options.Profile.HasValue)
                 {
@@ -62,7 +62,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 }
                 else
                 {
+#nullable disable
                     EventPipeProvider[] optionsProviders = Options.Providers.ToArray();
+#nullable restore
                     bool requestRundown = Options.RequestRundown.GetValueOrDefault(CollectTraceOptionsDefaults.RequestRundown);
                     int bufferSizeMegabytes = Options.BufferSizeMegabytes.GetValueOrDefault(CollectTraceOptionsDefaults.BufferSizeMegabytes);
                     configuration = TraceUtilities.GetTraceConfiguration(optionsProviders, requestRundown, bufferSizeMegabytes);

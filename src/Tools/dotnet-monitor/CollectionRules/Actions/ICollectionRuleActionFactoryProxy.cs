@@ -20,6 +20,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         /// Executes the underlying action with the specified parameters, verifying
         /// that the passed options are of the correct type.
         /// </summary>
-        ICollectionRuleAction Create(IProcessInfo endpointInfo, object options);
+        ICollectionRuleAction Create(IProcessInfo endpointInfo, object? options);
     }
 }

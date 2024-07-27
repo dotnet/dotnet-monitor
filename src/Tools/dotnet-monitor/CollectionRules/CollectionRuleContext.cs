@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 {
     internal class CollectionRuleContext
     {
-        public CollectionRuleContext(string name, CollectionRuleOptions options, IProcessInfo processInfo, HostInfo hostInfo, ILogger logger, Action throttledCallback = null)
+        public CollectionRuleContext(string name, CollectionRuleOptions options, IProcessInfo processInfo, HostInfo hostInfo, ILogger logger, Action? throttledCallback = null)
         {
             // TODO: Allow null processInfo to allow tests to pass, but this should be provided by
             // tests since it will be required by all aspects in the future. For example, the ActionListExecutor
@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public IProcessInfo ProcessInfo { get; }
 
-        public IEndpointInfo EndpointInfo => ProcessInfo?.EndpointInfo;
+        public IEndpointInfo EndpointInfo => ProcessInfo.EndpointInfo;
 
         public HostInfo HostInfo { get; }
 
@@ -37,6 +37,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public string Name { get; }
 
-        public Action ThrottledCallback { get; }
+        public Action? ThrottledCallback { get; }
     }
 }

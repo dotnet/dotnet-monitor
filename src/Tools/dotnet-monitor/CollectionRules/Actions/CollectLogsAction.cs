@@ -45,12 +45,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
             }
 
-            protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata collectionRuleMetadata)
+            protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata? collectionRuleMetadata)
             {
                 TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectLogsOptionsDefaults.Duration));
                 bool useAppFilters = Options.UseAppFilters.GetValueOrDefault(CollectLogsOptionsDefaults.UseAppFilters);
                 LogLevel defaultLevel = Options.DefaultLevel.GetValueOrDefault(CollectLogsOptionsDefaults.DefaultLevel);
-                Dictionary<string, LogLevel?> filterSpecs = Options.FilterSpecs;
+                Dictionary<string, LogLevel?>? filterSpecs = Options.FilterSpecs;
                 LogFormat logFormat = Options.Format.GetValueOrDefault(CollectLogsOptionsDefaults.Format);
 
                 var settings = new EventLogsPipelineSettings()

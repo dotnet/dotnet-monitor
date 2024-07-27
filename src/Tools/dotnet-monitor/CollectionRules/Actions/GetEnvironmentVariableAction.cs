@@ -53,14 +53,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
-                CollectionRuleMetadata collectionRuleMetadata,
+                CollectionRuleMetadata? collectionRuleMetadata,
                 CancellationToken token)
             {
                 DiagnosticsClient client = new DiagnosticsClient(EndpointInfo.Endpoint);
 
                 _logger.GettingEnvironmentVariable(_options.Name, EndpointInfo.ProcessId);
                 Dictionary<string, string> envBlock = await client.GetProcessEnvironmentAsync(token);
-                if (!envBlock.TryGetValue(Options.Name, out string value))
+                if (!envBlock.TryGetValue(Options.Name, out string? value))
                 {
                     throw new InvalidOperationException(
                             string.Format(

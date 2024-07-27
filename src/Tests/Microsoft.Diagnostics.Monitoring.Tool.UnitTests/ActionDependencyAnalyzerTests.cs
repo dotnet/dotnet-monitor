@@ -107,7 +107,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
                 TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, HostInfo.GetCurrent(timeProvider), logger);
+                Guid instanceId = Guid.NewGuid();
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), HostInfo.GetCurrent(timeProvider), logger);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;
@@ -237,7 +238,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
                 TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, HostInfo.GetCurrent(timeProvider), logger);
+                Guid instanceId = Guid.NewGuid();
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), HostInfo.GetCurrent(timeProvider), logger);
 
                 ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
                 analyzer.GetActionDependencies(1);
