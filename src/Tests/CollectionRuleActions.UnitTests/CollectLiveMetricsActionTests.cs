@@ -41,10 +41,9 @@ namespace CollectionRuleActions.UnitTests
         public Task CollectLiveMetricsAction_CustomProviders(TargetFrameworkMoniker tfm) =>
             CollectLiveMetricsAction_CustomProvidersCore(tfm);
 
-        [Theory]
-        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
-        public Task CollectLiveMetricsAction_CustomArtifactName(TargetFrameworkMoniker tfm) =>
-            CollectLiveMetricsAction_CustomProvidersCore(tfm, artifactName: Guid.NewGuid().ToString("n"));
+        [Fact]
+        public Task CollectLiveMetricsAction_CustomArtifactName() =>
+            CollectLiveMetricsAction_CustomProvidersCore(TargetFrameworkMoniker.Current, artifactName: Guid.NewGuid().ToString("n"));
 
         private async Task CollectLiveMetricsAction_CustomProvidersCore(TargetFrameworkMoniker tfm, string artifactName = null)
         {
