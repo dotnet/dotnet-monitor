@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 #nullable enable
 
@@ -20,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             return _capturedParameters.TryAdd(captureId, new CapturedParameters(activityId, activityIdFormat, threadId, capturedDateTime, methodName, methodTypeName, methodModuleName));
         }
 
-        public bool TryFinalizeParameters(Guid captureId, out ICapturedParameters? capturedParameters)
+        public bool TryFinalizeParameters(Guid captureId, [NotNullWhen(true)] out ICapturedParameters? capturedParameters)
         {
             if (_capturedParameters.Remove(captureId, out CapturedParameters? captured))
             {

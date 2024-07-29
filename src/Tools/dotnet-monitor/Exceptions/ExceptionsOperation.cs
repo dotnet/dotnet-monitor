@@ -292,7 +292,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             {
                 if (priorInstances.TryGetValue(
                         currentInstance.InnerExceptionIds[0],
-                        out IExceptionInstance primaryInnerInstance))
+                        out IExceptionInstance? primaryInnerInstance))
                 {
                     await WriteTextInnerException(writer, primaryInnerInstance, 0, priorInstances);
 
@@ -333,7 +333,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 {
                     if (priorInstances.TryGetValue(
                         currentInstance.InnerExceptionIds[index],
-                        out IExceptionInstance secondaryInnerInstance))
+                        out IExceptionInstance? secondaryInnerInstance))
                     {
                         await WriteTextInnerException(writer, secondaryInnerInstance, index, priorInstances);
                     }

@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return new TraceOperation(endpointInfo, settings, _operationTrackerService, _logger);
         }
 
-        public IArtifactOperation Create(IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, string providerName, string eventName, IDictionary<string, string> payloadFilter)
+        public IArtifactOperation Create(IEndpointInfo endpointInfo, MonitoringSourceConfiguration configuration, TimeSpan duration, string providerName, string eventName, IDictionary<string, string>? payloadFilter)
         {
             EventTracePipelineSettings settings = new()
             {
