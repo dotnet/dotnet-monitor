@@ -8,6 +8,7 @@
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
     <ServerGarbageCollection>false</ServerGarbageCollection>
     <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

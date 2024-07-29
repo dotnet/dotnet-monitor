@@ -40,11 +40,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(
-                CollectionRuleMetadata collectionRuleMetadata,
+                CollectionRuleMetadata? collectionRuleMetadata,
                 CancellationToken token)
             {
                 string path = Options.Path;
-                string arguments = Options.Arguments;
+                string? arguments = Options.Arguments;
                 bool IgnoreExitCode = Options.IgnoreExitCode.GetValueOrDefault(ExecuteOptionsDefaults.IgnoreExitCode);
 
                 ValidateFilePath(path);
@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 // May want to capture stdout and stderr and return as part of the result in the future
                 using Process process = new Process();
 
-                process.StartInfo = new ProcessStartInfo(path, arguments);
+                process.StartInfo = new ProcessStartInfo(path, arguments ?? string.Empty);
                 process.StartInfo.RedirectStandardOutput = true;
 
                 process.EnableRaisingEvents = true;

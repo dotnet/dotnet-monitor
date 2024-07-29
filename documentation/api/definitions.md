@@ -554,6 +554,7 @@ Enumeration that describes the type of diagnostic trace to capture. Each profile
 | `Http` | Tracks ASP[]().NET request handling and HttpClient requests. |
 | `Logs` | Tracks log events emitted at the `Debug` [log level](https://docs.microsoft.com/dotnet/api/system.diagnostics.tracing.eventlevel) or higher. |
 | `Metrics` | Tracks [event counters](https://docs.microsoft.com/en-us/dotnet/core/diagnostics/available-counters) from the `System.Runtime`, `Microsoft.AspNetCore.Hosting`, and `Grpc.AspNetCore.Server` event sources. |
+| `GcCollect` | Tracks only garbage collection events, same as the `gc-collect` profile for `dotnet-trace`. |
 
 ## ValidationProblemDetails
 

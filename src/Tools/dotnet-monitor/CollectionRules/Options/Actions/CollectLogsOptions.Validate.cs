@@ -29,14 +29,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                 // Validate that the category is not null and that the level is a valid level value.
                 foreach ((string category, LogLevel? level) in FilterSpecs)
                 {
-                    ValidationResult result = requiredAttribute.GetValidationResult(category, filterSpecsContext);
-                    if (result != ValidationResult.Success)
+                    ValidationResult? result = requiredAttribute.GetValidationResult(category, filterSpecsContext);
+                    if (!result.IsSuccess())
                     {
                         results.Add(result);
                     }
 
                     result = enumValidationAttribute.GetValidationResult(level, filterSpecsContext);
-                    if (result != ValidationResult.Success)
+                    if (!result.IsSuccess())
                     {
                         results.Add(result);
                     }

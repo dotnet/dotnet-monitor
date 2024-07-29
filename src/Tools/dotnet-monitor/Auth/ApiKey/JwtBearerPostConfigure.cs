@@ -21,10 +21,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
             _apiKeyConfig = apiKeyConfig;
         }
 
-        public void PostConfigure(string name, JwtBearerOptions options)
+        public void PostConfigure(string? name, JwtBearerOptions options)
         {
             MonitorApiKeyConfiguration configSnapshot = _apiKeyConfig.CurrentValue;
-            if (!configSnapshot.Configured || configSnapshot.ValidationErrors.Any())
+            if (!configSnapshot.Configured || configSnapshot.ValidationErrors?.Any() == true)
             {
 #if NET8_0_OR_GREATER
                 // https://github.com/aspnet/Announcements/issues/508
@@ -37,7 +37,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
                 return;
             }
 
+#nullable disable
             options.ConfigureApiKeyTokenValidation(configSnapshot.PublicKey, configSnapshot.Issuer);
+#nullable restore
         }
     }
 }

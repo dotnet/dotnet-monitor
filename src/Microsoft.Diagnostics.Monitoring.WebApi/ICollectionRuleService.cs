@@ -12,6 +12,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         Dictionary<string, CollectionRuleDescription> GetCollectionRulesDescriptions(IEndpointInfo endpointInfo);
 
-        CollectionRuleDetailedDescription GetCollectionRuleDetailedDescription(string collectionRuleName, IEndpointInfo endpointInfo);
+        CollectionRuleDetailedDescription? GetCollectionRuleDetailedDescription(string collectionRuleName, IEndpointInfo endpointInfo);
     }
 }

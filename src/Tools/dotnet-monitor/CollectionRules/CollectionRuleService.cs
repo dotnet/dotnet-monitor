@@ -124,7 +124,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             IEndpointInfo endpointInfo,
             CancellationToken token)
         {
-            CollectionRuleContainer container;
+            CollectionRuleContainer? container;
             lock (_containersMap)
             {
                 if (!_containersMap.Remove(endpointInfo, out container))
@@ -263,7 +263,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             Dictionary<string, CollectionRuleDescription> collectionRulesDescriptions = new();
 
-            if (_containersMap.TryGetValue(endpointInfo, out CollectionRuleContainer container))
+            if (_containersMap.TryGetValue(endpointInfo, out CollectionRuleContainer? container))
             {
                 container.Pipelines.ForEach(pipeline => collectionRulesDescriptions.Add(pipeline.Context.Name, GetCollectionRuleDescription(pipeline)));
             }
@@ -271,9 +271,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             return collectionRulesDescriptions;
         }
 
-        public CollectionRuleDetailedDescription GetCollectionRuleDetailedDescription(string collectionRuleName, IEndpointInfo endpointInfo)
+        public CollectionRuleDetailedDescription? GetCollectionRuleDetailedDescription(string collectionRuleName, IEndpointInfo endpointInfo)
         {
-            if (_containersMap.TryGetValue(endpointInfo, out CollectionRuleContainer container))
+            if (_containersMap.TryGetValue(endpointInfo, out CollectionRuleContainer? container))
             {
                 IEnumerable<CollectionRulePipeline> pipelines = container.Pipelines.Where(pipeline => pipeline.Context.Name.Equals(collectionRuleName));
 
