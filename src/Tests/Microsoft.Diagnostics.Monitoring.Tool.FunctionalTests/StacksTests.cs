@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 methodName = methodName[..methodName.IndexOf('[')];
             }
 
-            // Return null on psuedo frames (e.g. [NativeFrame])
+            // Return null on pseudo frames (e.g. [NativeFrame])
             if (methodName.Length == 0)
             {
                 return null;
