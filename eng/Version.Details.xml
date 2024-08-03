@@ -1,8 +1,8 @@
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="9.0.0-rc.1.24381.5" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0">
+    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="9.0.0-rc.1.24402.1" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>5c2dce53828a4435326ae0bce1698a3b8e4824a8</Sha>
+      <Sha>1d88c6cf5e0b62050f4b17431b9a34fa9e26070a</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="8.0.0-preview.24381.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
@@ -50,13 +50,13 @@
       <Uri>https://github.com/dotnet/runtime</Uri>
       <Sha>03b4c7945acfeb547eb9243f8875a3c4bb49eb9b</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.9.0" Version="9.0.0-rc.1.24381.5" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.9.0" Version="9.0.0-rc.1.24402.1" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>5c2dce53828a4435326ae0bce1698a3b8e4824a8</Sha>
+      <Sha>1d88c6cf5e0b62050f4b17431b9a34fa9e26070a</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0" Version="9.0.100-rc.1.24402.3">
+    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0" Version="9.0.100-rc.1.24402.5">
       <Uri>https://github.com/dotnet/sdk</Uri>
-      <Sha>fdbb7b29db83e6eabbdfc1bfff3e25ac2c7a05cf</Sha>
+      <Sha>02d34d95b9297ec43e678120b33473b618aecde3</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.9.0" Version="9.0.0-rc.1.24401.2" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0">
       <Uri>https://github.com/dotnet/runtime</Uri>
