@@ -773,4 +773,7 @@
     <value>The expected value of the 'iss' or Issuer field in the JWT (JSON Web Token).</value>
     <comment>The description provided for the Issuer parameter on MonitorApiKeyOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_CollectArtifactOptions_ArtifactName" xml:space="preserve">
+    <value>The name of the generated artifact.</value>
+  </data>
 </root>
