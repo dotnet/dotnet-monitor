@@ -51,7 +51,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 bool useAppFilters = Options.UseAppFilters.GetValueOrDefault(CollectLogsOptionsDefaults.UseAppFilters);
                 LogLevel defaultLevel = Options.DefaultLevel.GetValueOrDefault(CollectLogsOptionsDefaults.DefaultLevel);
                 Dictionary<string, LogLevel?>? filterSpecs = Options.FilterSpecs;
-                string egressProvider = Options.Egress;
                 LogFormat logFormat = Options.Format.GetValueOrDefault(CollectLogsOptionsDefaults.Format);
 
                 var settings = new EventLogsPipelineSettings()
@@ -73,7 +72,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 EgressOperation egressOperation = new EgressOperation(
                     operation,
-                    egressProvider,
+                    Options.Egress,
+                    Options.ArtifactName,
                     ProcessInfo,
                     scope,
                     null,

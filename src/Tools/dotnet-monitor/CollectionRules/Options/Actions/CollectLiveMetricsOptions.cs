@@ -55,5 +55,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         [ValidateEgressProvider]
 #endif
         public string Egress { get; set; } = string.Empty;
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_ArtifactName))]
+        public string? ArtifactName { get; set; }
     }
 }

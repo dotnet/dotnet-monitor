@@ -166,13 +166,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 RuntimeId = _ruleContext.EndpointInfo.RuntimeInstanceCookie,
                 ProcessId = _ruleContext.EndpointInfo.ProcessId,
                 CommandLine = commandLine ?? string.Empty,
-                ProcessName = _ruleContext.ProcessInfo.ProcessName ?? string.Empty
+                ProcessName = _ruleContext.ProcessInfo.ProcessName ?? string.Empty,
+                MonitorHostName = _ruleContext.HostInfo.HostName,
+                Timestamp = _ruleContext.HostInfo.TimeProvider.GetUtcNow(),
             });
 
             return settings;
         }
-
-
 
 #nullable disable
         private void EnsureDependencies()
@@ -291,7 +291,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             return ConfigurationTokenParser.GetPropertiesFromSettings(options.Settings, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
         }
-
-
     }
 }
