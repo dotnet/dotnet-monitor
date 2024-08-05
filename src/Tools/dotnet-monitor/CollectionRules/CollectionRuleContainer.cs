@@ -25,9 +25,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly ActionListExecutor _actionListExecutor;
         private readonly ILogger<CollectionRuleService> _logger;
         private readonly IProcessInfo _processInfo;
+        private readonly HostInfo _hostInfo;
         private readonly IOptionsMonitor<CollectionRuleOptions> _optionsMonitor;
         private readonly List<Task> _runTasks = new();
-        private readonly TimeProvider _timeProvider;
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
         public List<CollectionRulePipeline> Pipelines { get; set; } = new();
@@ -48,9 +48,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _processInfo = processInfo ?? throw new ArgumentNullException(nameof(processInfo));
 
+            _hostInfo = HostInfo.GetCurrent(serviceProvider.GetRequiredService<TimeProvider>());
             _actionListExecutor = serviceProvider.GetRequiredService<ActionListExecutor>();
             _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>();
-            _timeProvider = serviceProvider.GetRequiredService<TimeProvider>();
             _triggerOperations = serviceProvider.GetRequiredService<ICollectionRuleTriggerOperations>();
         }
 
@@ -197,7 +197,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
                 _logger.CollectionRuleStarted(ruleName);
 
-                CollectionRuleContext context = new(ruleName, options, _processInfo, _logger, _timeProvider);
+                CollectionRuleContext context = new(ruleName, options, _processInfo, _hostInfo, _logger);
 
                 await using CollectionRulePipeline pipeline = new(
                     _actionListExecutor,

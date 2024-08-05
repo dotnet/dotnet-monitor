@@ -50,7 +50,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata? collectionRuleMetadata)
             {
                 TimeSpan duration = Options.Duration.GetValueOrDefault(TimeSpan.Parse(CollectTraceOptionsDefaults.Duration));
-                string egressProvider = Options.Egress;
 
                 MonitoringSourceConfiguration configuration;
 
@@ -97,7 +96,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 EgressOperation egressOperation = new EgressOperation(
                     operation,
-                    egressProvider,
+                    Options.Egress,
+                    Options.ArtifactName,
                     ProcessInfo,
                     scope,
                     null,

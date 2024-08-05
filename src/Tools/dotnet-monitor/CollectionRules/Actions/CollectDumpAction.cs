@@ -48,7 +48,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata? collectionRuleMetadata)
             {
                 DumpType dumpType = Options.Type.GetValueOrDefault(CollectDumpOptionsDefaults.Type);
-                string egressProvider = Options.Egress;
 
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Dump, EndpointInfo);
 
@@ -56,7 +55,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 EgressOperation egressOperation = new EgressOperation(
                     dumpOperation,
-                    egressProvider,
+                    Options.Egress,
+                    Options.ArtifactName,
                     ProcessInfo,
                     scope,
                     tags: null,

@@ -1700,6 +1700,13 @@
           "type": "string",
           "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
+        },
+        "ArtifactName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the generated artifact."
         }
       }
     },
@@ -1750,6 +1757,13 @@
               "$ref": "#/definitions/ExceptionsConfiguration"
             }
           ]
+        },
+        "ArtifactName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the generated artifact."
         }
       }
     },
@@ -1776,6 +1790,13 @@
           "type": "string",
           "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
+        },
+        "ArtifactName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the generated artifact."
         }
       }
     },
@@ -1825,6 +1846,13 @@
           "type": "string",
           "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
+        },
+        "ArtifactName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the generated artifact."
         }
       }
     },
@@ -1939,6 +1967,13 @@
               "$ref": "#/definitions/LogFormat"
             }
           ]
+        },
+        "ArtifactName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the generated artifact."
         }
       }
     },
@@ -1976,6 +2011,13 @@
               "$ref": "#/definitions/CallStackFormat"
             }
           ]
+        },
+        "ArtifactName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the generated artifact."
         }
       }
     },
@@ -2062,6 +2104,13 @@
               "$ref": "#/definitions/TraceEventFilter"
             }
           ]
+        },
+        "ArtifactName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the generated artifact."
         }
       }
     },
