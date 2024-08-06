@@ -18,8 +18,9 @@ updates:
   commit-message:
     prefix: '[main] '
   groups:
-    azure-storage-dependencies:
+    azure-sdk-dependencies:
       patterns:
+      - Azure.Core
       - Azure.Storage.*
     identity-dependencies:
       patterns:
@@ -94,8 +95,9 @@ updates:
   commit-message:
     prefix: '[release/8.0] '
   groups:
-    azure-storage-dependencies:
+    azure-sdk-dependencies:
       patterns:
+      - Azure.Core
       - Azure.Storage.*
     identity-dependencies:
       patterns:
@@ -174,8 +176,9 @@ updates:
   commit-message:
     prefix: '[release/6.x] '
   groups:
-    azure-storage-dependencies:
+    azure-sdk-dependencies:
       patterns:
+      - Azure.Core
       - Azure.Storage.*
     identity-dependencies:
       patterns:

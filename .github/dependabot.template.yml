@@ -52,8 +52,9 @@ updates:
     commit-message:
       prefix: #@ commit_prefix
     groups:
-      azure-storage-dependencies:
+      azure-sdk-dependencies:
         patterns:
+          - "Azure.Core"
           - "Azure.Storage.*"
       identity-dependencies:
         patterns:
