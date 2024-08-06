@@ -11,17 +11,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_StorageOptions_DefaultSharedPath))]
-        public string DefaultSharedPath { get; set; }
+        public string? DefaultSharedPath { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_StorageOptions_DumpTempFolder))]
-        public string DumpTempFolder { get; set; }
+        public string? DumpTempFolder { get; set; }
 
         [Experimental]
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_StorageOptions_SharedLibraryPath))]
-        public string SharedLibraryPath { get; set; }
+        public string? SharedLibraryPath { get; set; }
     }
 }

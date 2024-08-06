@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public Guid Uid { get; set; }
 
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [JsonPropertyName("isDefault")]
         public bool IsDefault { get; set; }

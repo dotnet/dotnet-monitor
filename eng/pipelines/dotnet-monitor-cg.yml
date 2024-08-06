@@ -5,9 +5,9 @@ schedules:
     include:
     - shipped/*
     exclude:
-    - shipped/7.3
-    - shipped/7.2
-    - shipped/7.1
+    - shipped/v7.3
+    - shipped/v7.2
+    - shipped/v7.1
   always: true
 
 trigger: none

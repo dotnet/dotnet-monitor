@@ -51,6 +51,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
             await _writer.DisposeAsync();
         }
 
-        private static string GetValueOrUnknown(string value) => string.IsNullOrEmpty(value) ? "<unknown>" : value;
+        private static string GetValueOrUnknown(string? value) => string.IsNullOrEmpty(value) ? "<unknown>" : value;
     }
 }

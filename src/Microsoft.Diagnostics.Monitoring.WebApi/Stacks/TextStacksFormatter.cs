@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             {
                 builder.Append(NativeFrame);
             }
-            else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
+            else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData? functionData))
             {
                 builder.Append(NameFormatter.GetModuleName(cache, functionData.ModuleId));
                 builder.Append(ModuleSeparator);

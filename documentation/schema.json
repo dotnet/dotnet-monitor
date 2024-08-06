@@ -513,10 +513,7 @@
       ],
       "properties": {
         "Filters": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": "array",
           "description": "Process filters used to determine to which process(es) the collection rule is applied. All filters must match. If no filters are specified, the rule is applied to all discovered processes.",
           "items": {
             "$ref": "#/definitions/ProcessFilterDescriptor"
@@ -531,10 +528,7 @@
           ]
         },
         "Actions": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": "array",
           "description": "The list of actions to be executed when the trigger raises its notification.",
           "items": {
             "$ref": "#/definitions/CollectionRuleActionOptions"
@@ -1130,20 +1124,14 @@
       "additionalProperties": false,
       "properties": {
         "Include": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": "array",
           "description": "The list of exception configurations that determine which exceptions should be shown.\nEach configuration is a logical OR, so if any of the configurations match, the exception is shown.",
           "items": {
             "$ref": "#/definitions/ExceptionFilter"
           }
         },
         "Exclude": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": "array",
           "description": "The list of exception configurations that determine which exceptions should be shown.\nEach configuration is a logical OR, so if any of the configurations match, the exception isn't shown.",
           "items": {
             "$ref": "#/definitions/ExceptionFilter"
@@ -1384,20 +1372,14 @@
           "default": true
         },
         "Providers": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": "array",
           "description": "Providers for custom metrics.",
           "items": {
             "$ref": "#/definitions/MetricProvider"
           }
         },
         "Meters": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": "array",
           "description": "Names of meters to collect from the System.Diagnostics.Metrics provider.",
           "items": {
             "$ref": "#/definitions/MeterConfiguration"
@@ -1418,10 +1400,7 @@
           "minLength": 1
         },
         "CounterNames": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": "array",
           "description": "Name of custom metrics counters.",
           "items": {
             "type": "string"
@@ -1441,10 +1420,7 @@
           "description": "Name of the custom meter."
         },
         "InstrumentNames": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": "array",
           "description": "Names of the custom instruments.",
           "items": {
             "type": "string"
@@ -1484,10 +1460,7 @@
       "additionalProperties": false,
       "properties": {
         "Filters": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": "array",
           "description": "Process filters used to determine which process to use if one is not explicitly specified. All filters must match.",
           "items": {
             "$ref": "#/definitions/ProcessFilterDescriptor"
@@ -1727,6 +1700,13 @@
           "type": "string",
           "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
+        },
+        "ArtifactName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the generated artifact."
         }
       }
     },
@@ -1777,6 +1757,13 @@
               "$ref": "#/definitions/ExceptionsConfiguration"
             }
           ]
+        },
+        "ArtifactName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the generated artifact."
         }
       }
     },
@@ -1803,6 +1790,13 @@
           "type": "string",
           "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
+        },
+        "ArtifactName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the generated artifact."
         }
       }
     },
@@ -1852,6 +1846,13 @@
           "type": "string",
           "description": "The name of the egress provider to which the artifact is egressed.",
           "minLength": 1
+        },
+        "ArtifactName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the generated artifact."
         }
       }
     },
@@ -1966,6 +1967,13 @@
               "$ref": "#/definitions/LogFormat"
             }
           ]
+        },
+        "ArtifactName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the generated artifact."
         }
       }
     },
@@ -2003,6 +2011,13 @@
               "$ref": "#/definitions/CallStackFormat"
             }
           ]
+        },
+        "ArtifactName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the generated artifact."
         }
       }
     },
@@ -2089,6 +2104,13 @@
               "$ref": "#/definitions/TraceEventFilter"
             }
           ]
+        },
+        "ArtifactName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The name of the generated artifact."
         }
       }
     },

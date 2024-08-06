@@ -16,7 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// <summary>
         /// Returns running processes, optionally based on filter criteria.
         /// </summary>
-        Task<IEnumerable<IProcessInfo>> GetProcessesAsync(DiagProcessFilter processFilter, CancellationToken token);
+        Task<IEnumerable<IProcessInfo>> GetProcessesAsync(DiagProcessFilter? processFilter, CancellationToken token);
 
         /// <summary>
         /// Returns a process based on a key. If no key is specified, the DefaultProcess configuration is used.
@@ -33,11 +33,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         IEndpointInfo EndpointInfo { get; }
 
-        string CommandLine { get; }
+        string? CommandLine { get; }
 
-        public string OperatingSystem { get; }
+        public string? OperatingSystem { get; }
 
-        public string ProcessArchitecture { get; }
+        public string? ProcessArchitecture { get; }
 
         string ProcessName { get; }
     }

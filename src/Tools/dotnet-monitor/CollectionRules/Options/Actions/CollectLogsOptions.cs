@@ -1,6 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+#nullable enable
+
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
@@ -32,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectLogsOptions_FilterSpecs))]
-        public Dictionary<string, LogLevel?> FilterSpecs { get; set; }
+        public Dictionary<string, LogLevel?>? FilterSpecs { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -56,7 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 #if !UNITTEST && !SCHEMAGEN
         [ValidateEgressProvider]
 #endif
-        public string Egress { get; set; }
+        public string Egress { get; set; } = string.Empty;
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -64,5 +66,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         [DefaultValue(CollectLogsOptionsDefaults.Format)]
         [EnumDataType(typeof(LogFormat))]
         public LogFormat? Format { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_ArtifactName))]
+        public string? ArtifactName { get; set; }
     }
 }

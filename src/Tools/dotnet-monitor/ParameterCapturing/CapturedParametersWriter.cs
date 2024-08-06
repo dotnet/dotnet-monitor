@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
 
             while (await _parameters.Reader.WaitToReadAsync(_cancellationToken))
             {
-                if (_parameters.Reader.TryRead(out ICapturedParameters parameter))
+                if (_parameters.Reader.TryRead(out ICapturedParameters? parameter))
                 {
                     await _formatter.WriteParameters(parameter, _cancellationToken);
                 }

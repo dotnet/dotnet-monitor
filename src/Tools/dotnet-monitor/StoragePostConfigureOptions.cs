@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const string DefaultSharedPathDumpsFolderName = "dumps";
         private const string DefaultSharedPathLibrariesFolderName = "libs";
 
-        void IPostConfigureOptions<StorageOptions>.PostConfigure(string name, StorageOptions options)
+        void IPostConfigureOptions<StorageOptions>.PostConfigure(string? name, StorageOptions options)
         {
             if (string.IsNullOrEmpty(options.DumpTempFolder))
             {

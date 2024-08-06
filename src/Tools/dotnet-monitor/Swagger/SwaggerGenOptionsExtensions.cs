@@ -29,8 +29,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
             options.OperationFilter<UnauthorizedResponseOperationFilter>();
 
             string documentationFile = $"{typeof(DiagController).Assembly.GetName().Name}.xml";
+#nullable disable
             options.IncludeXmlComments(() => new XPathDocument(Assembly.GetExecutingAssembly().GetManifestResourceStream(documentationFile)));
-
+#nullable restore
             // Make sure TimeSpan is represented as a string instead of a full object type
             options.MapType<TimeSpan>(() => new OpenApiSchema() { Type = "string", Format = "time-span", Example = new OpenApiString("00:00:30") });
         }

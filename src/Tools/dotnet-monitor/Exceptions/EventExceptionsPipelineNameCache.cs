@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             throwingMethodId = 0;
             ilOffset = 0;
 
-            if (!_exceptionGroupMap.TryGetValue(groupId, out ExceptionGroup identifier))
+            if (!_exceptionGroupMap.TryGetValue(groupId, out ExceptionGroup? identifier))
                 return false;
 
             exceptionClassId = identifier.ClassId;
@@ -68,7 +68,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             methodId = 0;
             ilOffset = 0;
 
-            if (!_stackFrames.TryGetValue(stackFrameId, out StackFrameInstance instance))
+            if (!_stackFrames.TryGetValue(stackFrameId, out StackFrameInstance? instance))
                 return false;
 
             methodId = instance.MethodId;

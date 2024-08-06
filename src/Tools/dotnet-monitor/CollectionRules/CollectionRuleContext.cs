@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 {
     internal class CollectionRuleContext
     {
-        public CollectionRuleContext(string name, CollectionRuleOptions options, IProcessInfo processInfo, ILogger logger, TimeProvider timeProvider, Action throttledCallback = null)
+        public CollectionRuleContext(string name, CollectionRuleOptions options, IProcessInfo processInfo, HostInfo hostInfo, ILogger logger, Action? throttledCallback = null)
         {
             // TODO: Allow null processInfo to allow tests to pass, but this should be provided by
             // tests since it will be required by all aspects in the future. For example, the ActionListExecutor
@@ -18,18 +18,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             // the actions property bag used for token replacement.
             //ProcessInfo = processInfo ?? throw new ArgumentNullException(nameof(processInfo));
             ProcessInfo = processInfo;
+            HostInfo = hostInfo ?? throw new ArgumentNullException(nameof(hostInfo));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             Options = options ?? throw new ArgumentNullException(nameof(options));
             Name = name ?? throw new ArgumentNullException(nameof(name));
-            TimeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
             ThrottledCallback = throttledCallback;
         }
 
-        public TimeProvider TimeProvider { get; }
-
         public IProcessInfo ProcessInfo { get; }
 
-        public IEndpointInfo EndpointInfo => ProcessInfo?.EndpointInfo;
+        public IEndpointInfo EndpointInfo => ProcessInfo.EndpointInfo;
+
+        public HostInfo HostInfo { get; }
 
         public ILogger Logger { get; }
 
@@ -37,6 +37,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public string Name { get; }
 
-        public Action ThrottledCallback { get; }
+        public Action? ThrottledCallback { get; }
     }
 }

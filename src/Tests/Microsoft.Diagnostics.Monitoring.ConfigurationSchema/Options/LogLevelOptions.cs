@@ -13,6 +13,6 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LogLevelOptions_LogLevel))]
-        public IDictionary<string, LogLevel?> LogLevel { get; set; }
+        public IDictionary<string, LogLevel?>? LogLevel { get; set; }
     }
 }

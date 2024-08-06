@@ -29,7 +29,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             IOptions<MetricsOptions> metricsOptions)
         {
             _logger = logger;
-            _metricsStore = serviceProvider.GetService<MetricsStoreService>();
+            _metricsStore = serviceProvider.GetRequiredService<MetricsStoreService>();
             _metricsOptions = metricsOptions.Value;
         }
 

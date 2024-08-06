@@ -11,8 +11,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CorsConfiguration_AllowedOrigins))]
         [Required]
-        public string AllowedOrigins { get; set; }
+        public string AllowedOrigins { get; set; } = string.Empty;
 
-        public string[] GetOrigins() => AllowedOrigins?.Split(';');
+        public string[] GetOrigins() => AllowedOrigins.Split(';');
     }
 }
