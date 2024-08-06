@@ -9,10 +9,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     public class SpeedscopeResult
     {
         [JsonPropertyName("exporter")]
-        public string Exporter { get; set; }
+        public string? Exporter { get; set; }
 
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [JsonPropertyName("activeProfileIndex")]
         public int ActiveProfileIndex { get; set; }
@@ -21,22 +21,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public string Schema { get; set; } = "https://www.speedscope.app/file-format-schema.json";
 
         [JsonPropertyName("profiles")]
-        public List<Profile> Profiles { get; set; }
+        public List<Profile>? Profiles { get; set; }
 
         [JsonPropertyName("shared")]
-        public SharedFrames Shared { get; set; }
+        public SharedFrames? Shared { get; set; }
     }
 
     public class SharedFrames
     {
         [JsonPropertyName("frames")]
-        public List<SharedFrame> Frames { get; set; }
+        public List<SharedFrame>? Frames { get; set; }
     }
 
     public class SharedFrame
     {
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [JsonPropertyName("col")]
         public int? Column { get; set; }
@@ -45,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public int? Line { get; set; }
 
         [JsonPropertyName("file")]
-        public string File { get; set; }
+        public string? File { get; set; }
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -91,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public ProfileType Type { get; set; }
 
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [JsonPropertyName("unit")]
         public UnitType Unit { get; set; }
@@ -103,6 +103,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public double EndValue { get; set; }
 
         [JsonPropertyName("events")]
-        public List<ProfileEvent> Events { get; set; }
+        public List<ProfileEvent>? Events { get; set; }
     }
 }

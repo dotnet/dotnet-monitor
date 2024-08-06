@@ -41,7 +41,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterOptions_Filters))]
-        public List<ProcessFilterDescriptor> Filters { get; set; } = new List<ProcessFilterDescriptor>(0);
+        public List<ProcessFilterDescriptor> Filters { get; set; } = [];
     }
 
     public sealed partial class ProcessFilterDescriptor
@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_Value))]
-        public string Value { get; set; }
+        public string? Value { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
@@ -65,17 +65,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_ProcessName))]
-        public string ProcessName { get; set; }
+        public string? ProcessName { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_ProcessId))]
-        public string ProcessId { get; set; }
+        public string? ProcessId { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_CommandLine))]
-        public string CommandLine { get; set; }
+        public string? CommandLine { get; set; }
     }
 
     partial class ProcessFilterDescriptor : IValidatableObject

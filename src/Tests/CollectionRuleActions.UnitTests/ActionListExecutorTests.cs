@@ -11,6 +11,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Moq;
 using System;
 using System.Reflection;
 using System.Threading;
@@ -29,6 +30,16 @@ namespace CollectionRuleActions.UnitTests
         private readonly ITestOutputHelper _outputHelper;
 
         private const string DefaultRuleName = nameof(ActionListExecutorTests);
+
+        private static Microsoft.Diagnostics.Monitoring.WebApi.IProcessInfo CreateTestProcess()
+        {
+            Mock<Microsoft.Diagnostics.Monitoring.WebApi.IProcessInfo> mockProcessInfo = new();
+            mockProcessInfo
+                .Setup(p => p.EndpointInfo)
+                .Returns(Mock.Of<Microsoft.Diagnostics.Monitoring.WebApi.IEndpointInfo>);
+
+            return mockProcessInfo.Object;
+        }
 
         public ActionListExecutorTests(ITestOutputHelper outputHelper)
         {
@@ -54,7 +65,7 @@ namespace CollectionRuleActions.UnitTests
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
                 TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, timeProvider);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, CreateTestProcess(), HostInfo.GetCurrent(timeProvider), logger);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;
@@ -95,7 +106,7 @@ namespace CollectionRuleActions.UnitTests
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
                 TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, timeProvider);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, CreateTestProcess(), HostInfo.GetCurrent(timeProvider), logger);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;
@@ -141,7 +152,7 @@ namespace CollectionRuleActions.UnitTests
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
                 TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, timeProvider);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, CreateTestProcess(), HostInfo.GetCurrent(timeProvider), logger);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;

@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         public DiagController(IServiceProvider serviceProvider, ILogger<DiagController> logger)
             : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger)
         {
-            _diagnosticPortOptions = serviceProvider.GetService<IOptions<DiagnosticPortOptions>>();
+            _diagnosticPortOptions = serviceProvider.GetRequiredService<IOptions<DiagnosticPortOptions>>();
             _callStacksOptions = serviceProvider.GetRequiredService<IOptions<CallStacksOptions>>();
             _parameterCapturingOptions = serviceProvider.GetRequiredService<IOptions<ParameterCapturingOptions>>();
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
@@ -77,7 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             return this.InvokeService(async () =>
             {
-                IProcessInfo defaultProcessInfo = null;
+                IProcessInfo? defaultProcessInfo = null;
                 try
                 {
                     defaultProcessInfo = await DiagnosticServices.GetProcessAsync(null, HttpContext.RequestAborted);
@@ -127,7 +127,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null)
+            string? name = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -165,7 +165,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null)
+            string? name = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -213,13 +213,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null,
+            string? name = null,
             [FromQuery]
             Models.DumpType type = Models.DumpType.WithHeap,
             [FromQuery]
-            string egressProvider = null,
+            string? egressProvider = null,
             [FromQuery]
-            string tags = null)
+            string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -257,11 +257,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null,
+            string? name = null,
             [FromQuery]
-            string egressProvider = null,
+            string? egressProvider = null,
             [FromQuery]
-            string tags = null)
+            string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -300,15 +300,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null,
+            string? name = null,
             [FromQuery]
             TraceProfile profile = DefaultTraceProfiles,
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
-            string egressProvider = null,
+            string? egressProvider = null,
             [FromQuery]
-            string tags = null)
+            string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -348,13 +348,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null,
+            string? name = null,
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
-            string egressProvider = null,
+            string? egressProvider = null,
             [FromQuery]
-            string tags = null)
+            string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -363,7 +363,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 foreach (Models.EventPipeProvider provider in configuration.Providers)
                 {
                     if (!CounterValidator.ValidateProvider(_counterOptions.CurrentValue,
-                        provider, out string errorMessage))
+                        provider, out string? errorMessage))
                     {
                         throw new ValidationException(errorMessage);
                     }
@@ -399,15 +399,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null,
+            string? name = null,
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
             LogLevel? level = null,
             [FromQuery]
-            string egressProvider = null,
+            string? egressProvider = null,
             [FromQuery]
-            string tags = null)
+            string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -459,13 +459,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null,
+            string? name = null,
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
-            string egressProvider = null,
+            string? egressProvider = null,
             [FromQuery]
-            string tags = null)
+            string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -495,10 +495,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             return this.InvokeService(() =>
             {
-                string version = Assembly.GetExecutingAssembly().GetInformationalVersionString();
+                string? version = Assembly.GetExecutingAssembly().GetInformationalVersionString();
                 string runtimeVersion = Environment.Version.ToString();
                 DiagnosticPortConnectionMode diagnosticPortMode = _diagnosticPortOptions.Value.GetConnectionMode();
-                string diagnosticPortName = GetDiagnosticPortName();
+                string? diagnosticPortName = GetDiagnosticPortName();
 
                 DotnetMonitorInfo dotnetMonitorInfo = new()
                 {
@@ -528,7 +528,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null)
+            string? name = null)
         {
             return InvokeForProcess<Dictionary<string, CollectionRuleDescription>>(processInfo =>
             {
@@ -547,16 +547,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [HttpGet("collectionrules/{collectionRuleName}", Name = nameof(GetCollectionRuleDetailedDescription))]
         [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
         [ProducesResponseType(typeof(CollectionRuleDetailedDescription), StatusCodes.Status200OK)]
-        public Task<ActionResult<CollectionRuleDetailedDescription>> GetCollectionRuleDetailedDescription(
+        public Task<ActionResult<CollectionRuleDetailedDescription?>> GetCollectionRuleDetailedDescription(
             string collectionRuleName,
             [FromQuery]
             int? pid = null,
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null)
+            string? name = null)
         {
-            return InvokeForProcess<CollectionRuleDetailedDescription>(processInfo =>
+            return InvokeForProcess<CollectionRuleDetailedDescription?>(processInfo =>
             {
                 return _collectionRuleService.GetCollectionRuleDetailedDescription(collectionRuleName, processInfo.EndpointInfo);
             },
@@ -579,11 +579,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null,
+            string? name = null,
             [FromQuery]
-            string egressProvider = null,
+            string? egressProvider = null,
             [FromQuery]
-            string tags = null)
+            string? tags = null)
         {
             if (!_parameterCapturingOptions.Value.GetEnabled())
             {
@@ -621,11 +621,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null,
+            string? name = null,
             [FromQuery]
-            string egressProvider = null,
+            string? egressProvider = null,
             [FromQuery]
-            string tags = null)
+            string? tags = null)
         {
             if (!_callStacksOptions.Value.GetEnabled())
             {
@@ -651,7 +651,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Stacks);
         }
 
-        private string GetDiagnosticPortName()
+        private string? GetDiagnosticPortName()
         {
             return _diagnosticPortOptions.Value.EndpointName;
         }
@@ -660,8 +660,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             IProcessInfo processInfo,
             MonitoringSourceConfiguration configuration,
             TimeSpan duration,
-            string egressProvider,
-            string tags)
+            string? egressProvider,
+            string? tags)
         {
             IArtifactOperation traceOperation = _traceOperationFactory.Create(
                 processInfo.EndpointInfo,
@@ -679,8 +679,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private Task<ActionResult> StartLogs(
             IProcessInfo processInfo,
             EventLogsPipelineSettings settings,
-            string egressProvider,
-            string tags)
+            string? egressProvider,
+            string? tags)
         {
             LogFormat? format = ComputeLogFormat(Request.GetTypedHeaders().Accept);
             if (null == format)

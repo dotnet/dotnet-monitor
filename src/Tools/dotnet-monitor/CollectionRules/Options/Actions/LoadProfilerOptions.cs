@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoadProfilerOptions_Path))]
         [Required]
-        public string Path { get; set; }
+        public string Path { get; set; } = string.Empty;
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

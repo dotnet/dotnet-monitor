@@ -22,6 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             _factory = factory;
         }
 
+#nullable disable
         /// <inheritdoc/>
         public ICollectionRuleAction Create(IProcessInfo processInfo, object options)
         {
@@ -33,5 +34,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
             return _factory.Create(processInfo, typedOptions);
         }
+#nullable restore
     }
 }

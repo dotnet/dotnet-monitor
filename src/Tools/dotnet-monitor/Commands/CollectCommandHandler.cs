@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 {
     internal static class CollectCommandHandler
     {
-        public static async Task<int> Invoke(CancellationToken token, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress, FileInfo configurationFilePath, bool exitOnStdinDisconnect)
+        public static async Task<int> Invoke(CancellationToken token, string[]? urls, string[]? metricUrls, bool metrics, string? diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress, FileInfo? configurationFilePath, bool exitOnStdinDisconnect)
         {
             try
             {
@@ -154,7 +154,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             })
             .ConfigureContainer((HostBuilderContext context, IServiceCollection services) =>
             {
-                ServerUrlsBlockingConfigurationManager manager =
+                ServerUrlsBlockingConfigurationManager? manager =
                     context.Properties[typeof(ServerUrlsBlockingConfigurationManager)] as ServerUrlsBlockingConfigurationManager;
                 Debug.Assert(null != manager, $"Expected {typeof(ServerUrlsBlockingConfigurationManager).FullName} to be a {typeof(HostBuilderContext).FullName} property.");
                 if (null != manager)

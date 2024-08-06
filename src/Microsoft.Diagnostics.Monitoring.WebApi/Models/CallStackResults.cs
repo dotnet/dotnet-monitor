@@ -10,16 +10,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     public class CallStackFrame
     {
         [JsonPropertyName("methodName")]
-        public string MethodName { get; set; }
+        public string MethodName { get; set; } = string.Empty;
 
         [JsonPropertyName("methodToken")]
         public uint MethodToken { get; set; }
 
         [JsonPropertyName("typeName")]
-        public string TypeName { get; set; }
+        public string TypeName { get; set; } = string.Empty;
 
         [JsonPropertyName("moduleName")]
-        public string ModuleName { get; set; }
+        public string ModuleName { get; set; } = string.Empty;
 
         [JsonPropertyName("moduleVersionId")]
         public Guid ModuleVersionId { get; set; }
@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public uint ThreadId { get; set; }
 
         [JsonPropertyName("threadName")]
-        public string ThreadName { get; set; }
+        public string ThreadName { get; set; } = string.Empty;
 
         [JsonPropertyName("frames")]
         public IList<CallStackFrame> Frames { get; set; } = new List<CallStackFrame>();

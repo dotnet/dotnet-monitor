@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            if (operation.Responses.TryGetValue(StatusCodeStrings.Status401Unauthorized, out OpenApiResponse unauthorizedResponse))
+            if (operation.Responses.TryGetValue(StatusCodeStrings.Status401Unauthorized, out OpenApiResponse? unauthorizedResponse))
             {
                 unauthorizedResponse.Content.Clear();
                 unauthorizedResponse.Reference = new OpenApiReference()

@@ -18,12 +18,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_FileSystemEgressProviderOptions_DirectoryPath))]
         [Required]
-        public string DirectoryPath { get; set; }
+        public string DirectoryPath { get; set; } = string.Empty;
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_FileSystemEgressProviderOptions_IntermediateDirectoryPath))]
-        public string IntermediateDirectoryPath { get; set; }
+        public string? IntermediateDirectoryPath { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

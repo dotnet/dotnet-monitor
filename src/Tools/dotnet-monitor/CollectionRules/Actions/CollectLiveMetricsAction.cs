@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 _metricsOptions = serviceProvider.GetRequiredService<IOptionsMonitor<MetricsOptions>>();
             }
 
-            protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata collectionRuleMetadata)
+            protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata? collectionRuleMetadata)
             {
                 MetricsPipelineSettings settings;
                 if (Options.HasCustomConfiguration())
@@ -85,6 +85,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 EgressOperation egressOperation = new EgressOperation(
                     operation,
                     Options.Egress,
+                    Options.ArtifactName,
                     ProcessInfo,
                     scope,
                     null,

@@ -15,6 +15,7 @@
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
     <IncludeSymbols>true</IncludeSymbols>
     <OutputType>Library</OutputType>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">

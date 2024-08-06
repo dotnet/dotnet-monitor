@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 
@@ -20,17 +21,32 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     partial record class CollectTraceOptions :
         IValidatableObject
     {
+
+        [MemberNotNullWhen(true, nameof(StoppingEvent))]
+        private bool HasStoppingEvent()
+        {
+            return StoppingEvent != null;
+        }
+
+        [MemberNotNullWhen(true, nameof(Providers))]
+        private bool HasProviders()
+        {
+            return Providers != null && Providers.Count > 0;
+        }
+
+        [MemberNotNullWhen(true, nameof(Profile))]
+        private bool HasProfile()
+        {
+            return Profile.HasValue;
+        }
+
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
             List<ValidationResult> results = new();
 
-            bool hasProfile = Profile.HasValue;
-            bool hasProviders = null != Providers && Providers.Any();
-            bool hasStoppingEvent = null != StoppingEvent;
-
-            if (hasProfile)
+            if (HasProfile())
             {
-                if (hasStoppingEvent)
+                if (HasStoppingEvent())
                 {
                     results.Add(new ValidationResult(
                         string.Format(
@@ -40,7 +56,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                             nameof(StoppingEvent))));
                 }
 
-                if (hasProviders)
+                if (HasProviders())
                 {
                     // Both Profile and Providers cannot be specified at the same time, otherwise
                     // cannot determine whether to use providers from the profile or the custom
@@ -53,9 +69,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                             nameof(Providers))));
                 }
             }
-            else if (hasProviders)
+            else if (HasProviders())
             {
-                GlobalCounterOptions counterOptions = null;
+                GlobalCounterOptions? counterOptions = null;
 
                 try
                 {
@@ -76,7 +92,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 
                     Validator.TryValidateObject(provider, providerContext, results, validateAllProperties: true);
 
-                    if (counterOptions != null && !CounterValidator.ValidateProvider(counterOptions, provider, out string errorMessage))
+                    if (counterOptions != null && !CounterValidator.ValidateProvider(counterOptions, provider, out string? errorMessage))
                     {
                         results.Add(new ValidationResult(errorMessage, new[] { nameof(EventPipeProvider.Arguments) }));
                     }
@@ -95,9 +111,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                         nameof(Providers))));
             }
 
-            if (hasStoppingEvent)
+            if (HasStoppingEvent())
             {
-                bool hasMatchingStoppingProvider = hasProviders
+                bool hasMatchingStoppingProvider = HasProviders()
                     && null != Providers.Find(x => string.Equals(x.Name, StoppingEvent.ProviderName, System.StringComparison.Ordinal));
 
                 if (!hasMatchingStoppingProvider)

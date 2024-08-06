@@ -33,13 +33,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null,
+            string? name = null,
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
-            string egressProvider = null,
+            string? egressProvider = null,
             [FromQuery]
-            string tags = null)
+            string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -83,13 +83,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null,
+            string? name = null,
             [FromQuery][Range(-1, int.MaxValue)]
             int durationSeconds = 30,
             [FromQuery]
-            string egressProvider = null,
+            string? egressProvider = null,
             [FromQuery]
-            string tags = null)
+            string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 

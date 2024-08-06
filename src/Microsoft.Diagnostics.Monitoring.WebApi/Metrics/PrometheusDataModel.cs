@@ -28,22 +28,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public static string GetPrometheusNormalizedName(string metricProvider, string metric, string unit)
         {
-            string baseUnit = null;
+            string? baseUnit = null;
             if ((unit != null) && (!KnownUnits.TryGetValue(unit, out baseUnit)))
             {
                 baseUnit = unit;
             }
 
-            bool hasUnit = !string.IsNullOrEmpty(baseUnit);
-
             //The +1's account for separators
             //CONSIDER Can we optimize with Span/stackalloc here instead of using StringBuilder?
-            StringBuilder builder = new StringBuilder(metricProvider.Length + metric.Length + (hasUnit ? baseUnit.Length + 1 : 0) + 1);
+            StringBuilder builder = new StringBuilder(metricProvider.Length + metric.Length + (!string.IsNullOrEmpty(baseUnit) ? baseUnit.Length + 1 : 0) + 1);
 
             NormalizeString(builder, metricProvider, isProvider: true);
             builder.Append(SeparatorChar);
             NormalizeString(builder, metric, isProvider: false);
-            if (hasUnit)
+            if (!string.IsNullOrEmpty(baseUnit))
             {
                 builder.Append(SeparatorChar);
                 NormalizeString(builder, baseUnit, isProvider: false);

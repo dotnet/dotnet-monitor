@@ -34,6 +34,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
         public uint ThreadId { get; set; }
 
-        public string ThreadName { get; set; }
+        public string ThreadName { get; set; } = string.Empty;
     }
 }

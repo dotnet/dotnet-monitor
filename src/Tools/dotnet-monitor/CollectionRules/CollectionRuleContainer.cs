@@ -25,15 +25,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         private readonly ActionListExecutor _actionListExecutor;
         private readonly ILogger<CollectionRuleService> _logger;
         private readonly IProcessInfo _processInfo;
+        private readonly HostInfo _hostInfo;
         private readonly IOptionsMonitor<CollectionRuleOptions> _optionsMonitor;
         private readonly List<Task> _runTasks = new();
-        private readonly TimeProvider _timeProvider;
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
 
         public List<CollectionRulePipeline> Pipelines { get; set; } = new();
 
         private long _disposalState;
-        private CancellationTokenSource _shutdownTokenSource;
+        private CancellationTokenSource? _shutdownTokenSource;
 
         public CollectionRuleContainer(
             IServiceProvider serviceProvider,
@@ -48,9 +48,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _processInfo = processInfo ?? throw new ArgumentNullException(nameof(processInfo));
 
+            _hostInfo = HostInfo.GetCurrent(serviceProvider.GetRequiredService<TimeProvider>());
             _actionListExecutor = serviceProvider.GetRequiredService<ActionListExecutor>();
             _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>();
-            _timeProvider = serviceProvider.GetRequiredService<TimeProvider>();
             _triggerOperations = serviceProvider.GetRequiredService<ICollectionRuleTriggerOperations>();
         }
 
@@ -139,7 +139,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             // executing the ApplyRules method.
             using CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(token);
 
-            TaskCompletionSource<object> startedSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            TaskCompletionSource<object?> startedSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
             // Start running the rule and wrap running task
             // in a safe awaitable task so that shutdown isn't
@@ -164,42 +164,40 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         /// </remarks>
         private async Task RunRuleAsync(
             string ruleName,
-            TaskCompletionSource<object> startedSource,
+            TaskCompletionSource<object?> startedSource,
             CancellationToken token)
         {
             KeyValueLogScope scope = new();
             scope.AddCollectionRuleEndpointInfo(_processInfo.EndpointInfo);
             scope.AddCollectionRuleName(ruleName);
-            using IDisposable loggerScope = _logger.BeginScope(scope);
+            using IDisposable? loggerScope = _logger.BeginScope(scope);
 
+#nullable disable
             using CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(
                 _shutdownTokenSource.Token,
                 token);
-
+#nullable restore
             try
             {
                 CollectionRuleOptions options = _optionsMonitor.Get(ruleName);
 
-                if (null != options.Filters)
+                DiagProcessFilter filter = DiagProcessFilter.FromConfiguration(options.Filters);
+
+                if (!filter.Filters.All(f => f.MatchFilter(_processInfo)))
                 {
-                    DiagProcessFilter filter = DiagProcessFilter.FromConfiguration(options.Filters);
+                    // Collection rule filter does not match target process
+                    _logger.CollectionRuleUnmatchedFilters(ruleName);
 
-                    if (!filter.Filters.All(f => f.MatchFilter(_processInfo)))
-                    {
-                        // Collection rule filter does not match target process
-                        _logger.CollectionRuleUnmatchedFilters(ruleName);
+                    // Signal rule has "started" in order to not block
+                    // resumption of the runtime instance.
+                    startedSource.TrySetResult(null);
 
-                        // Signal rule has "started" in order to not block
-                        // resumption of the runtime instance.
-                        startedSource.TrySetResult(null);
-
-                        return;
-                    }
+                    return;
                 }
 
                 _logger.CollectionRuleStarted(ruleName);
 
-                CollectionRuleContext context = new(ruleName, options, _processInfo, _logger, _timeProvider);
+                CollectionRuleContext context = new(ruleName, options, _processInfo, _hostInfo, _logger);
 
                 await using CollectionRulePipeline pipeline = new(
                     _actionListExecutor,
@@ -242,7 +240,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
         }
 
-        private static bool TrySetCanceledAndReturnTrue(OperationCanceledException ex, TaskCompletionSource<object> source)
+        private static bool TrySetCanceledAndReturnTrue(OperationCanceledException ex, TaskCompletionSource<object?> source)
         {
             // Always attempt to cancel the completion source
             source.TrySetCanceled(ex.CancellationToken);
@@ -251,7 +249,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             return true;
         }
 
-        private bool LogExceptionAndReturnFalse(Exception ex, TaskCompletionSource<object> source, string ruleName)
+        private bool LogExceptionAndReturnFalse(Exception ex, TaskCompletionSource<object?> source, string ruleName)
         {
             // Log failure
             _logger.CollectionRuleFailed(ruleName, ex);

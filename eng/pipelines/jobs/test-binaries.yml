@@ -81,21 +81,11 @@ jobs:
 
     - ${{ if eq(parameters.useHelix, 'true')}}:
       - ${{ if ne(parameters.osGroup, 'Linux_Musl')}}:
-        # Linux builds (of all variants) run in Mariner containers and do not include pwsh by default
         - ${{ if eq(parameters.osGroup, 'Linux') }}:
-          - script: |
-              $(Build.SourcesDirectory)/restore.sh
-              $(Build.SourcesDirectory)/.dotnet/dotnet tool install --global PowerShell
-              echo "##vso[task.prependpath]/home/cloudtest_azpcontainer/.dotnet/tools"
-            displayName: Install pwsh
-
           # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
           - script: |
-              pwsh ../eng/helix/GetNodejsVersion.ps1 -MajorVersion $(NodeMajorVersion) -TaskVariableName 'FqNodejsVersion'
+              pwsh ./eng/helix/GetNodejsVersion.ps1 -MajorVersion $(NodeMajorVersion) -TaskVariableName 'FqNodejsVersion'
             displayName: Calculate Node.js version Linux
-            workingDirectory: "$(Build.SourcesDirectory)/.dotnet"
-            env:
-              DOTNET_ROOT: "$(Build.SourcesDirectory)/.dotnet"
   
           - task: Cache@2
             displayName: Node.js Cache Linux
@@ -105,11 +95,8 @@ jobs:
               path: $(HelixNodejsPayloadPath)
   
           - script: |
-              pwsh ../eng/helix/InstallNodejs.ps1 -Version $(FqNodejsVersion) -Architecture ${{ parameters.architecture }} -DestinationFolder "$(HelixNodejsPayloadPath)"
+              pwsh ./eng/helix/InstallNodejs.ps1 -Version $(FqNodejsVersion) -Architecture ${{ parameters.architecture }} -DestinationFolder "$(HelixNodejsPayloadPath)"
             displayName: Hydrate Node.js Installation Linux
-            workingDirectory: "$(Build.SourcesDirectory)/.dotnet"
-            env:
-              DOTNET_ROOT: "$(Build.SourcesDirectory)/.dotnet"
 
         - ${{ else }}:
           - pwsh: eng/helix/GetNodejsVersion.ps1

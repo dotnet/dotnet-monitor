@@ -23,12 +23,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private readonly IArtifactOperation _operation;
 
-        public EgressOperation(IArtifactOperation operation, string endpointName, IProcessInfo processInfo, KeyValueLogScope scope, string tags, CollectionRuleMetadata collectionRuleMetadata = null)
+        public EgressOperation(IArtifactOperation operation, string endpointName, string? artifactName, IProcessInfo processInfo, KeyValueLogScope scope, string? tags, CollectionRuleMetadata? collectionRuleMetadata = null)
         {
             _egress = (service, token) => service.EgressAsync(
                 endpointName,
                 operation.ExecuteAsync,
-                operation.GenerateFileName(),
+                artifactName ?? operation.GenerateFileName(),
                 operation.ContentType,
                 processInfo.EndpointInfo,
                 collectionRuleMetadata,

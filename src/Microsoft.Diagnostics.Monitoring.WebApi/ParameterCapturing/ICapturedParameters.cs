@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
 {
     internal interface ICapturedParameters
     {
-        string ActivityId { get; }
+        string? ActivityId { get; }
 
         ActivityIdFormat ActivityIdFormat { get; }
 

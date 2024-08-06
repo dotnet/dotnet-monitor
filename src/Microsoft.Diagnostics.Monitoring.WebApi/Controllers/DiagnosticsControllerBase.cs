@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        protected Task<ActionResult> InvokeForProcess(Func<IProcessInfo, ActionResult> func, ProcessKey? processKey, string artifactType = null)
+        protected Task<ActionResult> InvokeForProcess(Func<IProcessInfo, ActionResult> func, ProcessKey? processKey, string? artifactType = null)
         {
             Func<IProcessInfo, Task<ActionResult>> asyncFunc =
                 processInfo => Task.FromResult(func(processInfo));
@@ -30,21 +30,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return InvokeForProcess(asyncFunc, processKey, artifactType);
         }
 
-        protected async Task<ActionResult> InvokeForProcess(Func<IProcessInfo, Task<ActionResult>> func, ProcessKey? processKey, string artifactType)
+        protected async Task<ActionResult> InvokeForProcess(Func<IProcessInfo, Task<ActionResult>> func, ProcessKey? processKey, string? artifactType)
         {
             ActionResult<object> result = await InvokeForProcess<object>(async processInfo => await func(processInfo), processKey, artifactType);
 
-            return result.Result;
+            return result.Result!;
         }
 
-        protected Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, ActionResult<T>> func, ProcessKey? processKey, string artifactType = null)
+        protected Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, ActionResult<T>> func, ProcessKey? processKey, string? artifactType = null)
         {
             return InvokeForProcess(processInfo => Task.FromResult(func(processInfo)), processKey, artifactType);
         }
 
-        protected async Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, Task<ActionResult<T>>> func, ProcessKey? processKey, string artifactType = null)
+        protected async Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, Task<ActionResult<T>>> func, ProcessKey? processKey, string? artifactType = null)
         {
-            IDisposable artifactTypeRegistration = null;
+            IDisposable? artifactTypeRegistration = null;
             if (!string.IsNullOrEmpty(artifactType))
             {
                 KeyValueLogScope artifactTypeScope = new KeyValueLogScope();
@@ -75,10 +75,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
         protected async Task<ActionResult> Result(
             string artifactType,
-            string providerName,
+            string? providerName,
             IArtifactOperation operation,
             IProcessInfo processInfo,
-            string tags,
+            string? tags,
             bool asAttachment = true)
         {
             KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
@@ -96,6 +96,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return await SendToEgress(new EgressOperation(
                     operation,
                     providerName,
+                    default, // Use default artifact name
                     processInfo,
                     scope,
                     tags),
@@ -103,7 +104,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, string tags, IArtifactOperation operation)
+        private async Task RegisterCurrentHttpResponseAsOperation(IProcessInfo processInfo, string artifactType, string? tags, IArtifactOperation operation)
         {
             // While not strictly a Location redirect, use the same header as externally egressed operations for consistency.
             HttpContext.Response.Headers["Location"] = await RegisterOperation(
@@ -111,7 +112,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 limitKey: artifactType);
         }
 
-        private async Task<string> RegisterOperation(IEgressOperation egressOperation, string limitKey)
+        private async Task<string?> RegisterOperation(IEgressOperation egressOperation, string limitKey)
         {
             // Will throw TooManyRequestsException if there are too many concurrent operations.
             Guid operationId = await OperationStore.AddOperation(egressOperation, limitKey);
@@ -123,7 +124,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
         private async Task<ActionResult> SendToEgress(IEgressOperation egressOperation, string limitKey)
         {
-            string operationUrl = await RegisterOperation(egressOperation, limitKey);
+            string? operationUrl = await RegisterOperation(egressOperation, limitKey);
             return Accepted(operationUrl);
         }
 

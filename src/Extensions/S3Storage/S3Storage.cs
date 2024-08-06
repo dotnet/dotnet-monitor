@@ -24,9 +24,9 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
         private readonly string _objectId;
         private readonly string _contentType;
         private readonly bool _useKmsEncryption;
-        private readonly string _kmsEncryptionKey;
+        private readonly string? _kmsEncryptionKey;
 
-        public S3Storage(IAmazonS3 client, string bucketName, string objectId, string contentType, bool useKmsEncryption, string kmsEncryptionKey)
+        public S3Storage(IAmazonS3 client, string bucketName, string objectId, string contentType, bool useKmsEncryption, string? kmsEncryptionKey)
         {
             _s3Client = client;
             _bucketName = bucketName;
@@ -38,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 
         public static async Task<IS3Storage> CreateAsync(S3StorageEgressProviderOptions options, EgressArtifactSettings settings, CancellationToken cancellationToken)
         {
-            AWSCredentials awsCredentials = null;
+            AWSCredentials? awsCredentials = null;
             AmazonS3Config configuration = new();
             // use the specified access key and the secrets taken from configuration
             if (!string.IsNullOrEmpty(options.AccessKeyId) && !string.IsNullOrEmpty(options.SecretAccessKey))

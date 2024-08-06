@@ -16,17 +16,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         private readonly string _providerName;
         private readonly string _eventName;
-        private readonly IDictionary<string, string> _payloadFilter;
+        private readonly IDictionary<string, string>? _payloadFilter;
 
-        private readonly TaskCompletionSource<object> _eventStreamAvailableCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly TaskCompletionSource<object> _stoppingEventHitSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<object?> _eventStreamAvailableCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<object?> _stoppingEventHitSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         public TraceUntilEventOperation(
             IEndpointInfo endpointInfo,
             EventTracePipelineSettings settings,
             string providerName,
             string eventName,
-            IDictionary<string, string> payloadFilter,
+            IDictionary<string, string>? payloadFilter,
             OperationTrackerService trackerService,
             ILogger logger)
             : base(endpointInfo, settings, trackerService, logger)
@@ -42,7 +42,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return new EventTracePipeline(client, _settings,
                 async (eventStream, token) =>
                 {
-                    _eventStreamAvailableCompletionSource?.TrySetResult(null);
+                    _eventStreamAvailableCompletionSource.TrySetResult(null);
 
                     await using EventMonitor eventMonitor = new(
                         _providerName,

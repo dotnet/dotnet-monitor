@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public void Log()
         {
-            if (_builderContext.Properties.TryGetValue(HostBuilderResults.ResultKey, out object resultsObject))
+            if (_builderContext.Properties.TryGetValue(HostBuilderResults.ResultKey, out object? resultsObject))
             {
                 if (resultsObject is HostBuilderResults hostBuilderResults)
                 {

@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private readonly string _artifactType;
         private readonly TaskCompletionSource _startCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        private Func<CancellationToken, Task> _stopFunc;
+        private Func<CancellationToken, Task>? _stopFunc;
 
         protected OperationTrackerService OperationTrackerService { get; }
 
@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 _stopFunc = pipeline.StopAsync;
 
-                using IDisposable trackerRegistration = Register ? OperationTrackerService.Register(EndpointInfo) : null;
+                using IDisposable? trackerRegistration = Register ? OperationTrackerService.Register(EndpointInfo) : null;
 
                 Task runTask = await StartPipelineAsync(pipeline, token);
 
