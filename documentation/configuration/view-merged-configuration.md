@@ -54,5 +54,5 @@ Tell us about your experience with dotnet monitor: https://aka.ms/dotnet-monitor
 To view the loaded configuration providers, run the following command:
 
 ```cmd
-dotnet monitor config show --show-sources
+dotnet-monitor config show --show-sources
 ```
