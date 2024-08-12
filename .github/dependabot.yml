@@ -21,10 +21,10 @@ updates:
     azure-sdk-dependencies:
       patterns:
       - Azure.Core
+      - Azure.Identity
       - Azure.Storage.*
     identity-dependencies:
       patterns:
-      - Azure.Identity
       - Microsoft.Identity.*
       - Microsoft.IdentityModel.*
 - package-ecosystem: nuget
@@ -98,10 +98,10 @@ updates:
     azure-sdk-dependencies:
       patterns:
       - Azure.Core
+      - Azure.Identity
       - Azure.Storage.*
     identity-dependencies:
       patterns:
-      - Azure.Identity
       - Microsoft.Identity.*
       - Microsoft.IdentityModel.*
 - package-ecosystem: nuget
@@ -179,10 +179,10 @@ updates:
     azure-sdk-dependencies:
       patterns:
       - Azure.Core
+      - Azure.Identity
       - Azure.Storage.*
     identity-dependencies:
       patterns:
-      - Azure.Identity
       - Microsoft.Identity.*
       - Microsoft.IdentityModel.*
 - package-ecosystem: nuget
