@@ -1,32 +1,47 @@
 [CmdletBinding()]
 Param(
     [Parameter(Mandatory=$true)][string] $BarId,
-    [Parameter(Mandatory=$true)][string] $MaestroToken,
-    [Parameter(Mandatory=$false)][string] $MaestroApiEndPoint = 'https://maestro-prod.westus2.cloudapp.azure.com',
-    [Parameter(Mandatory=$false)][string] $MaestroApiVersion = '2020-02-20',
+    [Parameter(Mandatory=$false)][string] $MaestroApiEndPoint = 'https://maestro.dot.net',
     [Parameter(Mandatory=$false)][string] $TaskVariableName = $null,
+    [Parameter(Mandatory=$false)][string] $DarcVersion = $null,
     [Parameter(Mandatory=$false)][switch] $MajorMinorOnly
 )
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
 
-[array]$releaseData = Invoke-RestMethod `
-    -Uri "$MaestroApiEndPoint/api/assets?buildId=$BarId&api-version=$MaestroApiVersion" `
-    -Method 'GET' `
-    -Headers @{ 'accept' = 'application/json'; 'Authorization' = "Bearer $MaestroToken" }
+$ci = $true
+$darc = $null
+try {
+    $darc = (Get-Command darc).Source
+}
+catch {
+    . $PSScriptRoot\..\..\common\tools.ps1
+    $darc = Get-Darc $DarcVersion
+}
 
-Write-Verbose 'ReleaseData:'
-$releaseDataJson = $releaseData | ConvertTo-Json
-Write-Verbose $releaseDataJson
+[string]$buildDataJson = & $darc get-build `
+    --id "$BarId" `
+    --extended `
+    --output-format json `
+    --bar-uri "$MaestroApiEndPoint" `
+    --ci
 
-[array]$matchingData = $releaseData | Where-Object { $_.name -match 'MergedManifest.xml$' -and $_.nonShipping -ieq 'true' }
+Write-Verbose 'BuildData:'
+Write-Verbose $buildDataJson
+$buildData = $buildDataJson | ConvertFrom-Json
+
+if ($buildData.Length -ne 1) {
+    Write-Error 'Unable to obtain build data.'
+}
+
+[array]$matchingData = $buildData[0].assets | Where-Object { $_.name -match 'MergedManifest.xml$' }
 
 if ($matchingData.Length -ne 1) {
     Write-Error 'Unable to obtain build version.'
 }
 
-$version = $matchingData[0].Version
+$version = $matchingData[0].version
 
 if ($MajorMinorOnly) {
     $version = ($version -split '\.')[0..1] -join '.'
