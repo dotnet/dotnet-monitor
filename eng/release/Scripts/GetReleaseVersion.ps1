@@ -10,32 +10,12 @@ Param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
 
-$ci = $true
-$darc = $null
-try {
-    $darc = (Get-Command darc).Source
-}
-catch {
-    . $PSScriptRoot\..\..\common\tools.ps1
-    $darc = Get-Darc $DarcVersion
-}
+$buildData = & $PSScriptRoot\GetDarcBuild.ps1 `
+    -BarId $BarId `
+    -MaestroApiEndPoint $MaestroApiEndPoint `
+    -DarcVersion $DarcVersion
 
-[string]$buildDataJson = & $darc get-build `
-    --id "$BarId" `
-    --extended `
-    --output-format json `
-    --bar-uri "$MaestroApiEndPoint" `
-    --ci
-
-Write-Verbose 'BuildData:'
-Write-Verbose $buildDataJson
-$buildData = $buildDataJson | ConvertFrom-Json
-
-if ($buildData.Length -ne 1) {
-    Write-Error 'Unable to obtain build data.'
-}
-
-[array]$matchingData = $buildData[0].assets | Where-Object { $_.name -match '^dotnet-monitor$' }
+[array]$matchingData = $buildData.assets | Where-Object { $_.name -match '^dotnet-monitor$' }
 
 if ($matchingData.Length -ne 1) {
     Write-Error 'Unable to obtain release version'
