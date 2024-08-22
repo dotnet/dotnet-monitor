@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 methodName = methodName[..methodName.IndexOf('[')];
             }
 
-            // Return null on psuedo frames (e.g. [NativeFrame])
+            // Return null on pseudo frames (e.g. [NativeFrame])
             if (methodName.Length == 0)
             {
                 return null;
@@ -380,7 +380,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     options.GreaterThan = 0.0;
                     options.SlidingWindowDuration = TimeSpan.FromSeconds(5);
                 })
-                .AddCollectStacksAction(fileEgress, Tools.Monitor.CollectionRules.Options.Actions.CallStackFormat.Json);
+                .AddCollectStacksAction(fileEgress, o => o.Format = Tools.Monitor.CollectionRules.Options.Actions.CallStackFormat.Json);
 
             ruleCompletedTask = runner.WaitForCollectionRuleActionsCompletedAsync("StacksCounterRule");
         }

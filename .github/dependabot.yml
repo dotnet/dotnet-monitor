@@ -18,12 +18,13 @@ updates:
   commit-message:
     prefix: '[main] '
   groups:
-    azure-storage-dependencies:
+    azure-sdk-dependencies:
       patterns:
+      - Azure.Core
+      - Azure.Identity
       - Azure.Storage.*
     identity-dependencies:
       patterns:
-      - Azure.Identity
       - Microsoft.Identity.*
       - Microsoft.IdentityModel.*
 - package-ecosystem: nuget
@@ -94,12 +95,13 @@ updates:
   commit-message:
     prefix: '[release/8.0] '
   groups:
-    azure-storage-dependencies:
+    azure-sdk-dependencies:
       patterns:
+      - Azure.Core
+      - Azure.Identity
       - Azure.Storage.*
     identity-dependencies:
       patterns:
-      - Azure.Identity
       - Microsoft.Identity.*
       - Microsoft.IdentityModel.*
 - package-ecosystem: nuget
@@ -174,12 +176,13 @@ updates:
   commit-message:
     prefix: '[release/6.x] '
   groups:
-    azure-storage-dependencies:
+    azure-sdk-dependencies:
       patterns:
+      - Azure.Core
+      - Azure.Identity
       - Azure.Storage.*
     identity-dependencies:
       patterns:
-      - Azure.Identity
       - Microsoft.Identity.*
       - Microsoft.IdentityModel.*
 - package-ecosystem: nuget

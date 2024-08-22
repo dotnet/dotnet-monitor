@@ -23,6 +23,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public string CommandLine { get; set; } = string.Empty;
 
+        public string MonitorHostName { get; set; } = string.Empty;
+
+        public DateTimeOffset Timestamp { get; set; }
+
         public IDictionary<string, string> EnvironmentBlock { get; set; } = new Dictionary<string, string>();
     }
 
@@ -34,16 +38,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public const string SubstitutionSuffix = ")";
         public const string Separator = ".";
 
+        private const string MonitorInfoReference = "Monitor";
         private const string ProcessInfoReference = "Process";
+
         private const string RuntimeId = "RuntimeId";
         private const string ProcessId = "ProcessId";
         private const string ProcessName = "Name";
         private const string CommandLine = "CommandLine";
+        private const string HostName = "HostName";
+        private const string UnixTime = "UnixTime";
 
         public static readonly string RuntimeIdReference = CreateTokenReference(ProcessInfoReference, RuntimeId);
         public static readonly string ProcessIdReference = CreateTokenReference(ProcessInfoReference, ProcessId);
         public static readonly string ProcessNameReference = CreateTokenReference(ProcessInfoReference, ProcessName);
         public static readonly string CommandLineReference = CreateTokenReference(ProcessInfoReference, CommandLine);
+        public static readonly string HostNameReference = CreateTokenReference(MonitorInfoReference, HostName);
+        public static readonly string UnixTimeReference = CreateTokenReference(MonitorInfoReference, UnixTime);
 
         public ConfigurationTokenParser(ILogger logger)
         {
@@ -66,6 +76,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 replacement = replacement.Replace(ProcessIdReference, context.ProcessId.ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal);
                 replacement = replacement.Replace(ProcessNameReference, context.ProcessName, StringComparison.Ordinal);
                 replacement = replacement.Replace(CommandLineReference, context.CommandLine, StringComparison.Ordinal);
+                replacement = replacement.Replace(HostNameReference, context.MonitorHostName, StringComparison.Ordinal);
+                replacement = replacement.Replace(UnixTimeReference, context.Timestamp.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal);
 
                 if (!ReferenceEquals(replacement, originalPropertyValue))
                 {
