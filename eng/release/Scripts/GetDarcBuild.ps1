@@ -29,7 +29,7 @@ Write-Verbose 'BuildData:'
 Write-Verbose $buildDataJson
 $buildData = $buildDataJson | ConvertFrom-Json
 
-if ($buildData.Length -ne 1) {
+if (!$buildData -or $buildData.Length -ne 1) {
     Write-Error 'Unable to obtain build data.'
 }
 

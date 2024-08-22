@@ -17,7 +17,7 @@ $buildData = & $PSScriptRoot\GetDarcBuild.ps1 `
 
 [array]$matchingData = $buildData.assets | Where-Object { $_.name -match '^dotnet-monitor$' }
 
-if ($matchingData.Length -ne 1) {
+if (!$matchingData -or $matchingData.Length -ne 1) {
     Write-Error 'Unable to obtain release version'
 }
 
