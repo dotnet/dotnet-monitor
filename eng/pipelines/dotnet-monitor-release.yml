@@ -62,22 +62,24 @@ extends:
           env:
             SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
-        - task: PowerShell@2
+        - task: AzureCLI@2
           displayName: Get Release Version
           inputs:
-            filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetReleaseVersion.ps1
+            azureSubscription: "Darc: Maestro Production"
+            scriptType: ps
+            scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetReleaseVersion.ps1
             arguments: >-
               -BarId $(BarId)
-              -MaestroToken $(MaestroAccessToken)
               -TaskVariableName 'ReleaseVersion'
         
-        - task: PowerShell@2
+        - task: AzureCLI@2
           displayName: Get Build Version
           inputs:
-            filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
+            azureSubscription: "Darc: Maestro Production"
+            scriptType: ps
+            scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
             arguments: >-
               -BarId $(BarId)
-              -MaestroToken $(MaestroAccessToken)
               -TaskVariableName 'BuildVersion'
 
         - powershell: |
@@ -140,22 +142,24 @@ extends:
                 env:
                   SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
-              - task: PowerShell@2
+              - task: AzureCLI@2
                 displayName: Get Release Version
                 inputs:
-                  filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetReleaseVersion.ps1
+                  azureSubscription: "Darc: Maestro Production"
+                  scriptType: ps
+                  scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetReleaseVersion.ps1
                   arguments: >-
                     -BarId $(BarId)
-                    -MaestroToken $(MaestroAccessToken)
                     -TaskVariableName 'ReleaseVersion'
 
-              - task: PowerShell@2
+              - task: AzureCLI@2
                 displayName: Get Build Version
                 inputs:
-                  filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
+                  azureSubscription: "Darc: Maestro Production"
+                  scriptType: ps
+                  scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
                   arguments: >-
                     -BarId $(BarId)
-                    -MaestroToken $(MaestroAccessToken)
                     -TaskVariableName 'BuildVersion'
 
               - powershell: Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
