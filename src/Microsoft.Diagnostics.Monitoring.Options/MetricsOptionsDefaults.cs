@@ -10,5 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const int MetricCount = 3;
 
         public const bool IncludeDefaultProviders = true;
+
+        public const bool AllowMultipleProcessMetrics = false;
     }
 }

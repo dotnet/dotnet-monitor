@@ -50,7 +50,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_Meters))]
         public List<MeterConfiguration> Meters { get; set; } = [];
 
-        public bool AllowMultipleProcesses { get; set; }
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_AllowMultipleProcessesMetrics))]
+        [DefaultValue(MetricsOptionsDefaults.AllowMultipleProcessMetrics)]
+        public bool AllowMultipleProcessesMetrics { get; set; }
     }
 
     public class MetricProvider

@@ -1384,6 +1384,11 @@
           "items": {
             "$ref": "#/definitions/MeterConfiguration"
           }
+        },
+        "AllowMultipleProcessesMetrics": {
+          "type": "boolean",
+          "description": "Is it allowed to expose metrics of multiple processes in /metrics endpoint",
+          "default": false
         }
       }
     },

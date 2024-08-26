@@ -46,7 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 return;
             }
 
-            if (!_optionsMonitor.CurrentValue.AllowMultipleProcesses)
+            if (!_optionsMonitor.CurrentValue.AllowMultipleProcessesMetrics)
             {
                 await GetMetricsFromSingleProcessAsync(stoppingToken);
             }

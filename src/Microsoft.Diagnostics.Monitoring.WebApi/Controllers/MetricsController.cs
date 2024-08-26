@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
         /// <summary>
         /// Gets a list of the current backlog of metrics for default process (or multiple processes) in the Prometheus exposition format.
-        /// Behavior of this endpoint depends on <see cref="MetricsOptions.AllowMultipleProcesses"/> flag:
+        /// Behavior of this endpoint depends on <see cref="MetricsOptions.AllowMultipleProcessesMetrics"/> flag:
         ///  - if <c>false</c>: data will be returned only if exactly one process matches default process filters.
         ///  - if <c>true</c>: data will be returned for all processes which match filters, event if there is more than one.
         ///
@@ -47,7 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public ActionResult GetMetrics()
         {
-            if (!_metricsOptions.AllowMultipleProcesses)
+            if (!_metricsOptions.AllowMultipleProcessesMetrics)
             {
                 return GetSingleProcessMetrics();
             }
