@@ -1464,7 +1464,7 @@
         "tags": [
           "Metrics"
         ],
-        "summary": "Gets a list of the current backlog of metrics for default process (or multiple processes) in the Prometheus exposition format.\r\nBehavior of this endpoint depends on Microsoft.Diagnostics.Monitoring.WebApi.MetricsOptions.AllowMultipleProcessesMetrics flag:\r\n - if `false`: data will be returned only if exactly one process matches default process filters.\r\n - if `true`: data will be returned for all processes which match filters, event if there is more than one.\r\n            \r\nReturned metrics contain `process_id` and `process_name` labels, which can be used\r\nto determine metric origin process.",
+        "summary": "Gets a list of the current backlog of metrics for default process (or multiple processes) in the Prometheus exposition format.\r\nBehavior of this endpoint depends on `AllowMultipleProcessesMetrics` configuration flag:\r\n - if `false`: data will be returned only if exactly one process matches default process filters.\r\n - if `true`: data will be returned for all processes which match filters, event if there is more than one.\r\n            \r\nReturned metrics contain `process_id` and `process_name` labels, which can be used\r\nto determine metric origin process.",
         "operationId": "GetMetrics",
         "responses": {
           "400": {
