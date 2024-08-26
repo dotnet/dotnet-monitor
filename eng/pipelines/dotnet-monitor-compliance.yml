@@ -40,22 +40,24 @@ extends:
           env:
             SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
-        - task: PowerShell@2
+        - task: AzureCLI@2
           displayName: 'Get Build Version (Full)'
           inputs:
-            filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
+            azureSubscription: "Darc: Maestro Production"
+            scriptType: ps
+            scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
             arguments: >-
               -BarId $(BuildBarId)
-              -MaestroToken $(MaestroAccessToken)
               -TaskVariableName 'BuildVersion'
 
-        - task: PowerShell@2
+        - task: AzureCLI@2
           displayName: 'Get Build Version (Major.Minor)'
           inputs:
-            filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
+            azureSubscription: "Darc: Maestro Production"
+            scriptType: ps
+            scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
             arguments: >-
               -BarId $(BuildBarId)
-              -MaestroToken $(MaestroAccessToken)
               -TaskVariableName 'BuildMajorMinorVersion'
               -MajorMinorOnly
 
