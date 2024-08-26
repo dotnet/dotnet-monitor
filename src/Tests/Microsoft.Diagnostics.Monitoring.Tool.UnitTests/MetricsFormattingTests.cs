@@ -148,9 +148,69 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(FormattableString.Invariant($"{metricName} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}"), lines[2]);
         }
 
-        private async Task<MemoryStream> GetMetrics(List<ICounterPayload> payloads)
+        [Fact]
+        public async Task DefaultLabels_Test()
         {
-            IMetricsStore metricsStore = new MetricsStore(_logger, MetricCount);
+            CounterMetadata counterInfo = new CounterMetadata(MeterName, InstrumentName, meterTags: null, instrumentTags: null, scopeHash: null);
+
+            ICounterPayload payload = new UpDownCounterPayload(counterInfo, "DisplayName", "", null, Value1, Timestamp);
+
+            const string firstLabel = "first_default_label";
+            const string secondLabel = "second_default_label";
+            var defaultLabels = new Dictionary<string, string>()
+            {
+                {firstLabel, $"first-{Guid.NewGuid()}"},
+                {secondLabel, $"second-{Guid.NewGuid()}"}
+            };
+            MemoryStream stream = await GetMetrics(new() { payload }, defaultLabels);
+
+            List<string> lines = ReadStream(stream);
+
+            string metricName = $"{MeterName.ToLowerInvariant()}_{payload.CounterMetadata.CounterName}";
+            string expectedLabels =
+                $"{{{firstLabel}=\"{defaultLabels[firstLabel]}\", {secondLabel}=\"{defaultLabels[secondLabel]}\"}}";
+
+            Assert.Equal(3, lines.Count);
+            Assert.Equal(FormattableString.Invariant($"# HELP {metricName}{payload.Unit} {payload.DisplayName}"), lines[0]);
+            Assert.Equal(FormattableString.Invariant($"# TYPE {metricName} gauge"), lines[1]);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{expectedLabels} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}"), lines[2]);
+        }
+
+        [Fact]
+        public async Task MetricLabelsWithDefaultLabels_Test()
+        {
+            CounterMetadata counterInfo = new (MeterName, InstrumentName,
+                meterTags: "meter_tag:test_value",
+                instrumentTags: null,
+                scopeHash: null);
+
+            ICounterPayload payload = new UpDownCounterPayload(counterInfo, "DisplayName", "", null, Value1, Timestamp);
+
+            const string firstLabel = "first_default_label";
+            const string secondLabel = "second_default_label";
+            var defaultLabels = new Dictionary<string, string>()
+            {
+                {firstLabel, $"first-{Guid.NewGuid()}"},
+                {secondLabel, $"second-{Guid.NewGuid()}"}
+            };
+            MemoryStream stream = await GetMetrics(new() { payload }, defaultLabels);
+
+            List<string> lines = ReadStream(stream);
+
+            string metricName = $"{MeterName.ToLowerInvariant()}_{payload.CounterMetadata.CounterName}";
+            string expectedLabels =
+                $"{{meter_tag=\"test_value\", {firstLabel}=\"{defaultLabels[firstLabel]}\", {secondLabel}=\"{defaultLabels[secondLabel]}\"}}";
+
+            Assert.Equal(3, lines.Count);
+            Assert.Equal(FormattableString.Invariant($"# HELP {metricName}{payload.Unit} {payload.DisplayName}"), lines[0]);
+            Assert.Equal(FormattableString.Invariant($"# TYPE {metricName} gauge"), lines[1]);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{expectedLabels} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}"), lines[2]);
+        }
+
+        private async Task<MemoryStream> GetMetrics(List<ICounterPayload> payloads,
+            IDictionary<string, string> defaultLabels = null)
+        {
+            IMetricsStore metricsStore = new MetricsStore(_logger, MetricCount, defaultLabels);
 
             foreach (var payload in payloads)
             {
