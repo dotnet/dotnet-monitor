@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -47,12 +48,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private Dictionary<MetricKey, Queue<ICounterPayload>> _allMetrics = new Dictionary<MetricKey, Queue<ICounterPayload>>();
         private readonly int _maxMetricCount;
+        private readonly string _defaultLabels;
         private ILogger<MetricsStoreService> _logger;
 
         private HashSet<string> _observedErrorMessages = new();
         private HashSet<(string provider, string counter)> _observedEndedCounters = new();
 
-        public MetricsStore(ILogger<MetricsStoreService> logger, int maxMetricCount)
+        private static readonly IDictionary<string, string> EmptyDefault
+            = ImmutableDictionary<string, string>.Empty;
+        public MetricsStore(ILogger<MetricsStoreService> logger, int maxMetricCount,
+            IDictionary<string, string>? defaultLabels = null)
         {
             if (maxMetricCount < 1)
             {
@@ -60,6 +65,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             _maxMetricCount = maxMetricCount;
             _logger = logger;
+
+            defaultLabels ??= EmptyDefault;
+            _defaultLabels = LabelsToString(defaultLabels);
         }
 
         public void AddMetric(ICounterPayload metric)
@@ -150,6 +158,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         {
                             string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(metric.Unit, quantile.Value);
                             string metricLabels = GetMetricLabels(metric, quantile.Percentage);
+                            metricLabels = AppendDefaultLabels(metricLabels);
                             await WriteMetricDetails(writer, metric, metricName, metricValue, metricLabels);
                         }
                     }
@@ -157,10 +166,26 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     {
                         string metricValue = PrometheusDataModel.GetPrometheusNormalizedValue(metric.Unit, metric.Value);
                         string metricLabels = GetMetricLabels(metric, quantile: null);
+                        metricLabels = AppendDefaultLabels(metricLabels);
                         await WriteMetricDetails(writer, metric, metricName, metricValue, metricLabels);
                     }
                 }
             }
+        }
+
+        private string AppendDefaultLabels(string metricLabels)
+        {
+            if (string.IsNullOrEmpty(_defaultLabels))
+            {
+                return metricLabels;
+            }
+
+            if (string.IsNullOrEmpty(metricLabels))
+            {
+                return _defaultLabels;
+            }
+
+            return $"{metricLabels}, {_defaultLabels}";
         }
 
         private static string GetMetricLabels(ICounterPayload metric, double? quantile)
@@ -174,12 +199,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 metadataValues.Add("quantile", quantile.Value.ToString(CultureInfo.InvariantCulture));
             }
 
+            return LabelsToString(metadataValues);
+        }
+
+        private static string LabelsToString(IDictionary<string, string> metadataValues)
+        {
             var keyValuePairs = from pair in metadataValues
-                                select PrometheusDataModel.GetPrometheusNormalizedLabel(pair.Key, pair.Value);
+                select PrometheusDataModel.GetPrometheusNormalizedLabel(pair.Key, pair.Value);
 
-            string metricLabels = string.Join(", ", keyValuePairs);
-
-            return metricLabels;
+            return string.Join(", ", keyValuePairs);
         }
 
         //HACK We should make this easier in the base api

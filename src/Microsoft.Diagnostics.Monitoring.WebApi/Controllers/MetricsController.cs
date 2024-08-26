@@ -34,12 +34,28 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get a list of the current backlog of metrics for a process in the Prometheus exposition format.
+        /// Gets a list of the current backlog of metrics for default process (or multiple processes) in the Prometheus exposition format.
+        /// Behavior of this endpoint depends on <see cref="MetricsOptions.AllowMultipleProcesses"/> flag:
+        ///  - if <c>false</c>: data will be returned only if exactly one process matches default process filters.
+        ///  - if <c>true</c>: data will be returned for all processes which match filters, event if there is more than one.
+        ///
+        /// Returned metrics contain <c>process_id</c> and <c>process_name</c> labels, which can be used
+        /// to determine metric origin process.
         /// </summary>
         [HttpGet("metrics", Name = nameof(GetMetrics))]
         [ProducesWithProblemDetails(ContentTypes.TextPlain_v0_0_4)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public ActionResult GetMetrics()
+        {
+            if (!_metricsOptions.AllowMultipleProcesses)
+            {
+                return GetSingleProcessMetrics();
+            }
+
+            return GetMultipleProcessesMetrics();
+        }
+
+        private ActionResult GetSingleProcessMetrics()
         {
             return this.InvokeService(() =>
             {
@@ -54,6 +70,31 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return new OutputStreamResult(async (outputStream, token) =>
                     {
                         await _metricsStore.MetricsStore.SnapshotMetrics(outputStream, token);
+                    },
+                    ContentTypes.TextPlain_v0_0_4,
+                    null,
+                    scope);
+            }, _logger);
+        }
+
+        private ActionResult GetMultipleProcessesMetrics()
+        {
+            return this.InvokeService(() =>
+            {
+                if (!_metricsOptions.GetEnabled())
+                {
+                    throw new InvalidOperationException(Strings.ErrorMessage_MetricsDisabled);
+                }
+
+                KeyValueLogScope scope = new KeyValueLogScope();
+                scope.AddArtifactType(ArtifactType_Metrics);
+
+                return new OutputStreamResult(async (outputStream, token) =>
+                    {
+                        foreach (MetricsStore metricsStore in _metricsStore.GetAllMetrics())
+                        {
+                            await metricsStore.SnapshotMetrics(outputStream, token);
+                        }
                     },
                     ContentTypes.TextPlain_v0_0_4,
                     null,

@@ -49,6 +49,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_Meters))]
         public List<MeterConfiguration> Meters { get; set; } = [];
+
+        public bool AllowMultipleProcesses { get; set; }
     }
 
     public class MetricProvider
