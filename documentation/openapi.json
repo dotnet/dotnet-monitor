@@ -1853,7 +1853,8 @@
           "arguments": {
             "type": "object",
             "additionalProperties": {
-              "type": "string"
+              "type": "string",
+              "nullable": true
             },
             "nullable": true
           }
