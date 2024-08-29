@@ -145,7 +145,9 @@ When `dotnet-monitor` is used to produce artifacts such as dumps or traces, an e
 
 The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`; using the above example with an artifact named `mydump.dmp`, this would be `artifacts/mydump.dmp`) that is being egressed to blob storage. This is designed to be easily integrated into an Azure Function that triggers whenever a new message is added to the queue, providing you with the contents of the artifact as a stream. See [Azure Blob storage input binding for Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-input?tabs=csharp#example) for an example.
 
-## (8.0+) S3 storage egress provider
+## S3 storage egress provider
+
+First Available: 8.0
 
 | Name | Type | Required | Description |
 |---|---|---|---|
@@ -159,8 +161,8 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 | preSignedUrlExpiry | TimeStamp? | false | When specified, a pre-signed url is returned after successful upload; this value specifies the amount of time the generated pre-signed url should be accessible. The value has to be between 1 minute and 1 day. |
 | forcePathStyle | bool | false | The boolean flag set for AWS connection configuration ForcePathStyle option. |
 | copyBufferSize | int | false | The buffer size to use when copying data from the original artifact to the blob stream. There is a minimum size of 5 MB which is set when the given value is lower.|
-| useKmsEncryption | bool | false | A boolean flag which controls whether the Egress should use KMS server side encryption. |
-| kmsEncryptionKey | string | false | If UseKmsEncryption is true, this specifies the arn of the "customer managed" KMS encryption key to be used for server side encryption. If no value is set for this field then S3 will use an AWS managed key for KMS encryption. |
+| useKmsEncryption | bool | false | (9.0 Preview 6+) A boolean flag which controls whether the Egress should use KMS server side encryption. |
+| kmsEncryptionKey | string | false | (9.0 Preview 6+) If UseKmsEncryption is true, this specifies the arn of the "customer managed" KMS encryption key to be used for server side encryption. If no value is set for this field then S3 will use an AWS managed key for KMS encryption. |
 
 ### Example S3 storage provider
 
@@ -220,6 +222,9 @@ The Queue Message's payload will be the blob name (`<BlobPrefix>/<ArtifactName>`
 </details>
 
 ### Authenticating to S3 using service accounts
+
+First Available: 9.0 Preview 5
+
 If running workloads in Kubernetes it is common to authenticate with AWS via Kubernetes service accounts ([AWS Documentation](https://docs.aws.amazon.com/eks/latest/userguide/pod-configuration.html)). This is supported in dotnet monitor if none of: `accessKeyId`, `secretAccessKey`, `awsProfileName` are specified. In this case dotnet monitor will fallback to load credentials to login using AWS default defined environment variables, this means that workloads running in EKS can utilize service accounts as discussed in the above AWS documentation.
 
 Specifically the use of service accounts set the following environment variables which are detected by AWS SDK and used for authentication as a fallback:

@@ -23,7 +23,8 @@
       "supportedFrameworks": [
         "net6.0",
         "netcoreapp3.1"
-      ]
+      ],
+      "outOfSupportDate": "2024-11-12T00:00:00.000Z"
     },
     "7.1": {
       "tag": "v7.1.3",
