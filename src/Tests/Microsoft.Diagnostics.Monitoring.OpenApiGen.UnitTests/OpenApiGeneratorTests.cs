@@ -47,14 +47,14 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
         /// is the same that is generated from the dotnet-monitor binaries.
         /// </summary>
         [Fact]
-        public async Task BaselineDifferenceTest()
+        public async Task BaselineDifferenceTestAsync()
         {
             using FileStream stream = await GenerateDocumentAsync();
             using StreamReader reader = new(stream);
 
             // Renormalize line endings due to git checkout normalizing to the operating system preference.
             string baselineContent = File.ReadAllText(OpenApiBaselinePath).Replace("\r\n", "\n");
-            string generatedContent = reader.ReadToEnd();
+            string generatedContent = await reader.ReadToEndAsync();
 
             bool equal = string.Equals(baselineContent, generatedContent, StringComparison.Ordinal);
             if (!equal)
@@ -91,7 +91,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
         /// Test that the generated OpenAPI document is valid.
         /// </summary>
         [Fact]
-        public async Task GeneratedIsValidTest()
+        public async Task GeneratedIsValidTestAsync()
         {
             using FileStream stream = await GenerateDocumentAsync();
 
