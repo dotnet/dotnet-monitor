@@ -37,10 +37,7 @@ function generateReleasesMdContent(releasesData, repoOwner, repoName) {
         previewReleasesTable += `${generateTableRow(releasesData.releases[releaseKey], repoOwner, repoName, false)}\n`;
     }
 
-    let content =`
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Freleases)
-
-# Releases
+    let content =`# Releases
 
 `;
 
