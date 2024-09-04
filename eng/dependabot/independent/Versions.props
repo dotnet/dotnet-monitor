@@ -13,7 +13,7 @@
     <MicrosoftExtensionsLoggingEventSourceVersion>6.0.0</MicrosoftExtensionsLoggingEventSourceVersion>
     <MicrosoftIdentityModelTokensVersion>7.6.3</MicrosoftIdentityModelTokensVersion>
     <MicrosoftIdentityModelValidatorsVersion>7.6.3</MicrosoftIdentityModelValidatorsVersion>
-    <MicrosoftOpenApiReadersVersion>1.6.19</MicrosoftOpenApiReadersVersion>
+    <MicrosoftOpenApiReadersVersion>1.6.20</MicrosoftOpenApiReadersVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
 
