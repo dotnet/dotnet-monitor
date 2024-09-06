@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fconfiguration%2Fdiagnostic-port-configuration)
-
 # Diagnostic Port Configuration
 
 `dotnet monitor` communicates via .NET processes through their diagnostic port. In the default configuration, .NET processes listen on a platform native transport (named pipes on Windows/Unix-domain sockets on \*nix) in a well-known location.
@@ -21,7 +18,7 @@ It is possible to change this behavior and have .NET processes connect to `dotne
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   DiagnosticPort: "/diag/port.sock"
   ```
@@ -29,7 +26,7 @@ It is possible to change this behavior and have .NET processes connect to `dotne
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_DiagnosticPort
     value: "/diag/port.sock"
@@ -53,7 +50,7 @@ Alternatively, `dotnet monitor` can be set to `Listen` mode using the expanded f
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   DiagnosticPort__ConnectionMode: "Listen"
   DiagnosticPort__EndpointName: "/diag/port.sock"
@@ -62,7 +59,7 @@ Alternatively, `dotnet monitor` can be set to `Listen` mode using the expanded f
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_DiagnosticPort__ConnectionMode
     value: "Listen"
@@ -96,7 +93,7 @@ When operating in `Listen` mode, you can also specify the maximum number of inco
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   DiagnosticPort__MaxConnections: "10"
   ```
@@ -104,7 +101,7 @@ When operating in `Listen` mode, you can also specify the maximum number of inco
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_DiagnosticPort__MaxConnections
     value: "10"
@@ -117,9 +114,9 @@ When operating in `Listen` mode, you can also specify the maximum number of inco
 
 ### `dotnet monitor` in `Connect` mode
 
-As noted the default configuration for `dotnet monitor` is `Connect` mode. This assumes your .NET apps does not have any additional diagnostics configurations enabled and as a result is communicating with `dotnet monitor` via the diagnostics port in the default location. 
+As noted the default configuration for `dotnet monitor` is `Connect` mode. This assumes your .NET apps does not have any additional diagnostics configurations enabled and as a result is communicating with `dotnet monitor` via the diagnostics port in the default location.
 
-The following tables highlight that triggers and most of the advanced collection scenarios are not supported in this mode. 
+The following tables highlight that triggers and most of the advanced collection scenarios are not supported in this mode.
 
 | API | Supported |
 | :-------- | :-------: |
