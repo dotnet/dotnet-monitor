@@ -3,6 +3,7 @@
 In addition to its availability as a .NET CLI tool, the `dotnet monitor` tool is available as a prebuilt Docker image that can be run in container runtimes and orchestrators, such as Kubernetes.
 
 For Dockerfiles and repository information, see [Running in Docker](./docker.md)
+For a Docker Compose sample, see [Running in Docker Compose](./docker-compose.md)
 
 ## Non-root considerations
 
