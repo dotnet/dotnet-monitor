@@ -1,5 +1,3 @@
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fgrafana)
-
 # Configure `dotnet monitor` in an AKS cluster for Managed Grafana
 
 `dotnet monitor` provides [snapshots of .NET metrics in the Prometheus exposition format](https://github.com/dotnet/dotnet-monitor/blob/main/documentation/api/metrics.md). The [Prometheus](https://prometheus.io/docs/introduction/overview/) agent in turn collects metrics from targets by scraping metrics HTTP endpoints.

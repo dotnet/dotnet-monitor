@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2FREADME)
-
 # HTTP API Documentation
 
 The HTTP API enables on-demand extraction of diagnostic information and artifacts from discoverable processes.
