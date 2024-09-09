@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2FlearningPath%2Ftesting)
-
 # Testing
 
 ## Running Tests
@@ -15,7 +12,7 @@ The framework of the test assemblies is controlled by [TestTargetFrameworks](htt
 - [Microsoft.Diagnostics.Monitoring.WebApi.UnitTests](https://github.com/dotnet/dotnet-monitor/blob/b5bf953026d47318e521e5580524866ef0aab764/src/Tests/Microsoft.Diagnostics.Monitoring.WebApi.UnitTests/)
 - [CollectionRuleActions.UnitTests](https://github.com/dotnet/dotnet-monitor/blob/b5bf953026d47318e521e5580524866ef0aab764/src/Tests/CollectionRuleActions.UnitTests/)
 
-Unit test assemblies directly reference types from various dotnet-monitor assemblies. However, since most of dotnet-monitor heavily relies on code injection, there are utility classes to simplify unit test creation. 
+Unit test assemblies directly reference types from various dotnet-monitor assemblies. However, since most of dotnet-monitor heavily relies on code injection, there are utility classes to simplify unit test creation.
 
 - [TestHostHelper](https://github.com/dotnet/dotnet-monitor/blob/b5bf953026d47318e521e5580524866ef0aab764/src/Tests/Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon/TestHostHelper.cs) can be used to setup a basic unit test scenario using dependency injection.
 - [CollectionRuleOptionsExtensions](https://github.com/dotnet/dotnet-monitor/blob/b5bf953026d47318e521e5580524866ef0aab764/src/Tests/Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon/Options/CollectionRuleOptionsExtensions.cs) can be used to easily create collection rules from configuration.
