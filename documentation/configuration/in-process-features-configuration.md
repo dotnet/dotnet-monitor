@@ -1,11 +1,9 @@
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fconfiguration%2Fin-process-features-configuration)
-
 # In-Process Features Configuration
 
 First Available: 8.0 Preview 7
 
 > [!NOTE]
-> In-process features are only supported when running dotnet-monitor in `Listen` mode. 
+> In-process features are only supported when running dotnet-monitor in `Listen` mode.
 > See [Diagnostic Port](./diagnostic-port-configuration.md) configuration for details.
 
 Some features of `dotnet monitor` require loading libraries into target applications. These libraries ship with `dotnet monitor` and are provisioned to be available to target applications using the `DefaultSharedPath` option in the [storage configuration](./storage-configuration.md) section. The following features require these in-process libraries to be used:
@@ -33,7 +31,7 @@ To enable all available in-process features, use the following configuration:
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   InProcessFeatures__Enabled: "true"
   ```
@@ -41,7 +39,7 @@ To enable all available in-process features, use the following configuration:
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_InProcessFeatures__Enabled
     value: "true"
@@ -68,7 +66,7 @@ The call stacks feature is individually enabled by setting the `Enabled` propert
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   InProcessFeatures__CallStacks__Enabled: "true"
   ```
@@ -76,7 +74,7 @@ The call stacks feature is individually enabled by setting the `Enabled` propert
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_InProcessFeatures__CallStacks__Enabled
     value: "true"
@@ -102,7 +100,7 @@ Similarly, the call stacks feature can be individually disabled by setting the s
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   InProcessFeatures__Enabled: "true"
   InProcessFeatures__CallStacks__Enabled: "false"
@@ -111,7 +109,7 @@ Similarly, the call stacks feature can be individually disabled by setting the s
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_InProcessFeatures__Enabled
     value: "true"
@@ -140,7 +138,7 @@ The exceptions history feature is individually enabled by setting the `Enabled` 
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   InProcessFeatures__Exceptions__Enabled: "true"
   ```
@@ -148,7 +146,7 @@ The exceptions history feature is individually enabled by setting the `Enabled` 
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_InProcessFeatures__Exceptions__Enabled
     value: "true"
@@ -174,7 +172,7 @@ Similarly, the exceptions history feature can be individually disabled by settin
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   InProcessFeatures__Enabled: "true"
   InProcessFeatures__Exceptions__Enabled: "false"
@@ -183,7 +181,7 @@ Similarly, the exceptions history feature can be individually disabled by settin
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_InProcessFeatures__Enabled
     value: "true"
@@ -231,7 +229,7 @@ In this example, a user is choosing to only collect exceptions where the top fra
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   InProcessFeatures__Exceptions__Enabled: "true"
   InProcessFeatures__Exceptions__CollectionFilters__Include__0__TypeName: "MyClassName"
@@ -242,7 +240,7 @@ In this example, a user is choosing to only collect exceptions where the top fra
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_InProcessFeatures__Exceptions__Enabled
     value: "true"

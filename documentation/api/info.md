@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Finfo)
-
 # Info - Get
 
 Gets information about the `dotnet monitor` version, the runtime version, and the diagnostic port settings.
