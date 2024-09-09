@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fcollectionrules%2Ftemplates)
-
 # Templates
 
 Templates allow users to design reusable collection rule components to decrease configuration verbosity, reduce duplication between rules, and speed up the process of writing complex scenarios.
@@ -41,7 +38,7 @@ You can easily translate existing configuration to Templates using the format in
         "Trigger": "NameOfTriggerTemplate",
         "Actions": [
           "NameOfActionTemplate"
-        ] 
+        ]
       }
     }
   }
@@ -159,7 +156,7 @@ The following example creates a template trigger named "HighRequestCount", two t
         "Filters": [
           "AppName"
         ],
-        "Limits": "ShortDuration"  
+        "Limits": "ShortDuration"
       }
     },
     "TraceWhenHighCPU": {
@@ -207,7 +204,7 @@ The following example creates a template trigger named "HighRequestCount", two t
   Templates__CollectionRuleLimits__ShortDuration__RuleDuration: "00:05:00"
   Templates__CollectionRuleLimits__ShortDuration__ActionCount: "1"
   Templates__CollectionRuleLimits__ShortDuration__ActionCountSlidingWindowDuration: "00:00:30"
-  
+
   CollectionRules__LogAndDumpWhenHighRequestCount__Trigger: "HighRequestCount"
   CollectionRules__LogAndDumpWhenHighRequestCount__Actions__0: "ErrorLogs"
   CollectionRules__LogAndDumpWhenHighRequestCount__Actions__1__Type: "CollectDump"

@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fprocess-env)
-
 # Processes - Get Environment
 
 Gets the environment block of a specified process.

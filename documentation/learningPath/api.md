@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2FlearningPath%2Fapi)
-
 # API
 
 dotnet-monitor exposes functionality through both [collection rules](./collectionrules.md) and a web API surface. The web api is built using [ASP.NET Core](https://dotnet.microsoft.com/learn/aspnet/what-is-aspnet-core) and enables on-demand extraction of diagnostic information and artifacts from discoverable processes.

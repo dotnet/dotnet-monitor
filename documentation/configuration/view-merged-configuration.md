@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fconfiguration%2Fview-merged-configuration)
-
 # View Merged Configuration
 
 `dotnet monitor` includes a diagnostic command that allows you to output the resulting configuration after merging the configuration from all the various sources.

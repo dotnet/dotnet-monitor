@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fprocesses-list)
-
 # Processes - List
 
 Lists the processes that are available from which diagnostic information can be obtained.

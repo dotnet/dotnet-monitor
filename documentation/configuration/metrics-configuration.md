@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fconfiguration%2Fmetrics-configuration)
-
 # Metrics Configuration
 
 ## Default Providers
@@ -33,7 +30,7 @@ Prometheus metrics, livemetrics, triggers, traces, and trigger actions that coll
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   GlobalCounter__IntervalSeconds: "10"
   ```
@@ -41,7 +38,7 @@ Prometheus metrics, livemetrics, triggers, traces, and trigger actions that coll
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_GlobalCounter__IntervalSeconds
     value: "10"
@@ -73,7 +70,7 @@ It is possible to override the global interval on a per provider basis. Note thi
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   GlobalCounter__IntervalSeconds: "5"
   GlobalCounter__Providers__System.Runtime__IntervalSeconds: "10"
@@ -82,7 +79,7 @@ It is possible to override the global interval on a per provider basis. Note thi
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_GlobalCounter__IntervalSeconds
     value: "5"
@@ -94,7 +91,7 @@ It is possible to override the global interval on a per provider basis. Note thi
 
 ## Metrics Urls
 
-In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it also binds to metric urls that only expose the `/metrics` endpoint. Unlike the other endpoints, the metrics urls do not require authentication. Unless you enable collection of custom providers that may contain sensitive business logic, it is generally considered safe to expose metrics endpoints. 
+In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it also binds to metric urls that only expose the `/metrics` endpoint. Unlike the other endpoints, the metrics urls do not require authentication. Unless you enable collection of custom providers that may contain sensitive business logic, it is generally considered safe to expose metrics endpoints.
 
 <details>
   <summary>Command Line</summary>
@@ -118,7 +115,7 @@ In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it 
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   Metrics__Endpoints: "http://*:52325"
   ```
@@ -126,7 +123,7 @@ In addition to the ordinary diagnostics urls that `dotnet monitor` binds to, it 
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_Metrics__Endpoints
     value: "http://*:52325"
@@ -153,7 +150,7 @@ You can customize the number of data points stored per metric via the following 
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   Metrics__MetricCount: "3"
   ```
@@ -161,7 +158,7 @@ You can customize the number of data points stored per metric via the following 
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_Metrics__MetricCount
     value: "3"
@@ -172,7 +169,7 @@ See [Global Counter Interval](#global-counter-interval) to change the metrics fr
 
 ## Custom Metrics
 
-Additional metrics providers and counter names to return from this route can be specified via configuration. 
+Additional metrics providers and counter names to return from this route can be specified via configuration.
 
 <details>
   <summary>JSON</summary>
@@ -196,7 +193,7 @@ Additional metrics providers and counter names to return from this route can be 
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   Metrics__Providers__0__ProviderName: "Microsoft-AspNetCore-Server-Kestrel"
   Metrics__Providers__0__CounterNames__0: "connections-per-second"
@@ -206,7 +203,7 @@ Additional metrics providers and counter names to return from this route can be 
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_Metrics__Providers__0__ProviderName
     value: "Microsoft-AspNetCore-Server-Kestrel"
@@ -225,7 +222,7 @@ When `CounterNames` are not specified, all the counters associated with the `Pro
 
 [8.0+] `System.Diagnostics.Metrics` is now supported for custom metrics. At this time, there are the following known limitations:
  * `dotnet monitor` may fail to collect `System.Diagnostics.Metrics` if it begins collecting the metric before the target app creates the Meter ([note that this is fixed for .NET 8+ apps](https://github.com/dotnet/runtime/pull/76965)).
- 
+
 ### Adding Meters/Instruments for `System.Diagnostics.Metrics`
 
 Specifying a `Meter` is done differently than for `EventCounter` providers. The following example uses `MyCounter1` and `MyCounter2` on an `EventCounter` named `MyProvider`, as well as the `MyInstrument` instrument on `MyCustomMeter` and all instruments on the `AnotherMeter` meter:
@@ -258,7 +255,7 @@ Specifying a `Meter` is done differently than for `EventCounter` providers. The 
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   Metrics__Providers__0__ProviderName: "MyProvider"
   Metrics__Providers__0__CounterNames__0: "MyCounter1"
@@ -271,7 +268,7 @@ Specifying a `Meter` is done differently than for `EventCounter` providers. The 
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_Metrics__Providers__0__ProviderName
     value: "MyProvider"
@@ -306,7 +303,7 @@ For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum n
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   GlobalCounter__MaxHistograms: "5"
   ```
@@ -314,7 +311,7 @@ For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum n
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_GlobalCounter__MaxHistograms
     value: "5"
@@ -339,7 +336,7 @@ For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum n
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   GlobalCounter__MaxTimeSeries: "500"
   ```
@@ -347,7 +344,7 @@ For System.Diagnostics.Metrics, `dotnet monitor` allows you to set the maximum n
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_GlobalCounter__MaxTimeSeries
     value: "500"
@@ -372,7 +369,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   Metrics__IncludeDefaultProviders: "false"
   ```
@@ -380,7 +377,7 @@ In addition to enabling custom providers, `dotnet monitor` also allows you to di
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_Metrics__IncludeDefaultProviders
     value: "false"
