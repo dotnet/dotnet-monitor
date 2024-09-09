@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fconfiguration%2Fazure-ad-authentication-configuration)
-
 # Azure Active Directory Authentication Configuration
 
 First Available: 7.1

@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fgcdump)
-
 # GC Dump - Get
 
 Captures a GC dump of a specified process. These dumps are useful for several scenarios:

@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fparameters)
-
 # Parameters (experimental feature)
 
 Captures parameters for one or more methods each time they are called.

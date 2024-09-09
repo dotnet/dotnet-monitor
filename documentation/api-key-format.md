@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi-key-format)
-
 # API Key Format
 API Keys or MonitorApiKeys used in `dotnet monitor` are JSON Web Tokens or JWTs as defined by [RFC 7519: JSON Web Token (JWT)](https://datatracker.ietf.org/doc/html/rfc7519).
 > [!IMPORTANT]
