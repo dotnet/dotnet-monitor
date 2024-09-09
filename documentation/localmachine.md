@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Flocalmachine)
-
 # Running on a local machine
 
 `dotnet monitor` can be installed as a global tool providing observability, diagnostics artifact collection, and triggering in local development and testing scenarios. You can run `dotnet tool install -g dotnet-monitor` to install the latest version, see the full details [here](./setup.md#net-core-global-tool).
@@ -37,11 +34,11 @@ To start using `dotnet monitor`, run the following command from a PowerShell or 
 dotnet-monitor collect
 ```
 
-Assuming your default process is running, you can use the endpoints exposed by `dotnet monitor` to view metrics and logs or to download traces and memory dumps. When using Windows Authentication, your browser will automatically handle the Windows authentication challenge, allowing you to navigate to these endpoints directly. 
+Assuming your default process is running, you can use the endpoints exposed by `dotnet monitor` to view metrics and logs or to download traces and memory dumps. When using Windows Authentication, your browser will automatically handle the Windows authentication challenge, allowing you to navigate to these endpoints directly.
 
 [HTTP /dump API](./api/dump.md)
 ```http
-/dump 
+/dump
 ```
 
 [HTTP /trace API](./api/trace-get.md)

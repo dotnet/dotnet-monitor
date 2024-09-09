@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fcollectionrules%2Fcollectionruleexamples)
-
 # Collection Rule Examples
 
 The following examples provide sample scenarios for using a collection rule. These templates can be copied directly into your configuration file with minimal adjustments to work with your application (for more information on configuring an egress provider, see [egress providers](../configuration/egress-configuration.md)), or they can be adjusted for your specific use-case. [Learn more about configuring collection rules](collectionrules.md).
@@ -37,7 +34,7 @@ The following examples provide sample scenarios for using a collection rule. The
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   CollectionRules__AssemblyLoadTraceOnStartup__Trigger__Type: "Startup"
   CollectionRules__AssemblyLoadTraceOnStartup__Actions__0__Type: "CollectTrace"
@@ -51,7 +48,7 @@ The following examples provide sample scenarios for using a collection rule. The
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_CollectionRules__AssemblyLoadTraceOnStartup__Trigger__Type
     value: "Startup"
@@ -105,7 +102,7 @@ This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's start
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   CollectionRules__LargeGCHeapSize__Trigger__Type: "EventCounter"
   CollectionRules__LargeGCHeapSize__Trigger__Settings__ProviderName: "System.Runtime"
@@ -118,7 +115,7 @@ This rule, named "AssemblyLoadTraceOnStartup", will trigger on a process's start
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_CollectionRules__LargeGCHeapSize__Trigger__Type
     value: "EventCounter"
@@ -173,12 +170,12 @@ This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1
       ]
     }
   }
-  ```  
+  ```
 </details>
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   CollectionRules__HighCpuUsage__Trigger__Type: "EventCounter"
   CollectionRules__HighCpuUsage__Trigger__Settings__ProviderName: "System.Runtime"
@@ -195,7 +192,7 @@ This rule, named "LargeGCHeapSize", will trigger when the GC Heap Size exceeds 1
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_CollectionRules__HighCpuUsage__Trigger__Type
     value: "EventCounter"
@@ -299,7 +296,7 @@ First Available: 7.1
   - name: DotnetMonitor_CollectionRules__HighHistogramValues__Actions__0__Settings__UseAppFilters
     value: "false"
   - name: DotnetMonitor_CollectionRules__HighHistogramValues__Actions__0__Settings__Duration
-    value: "00:00:30"    
+    value: "00:00:30"
   ```
 </details>
 
@@ -344,7 +341,7 @@ This rule, named "HighHistogramValues", will trigger when the custom histogram's
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   CollectionRules__BadResponseStatus__Trigger__Type: "AspNetResponseStatus"
   CollectionRules__BadResponseStatus__Trigger__Settings__ResponseCount: "5"
@@ -359,7 +356,7 @@ This rule, named "HighHistogramValues", will trigger when the custom histogram's
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_CollectionRules__BadResponseStatus__Trigger__Type
     value: "AspNetResponseStatus"
@@ -427,7 +424,7 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-    
+
   ```yaml
   CollectionRules__HighRequestCount__Filters__0__Key: "ProcessId"
   CollectionRules__HighRequestCount__Filters__0__Value: "12345"
@@ -446,7 +443,7 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_CollectionRules__HighRequestCount__Filters__0__Key
     value: "ProcessId"
@@ -478,7 +475,7 @@ This rule, named "BadResponseStatus", will trigger when 5 4xx status codes are e
 ### Explanation
 
 This rule, named "HighRequestCount", will trigger when a process with a `ProcessId` of 12345 has 10 requests within a 1 minute sliding window. If the rule is triggered, error level logs will be collected for one minute and egressed to the specified `Egress` provider (in this case, `artifacts` has been configured to save the logs to the local filesystem). There is a limit that states that this may only be triggered for one hour (to prevent an excessive number of logs from being collected), and there is a default `ActionCount` limit stating that this rule may only be triggered 5 times.
-    
+
 ## Collect Trace - Too Many Long Requests (`AspNetRequestDuration` Trigger)
 
 <details>
@@ -508,12 +505,12 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
       ]
     }
   }
-  ```  
+  ```
 </details>
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   CollectionRules__LongRequestDuration__Trigger__Type: "AspNetRequestDuration"
   CollectionRules__LongRequestDuration__Trigger__Settings__RequestCount: "5"
@@ -529,7 +526,7 @@ This rule, named "HighRequestCount", will trigger when a process with a `Process
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_CollectionRules__LongRequestDuration__Trigger__Type
     value: "AspNetRequestDuration"
@@ -598,7 +595,7 @@ This rule, named "LongRequestDuration", will trigger when 5 requests each take g
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   CollectionRules__CollectDumpAndExecute__Trigger__Type: "AspNetResponseStatus"
   CollectionRules__CollectDumpAndExecute__Trigger__Settings__ResponseCount: "3"
@@ -616,7 +613,7 @@ This rule, named "LongRequestDuration", will trigger when 5 requests each take g
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_CollectionRules__CollectDumpAndExecute__Trigger__Type
     value: "AspNetResponseStatus"

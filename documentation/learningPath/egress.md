@@ -1,9 +1,6 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2FlearningPath%2Fegress)
-
 # Egress
 
-`dotnet monitor` includes functionality to egress (send) artifacts to permanent storage locations, such as `Azure Blob Storage`. For .NET Monitor 8, the tool has converted to using an extensible egress model that allows developers to author their own egress providers that aren't built into the `dotnet monitor` product. This section covers how the egress extensibility model works, and provides information about how to develop an egress extension (using the `AzureBlobStorage` egress provider as an example). 
+`dotnet monitor` includes functionality to egress (send) artifacts to permanent storage locations, such as `Azure Blob Storage`. For .NET Monitor 8, the tool has converted to using an extensible egress model that allows developers to author their own egress providers that aren't built into the `dotnet monitor` product. This section covers how the egress extensibility model works, and provides information about how to develop an egress extension (using the `AzureBlobStorage` egress provider as an example).
 
 ## How Egress Works
 
@@ -14,7 +11,7 @@ graph LR
     subgraph ide1 [.NET Monitor]
     A[Configuration] --> N{.NET Monitor}
     N --> 1
-    N --> 2   
+    N --> 2
     N --> 3
     end
     subgraph ide2 [Extensions]
@@ -22,7 +19,7 @@ graph LR
     R --> 4
     R --> 5
     end
-    
+
     class ide2 altColor
 ```
 
@@ -50,7 +47,7 @@ There are 3 [locations](https://github.com/dotnet/dotnet-monitor/blob/b5bf953026
   - On Windows, `%USERPROFILE%\.dotnet-monitor\settings.json`
   - On *nix,`$XDG_CONFIG_HOME/dotnet-monitor/settings.json`
   - If `$XDG_CONFIG_HOME` isn't defined, we fall back to `$HOME/.config/dotnet-monitor/settings.json`
-### Manually Acquiring An Egress Provider 
+### Manually Acquiring An Egress Provider
 #### TODO
 
 The distribution/acquisition model for third-party egress providers is determined by the author of the extension.
