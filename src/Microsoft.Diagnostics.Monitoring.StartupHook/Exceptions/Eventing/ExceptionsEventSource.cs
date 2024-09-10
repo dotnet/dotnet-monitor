@@ -35,11 +35,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         public void ExceptionInstance(
             ulong ExceptionId,
             ulong ExceptionGroupId,
-            string? ExceptionMessage,
+            string ExceptionMessage,
             ulong[] StackFrameIds,
             DateTime Timestamp,
             ulong[] InnerExceptionIds,
-            string? ActivityId,
+            string ActivityId,
             ActivityIdFormat ActivityIdFormat)
         {
             Span<EventData> data = stackalloc EventData[8];
