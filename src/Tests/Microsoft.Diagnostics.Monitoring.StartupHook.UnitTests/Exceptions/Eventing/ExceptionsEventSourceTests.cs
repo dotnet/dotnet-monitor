@@ -111,7 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Warning);
 
-            source.ExceptionInstance(5, 7, ObjectDisposedExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow, Array.Empty<ulong>(), string.Empty, ActivityIdFormat.Unknown);
+            source.ExceptionInstance(5, 7, ObjectDisposedExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow, Array.Empty<ulong>(), null, ActivityIdFormat.Unknown);
 
             Assert.Empty(listener.Exceptions);
         }
@@ -123,7 +123,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
             using ExceptionsEventListener listener = new();
 
-            source.ExceptionInstance(7, 9, OperationCancelledExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow, Array.Empty<ulong>(), string.Empty, ActivityIdFormat.Unknown);
+            source.ExceptionInstance(7, 9, OperationCancelledExceptionMessage, Array.Empty<ulong>(), DateTime.UtcNow, Array.Empty<ulong>(), null, ActivityIdFormat.Unknown);
 
             Assert.Empty(listener.Exceptions);
         }

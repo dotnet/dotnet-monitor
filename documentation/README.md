@@ -11,7 +11,6 @@ When running a dotnet application, differences in diverse local and production e
 - Getting Started
     - [Running on a local machine](./localmachine.md)
     - [Running in Docker](./docker.md)
-    - [Running in Docker Compose](./docker-compose.md)
     - [Running in Kubernetes](./kubernetes.md)
 - [API Endpoints](./api/README.md)
     - [OpenAPI document](./openapi.md)

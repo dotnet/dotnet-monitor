@@ -4,8 +4,6 @@ In addition to its availability as a .NET CLI tool, the `dotnet monitor` tool is
 
 For Dockerfiles and repository information, see [Running in Docker](./docker.md)
 
-For a Docker Compose sample, see [Running in Docker Compose](./docker-compose.md)
-
 ## Non-root considerations
 
 Starting with .NET 8.0, both the sample ASP.NET application and dotnet-monitor run as non-root. If both the application and dotnet-monitor are 8+, no additional configuration is required. Otherwise, a [security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) configuration may need to be added to the application, dotnet-monitor, or both.

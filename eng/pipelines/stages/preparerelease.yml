@@ -22,10 +22,10 @@ stages:
       - group: Release-Pipeline
     steps:
     - task: UseDotNet@2
-      displayName: 'Use .NET 8'
+      displayName: 'Use .NET 6'
       inputs:
         packageType: runtime
-        version: 8.x
+        version: 6.x
         installationPath: '$(Build.Repository.LocalPath)\.dotnet'
 
     - script: mkdir $(System.ArtifactsDirectory)\StagingToolLogs
