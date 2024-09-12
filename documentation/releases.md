@@ -21,6 +21,6 @@
 
 | Version | Release Date | Latest Version | Runtime Frameworks |
 | --- | --- | --- | --- |
-| 9.0 | September 10, 2024 | [9.0.0 rc 1](https://github.com/dotnet/dotnet-monitor/releases/tag/v9.0.0-rc.1.24453.3) | net9.0 |
+| 9.0 | August 13, 2024 | [9.0.0 preview 7](https://github.com/dotnet/dotnet-monitor/releases/tag/v9.0.0-preview.7.24408.4) | net9.0 |
 
 
