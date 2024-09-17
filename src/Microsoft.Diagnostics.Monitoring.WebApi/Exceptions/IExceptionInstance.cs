@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 
         ulong[] InnerExceptionIds { get; }
 
-        public string? ActivityId { get; }
+        public string ActivityId { get; }
 
         public ActivityIdFormat ActivityIdFormat { get; }
     }

@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fconfiguration%2Fconfiguration-sources)
-
 # Configuration Sources
 
 `dotnet monitor` can read and combine configuration from multiple sources. The configuration sources are listed below in the order in which they are read (first is lowest precedence, last is highest precedence):
@@ -65,7 +62,7 @@ kubectl create secret generic apikey \
 
 You can then use a Kubernetes volume mount to supply the secret to the container at runtime.
 
-```yaml 
+```yaml
 spec:
   volumes:
   - name: config
@@ -92,7 +89,7 @@ data:
 
 You can then use a Kubernetes volume mount to supply the configuration map to the container at runtime
 
-```yaml 
+```yaml
 spec:
   volumes:
   - name: config
@@ -108,7 +105,7 @@ spec:
 
 If using multiple configuration maps, secrets, or some combination of both, you need to use a [projected volume](https://kubernetes.io/docs/concepts/storage/volumes/#projected) to map several volume sources into a single directory
 
-```yaml 
+```yaml
 spec:
   volumes:
   - name: config

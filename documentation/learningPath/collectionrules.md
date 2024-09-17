@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2FlearningPath%2Fcollectionrules)
-
 # Collection Rules
 
 ## How To Use Collection Rules
@@ -18,7 +15,7 @@ graph LR
     subgraph ide1 [Set-Up]
     A[Configuration] --> N{.NET Monitor}
     N --> |1| O[Load Configuration and Bind Options]
-    N --> |2| P[Connect to Processes in Reverse Mode]    
+    N --> |2| P[Connect to Processes in Reverse Mode]
     N --> |3| Q[Start Pipelines For Processes That Match Filters]
     end
     subgraph ide2 [Repeat until Rule Limits Reached]
@@ -26,7 +23,7 @@ graph LR
     N ---> |5| V[Check For Throttling]
     N ---> |6| W[Execute Action List]
     end
-    
+
     class ide2 altColor
 ```
 
@@ -41,7 +38,7 @@ graph LR
 
 ### Triggers
 
-A trigger will monitor for a specific condition in the target application and raise a notification when that condition has been observed. Options for triggers can be found [here](https://github.com/dotnet/dotnet-monitor/blob/b5bf953026d47318e521e5580524866ef0aab764/src/Tools/dotnet-monitor/CollectionRules/Options/CollectionRuleTriggerOptions.cs); the type of `Settings` is determined by which trigger is being used (possible trigger types can be found [here](https://github.com/dotnet/dotnet-monitor/tree/b5bf953026d47318e521e5580524866ef0aab764/src/Tools/dotnet-monitor/CollectionRules/Options/Triggers)). The interface for all triggers can be found [here](https://github.com/dotnet/dotnet-monitor/blob/b5bf953026d47318e521e5580524866ef0aab764/src/Tools/dotnet-monitor/CollectionRules/Triggers/ICollectionRuleTrigger.cs) - this allows `dotnet monitor` to start and stop triggers, regardless of the trigger's properties. The collection rule pipeline creates instances of triggers [here](https://github.com/dotnet/dotnet-monitor/blob/b5bf953026d47318e521e5580524866ef0aab764/src/Tools/dotnet-monitor/CollectionRules/CollectionRulePipeline.cs#L99) before waiting for the trigger to [satisfy its conditions](https://github.com/dotnet/diagnostics/blob/v6.0.351802/src/Microsoft.Diagnostics.Monitoring.EventPipe/Triggers/Pipelines/TraceEventTriggerPipeline.cs#L107) - each trigger has its own set of criteria that determines when a trigger has been satisfied. 
+A trigger will monitor for a specific condition in the target application and raise a notification when that condition has been observed. Options for triggers can be found [here](https://github.com/dotnet/dotnet-monitor/blob/b5bf953026d47318e521e5580524866ef0aab764/src/Tools/dotnet-monitor/CollectionRules/Options/CollectionRuleTriggerOptions.cs); the type of `Settings` is determined by which trigger is being used (possible trigger types can be found [here](https://github.com/dotnet/dotnet-monitor/tree/b5bf953026d47318e521e5580524866ef0aab764/src/Tools/dotnet-monitor/CollectionRules/Options/Triggers)). The interface for all triggers can be found [here](https://github.com/dotnet/dotnet-monitor/blob/b5bf953026d47318e521e5580524866ef0aab764/src/Tools/dotnet-monitor/CollectionRules/Triggers/ICollectionRuleTrigger.cs) - this allows `dotnet monitor` to start and stop triggers, regardless of the trigger's properties. The collection rule pipeline creates instances of triggers [here](https://github.com/dotnet/dotnet-monitor/blob/b5bf953026d47318e521e5580524866ef0aab764/src/Tools/dotnet-monitor/CollectionRules/CollectionRulePipeline.cs#L99) before waiting for the trigger to [satisfy its conditions](https://github.com/dotnet/diagnostics/blob/v6.0.351802/src/Microsoft.Diagnostics.Monitoring.EventPipe/Triggers/Pipelines/TraceEventTriggerPipeline.cs#L107) - each trigger has its own set of criteria that determines when a trigger has been satisfied.
 
 ### Actions
 
