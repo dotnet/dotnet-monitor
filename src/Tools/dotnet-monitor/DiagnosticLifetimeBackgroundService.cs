@@ -79,8 +79,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             // Safe await the execution regardless of the completion type,
             // but allow cancelling waiting for it to finish.
-            await _executingTask.SafeAwait().WaitAsync(cancellationToken);
-            await (await _executingTask).SafeAwait().WaitAsync(cancellationToken);
+            await _executingTask.Unwrap().SafeAwait().WaitAsync(cancellationToken);
         }
 
         /// <summary>
