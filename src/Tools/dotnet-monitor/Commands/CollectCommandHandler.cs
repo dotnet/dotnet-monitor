@@ -134,8 +134,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 
                 // 
                 // The order of the below calls is **important**.
-                // - ConfigureInProcessFeatures needs to be called before ConfigureProfiler
-                //   because the profiler needs to have access to environment variables set by in process features.
+                // - ConfigureInProcessFeatures needs to be called before ConfigureProfiler and ConfigureStartupHook
+                //   because these features will configure themselves depending on environment variables set by InProcessFeaturesEndpointInfoSourceCallbacks.
                 // - ConfigureProfiler needs to be called before ConfigureStartupHook
                 //   because the startup hook may call into the profiler on load.
                 // - ConfigureExceptions needs to be called before ConfigureStartupHook
