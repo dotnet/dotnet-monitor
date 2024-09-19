@@ -21,7 +21,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
     {
         private readonly EventExceptionsPipeline _pipeline;
         private readonly IOptions<ExceptionsOptions> _options;
-        private readonly StartupHookService _startupHookService;
 
         public ExceptionsService(
             IEndpointInfo endpointInfo,
@@ -33,7 +32,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             ArgumentNullException.ThrowIfNull(store);
 
             _options = options ?? throw new ArgumentNullException(nameof(options));
-            _startupHookService = startupHookService ?? throw new ArgumentNullException(nameof(startupHookService));
 
             _pipeline = new EventExceptionsPipeline(
                 new DiagnosticsClient(endpointInfo.Endpoint),
@@ -41,15 +39,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 store);
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+
+        protected override async Task<Task> ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (!_options.Value.GetEnabled() || !await _startupHookService.Applied.WaitAsync(stoppingToken))
+            if (!_options.Value.GetEnabled())
             {
-                return;
+                return Task.CompletedTask;
             }
 
             // Collect exceptions and place them into exceptions store
-            await _pipeline.RunAsync(stoppingToken);
+            return await _pipeline.StartAsync(stoppingToken);
         }
 
         public override async ValueTask DisposeAsync()

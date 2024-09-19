@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         IDiagnosticLifetimeService,
         IAsyncDisposable
     {
-        private Task? _executingTask;
+        private Task<Task>? _executingTask;
         private object _executionLock = new object();
         private CancellationTokenSource? _stoppingSource;
 
@@ -41,17 +41,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         _stoppingSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-                        // Begin to execute but don't wait for it to complete.
+                        // Begin to execute but don't wait for the service to complete.
                         _executingTask = ExecuteAsync(_stoppingSource.Token);
                     }
                 }
             }
 
-            // If task already completed (e.g. faulted, cancelled, etc),
+            // Wait for the service to start
+            Task runningTask = await _executingTask;
+
+            // If the service already completed (e.g. faulted, cancelled, etc),
             // await it to propagate the likely faulting or cancellation exception.
-            if (_executingTask.IsCompleted)
+            if (runningTask.IsCompleted)
             {
-                await _executingTask;
+                await runningTask;
             }
         }
 
@@ -77,8 +80,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // Safe await the execution regardless of the completion type,
             // but allow cancelling waiting for it to finish.
             await _executingTask.SafeAwait().WaitAsync(cancellationToken);
+            await (await _executingTask).SafeAwait().WaitAsync(cancellationToken);
         }
 
-        protected abstract Task ExecuteAsync(CancellationToken stoppingToken);
+        /// <summary>
+        /// Starts the service and returns a <see cref="Task"/> that completes when the service
+        /// finishes running to completion.
+        /// </summary>
+        /// <param name="stoppingToken">The token to monitor for cancellation requests.</param>
+        /// <returns>
+        /// A task that completes when the service has started.
+        /// The inner task completes when the service runs to completion.
+        /// </returns>
+        /// <remarks>
+        /// The <paramref name="stoppingToken"/> applies to both the returned inner and outter task.
+        /// </remarks>
+        protected abstract Task<Task> ExecuteAsync(CancellationToken stoppingToken);
     }
 }

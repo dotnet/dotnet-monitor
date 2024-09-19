@@ -134,11 +134,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 #endif
             }
         }
-
-        public new Task StartAsync(CancellationToken token)
-        {
-            return base.StartAsync(token);
-        }
     }
 
     internal sealed class EventExceptionsPipelineSettings : EventSourcePipelineSettings
