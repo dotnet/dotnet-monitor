@@ -39,7 +39,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 store);
         }
 
-
         protected override async Task<Task> ExecuteAsync(CancellationToken stoppingToken)
         {
             if (!_options.Value.GetEnabled())
