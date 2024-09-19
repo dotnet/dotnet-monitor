@@ -48,13 +48,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
 
             // Wait for the service to start
-            Task runningTask = await _executingTask;
+            Task serviceCompletionTask = await _executingTask;
 
             // If the service already completed (e.g. faulted, cancelled, etc),
             // await it to propagate the likely faulting or cancellation exception.
-            if (runningTask.IsCompleted)
+            if (serviceCompletionTask.IsCompleted)
             {
-                await runningTask;
+                await serviceCompletionTask;
             }
         }
 
