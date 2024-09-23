@@ -5,7 +5,6 @@ using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Diagnostics.NETCore.Client;
-using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
@@ -21,12 +20,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
     {
         private readonly EventExceptionsPipeline _pipeline;
         private readonly IOptions<ExceptionsOptions> _options;
+        // We don't need to guard against concurrent StartAsync and StopAsync calls
+        private bool _isStarted;
 
         public ExceptionsService(
             IEndpointInfo endpointInfo,
             IOptions<ExceptionsOptions> options,
-            IExceptionsStore store,
-            StartupHookService startupHookService)
+            IExceptionsStore store)
         {
             ArgumentNullException.ThrowIfNull(endpointInfo);
             ArgumentNullException.ThrowIfNull(store);
@@ -46,7 +46,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 return;
             }
 
-
             // Wrap the passed CancellationToken into a linked CancellationTokenSource so that the
             // RunAsync method is only cancellable for the execution of the StartAsync method.
             // We don't want the caller to be able to cancel the run of the pipeline after having finished
@@ -55,10 +54,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
             // Collect exceptions and place them into exceptions store
             await _pipeline.StartAsync(cts.Token);
+            _isStarted = true;
         }
 
         public async ValueTask StopAsync(CancellationToken cancellationToken)
         {
+            if (!_isStarted)
+            {
+                return;
+            }
+
             await _pipeline.StopAsync(cancellationToken);
         }
 
