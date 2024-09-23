@@ -129,12 +129,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<ProfilerChannel>();
                 services.ConfigureCollectionRules();
                 services.ConfigureLibrarySharing();
-                services.ConfigureProfiler();
-                services.ConfigureStartupHook();
-                services.ConfigureHostingStartup();
-                services.ConfigureExceptions();
-                services.ConfigureStartupLoggers(authConfigurator);
+
+                //
+                // The order of the below calls is **important**.
+                // - ConfigureInProcessFeatures needs to be called before ConfigureProfiler and ConfigureStartupHook
+                //   because these features will configure themselves depending on environment variables set by InProcessFeaturesEndpointInfoSourceCallbacks.
+                // - ConfigureProfiler needs to be called before ConfigureStartupHook
+                //   because the startup hook may call into the profiler on load.
+                // - ConfigureExceptions needs to be called before ConfigureStartupHook
+                //   because we want to avoid missing exception data events and potentially having an out-of-sync name cache.
+                //
                 services.ConfigureInProcessFeatures(context.Configuration);
+                services.ConfigureProfiler();
+                services.ConfigureExceptions();
+                services.ConfigureStartupHook();
+
+                services.ConfigureStartupLoggers(authConfigurator);
                 services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
                 services.AddSingleton<IDumpOperationFactory, DumpOperationFactory>();
                 services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
