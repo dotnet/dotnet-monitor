@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
     /// Get exception information from target process and store it.
     /// </summary>
     internal sealed class ExceptionsService :
-        DiagnosticLifetimeBackgroundService
+        IDiagnosticLifetimeService, IAsyncDisposable
     {
         private readonly EventExceptionsPipeline _pipeline;
         private readonly IOptions<ExceptionsOptions> _options;
@@ -39,21 +39,31 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 store);
         }
 
-        protected override async Task<Task> ExecuteAsync(CancellationToken stoppingToken)
+        public async ValueTask StartAsync(CancellationToken cancellationToken)
         {
             if (!_options.Value.GetEnabled())
             {
-                return Task.CompletedTask;
+                return;
             }
 
+
+            // Wrap the passed CancellationToken into a linked CancellationTokenSource so that the
+            // RunAsync method is only cancellable for the execution of the StartAsync method.
+            // We don't want the caller to be able to cancel the run of the pipeline after having finished
+            // executing the StartAsync method.
+            using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
             // Collect exceptions and place them into exceptions store
-            return await _pipeline.StartAsync(stoppingToken);
+            _ = await _pipeline.StartAsync(cts.Token);
         }
 
-        public override async ValueTask DisposeAsync()
+        public async ValueTask StopAsync(CancellationToken cancellationToken)
         {
-            await base.DisposeAsync();
+            await _pipeline.StopAsync(cancellationToken);
+        }
 
+        public async ValueTask DisposeAsync()
+        {
             await _pipeline.DisposeAsync();
         }
     }
