@@ -14,7 +14,6 @@
 | --- | --- | --- | --- | --- | --- |
 | 7.3 | August 8, 2023 | [7.3.4](https://github.com/dotnet/dotnet-monitor/releases/tag/v7.3.4) | May 14, 2024 | May 14, 2024 | net6.0<br/>net7.0 |
 | 7.2 | June 13, 2023 | [7.2.3](https://github.com/dotnet/dotnet-monitor/releases/tag/v7.2.3) | October 10, 2023 | November 8, 2023 | net6.0<br/>net7.0 |
-| 7.1 | March 14, 2023 | [7.1.3](https://github.com/dotnet/dotnet-monitor/releases/tag/v7.1.3) | August 8, 2023 | September 13, 2023 | net6.0<br/>net7.0 |
 
 
 ## Preview versions
