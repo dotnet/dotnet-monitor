@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             using CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
             // Collect exceptions and place them into exceptions store
-            _ = await _pipeline.StartAsync(cts.Token);
+            await _pipeline.StartAsync(cts.Token);
         }
 
         public async ValueTask StopAsync(CancellationToken cancellationToken)
