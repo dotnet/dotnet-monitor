@@ -17,25 +17,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
         {
             return new AzureAdOptions
             {
+                TenantId = Guid.NewGuid().ToString("D"),
                 ClientId = Guid.NewGuid().ToString("D"),
                 RequiredRole = Guid.NewGuid().ToString("D")
             };
-        }
-
-        [Fact]
-        public void AzureAdOptions_Supports_GuidTenantId()
-        {
-            // Arrange
-            AzureAdOptions options = GetDefaultOptions();
-            options.TenantId = Guid.NewGuid().ToString("D");
-
-            List<ValidationResult> results = new();
-
-            // Act
-            bool isValid = Validator.TryValidateObject(options, new(options), results, validateAllProperties: true);
-
-            // Assert
-            Assert.True(isValid);
         }
 
         [Fact]
@@ -45,6 +30,24 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
             AzureAdOptions options = GetDefaultOptions();
 
             options.RequiredRole = null;
+
+            List<ValidationResult> results = new();
+
+            // Act
+            bool isValid = Validator.TryValidateObject(options, new(options), results, validateAllProperties: true);
+
+            // Assert
+            Assert.False(isValid);
+            Assert.Single(results);
+        }
+
+        [Fact]
+        public void AzureAdOptions_Requires_TenantId()
+        {
+            // Arrange
+            AzureAdOptions options = GetDefaultOptions();
+
+            options.TenantId = null;
 
             List<ValidationResult> results = new();
 
