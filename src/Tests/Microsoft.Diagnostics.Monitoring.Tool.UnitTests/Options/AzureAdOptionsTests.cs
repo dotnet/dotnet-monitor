@@ -39,22 +39,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.Options
         }
 
         [Fact]
-        public void AzureAdOptions_Supports_DomainTenantId()
-        {
-            // Arrange
-            AzureAdOptions options = GetDefaultOptions();
-            options.TenantId = "common";
-
-            List<ValidationResult> results = new();
-
-            // Act
-            bool isValid = Validator.TryValidateObject(options, new(options), results, validateAllProperties: true);
-
-            // Assert
-            Assert.True(isValid);
-        }
-
-        [Fact]
         public void AzureAdOptions_Requires_Role()
         {
             // Arrange

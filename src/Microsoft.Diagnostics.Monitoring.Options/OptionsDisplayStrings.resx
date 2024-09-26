@@ -713,7 +713,7 @@
     <comment>The description provided for the RequiredRole parameter on AzureAdOptions.</comment>
   </data>
   <data name="DisplayAttributeDescription_AzureAdOptions_TenantId" xml:space="preserve">
-    <value>The tenant id of the Azure Active Directory tenant, or its tenant domain.</value>
+    <value>The tenant id of the Azure Active Directory tenant.</value>
     <comment>The description provided for the TenantId parameter on AzureAdOptions.</comment>
   </data>
   <data name="ErrorMessage_MultipleAuthenticationModesSpecified" xml:space="preserve">
