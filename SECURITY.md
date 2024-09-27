@@ -14,6 +14,6 @@ Reports via MSRC may qualify for the .NET Core Bug Bounty. Details of the .NET C
 
 Please do not open issues for anything you think might have a security implication.
 
-## Considerations
+## Security Considerations
 
 See [Security Considerations](./documentation/security-considerations.md) for a list of topics to be aware of when configuring and using .NET Monitor.
