@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> This document is current a work in progress.
+> This document is currently a work in progress.
 
 # Security Considerations
 
