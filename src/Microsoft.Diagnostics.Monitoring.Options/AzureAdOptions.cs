@@ -19,8 +19,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_TenantId))]
-        [DefaultValue(AzureAdOptionsDefaults.DefaultTenantId)]
-        public string? TenantId { get; set; }
+        [Required]
+        public string TenantId { get; set; } = string.Empty;
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
