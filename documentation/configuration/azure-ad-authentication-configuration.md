@@ -7,7 +7,7 @@ Azure Active Directory authentication must be configured before `dotnet monitor`
 ## Configuration Options
 
 > [!NOTE]
-> Starting in 9.0 RC 2, The `TenantId` option is now **required**.
+> Starting in 9.0 RC 2, the `TenantId` option is now **required**.
 
 | Name | Type | Required | Description |
 |---|---|---|---|
