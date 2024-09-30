@@ -9,7 +9,6 @@ Azure Active Directory authentication must be configured before `dotnet monitor`
 > [!NOTE]
 > Starting in 9.0 RC 2, The `TenantId` option is now **required**.
 
-
 | Name | Type | Required | Description |
 |---|---|---|---|
 | ClientId | string | true | The unique application (client) id assigned to the app registration in Azure Active Directory. |
