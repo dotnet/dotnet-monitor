@@ -15,8 +15,8 @@ Azure Active Directory authentication must be configured before `dotnet monitor`
 | RequiredRole | string | true | The role required to be able to authenticate. |
 | AppIdUri | uri | false | The App ID URI of the app registration. Defaults to `api://{ClientId}` if not specified. |
 | Instance | uri | false | Specifies the Azure cloud instance users are signing in from. Can be either the Azure public cloud or one of the national clouds. Defaults to the Azure public cloud (`https://login.microsoftonline.com`). |
-| TenantId | string | false | The tenant id of the Azure Active Directory tenant. Defaults to `organizations`. |
 | TenantId (9.0 RC 2+) | string | true | The tenant id of the Azure Active Directory tenant. |
+| TenantId | string | false | The tenant id of the Azure Active Directory tenant. Defaults to `organizations`. |
 
 A minimal configuration requires setting just the `TenantId`, `ClientId`, and `RequiredRole`.
 
