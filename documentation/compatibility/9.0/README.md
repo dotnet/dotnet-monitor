@@ -12,4 +12,4 @@ If you are migrating your usage to `dotnet monitor` 9.0, the following changes m
 
 ### Configuration: Azure Active Directory Authentication
 
-When using Azure Active Directory (Entra Id) for authentication, setting the `TenantId` is now **required**.
+When using Azure Active Directory (Entra ID) for authentication, setting the `TenantId` is now **required**.
