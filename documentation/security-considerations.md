@@ -7,7 +7,7 @@
 
 ### Configuration
 
-Prior to 9.0 RC 2, the `TenantId` [configuration option](./configuration/azure-ad-authentication-configuration.md#configuration-options) is optional. However when configuring `dotnet-monitor`, `TenantId` should always be explicitly set to your tenant's id and not a pseudo tenant.
+Prior to 9.0 RC 2, the `TenantId` [configuration option](./configuration/azure-ad-authentication-configuration.md#configuration-options) is optional. However when configuring `dotnet-monitor`, `TenantId` should always be explicitly set to [your tenant's id](https://learn.microsoft.com/entra/fundamentals/how-to-find-tenant) and not a pseudo tenant.
 
 ### Token Validation
 
