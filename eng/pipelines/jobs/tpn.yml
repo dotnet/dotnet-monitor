@@ -5,10 +5,37 @@ jobs:
     displayName: Generate TPN
     disableComponentGovernance: true
     enableSbom: false
+    variables:
+    - _InternalInstallArgs: ''
+    - _InternalBuildArgs: ''
+    - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
+      - group: DotNet-MSRC-Storage
+      - _InternalInstallArgs: >-
+          -RuntimeSourceFeed https://dotnetclimsrc.blob.core.windows.net/dotnet
+          -RuntimeSourceFeedKey $(dotnetclimsrc-read-sas-token-base64)
+
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+      - _InternalBuildArgs: >-
+          /p:TeamName=$(_TeamName)
+          /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
+
     steps:
+    - ${{ if ne(variables['System.TeamProject'], 'public') }}:
+      - task: PowerShell@2
+        displayName: Setup Private Feeds Credentials
+        inputs:
+          filePath: $(Build.SourcesDirectory)/eng/common/SetupNugetSources.ps1
+          arguments: -ConfigFile $(Build.SourcesDirectory)/NuGet.config -Password $Env:Token
+        env:
+          Token: $(dn-bot-dnceng-artifact-feeds-rw)
+
     # Only restore the dotnet-monitor project so only packages we ship get included in the below CG scan
     - script: >-
-        $(Build.SourcesDirectory)/restore.cmd -ci -projects $(Build.SourcesDirectory)/src/Tools/dotnet-monitor/dotnet-monitor.csproj
+        $(Build.SourcesDirectory)/restore.cmd
+        -ci
+        -projects $(Build.SourcesDirectory)/src/Tools/dotnet-monitor/dotnet-monitor.csproj
+        $(_InternalInstallArgs)
+        $(_InternalBuildArgs)
       displayName: Restore dotnet-monitor tool packages
 
     - task: ComponentGovernanceComponentDetection@0
