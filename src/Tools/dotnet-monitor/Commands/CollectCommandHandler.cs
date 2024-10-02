@@ -138,11 +138,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 //   because the startup hook may call into the profiler on load.
                 // - ConfigureExceptions needs to be called before ConfigureStartupHook
                 //   because we want to avoid missing exception data events and potentially having an out-of-sync name cache.
+                // - ConfigureStartupHook needs to be called before ConfigureHostingStartup
+                //   because the hosting startup assembly depends on the startup hook assembly.
                 //
                 services.ConfigureInProcessFeatures(context.Configuration);
                 services.ConfigureProfiler();
                 services.ConfigureExceptions();
                 services.ConfigureStartupHook();
+                services.ConfigureHostingStartup();
 
                 services.ConfigureStartupLoggers(authConfigurator);
                 services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
