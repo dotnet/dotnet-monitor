@@ -168,7 +168,7 @@ function ValidateLinks(learningPathContents, repoURLToSearch, modifiedPRFiles, l
         UpdateManuallyReview(fileName, link, learningPathFile, learningPathLineNumber);
         continue
       }
-      const headContentLines = headContent.toString().split("\n");
+      const headContentLines = headContent.toString().split("\n").map(line => line.trim());
 
       if (!linkHasLineNumber) { continue; }
       const oldLineNumber = Number(link.substring(linePrefixIndex + linePrefix.length, link.length));
@@ -185,6 +185,9 @@ function ValidateLinks(learningPathContents, repoURLToSearch, modifiedPRFiles, l
       {
         const newLineNumberLast = headContentLines.lastIndexOf(prevContentLines[oldLineNumber - 1].trim()) + 1;
         const newLineNumberFirst = headContentLines.indexOf(prevContentLines[oldLineNumber - 1].trim()) + 1;
+
+        console.log("New line number last: " + newLineNumberLast);
+        console.log("New line number last: " + newLineNumberFirst);
 
         if (newLineNumberLast === 0 || newLineNumberFirst === 0 || newLineNumberLast !== newLineNumberFirst) // Multiple matches found in the file, or no matches found
         {
