@@ -31,6 +31,6 @@ $env:Egress__AzureBlobStorage__monitorBlob__AccountKey = "accountKey"; dotnet-mo
 
 ### Kubernetes
 
-For Kubernetes, a preferred alternative is to mount your secrets in the file system with restricted access - for more information and an example of how to do this, view the [Kubernetes documentation](https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume). For additional information on how secrets work in Kubernetes, view the [documentation](https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-secret).
+For Kubernetes, a preferred alternative is to mount your secrets in the file system with restricted access - for more information and an example of how to do this, view the [Kubernetes documentation](https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume). For additional information on how secrets work in Kubernetes, view the following [documentation](https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-secret).
 
 ## Item 3
