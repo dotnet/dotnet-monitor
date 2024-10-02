@@ -48,6 +48,9 @@ updates:
         - "version-update:semver-major"
         - "version-update:semver-minor"
 #@ end
+      - dependency-name: System.Text.Json
+        update-types:
+        - version-update:semver-major
       - dependency-name: "Moq"
     commit-message:
       prefix: #@ commit_prefix
@@ -84,6 +87,5 @@ updates:
         patterns:
           - "Microsoft.Extensions.*"
           - "Microsoft.NETCore.App.Runtime.*"
-          - "System.*"
 #@ end
 #@ end

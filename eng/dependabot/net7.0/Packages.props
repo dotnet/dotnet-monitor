@@ -13,6 +13,5 @@
       with the same version number.
     -->
     <PackageReference Include="Microsoft.NETCore.DotNetHost" Version="$(MicrosoftNETCoreApp70Version)" />
-    <PackageReference Include="System.Text.Json" Version="$(SystemTextJson70Version) />
   </ItemGroup>
 </Project>

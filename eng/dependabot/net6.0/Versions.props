@@ -11,7 +11,5 @@
     <MicrosoftExtensionsLoggingConsole60Version>6.0.0</MicrosoftExtensionsLoggingConsole60Version>
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp60Version>6.0.33</MicrosoftNETCoreApp60Version>
-    <!-- System.Text.Json -->
-    <SystemTextJson60Version>6.0.9</SystemTextJson60Version>
   </PropertyGroup>
 </Project>
