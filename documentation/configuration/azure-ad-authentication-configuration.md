@@ -4,6 +4,9 @@ First Available: 7.1
 
 Azure Active Directory authentication must be configured before `dotnet monitor` starts, it does not support being configured or changed at runtime.
 
+> [!IMPORTANT]
+> See [Security Considerations](../security-considerations.md#azure-active-directory-authentication-entra-id) for important information regarding configuring Azure Activity Directory authentication.
+
 ## Configuration Options
 
 > [!NOTE]
