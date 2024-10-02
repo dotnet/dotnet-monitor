@@ -1,5 +1,8 @@
 # Configuration Sources
 
+> [!IMPORTANT]
+> See [Security Considerations](../security-considerations.md#storing-configuration-secrets) for important information regarding specifying secrets in configuration.
+
 `dotnet monitor` can read and combine configuration from multiple sources. The configuration sources are listed below in the order in which they are read (first is lowest precedence, last is highest precedence):
 
 - Command line parameters
