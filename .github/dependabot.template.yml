@@ -84,5 +84,6 @@ updates:
         patterns:
           - "Microsoft.Extensions.*"
           - "Microsoft.NETCore.App.Runtime.*"
+          - "System.*"
 #@ end
 #@ end

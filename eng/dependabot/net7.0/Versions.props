@@ -11,5 +11,7 @@
     <MicrosoftExtensionsLoggingConsole70Version>7.0.0</MicrosoftExtensionsLoggingConsole70Version>
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp70Version>7.0.20</MicrosoftNETCoreApp70Version>
+    <!-- System.Text.Json -->
+    <SystemTextJson60Version>7.0.4</SystemTextJson60Version>
   </PropertyGroup>
 </Project>
