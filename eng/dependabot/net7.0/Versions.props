@@ -12,6 +12,6 @@
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp70Version>7.0.20</MicrosoftNETCoreApp70Version>
     <!-- System.Text.Json -->
-    <SystemTextJson60Version>7.0.4</SystemTextJson60Version>
+    <SystemTextJson70Version>7.0.4</SystemTextJson70Version>
   </PropertyGroup>
 </Project>
