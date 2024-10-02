@@ -138,7 +138,7 @@ jobs:
           displayName: Install Azurite
           inputs:
             command: custom
-            customCommand: install -g azurite
+            customCommand: install -g azurite@3.29.0
 
       # When using the Alpine build containers, the above npm install will install to the system's
       # node directory instead of the agent's copy.
