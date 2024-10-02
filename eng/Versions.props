@@ -54,6 +54,7 @@
     <!-- dotnet/runtime references -->
     <MicrosoftNETCoreAppRuntimewinx64Version>6.0.0</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21522.10</VSRedistCommonNetCoreSharedFrameworkx6460Version>
+    <SystemTextJsonVersion>6.0.9</SystemTextJsonVersion>
     <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>1.0.250401</MicrosoftFileFormatsVersion>
   </PropertyGroup>

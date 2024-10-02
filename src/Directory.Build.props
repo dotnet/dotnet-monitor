@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Private.Uri" Version="$(SystemPrivateUriVersion)" />
+    <PackageReference Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
   </ItemGroup>
 
   <ItemGroup>
