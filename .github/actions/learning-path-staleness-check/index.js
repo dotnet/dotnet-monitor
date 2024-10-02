@@ -168,7 +168,7 @@ function ValidateLinks(learningPathContents, repoURLToSearch, modifiedPRFiles, l
         UpdateManuallyReview(fileName, link, learningPathFile, learningPathLineNumber);
         continue
       }
-      const headContentLines = headContent.toString().split("\n");
+      const headContentLines = headContent.toString().split("\n").map(line => line.trim());
 
       if (!linkHasLineNumber) { continue; }
       const oldLineNumber = Number(link.substring(linePrefixIndex + linePrefix.length, link.length));
