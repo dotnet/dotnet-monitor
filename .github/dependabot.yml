@@ -14,6 +14,9 @@ updates:
   - dependency-name: Microsoft.Extensions.*
     update-types:
     - version-update:semver-major
+  - dependency-name: System.Text.Json
+    update-types:
+    - version-update:semver-major
   - dependency-name: Moq
   commit-message:
     prefix: '[main] '
@@ -89,6 +92,9 @@ updates:
   target-branch: release/8.0
   ignore:
   - dependency-name: Microsoft.Extensions.*
+    update-types:
+    - version-update:semver-major
+  - dependency-name: System.Text.Json
     update-types:
     - version-update:semver-major
   - dependency-name: Moq
@@ -172,6 +178,9 @@ updates:
     update-types:
     - version-update:semver-major
     - version-update:semver-minor
+  - dependency-name: System.Text.Json
+    update-types:
+    - version-update:semver-major
   - dependency-name: Moq
   commit-message:
     prefix: '[release/6.x] '
