@@ -8,6 +8,7 @@ When running a dotnet application, differences in diverse local and production e
 
 - [Releases](./releases.md)
 - [Setup](./setup.md)
+- [Security Considerations](./security-considerations.md)
 - Getting Started
     - [Running on a local machine](./localmachine.md)
     - [Running in Docker](./docker.md)
