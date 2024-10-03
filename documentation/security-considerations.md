@@ -1,6 +1,3 @@
-> [!IMPORTANT]
-> This document is currently a work in progress.
-
 # Security Considerations
 
 ## Azure Active Directory Authentication (Entra ID)
