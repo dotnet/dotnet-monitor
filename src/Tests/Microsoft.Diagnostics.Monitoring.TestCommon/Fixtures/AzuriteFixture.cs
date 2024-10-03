@@ -102,9 +102,10 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
                 // even for non-pipeline machines.
                 if (_azuriteProcess.HasExited)
                 {
+                    _startupErrorMessage = ErrorMessage($"azurite could not start with following output:\n{_azuriteStartupStdout}\nerror:\n{_azuriteStartupStderr}\nexit code:{_azuriteProcess.ExitCode}");
                     if (mustInitialize)
                     {
-                        throw new InvalidOperationException($"azurite could not start with following output:\n{_azuriteStartupStdout}\nerror:\n{_azuriteStartupStderr}\nexit code:{_azuriteProcess.ExitCode}");
+                        throw new InvalidOperationException(_startupErrorMessage);
                     }
                     _azuriteProcess = null;
                     return;
@@ -113,9 +114,11 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Fixtures
                 {
                     _azuriteProcess.Kill();
                     _azuriteProcess.WaitForExit(CommonTestTimeouts.AzuriteTeardownTimeout.Milliseconds);
+
+                    _startupErrorMessage = ErrorMessage($"azurite could not initialize within timeout with following output:\n{_azuriteStartupStdout}\nerror:\n{_azuriteStartupStderr}");
                     if (mustInitialize)
                     {
-                        throw new InvalidOperationException($"azurite could not initialize within timeout with following output:\n{_azuriteStartupStdout}\nerror:\n{_azuriteStartupStderr}");
+                        throw new InvalidOperationException(_startupErrorMessage);
                     }
                     _azuriteProcess = null;
                     return;
