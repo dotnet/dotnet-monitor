@@ -6,6 +6,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal static class AzureAdOptionsDefaults
     {
         public const string DefaultInstance = "https://login.microsoftonline.com";
-        public const string DefaultTenantId = "organizations";
     }
 }

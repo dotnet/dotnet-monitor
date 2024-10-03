@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fbuilding)
-
 # Clone, build and test the repo
 ------------------------------
 

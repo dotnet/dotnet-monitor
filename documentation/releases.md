@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Freleases)
-
 # Releases
 
 ## Supported versions
@@ -17,13 +14,12 @@
 | --- | --- | --- | --- | --- | --- |
 | 7.3 | August 8, 2023 | [7.3.4](https://github.com/dotnet/dotnet-monitor/releases/tag/v7.3.4) | May 14, 2024 | May 14, 2024 | net6.0<br/>net7.0 |
 | 7.2 | June 13, 2023 | [7.2.3](https://github.com/dotnet/dotnet-monitor/releases/tag/v7.2.3) | October 10, 2023 | November 8, 2023 | net6.0<br/>net7.0 |
-| 7.1 | March 14, 2023 | [7.1.3](https://github.com/dotnet/dotnet-monitor/releases/tag/v7.1.3) | August 8, 2023 | September 13, 2023 | net6.0<br/>net7.0 |
 
 
 ## Preview versions
 
 | Version | Release Date | Latest Version | Runtime Frameworks |
 | --- | --- | --- | --- |
-| 9.0 | August 13, 2024 | [9.0.0 preview 7](https://github.com/dotnet/dotnet-monitor/releases/tag/v9.0.0-preview.7.24408.4) | net9.0 |
+| 9.0 | September 10, 2024 | [9.0.0 rc 1](https://github.com/dotnet/dotnet-monitor/releases/tag/v9.0.0-rc.1.24453.3) | net9.0 |
 
 

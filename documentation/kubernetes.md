@@ -1,11 +1,10 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fkubernetes)
-
 # Running in Kubernetes
 
 In addition to its availability as a .NET CLI tool, the `dotnet monitor` tool is available as a prebuilt Docker image that can be run in container runtimes and orchestrators, such as Kubernetes.
 
 For Dockerfiles and repository information, see [Running in Docker](./docker.md)
+
+For a Docker Compose sample, see [Running in Docker Compose](./docker-compose.md)
 
 ## Non-root considerations
 
@@ -261,7 +260,7 @@ resources:
     cpu: "250m"
 ```
 
-How much memory and CPU is consumed by dotnet-monitor is dependent on which scenarios are being executed: 
+How much memory and CPU is consumed by dotnet-monitor is dependent on which scenarios are being executed:
 - Metrics consume a negligible amount of resources, although using custom metrics can affect this.
 - Operations such as traces and logs may require memory in the main application container that will automatically be allocated by the runtime.
 - Resource consumption by trace operations is also dependent on which providers are enabled, as well as the [buffer size](./api/definitions.md#eventprovidersconfiguration) allocated in the runtime.

@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fdump)
-
 # Dump - Get
 
 Captures a managed dump of a specified process without using a debugger.

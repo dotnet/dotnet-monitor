@@ -4,5 +4,6 @@
   <Import Project="net6.0/Versions.props" />
   <Import Project="net7.0/Versions.props" />
   <Import Project="net8.0/Versions.props" />
+  <Import Project="net9.0/Versions.props" />
   <Import Project="netcoreapp3.1/Versions.props" />
 </Project>

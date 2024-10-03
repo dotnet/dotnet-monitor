@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
                     configureMicrosoftIdentityOptions: options =>
                     {
                         options.Instance = _azureAdOptions.GetInstance().ToString();
-                        options.TenantId = _azureAdOptions.GetTenantId();
+                        options.TenantId = _azureAdOptions.TenantId;
                         options.ClientId = _azureAdOptions.ClientId;
                     }
                 );
@@ -51,7 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
         {
             const string OAuth2SecurityDefinitionName = "OAuth2";
 
-            Uri baseEndpoint = new Uri(_azureAdOptions.GetInstance(), FormattableString.Invariant($"{_azureAdOptions.GetTenantId()}/oauth2/v2.0/"));
+            Uri baseEndpoint = new Uri(_azureAdOptions.GetInstance(), FormattableString.Invariant($"{_azureAdOptions.TenantId}/oauth2/v2.0/"));
 
             options.AddSecurityDefinition(OAuth2SecurityDefinitionName, new OpenApiSecurityScheme
             {
