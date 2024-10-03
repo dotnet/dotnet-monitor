@@ -405,6 +405,10 @@
     <value>Amount of data points to store per metric.</value>
     <comment>The description provided for the MetricCount parameter on MetricsOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_MetricsOptions_AllowMultipleProcessesMetrics" xml:space="preserve">
+    <value>Is it allowed to expose metrics of multiple processes in /metrics endpoint</value>
+    <comment>The description provided for the AllowMultipleProcessesMetrics parameter on MetricsOptions.</comment>
+  </data>
   <data name="DisplayAttributeDescription_MetricsOptions_Providers" xml:space="preserve">
     <value>Providers for custom metrics.</value>
     <comment>The description provided for the Providers parameter on MetricsOptions.</comment>
