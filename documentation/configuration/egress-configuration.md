@@ -2,6 +2,9 @@
 
 When `dotnet-monitor` is used to produce artifacts such as dumps or traces, an egress provider enables the artifacts to be stored in a manner suitable for the hosting environment rather than streamed back directly.
 
+> [!IMPORTANT]
+> See [Security Considerations](../security-considerations.md#storing-configuration-secrets) for important information regarding specifying secrets in configuration.
+
 ## Azure blob storage egress provider
 
 | Name | Type | Required | Description |
