@@ -5,7 +5,7 @@
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
     <VersionPrefix>9.0.0</VersionPrefix>
     <PreReleaseVersionLabel>rc</PreReleaseVersionLabel>
-    <PreReleaseVersionIteration>1</PreReleaseVersionIteration>
+    <PreReleaseVersionIteration>2</PreReleaseVersionIteration>
     <!-- Disable final version kind until merged into release branch. -->
     <DotNetUseShippingVersions>true</DotNetUseShippingVersions>
     <!--
@@ -48,26 +48,26 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/arcade references -->
-    <MicrosoftDotNetBuildTasksArchivesVersion>9.0.0-beta.24426.3</MicrosoftDotNetBuildTasksArchivesVersion>
-    <MicrosoftDotNetCodeAnalysisVersion>9.0.0-beta.24426.3</MicrosoftDotNetCodeAnalysisVersion>
-    <MicrosoftDotNetXUnitExtensionsVersion>9.0.0-beta.24426.3</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetBuildTasksArchivesVersion>9.0.0-beta.24501.3</MicrosoftDotNetBuildTasksArchivesVersion>
+    <MicrosoftDotNetCodeAnalysisVersion>9.0.0-beta.24501.3</MicrosoftDotNetCodeAnalysisVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>9.0.0-beta.24501.3</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>9.0.0-rc.1.24452.1</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <VSRedistCommonAspNetCoreSharedFrameworkx6490Version>9.0.0-rc.1.24452.1</VSRedistCommonAspNetCoreSharedFrameworkx6490Version>
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta4.24324.3</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>8.0.0-preview.24427.4</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>8.0.0-preview.24427.4</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>8.0.0-preview.24479.1</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>8.0.0-preview.24479.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/roslyn-analyzers -->
-    <MicrosoftCodeAnalysisNetAnalyzersVersion>9.0.0-preview.24415.1</MicrosoftCodeAnalysisNetAnalyzersVersion>
+    <MicrosoftCodeAnalysisNetAnalyzersVersion>9.0.0-preview.24479.1</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
     <MicrosoftNETCoreAppRuntimewinx64Version>9.0.0-rc.1.24431.7</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6490Version>9.0.0-rc.1.24431.7</VSRedistCommonNetCoreSharedFrameworkx6490Version>
     <!-- dotnet/sdk references -->
     <VSRedistCommonNetCoreSdkPlaceholderx6490Version>9.0.100-rc.1.24452.12</VSRedistCommonNetCoreSdkPlaceholderx6490Version>
     <!-- dotnet/symstore references -->
-    <MicrosoftFileFormatsVersion>1.0.542704</MicrosoftFileFormatsVersion>
+    <MicrosoftFileFormatsVersion>1.0.547901</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
@@ -96,6 +96,7 @@
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging60Version)</MicrosoftExtensionsLoggingVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions60Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole60Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <SystemTextJsonVersion>$(SystemTextJson80Version)</SystemTextJsonVersion>
   </PropertyGroup>
   <PropertyGroup Label=".NET 7 Dependent" Condition=" '$(TargetFramework)' == 'net7.0' ">
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp70Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
@@ -103,6 +104,7 @@
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging70Version)</MicrosoftExtensionsLoggingVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions70Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole70Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <SystemTextJsonVersion>$(SystemTextJson80Version)</SystemTextJsonVersion>
   </PropertyGroup>
   <PropertyGroup Label=".NET 8 Dependent" Condition=" '$(TargetFramework)' == 'net8.0' ">
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp80Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
@@ -111,6 +113,7 @@
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging80Version)</MicrosoftExtensionsLoggingVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions80Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole80Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <SystemTextJsonVersion>$(SystemTextJson80Version)</SystemTextJsonVersion>
   </PropertyGroup>
   <PropertyGroup Label=".NET 9 Dependent" Condition=" '$(TargetFramework)' == 'net9.0' ">
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp90Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
@@ -119,6 +122,7 @@
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftNETCoreApp90Version)</MicrosoftExtensionsLoggingVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftNETCoreApp90Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftNETCoreApp90Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <SystemTextJsonVersion>$(SystemTextJson90Version)</SystemTextJsonVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(UseMicrosoftDiagnosticsMonitoringShippedVersion)' == 'true'">
     <MicrosoftDiagnosticsMonitoringLibraryVersion>$(MicrosoftDiagnosticsMonitoringShippedVersion)</MicrosoftDiagnosticsMonitoringLibraryVersion>

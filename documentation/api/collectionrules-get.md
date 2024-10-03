@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fcollectionrules-get)
-
 # Collection Rules - Get
 
 First Available: 6.3

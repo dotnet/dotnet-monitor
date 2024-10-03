@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fconfiguration%2Fstorage-configuration)
-
 # Storage Configuration
 
 Some diagnostic features (e.g. memory dumps, stack traces) require that a directory is shared between the `dotnet monitor` tool and the target applications. The `Storage` configuration section allows specifying these directories to facilitate this sharing.
