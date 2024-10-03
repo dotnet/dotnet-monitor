@@ -1,0 +1,8 @@
+<Project>
+  <!--
+    Packages in this file have versions updated periodically by Dependabot specifically for .NET 9.
+  -->
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="$(SystemTextJson90Version) />
+  </ItemGroup>
+</Project>

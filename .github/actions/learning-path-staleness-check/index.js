@@ -24,7 +24,7 @@ function UpdateModifiedFiles(fileName, path, learningPathFile)
 {
   modifiedFilesUrlToFileName[path] = fileName;
 
-  modifiedFilesPathToLearningPathFile[path] = modifiedFilesPathToLearningPathFile[path] ? modifiedFilesPathToLearningPathFile[path] : new Set();;
+  modifiedFilesPathToLearningPathFile[path] = modifiedFilesPathToLearningPathFile[path] ? modifiedFilesPathToLearningPathFile[path] : new Set();
   modifiedFilesPathToLearningPathFile[path].add(learningPathFile);
 
   modifiedFiles = new Set();
@@ -168,7 +168,7 @@ function ValidateLinks(learningPathContents, repoURLToSearch, modifiedPRFiles, l
         UpdateManuallyReview(fileName, link, learningPathFile, learningPathLineNumber);
         continue
       }
-      const headContentLines = headContent.toString().split("\n");
+      const headContentLines = headContent.toString().split("\n").map(line => line.trim());
 
       if (!linkHasLineNumber) { continue; }
       const oldLineNumber = Number(link.substring(linePrefixIndex + linePrefix.length, link.length));
@@ -183,10 +183,10 @@ function ValidateLinks(learningPathContents, repoURLToSearch, modifiedPRFiles, l
       }
       else if (headContentLines.length < oldLineNumber || prevContentLines[oldLineNumber - 1].trim() !== headContentLines[oldLineNumber - 1].trim())
       {
-        const newLineNumberLast = headContentLines.lastIndexOf(prevContentLines[oldLineNumber - 1]) + 1;
-        const newLineNumberFirst = headContentLines.indexOf(prevContentLines[oldLineNumber - 1]) + 1;
+        const newLineNumberLast = headContentLines.lastIndexOf(prevContentLines[oldLineNumber - 1].trim()) + 1;
+        const newLineNumberFirst = headContentLines.indexOf(prevContentLines[oldLineNumber - 1].trim()) + 1;
 
-        if (newLineNumberLast !== newLineNumberFirst) // Multiple matches found in the file
+        if (newLineNumberLast === 0 || newLineNumberFirst === 0 || newLineNumberLast !== newLineNumberFirst) // Multiple matches found in the file, or no matches found
         {
           UpdateManuallyReview(fileName, link, learningPathFile, learningPathLineNumber, oldLineNumber);
         }
