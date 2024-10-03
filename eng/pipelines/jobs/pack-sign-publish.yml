@@ -15,6 +15,15 @@ jobs:
     variables:
     - _BuildConfig: Release
     - _SignType: real
+    - group: DotNet-MSRC-Storage
+    - _InternalBuildArgs: ''
+    - _InternalInstallArgs: >-
+        -RuntimeSourceFeed https://dotnetclimsrc.blob.core.windows.net/dotnet
+        -RuntimeSourceFeedKey $(dotnetclimsrc-read-sas-token-base64)
+    - ${{ if notin(variables['Build.Reason'], 'PullRequest') }}:
+      - _InternalBuildArgs: >-
+          /p:TeamName=$(_TeamName)
+          /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
     steps:
     - task: DownloadPipelineArtifact@2
       displayName: Download Binaries
@@ -31,13 +40,20 @@ jobs:
       inputs:
         artifactName: 'THIRD-PARTY-NOTICES'
         targetPath: '$(Build.SourcesDirectory)'
+    - task: PowerShell@2
+      displayName: Setup Private Feeds Credentials
+      inputs:
+        filePath: $(Build.SourcesDirectory)/eng/common/SetupNugetSources.ps1
+        arguments: -ConfigFile $(Build.SourcesDirectory)/NuGet.config -Password $Env:Token
+      env:
+        Token: $(dn-bot-dnceng-artifact-feeds-rw)
     - script: >-
         $(Build.SourcesDirectory)/eng/cipacksignpublish.cmd
-        /p:TeamName=$(_TeamName)
-        /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
         /p:DotNetSignType=real
         /p:DotNetPublishUsingPipelines=true
         /p:ThirdPartyNoticesFilePath='$(Build.SourcesDirectory)/$(_TPNFile)'
+        $(_InternalInstallArgs)
+        $(_InternalBuildArgs)
       displayName: Pack, Sign, and Publish
     # Intentionally copying file as "dotnet-monitor.nupkg.buildversion" for back compat
     - task: powershell@2
