@@ -1,5 +1,8 @@
 # Metrics Configuration
 
+> [!IMPORTANT]
+> See [Security Considerations](../security-considerations.md#prometheus-metrics) for important information regarding security for the metrics endpoint.
+
 ## Default Providers
 
 The `/metrics` route (and starting in 8.0, the `/livemetrics` route and `CollectLiveMetrics` actions) will collect metrics from the default providers. The default providers are:
