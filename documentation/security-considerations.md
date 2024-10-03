@@ -35,4 +35,4 @@ For Kubernetes, a preferred alternative is to mount your secrets in the file sys
 
 ## Prometheus Metrics
 
-By default, dotnet-monitor exposes [Prometheus](https://prometheus.io/docs/introduction/overview) metrics using http with an unauthenticated endpoint. This is to support the default [scraping configuration](https://learn.microsoft.com/en-us/azure/azure-monitor/containers/container-insights-prometheus-logs?tabs=pod#tabpanel_1_pod). If your application contains custom metrics or tags, ensure that no sensitive data is being emitted in your metrics.
+By default, `dotnet-monitor` exposes [Prometheus](https://prometheus.io/docs/introduction/overview) metrics using http with an unauthenticated endpoint and no other artifacts are available on this unauthenticated endpoint. This is to support the default [scraping configuration](https://learn.microsoft.com/azure/azure-monitor/containers/container-insights-prometheus-logs?tabs=pod#tabpanel_1_pod). If your application contains custom metrics or tags, ensure that no sensitive data is being emitted in your metrics.
