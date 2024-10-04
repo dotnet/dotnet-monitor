@@ -58,7 +58,6 @@ try {
         --verbose `
         --continue-on-error `
         --ci `
-        --verbose `
         $separatedArgs
 
     if ($LastExitCode -ne 0) {
