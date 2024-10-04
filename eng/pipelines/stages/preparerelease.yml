@@ -49,39 +49,16 @@ stages:
             -BarId $(BARBuildId)
             -TaskVariableName 'BuildVersion'
 
-      # Populate dotnetbuilds-internal-container-read-token
-      - template: /eng/common/templates-official/steps/get-delegation-sas.yml
-        parameters:
-          federatedServiceConnection: 'dotnetbuilds-internal-read'
-          outputVariableName: 'dotnetbuilds-internal-checksums-container-read-token'
-          expiryInHours: 1
-          base64Encode: false
-          storageAccount: dotnetbuilds
-          container: internal-checksums
-          permissions: rl
-
-      # Populate dotnetbuilds-internal-container-read-token
-      - template: /eng/common/templates-official/steps/get-delegation-sas.yml
-        parameters:
-          federatedServiceConnection: 'dotnetbuilds-internal-read'
-          outputVariableName: 'dotnetbuilds-internal-container-read-token'
-          expiryInHours: 1
-          base64Encode: false
-          storageAccount: dotnetbuilds
-          container: internal
-          permissions: rl
-
       - task: AzureCLI@2
         displayName: 'Download Build Assets'
         inputs:
-          azureSubscription: 'Darc: Maestro Production'
+          azureSubscription: 'DotNetStaging'
           scriptType: ps
           scriptPath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
           arguments: >-
             -BarBuildId "$(BARBuildId)"
             -AzdoToken "$(dn-bot-all-drop-rw-code-rw-release-all)"
             -DownloadTargetPath "$(System.ArtifactsDirectory)\BuildAssets"
-            -SasSuffixes "$(dotnetbuilds-internal-checksums-container-read-token),$(dotnetbuilds-internal-container-read-token)"
             -ReleaseVersion "$(Build.BuildNumber)"
           workingDirectory: '$(Build.Repository.LocalPath)'
         continueOnError: true
