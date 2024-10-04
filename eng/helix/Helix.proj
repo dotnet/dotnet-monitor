@@ -79,10 +79,6 @@
                                Condition="'$(HelixArchitecture)' == 'x64'">
       <TestRunName>Debian 12 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
-    <HelixAvailableTargetQueue Include="ubuntu.2204.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-helix-amd64"
-                               Condition="'$(HelixArchitecture)' == 'x64'">
-      <TestRunName>Mariner 2.0 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
-    </HelixAvailableTargetQueue>
     <HelixAvailableTargetQueue Include="ubuntu.2204.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-20.04-helix-amd64"
                                Condition="'$(HelixArchitecture)' == 'x64'">
       <TestRunName>Ubuntu 20.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
