@@ -1,8 +1,8 @@
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="9.0.0-rtm.24477.5" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0">
+    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="9.0.0-rtm.24501.7" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>9a34a6e3c7975f41300bd2550a089a85810cafd1</Sha>
+      <Sha>9d5458536b0e28996570b0ebbb1c2dbc5afedf56</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="8.0.0-preview.24503.2">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
@@ -50,13 +50,13 @@
       <Uri>https://github.com/dotnet/runtime</Uri>
       <Sha>58801184a1f0300d193517a77a054f51752aa3b2</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.9.0" Version="9.0.0-rtm.24477.5" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.9.0" Version="9.0.0-rtm.24501.7" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>9a34a6e3c7975f41300bd2550a089a85810cafd1</Sha>
+      <Sha>9d5458536b0e28996570b0ebbb1c2dbc5afedf56</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0" Version="9.0.100-rtm.24502.22">
+    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0" Version="9.0.100-rtm.24504.1">
       <Uri>https://github.com/dotnet/sdk</Uri>
-      <Sha>3c5b89fabedba77188c0e24ee48437e547e9ee8b</Sha>
+      <Sha>400deebe954609bb60ba2855f87e9816e4f0620e</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.9.0" Version="9.0.0-rtm.24501.6" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0">
       <Uri>https://github.com/dotnet/runtime</Uri>
