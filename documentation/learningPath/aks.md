@@ -42,7 +42,7 @@ ENV \
     # Unset ASPNETCORE_HTTP_PORTS from aspnet base image (.NET 8+)
     ASPNETCORE_HTTP_PORTS= \
     # Disable debugger and profiler diagnostics to avoid diagnosing self.
-    COMPlus_EnableDiagnostics=0 \
+    DOTNET_EnableDiagnostics=0 \
     # Default Filter
     DefaultProcess__Filters__0__Key=ProcessId \
     DefaultProcess__Filters__0__Value=1 \
