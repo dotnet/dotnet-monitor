@@ -2,7 +2,6 @@ param(
   [Parameter(Mandatory=$true)][int] $BarBuildId,
   [Parameter(Mandatory=$true)][string] $ReleaseVersion,
   [Parameter(Mandatory=$true)][string] $DownloadTargetPath,
-  [Parameter(Mandatory=$true)][string] $SasSuffixes,
   [Parameter(Mandatory=$true)][string] $AzdoToken,
   [Parameter(Mandatory=$false)][string] $DarcVersion = $null,
   [Parameter(Mandatory=$false)][bool] $Separated = $true,
@@ -14,7 +13,6 @@ function Write-Help() {
     Write-Host "  -BarBuildId <value>               BAR Build ID of the diagnostics build to publish."
     Write-Host "  -ReleaseVersion <value>           Name to give the diagnostics release."
     Write-Host "  -DownloadTargetPath <value>       Path to download the build to."
-    Write-Host "  -SasSuffixes <value>              Comma separated list of potential uri suffixes that can be used if anonymous access to a blob uri fails. Appended directly to the end of the URI. Use full SAS syntax with ?."
     Write-Host "  -AzdoToken <value>                Azure DevOps token to use for builds queries"
     Write-Host "  -Separated <`$true|`$false>       Download files to their repo separated locations."
     Write-Host ""
@@ -55,7 +53,7 @@ try {
         --release-name $ReleaseVersion `
         --output-dir $DownloadTargetPath `
         --overwrite `
-        --sas-suffixes $SasSuffixes `
+        --use-azure-credential-for-blobs `
         --azdev-pat $AzdoToken `
         --verbose `
         --continue-on-error `

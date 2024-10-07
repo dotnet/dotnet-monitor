@@ -1,6 +1,3 @@
-> [!IMPORTANT]
-> This document is currently a work in progress.
-
 # Security Considerations
 
 ## Azure Active Directory Authentication (Entra ID)
@@ -33,4 +30,6 @@ $env:Egress__AzureBlobStorage__monitorBlob__AccountKey = "accountKey"; dotnet-mo
 
 For Kubernetes, a preferred alternative is to mount your secrets in the file system with restricted access - for more information and an example of how to do this, view the [Kubernetes documentation](https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume). For additional information on how secrets work in Kubernetes, view the following [documentation](https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-secret).
 
-## Item 3
+## Prometheus Metrics
+
+By default, `dotnet-monitor` exposes [Prometheus](https://prometheus.io/docs/introduction/overview) metrics using http with an unauthenticated endpoint and no other artifacts are available on this unauthenticated endpoint. This is to support the default [scraping configuration](https://learn.microsoft.com/azure/azure-monitor/containers/container-insights-prometheus-logs?tabs=pod#tabpanel_1_pod). If your application contains custom metrics or tags, ensure that no sensitive data is being emitted in your metrics.
