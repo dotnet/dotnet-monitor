@@ -26,9 +26,9 @@
       "outOfSupportDate": "2024-11-12T00:00:00.000Z"
     },
     "8.0": {
-      "tag": "v8.0.4",
+      "tag": "v8.0.5",
       "minorReleaseDate": "2023-11-14T00:00:00.000Z",
-      "patchReleaseDate": "2024-08-13T00:00:00.000Z",
+      "patchReleaseDate": "2024-10-08T00:00:00.000Z",
       "supportedFrameworks": [
         "net8.0"
       ]
