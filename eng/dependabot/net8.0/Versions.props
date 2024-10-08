@@ -4,11 +4,11 @@
     <!-- Microsoft.Extensions.Configuration.Abstractions -->
     <MicrosoftExtensionsConfigurationAbstractions80Version>8.0.0</MicrosoftExtensionsConfigurationAbstractions80Version>
     <!-- Microsoft.Extensions.Logging -->
-    <MicrosoftExtensionsLogging80Version>8.0.0</MicrosoftExtensionsLogging80Version>
+    <MicrosoftExtensionsLogging80Version>8.0.1</MicrosoftExtensionsLogging80Version>
     <!-- Microsoft.Extensions.Logging.Abstractions -->
-    <MicrosoftExtensionsLoggingAbstractions80Version>8.0.1</MicrosoftExtensionsLoggingAbstractions80Version>
+    <MicrosoftExtensionsLoggingAbstractions80Version>8.0.2</MicrosoftExtensionsLoggingAbstractions80Version>
     <!-- Microsoft.Extensions.Logging.Console -->
-    <MicrosoftExtensionsLoggingConsole80Version>8.0.0</MicrosoftExtensionsLoggingConsole80Version>
+    <MicrosoftExtensionsLoggingConsole80Version>8.0.1</MicrosoftExtensionsLoggingConsole80Version>
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp80Version>8.0.8</MicrosoftNETCoreApp80Version>
   </PropertyGroup>
