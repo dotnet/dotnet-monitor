@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             get
             {
-                string enableDiagnostics = Environment.GetEnvironmentVariable("COMPlus_EnableDiagnostics");
+                string enableDiagnostics = Environment.GetEnvironmentVariable("DOTNET_EnableDiagnostics") ?? Environment.GetEnvironmentVariable("COMPlus_EnableDiagnostics");
                 return string.IsNullOrEmpty(enableDiagnostics) || !"0".Equals(enableDiagnostics, StringComparison.Ordinal);
             }
         }
