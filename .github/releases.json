@@ -16,9 +16,9 @@
   ],
   "releases": {
     "6.3": {
-      "tag": "v6.3.8",
+      "tag": "v6.3.9",
       "minorReleaseDate": "2022-10-11T00:00:00.000Z",
-      "patchReleaseDate": "2024-08-13T00:00:00.000Z",
+      "patchReleaseDate": "2024-10-08T00:00:00.000Z",
       "supportedFrameworks": [
         "net6.0",
         "netcoreapp3.1"
@@ -26,9 +26,9 @@
       "outOfSupportDate": "2024-11-12T00:00:00.000Z"
     },
     "8.0": {
-      "tag": "v8.0.4",
+      "tag": "v8.0.5",
       "minorReleaseDate": "2023-11-14T00:00:00.000Z",
-      "patchReleaseDate": "2024-08-13T00:00:00.000Z",
+      "patchReleaseDate": "2024-10-08T00:00:00.000Z",
       "supportedFrameworks": [
         "net8.0"
       ]
@@ -54,9 +54,9 @@
       "outOfSupportDate": "2024-05-14T00:00:00.000Z"
     },
     "9.0": {
-      "tag": "v9.0.0-rc.1.24453.3",
-      "minorReleaseDate": "2024-09-10T00:00:00.000Z",
-      "patchReleaseDate": "2024-09-10T00:00:00.000Z",
+      "tag": "v9.0.0-rc.2.24504.9",
+      "minorReleaseDate": "2024-10-08T00:00:00.000Z",
+      "patchReleaseDate": "2024-10-08T00:00:00.000Z",
       "supportedFrameworks": [
         "net9.0"
       ]
