@@ -137,7 +137,7 @@
     <AdditionalDotNetPackage Include="$(MicrosoftAspNetCoreApp70Version)">
       <PackageType>aspnetcore-runtime</PackageType>
     </AdditionalDotNetPackage>
-    <AdditionalDotNetPackage Include="$(VSRedistCommonAspNetCoreSharedFrameworkx6480Version)">
+    <AdditionalDotNetPackage Include="$(MicrosoftAspNetCoreApp80Version)">
       <PackageType>aspnetcore-runtime</PackageType>
     </AdditionalDotNetPackage>
   </ItemGroup>
