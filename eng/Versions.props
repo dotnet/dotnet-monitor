@@ -89,6 +89,7 @@
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging60Version)</MicrosoftExtensionsLoggingVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions60Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole60Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <SystemTextJsonVersion>$(SystemTextJson80Version)</SystemTextJsonVersion>
   </PropertyGroup>
   <PropertyGroup Label=".NET 7 Dependent" Condition=" '$(TargetFramework)' == 'net7.0' ">
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp70Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
@@ -96,6 +97,7 @@
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging70Version)</MicrosoftExtensionsLoggingVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions70Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole70Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <SystemTextJsonVersion>$(SystemTextJson80Version)</SystemTextJsonVersion>
   </PropertyGroup>
   <PropertyGroup Label=".NET 8 Dependent" Condition=" '$(TargetFramework)' == 'net8.0' ">
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp80Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
@@ -104,6 +106,7 @@
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging80Version)</MicrosoftExtensionsLoggingVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions80Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole80Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <SystemTextJsonVersion>$(SystemTextJson80Version)</SystemTextJsonVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(UseMicrosoftDiagnosticsMonitoringShippedVersion)' == 'true'">
     <MicrosoftDiagnosticsMonitoringLibraryVersion>$(MicrosoftDiagnosticsMonitoringShippedVersion)</MicrosoftDiagnosticsMonitoringLibraryVersion>

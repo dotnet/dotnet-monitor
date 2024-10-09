@@ -11,5 +11,6 @@
     <MicrosoftExtensionsLoggingConsole80Version>8.0.1</MicrosoftExtensionsLoggingConsole80Version>
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp80Version>8.0.8</MicrosoftNETCoreApp80Version>
+    <SystemTextJson80Version>8.0.4</SystemTextJson80Version>
   </PropertyGroup>
 </Project>
