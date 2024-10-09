@@ -145,7 +145,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             _runner.Arguments = string.Join(" ", argsList);
 
             // Disable diagnostics on tool
-            _adapter.Environment.Add("COMPlus_EnableDiagnostics", "0");
+            _adapter.Environment.Add("DOTNET_EnableDiagnostics", "0");
             // Console output in JSON for easy parsing
             _adapter.Environment.Add("Logging__Console__FormatterName", "json");
             // Enable Information on ASP.NET Core logs for better ability to diagnose issues.

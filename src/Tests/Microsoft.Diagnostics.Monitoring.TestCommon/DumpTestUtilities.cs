@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     public static class DumpTestUtilities
     {
-        public const string EnableElfDumpOnMacOS = "COMPlus_DbgEnableElfDumpOnMacOS";
+        public const string EnableElfDumpOnMacOS = "DOTNET_DbgEnableElfDumpOnMacOS";
 
         public static async Task ValidateDump(bool expectElfDump, Stream dumpStream)
         {

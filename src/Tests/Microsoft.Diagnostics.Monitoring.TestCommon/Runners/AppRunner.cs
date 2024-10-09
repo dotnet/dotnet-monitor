@@ -153,7 +153,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
             _runner.Arguments = fullScenarioName;
 
             // Enable diagnostics in case it is disabled via inheriting test environment.
-            _adapter.Environment.Add("COMPlus_EnableDiagnostics", "1");
+            _adapter.Environment.Add("DOTNET_EnableDiagnostics", "1");
 
             if (ConnectionMode == DiagnosticPortConnectionMode.Connect)
             {
