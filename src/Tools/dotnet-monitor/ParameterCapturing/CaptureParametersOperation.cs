@@ -106,8 +106,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                 throw getNotAvailableException(Strings.ParameterCapturingNotAvailable_Reason_StartupHookDidNotLoad);
             }
 
-            const string EditAndContinueEnvName = "COMPLUS_ForceEnc";
-            if (env.TryGetValue(EditAndContinueEnvName, out string? editAndContinueEnvValue) &&
+            if ((env.TryGetValue("DOTNET_ForceEnc", out string? editAndContinueEnvValue) || env.TryGetValue("COMPlus_ForceEnc", out editAndContinueEnvValue)) &&
                 ToolIdentifiers.IsEnvVarValueEnabled(editAndContinueEnvValue))
             {
                 // Having Enc enabled results in methods belonging to debug modules to silently fail being instrumented.
