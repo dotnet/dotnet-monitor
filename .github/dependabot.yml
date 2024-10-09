@@ -14,9 +14,6 @@ updates:
   - dependency-name: Microsoft.Extensions.*
     update-types:
     - version-update:semver-major
-  - dependency-name: System.Text.Json
-    update-types:
-    - version-update:semver-major
   - dependency-name: Moq
   commit-message:
     prefix: '[main] '
@@ -53,6 +50,7 @@ updates:
       patterns:
       - Microsoft.Extensions.*
       - Microsoft.NETCore.App.Runtime.*
+      - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net7.0
   schedule:
@@ -69,6 +67,7 @@ updates:
       patterns:
       - Microsoft.Extensions.*
       - Microsoft.NETCore.App.Runtime.*
+      - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
   schedule:
@@ -85,6 +84,7 @@ updates:
       patterns:
       - Microsoft.Extensions.*
       - Microsoft.NETCore.App.Runtime.*
+      - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/independent
   schedule:
@@ -94,9 +94,6 @@ updates:
   - dependency-name: Microsoft.Extensions.*
     update-types:
     - version-update:semver-major
-  - dependency-name: System.Text.Json
-    update-types:
-    - version-update:semver-major
   - dependency-name: Moq
   commit-message:
     prefix: '[release/8.0] '
@@ -133,6 +130,7 @@ updates:
       patterns:
       - Microsoft.Extensions.*
       - Microsoft.NETCore.App.Runtime.*
+      - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net7.0
   schedule:
@@ -149,6 +147,7 @@ updates:
       patterns:
       - Microsoft.Extensions.*
       - Microsoft.NETCore.App.Runtime.*
+      - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net6.0
   schedule:
@@ -165,6 +164,7 @@ updates:
       patterns:
       - Microsoft.Extensions.*
       - Microsoft.NETCore.App.Runtime.*
+      - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/independent
   schedule:
@@ -178,9 +178,6 @@ updates:
     update-types:
     - version-update:semver-major
     - version-update:semver-minor
-  - dependency-name: System.Text.Json
-    update-types:
-    - version-update:semver-major
   - dependency-name: Moq
   commit-message:
     prefix: '[release/6.x] '
@@ -217,6 +214,7 @@ updates:
       patterns:
       - Microsoft.Extensions.*
       - Microsoft.NETCore.App.Runtime.*
+      - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/netcoreapp3.1
   schedule:
@@ -233,3 +231,4 @@ updates:
       patterns:
       - Microsoft.Extensions.*
       - Microsoft.NETCore.App.Runtime.*
+      - System.Text.Json
