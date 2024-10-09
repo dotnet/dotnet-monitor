@@ -85,7 +85,7 @@ updates:
       runtime-dependencies:
         patterns:
           - "Microsoft.Extensions.*"
-          - "Microsoft.NETCore.DotNetHost.*"
+          - "Microsoft.NETCore.DotNetHost"
           - "System.Text.Json"
 #@ end
 #@ end
