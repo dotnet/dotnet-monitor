@@ -11,6 +11,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Eventing
 {
     internal abstract class AbstractMonitorEventSource : EventSource
     {
+        private const int TrueBooleanPayload = 1;
+        private const int FalseBooleanPayload = 0;
+
         // Arrays are expected to have a 16-bit field for the length of the array.
         // The length of the array is the number of elements, not the number of bytes.
         private const int ArrayLengthFieldSize = sizeof(short);
@@ -99,29 +102,24 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Eventing
         }
 
         [NonEvent]
-        protected static void SetBool(ref EventData data, in bool value, out int buffer)
+        protected static unsafe void SetValue(ref EventData data, in bool value)
         {
             //
-            // The event pipe serializes booleans using 4 bytes (same as an int).
+            // The event pipe serializes a boolean using 4 bytes (same as an int).
             //
             // The int value also can't live on the stack of this method as the caller will be
             // referencing a pointer to it.
             //
-            // Require the caller to pass in an int for us to safely reference instead so it outlives
-            // this method.
+            // Rather than making the caller deal with this complication, silently swap the request over to
+            // use predefined static true/false boolean payloads.
             //
-            buffer = value ? 1 : 0;
-            SetValue(ref data, buffer);
+            SetValue(ref data, value ? TrueBooleanPayload : FalseBooleanPayload);
+            return;
         }
 
         [NonEvent]
         protected static unsafe void SetValue<T>(ref EventData data, in T value) where T : unmanaged
         {
-            if (typeof(T) == typeof(bool))
-            {
-                throw new NotSupportedException($"bools cannot be used with this method, use {nameof(SetBool)} instead.");
-            }
-
             data.DataPointer = (nint)Unsafe.AsPointer(ref Unsafe.AsRef(value));
             data.Size = sizeof(T);
         }

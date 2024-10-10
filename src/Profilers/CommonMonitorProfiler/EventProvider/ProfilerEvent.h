@@ -47,7 +47,7 @@ private:
     HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const GUID& first, TArgs... rest);
 
     template<size_t index, typename T = GUID, typename... TArgs>
-    HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const BOOL& first, TArgs... rest);
+    HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const bool& first, TArgs... rest);
 
     template<size_t index, typename T, typename... TArgs>
     HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const std::vector<typename T::value_type>& first, TArgs... rest);
@@ -173,15 +173,24 @@ HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const GUI
     return WritePayload<index + 1, TArgs...>(data, rest...);
 }
 
-// NOTE: We take in a BOOL here instead of a bool since event pipe serializes booleans with 4 bytes.
-// Callers can simply pass in a bool and it will be implicitly casted to a BOOL.
-C_ASSERT(sizeof(BOOL) == sizeof(INT32), "BOOL should be INT32 sized");
 template<typename... Args>
 template<size_t index, typename T, typename... TArgs>
-HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const BOOL& first, TArgs... rest)
+HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const bool& first, TArgs... rest)
 {
-    data[index].ptr = reinterpret_cast<UINT64>(&first);
-    data[index].size = sizeof(BOOL);
+    //
+    // The event pipe serializes a boolean using 4 bytes (same as an int).
+    //
+    // The int value also can't live on the stack of this method as the caller will be
+    // referencing a pointer to it.
+    //
+    // Rather than making the caller deal with this complication, silently swap the request over to
+    // use predefined static true/false boolean payloads.
+    //
+    static const INT32 TrueBooleanPayload = 1;
+    static const INT32 FalseBooleanPayload = 0;
+
+    data[index].ptr = reinterpret_cast<UINT64>(first ? &TrueBooleanPayload : &FalseBooleanPayload);
+    data[index].size = sizeof(INT32);
     data[index].reserved = 0;
     return WritePayload<index + 1, TArgs...>(data, rest...);
 }
