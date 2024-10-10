@@ -169,6 +169,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             Assert.Equal(classToken, function.ParentClassToken);
             Assert.Equal(moduleId, function.ModuleId);
             Assert.Equal(name, function.Name);
+            Assert.Equal(stackTraceHidden, function.StackTraceHidden);
             // We would normally expect the following to return an array of the stack frame IDs
             // but in-process listener doesn't decode non-byte arrays correctly.
             Assert.Equal(Array.Empty<ulong>(), function.TypeArgs);

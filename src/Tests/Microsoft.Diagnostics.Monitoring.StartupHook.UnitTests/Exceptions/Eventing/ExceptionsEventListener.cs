@@ -112,7 +112,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 
         private static bool ToBool(object? value)
         {
-            return ToType<bool>(value);
+            return Convert.ToBoolean(ToType<uint>(value));
         }
 
         private static Guid ToGuid(object? value)
