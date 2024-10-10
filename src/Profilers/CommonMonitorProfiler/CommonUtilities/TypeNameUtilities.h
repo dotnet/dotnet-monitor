@@ -24,7 +24,10 @@ class TypeNameUtilities
         HRESULT GetClassInfo(NameCache& nameCache, ClassID classId);
         HRESULT GetModuleInfo(NameCache& nameCache, ModuleID moduleId);
         HRESULT GetTypeDefName(NameCache& nameCache, ModuleID moduleId, mdTypeDef classToken);
-        HRESULT IsStackTraceHidden(ModuleID moduleId, mdToken token, bool& hidden);
+        HRESULT HasStackTraceHiddenAttribute(ModuleID moduleId, mdToken token, bool& hasAttribute);
+        // A wrapper around HasStackTraceHiddenAttribute to ensure consistent behavior when checking for the attribute
+        // encounters errors.
+        bool ShouldHideFromStackTrace(ModuleID moduleId, mdToken token);
     private:
         ComPtr<ICorProfilerInfo12> _profilerInfo;
 };

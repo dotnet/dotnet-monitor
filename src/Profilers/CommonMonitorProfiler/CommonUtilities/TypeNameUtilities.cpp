@@ -86,8 +86,7 @@ HRESULT TypeNameUtilities::GetFunctionInfo(NameCache& nameCache, FunctionID id, 
 
     IfFailRet(GetModuleInfo(nameCache, moduleId));
 
-    bool stackTraceHidden = false;
-    IfFailRet(IsStackTraceHidden(moduleId, token, stackTraceHidden));
+    bool stackTraceHidden = ShouldHideFromStackTrace(moduleId, classToken);
 
     nameCache.AddFunctionData(moduleId, id, tstring(funcName), classId, token, classToken, typeArgs, typeArgsCount, stackTraceHidden);
 
@@ -172,8 +171,7 @@ HRESULT TypeNameUtilities::GetClassInfo(NameCache& nameCache, ClassID classId)
         }
     }
 
-    bool stackTraceHidden = false;
-    IfFailRet(IsStackTraceHidden(modId, classToken, stackTraceHidden));
+    bool stackTraceHidden = ShouldHideFromStackTrace(modId, classToken);
 
     nameCache.AddClassData(modId, classId, classToken, flags, typeArgs, typeArgsCount, stackTraceHidden);
 
@@ -199,8 +197,7 @@ HRESULT TypeNameUtilities::GetTypeDefName(NameCache& nameCache, ModuleID moduleI
             break;
         }
 
-        bool stackTraceHidden = false;
-        IfFailRet(IsStackTraceHidden(moduleId, tokenToProcess, stackTraceHidden));
+        bool stackTraceHidden = ShouldHideFromStackTrace(moduleId, tokenToProcess);
 
         WCHAR wName[256];
 
@@ -293,10 +290,21 @@ HRESULT TypeNameUtilities::GetModuleInfo(NameCache& nameCache, ModuleID moduleId
     return S_OK;
 }
 
-HRESULT TypeNameUtilities::IsStackTraceHidden(ModuleID moduleId, mdToken token, bool& hidden)
+bool TypeNameUtilities::ShouldHideFromStackTrace(ModuleID moduleId, mdToken token)
+{
+    bool hasAttribute = false;
+    if (HasStackTraceHiddenAttribute(moduleId, token, hasAttribute) != S_OK) {
+        // When encountering an error while checking for the attribute show the frame.
+        return false;
+    }
+
+    return hasAttribute;
+}
+
+HRESULT TypeNameUtilities::HasStackTraceHiddenAttribute(ModuleID moduleId, mdToken token, bool& hasAttribute)
 {
     HRESULT hr;
-    hidden = false;
+    hasAttribute = false;
 
     ComPtr<IMetaDataImport> pIMDImport;
     IfFailRet(_profilerInfo->GetModuleMetaData(moduleId,
@@ -311,7 +319,7 @@ HRESULT TypeNameUtilities::IsStackTraceHidden(ModuleID moduleId, mdToken token, 
         nullptr,
         nullptr));
 
-    hidden = (hr == S_OK);
+    hasAttribute = (hr == S_OK);
 
     return S_OK;
 }
