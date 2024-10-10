@@ -102,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Eventing
         protected static void SetBool(ref EventData data, in bool value, out int buffer)
         {
             //
-            // Event source serializes bools using 4 bytes (same as an int).
+            // The event pipe serializes booleans using 4 bytes (same as an int).
             //
             // The int value also can't live on the stack of this method as the caller will be
             // referencing a pointer to it.
@@ -117,12 +117,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Eventing
         [NonEvent]
         protected static unsafe void SetValue<T>(ref EventData data, in T value) where T : unmanaged
         {
-#if DEBUG
             if (typeof(T) == typeof(bool))
             {
                 throw new NotSupportedException($"bools cannot be used with this method, use {nameof(SetBool)} instead.");
             }
-#endif
+
             data.DataPointer = (nint)Unsafe.AsPointer(ref Unsafe.AsRef(value));
             data.Size = sizeof(T);
         }

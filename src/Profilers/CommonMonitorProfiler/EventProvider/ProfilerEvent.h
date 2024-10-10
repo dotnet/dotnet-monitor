@@ -173,6 +173,9 @@ HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const GUI
     return WritePayload<index + 1, TArgs...>(data, rest...);
 }
 
+// NOTE: We take in a BOOL here instead of a bool since event pipe serializes booleans with 4 bytes.
+// Callers can simply pass in a bool and it will be implicitly casted to a BOOL.
+C_ASSERT(sizeof(BOOL) == sizeof(INT32), "BOOL should be INT32 sized");
 template<typename... Args>
 template<size_t index, typename T, typename... TArgs>
 HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const BOOL& first, TArgs... rest)
