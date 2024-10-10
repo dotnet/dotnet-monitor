@@ -65,6 +65,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                                 ToBool(eventData.Payload[NameIdentificationEvents.ClassDescPayloads.StackTraceHidden])));
                         break;
                     case ExceptionEvents.EventIds.FunctionDescription:
+                        var value = ToBool(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.StackTraceHidden]);
+
                         NameCache.FunctionData.TryAdd(
                             ToUInt64(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.FunctionId]),
                             new FunctionData(
@@ -75,7 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                                 ToUInt64(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ModuleId]),
                                 ToArray<ulong>(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.TypeArgs]),
                                 ToArray<ulong>(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ParameterTypes]),
-                                ToBool(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.StackTraceHidden])));
+                                value));
                         break;
                     case ExceptionEvents.EventIds.ModuleDescription:
                         NameCache.ModuleData.TryAdd(

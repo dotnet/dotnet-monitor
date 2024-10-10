@@ -99,8 +99,21 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Eventing
         }
 
         [NonEvent]
+        protected static void SetBool(ref EventData data, in bool value, out int buffer)
+        {
+            buffer = value ? 1 : 0;
+            SetValue(ref data, buffer);
+        }
+
+        [NonEvent]
         protected static unsafe void SetValue<T>(ref EventData data, in T value) where T : unmanaged
         {
+#if DEBUG
+            if (typeof(T) == typeof(bool))
+            {
+                throw new NotSupportedException($"bools cannot be used with this method, use {nameof(SetBool)} instead.");
+            }
+#endif
             data.DataPointer = (nint)Unsafe.AsPointer(ref Unsafe.AsRef(value));
             data.Size = sizeof(T);
         }

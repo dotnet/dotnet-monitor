@@ -90,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.ModuleId], ModuleId);
             SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.Token], Token);
             SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.Flags], Flags);
-            SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.StackTraceHidden], StackTraceHidden);
+            SetBool(ref data[NameIdentificationEvents.ClassDescPayloads.StackTraceHidden], StackTraceHidden, out int _);
             SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.TypeArgs], typeArgsSpan);
 
             WriteEventWithFlushing(ExceptionEvents.EventIds.ClassDescription, data);
@@ -120,7 +120,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ClassId], ClassId);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ClassToken], ClassToken);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ModuleId], ModuleId);
-            SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.StackTraceHidden], StackTraceHidden);
+            SetBool(ref data[NameIdentificationEvents.FunctionDescPayloads.StackTraceHidden], StackTraceHidden, out int _);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.Name], namePinned);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.TypeArgs], typeArgsSpan);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ParameterTypes], parameterTypesSpan);
@@ -175,7 +175,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.ModuleId], ModuleId);
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.Token], Token);
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.OuterToken], OuterToken);
-            SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.StackTraceHidden], StackTraceHidden);
+            SetBool(ref data[NameIdentificationEvents.TokenDescPayloads.StackTraceHidden], StackTraceHidden, out int _);
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.Name], namePinned);
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.Namespace], namespacePinned);
 
