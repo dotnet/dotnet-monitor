@@ -5,7 +5,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 
@@ -100,7 +99,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             bool stackTraceHidden = false;
             try
             {
-                stackTraceHidden = method.GetCustomAttributes<StackTraceHiddenAttribute>(inherit: false).Any();
+                stackTraceHidden = method.GetCustomAttribute<StackTraceHiddenAttribute>(inherit: false) != null;
             }
             catch (Exception) { }
 
@@ -217,7 +216,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                 bool stackTraceHidden = false;
                 try
                 {
-                    stackTraceHidden = type.GetCustomAttributes<StackTraceHiddenAttribute>(inherit: false).Any();
+                    stackTraceHidden = type.GetCustomAttribute<StackTraceHiddenAttribute>(inherit: false) != null;
                 }
                 catch (Exception) { }
 
