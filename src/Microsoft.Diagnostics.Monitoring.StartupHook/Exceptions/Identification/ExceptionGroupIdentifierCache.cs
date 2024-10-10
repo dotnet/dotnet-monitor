@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 
@@ -96,6 +97,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                 parentClassToken = Convert.ToUInt32(method.DeclaringType.MetadataToken);
             }
 
+            bool stackTraceHidden = false;
+            try
+            {
+                stackTraceHidden = method.GetCustomAttributes<StackTraceHiddenAttribute>(inherit: false).Any();
+            }
+            catch (Exception) { }
+
             // RTDynamicMethod does not implement GetGenericArguments.
             Type[] genericArguments = Array.Empty<Type>();
             try
@@ -111,8 +119,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                 parentClassToken,
                 GetOrAdd(method.Module),
                 GetOrAdd(genericArguments),
-                GetOrAdd(method.GetParameters())
-                );
+                GetOrAdd(method.GetParameters()),
+                stackTraceHidden);
 
             if (_nameCache.FunctionData.TryAdd(methodId, data))
             {
@@ -205,11 +213,20 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             {
                 ulong moduleId = GetOrAdd(type.Module);
                 uint typeToken = Convert.ToUInt32(type.MetadataToken);
+
+                bool stackTraceHidden = false;
+                try
+                {
+                    stackTraceHidden = type.GetCustomAttributes<StackTraceHiddenAttribute>(inherit: false).Any();
+                }
+                catch (Exception) { }
+
                 ClassData classData = new(
                     typeToken,
                     moduleId,
                     ClassFlags.None,
-                    GetOrAdd(type.GetGenericArguments()));
+                    GetOrAdd(type.GetGenericArguments()),
+                    stackTraceHidden);
 
                 if (!_nameCache.ClassData.TryAdd(classId, classData))
                     break;
@@ -228,7 +245,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
                     TokenData tokenData = new(
                         type.Name,
                         null == type.DeclaringType ? type.Namespace ?? string.Empty : string.Empty,
-                        parentClassToken);
+                        parentClassToken,
+                        stackTraceHidden);
 
                     if (!_nameCache.TokenData.TryAdd(key, tokenData))
                         break;

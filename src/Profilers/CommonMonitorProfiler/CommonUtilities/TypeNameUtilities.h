@@ -24,6 +24,7 @@ class TypeNameUtilities
         HRESULT GetClassInfo(NameCache& nameCache, ClassID classId);
         HRESULT GetModuleInfo(NameCache& nameCache, ModuleID moduleId);
         HRESULT GetTypeDefName(NameCache& nameCache, ModuleID moduleId, mdTypeDef classToken);
+        HRESULT IsStackTraceHidden(ModuleID moduleId, mdToken token, bool& hidden);
     private:
         ComPtr<ICorProfilerInfo12> _profilerInfo;
 };

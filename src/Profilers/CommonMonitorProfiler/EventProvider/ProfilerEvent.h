@@ -46,6 +46,9 @@ private:
     template<size_t index, typename T = GUID, typename... TArgs>
     HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const GUID& first, TArgs... rest);
 
+    template<size_t index, typename T = GUID, typename... TArgs>
+    HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const BOOL& first, TArgs... rest);
+
     template<size_t index, typename T, typename... TArgs>
     HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const std::vector<typename T::value_type>& first, TArgs... rest);
 
@@ -167,6 +170,16 @@ HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const GUI
     data[index].size = static_cast<UINT32>(GUID_FLAT_SIZE);
     data[index].reserved = 0;
 
+    return WritePayload<index + 1, TArgs...>(data, rest...);
+}
+
+template<typename... Args>
+template<size_t index, typename T, typename... TArgs>
+HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const BOOL& first, TArgs... rest)
+{
+    data[index].ptr = reinterpret_cast<UINT64>(&first);
+    data[index].size = sizeof(BOOL);
+    data[index].reserved = 0;
     return WritePayload<index + 1, TArgs...>(data, rest...);
 }
 

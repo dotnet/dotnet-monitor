@@ -25,9 +25,9 @@ public:
     bool TryGetTokenData(ModuleID modId, mdTypeDef token, std::shared_ptr<TokenData>& data);
 
     void AddModuleData(ModuleID moduleId, tstring&& name, GUID mvid);
-    void AddFunctionData(ModuleID moduleId, FunctionID id, tstring&& name, ClassID parent, mdToken methodToken, mdTypeDef parentToken, ClassID* typeArgs, int typeArgsCount);
-    void AddClassData(ModuleID moduleId, ClassID id, mdTypeDef typeDef, ClassFlags flags, ClassID* typeArgs, int typeArgsCount);
-    void AddTokenData(ModuleID moduleId, mdTypeDef typeDef, mdTypeDef outerToken, tstring&& name, tstring&& Namespace);
+    void AddFunctionData(ModuleID moduleId, FunctionID id, tstring&& name, ClassID parent, mdToken methodToken, mdTypeDef parentToken, ClassID* typeArgs, int typeArgsCount, bool stackTraceHidden);
+    void AddClassData(ModuleID moduleId, ClassID id, mdTypeDef typeDef, ClassFlags flags, ClassID* typeArgs, int typeArgsCount, bool stackTraceHidden);
+    void AddTokenData(ModuleID moduleId, mdTypeDef typeDef, mdTypeDef outerToken, tstring&& name, tstring&& Namespace, bool stackTraceHidden);
 
     HRESULT GetFullyQualifiedName(FunctionID id, tstring& name);
     HRESULT GetFullyQualifiedTypeName(ClassID classId, tstring& name);

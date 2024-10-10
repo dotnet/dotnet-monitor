@@ -86,7 +86,10 @@ HRESULT TypeNameUtilities::GetFunctionInfo(NameCache& nameCache, FunctionID id, 
 
     IfFailRet(GetModuleInfo(nameCache, moduleId));
 
-    nameCache.AddFunctionData(moduleId, id, tstring(funcName), classId, token, classToken, typeArgs, typeArgsCount);
+    bool stackTraceHidden = false;
+    IfFailRet(IsStackTraceHidden(moduleId, token, stackTraceHidden));
+
+    nameCache.AddFunctionData(moduleId, id, tstring(funcName), classId, token, classToken, typeArgs, typeArgsCount, stackTraceHidden);
 
     // If the ClassID returned from GetFunctionInfo is 0, then the function is a shared generic function.
     if (classId != 0)
@@ -169,7 +172,10 @@ HRESULT TypeNameUtilities::GetClassInfo(NameCache& nameCache, ClassID classId)
         }
     }
 
-    nameCache.AddClassData(modId, classId, classToken, flags, typeArgs, typeArgsCount);
+    bool stackTraceHidden = false;
+    IfFailRet(IsStackTraceHidden(modId, classToken, stackTraceHidden));
+
+    nameCache.AddClassData(modId, classId, classToken, flags, typeArgs, typeArgsCount, stackTraceHidden);
 
     return S_OK;
 }
@@ -192,6 +198,9 @@ HRESULT TypeNameUtilities::GetTypeDefName(NameCache& nameCache, ModuleID moduleI
             //We already processed this type (and therefore all of its outer classes)
             break;
         }
+
+        bool stackTraceHidden = false;
+        IfFailRet(IsStackTraceHidden(moduleId, tokenToProcess, stackTraceHidden));
 
         WCHAR wName[256];
 
@@ -222,7 +231,7 @@ HRESULT TypeNameUtilities::GetTypeDefName(NameCache& nameCache, ModuleID moduleI
                 wNameString = wNameString.substr(found + 1);
             }
         }
-        nameCache.AddTokenData(moduleId, tokenToProcess, outerTokenType, tstring(wNameString), tstring(wNamespaceString));
+        nameCache.AddTokenData(moduleId, tokenToProcess, outerTokenType, tstring(wNameString), tstring(wNamespaceString), stackTraceHidden);
         tokenToProcess = outerTokenType;
     }
 
@@ -280,6 +289,29 @@ HRESULT TypeNameUtilities::GetModuleInfo(NameCache& nameCache, ModuleID moduleId
     }
 
     nameCache.AddModuleData(moduleId, std::move(moduleName), mvid);
+
+    return S_OK;
+}
+
+HRESULT TypeNameUtilities::IsStackTraceHidden(ModuleID moduleId, mdToken token, bool& hidden)
+{
+    HRESULT hr;
+    hidden = false;
+
+    ComPtr<IMetaDataImport> pIMDImport;
+    IfFailRet(_profilerInfo->GetModuleMetaData(moduleId,
+        ofRead,
+        IID_IMetaDataImport,
+        (IUnknown**)&pIMDImport));
+
+    // GetCustomAttributeByName will return S_FALSE if the attribute is not found.
+    IfFailRet(pIMDImport->GetCustomAttributeByName(
+        token,
+        _T("System.Diagnostics.StackTraceHiddenAttribute"),
+        nullptr,
+        nullptr));
+
+    hidden = (hr == S_OK);
 
     return S_OK;
 }

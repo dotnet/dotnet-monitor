@@ -22,6 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                 data.ModuleId,
                 data.Token,
                 (uint)data.Flags,
+                data.StackTraceHidden,
                 data.TypeArgs);
         }
 
@@ -42,6 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                 data.ParentClass,
                 data.ParentClassToken,
                 data.ModuleId,
+                data.StackTraceHidden,
                 data.Name,
                 data.TypeArgs,
                 data.ParameterTypes);
@@ -69,6 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                 moduleId,
                 typeToken,
                 data.OuterToken,
+                data.StackTraceHidden,
                 data.Name,
                 data.Namespace);
         }
