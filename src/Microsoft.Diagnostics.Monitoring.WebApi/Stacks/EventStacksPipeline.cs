@@ -115,7 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                     action.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ModuleId),
                     action.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.TypeArgs) ?? Array.Empty<ulong>(),
                     action.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.ParameterTypes) ?? Array.Empty<ulong>(),
-                    action.GetPayload<bool>(NameIdentificationEvents.FunctionDescPayloads.StackTraceHidden)
+                    action.GetBoolPayload(NameIdentificationEvents.FunctionDescPayloads.StackTraceHidden)
                     );
 
                 _result.NameCache.FunctionData.TryAdd(id, functionData);
@@ -128,7 +128,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                     action.GetPayload<ulong>(NameIdentificationEvents.ClassDescPayloads.ModuleId),
                     (ClassFlags)action.GetPayload<uint>(NameIdentificationEvents.ClassDescPayloads.Flags),
                     action.GetPayload<ulong[]>(NameIdentificationEvents.ClassDescPayloads.TypeArgs) ?? Array.Empty<ulong>(),
-                    action.GetPayload<bool>(NameIdentificationEvents.ClassDescPayloads.StackTraceHidden)
+                    action.GetBoolPayload(NameIdentificationEvents.ClassDescPayloads.StackTraceHidden)
                     );
 
                 _result.NameCache.ClassData.TryAdd(id, classData);
@@ -151,7 +151,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                     action.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.Name),
                     action.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.Namespace),
                     action.GetPayload<uint>(NameIdentificationEvents.TokenDescPayloads.OuterToken),
-                    action.GetPayload<bool>(NameIdentificationEvents.TokenDescPayloads.StackTraceHidden)
+                    action.GetBoolPayload(NameIdentificationEvents.TokenDescPayloads.StackTraceHidden)
                     );
 
                 _result.NameCache.TokenData.TryAdd(new ModuleScopedToken(modId, token), tokenData);

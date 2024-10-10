@@ -161,7 +161,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Informational);
 
-            source.FunctionDescription(functionId, methodToken, classId, classToken, moduleId, stackTraceHidden, name, typeArgs, parameterTypes);
+            source.FunctionDescription(functionId, methodToken, classId, classToken, moduleId, Convert.ToUInt32(stackTraceHidden), name, typeArgs, parameterTypes);
 
             Assert.True(listener.NameCache.FunctionData.TryGetValue(functionId, out FunctionData? function));
             Assert.Equal(methodToken, function.MethodToken);

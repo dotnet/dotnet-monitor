@@ -11,9 +11,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Eventing
 {
     internal abstract class AbstractMonitorEventSource : EventSource
     {
-        private const int TrueBooleanPayload = 1;
-        private const int FalseBooleanPayload = 0;
-
         // Arrays are expected to have a 16-bit field for the length of the array.
         // The length of the array is the number of elements, not the number of bytes.
         private const int ArrayLengthFieldSize = sizeof(short);
@@ -99,22 +96,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Eventing
             }
 
             RestartFlushingEventTimer();
-        }
-
-        [NonEvent]
-        protected static unsafe void SetValue(ref EventData data, in bool value)
-        {
-            //
-            // The event pipe serializes a boolean using 4 bytes (same as an int).
-            //
-            // The int value also can't live on the stack of this method as the caller will be
-            // referencing a pointer to it.
-            //
-            // Rather than making the caller deal with this complication, silently swap the request over to
-            // use predefined static true/false boolean payloads.
-            //
-            SetValue(ref data, value ? TrueBooleanPayload : FalseBooleanPayload);
-            return;
         }
 
         [NonEvent]

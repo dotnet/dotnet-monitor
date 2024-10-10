@@ -79,7 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             ulong ModuleId,
             uint Token,
             uint Flags,
-            bool StackTraceHidden,
+            uint StackTraceHidden,
             ulong[] TypeArgs)
         {
             Span<EventData> data = stackalloc EventData[6];
@@ -103,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             ulong ClassId,
             uint ClassToken,
             ulong ModuleId,
-            bool StackTraceHidden,
+            uint StackTraceHidden,
             string Name,
             ulong[] TypeArgs,
             ulong[] ParameterTypes)
@@ -164,7 +164,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             ulong ModuleId,
             uint Token,
             uint OuterToken,
-            bool StackTraceHidden,
+            uint StackTraceHidden,
             string Name,
             string Namespace)
         {
