@@ -101,6 +101,15 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Eventing
         [NonEvent]
         protected static void SetBool(ref EventData data, in bool value, out int buffer)
         {
+            //
+            // Event source serializes bools using 4 bytes (same as an int).
+            //
+            // The int value also can't live on the stack of this method as the caller will be
+            // referencing a pointer to it.
+            //
+            // Require the caller to pass in an int for us to safely reference instead so it outlives
+            // this method.
+            //
             buffer = value ? 1 : 0;
             SetValue(ref data, buffer);
         }
