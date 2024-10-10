@@ -16,9 +16,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         public NameCache NameCache => _nameCache;
 
-        public void AddClass(ulong id, uint token, ulong moduleId, ClassFlags flags, ulong[] typeArgs)
+        public void AddClass(ulong id, uint token, ulong moduleId, ClassFlags flags, ulong[] typeArgs, bool stackTraceHidden)
         {
-            _nameCache.ClassData.TryAdd(id, new ClassData(token, moduleId, flags, typeArgs ?? Array.Empty<ulong>()));
+            _nameCache.ClassData.TryAdd(id, new ClassData(token, moduleId, flags, typeArgs, stackTraceHidden));
         }
 
         public void AddExceptionGroup(ulong id, ulong exceptionClassId, ulong throwingMethodId, int ilOffset)
@@ -26,9 +26,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _exceptionGroupMap.Add(id, new ExceptionGroup(exceptionClassId, throwingMethodId, ilOffset));
         }
 
-        public void AddFunction(ulong id, uint methodToken, ulong classId, uint classToken, ulong moduleId, string name, ulong[] typeArgs, ulong[] parameterTypes)
+        public void AddFunction(ulong id, uint methodToken, ulong classId, uint classToken, ulong moduleId, string name, ulong[] typeArgs, ulong[] parameterTypes, bool stackTraceHidden)
         {
-            _nameCache.FunctionData.TryAdd(id, new FunctionData(name, methodToken, classId, classToken, moduleId, typeArgs ?? Array.Empty<ulong>(), parameterTypes ?? Array.Empty<ulong>()));
+            _nameCache.FunctionData.TryAdd(id, new FunctionData(name, methodToken, classId, classToken, moduleId, typeArgs, parameterTypes, stackTraceHidden));
         }
 
         public void AddStackFrame(ulong id, ulong functionId, int ilOffset)
@@ -41,11 +41,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             _nameCache.ModuleData.TryAdd(id, new ModuleData(moduleName, moduleVersionId));
         }
 
-        public void AddToken(ulong moduleId, uint token, uint outerToken, string name, string @namespace)
+        public void AddToken(ulong moduleId, uint token, uint outerToken, string name, string @namespace, bool stackTraceHidden)
         {
             _nameCache.TokenData.TryAdd(
                 new ModuleScopedToken(moduleId, token),
-                new TokenData(name, @namespace, outerToken));
+                new TokenData(name, @namespace, outerToken, stackTraceHidden));
         }
 
         public bool TryGetExceptionGroup(ulong groupId, out ulong exceptionClassId, out ulong throwingMethodId, out int ilOffset)

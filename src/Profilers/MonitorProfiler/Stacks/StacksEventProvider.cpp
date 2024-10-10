@@ -46,6 +46,7 @@ HRESULT StacksEventProvider::WriteClassData(ClassID classId, const ClassData& cl
         static_cast<UINT64>(classData.GetModuleId()),
         classData.GetToken(),
         static_cast<UINT32>(classData.GetFlags()),
+        classData.GetStackTraceHidden(),
         classData.GetTypeArgs());
 }
 
@@ -57,6 +58,7 @@ HRESULT StacksEventProvider::WriteFunctionData(FunctionID functionId, const Func
         static_cast<UINT64>(functionData.GetClass()),
         functionData.GetClassToken(),
         static_cast<UINT64>(functionData.GetModuleId()),
+        functionData.GetStackTraceHidden(),
         functionData.GetName(),
         functionData.GetTypeArgs(),
         functionData.GetParameterTypes());
@@ -72,7 +74,13 @@ HRESULT StacksEventProvider::WriteModuleData(ModuleID moduleId, const ModuleData
 
 HRESULT StacksEventProvider::WriteTokenData(ModuleID moduleId, mdTypeDef typeDef, const TokenData& tokenData)
 {
-    return _tokenEvent->WritePayload(moduleId, typeDef, tokenData.GetOuterToken(), tokenData.GetName(), tokenData.GetNamespace());
+    return _tokenEvent->WritePayload(
+        moduleId,
+        typeDef,
+        tokenData.GetOuterToken(),
+        tokenData.GetStackTraceHidden(),
+        tokenData.GetName(),
+        tokenData.GetNamespace());
 }
 
 HRESULT StacksEventProvider::WriteEndEvent()

@@ -61,7 +61,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                                 ToUInt32(eventData.Payload[NameIdentificationEvents.ClassDescPayloads.Token]),
                                 ToUInt64(eventData.Payload[NameIdentificationEvents.ClassDescPayloads.ModuleId]),
                                 (ClassFlags)ToUInt32(eventData.Payload[NameIdentificationEvents.ClassDescPayloads.Flags]),
-                                ToArray<ulong>(eventData.Payload[NameIdentificationEvents.ClassDescPayloads.TypeArgs])));
+                                ToArray<ulong>(eventData.Payload[NameIdentificationEvents.ClassDescPayloads.TypeArgs]),
+                                ToBool(eventData.Payload[NameIdentificationEvents.ClassDescPayloads.StackTraceHidden])));
                         break;
                     case ExceptionEvents.EventIds.FunctionDescription:
                         NameCache.FunctionData.TryAdd(
@@ -73,7 +74,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                                 ToUInt32(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ClassToken]),
                                 ToUInt64(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ModuleId]),
                                 ToArray<ulong>(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.TypeArgs]),
-                                ToArray<ulong>(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ParameterTypes])));
+                                ToArray<ulong>(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.ParameterTypes]),
+                                ToBool(eventData.Payload[NameIdentificationEvents.FunctionDescPayloads.StackTraceHidden])));
                         break;
                     case ExceptionEvents.EventIds.ModuleDescription:
                         NameCache.ModuleData.TryAdd(
@@ -99,12 +101,18 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                             new TokenData(
                                 ToString(eventData.Payload[NameIdentificationEvents.TokenDescPayloads.Name]),
                                 ToString(eventData.Payload[NameIdentificationEvents.TokenDescPayloads.Namespace]),
-                                ToUInt32(eventData.Payload[NameIdentificationEvents.TokenDescPayloads.OuterToken])));
+                                ToUInt32(eventData.Payload[NameIdentificationEvents.TokenDescPayloads.OuterToken]),
+                                ToBool(eventData.Payload[NameIdentificationEvents.TokenDescPayloads.StackTraceHidden])));
                         break;
                     default:
                         throw new NotSupportedException();
                 }
             }
+        }
+
+        private static bool ToBool(object? value)
+        {
+            return Convert.ToBoolean(ToType<uint>(value));
         }
 
         private static Guid ToGuid(object? value)
