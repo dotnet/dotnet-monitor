@@ -205,6 +205,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         writer.WriteString("typeName", frame.TypeName);
                         writer.WriteString("moduleName", frame.ModuleName);
                         writer.WriteString("moduleVersionId", frame.ModuleVersionId.ToString("D"));
+                        writer.WriteBoolean("hidden", frame.Hidden);
 
                         writer.WriteEndObject();
                     }
