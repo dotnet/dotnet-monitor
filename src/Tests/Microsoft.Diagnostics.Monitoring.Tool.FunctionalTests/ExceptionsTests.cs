@@ -748,6 +748,40 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public async Task Exceptions_HideHiddenFrames(Architecture targetArchitecture)
+        {
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Listen,
+                TestAppScenarios.Exceptions.Name,
+                subScenarioName: TestAppScenarios.Exceptions.SubScenarios.HiddenFramesExceptionCommand,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText);
+                    ValidateSingleExceptionText(
+                        SystemInvalidOperationException,
+                        ExceptionMessage,
+                        [
+                            new ExceptionFrame(FrameTypeName, FrameMethodName, [SimpleFrameParameterType, SimpleFrameParameterType]),
+                            new ExceptionFrame(FrameTypeName, FrameMethodName, []),
+                            new ExceptionFrame($"{FrameTypeName}+PartiallyVisibleClass", "ThrowException", []),
+                            new ExceptionFrame(FrameTypeName, "ThrowExceptionWithHiddenMethodFrame", []),
+                        ]);
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                    runner.EnableMonitorStartupHook = true;
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
+                });
+        }
+
         private void ValidateMultipleExceptionsText(int exceptionsCount, List<string> exceptionTypes)
         {
             var exceptions = exceptionsResult.Split(new[] { FirstChanceExceptionMessage }, StringSplitOptions.RemoveEmptyEntries);
@@ -759,15 +793,32 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         }
 
-        private void ValidateSingleExceptionText(string exceptionType, string exceptionMessage, string frameTypeName, string frameMethodName, List<string> parameterTypes)
+        private record class ExceptionFrame(string TypeName, string MethodName, List<string> ParameterTypes);
+
+        private void ValidateSingleExceptionText(string exceptionType, string exceptionMessage, List<ExceptionFrame> topFrames)
         {
             var exceptionsLines = exceptionsResult.Split(Environment.NewLine, StringSplitOptions.None);
 
-            Assert.True(exceptionsLines.Length >= 3);
+            Assert.True(exceptionsLines.Length >= 2);
             Assert.Contains(FirstChanceExceptionMessage, exceptionsLines[0]);
             Assert.Equal($"{exceptionType}: {exceptionMessage}", exceptionsLines[1]);
-            Assert.Equal($"   at {frameTypeName}.{frameMethodName}({string.Join(',', parameterTypes)})", exceptionsLines[2]);
+            int lineIndex = 2;
+
+            Assert.True(exceptionsLines.Length - lineIndex >= topFrames.Count, "Not enough frames");
+            foreach(ExceptionFrame expectedFrame in topFrames)
+            {
+                string parametersString = string.Empty;
+                if (expectedFrame.ParameterTypes.Count > 0)
+                {
+                    parametersString = $"({string.Join(',', expectedFrame.ParameterTypes)})";
+                }
+                Assert.Equal($"   at {expectedFrame.TypeName}.{expectedFrame.MethodName}{parametersString}", exceptionsLines[lineIndex]);
+                lineIndex++;
+            }
         }
+
+        private void ValidateSingleExceptionText(string exceptionType, string exceptionMessage, string frameTypeName, string frameMethodName, List<string> parameterTypes)
+            => ValidateSingleExceptionText(exceptionType, exceptionMessage, [new ExceptionFrame(frameTypeName, frameMethodName, parameterTypes)]);
 
         private async Task GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionFormat format, ExceptionsConfiguration configuration = null)
         {

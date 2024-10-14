@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System;
 using System.CommandLine;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -65,6 +66,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             CliCommand reflectionTypeLoadExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ReflectionTypeLoadException);
             reflectionTypeLoadExceptionCommand.SetAction(ReflectionTypeLoadExceptionAsync);
 
+            CliCommand hiddenFramesExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.HiddenFramesExceptionCommand);
+            hiddenFramesExceptionCommand.SetAction(HiddenFramesExceptionAsync);
+
             CliCommand scenarioCommand = new(TestAppScenarios.Exceptions.Name);
             scenarioCommand.Subcommands.Add(singleExceptionCommand);
             scenarioCommand.Subcommands.Add(multipleExceptionsCommand);
@@ -82,6 +86,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             scenarioCommand.Subcommands.Add(eclipsingExceptionFromMethodCallCommand);
             scenarioCommand.Subcommands.Add(aggregateExceptionCommand);
             scenarioCommand.Subcommands.Add(reflectionTypeLoadExceptionCommand);
+            scenarioCommand.Subcommands.Add(hiddenFramesExceptionCommand);
             return scenarioCommand;
         }
 
@@ -374,6 +379,52 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
                 return 0;
             }, token);
+        }
+
+        public static Task<int> HiddenFramesExceptionAsync(ParseResult result, CancellationToken token)
+        {
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
+                try
+                {
+                    ThrowExceptionWithHiddenMethodFrame();
+                }
+                catch (Exception)
+                {
+                }
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
+                return 0;
+            }, token);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowExceptionWithHiddenMethodFrame()
+        {
+            PartiallyVisibleClass partiallyVisibleClass = new();
+            partiallyVisibleClass.ThrowException();
+        }
+
+        [StackTraceHidden]
+        private abstract class BaseHiddenClass
+        {
+#pragma warning disable CA1822 // Mark members as static
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            public void ThrowExceptionFromBaseClass()
+#pragma warning restore CA1822 // Mark members as static
+            {
+                ThrowAndCatchInvalidOperationException();
+            }
+        }
+
+        private class PartiallyVisibleClass : BaseHiddenClass
+        {
+            // StackTraceHidden attributes are not inherited
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            public void ThrowException()
+            {
+                ThrowExceptionFromBaseClass();
+            }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
