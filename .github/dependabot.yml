@@ -89,6 +89,103 @@ updates:
   directory: /eng/dependabot/independent
   schedule:
     interval: daily
+  target-branch: feature/9.x
+  ignore:
+  - dependency-name: Microsoft.Extensions.*
+    update-types:
+    - version-update:semver-major
+  - dependency-name: Moq
+  commit-message:
+    prefix: '[feature/9.x] '
+  groups:
+    azure-sdk-dependencies:
+      patterns:
+      - Azure.Core
+      - Azure.Identity
+      - Azure.Storage.*
+    identity-dependencies:
+      patterns:
+      - Microsoft.Identity.*
+      - Microsoft.IdentityModel.*
+- package-ecosystem: nuget
+  directory: /eng/dependabot/nuget.org
+  schedule:
+    interval: daily
+  target-branch: feature/9.x
+  commit-message:
+    prefix: '[feature/9.x] '
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net9.0
+  schedule:
+    interval: daily
+  target-branch: feature/9.x
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+  commit-message:
+    prefix: '[feature/9.x] '
+  groups:
+    runtime-dependencies:
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.DotNetHost
+      - System.Text.Json
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net8.0
+  schedule:
+    interval: daily
+  target-branch: feature/9.x
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+  commit-message:
+    prefix: '[feature/9.x] '
+  groups:
+    runtime-dependencies:
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.DotNetHost
+      - System.Text.Json
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net7.0
+  schedule:
+    interval: daily
+  target-branch: feature/9.x
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+  commit-message:
+    prefix: '[feature/9.x] '
+  groups:
+    runtime-dependencies:
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.DotNetHost
+      - System.Text.Json
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net6.0
+  schedule:
+    interval: daily
+  target-branch: feature/9.x
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+  commit-message:
+    prefix: '[feature/9.x] '
+  groups:
+    runtime-dependencies:
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.DotNetHost
+      - System.Text.Json
+- package-ecosystem: nuget
+  directory: /eng/dependabot/independent
+  schedule:
+    interval: daily
   target-branch: release/8.0
   ignore:
   - dependency-name: Microsoft.Extensions.*
