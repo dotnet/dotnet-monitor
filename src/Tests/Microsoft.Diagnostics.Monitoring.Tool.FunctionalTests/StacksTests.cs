@@ -154,12 +154,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Assert.Equal(expectedFrames.Length, actualFrames.Count);
             for (int i = 0; i < expectedFrames.Length; i++)
             {
-                var expected = expectedFrames[i];
-                var actual = actualFrames[i];
-                if (!AreFramesEqual(expected, actual))
-                {
-                    Assert.Fail("WHOO");
-                }
+                Assert.True(AreFramesEqual(expectedFrames[i], actualFrames[i]));
             }
         }
 
