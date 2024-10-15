@@ -37,7 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
     public class InnerExceptionId
     {
-        public static implicit operator InnerExceptionId(ulong id)
+        public static explicit operator InnerExceptionId(ulong id)
             => new InnerExceptionId()
             {
                 Id = id,
