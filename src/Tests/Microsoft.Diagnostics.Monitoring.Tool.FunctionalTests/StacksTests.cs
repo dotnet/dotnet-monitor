@@ -154,7 +154,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Assert.Equal(expectedFrames.Length, actualFrames.Count);
             for (int i = 0; i < expectedFrames.Length; i++)
             {
-                Assert.True(AreFramesEqual(expectedFrames[i], actualFrames[i]));
+                var expected = expectedFrames[i];
+                var actual = actualFrames[i];
+                if (!AreFramesEqual(expected, actual))
+                {
+                    Assert.Fail("WHOO");
+                }
             }
         }
 
@@ -565,19 +570,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ModuleName = ExpectedModule,
                     TypeName = ExpectedClass,
-                    MethodName = ExpectedCallbackFunction,
+                    MethodNameWithGenericArgTypes = ExpectedCallbackFunction,
                 },
                 new WebApi.Models.CallStackFrame
                 {
                     ModuleName = NativeFrame,
                     TypeName = NativeFrame,
-                    MethodName = NativeFrame,
+                    MethodNameWithGenericArgTypes = NativeFrame,
                 },
                 new WebApi.Models.CallStackFrame
                 {
                     ModuleName = ExpectedModule,
                     TypeName = ExpectedClass,
-                    MethodName = ExpectedFunction,
+                    MethodNameWithGenericArgTypes = ExpectedFunction,
                 }
             };
     }

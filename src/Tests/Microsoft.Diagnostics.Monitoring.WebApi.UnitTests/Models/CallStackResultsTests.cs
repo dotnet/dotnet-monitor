@@ -26,6 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Models
 
         [Theory]
         [InlineData("Test", "Test")]
+        [InlineData("[NativeFrame]", "[NativeFrame]")]
         [InlineData("Test[System.String]", "Test", "System.String")]
         [InlineData("Test[System.String,System.Object]", "Test", "System.String", "System.Object")]
         public void MethodNameWithGenericArgTypes_Set(string serializedName, string expectedMethodName, params string[] expectedGenericArgTypes)
