@@ -36,15 +36,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public CallStack? CallStack { get; set; }
     }
 
-    public class Activity
-    {
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
-
-        [JsonPropertyName("idFormat")]
-        public ActivityIdFormat IdFormat { get; set; } = ActivityIdFormat.Unknown;
-    }
-
     public class InnerExceptionId
     {
         public static implicit operator InnerExceptionId(ulong id)
