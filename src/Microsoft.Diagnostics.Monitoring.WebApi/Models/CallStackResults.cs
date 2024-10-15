@@ -15,6 +15,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [JsonPropertyName("methodToken")]
         public uint MethodToken { get; set; }
 
+        [JsonPropertyName("parameterTypes")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public IList<string>? FullParameterTypes { get; set; }
+
+        [JsonIgnore]
+        internal IList<string>? SimpleParameterTypes { get; set; }
+
         [JsonPropertyName("typeName")]
         public string TypeName { get; set; } = string.Empty;
 
@@ -30,11 +37,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [JsonIgnore]
         internal IList<string> FullGenericArgTypes { get; set; } = new List<string>();
 
-        [JsonIgnore]
-        internal IList<string> SimpleParameterTypes { get; set; } = new List<string>();
-
-        [JsonIgnore]
-        internal IList<string> FullParameterTypes { get; set; } = new List<string>();
         //TODO Bring this back once we have a relative il offset value.
         //[JsonPropertyName("offset")]
         //public ulong Offset { get; set; }

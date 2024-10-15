@@ -25,12 +25,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public string Message { get; set; } = string.Empty;
 
         [JsonPropertyName("activity")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Activity? Activity { get; set; }
 
         [JsonPropertyName("innerExceptions")]
         public InnerExceptionId[] InnerExceptionIds { get; set; } = [];
 
         [JsonPropertyName("stack")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public CallStack? CallStack { get; set; }
     }
 

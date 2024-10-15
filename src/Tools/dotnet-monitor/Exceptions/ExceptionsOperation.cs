@@ -266,7 +266,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     await writer.WriteAsync(builder);
                     builder.Clear();
 
-                    NameFormatter.BuildMethodParameterTypes(builder, frame.SimpleParameterTypes);
+                    NameFormatter.BuildMethodParameterTypes(builder, frame.SimpleParameterTypes ?? []);
                     await writer.WriteAsync(builder);
                     builder.Clear();
                 }
