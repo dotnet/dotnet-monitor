@@ -1,8 +1,10 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
@@ -10,7 +12,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     public class CallStackFrame
     {
         [JsonPropertyName("methodName")]
-        public string MethodName { get; set; } = string.Empty;
+        public string MethodNameWithGenericArgTypes
+        {
+            get
+            {
+                StringBuilder builder = new(MethodName);
+                NameFormatter.BuildGenericArgTypes(builder, FullGenericArgTypes);
+                return builder.ToString();
+            }
+            // Only intended for use test code.
+            set
+            {
+                MethodName = NameFormatter.RemoveGenericArgTypes(value, out string[] genericArgTypes);
+                FullGenericArgTypes = genericArgTypes;
+            }
+        }
+
+        [JsonIgnore]
+        internal string MethodName { get; set; } = string.Empty;
 
         [JsonPropertyName("methodToken")]
         public uint MethodToken { get; set; }
