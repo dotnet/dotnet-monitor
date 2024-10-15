@@ -130,7 +130,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         public static string RemoveGenericArgTypes(string name, out string[] genericArgTypes)
         {
             int genericsStartIndex = name.IndexOf(GenericStart);
-            if (genericsStartIndex == -1)
+            // Not found or an annotated frame
+            if (genericsStartIndex <= 0)
             {
                 genericArgTypes = [];
                 return name;
