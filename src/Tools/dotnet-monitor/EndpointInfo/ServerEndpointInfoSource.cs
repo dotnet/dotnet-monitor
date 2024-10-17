@@ -304,14 +304,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 EndpointRemovedEventArgs args = await _pendingRemovalReader.ReadAsync(token);
                 IEndpointInfo endpoint = args.Endpoint;
-                EndpointRemovalReason reason = args.Reason;
+                ServerEndpointState state = args.State;
 
                 List<Exception> exceptions = new();
 
                 AsyncServiceScope serviceScope;
                 bool isServiceScopeValid = false;
 
-                if (reason == EndpointRemovalReason.Timeout)
+                if (state == ServerEndpointState.Unresponsive)
                 {
                     _logger.EndpointTimeout(endpoint.ProcessId.ToString(System.Globalization.CultureInfo.InvariantCulture));
                 }

@@ -73,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 .Setup(factory => factory.CreateScope())
                 .Returns(serviceScopeMock.Object);
 
-            IServerEndpointChecker endpointChecker = new ServerEndpointChecker(operationTrackerService);
+            IServerEndpointStateChecker endpointChecker = new ServerEndpointStateChecker(operationTrackerService);
 
             IServerEndpointTracker endpointTracker = new ServerEndpointTracker(endpointChecker);
 

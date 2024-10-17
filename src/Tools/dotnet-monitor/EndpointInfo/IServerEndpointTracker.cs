@@ -10,7 +10,7 @@ using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal record class EndpointRemovedEventArgs(IEndpointInfo Endpoint, EndpointRemovalReason Reason);
+    internal record class EndpointRemovedEventArgs(IEndpointInfo Endpoint, ServerEndpointState State);
 
     internal interface IServerEndpointTracker
         : IHostedService

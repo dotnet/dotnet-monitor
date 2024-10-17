@@ -8,21 +8,21 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal class ServerEndpointChecker(OperationTrackerService operationTracker) : IServerEndpointChecker
+    internal class ServerEndpointStateChecker(OperationTrackerService operationTracker) : IServerEndpointStateChecker
     {
         // The amount of time to wait when checking if the a endpoint info should be
         // pruned from the list of endpoint infos. If the runtime doesn't have a viable connection within
         // this time, it will be pruned from the list.
         private static readonly TimeSpan PruneWaitForConnectionTimeout = TimeSpan.FromMilliseconds(250);
 
-        public async Task<EndpointRemovalReason?> CheckEndpointAsync(IEndpointInfo info, CancellationToken token)
+        public async Task<ServerEndpointState> GetEndpointStateAsync(IEndpointInfo info, CancellationToken token)
         {
             // If a dump operation is in progress, the runtime is likely to not respond to
             // diagnostic requests. Do not check for responsiveness while the dump operation
             // is in progress.
             if (operationTracker.IsExecutingOperation(info))
             {
-                return null;
+                return ServerEndpointState.Active;
             }
 
             using var timeoutSource = new CancellationTokenSource();
@@ -36,14 +36,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
             catch (OperationCanceledException) when (timeoutSource.IsCancellationRequested)
             {
-                return EndpointRemovalReason.Timeout;
+                return ServerEndpointState.Unresponsive;
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                return EndpointRemovalReason.Unknown;
+                return ServerEndpointState.Error;
             }
 
-            return null;
+            return ServerEndpointState.Active;
         }
     }
 }

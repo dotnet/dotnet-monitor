@@ -11,10 +11,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    /// <summary>
-    /// Aggregates diagnostic endpoints that are established at a transport path via a reversed server.
-    /// </summary>
-    internal sealed class ServerEndpointTracker(IServerEndpointChecker endpointChecker) :
+    internal sealed class ServerEndpointTracker(IServerEndpointStateChecker endpointChecker) :
         BackgroundService,
         IServerEndpointTracker
     {
@@ -52,7 +49,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return validEndpoints;
         }
 
-
         private async Task PruneEndpointsAsync(List<IEndpointInfo>? validEndpoints, CancellationToken token)
         {
             // Prune connections that no longer have an active runtime instance before
@@ -62,24 +58,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             try
             {
                 // Check the transport for each endpoint info and remove it if the check fails.
-                List<Task<EndpointRemovalReason?>> checkTasks = new();
+                List<Task<ServerEndpointState>> checkTasks = new();
                 foreach (EndpointInfo info in _activeEndpoints)
                 {
-                    checkTasks.Add(Task.Run(() => endpointChecker.CheckEndpointAsync(info, token), token));
+                    checkTasks.Add(Task.Run(() => endpointChecker.GetEndpointStateAsync(info, token), token));
                 }
 
                 // Wait for all checks to complete
-                EndpointRemovalReason?[] results = await Task.WhenAll(checkTasks).ConfigureAwait(false);
+                ServerEndpointState[] states = await Task.WhenAll(checkTasks).ConfigureAwait(false);
 
                 // Remove failed endpoints from active list; record the failed endpoints
                 // for removal after releasing the active endpoints semaphore.
                 int endpointIndex = 0;
-                for (int resultIndex = 0; resultIndex < results.Length; resultIndex++)
+                for (int resultIndex = 0; resultIndex < states.Length; resultIndex++)
                 {
                     IEndpointInfo endpoint = _activeEndpoints[endpointIndex];
-                    EndpointRemovalReason? reason = results[resultIndex];
+                    ServerEndpointState state = states[resultIndex];
 
-                    if (!reason.HasValue)
+                    if (state == ServerEndpointState.Active)
                     {
                         validEndpoints?.Add(endpoint);
                         endpointIndex++;
@@ -87,7 +83,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     else
                     {
                         _activeEndpoints.RemoveAt(endpointIndex);
-                        EndpointRemoved?.Invoke(this, new(endpoint, reason.Value));
+                        EndpointRemoved?.Invoke(this, new(endpoint, state));
                     }
                 }
             }
