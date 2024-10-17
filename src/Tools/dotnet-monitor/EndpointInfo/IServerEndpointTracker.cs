@@ -10,12 +10,6 @@ using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal enum EndpointRemovalReason
-    {
-        Unknown,
-        Timeout
-    }
-
     internal record class EndpointRemovedEventArgs(IEndpointInfo Endpoint, EndpointRemovalReason Reason);
 
     internal interface IServerEndpointTracker

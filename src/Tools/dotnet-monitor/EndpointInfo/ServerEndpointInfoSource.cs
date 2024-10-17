@@ -123,37 +123,41 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (_portOptions.ConnectionMode == DiagnosticPortConnectionMode.Listen)
             {
-                if (_portOptions.GetDeleteEndpointOnStartup() &&
-                    File.Exists(_portOptions.EndpointName))
+                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    // In some circumstances stale files from previous instances of dotnet-monitor cause
-                    // the new instance to fail binding. We need to delete the file in this situation.
-                    try
+                    if (_portOptions.GetDeleteEndpointOnStartup() &&
+                        File.Exists(_portOptions.EndpointName))
                     {
-                        _logger.DiagnosticPortDeleteAttempt(_portOptions.EndpointName);
-                        File.Delete(_portOptions.EndpointName);
+                        // In some circumstances stale files from previous instances of dotnet-monitor cause
+                        // the new instance to fail binding. We need to delete the file in this situation.
+                        try
+                        {
+                            _logger.DiagnosticPortDeleteAttempt(_portOptions.EndpointName);
+                            File.Delete(_portOptions.EndpointName);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.DiagnosticPortDeleteFailed(_portOptions.EndpointName, ex);
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        _logger.DiagnosticPortDeleteFailed(_portOptions.EndpointName, ex);
-                    }
+
+                    Directory.CreateDirectory(Path.GetDirectoryName(_portOptions.EndpointName));
                 }
 
-                Directory.CreateDirectory(Path.GetDirectoryName(_portOptions.EndpointName));
+                await using ReversedDiagnosticsServer server = new(_portOptions.EndpointName);
+
+                server.Start(_portOptions.MaxConnections.GetValueOrDefault(ReversedDiagnosticsServer.MaxAllowedConnections));
+
+                using IDisposable _ = SetupDiagnosticPortWatcher();
+
+                await Task.WhenAll(
+                    ListenAsync(server, stoppingToken),
+                    NotifyAndRemoveAsync(server, stoppingToken)
+                    );
             }
 
-            await using ReversedDiagnosticsServer server = new(_portOptions.EndpointName);
-
-            server.Start(_portOptions.MaxConnections.GetValueOrDefault(ReversedDiagnosticsServer.MaxAllowedConnections));
-
-            using IDisposable _ = SetupDiagnosticPortWatcher();
-
-            await Task.WhenAll(
-                ListenAsync(server, stoppingToken),
-                NotifyAndRemoveAsync(server, stoppingToken)
-                );
         }
 
         /// <summary>

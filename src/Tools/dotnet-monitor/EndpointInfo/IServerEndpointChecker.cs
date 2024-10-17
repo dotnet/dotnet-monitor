@@ -7,6 +7,12 @@ using System.Threading;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
+    internal enum EndpointRemovalReason
+    {
+        Unknown,
+        Timeout
+    }
+
     internal interface IServerEndpointChecker
     {
 
