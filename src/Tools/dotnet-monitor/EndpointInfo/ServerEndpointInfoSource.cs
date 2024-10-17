@@ -150,14 +150,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 server.Start(_portOptions.MaxConnections.GetValueOrDefault(ReversedDiagnosticsServer.MaxAllowedConnections));
 
-                using IDisposable _ = SetupDiagnosticPortWatcher();
+                using var _ = SetupDiagnosticPortWatcher();
 
                 await Task.WhenAll(
                     ListenAsync(server, stoppingToken),
                     NotifyAndRemoveAsync(server, stoppingToken)
                     );
             }
-
         }
 
         /// <summary>
