@@ -105,18 +105,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 _activeEndpointsSemaphore.Release();
             }
         }
-
-        public async Task ClearAsync(CancellationToken token)
-        {
-            await _activeEndpointsSemaphore.WaitAsync(token).ConfigureAwait(false);
-            try
-            {
-                _activeEndpoints.Clear();
-            }
-            finally
-            {
-                _activeEndpointsSemaphore.Release();
-            }
-        }
     }
 }

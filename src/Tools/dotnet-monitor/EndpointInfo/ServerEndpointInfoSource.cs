@@ -117,9 +117,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 {
                 }
             }
-
-            // Clear all endpoints
-            await _endpointTracker.ClearAsync(CancellationToken.None);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
