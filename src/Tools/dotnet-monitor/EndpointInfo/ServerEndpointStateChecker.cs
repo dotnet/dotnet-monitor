@@ -10,9 +10,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal class ServerEndpointStateChecker(OperationTrackerService operationTracker) : IServerEndpointStateChecker
     {
-        // The amount of time to wait when checking if the a endpoint info should be
-        // pruned from the list of endpoint infos. If the runtime doesn't have a viable connection within
-        // this time, it will be pruned from the list.
+        // The amount of time to wait when checking if the a endpoint info is active.
         private static readonly TimeSpan WaitForConnectionTimeout = TimeSpan.FromMilliseconds(250);
 
         public async Task<ServerEndpointState> GetEndpointStateAsync(IEndpointInfo info, CancellationToken token)
