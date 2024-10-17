@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
@@ -72,7 +73,16 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 .Setup(factory => factory.CreateScope())
                 .Returns(serviceScopeMock.Object);
 
-            ServerEndpointInfoSource source = new(scopeFactoryMock.Object, portOptions, callbacks, operationTrackerService);
+            IServerEndpointChecker endpointChecker = new ServerEndpointChecker(operationTrackerService);
+
+            IServerEndpointTracker endpointTracker = new ServerEndpointTracker(endpointChecker);
+
+            ServerEndpointInfoSource source = new(
+                scopeFactoryMock.Object,
+                endpointTracker,
+                portOptions,
+                Mock.Of<ILogger<ServerEndpointInfoSource>>(),
+                callbacks);
 
             await source.StartAsync(CancellationToken.None);
 

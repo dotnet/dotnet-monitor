@@ -114,6 +114,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureDotnetMonitorDebug(context.Configuration);
 
                 services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
+                services.AddSingleton<IServerEndpointChecker, ServerEndpointChecker>();
+                services.AddSingleton<IServerEndpointTracker, ServerEndpointTracker>();
                 services.AddSingleton<ServerEndpointInfoSource>();
                 services.AddHostedServiceForwarder<ServerEndpointInfoSource>();
                 services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
