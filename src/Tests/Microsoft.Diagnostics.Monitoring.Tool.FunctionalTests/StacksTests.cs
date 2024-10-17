@@ -565,19 +565,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     ModuleName = ExpectedModule,
                     TypeName = ExpectedClass,
-                    MethodName = ExpectedCallbackFunction,
+                    MethodNameWithGenericArgTypes = ExpectedCallbackFunction,
                 },
                 new WebApi.Models.CallStackFrame
                 {
                     ModuleName = NativeFrame,
                     TypeName = NativeFrame,
-                    MethodName = NativeFrame,
+                    MethodNameWithGenericArgTypes = NativeFrame,
                 },
                 new WebApi.Models.CallStackFrame
                 {
                     ModuleName = ExpectedModule,
                     TypeName = ExpectedClass,
-                    MethodName = ExpectedFunction,
+                    MethodNameWithGenericArgTypes = ExpectedFunction,
                 }
             };
     }

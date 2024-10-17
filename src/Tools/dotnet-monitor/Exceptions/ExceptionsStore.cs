@@ -220,7 +220,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 }
             }
 
-            return StackUtilities.TranslateCallStackToModel(callStack, cache.NameCache, methodNameIncludesGenericParameters: false);
+            return StackUtilities.TranslateCallStackToModel(callStack, cache.NameCache);
         }
 
         private sealed class ExceptionInstanceEntry

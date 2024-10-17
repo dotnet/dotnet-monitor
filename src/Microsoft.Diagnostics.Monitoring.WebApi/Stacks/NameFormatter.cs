@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -124,6 +125,26 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         public static void BuildGenericArgTypes(StringBuilder builder, IList<string> typeNames)
         {
             WriteTypeNamesList(builder, typeNames, GenericStart, GenericEnd, GenericSeparator);
+        }
+
+        public static string RemoveGenericArgTypes(string name, out string[] genericArgTypes)
+        {
+            int genericsStartIndex = name.IndexOf(GenericStart);
+            // Not found or an annotated frame
+            if (genericsStartIndex <= 0)
+            {
+                genericArgTypes = [];
+                return name;
+            }
+
+            int genericEndIndex = name.IndexOf(GenericEnd);
+            if (genericEndIndex != name.Length - 1)
+            {
+                throw new InvalidOperationException("Malformed name");
+            }
+
+            genericArgTypes = name[(genericsStartIndex + 1)..genericEndIndex].Split(GenericSeparator);
+            return name[..genericsStartIndex];
         }
 
         public static void BuildMethodParameterTypes(StringBuilder builder, IList<string> typeNames)

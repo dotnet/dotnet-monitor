@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
             // Assert
             Exception hitException = await exceptionHit.Task.WaitAsync(CommonTestTimeouts.GeneralTimeout);
             Assert.NotNull(hitException);
-            Assert.Equal(Models.OperationState.Stopping, store.GetOperationStatus(operationId).Status);
+            Assert.Equal(WebApi.Models.OperationState.Stopping, store.GetOperationStatus(operationId).Status);
         }
 
         [Fact(Skip = "Flaky")]
@@ -96,14 +96,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests.Operation
 
             Guid operationId = await store.AddOperation(mockOperation.Object, AllowOperationKey);
             store.StopOperation(operationId, (ex) => { });
-            Assert.Equal(Models.OperationState.Stopping, store.GetOperationStatus(operationId).Status);
+            Assert.Equal(WebApi.Models.OperationState.Stopping, store.GetOperationStatus(operationId).Status);
 
             // Act
             store.CancelOperation(operationId);
 
             // Assert
             await stopCancelled.Task.WaitAsync(CommonTestTimeouts.GeneralTimeout);
-            Assert.Equal(Models.OperationState.Cancelled, store.GetOperationStatus(operationId).Status);
+            Assert.Equal(WebApi.Models.OperationState.Cancelled, store.GetOperationStatus(operationId).Status);
         }
     }
 }

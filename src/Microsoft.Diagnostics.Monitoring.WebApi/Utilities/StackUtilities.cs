@@ -17,23 +17,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
     internal static class StackUtilities
     {
-        public static Models.CallStack TranslateCallStackToModel(CallStack stack, NameCache cache, bool methodNameIncludesGenericParameters = true)
+        public static Models.CallStack TranslateCallStackToModel(CallStack stack, NameCache cache, bool parameterTypesSupported = true)
         {
             Models.CallStack stackModel = new Models.CallStack();
             stackModel.ThreadId = stack.ThreadId;
             stackModel.ThreadName = stack.ThreadName;
 
-            StringBuilder builder = new();
             foreach (CallStackFrame frame in stack.Frames)
             {
                 var frameModel = CreateFrameModel(frame, cache);
-                if (methodNameIncludesGenericParameters)
+
+                if (parameterTypesSupported)
                 {
-                    builder.Append(frameModel.MethodName);
-                    NameFormatter.BuildGenericArgTypes(builder, frameModel.FullGenericArgTypes);
-                    frameModel.MethodName = builder.ToString();
-                    builder.Clear();
+                    frameModel.SimpleParameterTypes ??= [];
+                    frameModel.FullParameterTypes ??= [];
                 }
+
                 stackModel.Frames.Add(frameModel);
             }
 
