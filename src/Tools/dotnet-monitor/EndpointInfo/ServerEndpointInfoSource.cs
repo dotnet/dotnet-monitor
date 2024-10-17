@@ -31,12 +31,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         // The number of items that the pending removal channel will hold before forcing
         // the writer to wait for capacity to be available.
         private const int PendingRemovalChannelCapacity = 1000;
+
+        private readonly SemaphoreSlim _activeEndpointsSemaphore = new(1);
+        private readonly Dictionary<Guid, AsyncServiceScope> _activeEndpointServiceScopes = new();
+        private readonly IServiceScopeFactory _scopeFactory;
+
         private readonly ChannelReader<EndpointRemovedEventArgs> _pendingRemovalReader;
         private readonly ChannelWriter<EndpointRemovedEventArgs> _pendingRemovalWriter;
-
-        private readonly Dictionary<Guid, AsyncServiceScope> _activeEndpointServiceScopes = new();
-        private readonly SemaphoreSlim _activeEndpointsSemaphore = new(1);
-        private readonly IServiceScopeFactory _scopeFactory;
 
         private readonly IEnumerable<IEndpointInfoSourceCallbacks> _callbacks;
         private readonly DiagnosticPortOptions _portOptions;
