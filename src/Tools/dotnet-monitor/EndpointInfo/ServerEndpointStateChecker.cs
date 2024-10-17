@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal class ServerEndpointStateChecker(OperationTrackerService operationTracker) : IServerEndpointStateChecker
+    internal class ServerEndpointStateChecker(OperationTrackerService? operationTracker) : IServerEndpointStateChecker
     {
         // The amount of time to wait when checking if the a endpoint info is active.
         private static readonly TimeSpan WaitForConnectionTimeout = TimeSpan.FromMilliseconds(250);
@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // If a dump operation is in progress, the runtime is likely to not respond to
             // diagnostic requests. Do not check for responsiveness while the dump operation
             // is in progress.
-            if (operationTracker.IsExecutingOperation(info))
+            if (operationTracker?.IsExecutingOperation(info) == true)
             {
                 return ServerEndpointState.Active;
             }

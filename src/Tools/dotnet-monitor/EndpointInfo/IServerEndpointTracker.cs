@@ -13,7 +13,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal record class EndpointRemovedEventArgs(IEndpointInfo Endpoint, ServerEndpointState State);
 
     internal interface IServerEndpointTracker
-        : IHostedService
     {
         Task AddAsync(IEndpointInfo endpointInfo, CancellationToken token);
         Task ClearAsync(CancellationToken token);
