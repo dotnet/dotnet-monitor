@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
                 NameFormatter.BuildGenericArgTypes(builder, FullGenericArgTypes);
                 return builder.ToString();
             }
-            // Only intended for use test code.
+            // Only intended for test code.
             set
             {
                 MethodName = NameFormatter.RemoveGenericArgTypes(value, out string[] genericArgTypes);
