@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         // The amount of time to wait when checking if the a endpoint info should be
         // pruned from the list of endpoint infos. If the runtime doesn't have a viable connection within
         // this time, it will be pruned from the list.
-        private static readonly TimeSpan PruneWaitForConnectionTimeout = TimeSpan.FromMilliseconds(250);
+        private static readonly TimeSpan WaitForConnectionTimeout = TimeSpan.FromMilliseconds(250);
 
         public async Task<ServerEndpointState> GetEndpointStateAsync(IEndpointInfo info, CancellationToken token)
         {
@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             try
             {
-                timeoutSource.CancelAfter(PruneWaitForConnectionTimeout);
+                timeoutSource.CancelAfter(WaitForConnectionTimeout);
 
                 await info.Endpoint.WaitForConnectionAsync(linkedSource.Token).ConfigureAwait(false);
             }

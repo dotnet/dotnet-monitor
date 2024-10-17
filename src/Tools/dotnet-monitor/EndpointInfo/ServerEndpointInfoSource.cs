@@ -44,9 +44,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private readonly ILogger<ServerEndpointInfoSource> _logger;
 
-        private long _disposalState;
-
         private readonly IServerEndpointTracker _endpointTracker;
+
+        private long _disposalState;
 
         /// <summary>
         /// Constructs a <see cref="ServerEndpointInfoSource"/> that aggregates diagnostic endpoints
