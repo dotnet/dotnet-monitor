@@ -32,28 +32,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         // the writer to wait for capacity to be available.
         private const int PendingRemovalChannelCapacity = 1000;
 
-        // The amount of time to wait when checking if the a endpoint info should be
-        // pruned from the list of endpoint infos. If the runtime doesn't have a viable connection within
-        // this time, it will be pruned from the list.
-        private static readonly TimeSpan PruneWaitForConnectionTimeout = TimeSpan.FromMilliseconds(250);
-
-        // The amount of time to wait between pruning operations.
-        private static readonly TimeSpan PruningInterval = TimeSpan.FromSeconds(3);
-
-        private readonly List<EndpointInfo> _activeEndpoints = new();
         private readonly SemaphoreSlim _activeEndpointsSemaphore = new(1);
         private readonly Dictionary<Guid, AsyncServiceScope> _activeEndpointServiceScopes = new();
         private readonly IServiceScopeFactory _scopeFactory;
 
-        private readonly ChannelReader<IEndpointInfo> _pendingRemovalReader;
-        private readonly ChannelWriter<IEndpointInfo> _pendingRemovalWriter;
+        private readonly ChannelReader<EndpointRemovedEventArgs> _pendingRemovalReader;
+        private readonly ChannelWriter<EndpointRemovedEventArgs> _pendingRemovalWriter;
 
-        private readonly CancellationTokenSource _cancellation = new();
         private readonly IEnumerable<IEndpointInfoSourceCallbacks> _callbacks;
         private readonly DiagnosticPortOptions _portOptions;
 
-        private readonly OperationTrackerService _operationTrackerService;
         private readonly ILogger<ServerEndpointInfoSource> _logger;
+
+        private readonly IServerEndpointTracker _endpointTracker;
 
         private long _disposalState;
 
@@ -63,15 +54,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// </summary>
         public ServerEndpointInfoSource(
             IServiceScopeFactory scopeFactory,
+            IServerEndpointTracker endpointTracker,
             IOptions<DiagnosticPortOptions> portOptions,
-            IEnumerable<IEndpointInfoSourceCallbacks> callbacks = null,
-            OperationTrackerService operationTrackerService = null,
-            ILogger<ServerEndpointInfoSource> logger = null)
+            ILogger<ServerEndpointInfoSource> logger,
+            IEnumerable<IEndpointInfoSourceCallbacks> callbacks = null)
         {
             _callbacks = callbacks ?? Enumerable.Empty<IEndpointInfoSourceCallbacks>();
-            _operationTrackerService = operationTrackerService;
             _portOptions = portOptions.Value;
             _logger = logger;
+            _endpointTracker = endpointTracker;
             _scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
 
             BoundedChannelOptions channelOptions = new(PendingRemovalChannelCapacity)
@@ -79,9 +70,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 SingleReader = true,
                 SingleWriter = true
             };
-            Channel<IEndpointInfo> pendingRemovalChannel = Channel.CreateBounded<IEndpointInfo>(channelOptions);
+            Channel<EndpointRemovedEventArgs> pendingRemovalChannel = Channel.CreateBounded<EndpointRemovedEventArgs>(channelOptions);
             _pendingRemovalReader = pendingRemovalChannel.Reader;
             _pendingRemovalWriter = pendingRemovalChannel.Writer;
+
+            _endpointTracker.EndpointRemoved += OnEndpointRemoved;
         }
 
         public async ValueTask DisposeAsync()
@@ -92,6 +85,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // Makes sure the background task is canceled.
             Dispose();
 
+            _endpointTracker.EndpointRemoved -= OnEndpointRemoved;
             _pendingRemovalWriter.TryComplete();
 
             // Wait for background services to complete.
@@ -158,7 +152,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 await Task.WhenAll(
                     ListenAsync(server, stoppingToken),
-                    MonitorEndpointsAsync(stoppingToken),
                     NotifyAndRemoveAsync(server, stoppingToken)
                     );
             }
@@ -170,13 +163,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// <param name="token">The token to monitor for cancellation requests.</param>
         /// <returns>A list of active <see cref="IEndpointInfo"/> instances.</returns>
         public async Task<IEnumerable<IEndpointInfo>> GetEndpointInfoAsync(CancellationToken token)
-        {
-            using CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(token, _cancellation.Token);
+            => await _endpointTracker.GetEndpointInfoAsync(token);
 
-            List<IEndpointInfo> validEndpoints = new();
-            await PruneEndpointsAsync(validEndpoints, linkedSource.Token);
-            return validEndpoints;
-        }
+        private void OnEndpointRemoved(object sender, EndpointRemovedEventArgs args)
+            => _pendingRemovalWriter.TryWrite(args);
 
         /// <summary>
         /// Accepts endpoint infos from the reversed diagnostics server.
@@ -276,7 +266,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 await _activeEndpointsSemaphore.WaitAsync(token).ConfigureAwait(false);
                 try
                 {
-                    _activeEndpoints.Add(endpointInfo);
+                    await _endpointTracker.AddAsync(endpointInfo, token).ConfigureAwait(false);
 
                     foreach (IEndpointInfoSourceCallbacks callback in _callbacks)
                     {
@@ -306,26 +296,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
-        private async Task MonitorEndpointsAsync(CancellationToken token)
-        {
-            while (!token.IsCancellationRequested)
-            {
-                await Task.Delay(PruningInterval, token);
-
-                await PruneEndpointsAsync(validEndpoints: null, token);
-            }
-        }
-
         private async Task NotifyAndRemoveAsync(ReversedDiagnosticsServer server, CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
-                IEndpointInfo endpoint = await _pendingRemovalReader.ReadAsync(token);
+                EndpointRemovedEventArgs args = await _pendingRemovalReader.ReadAsync(token);
+                IEndpointInfo endpoint = args.Endpoint;
+                ServerEndpointState state = args.State;
 
                 List<Exception> exceptions = new();
 
                 AsyncServiceScope serviceScope;
                 bool isServiceScopeValid = false;
+
+                if (state == ServerEndpointState.Unresponsive)
+                {
+                    _logger.EndpointTimeout(endpoint.ProcessId.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                }
 
                 await _activeEndpointsSemaphore.WaitAsync(token);
                 try
@@ -383,84 +370,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 server.RemoveConnection(endpoint.RuntimeInstanceCookie);
             }
-        }
-
-        private async Task PruneEndpointsAsync(List<IEndpointInfo> validEndpoints, CancellationToken token)
-        {
-            // Prune connections that no longer have an active runtime instance before
-            // returning the list of connections.
-            await _activeEndpointsSemaphore.WaitAsync(token).ConfigureAwait(false);
-
-            try
-            {
-                // Check the transport for each endpoint info and remove it if the check fails.
-                List<Task<bool>> checkTasks = new();
-                foreach (EndpointInfo info in _activeEndpoints)
-                {
-                    checkTasks.Add(Task.Run(() => CheckEndpointAsync(info, token), token));
-                }
-
-                // Wait for all checks to complete
-                bool[] results = await Task.WhenAll(checkTasks).ConfigureAwait(false);
-
-                // Remove failed endpoints from active list; record the failed endpoints
-                // for removal after releasing the active endpoints semaphore.
-                int endpointIndex = 0;
-                for (int resultIndex = 0; resultIndex < results.Length; resultIndex++)
-                {
-                    IEndpointInfo endpoint = _activeEndpoints[endpointIndex];
-                    if (results[resultIndex])
-                    {
-                        validEndpoints?.Add(endpoint);
-                        endpointIndex++;
-                    }
-                    else
-                    {
-                        _activeEndpoints.RemoveAt(endpointIndex);
-
-                        await _pendingRemovalWriter.WriteAsync(endpoint, token);
-                    }
-                }
-            }
-            finally
-            {
-                _activeEndpointsSemaphore.Release();
-            }
-        }
-
-        /// <summary>
-        /// Tests the endpoint to see if its connection is viable.
-        /// </summary>
-        private async Task<bool> CheckEndpointAsync(EndpointInfo info, CancellationToken token)
-        {
-            // If a dump operation is in progress, the runtime is likely to not respond to
-            // diagnostic requests. Do not check for responsiveness while the dump operation
-            // is in progress.
-            if (_operationTrackerService?.IsExecutingOperation(info) == true)
-            {
-                return true;
-            }
-
-            using var timeoutSource = new CancellationTokenSource();
-            using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(token, timeoutSource.Token);
-
-            try
-            {
-                timeoutSource.CancelAfter(PruneWaitForConnectionTimeout);
-
-                await info.Endpoint.WaitForConnectionAsync(linkedSource.Token).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException) when (timeoutSource.IsCancellationRequested)
-            {
-                _logger?.EndpointTimeout(info.ProcessId.ToString(System.Globalization.CultureInfo.InvariantCulture));
-                return false;
-            }
-            catch (Exception ex) when (ex is not OperationCanceledException)
-            {
-                return false;
-            }
-
-            return true;
         }
 
         private IDisposable SetupDiagnosticPortWatcher()
