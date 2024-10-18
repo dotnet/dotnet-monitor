@@ -916,6 +916,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             List<ExceptionInstance> exceptions = DeserializeJsonExceptions();
             ExceptionInstance exception = Assert.Single(exceptions);
 
+            // We don't check all properties (e.g. timestamp or thread information)
             Assert.Equal(expectedException.ModuleName, exception.ModuleName);
             Assert.Equal(expectedException.TypeName, exception.TypeName);
             Assert.Equal(expectedException.Message, exception.Message);
@@ -923,6 +924,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             if (expectedException.CallStack == null)
             {
+                Assert.Null(exception.CallStack);
                 return;
             }
 
@@ -941,6 +943,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 CallStackFrame expectedFrame = expectedException.CallStack.Frames[i];
                 CallStackFrame actualFrame = exception.CallStack.Frames[i];
 
+                //
+                // TODO: We don't currently check method tokens / mvids.
+                // This is tested by ExceptionsJsonTest. If/when that test is updated to use this method,
+                // we should resolve this todo. Until then the coverage is unnecessary so keep things simple.
+                //
                 Assert.Equal(expectedFrame.ModuleName, actualFrame.ModuleName);
                 Assert.Equal(expectedFrame.TypeName, actualFrame.TypeName);
                 Assert.Equal(expectedFrame.MethodName, actualFrame.MethodName);
