@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
+using Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -90,6 +91,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             string[] expectedFrames =
             {
+                FormatFrame(ExpectedModule, typeof(HiddenFrameTestMethods).FullName, nameof(HiddenFrameTestMethods.ExitPoint)),
+                FormatFrame(ExpectedModule, typeof(HiddenFrameTestMethods.PartiallyVisibleClass).FullName, nameof(HiddenFrameTestMethods.PartiallyVisibleClass.DoWorkFromVisibleDerivedClass)),
+                FormatFrame(ExpectedModule, typeof(HiddenFrameTestMethods).FullName, nameof(HiddenFrameTestMethods.EntryPoint)),
                 FormatFrame(ExpectedModule, ExpectedClass, ExpectedCallbackFunction),
                 NativeFrame,
                 FormatFrame(ExpectedModule, ExpectedClass, ExpectedTextFunction),
@@ -561,6 +565,36 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         private static WebApi.Models.CallStackFrame[] ExpectedFrames() => new WebApi.Models.CallStackFrame[]
             {
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    TypeName = typeof(HiddenFrameTestMethods).FullName,
+                    MethodNameWithGenericArgTypes = nameof(HiddenFrameTestMethods.ExitPoint),
+                },
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    TypeName = typeof(HiddenFrameTestMethods).FullName,
+                    MethodNameWithGenericArgTypes = nameof(HiddenFrameTestMethods.DoWorkFromHiddenMethod),
+                },
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    TypeName = typeof(HiddenFrameTestMethods.BaseHiddenClass).FullName,
+                    MethodNameWithGenericArgTypes = nameof(HiddenFrameTestMethods.BaseHiddenClass.DoWorkFromHiddenBaseClass),
+                },
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    TypeName = typeof(HiddenFrameTestMethods.PartiallyVisibleClass).FullName,
+                    MethodNameWithGenericArgTypes = nameof(HiddenFrameTestMethods.PartiallyVisibleClass.DoWorkFromVisibleDerivedClass),
+                },
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    TypeName = typeof(HiddenFrameTestMethods).FullName,
+                    MethodNameWithGenericArgTypes = nameof(HiddenFrameTestMethods.EntryPoint),
+                },
                 new WebApi.Models.CallStackFrame
                 {
                     ModuleName = ExpectedModule,

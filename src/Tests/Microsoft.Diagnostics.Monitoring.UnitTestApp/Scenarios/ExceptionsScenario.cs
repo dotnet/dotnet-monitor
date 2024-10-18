@@ -398,10 +398,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static void ThrowExceptionWithHiddenFrames()
+        private static void ThrowExceptionWithHiddenFrames()
         {
-            HiddenFrameTestMethods.PartiallyVisibleClass partiallyVisibleClass = new();
-            partiallyVisibleClass.DoWorkEntryPoint(ThrowAndCatchInvalidOperationException);
+            HiddenFrameTestMethods.EntryPoint(ThrowAndCatchInvalidOperationException);
         }
 
 

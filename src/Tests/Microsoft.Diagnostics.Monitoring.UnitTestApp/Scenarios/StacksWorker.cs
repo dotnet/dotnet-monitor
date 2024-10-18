@@ -23,8 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
             public void Callback()
             {
-                HiddenFrameTestMethods.PartiallyVisibleClass partiallyVisibleClass = new();
-                partiallyVisibleClass.DoWorkEntryPoint(() =>
+                HiddenFrameTestMethods.EntryPoint(() =>
                 {
                     using EventSource eventSource = new EventSource("StackScenario");
                     using EventCounter eventCounter = new EventCounter("Ready", eventSource);

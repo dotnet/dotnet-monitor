@@ -9,24 +9,26 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
     internal static class HiddenFrameTestMethods
     {
-        /// <summary>
-        /// Entry point to test frame visibility
-        /// </summary>
-        public class PartiallyVisibleClass : BaseHiddenClass
+        // We keep the entry and exit points visible so they act as sentinel frames
+        // when checking output that excludes hidden frames.
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void EntryPoint(Action work)
         {
-            // StackTraceHidden attributes are not inherited
-            [MethodImpl(MethodImplOptions.NoInlining)]
-            public void DoWorkEntryPoint(Action work)
-            {
-                DoWorkFromHiddenBaseClass(work);
-            }
+            PartiallyVisibleClass partiallyVisibleClass = new();
+            partiallyVisibleClass.DoWorkFromVisibleDerivedClass(work);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ExitPoint(Action work)
+        {
+            work();
         }
 
         [StackTraceHidden]
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void DoWorkFromHiddenMethod(Action work)
         {
-            work();
+            ExitPoint(work);
         }
 
         [StackTraceHidden]
@@ -38,6 +40,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 #pragma warning restore CA1822 // Mark members as static
             {
                 DoWorkFromHiddenMethod(work);
+            }
+        }
+
+        public class PartiallyVisibleClass : BaseHiddenClass
+        {
+            // StackTraceHidden attributes are not inherited
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            public void DoWorkFromVisibleDerivedClass(Action work)
+            {
+                DoWorkFromHiddenBaseClass(work);
             }
         }
     }
