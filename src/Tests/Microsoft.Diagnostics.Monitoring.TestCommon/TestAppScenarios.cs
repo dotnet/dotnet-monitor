@@ -64,6 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string EclipsingExceptionFromMethodCall = nameof(EclipsingExceptionFromMethodCall);
                 public const string AggregateException = nameof(AggregateException);
                 public const string ReflectionTypeLoadException = nameof(ReflectionTypeLoadException);
+                public const string HiddenFramesExceptionCommand = nameof(HiddenFramesExceptionCommand);
             }
 
             public static class Commands

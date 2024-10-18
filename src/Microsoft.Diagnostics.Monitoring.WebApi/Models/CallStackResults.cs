@@ -4,11 +4,13 @@
 using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
+    [DebuggerDisplay("{ModuleName,nq}!{TypeName,nq}.{MethodName,nq}")]
     public class CallStackFrame
     {
         [JsonPropertyName("methodName")]
@@ -49,6 +51,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         [JsonPropertyName("moduleVersionId")]
         public Guid ModuleVersionId { get; set; }
+
+        [JsonPropertyName("hidden")]
+        public bool Hidden { get; set; }
 
         [JsonIgnore]
         internal IList<string> SimpleGenericArgTypes { get; set; } = new List<string>();

@@ -23,10 +23,13 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
             public void Callback()
             {
-                using EventSource eventSource = new EventSource("StackScenario");
-                using EventCounter eventCounter = new EventCounter("Ready", eventSource);
-                eventCounter.WriteMetric(1.0);
-                _handle.WaitOne();
+                HiddenFrameTestMethods.EntryPoint(() =>
+                {
+                    using EventSource eventSource = new EventSource("StackScenario");
+                    using EventCounter eventCounter = new EventCounter("Ready", eventSource);
+                    eventCounter.WriteMetric(1.0);
+                    _handle.WaitOne();
+                });
             }
         }
 

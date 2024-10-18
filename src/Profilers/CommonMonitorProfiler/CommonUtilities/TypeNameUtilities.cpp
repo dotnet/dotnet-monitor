@@ -86,7 +86,7 @@ HRESULT TypeNameUtilities::GetFunctionInfo(NameCache& nameCache, FunctionID id, 
 
     IfFailRet(GetModuleInfo(nameCache, moduleId));
 
-    bool stackTraceHidden = ShouldHideFromStackTrace(moduleId, classToken);
+    bool stackTraceHidden = ShouldHideFromStackTrace(moduleId, token);
 
     nameCache.AddFunctionData(moduleId, id, tstring(funcName), classId, token, classToken, typeArgs, typeArgsCount, stackTraceHidden);
 

@@ -91,8 +91,6 @@ System.InvalidOperationException: Operation is not valid due to the current stat
 First chance exception at 2023-07-13T21:46:18.7530773Z
 System.ObjectDisposedException: Cannot access a disposed object.
 Object name: 'System.Net.Sockets.NetworkStream'.
-   at System.ThrowHelper.ThrowObjectDisposedException(System.Object)
-   at System.ObjectDisposedException.ThrowIf(System.Boolean,System.Object)
    at System.Net.Sockets.NetworkStream.ReadAsync(System.Memory`1[[System.Byte, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]][System.Byte],System.Threading.CancellationToken)
    at System.Net.Http.HttpConnection+<<EnsureReadAheadTaskHasStarted>g__ReadAheadWithZeroByteReadAsync|43_0>d.MoveNext()
    at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1[System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1+TResult,System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1+TStateMachine].ExecutionContextCallback(System.Object)
@@ -140,7 +138,8 @@ Content-Type: application/x-ndjson
         "parameterTypes": [],
         "typeName": "WebApplication3.Pages.IndexModel\u002B\u003CGetData\u003Ed__3",
         "moduleName": "WebApplication3.dll",
-        "moduleVersionId": "bf769014-c2e2-496a-93b7-76fbbcd04be5"
+        "moduleVersionId": "bf769014-c2e2-496a-93b7-76fbbcd04be5",
+        "hidden": false
       },
       ... // see stacks.md
     ]
@@ -165,7 +164,8 @@ Content-Type: application/x-ndjson
         ],
         "typeName": "System.ThrowHelper",
         "moduleName": "System.Private.CoreLib.dll",
-        "moduleVersionId": "bf769014-c2e2-496a-93b7-76fbbcd04be5"
+        "moduleVersionId": "bf769014-c2e2-496a-93b7-76fbbcd04be5",
+        "hidden": true
       },
       ... // see stacks.md
     ]
