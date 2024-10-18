@@ -17,30 +17,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
     internal static class StackUtilities
     {
-        public static Models.CallStack TranslateCallStackToModel(CallStack stack, NameCache cache, bool methodNameIncludesGenericParameters = true)
+        public static Models.CallStack TranslateCallStackToModel(CallStack stack, NameCache cache, bool ensureParameterTypeFieldsNotNull = true)
         {
             Models.CallStack stackModel = new Models.CallStack();
             stackModel.ThreadId = stack.ThreadId;
             stackModel.ThreadName = stack.ThreadName;
 
-            StringBuilder builder = new();
             foreach (CallStackFrame frame in stack.Frames)
             {
-                var frameModel = CreateFrameModel(frame, cache);
-                if (methodNameIncludesGenericParameters)
-                {
-                    builder.Append(frameModel.MethodName);
-                    NameFormatter.BuildGenericArgTypes(builder, frameModel.FullGenericArgTypes);
-                    frameModel.MethodName = builder.ToString();
-                    builder.Clear();
-                }
+                var frameModel = CreateFrameModel(frame, cache, ensureParameterTypeFieldsNotNull);
                 stackModel.Frames.Add(frameModel);
             }
 
             return stackModel;
         }
 
-        internal static Models.CallStackFrame CreateFrameModel(CallStackFrame frame, NameCache cache)
+        internal static Models.CallStackFrame CreateFrameModel(CallStackFrame frame, NameCache cache, bool ensureParameterTypeFieldsNotNull)
         {
             var builder = new StringBuilder();
 
@@ -53,7 +45,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 //Offset = frame.Offset,
                 ModuleName = NameFormatter.UnknownModule,
                 ModuleVersionId = Guid.Empty,
-                Hidden = false
+                Hidden = false,
+
+                SimpleParameterTypes = ensureParameterTypeFieldsNotNull ? [] : null,
+                FullParameterTypes = ensureParameterTypeFieldsNotNull ? [] : null,
             };
             if (frame.FunctionId == 0)
             {

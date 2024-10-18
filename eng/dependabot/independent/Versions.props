@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <AzureCoreVersion>1.44.1</AzureCoreVersion>
-    <AzureIdentityVersion>1.12.1</AzureIdentityVersion>
+    <AzureIdentityVersion>1.13.0</AzureIdentityVersion>
     <AzureStorageBlobsVersion>12.22.2</AzureStorageBlobsVersion>
     <AzureStorageQueuesVersion>12.20.1</AzureStorageQueuesVersion>
     <MicrosoftIdentityWebVersion>3.2.2</MicrosoftIdentityWebVersion>
@@ -14,7 +14,7 @@
     <!-- Third-party references -->
     <NewtonsoftJsonVersion>13.0.3</NewtonsoftJsonVersion>
     <NJsonSchemaVersion>11.0.0</NJsonSchemaVersion>
-    <SwashbuckleAspNetCoreVersion>6.8.1</SwashbuckleAspNetCoreVersion>
+    <SwashbuckleAspNetCoreVersion>6.9.0</SwashbuckleAspNetCoreVersion>
     <AwsSdkS3Version>3.7.305.7</AwsSdkS3Version>
     <AwsSdkSecurityTokenVersion>3.7.300.33</AwsSdkSecurityTokenVersion>
 
