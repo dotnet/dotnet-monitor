@@ -75,7 +75,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             IServerEndpointStateChecker endpointChecker = new ServerEndpointStateChecker(operationTrackerService);
 
-            ServerEndpointTracker endpointTracker = new ServerEndpointTracker(endpointChecker);
+            ServerEndpointTracker endpointTracker = new ServerEndpointTracker(endpointChecker, portOptions);
 
             ServerEndpointInfoSource source = new(
                 scopeFactoryMock.Object,
