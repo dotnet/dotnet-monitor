@@ -9,6 +9,7 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -750,7 +751,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
-        public async Task Exceptions_HideHiddenFrames(Architecture targetArchitecture)
+        public async Task Exceptions_HideHiddenFrames_Text(Architecture targetArchitecture)
         {
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
@@ -767,9 +768,87 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         [
                             new ExceptionFrame(FrameTypeName, FrameMethodName, [SimpleFrameParameterType, SimpleFrameParameterType]),
                             new ExceptionFrame(FrameTypeName, FrameMethodName, []),
-                            new ExceptionFrame($"{FrameTypeName}+PartiallyVisibleClass", "ThrowException", []),
-                            new ExceptionFrame(FrameTypeName, "ThrowExceptionWithHiddenMethodFrame", []),
+                            new ExceptionFrame($"{FrameTypeName}+PartiallyVisibleClass", "DoWork(Action)", []),
+                            new ExceptionFrame(FrameTypeName, "ThrowExceptionWithHiddenFrames", []),
                         ]);
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                    runner.EnableMonitorStartupHook = true;
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public async Task Exceptions_HideHiddenFrames_Json(Architecture targetArchitecture)
+        {
+            ExceptionInstance expectedException = new()
+            {
+                Message = ExceptionMessage,
+                TypeName = SystemInvalidOperationException,
+                ModuleName = CoreLibModuleName,
+                CallStack = new()
+                {
+                    Frames =
+                    [
+                        new()
+                        {
+                            TypeName = FrameTypeName,
+                            ModuleName = UnitTestAppModule,
+                            MethodName = FrameMethodName,
+                            FullParameterTypes = [FrameParameterType, FrameParameterType]
+                        },
+                        new()
+                        {
+                            TypeName = FrameTypeName,
+                            ModuleName = UnitTestAppModule,
+                            MethodName = FrameMethodName,
+                        },
+                        new()
+                        {
+                            TypeName = FrameTypeName,
+                            ModuleName = UnitTestAppModule,
+                            MethodName = "DoWorkFromHiddenMethod",
+                            Hidden = true
+                        },
+                        new()
+                        {
+                            TypeName = $"{FrameTypeName}+BaseHiddenClass",
+                            ModuleName = UnitTestAppModule,
+                            MethodName = "DoWorkFromHiddenBaseClass",
+                            Hidden = true
+                        },
+                        new()
+                        {
+                            TypeName = $"{FrameTypeName}+PartiallyVisibleClass",
+                            ModuleName = UnitTestAppModule,
+                            MethodName = "DoWork",
+                        },
+                        new()
+                        {
+                            TypeName = FrameTypeName,
+                            ModuleName = UnitTestAppModule,
+                            MethodName = "ThrowExceptionWithHiddenFrames",
+                        },
+                    ]
+                }
+            };
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Listen,
+                TestAppScenarios.Exceptions.Name,
+                subScenarioName: TestAppScenarios.Exceptions.SubScenarios.HiddenFramesExceptionCommand,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.NewlineDelimitedJson);
+                    ValidateSingleExceptionJson(expectedException);
                 },
                 configureApp: runner =>
                 {
@@ -817,8 +896,63 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         }
 
+        private void ValidateSingleExceptionJson(ExceptionInstance expectedException, bool onlyMatchTopFrames = true)
+        {
+            List<ExceptionInstance> exceptions = DeserializeJsonExceptions();
+            ExceptionInstance exception = Assert.Single(exceptions);
+
+            Assert.Equal(expectedException.ModuleName, exception.ModuleName);
+            Assert.Equal(expectedException.TypeName, exception.TypeName);
+            Assert.Equal(expectedException.Message, exception.Message);
+            Assert.Equivalent(expectedException.Activity, exception.Activity);
+
+            if (expectedException.CallStack == null)
+            {
+                return;
+            }
+
+            Assert.NotNull(exception.CallStack);
+            if (onlyMatchTopFrames)
+            {
+                Assert.True(exception.CallStack.Frames.Count >= expectedException.CallStack.Frames.Count);
+            }
+            else
+            {
+                Assert.Equal(expectedException.CallStack.Frames.Count, exception.CallStack.Frames.Count);
+            }
+
+            for (int i = 0; i < expectedException.CallStack.Frames.Count; i++)
+            {
+                CallStackFrame expectedFrame = expectedException.CallStack.Frames[i];
+                CallStackFrame actualFrame = exception.CallStack.Frames[i];
+
+                Assert.Equal(expectedFrame.ModuleName, actualFrame.ModuleName);
+                Assert.Equal(expectedFrame.TypeName, actualFrame.TypeName);
+                Assert.Equal(expectedFrame.MethodName, actualFrame.MethodName);
+                Assert.Equivalent(expectedFrame.FullGenericArgTypes, actualFrame.FullGenericArgTypes);
+                Assert.Equivalent(expectedFrame.FullParameterTypes ?? [], actualFrame.FullParameterTypes ?? []);
+                Assert.Equal(expectedFrame.Hidden, actualFrame.Hidden);
+            }
+        }
+
         private void ValidateSingleExceptionText(string exceptionType, string exceptionMessage, string frameTypeName, string frameMethodName, List<string> parameterTypes)
             => ValidateSingleExceptionText(exceptionType, exceptionMessage, [new ExceptionFrame(frameTypeName, frameMethodName, parameterTypes)]);
+
+        private List<ExceptionInstance> DeserializeJsonExceptions()
+        {
+            List<ExceptionInstance> exceptions = [];
+            JsonSerializerOptions options = new();
+            //options.Converters.Add(new JsonStringEnumConverter());
+
+            using StringReader reader = new StringReader(exceptionsResult);
+
+            string line;
+            while (null != (line = reader.ReadLine()))
+            {
+                exceptions.Add(JsonSerializer.Deserialize<ExceptionInstance>(line, options));
+            }
+            return exceptions;
+        }
 
         private async Task GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionFormat format, ExceptionsConfiguration configuration = null)
         {

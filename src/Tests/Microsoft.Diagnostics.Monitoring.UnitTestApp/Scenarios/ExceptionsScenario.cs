@@ -388,7 +388,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
                 try
                 {
-                    ThrowExceptionWithHiddenMethodFrame();
+                    ThrowExceptionWithHiddenFrames();
                 }
                 catch (Exception)
                 {
@@ -399,10 +399,16 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void ThrowExceptionWithHiddenMethodFrame()
+        private static void ThrowExceptionWithHiddenFrames()
         {
             PartiallyVisibleClass partiallyVisibleClass = new();
-            partiallyVisibleClass.ThrowException();
+            partiallyVisibleClass.DoWork(ThrowAndCatchInvalidOperationException);
+        }
+
+        [StackTraceHidden]
+        private static void DoWorkFromHiddenMethod(Action work)
+        {
+            work();
         }
 
         [StackTraceHidden]
@@ -410,10 +416,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         {
 #pragma warning disable CA1822 // Mark members as static
             [MethodImpl(MethodImplOptions.NoInlining)]
-            public void ThrowExceptionFromBaseClass()
+            public void DoWorkFromHiddenBaseClass(Action work)
 #pragma warning restore CA1822 // Mark members as static
             {
-                ThrowAndCatchInvalidOperationException();
+                DoWorkFromHiddenMethod(work);
             }
         }
 
@@ -421,9 +427,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         {
             // StackTraceHidden attributes are not inherited
             [MethodImpl(MethodImplOptions.NoInlining)]
-            public void ThrowException()
+            public void DoWork(Action work)
             {
-                ThrowExceptionFromBaseClass();
+                DoWorkFromHiddenBaseClass(work);
             }
         }
 
