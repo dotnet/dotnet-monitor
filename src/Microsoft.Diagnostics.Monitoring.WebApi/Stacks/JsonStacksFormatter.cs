@@ -21,7 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
             foreach (CallStack stack in stackResult.Stacks)
             {
-                stackResultModel.Stacks.Add(StackUtilities.TranslateCallStackToModel(stack, cache, parameterTypesSupported: false));
+                stackResultModel.Stacks.Add(StackUtilities.TranslateCallStackToModel(stack, cache, ensureParameterTypeFieldsNotNull: false));
             }
 
             await JsonSerializer.SerializeAsync(OutputStream, stackResultModel, cancellationToken: token);

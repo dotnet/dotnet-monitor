@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
     internal static class StackUtilities
     {
-        public static Models.CallStack TranslateCallStackToModel(CallStack stack, NameCache cache, bool parameterTypesSupported = true)
+        public static Models.CallStack TranslateCallStackToModel(CallStack stack, NameCache cache, bool ensureParameterTypeFieldsNotNull = true)
         {
             Models.CallStack stackModel = new Models.CallStack();
             stackModel.ThreadId = stack.ThreadId;
@@ -25,21 +25,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             foreach (CallStackFrame frame in stack.Frames)
             {
-                var frameModel = CreateFrameModel(frame, cache);
-
-                if (parameterTypesSupported)
-                {
-                    frameModel.SimpleParameterTypes ??= [];
-                    frameModel.FullParameterTypes ??= [];
-                }
-
+                var frameModel = CreateFrameModel(frame, cache, ensureParameterTypeFieldsNotNull);
                 stackModel.Frames.Add(frameModel);
             }
 
             return stackModel;
         }
 
-        internal static Models.CallStackFrame CreateFrameModel(CallStackFrame frame, NameCache cache)
+        internal static Models.CallStackFrame CreateFrameModel(CallStackFrame frame, NameCache cache, bool ensureParameterTypeFieldsNotNull)
         {
             var builder = new StringBuilder();
 
@@ -51,7 +44,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 //TODO Bring this back once we have a useful offset value
                 //Offset = frame.Offset,
                 ModuleName = NameFormatter.UnknownModule,
-                ModuleVersionId = Guid.Empty
+                ModuleVersionId = Guid.Empty,
+
+                SimpleParameterTypes = ensureParameterTypeFieldsNotNull ? [] : null,
+                FullParameterTypes = ensureParameterTypeFieldsNotNull ? [] : null,
             };
             if (frame.FunctionId == 0)
             {
