@@ -424,7 +424,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddScoped<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
         }
 
-        public static void AddSingletonForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
+        private static void AddSingletonForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
         {
             services.AddSingleton<TService, TImplementation>(sp => sp.GetRequiredService<TImplementation>());
         }
