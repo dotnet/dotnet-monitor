@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class ServerEndpointTracker(IServerEndpointStateChecker endpointChecker) :
+    internal sealed class ServerEndpointTracker(IServerEndpointStateChecker endpointChecker, IOptions<DiagnosticPortOptions> portOptions) :
         BackgroundService,
         IServerEndpointTracker
     {
@@ -23,10 +24,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private readonly CancellationTokenSource _cancellation = new();
 
+        private readonly DiagnosticPortOptions _portOptions = portOptions.Value;
+
         public event EventHandler<EndpointRemovedEventArgs>? EndpointRemoved;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            if (_portOptions.ConnectionMode != DiagnosticPortConnectionMode.Listen)
+            {
+                return;
+            }
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Delay(PruningInterval, stoppingToken);
