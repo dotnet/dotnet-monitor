@@ -412,6 +412,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             services.AddSingleton<ServerEndpointTracker>();
             services.AddSingletonForwarder<IServerEndpointTracker, ServerEndpointTracker>();
+            services.AddHostedServiceForwarder<ServerEndpointTracker>();
 
             services.AddSingleton<ServerEndpointInfoSource>();
             services.AddHostedServiceForwarder<ServerEndpointInfoSource>();
