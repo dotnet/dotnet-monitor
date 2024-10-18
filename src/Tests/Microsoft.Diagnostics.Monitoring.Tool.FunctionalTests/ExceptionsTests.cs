@@ -944,7 +944,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 CallStackFrame actualFrame = exception.CallStack.Frames[i];
 
                 //
-                // TODO: We don't currently check method tokens / mvids.
+                // TODO: We don't currently check method tokens / mvid.
                 // This is tested by ExceptionsJsonTest. If/when that test is updated to use this method,
                 // we should resolve this todo. Until then the coverage is unnecessary so keep things simple.
                 //
