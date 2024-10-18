@@ -956,15 +956,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private List<ExceptionInstance> DeserializeJsonExceptions()
         {
             List<ExceptionInstance> exceptions = [];
-            JsonSerializerOptions options = new();
-            //options.Converters.Add(new JsonStringEnumConverter());
 
             using StringReader reader = new StringReader(exceptionsResult);
 
             string line;
             while (null != (line = reader.ReadLine()))
             {
-                exceptions.Add(JsonSerializer.Deserialize<ExceptionInstance>(line, options));
+                exceptions.Add(JsonSerializer.Deserialize<ExceptionInstance>(line));
             }
             return exceptions;
         }
