@@ -10,7 +10,7 @@ using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
-    [DebuggerDisplay("{ModuleName}!{TypeName}.{MethodName}")]
+    [DebuggerDisplay("{ModuleName,nq}!{TypeName,nq}.{MethodName,nq}")]
     public class CallStackFrame
     {
         [JsonPropertyName("methodName")]
