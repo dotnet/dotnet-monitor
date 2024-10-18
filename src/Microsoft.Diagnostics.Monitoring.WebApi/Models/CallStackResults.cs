@@ -4,11 +4,13 @@
 using Microsoft.Diagnostics.Monitoring.WebApi.Stacks;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
+    [DebuggerDisplay("{ModuleName}!{TypeName}.{MethodName}")]
     public class CallStackFrame
     {
         [JsonPropertyName("methodName")]

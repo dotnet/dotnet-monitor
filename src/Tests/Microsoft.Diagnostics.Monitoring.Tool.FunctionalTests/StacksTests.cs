@@ -576,12 +576,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ModuleName = ExpectedModule,
                     TypeName = typeof(HiddenFrameTestMethods).FullName,
                     MethodNameWithGenericArgTypes = nameof(HiddenFrameTestMethods.DoWorkFromHiddenMethod),
+                    Hidden = true,
                 },
                 new WebApi.Models.CallStackFrame
                 {
                     ModuleName = ExpectedModule,
                     TypeName = typeof(HiddenFrameTestMethods.BaseHiddenClass).FullName,
                     MethodNameWithGenericArgTypes = nameof(HiddenFrameTestMethods.BaseHiddenClass.DoWorkFromHiddenBaseClass),
+                    Hidden = true
                 },
                 new WebApi.Models.CallStackFrame
                 {
