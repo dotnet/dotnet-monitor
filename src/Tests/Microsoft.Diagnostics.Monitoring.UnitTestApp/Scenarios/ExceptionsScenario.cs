@@ -4,7 +4,6 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using System;
 using System.CommandLine;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -399,39 +398,12 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void ThrowExceptionWithHiddenFrames()
+        internal static void ThrowExceptionWithHiddenFrames()
         {
-            PartiallyVisibleClass partiallyVisibleClass = new();
-            partiallyVisibleClass.DoWork(ThrowAndCatchInvalidOperationException);
+            HiddenFrameTestMethods.PartiallyVisibleClass partiallyVisibleClass = new();
+            partiallyVisibleClass.DoWorkEntryPoint(ThrowAndCatchInvalidOperationException);
         }
 
-        [StackTraceHidden]
-        private static void DoWorkFromHiddenMethod(Action work)
-        {
-            work();
-        }
-
-        [StackTraceHidden]
-        private abstract class BaseHiddenClass
-        {
-#pragma warning disable CA1822 // Mark members as static
-            [MethodImpl(MethodImplOptions.NoInlining)]
-            public void DoWorkFromHiddenBaseClass(Action work)
-#pragma warning restore CA1822 // Mark members as static
-            {
-                DoWorkFromHiddenMethod(work);
-            }
-        }
-
-        private class PartiallyVisibleClass : BaseHiddenClass
-        {
-            // StackTraceHidden attributes are not inherited
-            [MethodImpl(MethodImplOptions.NoInlining)]
-            public void DoWork(Action work)
-            {
-                DoWorkFromHiddenBaseClass(work);
-            }
-        }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void ThrowAndCatchInvalidOperationException()

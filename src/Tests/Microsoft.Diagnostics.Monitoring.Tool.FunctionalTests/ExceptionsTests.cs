@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
+using Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -753,6 +754,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task Exceptions_HideHiddenFrames_Text(Architecture targetArchitecture)
         {
+            const string DoWorkEntryPointMethod = $"{nameof(HiddenFrameTestMethods.PartiallyVisibleClass.DoWorkEntryPoint)}(Action)";
             await ScenarioRunner.SingleTarget(
                 _outputHelper,
                 _httpClientFactory,
@@ -768,8 +770,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         [
                             new ExceptionFrame(FrameTypeName, FrameMethodName, [SimpleFrameParameterType, SimpleFrameParameterType]),
                             new ExceptionFrame(FrameTypeName, FrameMethodName, []),
-                            new ExceptionFrame($"{FrameTypeName}+PartiallyVisibleClass", "DoWork(Action)", []),
-                            new ExceptionFrame(FrameTypeName, "ThrowExceptionWithHiddenFrames", []),
+                            new ExceptionFrame(typeof(HiddenFrameTestMethods.PartiallyVisibleClass).FullName, DoWorkEntryPointMethod, []),
+                            new ExceptionFrame(FrameTypeName, nameof(ExceptionsScenario.ThrowExceptionWithHiddenFrames), []),
                         ]);
                 },
                 configureApp: runner =>
@@ -811,29 +813,32 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         },
                         new()
                         {
-                            TypeName = FrameTypeName,
+                            TypeName = typeof(HiddenFrameTestMethods).FullName,
                             ModuleName = UnitTestAppModule,
-                            MethodName = "DoWorkFromHiddenMethod",
+                            MethodName = nameof(HiddenFrameTestMethods.DoWorkFromHiddenMethod),
+                            FullParameterTypes = [typeof(Action).FullName],
                             Hidden = true
                         },
                         new()
                         {
-                            TypeName = $"{FrameTypeName}+BaseHiddenClass",
+                            TypeName = typeof(HiddenFrameTestMethods.BaseHiddenClass).FullName,
                             ModuleName = UnitTestAppModule,
-                            MethodName = "DoWorkFromHiddenBaseClass",
+                            MethodName = nameof(HiddenFrameTestMethods.BaseHiddenClass.DoWorkFromHiddenBaseClass),
+                            FullParameterTypes = [typeof(Action).FullName],
                             Hidden = true
                         },
                         new()
                         {
-                            TypeName = $"{FrameTypeName}+PartiallyVisibleClass",
+                            TypeName = typeof(HiddenFrameTestMethods.PartiallyVisibleClass).FullName,
                             ModuleName = UnitTestAppModule,
-                            MethodName = "DoWork",
+                            MethodName = nameof(HiddenFrameTestMethods.PartiallyVisibleClass.DoWorkEntryPoint),
+                            FullParameterTypes = [typeof(Action).FullName],
                         },
                         new()
                         {
                             TypeName = FrameTypeName,
                             ModuleName = UnitTestAppModule,
-                            MethodName = "ThrowExceptionWithHiddenFrames",
+                            MethodName = nameof(ExceptionsScenario.ThrowExceptionWithHiddenFrames),
                         },
                     ]
                 }
@@ -929,8 +934,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 Assert.Equal(expectedFrame.ModuleName, actualFrame.ModuleName);
                 Assert.Equal(expectedFrame.TypeName, actualFrame.TypeName);
                 Assert.Equal(expectedFrame.MethodName, actualFrame.MethodName);
-                Assert.Equivalent(expectedFrame.FullGenericArgTypes, actualFrame.FullGenericArgTypes);
-                Assert.Equivalent(expectedFrame.FullParameterTypes ?? [], actualFrame.FullParameterTypes ?? []);
+                Assert.Equal(expectedFrame.FullGenericArgTypes, actualFrame.FullGenericArgTypes);
+                Assert.Equal(expectedFrame.FullParameterTypes ?? [], actualFrame.FullParameterTypes ?? []);
                 Assert.Equal(expectedFrame.Hidden, actualFrame.Hidden);
             }
         }
