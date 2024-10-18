@@ -30,6 +30,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
     [Collection(DefaultCollectionFixture.Name)]
     public class ExceptionsTests
     {
+        private record class ExceptionFrame(string TypeName, string MethodName, List<string> ParameterTypes);
+
         private const string FrameTypeName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario";
         private const string FrameMethodName = "ThrowAndCatchInvalidOperationException";
         private const string FrameParameterType = "System.Boolean";
@@ -886,8 +888,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 Assert.Contains(exceptionType, exceptionsResult);
             }
         }
-
-        private record class ExceptionFrame(string TypeName, string MethodName, List<string> ParameterTypes);
 
         private void ValidateSingleExceptionText(string exceptionType, string exceptionMessage, List<ExceptionFrame> topFrames)
         {
