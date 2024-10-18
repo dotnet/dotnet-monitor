@@ -113,11 +113,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 
                 services.ConfigureDotnetMonitorDebug(context.Configuration);
 
-                services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
-                services.AddSingleton<IServerEndpointStateChecker, ServerEndpointStateChecker>();
-                services.AddSingleton<IServerEndpointTracker, ServerEndpointTracker>();
-                services.AddSingleton<ServerEndpointInfoSource>();
-                services.AddHostedServiceForwarder<ServerEndpointInfoSource>();
+                services.ConfigureEndpointInfoSource();
+
                 services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
                 services.AddSingleton<IDumpService, DumpService>();
                 services.AddSingleton<IEndpointInfoSourceCallbacks, OperationTrackerServiceEndpointInfoSourceCallback>();
