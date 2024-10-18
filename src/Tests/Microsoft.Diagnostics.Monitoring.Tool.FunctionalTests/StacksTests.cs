@@ -207,10 +207,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 FormatFrame(ExpectedModule, ExpectedClass, ExpectedFunction)
                 ];
 
-            int[] indicies = framesToFind.Select(frame => result.Shared.Frames.FindIndex(f => f.Name == frame)).ToArray();
-            Assert.DoesNotContain(-1, indicies);
+            int[] indices = framesToFind.Select(frame => result.Shared.Frames.FindIndex(f => f.Name == frame)).ToArray();
+            Assert.DoesNotContain(-1, indices);
 
-            WebApi.Models.ProfileEvent[] expectedFrames = ExpectedSpeedscopeFrames(indicies);
+            WebApi.Models.ProfileEvent[] expectedFrames = ExpectedSpeedscopeFrames(indices);
             (WebApi.Models.Profile stack, IList<WebApi.Models.ProfileEvent> actualFrames) = GetActualFrames(result, framesToFind[0], framesToFind.Length);
 
             Assert.NotNull(stack);
