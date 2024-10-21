@@ -899,7 +899,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             int lineIndex = 2;
 
             Assert.True(exceptionsLines.Length - lineIndex >= topFrames.Count, "Not enough frames");
-            foreach(ExceptionFrame expectedFrame in topFrames)
+            foreach (ExceptionFrame expectedFrame in topFrames)
             {
                 string parametersString = string.Empty;
                 if (expectedFrame.ParameterTypes.Count > 0)

@@ -198,14 +198,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             WebApi.Models.SpeedscopeResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.SpeedscopeResult>(holder.Stream);
 
-            string[] framesToFind = [
-            FormatFrame(ExpectedModule, typeof(HiddenFrameTestMethods).FullName, nameof(HiddenFrameTestMethods.ExitPoint)),
+            string[] framesToFind =
+            [
+                FormatFrame(ExpectedModule, typeof(HiddenFrameTestMethods).FullName, nameof(HiddenFrameTestMethods.ExitPoint)),
                 FormatFrame(ExpectedModule, typeof(HiddenFrameTestMethods.PartiallyVisibleClass).FullName, nameof(HiddenFrameTestMethods.PartiallyVisibleClass.DoWorkFromVisibleDerivedClass)),
                 FormatFrame(ExpectedModule, typeof(HiddenFrameTestMethods).FullName, nameof(HiddenFrameTestMethods.EntryPoint)),
                 FormatFrame(ExpectedModule, ExpectedClass, ExpectedCallbackFunction),
                 NativeFrame,
                 FormatFrame(ExpectedModule, ExpectedClass, ExpectedFunction)
-                ];
+            ];
 
             int[] indices = framesToFind.Select(frame => result.Shared.Frames.FindIndex(f => f.Name == frame)).ToArray();
             Assert.DoesNotContain(-1, indices);
@@ -556,7 +557,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         private static WebApi.Models.ProfileEvent[] ExpectedSpeedscopeFrames(int[] indices)
-            => indices.Select((i) => new WebApi.Models.ProfileEvent {
+            => indices.Select((i) => new WebApi.Models.ProfileEvent
+            {
                 Frame = i,
                 At = 0.0,
                 Type = WebApi.Models.ProfileEventType.O
