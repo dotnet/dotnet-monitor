@@ -404,6 +404,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddTransient<ICaptureParametersOperationFactory, CaptureParametersOperationFactory>();
             return services;
         }
+        public static IServiceCollection ConfigureEndpointInfoSource(this IServiceCollection services)
+        {
+            services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
+
+            services.AddSingleton<IServerEndpointStateChecker, ServerEndpointStateChecker>();
+
+            services.AddSingleton<ServerEndpointTracker>();
+            services.AddSingletonForwarder<IServerEndpointTracker, ServerEndpointTracker>();
+            services.AddHostedServiceForwarder<ServerEndpointTracker>();
+
+            services.AddSingleton<ServerEndpointInfoSource>();
+            services.AddHostedServiceForwarder<ServerEndpointInfoSource>();
+
+            return services;
+        }
 
         public static void AddScopedForwarder<TService, TImplementation>(this IServiceCollection services) where TImplementation : class, TService where TService : class
         {

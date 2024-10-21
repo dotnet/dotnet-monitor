@@ -36,14 +36,15 @@ enum class ClassFlags : UINT32
 class ClassData
 {
 public:
-    ClassData(ModuleID moduleId, mdTypeDef token, ClassFlags flags) :
-        _moduleId(moduleId), _token(token), _flags(flags)
+    ClassData(ModuleID moduleId, mdTypeDef token, ClassFlags flags, bool stackTraceHidden) :
+        _moduleId(moduleId), _token(token), _flags(flags), _stackTraceHidden(stackTraceHidden)
     {
     }
 
     const ModuleID GetModuleId() const { return _moduleId; }
     const mdTypeDef GetToken() const { return _token; }
     const ClassFlags GetFlags() const { return _flags; }
+    const bool GetStackTraceHidden() const { return _stackTraceHidden; }
     const std::vector<UINT64>& GetTypeArgs() const { return _typeArgs; }
     void AddTypeArg(ClassID id) { _typeArgs.push_back(static_cast<UINT64>(id)); }
 
@@ -51,30 +52,34 @@ private:
     ModuleID _moduleId;
     mdTypeDef _token;
     ClassFlags _flags;
+    bool _stackTraceHidden;
     std::vector<UINT64> _typeArgs;
 };
 
 class TokenData
 {
 public:
-    TokenData(tstring&& name, tstring&& Namespace, mdTypeDef outerClass) : _name(name), _namespace(Namespace), _outerClass(outerClass)
+    TokenData(tstring&& name, tstring&& Namespace, mdTypeDef outerClass, bool stackTraceHidden) :
+        _name(name), _namespace(Namespace), _outerClass(outerClass), _stackTraceHidden(stackTraceHidden)
     {
     }
 
     const tstring& GetName() const { return _name; }
     const tstring& GetNamespace() const { return _namespace; }
     const mdTypeDef& GetOuterToken() const { return _outerClass; }
+    const bool GetStackTraceHidden() const { return _stackTraceHidden; }
 private:
     tstring _name;
     tstring _namespace;
     mdTypeDef _outerClass;
+    bool _stackTraceHidden;
 };
 
 class FunctionData
 {
 public:
-    FunctionData(ModuleID moduleId, ClassID containingClass, tstring&& name, mdToken methodToken, mdTypeDef classToken) :
-        _moduleId(moduleId), _class(containingClass), _functionName(name), _methodToken(methodToken), _classToken(classToken)
+    FunctionData(ModuleID moduleId, ClassID containingClass, tstring&& name, mdToken methodToken, mdTypeDef classToken, bool stackTraceHidden) :
+        _moduleId(moduleId), _class(containingClass), _functionName(name), _methodToken(methodToken), _classToken(classToken), _stackTraceHidden(stackTraceHidden)
     {
     }
 
@@ -83,6 +88,7 @@ public:
     const ClassID GetClass() const { return _class; }
     const mdToken GetMethodToken() const { return _methodToken; }
     const mdTypeDef GetClassToken() const { return _classToken; }
+    const bool GetStackTraceHidden() const { return _stackTraceHidden; }
     const std::vector<UINT64>& GetTypeArgs() const { return _typeArgs; }
     const std::vector<UINT64>& GetParameterTypes() const { return _parameterTypes; }
     void AddTypeArg(ClassID classID) { _typeArgs.push_back(static_cast<UINT64>(classID)); }
@@ -93,6 +99,7 @@ private:
     tstring _functionName;
     mdToken _methodToken;
     mdTypeDef _classToken;
+    bool _stackTraceHidden;
     std::vector<UINT64> _typeArgs;
     std::vector<UINT64> _parameterTypes;
 };

@@ -193,9 +193,9 @@ const std::unordered_map<std::pair<ModuleID, mdTypeDef>, std::shared_ptr<TokenDa
     return _names;
 }
 
-void NameCache::AddFunctionData(ModuleID moduleId, FunctionID id, tstring&& name, ClassID parent, mdToken methodToken, mdTypeDef parentToken, ClassID* typeArgs, int typeArgsCount)
+void NameCache::AddFunctionData(ModuleID moduleId, FunctionID id, tstring&& name, ClassID parent, mdToken methodToken, mdTypeDef parentToken, ClassID* typeArgs, int typeArgsCount, bool stackTraceHidden)
 {
-    std::shared_ptr<FunctionData> functionData = std::make_shared<FunctionData>(moduleId, parent, std::move(name), methodToken, parentToken);
+    std::shared_ptr<FunctionData> functionData = std::make_shared<FunctionData>(moduleId, parent, std::move(name), methodToken, parentToken, stackTraceHidden);
     for (int i = 0; i < typeArgsCount; i++)
     {
         functionData->AddTypeArg(typeArgs[i]);
@@ -203,9 +203,9 @@ void NameCache::AddFunctionData(ModuleID moduleId, FunctionID id, tstring&& name
     _functionNames.emplace(id, functionData);
 }
 
-void NameCache::AddClassData(ModuleID moduleId, ClassID id, mdTypeDef typeDef, ClassFlags flags, ClassID* typeArgs, int typeArgsCount)
+void NameCache::AddClassData(ModuleID moduleId, ClassID id, mdTypeDef typeDef, ClassFlags flags, ClassID* typeArgs, int typeArgsCount, bool stackTraceHidden)
 {
-    std::shared_ptr<ClassData> classData = std::make_shared<ClassData>(moduleId, typeDef, flags);
+    std::shared_ptr<ClassData> classData = std::make_shared<ClassData>(moduleId, typeDef, flags, stackTraceHidden);
     for (int i = 0; i < typeArgsCount; i++)
     {
         classData->AddTypeArg(typeArgs[i]);
@@ -213,9 +213,9 @@ void NameCache::AddClassData(ModuleID moduleId, ClassID id, mdTypeDef typeDef, C
     _classNames.emplace(id, classData);
 }
 
-void NameCache::AddTokenData(ModuleID moduleId, mdTypeDef typeDef, mdTypeDef outerToken, tstring&& name, tstring&& Namespace)
+void NameCache::AddTokenData(ModuleID moduleId, mdTypeDef typeDef, mdTypeDef outerToken, tstring&& name, tstring&& Namespace, bool stackTraceHidden)
 {
-    std::shared_ptr<TokenData> tokenData = std::make_shared<TokenData>(std::move(name), std::move(Namespace), outerToken);
+    std::shared_ptr<TokenData> tokenData = std::make_shared<TokenData>(std::move(name), std::move(Namespace), outerToken, stackTraceHidden);
 
     _names.emplace(std::make_pair(moduleId, typeDef), tokenData);
 }
