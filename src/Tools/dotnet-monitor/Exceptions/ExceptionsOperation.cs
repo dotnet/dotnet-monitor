@@ -256,6 +256,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             {
                 foreach (CallStackFrame frame in currentInstance.CallStack.Frames)
                 {
+                    if (frame.Hidden)
+                    {
+                        continue;
+                    }
+
                     await writer.WriteLineAsync();
                     await writer.WriteAsync("   at ");
                     await writer.WriteAsync(frame.TypeName);
