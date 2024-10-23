@@ -1190,6 +1190,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Is it allowed to expose metrics of multiple processes in /metrics endpoint.
+        /// </summary>
+        public static string DisplayAttributeDescription_MetricsOptions_AllowMultipleProcessesMetrics {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_MetricsOptions_AllowMultipleProcessesMetrics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enable or disable metrics collection..
         /// </summary>
         public static string DisplayAttributeDescription_MetricsOptions_Enabled {
