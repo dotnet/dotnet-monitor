@@ -12,18 +12,15 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal sealed class ServerEndpointTracker(IServerEndpointStateChecker endpointChecker, IOptions<DiagnosticPortOptions> portOptions) :
+    internal sealed class ServerEndpointTrackerV2(IServerEndpointStateChecker endpointChecker, TimeProvider timeProvider, IOptions<DiagnosticPortOptions> portOptions) :
         BackgroundService,
         IServerEndpointTracker
     {
-
         private record class ActiveEndpoint(IEndpointInfo Endpoint, DateTimeOffset LastContact)
         {
             // LastContact should be mutable
             public DateTimeOffset LastContact { get; set; } = LastContact;
         }
-
-        private readonly TimeProvider timeProvider = TimeProvider.System;
 
         private static readonly TimeSpan PruningInterval = TimeSpan.FromSeconds(3);
         // Public for testing
