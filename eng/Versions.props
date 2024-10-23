@@ -55,7 +55,7 @@
     <MicrosoftAspNetCoreAppRuntimewinx64Version>8.0.1</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <VSRedistCommonAspNetCoreSharedFrameworkx6480Version>8.0.1-servicing.23580.8</VSRedistCommonAspNetCoreSharedFrameworkx6480Version>
     <!-- dotnet/command-line-api references -->
-    <SystemCommandLineVersion>2.0.0-beta4.24324.3</SystemCommandLineVersion>
+    <SystemCommandLineVersion>2.0.0-beta4.24517.1</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>8.0.0-preview.24522.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>8.0.0-preview.24522.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
