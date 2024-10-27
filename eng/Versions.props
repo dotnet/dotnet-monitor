@@ -60,7 +60,7 @@
     <MicrosoftDiagnosticsMonitoringVersion>8.0.0-preview.24525.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>8.0.0-preview.24525.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/roslyn-analyzers -->
-    <MicrosoftCodeAnalysisNetAnalyzersVersion>9.0.0-preview.24508.2</MicrosoftCodeAnalysisNetAnalyzersVersion>
+    <MicrosoftCodeAnalysisNetAnalyzersVersion>9.0.0-preview.24527.2</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
     <MicrosoftNETCoreAppRuntimewinx64Version>9.0.0-rtm.24515.9</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6490Version>9.0.0-rtm.24515.9</VSRedistCommonNetCoreSharedFrameworkx6490Version>
