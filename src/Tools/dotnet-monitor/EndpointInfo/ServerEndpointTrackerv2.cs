@@ -67,8 +67,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// </summary>
         internal async Task PruneEndpointsAsync(CancellationToken token)
         {
-            // Prune connections that no longer have an active runtime instance before
-            // returning the list of connections.
             await _activeEndpointsSemaphore.WaitAsync(token).ConfigureAwait(false);
 
             try
