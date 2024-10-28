@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 // for removal after releasing the active endpoints semaphore.
                 int endpointIndex = 0;
 
-                void removeEndpoint(IEndpointInfo endpoint, int endpointIndex, ServerEndpointState state)
+                void removeEndpoint(IEndpointInfo endpoint, ServerEndpointState state)
                 {
                     _activeEndpoints.RemoveAt(endpointIndex);
                     EndpointRemoved?.Invoke(this, new(endpoint, state));
@@ -108,7 +108,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         case ServerEndpointState.Unresponsive:
                             if (now - activeEndpoint.LastContact > UnresponsiveGracePeriod)
                             {
-                                removeEndpoint(activeEndpoint.Endpoint, endpointIndex, state);
+                                removeEndpoint(activeEndpoint.Endpoint, state);
                             }
                             else
                             {
@@ -117,7 +117,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                             break;
 
                         case ServerEndpointState.Error:
-                            removeEndpoint(activeEndpoint.Endpoint, endpointIndex, state);
+                            removeEndpoint(activeEndpoint.Endpoint, state);
                             break;
                     }
                 }
