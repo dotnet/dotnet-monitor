@@ -65,6 +65,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             CliCommand reflectionTypeLoadExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ReflectionTypeLoadException);
             reflectionTypeLoadExceptionCommand.SetAction(ReflectionTypeLoadExceptionAsync);
 
+            CliCommand hiddenFramesExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.HiddenFramesExceptionCommand);
+            hiddenFramesExceptionCommand.SetAction(HiddenFramesExceptionAsync);
+
             CliCommand scenarioCommand = new(TestAppScenarios.Exceptions.Name);
             scenarioCommand.Subcommands.Add(singleExceptionCommand);
             scenarioCommand.Subcommands.Add(multipleExceptionsCommand);
@@ -82,6 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             scenarioCommand.Subcommands.Add(eclipsingExceptionFromMethodCallCommand);
             scenarioCommand.Subcommands.Add(aggregateExceptionCommand);
             scenarioCommand.Subcommands.Add(reflectionTypeLoadExceptionCommand);
+            scenarioCommand.Subcommands.Add(hiddenFramesExceptionCommand);
             return scenarioCommand;
         }
 
@@ -375,6 +379,30 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 return 0;
             }, token);
         }
+
+        public static Task<int> HiddenFramesExceptionAsync(ParseResult result, CancellationToken token)
+        {
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
+                try
+                {
+                    ThrowExceptionWithHiddenFrames();
+                }
+                catch (Exception)
+                {
+                }
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
+                return 0;
+            }, token);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowExceptionWithHiddenFrames()
+        {
+            HiddenFrameTestMethods.EntryPoint(ThrowAndCatchInvalidOperationException);
+        }
+
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void ThrowAndCatchInvalidOperationException()
