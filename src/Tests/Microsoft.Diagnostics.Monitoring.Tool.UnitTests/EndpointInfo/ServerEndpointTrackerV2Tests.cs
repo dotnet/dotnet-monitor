@@ -85,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.EndpointInfo
 
             Assert.NotNull(endpointRemovedArgs);
             Assert.Equal(ServerEndpointState.Error, endpointRemovedArgs.State);
-            Assert.Equal(endpointRemovedArgs.Endpoint, endpoint);
+            Assert.Equal(endpoint, endpointRemovedArgs.Endpoint);
         }
 
         [Fact]
@@ -162,7 +162,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.EndpointInfo
 
             Assert.NotNull(endpointRemovedArgs);
             Assert.Equal(ServerEndpointState.Unresponsive, endpointRemovedArgs.State);
-            Assert.Equal(endpointRemovedArgs.Endpoint, endpoint);
+            Assert.Equal(endpoint, endpointRemovedArgs.Endpoint);
         }
     }
 }
