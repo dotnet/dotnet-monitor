@@ -23,8 +23,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         }
 
         private static readonly TimeSpan PruningInterval = TimeSpan.FromSeconds(3);
-        // Public for testing
-        public static readonly TimeSpan UnresponsiveGracePeriod = TimeSpan.FromMinutes(1);
+        // Internal for testing
+        internal static readonly TimeSpan UnresponsiveGracePeriod = TimeSpan.FromMinutes(1);
 
 
         private readonly List<ActiveEndpoint> _activeEndpoints = new();
