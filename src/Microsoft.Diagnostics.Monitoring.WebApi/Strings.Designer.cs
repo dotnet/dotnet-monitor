@@ -313,6 +313,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Server Endpointing Pruning Algorithm V2.
+        /// </summary>
+        internal static string FeatureName_PruningAlgorithmV2 {
+            get {
+                return ResourceManager.GetString("FeatureName_PruningAlgorithmV2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The counter {0} ended and is no longer receiving metrics..
         /// </summary>
         internal static string LogFormatString_CounterEndedPayload {

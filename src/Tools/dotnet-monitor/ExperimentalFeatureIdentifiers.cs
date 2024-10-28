@@ -7,7 +7,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public static class EnvironmentVariables
         {
-            private const string Prefix = "Experimental_";
+            private const string Prefix = ToolIdentifiers.StandardPrefix + "Experimental_";
 
             public const string PruningAlgorithmV2 = Prefix + nameof(PruningAlgorithmV2);
         }

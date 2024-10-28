@@ -410,7 +410,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             services.AddSingleton<IServerEndpointStateChecker, ServerEndpointStateChecker>();
 
-            if (ToolIdentifiers.IsEnvVarValueEnabled(ExperimentalFeatureIdentifiers.EnvironmentVariables.PruningAlgorithmV2))
+            if (ToolIdentifiers.IsEnvVarEnabled(ExperimentalFeatureIdentifiers.EnvironmentVariables.PruningAlgorithmV2))
             {
                 services.AddSingleton<ServerEndpointTrackerV2>();
                 services.AddSingletonForwarder<IServerEndpointTracker, ServerEndpointTrackerV2>();
