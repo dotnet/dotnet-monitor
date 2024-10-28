@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             private const string Prefix = ToolIdentifiers.StandardPrefix + "Experimental_";
 
-            public const string PruningAlgorithmV2 = Prefix + nameof(PruningAlgorithmV2);
+            public const string ServerEndpointPruningAlgorithmV2 = Prefix + nameof(ServerEndpointPruningAlgorithmV2);
         }
     }
 }

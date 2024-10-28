@@ -25,6 +25,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Extension;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
+using Microsoft.Diagnostics.Tools.Monitor.Experimental;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
@@ -410,7 +411,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             services.AddSingleton<IServerEndpointStateChecker, ServerEndpointStateChecker>();
 
-            if (ToolIdentifiers.IsEnvVarEnabled(ExperimentalFeatureIdentifiers.EnvironmentVariables.PruningAlgorithmV2))
+            if (ToolIdentifiers.IsEnvVarEnabled(ExperimentalFeatureIdentifiers.EnvironmentVariables.ServerEndpointPruningAlgorithmV2))
             {
                 services.AddSingleton<ServerEndpointTrackerV2>();
                 services.AddSingletonForwarder<IServerEndpointTracker, ServerEndpointTrackerV2>();

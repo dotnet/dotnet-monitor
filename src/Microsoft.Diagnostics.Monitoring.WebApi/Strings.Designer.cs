@@ -313,11 +313,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Server Endpointing Pruning Algorithm V2.
+        ///   Looks up a localized string similar to Server Endpoint Pruning Algorithm V2.
         /// </summary>
-        internal static string FeatureName_PruningAlgorithmV2 {
+        internal static string FeatureName_ServerEndpointPruningAlgorithmV2 {
             get {
-                return ResourceManager.GetString("FeatureName_PruningAlgorithmV2", resourceCulture);
+                return ResourceManager.GetString("FeatureName_ServerEndpointPruningAlgorithmV2", resourceCulture);
             }
         }
         

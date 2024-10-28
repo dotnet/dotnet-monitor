@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             if (_serverEndpointTrackerV2 != null)
             {
-                _logger.ExperimentalFeatureEnabled(Microsoft.Diagnostics.Monitoring.WebApi.Strings.FeatureName_PruningAlgorithmV2);
+                _logger.ExperimentalFeatureEnabled(Microsoft.Diagnostics.Monitoring.WebApi.Strings.FeatureName_ServerEndpointPruningAlgorithmV2);
             }
 
             // Experimental features should log a warning when they are activated e.g.
