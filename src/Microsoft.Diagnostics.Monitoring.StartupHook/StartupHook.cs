@@ -13,11 +13,11 @@ internal sealed class StartupHook
     {
         // Ensure that only one bootstrapper is created for the application domain,
         // regardless of multiple initializations or multiple threads.
-        if (null == s_bootstrapper)
+        if (s_bootstrapper is null)
         {
             lock (s_lock)
             {
-                if (s_bootstrapper == null)
+                if (s_bootstrapper is null)
                 {
                     try
                     {
