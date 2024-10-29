@@ -6,25 +6,25 @@
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(MicrosoftAspNetCoreApp70Version)",
         "$(MicrosoftAspNetCoreApp80Version)",
-        "$(MicrosoftAspNetCoreApp90Version)"
+        "$(VSRedistCommonAspNetCoreSharedFrameworkx6490Version)"
       ],
       "aspnetcore/x86": [
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(MicrosoftAspNetCoreApp70Version)",
         "$(MicrosoftAspNetCoreApp80Version)",
-        "$(MicrosoftAspNetCoreApp90Version)"
+        "$(VSRedistCommonAspNetCoreSharedFrameworkx6490Version)"
       ],
       "dotnet": [
         "$(MicrosoftNETCoreApp60Version)",
         "$(MicrosoftNETCoreApp70Version)",
         "$(MicrosoftNETCoreApp80Version)",
-        "$(MicrosoftNETCoreApp90Version)"
+        "$(VSRedistCommonNetCoreSharedFrameworkx6490Version)"
       ],
       "dotnet/x86": [
         "$(MicrosoftNETCoreApp60Version)",
         "$(MicrosoftNETCoreApp70Version)",
         "$(MicrosoftNETCoreApp80Version)",
-        "$(MicrosoftNETCoreApp90Version)"
+        "$(VSRedistCommonNetCoreSharedFrameworkx6490Version)"
       ]
     },
     "xcopy-msbuild": "17.8.5"
