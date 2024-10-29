@@ -45,6 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 //Offset = frame.Offset,
                 ModuleName = NameFormatter.UnknownModule,
                 ModuleVersionId = Guid.Empty,
+                Hidden = false,
 
                 SimpleParameterTypes = ensureParameterTypeFieldsNotNull ? [] : null,
                 FullParameterTypes = ensureParameterTypeFieldsNotNull ? [] : null,
@@ -59,6 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 frameModel.MethodToken = functionData.MethodToken;
                 frameModel.ModuleName = NameFormatter.GetModuleName(cache, functionData.ModuleId);
+                frameModel.Hidden = ShouldHideFunctionFromStackTrace(cache, functionData);
 
                 if (cache.ModuleData.TryGetValue(functionData.ModuleId, out ModuleData? moduleData))
                 {
@@ -88,6 +90,32 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             return frameModel;
+        }
+
+        public static bool ShouldHideFunctionFromStackTrace(NameCache cache, FunctionData functionData)
+        {
+            if (functionData.StackTraceHidden)
+            {
+                return true;
+            }
+
+            if (cache.ClassData.TryGetValue(functionData.ParentClass, out ClassData? classData))
+            {
+                if (classData.StackTraceHidden)
+                {
+                    return true;
+                }
+            }
+
+            if (cache.TokenData.TryGetValue(new ModuleScopedToken(functionData.ModuleId, functionData.ParentClassToken), out TokenData? tokenData))
+            {
+                if (tokenData.StackTraceHidden)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         internal static StacksFormatter CreateFormatter(StackFormat format, Stream outputStream) =>
