@@ -48,7 +48,7 @@
     <MicrosoftAspNetCoreAppRuntimewinx64Version>6.0.0</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <VSRedistCommonAspNetCoreSharedFrameworkx6460Version>6.0.0-rtm.21526.8</VSRedistCommonAspNetCoreSharedFrameworkx6460Version>
     <!-- dotnet/command-line-api references -->
-    <SystemCommandLineVersion>2.0.0-beta4.24517.1</SystemCommandLineVersion>
+    <SystemCommandLineVersion>2.0.0-beta4.24528.1</SystemCommandLineVersion>
     <!-- dotnet/roslyn-analyzers -->
     <MicrosoftCodeAnalysisNetAnalyzersVersion>6.0.3</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
