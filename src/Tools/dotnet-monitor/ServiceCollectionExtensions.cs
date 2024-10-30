@@ -410,9 +410,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             services.AddSingleton<IServerEndpointStateChecker, ServerEndpointStateChecker>();
 
-            services.AddSingleton<ServerEndpointTracker>();
-            services.AddSingletonForwarder<IServerEndpointTracker, ServerEndpointTracker>();
-            services.AddHostedServiceForwarder<ServerEndpointTracker>();
+            if (ToolIdentifiers.IsEnvVarEnabled(ExperimentalFeatureIdentifiers.EnvironmentVariables.ServerEndpointPruningAlgorithmV2))
+            {
+                services.AddSingleton<ServerEndpointTrackerV2>();
+                services.AddSingletonForwarder<IServerEndpointTracker, ServerEndpointTrackerV2>();
+                services.AddHostedServiceForwarder<ServerEndpointTrackerV2>();
+            }
+            else
+            {
+                services.AddSingleton<ServerEndpointTracker>();
+                services.AddSingletonForwarder<IServerEndpointTracker, ServerEndpointTracker>();
+                services.AddHostedServiceForwarder<ServerEndpointTracker>();
+            }
 
             services.AddSingleton<ServerEndpointInfoSource>();
             services.AddHostedServiceForwarder<ServerEndpointInfoSource>();
