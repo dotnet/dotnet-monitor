@@ -42,6 +42,9 @@ Allowed schemes:
 
 ## Responses
 
+> [!NOTE]
+> Parameter type information is not available through this feature. The `parameterTypes` field of [CallStackFrame](definitions.md#callstackframe) is omitted.
+
 | Name | Type | Description | Content Type |
 |---|---|---|---|
 | 200 OK | [CallStackResult](definitions.md#callstackresult) | Callstacks for all managed threads in the process. | `application/json` |
@@ -79,30 +82,26 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
         {
             "methodName": "GetQueuedCompletionStatus",
             "methodToken": 100663634,
-            "parameterTypes": [],
             "typeName": "Interop\u002BKernel32",
             "moduleName": "System.Private.CoreLib.dll",
-            "moduleVersionId": "194ddabd-a802-4520-90ef-854e2f1cd606"
+            "moduleVersionId": "194ddabd-a802-4520-90ef-854e2f1cd606",
+            "hidden": false
         },
         {
             "methodName": "WaitForSignal",
             "methodToken": 100663639,
-            "parameterTypes": [
-                "System.Threading.ExecutionContext",
-                "System.Threading.ContextCallback",
-                "System.Object"
-            ],
             "typeName": "System.Threading.LowLevelLifoSemaphore",
             "moduleName": "System.Private.CoreLib.dll",
-            "moduleVersionId": "194ddabd-a802-4520-90ef-854e2f1cd606"
+            "moduleVersionId": "194ddabd-a802-4520-90ef-854e2f1cd606",
+            "hidden": false
         },
         {
             "methodName": "Wait",
             "methodToken": 100663643,
-            "parameterTypes": [],
             "typeName": "System.Threading.LowLevelLifoSemaphore",
             "moduleName": "System.Private.CoreLib.dll",
-            "moduleVersionId": "194ddabd-a802-4520-90ef-854e2f1cd606"
+            "moduleVersionId": "194ddabd-a802-4520-90ef-854e2f1cd606",
+            "hidden": false
         }
     ]
 }

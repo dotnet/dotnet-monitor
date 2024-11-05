@@ -11,12 +11,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         IStartupLogger
     {
         private readonly ILogger _logger;
-        private ParameterCapturingOptions _parameterCapturingOptions;
+        private readonly ParameterCapturingOptions _parameterCapturingOptions;
+        private readonly ServerEndpointTrackerV2? _serverEndpointTrackerV2;
 
-        public ExperimentalStartupLogger(ILogger<Startup> logger, IOptions<ParameterCapturingOptions> parameterCapturingOptions)
+        public ExperimentalStartupLogger(
+            ILogger<Startup> logger,
+            IOptions<ParameterCapturingOptions> parameterCapturingOptions,
+            ServerEndpointTrackerV2? serverEndpointTrackerV2 = null)
         {
             _logger = logger;
             _parameterCapturingOptions = parameterCapturingOptions.Value;
+            _serverEndpointTrackerV2 = serverEndpointTrackerV2;
         }
 
         public void Log()
@@ -24,6 +29,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             if (_parameterCapturingOptions.GetEnabled())
             {
                 _logger.ExperimentalFeatureEnabled(Microsoft.Diagnostics.Monitoring.WebApi.Strings.FeatureName_ParameterCapturing);
+            }
+
+            if (_serverEndpointTrackerV2 != null)
+            {
+                _logger.ExperimentalFeatureEnabled(Microsoft.Diagnostics.Monitoring.WebApi.Strings.FeatureName_ServerEndpointPruningAlgorithmV2);
             }
 
             // Experimental features should log a warning when they are activated e.g.

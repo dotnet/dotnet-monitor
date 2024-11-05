@@ -37,20 +37,20 @@ class StacksEventProvider
 
         ComPtr<ICorProfilerInfo12> _profilerInfo;
         std::unique_ptr<ProfilerEventProvider> _provider;
-        
+
         const WCHAR* CallstackPayloads[4] = { _T("ThreadId"), _T("ThreadName"), _T("FunctionIds"), _T("IpOffsets")};
         std::unique_ptr<ProfilerEvent<UINT32, tstring, std::vector<UINT64>, std::vector<UINT64>>> _callstackEvent;
 
         //Note we will either send a ClassId or a ClassToken. For Shared generic functions, there is no ClassID.
-        const WCHAR* FunctionPayloads[8] = { _T("FunctionId"), _T("MethodToken"), _T("ClassId"), _T("ClassToken"), _T("ModuleId"), _T("Name"), _T("TypeArgs"), _T("ParameterTypes") };
-        std::unique_ptr<ProfilerEvent<UINT64, UINT32, UINT64, UINT32, UINT64, tstring, std::vector<UINT64>, std::vector<UINT64>>> _functionEvent;
+        const WCHAR* FunctionPayloads[9] = { _T("FunctionId"), _T("MethodToken"), _T("ClassId"), _T("ClassToken"), _T("ModuleId"), _T("StackTraceHidden"), _T("Name"), _T("TypeArgs"), _T("ParameterTypes") };
+        std::unique_ptr<ProfilerEvent<UINT64, UINT32, UINT64, UINT32, UINT64, UINT32, tstring, std::vector<UINT64>, std::vector<UINT64>>> _functionEvent;
 
         //We cannot retrieve detailed information for some ClassIds. Flags is used to indicate these conditions.
-        const WCHAR* ClassPayloads[5] = { _T("ClassId"), _T("ModuleId"), _T("Token"), _T("Flags"), _T("TypeArgs") };
-        std::unique_ptr<ProfilerEvent<UINT64, UINT64, UINT32, UINT32, std::vector<UINT64>>> _classEvent;
+        const WCHAR* ClassPayloads[6] = { _T("ClassId"), _T("ModuleId"), _T("Token"), _T("Flags"), _T("StackTraceHidden"), _T("TypeArgs") };
+        std::unique_ptr<ProfilerEvent<UINT64, UINT64, UINT32, UINT32, UINT32, std::vector<UINT64>>> _classEvent;
 
-        const WCHAR* TokenPayloads[5] = { _T("ModuleId"), _T("Token"), _T("OuterToken"), _T("Name"), _T("Namespace") };
-        std::unique_ptr<ProfilerEvent<UINT64, UINT32, UINT32, tstring, tstring>> _tokenEvent;
+        const WCHAR* TokenPayloads[6] = { _T("ModuleId"), _T("Token"), _T("OuterToken"), _T("StackTraceHidden"), _T("Name"), _T("Namespace") };
+        std::unique_ptr<ProfilerEvent<UINT64, UINT32, UINT32, UINT32, tstring, tstring>> _tokenEvent;
 
         const WCHAR* ModulePayloads[3] = { _T("ModuleId"), _T("ModuleVersionId"), _T("Name") };
         std::unique_ptr<ProfilerEvent<UINT64, GUID, tstring>> _moduleEvent;

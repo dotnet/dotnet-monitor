@@ -63,7 +63,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         traceEvent.GetPayload<uint>(NameIdentificationEvents.ClassDescPayloads.Token),
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.ClassDescPayloads.ModuleId),
                         traceEvent.GetPayload<ClassFlags>(NameIdentificationEvents.ClassDescPayloads.Flags),
-                        traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.ClassDescPayloads.TypeArgs)
+                        traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.ClassDescPayloads.TypeArgs),
+                        traceEvent.GetBoolPayload(NameIdentificationEvents.ClassDescPayloads.StackTraceHidden)
                         );
                     break;
                 case "ExceptionGroup":
@@ -100,7 +101,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ModuleId),
                         traceEvent.GetPayload<string>(NameIdentificationEvents.FunctionDescPayloads.Name),
                         traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.TypeArgs),
-                        traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.ParameterTypes)
+                        traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.ParameterTypes),
+                        traceEvent.GetBoolPayload(NameIdentificationEvents.FunctionDescPayloads.StackTraceHidden)
                         );
                     break;
                 case "ModuleDescription":
@@ -123,7 +125,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         traceEvent.GetPayload<uint>(NameIdentificationEvents.TokenDescPayloads.Token),
                         traceEvent.GetPayload<uint>(NameIdentificationEvents.TokenDescPayloads.OuterToken),
                         traceEvent.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.Name),
-                        traceEvent.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.Namespace)
+                        traceEvent.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.Namespace),
+                        traceEvent.GetBoolPayload(NameIdentificationEvents.TokenDescPayloads.StackTraceHidden)
                         );
                     break;
                 case "Flush":
