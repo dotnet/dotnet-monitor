@@ -134,11 +134,9 @@ The release image is `mcr.microsoft.com/dotnet/monitor`. The tag list is https:/
 1. Review and merge the automatically create `Register new release information` PR.
 1. For each release, push its corresponding tag to the `shipped/v<version>` branch in the [internal repository](https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet-monitor) e.g `v8.0.0-rc.1.23458.6 -> shipped/v8.0`. If done correctly, this should be a fast-forward merge.
 ```
-git remote add public https://github.com/dotnet/dotnet-monitor.git
-git fetch --tags public
-git checkout shipped/v8.0
-git pull (ensure you have the latest if you've done this before)
-git merge v8.0.0-rc.1.23458.6
-git push
+git remote add internal https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet-monitor
+git fetch --tags
+git checkout v8.0.0-rc.1.23458.6
+git push internal HEAD:shipped/v8.0
 ```
 1. When necessary, update this document if its instructions were unclear or incorrect.
