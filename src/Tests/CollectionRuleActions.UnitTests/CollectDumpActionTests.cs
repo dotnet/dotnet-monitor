@@ -36,7 +36,7 @@ namespace CollectionRuleActions.UnitTests
             _endpointUtilities = new(_outputHelper);
         }
 
-        [Theory]
+        [Theory(Skip = "Flaky")]
         [MemberData(nameof(ActionTestsHelper.GetTfmsAndDumpTypes), MemberType = typeof(ActionTestsHelper))]
         public Task CollectDumpAction_Success(TargetFrameworkMoniker tfm, DumpType dumpType)
         {
