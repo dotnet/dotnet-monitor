@@ -2,6 +2,6 @@
   <!-- Import references updated by Dependabot. -->
   <PropertyGroup>
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringShippedVersion>8.0.547301</MicrosoftDiagnosticsMonitoringShippedVersion>
+    <MicrosoftDiagnosticsMonitoringShippedVersion>9.0.553101</MicrosoftDiagnosticsMonitoringShippedVersion>
   </PropertyGroup>
 </Project>
