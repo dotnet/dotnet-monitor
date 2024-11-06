@@ -15,6 +15,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
+using Models = Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using NameFormatter = Microsoft.Diagnostics.Monitoring.WebApi.Stacks.NameFormatter;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
@@ -25,9 +26,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         private static byte[] JsonSequenceRecordSeparator = new byte[] { 0x1E };
 
-        private const char GenericSeparator = ',';
-        private const char GenericStart = '[';
-        private const char GenericEnd = ']';
 
         private readonly ExceptionsConfigurationSettings _configuration;
         private readonly IEndpointInfo _endpointInfo;
@@ -141,80 +139,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 await stream.WriteAsync(JsonSequenceRecordSeparator, token);
             }
 
-            // Make sure dotnet-monitor is self-consistent with other features that print type and stack information.
-            // For example, the stacks and exceptions features should print structured stack traces exactly the same way.
-            // CONSIDER: Investigate if other tools have "standard" formats for printing structured stacks and exceptions.
-            await using (Utf8JsonWriter writer = new(stream, new JsonWriterOptions() { Indented = false }))
+            Models.ExceptionInstance model = new()
             {
-                writer.WriteStartObject();
-                writer.WriteNumber("id", instance.Id);
-                // Writes the timestamp in ISO 8601 format
-                writer.WriteString("timestamp", instance.Timestamp);
-                writer.WriteString("typeName", instance.TypeName);
-                writer.WriteString("moduleName", instance.ModuleName);
-                writer.WriteString("message", instance.Message);
+                Id = instance.Id,
+                Timestamp = instance.Timestamp,
+                TypeName = instance.TypeName,
+                ModuleName = instance.ModuleName,
+                Message = instance.Message,
+                InnerExceptionIds = Array.ConvertAll(instance.InnerExceptionIds, id => (InnerExceptionId)id),
+                CallStack = instance.CallStack,
+            };
 
-                if (IncludeActivityId(instance))
+            if (IncludeActivityId(instance))
+            {
+                model.Activity = new()
                 {
-                    writer.WriteStartObject("activity");
-                    writer.WriteString("id", instance.ActivityId);
-                    writer.WriteString("idFormat", instance.ActivityIdFormat.ToString("G"));
-                    writer.WriteEndObject();
-                }
-
-                writer.WriteStartArray("innerExceptions");
-                foreach (ulong innerExceptionId in instance.InnerExceptionIds)
-                {
-                    writer.WriteStartObject();
-                    writer.WriteNumber("id", innerExceptionId);
-                    writer.WriteEndObject();
-                }
-                writer.WriteEndArray();
-
-                if (null != instance.CallStack)
-                {
-                    writer.WriteStartObject("stack");
-                    writer.WriteNumber("threadId", instance.CallStack.ThreadId);
-                    writer.WriteString("threadName", instance.CallStack.ThreadName);
-
-                    writer.WriteStartArray("frames");
-
-                    StringBuilder builder = new StringBuilder();
-
-                    foreach (var frame in instance.CallStack.Frames)
-                    {
-                        writer.WriteStartObject();
-
-                        string assembledMethodName = frame.MethodName;
-                        if (frame.FullGenericArgTypes.Count > 0)
-                        {
-                            builder.Clear();
-                            builder.Append(GenericStart);
-                            builder.Append(string.Join(GenericSeparator, frame.FullGenericArgTypes));
-                            builder.Append(GenericEnd);
-                            assembledMethodName += builder.ToString();
-                        }
-                        writer.WriteString("methodName", assembledMethodName);
-                        writer.WriteNumber("methodToken", frame.MethodToken);
-                        writer.WriteStartArray("parameterTypes");
-                        foreach (string parameterType in frame.FullParameterTypes)
-                        {
-                            writer.WriteStringValue(parameterType);
-                        }
-                        writer.WriteEndArray(); // end parameterTypes
-                        writer.WriteString("typeName", frame.TypeName);
-                        writer.WriteString("moduleName", frame.ModuleName);
-                        writer.WriteString("moduleVersionId", frame.ModuleVersionId.ToString("D"));
-
-                        writer.WriteEndObject();
-                    }
-
-                    writer.WriteEndArray(); // end frames
-                    writer.WriteEndObject(); // end callStack
-                }
-
-                writer.WriteEndObject(); // end.
+                    Id = instance.ActivityId,
+                    IdFormat = instance.ActivityIdFormat
+                };
             }
+
+            await JsonSerializer.SerializeAsync(stream, model, cancellationToken: token);
 
             await stream.WriteAsync(JsonRecordDelimiter, token);
         }
@@ -311,6 +256,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             {
                 foreach (CallStackFrame frame in currentInstance.CallStack.Frames)
                 {
+                    if (frame.Hidden)
+                    {
+                        continue;
+                    }
+
                     await writer.WriteLineAsync();
                     await writer.WriteAsync("   at ");
                     await writer.WriteAsync(frame.TypeName);
@@ -321,7 +271,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     await writer.WriteAsync(builder);
                     builder.Clear();
 
-                    NameFormatter.BuildMethodParameterTypes(builder, frame.SimpleParameterTypes);
+                    NameFormatter.BuildMethodParameterTypes(builder, frame.SimpleParameterTypes ?? []);
                     await writer.WriteAsync(builder);
                     builder.Clear();
                 }

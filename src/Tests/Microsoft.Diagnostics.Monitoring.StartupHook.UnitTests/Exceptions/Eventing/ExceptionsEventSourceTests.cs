@@ -146,14 +146,15 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         }
 
         [Theory]
-        [InlineData(0, 0, 0, 0, 0, "", new ulong[0], new ulong[0])]
-        [InlineData(1, 100663639, 128, 256, 512, "ThrowObjectDisposedException", new ulong[1] { 1024 }, new ulong[2] { 2048, 4096 })]
+        [InlineData(0, 0, 0, 0, 0, true, "", new ulong[0], new ulong[0])]
+        [InlineData(1, 100663639, 128, 256, 512, false, "ThrowObjectDisposedException", new ulong[1] { 1024 }, new ulong[2] { 2048, 4096 })]
         public void ExceptionsEventSource_WriteFunction_Event(
             ulong functionId,
             uint methodToken,
             ulong classId,
             uint classToken,
             ulong moduleId,
+            bool stackTraceHidden,
             string name,
             ulong[] typeArgs,
             ulong[] parameterTypes)
@@ -163,7 +164,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             using ExceptionsEventListener listener = new();
             listener.EnableEvents(source, EventLevel.Informational);
 
-            source.FunctionDescription(functionId, methodToken, classId, classToken, moduleId, name, typeArgs, parameterTypes);
+            source.FunctionDescription(functionId, methodToken, classId, classToken, moduleId, Convert.ToUInt32(stackTraceHidden), name, typeArgs, parameterTypes);
 
             Assert.True(listener.NameCache.FunctionData.TryGetValue(functionId, out FunctionData? function));
             Assert.Equal(methodToken, function.MethodToken);
@@ -171,6 +172,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             Assert.Equal(classToken, function.ParentClassToken);
             Assert.Equal(moduleId, function.ModuleId);
             Assert.Equal(name, function.Name);
+            Assert.Equal(stackTraceHidden, function.StackTraceHidden);
             // We would normally expect the following to return an array of the stack frame IDs
             // but in-process listener doesn't decode non-byte arrays correctly.
             Assert.Equal(Array.Empty<ulong>(), function.TypeArgs);

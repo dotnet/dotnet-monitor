@@ -332,4 +332,7 @@
   <data name="Message_GeneratedInProcessArtifact" xml:space="preserve">
     <value>Finished generating in-process artifact</value>
   </data>
+  <data name="FeatureName_ServerEndpointPruningAlgorithmV2" xml:space="preserve">
+    <value>Server Endpoint Pruning Algorithm V2</value>
+  </data>
 </root>

@@ -33,10 +33,11 @@ First Available: 8.0 Preview 7
 |---|---|---|
 | `methodName` | string | Name of the method for this frame. This includes generic parameters. |
 | `methodToken` | int | TypeDef token for the method. |
-| `parameterTypes` | string[] | Array of parameter types. Empty array if none. |
+| `parameterTypes` | string[] | Array of parameter types. Empty array if none. Field does not exist when this information is not available. |
 | `typeName` | string | Name of the class for this frame. This includes generic parameters. |
 | `moduleName` | string | Name of the module for this frame. |
 | `moduleVersionId` | guid | Unique identifier used to distinguish between two versions of the same module. An empty value: `00000000-0000-0000-0000-000000000000`. |
+| `hidden`| bool |(8.1+ and 9.0+) Whether this frame has the [StackTraceHiddenAttribute](https://learn.microsoft.com/dotnet/api/system.diagnostics.stacktracehiddenattribute) and should be omitted from stack trace text. |
 
 ## CallStackResult
 
