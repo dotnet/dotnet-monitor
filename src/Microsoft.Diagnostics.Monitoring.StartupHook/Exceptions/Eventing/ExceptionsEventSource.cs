@@ -79,9 +79,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             ulong ModuleId,
             uint Token,
             uint Flags,
+            uint StackTraceHidden,
             ulong[] TypeArgs)
         {
-            Span<EventData> data = stackalloc EventData[5];
+            Span<EventData> data = stackalloc EventData[6];
             Span<byte> typeArgsSpan = stackalloc byte[GetArrayDataSize(TypeArgs)];
             FillArrayData(typeArgsSpan, TypeArgs);
 
@@ -89,6 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.ModuleId], ModuleId);
             SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.Token], Token);
             SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.Flags], Flags);
+            SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.StackTraceHidden], StackTraceHidden);
             SetValue(ref data[NameIdentificationEvents.ClassDescPayloads.TypeArgs], typeArgsSpan);
 
             WriteEventWithFlushing(ExceptionEvents.EventIds.ClassDescription, data);
@@ -101,11 +103,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             ulong ClassId,
             uint ClassToken,
             ulong ModuleId,
+            uint StackTraceHidden,
             string Name,
             ulong[] TypeArgs,
             ulong[] ParameterTypes)
         {
-            Span<EventData> data = stackalloc EventData[8];
+            Span<EventData> data = stackalloc EventData[9];
             using PinnedData namePinned = PinnedData.Create(Name);
             Span<byte> typeArgsSpan = stackalloc byte[GetArrayDataSize(TypeArgs)];
             FillArrayData(typeArgsSpan, TypeArgs);
@@ -117,6 +120,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ClassId], ClassId);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ClassToken], ClassToken);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ModuleId], ModuleId);
+            SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.StackTraceHidden], StackTraceHidden);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.Name], namePinned);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.TypeArgs], typeArgsSpan);
             SetValue(ref data[NameIdentificationEvents.FunctionDescPayloads.ParameterTypes], parameterTypesSpan);
@@ -160,16 +164,18 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
             ulong ModuleId,
             uint Token,
             uint OuterToken,
+            uint StackTraceHidden,
             string Name,
             string Namespace)
         {
-            Span<EventData> data = stackalloc EventData[5];
+            Span<EventData> data = stackalloc EventData[6];
             using PinnedData namePinned = PinnedData.Create(Name);
             using PinnedData namespacePinned = PinnedData.Create(Namespace);
 
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.ModuleId], ModuleId);
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.Token], Token);
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.OuterToken], OuterToken);
+            SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.StackTraceHidden], StackTraceHidden);
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.Name], namePinned);
             SetValue(ref data[NameIdentificationEvents.TokenDescPayloads.Namespace], namespacePinned);
 

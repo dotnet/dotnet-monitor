@@ -2,11 +2,11 @@
   <!-- Import references updated by Dependabot. -->
 
   <PropertyGroup>
-    <AzureCoreVersion>1.43.0</AzureCoreVersion>
-    <AzureIdentityVersion>1.12.1</AzureIdentityVersion>
-    <AzureStorageBlobsVersion>12.22.1</AzureStorageBlobsVersion>
-    <AzureStorageQueuesVersion>12.20.0</AzureStorageQueuesVersion>
-    <MicrosoftIdentityWebVersion>3.2.0</MicrosoftIdentityWebVersion>
+    <AzureCoreVersion>1.44.1</AzureCoreVersion>
+    <AzureIdentityVersion>1.13.1</AzureIdentityVersion>
+    <AzureStorageBlobsVersion>12.22.2</AzureStorageBlobsVersion>
+    <AzureStorageQueuesVersion>12.20.1</AzureStorageQueuesVersion>
+    <MicrosoftIdentityWebVersion>3.3.1</MicrosoftIdentityWebVersion>
     <MicrosoftOpenApiReadersVersion>1.6.22</MicrosoftOpenApiReadersVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
@@ -14,7 +14,7 @@
     <!-- Third-party references -->
     <NewtonsoftJsonVersion>13.0.3</NewtonsoftJsonVersion>
     <NJsonSchemaVersion>11.0.0</NJsonSchemaVersion>
-    <SwashbuckleAspNetCoreVersion>6.8.1</SwashbuckleAspNetCoreVersion>
+    <SwashbuckleAspNetCoreVersion>6.9.0</SwashbuckleAspNetCoreVersion>
     <AwsSdkS3Version>3.7.305.7</AwsSdkS3Version>
     <AwsSdkSecurityTokenVersion>3.7.300.33</AwsSdkSecurityTokenVersion>
 

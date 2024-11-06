@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             }
         }
 
-        public static async Task RetryAsync(Func<Task> func, Func<Exception, bool> shouldRetry, ITestOutputHelper outputHelper, int maxRetryCount = 3)
+        public static async Task<T> RetryAsync<T>(Func<Task<T>> func, Func<Exception, bool> shouldRetry, ITestOutputHelper outputHelper, int maxRetryCount = 3)
         {
             int attemptIteration = 0;
             while (true)
@@ -36,13 +36,19 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 outputHelper.WriteLine("===== Attempt #{0} =====", attemptIteration);
                 try
                 {
-                    await func();
-                    break;
+                    return await func();
                 }
                 catch (Exception ex) when (attemptIteration < maxRetryCount && shouldRetry(ex))
                 {
                 }
             }
         }
+
+        public static async Task RetryAsync(Func<Task> func, Func<Exception, bool> shouldRetry, ITestOutputHelper outputHelper, int maxRetryCount = 3)
+            => await RetryAsync<object>(async () =>
+            {
+                await func();
+                return null;
+            }, shouldRetry, outputHelper, maxRetryCount);
     }
 }
