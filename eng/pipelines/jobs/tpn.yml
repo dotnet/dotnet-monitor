@@ -43,6 +43,7 @@ jobs:
 
     - task: notice@0
       displayName: Generate TPN file
+      retryCountOnTaskFailure: 5
       inputs:
         outputfile: '$(Build.ArtifactStagingDirectory)/$(_TPNFile)'
         outputformat: text
