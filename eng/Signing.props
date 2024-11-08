@@ -9,11 +9,6 @@
   </ItemGroup>
   <ItemGroup Condition="'$(SignAllBinaries)' != 'true'">
     <!--
-      Tarballs are currently not signed nor are their contents.
-      This entry allows them to be signed automatically when tooling allows for it.
-      -->
-    <ItemsToSign Include="$(ArtifactsPackagesDir)**\*.tar.gz" />
-    <!--
       The zip file itself is not signed but their contents are.
       The zip is expanded, the contents are signed, and then rezipped.
       -->
