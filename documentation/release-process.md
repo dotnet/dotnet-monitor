@@ -120,7 +120,7 @@ The remainder of the release will automatically push NuGet packages to nuget.org
 1. The .NET Containers team will merge from `nightly` branch to `main` branch and wait for `dotnet-monitor` team approval. Typically, these changes are completed the day before the release date.
 1. The .NET Containers team will start the build ahead of the release and wait for the all-clear from `dotnet-monitor` team before publishing the images.
 
-**For internal/release/\* build**: A PR will need to be opened directly into the `main` branch that updates the .NET Monitor versions and checksums as appropriate since these values do not exist publicly until [Release to Storage Accounts](#release-to-storage-accounts) has been performed: [Example PR](https://github.com/dotnet/dotnet-docker/pull/4862). Coordinate with .NET Containers team for creating this PR. Example:
+**For internal/release/\* build**: A PR will need to be opened directly into the `main` branch that updates the .NET Monitor versions and checksums as appropriate since these values do not exist publicly until [Release to Storage Accounts](#release-to-storage-accounts) has been performed: [Example PR](https://github.com/dotnet/dotnet-docker/pull/4862). The checksums file can be found in the build's artifacts at `Artifacts_Pack_Sign/packages/Release/Shipping/{version}-sha.txt` Coordinate with .NET Containers team for creating this PR. Example:
 
 ```
 .\eng\Set-DotnetVersions.ps1 -ProductVersion 9.0 -MonitorVersion 9.0.0-rc.2.24504.9 -ChecksumsFile "9.0.0-rc.2.24504.9-sha.txt"
