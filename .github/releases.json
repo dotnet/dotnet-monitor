@@ -11,8 +11,7 @@
     "6.3"
   ],
   "unsupported": [
-    "7.3",
-    "7.2"
+    "7.3"
   ],
   "releases": {
     "6.3": {
@@ -32,16 +31,6 @@
       "supportedFrameworks": [
         "net8.0"
       ]
-    },
-    "7.2": {
-      "tag": "v7.2.3",
-      "minorReleaseDate": "2023-06-13T00:00:00.000Z",
-      "patchReleaseDate": "2023-10-10T00:00:00.000Z",
-      "supportedFrameworks": [
-        "net6.0",
-        "net7.0"
-      ],
-      "outOfSupportDate": "2023-11-08T00:00:00.000Z"
     },
     "7.3": {
       "tag": "v7.3.4",
