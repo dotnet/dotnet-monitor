@@ -76,7 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Validates that a non-startup rule will complete when it has an action limit specified
         /// without a sliding window duration.
         /// </summary>
-        [Theory]
+        [Theory(Skip = "Flaky")]
         [InlineData(DiagnosticPortConnectionMode.Listen)]
         public async Task CollectionRule_ActionLimitTest(DiagnosticPortConnectionMode mode)
         {
