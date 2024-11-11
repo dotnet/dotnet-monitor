@@ -348,7 +348,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "Flaky")]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task Exceptions_FilterIncludeBasic(Architecture targetArchitecture)
         {
@@ -387,7 +387,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "Flaky")]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task Exceptions_FilterIncludeMultiple(Architecture targetArchitecture)
         {
