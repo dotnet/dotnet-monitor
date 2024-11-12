@@ -3,10 +3,9 @@
     "additionalMonthsOfSupportOnNewMinorRelease": 3,
     "cleanupUnsupportedReleasesAfterMonths": 12
   },
-  "preview": [
-    "9.0"
-  ],
+  "preview": [],
   "supported": [
+    "9.0",
     "8.0"
   ],
   "unsupported": [
@@ -43,9 +42,9 @@
       "outOfSupportDate": "2024-05-14T00:00:00.000Z"
     },
     "9.0": {
-      "tag": "v9.0.0-rc.2.24504.9",
-      "minorReleaseDate": "2024-10-08T00:00:00.000Z",
-      "patchReleaseDate": "2024-10-08T00:00:00.000Z",
+      "tag": "v9.0.0",
+      "minorReleaseDate": "2024-11-12T00:00:00.000Z",
+      "patchReleaseDate": "2024-11-12T00:00:00.000Z",
       "supportedFrameworks": [
         "net9.0"
       ]
