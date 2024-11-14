@@ -2,14 +2,14 @@
   <!-- Import references updated by Dependabot. -->
   <PropertyGroup>
     <!-- Microsoft.Extensions.Configuration.Abstractions -->
-    <MicrosoftExtensionsConfigurationAbstractions60Version>6.0.0</MicrosoftExtensionsConfigurationAbstractions60Version>
+    <MicrosoftExtensionsConfigurationAbstractions60Version>6.0.1</MicrosoftExtensionsConfigurationAbstractions60Version>
     <!-- Microsoft.Extensions.Logging -->
-    <MicrosoftExtensionsLogging60Version>6.0.0</MicrosoftExtensionsLogging60Version>
+    <MicrosoftExtensionsLogging60Version>6.0.1</MicrosoftExtensionsLogging60Version>
     <!-- Microsoft.Extensions.Logging.Abstractions -->
     <MicrosoftExtensionsLoggingAbstractions60Version>6.0.4</MicrosoftExtensionsLoggingAbstractions60Version>
     <!-- Microsoft.Extensions.Logging.Console -->
-    <MicrosoftExtensionsLoggingConsole60Version>6.0.0</MicrosoftExtensionsLoggingConsole60Version>
+    <MicrosoftExtensionsLoggingConsole60Version>6.0.1</MicrosoftExtensionsLoggingConsole60Version>
     <!-- Microsoft.NETCore.App -->
-    <MicrosoftNETCoreApp60Version>6.0.35</MicrosoftNETCoreApp60Version>
+    <MicrosoftNETCoreApp60Version>6.0.36</MicrosoftNETCoreApp60Version>
   </PropertyGroup>
 </Project>
