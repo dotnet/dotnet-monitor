@@ -186,7 +186,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private static bool IsMeter(ICounterPayload payload) =>
             payload switch
             {
-                GaugePayload or PercentilePayload or CounterEndedPayload or RatePayload => true,
+                GaugePayload or PercentilePayload or CounterEndedPayload or RatePayload or AggregatePercentilePayload or UpDownCounterPayload => true,
                 _ => false
             };
 
