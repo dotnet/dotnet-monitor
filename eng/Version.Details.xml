@@ -4,11 +4,11 @@
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-aspnetcore</Uri>
       <Sha>af22effae4069a5dfb9b0735859de48820104f5b</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="9.0.0-preview.24606.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="9.0.0-preview.24607.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>0be2f6a5352d73652c4bd5863fa975240105facc</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="9.0.0-preview.24606.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="9.0.0-preview.24607.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>0be2f6a5352d73652c4bd5863fa975240105facc</Sha>
     </Dependency>
@@ -42,7 +42,7 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>1c7e09a8d9c9c9b15ba574cd6a496553505559de</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.FileFormats" Version="1.0.560601">
+    <Dependency Name="Microsoft.FileFormats" Version="1.0.560701">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>0be2f6a5352d73652c4bd5863fa975240105facc</Sha>
     </Dependency>
