@@ -1,0 +1,11 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props"/>
+  <!--
+    Some test projects build for target frameworks that are no longer in support.
+    This is intentional so that test coverage for downlevel versions is maintained.
+    Suppress the EOL target framework check for test projects.
+  -->
+  <PropertyGroup>
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
+  </PropertyGroup>
+</Project>
