@@ -67,6 +67,37 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         }
 
         [Fact]
+        public async Task HistogramFormat_Test_Tags()
+        {
+            List<ICounterPayload> payload = new();
+
+            string meterTags = "MeterTagKey=MeterTagValue,MeterTagKey2=MeterTagValue2";
+            string instrumentTags = "InstrumentTagKey=InstrumentTagValue,InstrumentTagKey2=InstrumentTagValue2";
+
+            CounterMetadata counterInfo = new CounterMetadata(MeterName, InstrumentName, meterTags: meterTags, instrumentTags: instrumentTags, scopeHash: null);
+
+            payload.Add(new AggregatePercentilePayload(counterInfo, "DisplayName", string.Empty, string.Empty,
+                new Quantile[] { new Quantile(0.5, Value1), new Quantile(0.95, Value2), new Quantile(0.99, Value3) },
+                Timestamp));
+
+            using MemoryStream stream = await GetMetrics(payload);
+            List<string> lines = ReadStream(stream);
+
+            string metricName = $"{MeterName.ToLowerInvariant()}_{payload[0].CounterMetadata.CounterName}";
+
+            const string quantile_50 = "{MeterTagKey=\"MeterTagValue\", MeterTagKey2=\"MeterTagValue2\", InstrumentTagKey=\"InstrumentTagValue\", InstrumentTagKey2=\"InstrumentTagValue2\", quantile=\"0.5\"}";
+            const string quantile_95 = "{MeterTagKey=\"MeterTagValue\", MeterTagKey2=\"MeterTagValue2\", InstrumentTagKey=\"InstrumentTagValue\", InstrumentTagKey2=\"InstrumentTagValue2\", quantile=\"0.95\"}";
+            const string quantile_99 = "{MeterTagKey=\"MeterTagValue\", MeterTagKey2=\"MeterTagValue2\", InstrumentTagKey=\"InstrumentTagValue\", InstrumentTagKey2=\"InstrumentTagValue2\", quantile=\"0.99\"}";
+
+            Assert.Equal(5, lines.Count);
+            Assert.Equal(FormattableString.Invariant($"# HELP {metricName}{payload[0].Unit} {payload[0].DisplayName}"), lines[0]);
+            Assert.Equal(FormattableString.Invariant($"# TYPE {metricName} summary"), lines[1]);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{quantile_50} {Value1}"), lines[2]);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{quantile_95} {Value2}"), lines[3]);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{quantile_99} {Value3}"), lines[4]);
+        }
+
+        [Fact]
         public async Task GaugeFormat_Test()
         {
             ICounterPayload payload = new GaugePayload(new CounterMetadata(MeterName, InstrumentName, meterTags: null, instrumentTags: null, scopeHash: null),
@@ -118,6 +149,30 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(FormattableString.Invariant($"# HELP {metricName}{payload.Unit} {payload.DisplayName}"), lines[0]);
             Assert.Equal(FormattableString.Invariant($"# TYPE {metricName} gauge"), lines[1]);
             Assert.Equal(FormattableString.Invariant($"{metricName} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}"), lines[2]);
+        }
+
+        [Fact]
+        public async Task UpDownCounterFormat_Test_Tags()
+        {
+            string meterTags = "MeterTagKey=MeterTagValue,MeterTagKey2=MeterTagValue2";
+            string instrumentTags = "InstrumentTagKey=InstrumentTagValue,InstrumentTagKey2=InstrumentTagValue2";
+            string scopeHash = "123";
+
+            CounterMetadata counterInfo = new CounterMetadata(MeterName, InstrumentName, meterTags, instrumentTags, scopeHash);
+
+            ICounterPayload payload = new UpDownCounterPayload(counterInfo, "DisplayName", "", null, Value1, Timestamp);
+
+            MemoryStream stream = await GetMetrics(new() { payload });
+
+            List<string> lines = ReadStream(stream);
+
+            string metricName = $"{MeterName.ToLowerInvariant()}_{payload.CounterMetadata.CounterName}";
+            string metricTags = "{MeterTagKey=\"MeterTagValue\", MeterTagKey2=\"MeterTagValue2\", InstrumentTagKey=\"InstrumentTagValue\", InstrumentTagKey2=\"InstrumentTagValue2\"}";
+
+            Assert.Equal(3, lines.Count);
+            Assert.Equal(FormattableString.Invariant($"# HELP {metricName}{payload.Unit} {payload.DisplayName}"), lines[0]);
+            Assert.Equal(FormattableString.Invariant($"# TYPE {metricName} gauge"), lines[1]);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{metricTags} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}"), lines[2]);
         }
 
         private async Task<MemoryStream> GetMetrics(List<ICounterPayload> payloads)
