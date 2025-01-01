@@ -18,7 +18,7 @@
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0-preview.24605.2">
+    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0-preview.24629.2">
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
       <Sha>5bfaf6aea5cf9d1c924d9adc69916eac3be07880</Sha>
     </Dependency>
