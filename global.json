@@ -26,8 +26,7 @@
         "$(MicrosoftNETCoreApp80Version)",
         "$(VSRedistCommonNetCoreSharedFrameworkx6490Version)"
       ]
-    },
-    "xcopy-msbuild": "17.8.5"
+    }
   },
   "msbuild-sdks": {
     "Microsoft.Build.NoTargets": "3.7.0",
