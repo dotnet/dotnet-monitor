@@ -173,6 +173,15 @@ extends:
               - powershell: Install-Module Az.Storage -Force -Scope CurrentUser -AllowClobber -Verbose -RequiredVersion 5.10.1
                 displayName: Install Az.Storage Module 5.10.1
 
+              - template: /eng/common/templates/steps/get-delegation-sas.yml
+                parameters:
+                  federatedServiceConnection: 'DotNetRelease-PME'
+                  outputVariableName: 'DotNetCliDelegationSasTokenBase64'
+                  base64Encode: true
+                  storageAccount: 'dotnetcli'
+                  container: 'dotnet'
+                  permissions: 'racwl'
+
               - task: AzureCLI@2
                 displayName: Publish Assets
                 inputs:
@@ -192,8 +201,11 @@ extends:
                     -BuildVersion $(BuildVersion)
                     -ReleaseVersion $(ReleaseVersion)
                     -DestinationAccountName $(DestinationAccountName)
+                    -DestinationSasTokenBase64 $Env:DestinationSasTokenBase64
                     -ChecksumsAccountName $(ChecksumsAccountName)
                     -WhatIf:${{ format('${0}', parameters.IsDryRun) }}
+                env:
+                  DestinationSasTokenBase64: $(DotNetCliDelegationSasTokenBase64)
 
               - task: 1ES.PublishBuildArtifacts@1
                 displayName: Publish Logs

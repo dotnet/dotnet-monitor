@@ -4,6 +4,7 @@ Param(
     [Parameter(Mandatory=$true)][string]$BuildVersion,
     [Parameter(Mandatory=$true)][string]$ReleaseVersion,
     [Parameter(Mandatory=$true)][string]$DestinationAccountName,
+    [Parameter(Mandatory=$true)][string]$DestinationSasTokenBase64,
     [Parameter(Mandatory=$true)][string]$ChecksumsAccountName
 )
 
@@ -39,8 +40,13 @@ function Transfer-File{
     [CmdletBinding(SupportsShouldProcess)]
     Param(
         [Parameter(Mandatory=$true)][string]$From,
-        [Parameter(Mandatory=$true)][string]$To
+        [Parameter(Mandatory=$true)][string]$To,
+        [Parameter(Mandatory=$false)][string]$ToToken = $null
     )
+
+    if ($ToToken -and ($ToToken[0] -ne '?')) {
+        $ToToken = '?' + $ToToken
+    }
 
     Write-Host "Copy $From -> $To"
 
@@ -48,7 +54,7 @@ function Transfer-File{
         Write-Host 'Skipping copy because source and destination are the same.'
     } else {
         [array]$azCopyArgs = "$From"
-        $azCopyArgs += "$To"
+        $azCopyArgs += "$To$ToToken"
         $azCopyArgs += "--s2s-preserve-properties"
         $azCopyArgs += "--s2s-preserve-access-tier=false"
         if ($WhatIfPreference) {
@@ -70,6 +76,7 @@ $destinationUri = Generate-Destination-Uri `
 Transfer-File `
     -From $sourceUri `
     -To $destinationUri `
+    -ToToken ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($DestinationSasTokenBase64))) `
     -WhatIf:$WhatIfPreference
 
 # Create source checksums URI
