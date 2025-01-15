@@ -5,15 +5,30 @@
 
 #include <vector>
 
-enum class IpcCommand : short
+enum class ProfilerCommand : unsigned short
 {
-    Unknown,
-    Status,
     Callstack
+};
+
+enum class ServerResponseCommand : unsigned short
+{
+    Status
+};
+
+//
+// Kept in sync with src\Microsoft.Diagnostics.Monitoring.WebApi\ProfilerMessage.cs even though not all
+// command sets will be used by the profiler.
+//
+enum class CommandSet : unsigned short
+{
+    ServerResponse,
+    Profiler,
+    StartupHook
 };
 
 struct IpcMessage
 {
-    IpcCommand Command = IpcCommand::Unknown;
+    unsigned short CommandSet;
+    unsigned short Command;
     std::vector<BYTE> Payload;
 };

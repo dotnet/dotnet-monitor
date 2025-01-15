@@ -79,29 +79,48 @@ jobs:
 
     - ${{ if eq(parameters.useHelix, 'true')}}:
       - ${{ if ne(parameters.osGroup, 'Linux_Musl')}}:
-        # Linux builds (of all variants) run in Mariner containers and do not include pwsh by default
         - ${{ if eq(parameters.osGroup, 'Linux') }}:
-          - script: sudo -n tdnf install -y --refresh powershell
-            displayName: Install pwsh
+          # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
+          - script: |
+              pwsh ./eng/helix/GetNodejsVersion.ps1 -MajorVersion $(NodeMajorVersion) -TaskVariableName 'FqNodejsVersion'
+            displayName: Calculate Node.js version Linux
+  
+          - task: Cache@2
+            displayName: Node.js Cache Linux
+            inputs:
+              # Wrap FqNodejsVersion in quotes to prevent it being interpreted as a file
+              key: 'nodejs | ${{ parameters.osGroup }} | ${{ parameters.architecture }} | "$(FqNodejsVersion)"'
+              path: $(HelixNodejsPayloadPath)
+  
+          - script: |
+              pwsh ./eng/helix/InstallNodejs.ps1 -Version $(FqNodejsVersion) -Architecture ${{ parameters.architecture }} -DestinationFolder "$(HelixNodejsPayloadPath)"
+            displayName: Hydrate Node.js Installation Linux
 
-        # Calculate the fully qualified Nodejs version first so that any new releases will result in a new cache key
-        - pwsh: eng/helix/GetNodejsVersion.ps1
-              -MajorVersion $(NodeMajorVersion)
-              -TaskVariableName 'FqNodejsVersion'
-          displayName: Calculate Node.js version
+        - ${{ else }}:
+          - pwsh: eng/helix/GetNodejsVersion.ps1
+                -MajorVersion $(NodeMajorVersion)
+                -TaskVariableName 'FqNodejsVersion'
+            displayName: Calculate Node.js version Non-Linux
+  
+          - task: Cache@2
+            displayName: Node.js Cache Non-Linux
+            inputs:
+              # Wrap FqNodejsVersion in quotes to prevent it being interpreted as a file
+              key: 'nodejs | ${{ parameters.osGroup }} | ${{ parameters.architecture }} | "$(FqNodejsVersion)"'
+              path: $(HelixNodejsPayloadPath)
+  
+          - pwsh: eng/helix/InstallNodejs.ps1
+              -Version $(FqNodejsVersion)
+              -Architecture ${{ parameters.architecture }}
+              -DestinationFolder "$(HelixNodejsPayloadPath)"
+            displayName: Hydrate Node.js Installation Non-Linux
 
-        - task: Cache@2
-          displayName: Node.js Cache
-          inputs:
-            # Wrap FqNodejsVersion in quotes to prevent it being interpreted as a file
-            key: 'nodejs | ${{ parameters.osGroup }} | ${{ parameters.architecture }} | "$(FqNodejsVersion)"'
-            path: $(HelixNodejsPayloadPath)
-
-        - pwsh: eng/helix/InstallNodejs.ps1
-            -Version $(FqNodejsVersion)
-            -Architecture ${{ parameters.architecture }}
-            -DestinationFolder "$(HelixNodejsPayloadPath)"
-          displayName: Hydrate Node.js Installation
+      # Populate dotnetbuilds-internal-container-read-token for Helix
+      - template: /eng/common/templates-official/steps/enable-internal-runtimes.yml
+        parameters:
+          outputVariableName: 'dotnetbuilds-internal-container-read-token'
+          base64Encode: false
+          expiryInHours: 2 # Match the job timeout; Helix can take a long time to process tests depending on queue depth
 
     - ${{ else }}:
       - ${{ if ne(parameters.osGroup, 'Windows') }}:
@@ -119,7 +138,7 @@ jobs:
           displayName: Install Azurite
           inputs:
             command: custom
-            customCommand: install -g azurite
+            customCommand: install -g azurite@3.29.0
 
       # When using the Alpine build containers, the above npm install will install to the system's
       # node directory instead of the agent's copy.

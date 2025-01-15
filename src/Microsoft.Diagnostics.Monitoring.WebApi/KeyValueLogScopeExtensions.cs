@@ -2,14 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Collections.Generic;
-
-#if HOSTINGSTARTUP
-namespace Microsoft.Diagnostics.Monitoring.HostingStartup
-#else
 using System.Globalization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
-#endif
 {
     internal static class KeyValueLogScopeExtensions
     {
@@ -17,7 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             values.Add(new KeyValuePair<string, object>(key, value));
         }
-#if !HOSTINGSTARTUP
+
         public static void AddArtifactType(this KeyValueLogScope scope, string artifactType)
         {
             scope.Values.Add("ArtifactType", artifactType);
@@ -32,6 +27,5 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 ArtifactMetadataNames.ArtifactSource.RuntimeInstanceCookie,
                 endpointInfo.RuntimeInstanceCookie.ToString("N"));
         }
-#endif
     }
 }

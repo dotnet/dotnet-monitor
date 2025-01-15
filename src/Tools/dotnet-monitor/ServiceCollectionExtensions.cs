@@ -26,7 +26,6 @@ using Microsoft.Diagnostics.Tools.Monitor.Egress.Extension;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Diagnostics.Tools.Monitor.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
-using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
 using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
@@ -41,6 +40,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.IO;
+using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -358,16 +358,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        public static IServiceCollection ConfigureHostingStartup(this IServiceCollection services)
+        public static IServiceCollection ConfigureRequestLimits(this IServiceCollection services)
         {
-            services.AddScoped<HostingStartupService>();
-            services.AddScopedForwarder<IDiagnosticLifetimeService, HostingStartupService>();
+            services.AddSingleton<IRequestLimitTracker, RequestLimitTracker>();
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_Dump, 1); });
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_GCDump, 1); });
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_Logs, 3); });
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_Trace, 3); });
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_Metrics, 3); });
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_Stacks, 1); });
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_Exceptions, 1); });
+            services.AddSingleton((_) => { return new RequestLimit(Utils.ArtifactType_Parameters, 1); });
+            services.AddSingleton((_) => { return new RequestLimit(RequestLimitTracker.Unlimited, int.MaxValue); });
+
             return services;
         }
 
         public static IServiceCollection ConfigureStartupHook(this IServiceCollection services)
         {
-            services.AddTransient<StartupHookValidator>();
+            services.AddScoped<StartupHookApplicator>();
             services.AddScoped<StartupHookService>();
             services.AddScopedForwarder<IDiagnosticLifetimeService, StartupHookService>();
             return services;
@@ -387,6 +396,36 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 return authConfigurator.CreateStartupLogger(logger, services);
             });
             services.AddSingleton<IStartupLogger, EgressStartupLogger>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureParameterCapturing(this IServiceCollection services)
+        {
+            services.AddTransient<ICaptureParametersOperationFactory, CaptureParametersOperationFactory>();
+            return services;
+        }
+        public static IServiceCollection ConfigureEndpointInfoSource(this IServiceCollection services)
+        {
+            services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
+
+            services.AddSingleton<IServerEndpointStateChecker, ServerEndpointStateChecker>();
+
+            if (ToolIdentifiers.IsEnvVarEnabled(ExperimentalFeatureIdentifiers.EnvironmentVariables.ServerEndpointPruningAlgorithmV2))
+            {
+                services.AddSingleton<ServerEndpointTrackerV2>();
+                services.AddSingletonForwarder<IServerEndpointTracker, ServerEndpointTrackerV2>();
+                services.AddHostedServiceForwarder<ServerEndpointTrackerV2>();
+            }
+            else
+            {
+                services.AddSingleton<ServerEndpointTracker>();
+                services.AddSingletonForwarder<IServerEndpointTracker, ServerEndpointTracker>();
+                services.AddHostedServiceForwarder<ServerEndpointTracker>();
+            }
+
+            services.AddSingleton<ServerEndpointInfoSource>();
+            services.AddHostedServiceForwarder<ServerEndpointInfoSource>();
+
             return services;
         }
 

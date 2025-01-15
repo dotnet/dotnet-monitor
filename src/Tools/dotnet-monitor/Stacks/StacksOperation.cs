@@ -84,7 +84,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Stacks
 
                 await _channel.SendMessage(
                     _endpointInfo,
-                    new CommandOnlyProfilerMessage(IpcCommand.Callstack),
+                    new CommandOnlyProfilerMessage(ProfilerCommand.Callstack),
                     token);
 
                 return runTask;

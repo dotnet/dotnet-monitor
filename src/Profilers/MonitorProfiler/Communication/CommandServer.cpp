@@ -13,7 +13,10 @@ CommandServer::CommandServer(const std::shared_ptr<ILogger>& logger, ICorProfile
 {
 }
 
-HRESULT CommandServer::Start(const std::string& path, std::function<HRESULT(const IpcMessage& message)> callback)
+HRESULT CommandServer::Start(
+    const std::string& path,
+    std::function<HRESULT(const IpcMessage& message)> callback,
+    std::function<HRESULT(const IpcMessage& message)> validateMessageCallback)
 {
     if (_shutdown.load())
     {
@@ -31,6 +34,7 @@ HRESULT CommandServer::Start(const std::string& path, std::function<HRESULT(cons
 #endif
 
     _callback = callback;
+    _validateMessageCallback = validateMessageCallback;
 
     IfFailLogRet_(_logger, _server.Bind(path));
     _listeningThread = std::thread(&CommandServer::ListeningThread, this);
@@ -55,7 +59,8 @@ void CommandServer::ListeningThread()
 {
     // TODO: Handle oom scenarios
     IpcMessage response;
-    response.Command = IpcCommand::Status;
+    response.CommandSet = static_cast<unsigned short>(CommandSet::ServerResponse);
+    response.Command = static_cast<unsigned short>(ServerResponseCommand::Status);
     response.Payload.resize(sizeof(HRESULT));
 
     while (true)
@@ -74,7 +79,17 @@ void CommandServer::ListeningThread()
         if (FAILED(hr))
         {
             _logger->Log(LogLevel::Error, _LS("Unexpected error when receiving data: 0x%08x"), hr);
+            // Best-effort shutdown, ignore the result.
+            client->Shutdown();
             continue;
+        }
+
+        bool doEnqueueMessage = true;
+        hr = _validateMessageCallback(message);
+        if (FAILED(hr))
+        {
+            _logger->Log(LogLevel::Error, _LS("Failed to validate message: 0x%08x"), hr);
+            doEnqueueMessage = false;
         }
 
         *reinterpret_cast<HRESULT*>(response.Payload.data()) = hr;
@@ -83,16 +98,20 @@ void CommandServer::ListeningThread()
         if (FAILED(hr))
         {
             _logger->Log(LogLevel::Error, _LS("Unexpected error when sending data: 0x%08x"), hr);
-            continue;
+            doEnqueueMessage = false;
         }
 
         hr = client->Shutdown();
         if (FAILED(hr))
         {
             _logger->Log(LogLevel::Warning, _LS("Unexpected error during shutdown: 0x%08x"), hr);
+            // Not fatal, keep processing the message
         }
 
-        _clientQueue.Enqueue(message);
+        if (doEnqueueMessage)
+        {
+            _clientQueue.Enqueue(message);
+        }
     }
 }
 

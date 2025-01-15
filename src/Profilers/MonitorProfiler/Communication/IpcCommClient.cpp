@@ -21,20 +21,24 @@ HRESULT IpcCommClient::Receive(IpcMessage& message)
     }
 
     //CONSIDER It is generally more performant to read and buffer larger chunks, in this case we are not expecting very frequent communication.
-    char headersBuffer[sizeof(IpcCommand) + sizeof(int)];
+    char headersBuffer[sizeof(UINT16) + sizeof(UINT16) + sizeof(INT32)];
     IfFailRet(ReceiveFixedBuffer(
         headersBuffer,
         sizeof(headersBuffer)
     ));
 
-    int bufferOffset = 0; 
-    message.Command = *reinterpret_cast<IpcCommand*>(&headersBuffer[bufferOffset]);
-    bufferOffset += sizeof(IpcCommand);
+    int headerOffset = 0;
 
-    int payloadSize = *reinterpret_cast<int*>(&headersBuffer[bufferOffset]);
-    bufferOffset += sizeof(int);
+    message.CommandSet = *reinterpret_cast<UINT16*>(&headersBuffer[headerOffset]);
+    headerOffset += sizeof(UINT16);
 
-    assert(bufferOffset == sizeof(headersBuffer));
+    message.Command = *reinterpret_cast<UINT16*>(&headersBuffer[headerOffset]);
+    headerOffset += sizeof(UINT16);
+
+    int payloadSize = *reinterpret_cast<INT32*>(&headersBuffer[headerOffset]);
+    headerOffset += sizeof(INT32);
+
+    assert(headerOffset == sizeof(headersBuffer));
 
     if (payloadSize < 0 || payloadSize > MaxPayloadSize)
     {
@@ -113,15 +117,19 @@ HRESULT IpcCommClient::Send(const IpcMessage& message)
         return E_FAIL;
     }
 
-    char headersBuffer[sizeof(IpcCommand) + sizeof(int)];
+    char headersBuffer[sizeof(UINT16) + sizeof(UINT16) + sizeof(INT32)];
 
-    int bufferOffset = 0; 
-    *reinterpret_cast<IpcCommand*>(&headersBuffer[bufferOffset]) = message.Command;
-    bufferOffset += sizeof(IpcCommand);
+    int bufferOffset = 0;
+
+    *reinterpret_cast<UINT16*>(&headersBuffer[bufferOffset]) = message.CommandSet;
+    bufferOffset += sizeof(UINT16);
+
+    *reinterpret_cast<UINT16*>(&headersBuffer[bufferOffset]) = message.Command;
+    bufferOffset += sizeof(UINT16);
 
     int payloadSize = static_cast<int>(message.Payload.size());
-    *reinterpret_cast<int*>(&headersBuffer[bufferOffset]) = payloadSize;
-    bufferOffset += sizeof(int);
+    *reinterpret_cast<INT32*>(&headersBuffer[bufferOffset]) = payloadSize;
+    bufferOffset += sizeof(INT32);
 
     assert(bufferOffset == sizeof(headersBuffer));
 

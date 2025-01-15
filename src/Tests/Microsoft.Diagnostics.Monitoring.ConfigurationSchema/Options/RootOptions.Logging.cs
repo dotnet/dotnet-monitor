@@ -7,6 +7,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal partial class RootOptions
     {
-        public LoggingOptions Logging { get; set; }
+        public LoggingOptions? Logging { get; set; }
     }
 }

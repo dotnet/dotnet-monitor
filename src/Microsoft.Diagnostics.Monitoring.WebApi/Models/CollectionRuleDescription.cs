@@ -17,6 +17,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         /// Human-readable explanation for the current state of the collection rule.
         /// </summary>
         [JsonPropertyName("stateReason")]
-        public string StateReason { get; set; }
+        public string? StateReason { get; set; }
     }
 }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal interface IStartable
+    public interface IStartable
     {
         Task Started { get; }
     }

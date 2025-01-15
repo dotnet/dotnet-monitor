@@ -170,6 +170,9 @@
     <value>Unable to enumerate processes.</value>
     <comment>Gets a string similar to "Unable to enumerate processes.".</comment>
   </data>
+  <data name="ErrorMessage_ProfilerPayloadTooLarge" xml:space="preserve">
+    <value>The message payload is {1} bytes which exceeds the maximum size of {0} bytes. </value>
+  </data>
   <data name="ErrorMessage_ResourceNotFound" xml:space="preserve">
     <value>Resource {0} cannot be found</value>
     <comment>Gets the format string for when an embedded resource is requested that doesn't exist</comment>
@@ -328,5 +331,8 @@
   </data>
   <data name="Message_GeneratedInProcessArtifact" xml:space="preserve">
     <value>Finished generating in-process artifact</value>
+  </data>
+  <data name="FeatureName_ServerEndpointPruningAlgorithmV2" xml:space="preserve">
+    <value>Server Endpoint Pruning Algorithm V2</value>
   </data>
 </root>

@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal class DiagnosticPortValidateOptions :
         IValidateOptions<DiagnosticPortOptions>
     {
-        public ValidateOptionsResult Validate(string name, DiagnosticPortOptions options)
+        public ValidateOptionsResult Validate(string? name, DiagnosticPortOptions options)
         {
             var failures = new List<string>();
 

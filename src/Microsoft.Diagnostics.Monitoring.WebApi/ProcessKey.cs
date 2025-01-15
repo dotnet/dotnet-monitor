@@ -8,46 +8,46 @@ using System.Globalization;
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     [TypeConverter(typeof(ProcessKeyTypeConverter))]
-    internal struct ProcessKey
+    public struct ProcessKey
     {
-        internal ProcessKey(int processId)
+        public ProcessKey(int processId)
         {
             ProcessId = processId;
             ProcessName = null;
             RuntimeInstanceCookie = null;
         }
 
-        internal ProcessKey(Guid runtimeInstanceCookie)
+        public ProcessKey(Guid runtimeInstanceCookie)
         {
             ProcessId = null;
             ProcessName = null;
             RuntimeInstanceCookie = runtimeInstanceCookie;
         }
 
-        internal ProcessKey(string processName)
+        public ProcessKey(string processName)
         {
             ProcessId = null;
             ProcessName = processName;
             RuntimeInstanceCookie = null;
         }
 
-        internal ProcessKey(int? processId = null, Guid? runtimeInstanceCookie = null, string processName = null)
+        public ProcessKey(int? processId = null, Guid? runtimeInstanceCookie = null, string? processName = null)
         {
             ProcessId = processId;
             ProcessName = processName;
             RuntimeInstanceCookie = runtimeInstanceCookie;
         }
 
-        internal int? ProcessId { get; }
+        public int? ProcessId { get; }
 
-        internal string ProcessName { get; }
+        public string? ProcessName { get; }
 
-        internal Guid? RuntimeInstanceCookie { get; }
+        public Guid? RuntimeInstanceCookie { get; }
     }
 
     internal class ProcessKeyTypeConverter : TypeConverter
     {
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
         {
             if (null == sourceType)
             {
@@ -56,7 +56,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return sourceType == typeof(string) || sourceType == typeof(ProcessKey);
         }
 
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
         {
             if (value is string valueString)
             {

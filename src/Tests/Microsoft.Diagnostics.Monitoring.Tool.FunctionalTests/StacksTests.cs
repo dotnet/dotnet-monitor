@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
+using Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,32 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private const string ExpectedCallbackFunction = @"Callback";
         private const string NativeFrame = "[NativeFrame]";
         private const string ExpectedThreadName = "TestThread";
+
+        private static MethodInfo GetMethodInfo(string typeName, string methodName)
+        {
+            static void removeGenericInformation(ref string name)
+            {
+                if (name.Contains('['))
+                {
+                    name = name[..name.IndexOf('[')];
+                }
+            }
+
+            // Strip off any generic type information.
+            removeGenericInformation(ref typeName);
+            removeGenericInformation(ref methodName);
+
+            // Return null on pseudo frames (e.g. [NativeFrame])
+            if (methodName.Length == 0)
+            {
+                return null;
+            }
+
+            Type typeMatch = typeof(StacksWorker).Module.GetType(typeName);
+            Assert.NotNull(typeMatch);
+
+            return typeMatch.GetMethod(methodName);
+        }
 
         public StacksTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
@@ -73,6 +100,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             string[] expectedFrames =
             {
+                FormatFrame(ExpectedModule, typeof(HiddenFrameTestMethods).FullName, nameof(HiddenFrameTestMethods.ExitPoint)),
+                FormatFrame(ExpectedModule, typeof(HiddenFrameTestMethods.PartiallyVisibleClass).FullName, nameof(HiddenFrameTestMethods.PartiallyVisibleClass.DoWorkFromVisibleDerivedClass)),
+                FormatFrame(ExpectedModule, typeof(HiddenFrameTestMethods).FullName, nameof(HiddenFrameTestMethods.EntryPoint)),
                 FormatFrame(ExpectedModule, ExpectedClass, ExpectedCallbackFunction),
                 NativeFrame,
                 FormatFrame(ExpectedModule, ExpectedClass, ExpectedTextFunction),
@@ -168,14 +198,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             WebApi.Models.SpeedscopeResult result = await JsonSerializer.DeserializeAsync<WebApi.Models.SpeedscopeResult>(holder.Stream);
 
-            int bottomIndex = result.Shared.Frames.FindIndex(f => f.Name == FormatFrame(ExpectedModule, ExpectedClass, ExpectedFunction));
-            Assert.NotEqual(-1, bottomIndex);
-            string topFrameName = FormatFrame(ExpectedModule, ExpectedClass, ExpectedCallbackFunction);
-            int topIndex = result.Shared.Frames.FindIndex(f => f.Name == topFrameName);
-            Assert.NotEqual(-1, topIndex);
+            string[] framesToFind =
+            [
+                FormatFrame(ExpectedModule, typeof(HiddenFrameTestMethods).FullName, nameof(HiddenFrameTestMethods.ExitPoint)),
+                FormatFrame(ExpectedModule, typeof(HiddenFrameTestMethods.PartiallyVisibleClass).FullName, nameof(HiddenFrameTestMethods.PartiallyVisibleClass.DoWorkFromVisibleDerivedClass)),
+                FormatFrame(ExpectedModule, typeof(HiddenFrameTestMethods).FullName, nameof(HiddenFrameTestMethods.EntryPoint)),
+                FormatFrame(ExpectedModule, ExpectedClass, ExpectedCallbackFunction),
+                NativeFrame,
+                FormatFrame(ExpectedModule, ExpectedClass, ExpectedFunction)
+            ];
 
-            WebApi.Models.ProfileEvent[] expectedFrames = ExpectedSpeedscopeFrames(topIndex, bottomIndex);
-            (WebApi.Models.Profile stack, IList<WebApi.Models.ProfileEvent> actualFrames) = GetActualFrames(result, topFrameName, 3);
+            int[] indices = framesToFind.Select(frame => result.Shared.Frames.FindIndex(f => f.Name == frame)).ToArray();
+            Assert.DoesNotContain(-1, indices);
+
+            WebApi.Models.ProfileEvent[] expectedFrames = ExpectedSpeedscopeFrames(indices);
+            (WebApi.Models.Profile stack, IList<WebApi.Models.ProfileEvent> actualFrames) = GetActualFrames(result, framesToFind[0], framesToFind.Length);
 
             Assert.NotNull(stack);
 
@@ -363,7 +400,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     options.GreaterThan = 0.0;
                     options.SlidingWindowDuration = TimeSpan.FromSeconds(5);
                 })
-                .AddCollectStacksAction(fileEgress, Tools.Monitor.CollectionRules.Options.Actions.CallStackFormat.Json);
+                .AddCollectStacksAction(fileEgress, o => o.Format = Tools.Monitor.CollectionRules.Options.Actions.CallStackFormat.Json);
 
             ruleCompletedTask = runner.WaitForCollectionRuleActionsCompletedAsync("StacksCounterRule");
         }
@@ -452,8 +489,17 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private static string FormatFrame(string module, string @class, string function) =>
             FormattableString.Invariant($"{module}!{@class}.{function}");
 
-        private static bool AreFramesEqual(WebApi.Models.CallStackFrame left, WebApi.Models.CallStackFrame right) =>
-            (left.ModuleName == right.ModuleName) && (left.TypeName == right.TypeName) && (left.MethodName == right.MethodName);
+        private static bool AreFramesEqual(WebApi.Models.CallStackFrame expected, WebApi.Models.CallStackFrame actual)
+        {
+            MethodInfo expectedMethodInfo = GetMethodInfo(expected.TypeName, expected.MethodName);
+
+            return (expected.ModuleName == actual.ModuleName) &&
+                (expected.TypeName == actual.TypeName) &&
+                (expected.MethodName == actual.MethodName) &&
+                ((expectedMethodInfo?.MetadataToken ?? 0) == actual.MethodToken) &&
+                ((expectedMethodInfo?.Module.ModuleVersionId ?? Guid.Empty) == actual.ModuleVersionId);
+
+        }
 
         private static bool AreFramesEqual(WebApi.Models.ProfileEvent left, WebApi.Models.ProfileEvent right) =>
             (left.Frame == right.Frame) && (left.At == right.At) && (left.Type == right.Type);
@@ -510,49 +556,66 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             return (null, actualFrames);
         }
 
-        private static WebApi.Models.ProfileEvent[] ExpectedSpeedscopeFrames(int topFrameIndex, int bottomFrameIndex) => new WebApi.Models.ProfileEvent[]
-        {
-            new WebApi.Models.ProfileEvent
+        private static WebApi.Models.ProfileEvent[] ExpectedSpeedscopeFrames(int[] indices)
+            => indices.Select((i) => new WebApi.Models.ProfileEvent
             {
-                Frame = topFrameIndex,
+                Frame = i,
                 At = 0.0,
                 Type = WebApi.Models.ProfileEventType.O
-            },
-            new WebApi.Models.ProfileEvent
-            {
-                Frame = 0,
-                At = 0.0,
-                Type = WebApi.Models.ProfileEventType.O
-            },
-            new WebApi.Models.ProfileEvent
-            {
-                Frame = bottomFrameIndex,
-                At = 0.0,
-                Type = WebApi.Models.ProfileEventType.O
-            },
-
-        };
+            }).ToArray();
 
         private static WebApi.Models.CallStackFrame[] ExpectedFrames() => new WebApi.Models.CallStackFrame[]
             {
-                        new WebApi.Models.CallStackFrame
-                        {
-                            ModuleName = ExpectedModule,
-                            TypeName = ExpectedClass,
-                            MethodName = ExpectedCallbackFunction
-                        },
-                        new WebApi.Models.CallStackFrame
-                        {
-                            ModuleName = NativeFrame,
-                            TypeName = NativeFrame,
-                            MethodName = NativeFrame
-                        },
-                        new WebApi.Models.CallStackFrame
-                        {
-                            ModuleName = ExpectedModule,
-                            TypeName = ExpectedClass,
-                            MethodName = ExpectedFunction
-                        }
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    TypeName = typeof(HiddenFrameTestMethods).FullName,
+                    MethodNameWithGenericArgTypes = nameof(HiddenFrameTestMethods.ExitPoint),
+                },
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    TypeName = typeof(HiddenFrameTestMethods).FullName,
+                    MethodNameWithGenericArgTypes = nameof(HiddenFrameTestMethods.DoWorkFromHiddenMethod),
+                    Hidden = true,
+                },
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    TypeName = typeof(HiddenFrameTestMethods.BaseHiddenClass).FullName,
+                    MethodNameWithGenericArgTypes = nameof(HiddenFrameTestMethods.BaseHiddenClass.DoWorkFromHiddenBaseClass),
+                    Hidden = true
+                },
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    TypeName = typeof(HiddenFrameTestMethods.PartiallyVisibleClass).FullName,
+                    MethodNameWithGenericArgTypes = nameof(HiddenFrameTestMethods.PartiallyVisibleClass.DoWorkFromVisibleDerivedClass),
+                },
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    TypeName = typeof(HiddenFrameTestMethods).FullName,
+                    MethodNameWithGenericArgTypes = nameof(HiddenFrameTestMethods.EntryPoint),
+                },
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    TypeName = ExpectedClass,
+                    MethodNameWithGenericArgTypes = ExpectedCallbackFunction,
+                },
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = NativeFrame,
+                    TypeName = NativeFrame,
+                    MethodNameWithGenericArgTypes = NativeFrame,
+                },
+                new WebApi.Models.CallStackFrame
+                {
+                    ModuleName = ExpectedModule,
+                    TypeName = ExpectedClass,
+                    MethodNameWithGenericArgTypes = ExpectedFunction,
+                }
             };
     }
 }

@@ -5,6 +5,7 @@
   -->
 
   <ItemGroup>
+    <PackageReference Include="Azure.Core" Version="$(AzureCoreVersion)" />
     <PackageReference Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
     <PackageReference Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
     <PackageReference Include="Azure.Storage.Queues" Version="$(AzureStorageQueuesVersion)" />
@@ -19,5 +20,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="$(SwashbuckleAspNetCoreVersion)" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <PackageReference Include="AWSSDK.S3" Version="$(AwsSdkS3Version)" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="$(AwsSdkSecurityTokenVersion)" />
   </ItemGroup>
 </Project>

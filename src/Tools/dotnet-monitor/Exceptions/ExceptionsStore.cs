@@ -87,7 +87,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         public void RemoveExceptionInstance(ulong exceptionId)
         {
-            ExceptionInstance removedInstance = null;
+            ExceptionInstance? removedInstance = null;
 
             lock (_instances)
             {
@@ -145,7 +145,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 // it in the future, with either periodic retry OR registering a callback system for the missing IDs.
                 if (entry.Cache.TryGetExceptionGroup(entry.GroupId, out ulong exceptionClassId, out _, out _))
                 {
-                    string exceptionTypeName;
+                    string? exceptionTypeName;
                     if (!_exceptionTypeNameMap.TryGetValue(exceptionClassId, out exceptionTypeName))
                     {
                         _builder.Clear();
@@ -154,12 +154,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                     }
 
                     string moduleName = string.Empty;
-                    if (entry.Cache.NameCache.ClassData.TryGetValue(exceptionClassId, out ClassData exceptionClassData))
+                    if (entry.Cache.NameCache.ClassData.TryGetValue(exceptionClassId, out ClassData? exceptionClassData))
                     {
                         moduleName = NameFormatter.GetModuleName(entry.Cache.NameCache, exceptionClassData.ModuleId);
                     }
 
-                    CallStackModel callStack = GenerateCallStack(entry.StackFrameIds, entry.Cache, entry.ThreadId);
+                    CallStackModel? callStack = GenerateCallStack(entry.StackFrameIds, entry.Cache, entry.ThreadId);
 
                     ExceptionInstance instance = new(
                         entry.ExceptionId,
@@ -196,7 +196,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             }
         }
 
-        internal static CallStackModel GenerateCallStack(ulong[] stackFrameIds, IExceptionsNameCache cache, int threadId)
+        internal static CallStackModel? GenerateCallStack(ulong[] stackFrameIds, IExceptionsNameCache cache, int threadId)
         {
             // Exceptions without stack frames were not thrown; do not create a call stack object,
             // which makes it clear that this exception was not thrown.
@@ -220,7 +220,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 }
             }
 
-            return StackUtilities.TranslateCallStackToModel(callStack, cache.NameCache, methodNameIncludesGenericParameters: false);
+            return StackUtilities.TranslateCallStackToModel(callStack, cache.NameCache);
         }
 
         private sealed class ExceptionInstanceEntry

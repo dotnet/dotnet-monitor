@@ -19,7 +19,10 @@ class CommandServer final
 {
 public:
     CommandServer(const std::shared_ptr<ILogger>& logger, ICorProfilerInfo12* profilerInfo);
-    HRESULT Start(const std::string& path, std::function<HRESULT (const IpcMessage& message)> callback);
+    HRESULT Start(
+        const std::string& path,
+        std::function<HRESULT (const IpcMessage& message)> callback,
+        std::function<HRESULT (const IpcMessage& message)> validateMessageCallback);
     void Shutdown();
 
 private:
@@ -29,6 +32,8 @@ private:
     std::atomic_bool _shutdown;
 
     std::function<HRESULT(const IpcMessage& message)> _callback;
+    std::function<HRESULT(const IpcMessage& message)> _validateMessageCallback;
+
     IpcCommServer _server;
 
     BlockingQueue<IpcMessage> _clientQueue;

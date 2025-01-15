@@ -75,7 +75,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.LibrarySharing
                 // Go through each directory and validate the existing files are exactly the same as expected
                 // or create new files if they do not exist. Hold onto the file handles to prevent modification
                 // of the shared files while they are being offered for use in target applications.
-                while (subDirectories.TryDequeue(out string subDirectory))
+                while (subDirectories.TryDequeue(out string? subDirectory))
                 {
                     DirectoryInfo sourceDir = new(Path.Combine(sharedLibrarySourceDir.FullName, subDirectory));
                     DirectoryInfo targetDir = Directory.CreateDirectory(Path.Combine(_pathProvider.TargetPath, subDirectory));

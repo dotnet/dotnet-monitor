@@ -5,7 +5,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-#if STARTUPHOOK || HOSTINGSTARTUP
+#if STARTUPHOOK
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher.Models
 #else
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models

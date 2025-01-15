@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;
@@ -330,9 +331,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Guid subject = Guid.NewGuid();
             string subjectStr = subject.ToString("D");
             const string BadApiKeyJwtAudience = "SomeOtherAudience";
-            JwtPayload newPayload = GetJwtPayload(BadApiKeyJwtAudience, subjectStr, AuthConstants.ApiKeyJwtInternalIssuer);
+            JwtPayload newPayload = GetJwtPayload(BadApiKeyJwtAudience, subjectStr, AuthConstants.ApiKeyJwtInternalIssuer, AuthConstants.ApiKeyJwtDefaultExpiration);
 
-            toolRunner.ConfigurationFromEnvironment.UseApiKey(SecurityAlgorithms.EcdsaSha384, subjectStr, newPayload, out string apiKey);
+            toolRunner.ConfigurationFromEnvironment.UseApiKey(SecurityAlgorithms.EcdsaSha384, subjectStr, newPayload, out string token);
 
             // Start dotnet-monitor
             await toolRunner.StartAsync();
@@ -340,7 +341,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             // Create HttpClient with default request headers
             using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
             httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, apiKey);
+                new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, token);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
@@ -358,9 +359,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             Guid subject = Guid.NewGuid();
             string subjectStr = subject.ToString("D");
-            JwtPayload newPayload = GetJwtPayload(null, subjectStr, AuthConstants.ApiKeyJwtInternalIssuer);
+            JwtPayload newPayload = GetJwtPayload(null, subjectStr, AuthConstants.ApiKeyJwtInternalIssuer, AuthConstants.ApiKeyJwtDefaultExpiration);
 
-            toolRunner.ConfigurationFromEnvironment.UseApiKey(SecurityAlgorithms.EcdsaSha384, subjectStr, newPayload, out string apiKey);
+            toolRunner.ConfigurationFromEnvironment.UseApiKey(SecurityAlgorithms.EcdsaSha384, subjectStr, newPayload, out string token);
 
             // Start dotnet-monitor
             await toolRunner.StartAsync();
@@ -368,7 +369,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             // Create HttpClient with default request headers
             using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
             httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, apiKey);
+                new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, token);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
@@ -377,7 +378,35 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
         [Fact]
-        public async Task AllowDifferentIssuer()
+        public async Task RejectsMissingIssuer()
+        {
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
+            toolRunner.DisableMetricsViaCommandLine = true;
+
+            _outputHelper.WriteLine("Generating API key.");
+
+            Guid subject = Guid.NewGuid();
+            string subjectStr = subject.ToString("D");
+            JwtPayload newPayload = GetJwtPayload(AuthConstants.ApiKeyJwtAudience, subjectStr, issuer: null, AuthConstants.ApiKeyJwtDefaultExpiration);
+
+            toolRunner.ConfigurationFromEnvironment.UseApiKey(SecurityAlgorithms.EcdsaSha384, subjectStr, newPayload, out string token);
+
+            // Start dotnet-monitor
+            await toolRunner.StartAsync();
+
+            // Create HttpClient with default request headers
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, token);
+            ApiClient apiClient = new(_outputHelper, httpClient);
+
+            var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
+                apiClient.GetProcessesAsync);
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
+        }
+
+        [Fact]
+        public async Task RejectsDifferentIssuer()
         {
             await using MonitorCollectRunner toolRunner = new(_outputHelper);
             toolRunner.DisableMetricsViaCommandLine = true;
@@ -387,9 +416,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Guid subject = Guid.NewGuid();
             string subjectStr = subject.ToString("D");
             const string ApiKeyJwtIssuer = "MyOtherServiceMintingTokens";
-            JwtPayload newPayload = GetJwtPayload(AuthConstants.ApiKeyJwtAudience, subjectStr, ApiKeyJwtIssuer);
+            JwtPayload newPayload = GetJwtPayload(AuthConstants.ApiKeyJwtAudience, subjectStr, ApiKeyJwtIssuer, AuthConstants.ApiKeyJwtDefaultExpiration);
 
-            toolRunner.ConfigurationFromEnvironment.UseApiKey(SecurityAlgorithms.EcdsaSha384, subjectStr, newPayload, out string apiKey);
+            toolRunner.ConfigurationFromEnvironment.UseApiKey(SecurityAlgorithms.EcdsaSha384, subjectStr, newPayload, out string token);
 
             // Start dotnet-monitor
             await toolRunner.StartAsync();
@@ -397,11 +426,43 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             // Create HttpClient with default request headers
             using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
             httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, apiKey);
+                new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, token);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
-            var processes = await apiClient.GetProcessesAsync();
-            Assert.NotNull(processes);
+            var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
+                apiClient.GetProcessesAsync);
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
+        }
+
+        [Fact]
+        public async Task AllowsConfiguredIssuer()
+        {
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
+            toolRunner.DisableMetricsViaCommandLine = true;
+
+            _outputHelper.WriteLine("Generating API key.");
+
+            ApiKeySignInfo signInfo = ApiKeySignInfo.Create(SecurityAlgorithms.EcdsaSha384);
+
+            Guid subject = Guid.NewGuid();
+            string subjectStr = subject.ToString("D");
+            const string ApiKeyJwtIssuer = "MyOtherServiceMintingTokens";
+            JwtPayload newPayload = GetJwtPayload(AuthConstants.ApiKeyJwtAudience, subjectStr, ApiKeyJwtIssuer, AuthConstants.ApiKeyJwtDefaultExpiration);
+
+            toolRunner.ConfigurationFromEnvironment.UseApiKey(signInfo, subjectStr, ApiKeyJwtIssuer);
+
+            string token = ApiKeyToken.Create(signInfo, newPayload);
+
+            // Start dotnet-monitor
+            await toolRunner.StartAsync();
+
+            // Create HttpClient with default request headers
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, token);
+            ApiClient apiClient = new(_outputHelper, httpClient);
+
+            await apiClient.GetProcessesAsync();
         }
 
         /// <summary>
@@ -422,9 +483,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             _outputHelper.WriteLine("Generating API key.");
 
-            JwtPayload newPayload = GetJwtPayload(AuthConstants.ApiKeyJwtAudience, jwtSubject, AuthConstants.ApiKeyJwtInternalIssuer);
+            JwtPayload newPayload = GetJwtPayload(AuthConstants.ApiKeyJwtAudience, jwtSubject, AuthConstants.ApiKeyJwtInternalIssuer, AuthConstants.ApiKeyJwtDefaultExpiration);
 
-            toolRunner.ConfigurationFromEnvironment.UseApiKey(SecurityAlgorithms.EcdsaSha384, configSubject, newPayload, out string apiKey);
+            toolRunner.ConfigurationFromEnvironment.UseApiKey(SecurityAlgorithms.EcdsaSha384, configSubject, newPayload, out string token);
 
             // Start dotnet-monitor
             await toolRunner.StartAsync();
@@ -432,12 +493,86 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             // Create HttpClient with default request headers
             using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
             httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, apiKey);
+                new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, token);
             ApiClient apiClient = new(_outputHelper, httpClient);
 
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
                 apiClient.GetProcessesAsync);
             Assert.Equal(expectedError, statusCodeException.StatusCode);
+        }
+
+        [Fact]
+        public async Task RejectsMissingExpiration()
+        {
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
+            toolRunner.DisableMetricsViaCommandLine = true;
+
+            _outputHelper.WriteLine("Generating API key.");
+
+            ApiKeySignInfo signInfo = ApiKeySignInfo.Create(SecurityAlgorithms.EcdsaSha384);
+
+            Guid subject = Guid.NewGuid();
+            string subjectStr = subject.ToString("D");
+
+            toolRunner.ConfigurationFromEnvironment.UseApiKey(signInfo, subjectStr);
+
+            // Create token without expiration
+            JwtPayload newPayload = GetJwtPayload(
+                AuthConstants.ApiKeyJwtAudience,
+                subjectStr,
+                AuthConstants.ApiKeyJwtInternalIssuer,
+                expiration: null);
+            string token = ApiKeyToken.Create(signInfo, newPayload);
+
+            // Start dotnet-monitor
+            await toolRunner.StartAsync();
+
+            // Create HttpClient with default request headers
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, token);
+            ApiClient apiClient = new(_outputHelper, httpClient);
+
+            var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
+                apiClient.GetProcessesAsync);
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
+        }
+
+        [Fact]
+        public async Task RejectsExpiredToken()
+        {
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
+            toolRunner.DisableMetricsViaCommandLine = true;
+
+            _outputHelper.WriteLine("Generating API key.");
+
+            ApiKeySignInfo signInfo = ApiKeySignInfo.Create(SecurityAlgorithms.EcdsaSha384);
+
+            Guid subject = Guid.NewGuid();
+            string subjectStr = subject.ToString("D");
+
+            toolRunner.ConfigurationFromEnvironment.UseApiKey(signInfo, subjectStr);
+
+            // Create token that expired yesterday
+            JwtPayload newPayload = GetJwtPayload(
+                AuthConstants.ApiKeyJwtAudience,
+                subjectStr,
+                AuthConstants.ApiKeyJwtInternalIssuer,
+                DateTime.UtcNow.AddDays(-1));
+            string token = ApiKeyToken.Create(signInfo, newPayload);
+
+            // Start dotnet-monitor
+            await toolRunner.StartAsync();
+
+            // Create HttpClient with default request headers
+            using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, token);
+            ApiClient apiClient = new(_outputHelper, httpClient);
+
+            var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
+                apiClient.GetProcessesAsync);
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCodeException.StatusCode);
         }
 
         /// <summary>
@@ -458,35 +593,21 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                 Guid subject = Guid.NewGuid();
                 string subjectStr = subject.ToString("D");
-                JwtPayload newPayload = GetJwtPayload(AuthConstants.ApiKeyJwtAudience, subjectStr, AuthConstants.ApiKeyJwtInternalIssuer);
+                JwtPayload newPayload = GetJwtPayload(AuthConstants.ApiKeyJwtAudience, subjectStr, AuthConstants.ApiKeyJwtInternalIssuer, AuthConstants.ApiKeyJwtDefaultExpiration);
                 RootOptions opts = new();
-                opts.UseApiKey(signingAlgo, subjectStr, newPayload, out string apiKey, out SecurityKey creds);
 
-                JsonWebKey exportableJwk = null;
-                if (signingAlgo.StartsWith("RS"))
-                {
-                    exportableJwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(creds as RsaSecurityKey);
-                }
-                else if (signingAlgo.StartsWith("ES"))
-                {
-                    exportableJwk = JsonWebKeyConverter.ConvertFromECDsaSecurityKey(creds as ECDsaSecurityKey);
-                }
-                else
-                {
-                    Assert.Fail("Unknown algorithm");
-                }
+                ApiKeySignInfo signInfo = ApiKeySignInfo.Create(signingAlgo);
+                opts.UseApiKey(signInfo, subjectStr, newPayload, out string token);
 
                 JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonIgnoreCondition.WhenWritingNull);
                 serializerOptions.IgnoreReadOnlyProperties = true;
-                string privateKeyJson = JsonSerializer.Serialize(exportableJwk, serializerOptions);
-                string privateKeyEncoded = Base64UrlEncoder.Encode(privateKeyJson);
 
                 AuthenticationOptions authOpts = new AuthenticationOptions()
                 {
                     MonitorApiKey = new MonitorApiKeyOptions()
                     {
                         Subject = opts.Authentication.MonitorApiKey.Subject,
-                        PublicKey = privateKeyEncoded,
+                        PublicKey = signInfo.PrivateKeyEncoded,
                     },
                 };
                 toolRunner.ConfigurationFromEnvironment.Authentication = authOpts;
@@ -497,7 +618,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 // Create HttpClient with default request headers
                 using HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
                 httpClient.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, apiKey);
+                    new AuthenticationHeaderValue(AuthConstants.ApiKeySchema, token);
                 ApiClient apiClient = new(_outputHelper, httpClient);
 
                 await apiClient.GetProcessesAsync();
@@ -677,7 +798,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _warnPrivateKeyLog.Add((fieldName, DateTime.Now));
         }
 
-        private static JwtPayload GetJwtPayload(string audience, string subject, string issuer)
+        private static JwtPayload GetJwtPayload(string audience, string subject, string issuer, TimeSpan expiration)
+        {
+            return GetJwtPayload(audience, subject, issuer, DateTime.UtcNow + expiration);
+        }
+
+        private static JwtPayload GetJwtPayload(string audience, string subject, string issuer, DateTime? expiration)
         {
             List<Claim> claims = new();
 
@@ -695,6 +821,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             {
                 Claim audClaim = new Claim(AuthConstants.ClaimIssuerStr, issuer);
                 claims.Add(audClaim);
+            }
+            if (expiration.HasValue)
+            {
+                long expirationSecondsSinceEpoch = EpochTime.GetIntDate(expiration.Value);
+                Claim expClaim = new Claim(AuthConstants.ClaimExpirationStr, expirationSecondsSinceEpoch.ToString(CultureInfo.InvariantCulture));
+                claims.Add(expClaim);
             }
 
             JwtPayload newPayload = new JwtPayload(claims);

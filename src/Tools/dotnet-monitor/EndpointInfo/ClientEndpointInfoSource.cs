@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             CancellationToken timeoutToken = timeoutTokenSource.Token;
             CancellationToken linkedToken = linkedTokenSource.Token;
 
-            var endpointInfoTasks = new List<Task<EndpointInfo>>();
+            var endpointInfoTasks = new List<Task<EndpointInfo?>>();
             // Run the EndpointInfo creation parallel. The call to FromProcessId sends
             // a GetProcessInfo command to the runtime instance to get additional information.
             foreach (int pid in DiagnosticsClient.GetPublishedProcesses())
@@ -68,7 +68,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             await Task.WhenAll(endpointInfoTasks);
 
-            return endpointInfoTasks.Where(t => t.Result != null).Select(t => t.Result);
+            return endpointInfoTasks.Where(t => t.Result != null).Select(t => t.Result).Cast<IEndpointInfo>();
         }
     }
 }

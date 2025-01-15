@@ -26,6 +26,6 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExceptionsOptions_CollectionFilters))]
-        public ExceptionsConfiguration CollectionFilters { get; set; }
+        public ExceptionsConfiguration? CollectionFilters { get; set; }
     }
 }

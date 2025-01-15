@@ -1,7 +1,6 @@
 <Project>
   <!-- Create dotnet-monitor product archive (RID and TFM specific) -->
   <Import Project="$(MSBuildThisFileDirectory)ProjectsToPublish.props" />
-  <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.HostingStartup\ProjectsToPublish.props" />
   <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.StartupHook\ProjectsToPublish.props" />
   <PropertyGroup>
     <ExecutableName>dotnet-monitor</ExecutableName>

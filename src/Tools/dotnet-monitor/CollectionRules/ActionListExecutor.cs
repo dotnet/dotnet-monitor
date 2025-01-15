@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -57,7 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 {
                     KeyValueLogScope actionScope = new();
                     actionScope.AddCollectionRuleAction(actionOption.Type, actionIndex);
-                    using IDisposable actionScopeRegistration = _logger.BeginScope(actionScope);
+                    using IDisposable? actionScopeRegistration = _logger.BeginScope(actionScope);
 
                     _logger.CollectionRuleActionStarted(context.Name, actionOption.Type);
 
@@ -83,11 +84,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                         if (!_actionOperations.TryCreateFactory(actionOption.Type, out factory))
                         {
-                            throw new InvalidOperationException(Strings.ErrorMessage_CouldNotMapToAction);
+                            throw new InvalidOperationException(string.Format(
+                                CultureInfo.InvariantCulture,
+                                Strings.ErrorMessage_CouldNotMapToAction,
+                                actionOption.Type
+                                ));
                         }
 
-                        object newSettings = dependencyAnalyzer.SubstituteOptionValues(actionResults, actionIndex, actionOption.Settings);
-                        ICollectionRuleAction action = factory.Create(context.ProcessInfo, newSettings);
+                        object? newSettings = dependencyAnalyzer.SubstituteOptionValues(actionResults, actionIndex, actionOption.Settings);
+                        ICollectionRuleAction? action = factory.Create(context.ProcessInfo, newSettings);
 
                         try
                         {
@@ -153,7 +158,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         private async Task WaitForCompletion(CollectionRuleContext context,
-            Action startCallback,
+            Action? startCallback,
             IDictionary<string, CollectionRuleActionResult> allResults,
             ICollectionRuleAction action,
             CollectionRuleActionOptions actionOption,
@@ -173,7 +178,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         private async Task WaitForCompletion(CollectionRuleContext context,
-            Action startCallback,
+            Action? startCallback,
             IDictionary<string, CollectionRuleActionResult> allResults,
             ActionCompletionEntry entry,
             CancellationToken cancellationToken)

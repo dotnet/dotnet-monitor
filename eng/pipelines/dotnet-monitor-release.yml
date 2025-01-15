@@ -62,22 +62,24 @@ extends:
           env:
             SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
-        - task: PowerShell@2
+        - task: AzureCLI@2
           displayName: Get Release Version
           inputs:
-            filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetReleaseVersion.ps1
+            azureSubscription: "Darc: Maestro Production"
+            scriptType: ps
+            scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetReleaseVersion.ps1
             arguments: >-
               -BarId $(BarId)
-              -MaestroToken $(MaestroAccessToken)
               -TaskVariableName 'ReleaseVersion'
-        
-        - task: PowerShell@2
+
+        - task: AzureCLI@2
           displayName: Get Build Version
           inputs:
-            filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
+            azureSubscription: "Darc: Maestro Production"
+            scriptType: ps
+            scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
             arguments: >-
               -BarId $(BarId)
-              -MaestroToken $(MaestroAccessToken)
               -TaskVariableName 'BuildVersion'
 
         - powershell: |
@@ -107,10 +109,15 @@ extends:
 
         variables:
         - ${{ if eq(parameters.IsTestRun, 'true') }}:
-          - group: DotNet-Diagnostics-Storage-Test
+          - name: DestinationAccountName
+            value: monitortestcli
+          - name: ChecksumsAccountName
+            value: monitortestchecksums
         - ${{ else }}:
-          - group: DotNetCli storage account tokens
-        - group: DotNet-DotNetStage-Storage
+          - name: DestinationAccountName
+            value: dotnetcli
+          - name: ChecksumsAccountName
+            value: dotnetclichecksums
 
         workspace:
           clean: all
@@ -140,22 +147,24 @@ extends:
                 env:
                   SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
-              - task: PowerShell@2
+              - task: AzureCLI@2
                 displayName: Get Release Version
                 inputs:
-                  filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetReleaseVersion.ps1
+                  azureSubscription: "Darc: Maestro Production"
+                  scriptType: ps
+                  scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetReleaseVersion.ps1
                   arguments: >-
                     -BarId $(BarId)
-                    -MaestroToken $(MaestroAccessToken)
                     -TaskVariableName 'ReleaseVersion'
 
-              - task: PowerShell@2
+              - task: AzureCLI@2
                 displayName: Get Build Version
                 inputs:
-                  filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
+                  azureSubscription: "Darc: Maestro Production"
+                  scriptType: ps
+                  scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
                   arguments: >-
                     -BarId $(BarId)
-                    -MaestroToken $(MaestroAccessToken)
                     -TaskVariableName 'BuildVersion'
 
               - powershell: Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
@@ -164,42 +173,40 @@ extends:
               - powershell: Install-Module Az.Storage -Force -Scope CurrentUser -AllowClobber -Verbose -RequiredVersion 5.10.1
                 displayName: Install Az.Storage Module 5.10.1
 
-              - powershell: |
-                  Write-Host "##vso[task.setvariable variable=DestinationAccountName]$env:DESTINATION_ACCOUNT_NAME"
-                  Write-Host "##vso[task.setvariable variable=DestinationSasTokenBase64;issecret=true]$env:DESTINATION_SAS_TOKEN_BASE64"
-                  Write-Host "##vso[task.setvariable variable=ChecksumsAccountName]$env:CHECKSUMS_ACCOUNT_NAME"
-                  Write-Host "##vso[task.setvariable variable=ChecksumsSasTokenBase64;issecret=true]$env:CHECKSUMS_SAS_TOKEN_BASE64"
-                displayName: Set Storage Accounts
-                ${{ if eq(parameters.IsTestRun, 'true') }}:
-                  env:
-                    # Variables provided by DotNet-Diagnostics-Storage-Test group
-                    DESTINATION_ACCOUNT_NAME: $(dotnet-monitor-test-storage-accountname)
-                    DESTINATION_SAS_TOKEN_BASE64: $(dotnet-monitor-test-blob-write-token-base64)
-                    CHECKSUMS_ACCOUNT_NAME: $(dotnet-monitor-checksums-test-storage-accountname)
-                    CHECKSUMS_SAS_TOKEN_BASE64: $(dotnet-monitor-checksums-test-blob-write-token-base64)
-                ${{ else }}:
-                  env:
-                    # Variables provided by "DotNetCli storage account tokens" group
-                    DESTINATION_ACCOUNT_NAME: dotnetcli
-                    DESTINATION_SAS_TOKEN_BASE64: $(dotnetcli-account-blob-write-token-base64)
-                    CHECKSUMS_ACCOUNT_NAME: dotnetclichecksums
-                    CHECKSUMS_SAS_TOKEN_BASE64: $(dotnetclichecksums-account-blob-write-token-base64)
+              - template: /eng/common/templates/steps/get-delegation-sas.yml
+                parameters:
+                  federatedServiceConnection: 'DotNetRelease-PME'
+                  outputVariableName: 'DotNetCliDelegationSasTokenBase64'
+                  base64Encode: true
+                  storageAccount: 'dotnetcli'
+                  container: 'dotnet'
+                  permissions: 'racwl'
 
-              - task: PowerShell@2
+              - task: AzureCLI@2
                 displayName: Publish Assets
                 inputs:
-                  filePath: $(Build.SourcesDirectory)/eng/release/Scripts/PublishToBlobAccounts.ps1
+                  # It seems that azureSubscription can't use runtime expressions, so we need to use a compile time expression
+                  # to set it.
+                  ${{ if eq(parameters.IsTestRun, 'true') }}:
+                    azureSubscription: dotnet-monitor-test-publish
+                  ${{ else }}:
+                    azureSubscription: dotnet-monitor-cli-storage-accounts-publish
+                  # Save the service principal details to the environment so that azcopy can use them
+                  addSpnToEnvironment: true
+                  scriptType: ps
+                  scriptLocation: scriptPath
+                  scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/PublishToBlobAccounts.ps1
                   arguments: >-
                     -AzCopyPath $(AzCopyPath)
                     -BuildVersion $(BuildVersion)
                     -ReleaseVersion $(ReleaseVersion)
-                    -DotnetStageAccountKey $(dotnetstage-storage-key)
                     -DestinationAccountName $(DestinationAccountName)
-                    -DestinationSasTokenBase64 $(DestinationSasTokenBase64)
+                    -DestinationSasTokenBase64 $Env:DestinationSasTokenBase64
                     -ChecksumsAccountName $(ChecksumsAccountName)
-                    -ChecksumsSasTokenBase64 $(ChecksumsSasTokenBase64)
                     -WhatIf:${{ format('${0}', parameters.IsDryRun) }}
-              
+                env:
+                  DestinationSasTokenBase64: $(DotNetCliDelegationSasTokenBase64)
+
               - task: 1ES.PublishBuildArtifacts@1
                 displayName: Publish Logs
                 inputs:

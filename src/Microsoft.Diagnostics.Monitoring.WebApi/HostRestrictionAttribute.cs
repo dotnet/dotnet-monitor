@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// To do this, we determine what port the request is on, and disallow other actions on the prometheus port.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-    internal sealed class HostRestrictionAttribute : Attribute, IActionConstraintFactory
+    public sealed class HostRestrictionAttribute : Attribute, IActionConstraintFactory
     {
         private sealed class HostConstraint : IActionConstraint
         {

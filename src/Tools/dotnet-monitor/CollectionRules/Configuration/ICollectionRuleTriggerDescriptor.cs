@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
     {
         Type FactoryType { get; }
 
-        Type OptionsType { get; }
+        Type? OptionsType { get; }
 
         string TriggerName { get; }
     }

@@ -769,4 +769,11 @@
   <data name="DisplayAttributeDescription_CollectExceptionsOptions_Filters" xml:space="preserve">
     <value>The filters that determine which exceptions should be included/excluded when collecting exceptions.</value>
   </data>
+  <data name="DisplayAttributeDescription_MonitorApiKeyOptions_Issuer" xml:space="preserve">
+    <value>The expected value of the 'iss' or Issuer field in the JWT (JSON Web Token).</value>
+    <comment>The description provided for the Issuer parameter on MonitorApiKeyOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_CollectArtifactOptions_ArtifactName" xml:space="preserve">
+    <value>The name of the generated artifact.</value>
+  </data>
 </root>

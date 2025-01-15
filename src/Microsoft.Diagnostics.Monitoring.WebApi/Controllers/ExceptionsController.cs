@@ -31,7 +31,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         public ExceptionsController(
             IServiceProvider serviceProvider,
             ILogger<ExceptionsController> logger)
-            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<EgressOperationStore>(), logger)
+            : base(serviceProvider, logger)
         {
             _options = serviceProvider.GetRequiredService<IOptions<ExceptionsOptions>>();
         }
@@ -55,11 +55,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null,
+            string? name = null,
             [FromQuery]
-            string egressProvider = null,
+            string? egressProvider = null,
             [FromQuery]
-            string tags = null)
+            string? tags = null)
         {
             if (!_options.Value.GetEnabled())
             {
@@ -107,11 +107,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             [FromQuery]
             Guid? uid = null,
             [FromQuery]
-            string name = null,
+            string? name = null,
             [FromQuery]
-            string egressProvider = null,
+            string? egressProvider = null,
             [FromQuery]
-            string tags = null)
+            string? tags = null)
         {
             if (!_options.Value.GetEnabled())
             {

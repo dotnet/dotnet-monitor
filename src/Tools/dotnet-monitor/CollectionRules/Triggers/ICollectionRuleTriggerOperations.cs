@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         /// </summary>
         bool TryValidateOptions(
             string triggerName,
-            object options,
+            object? options,
             ValidationContext validationContext,
             ICollection<ValidationResult> results);
     }

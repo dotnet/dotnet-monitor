@@ -11,11 +11,10 @@ jobs:
     artifacts:
       publish:
         logs:
-          name: Logs_$(JobName)
+          name: Logs_Sign_Binaries
     variables:
     - _BuildConfig: ${{ parameters.configuration }}
     - _SignType: real
-    - group: DotNetBuilds storage account read tokens
 
     steps:
     - task: DownloadPipelineArtifact@2
@@ -27,6 +26,9 @@ jobs:
     - template: /eng/pipelines/steps/setup-nuget-sources.yml@self
       parameters:
         osGroup: Windows
+
+    # Populate internal runtime access variables
+    - template: /eng/common/templates/steps/enable-internal-runtimes.yml
 
     - script: >-
         $(Build.SourcesDirectory)/restore.cmd

@@ -43,6 +43,9 @@ private:
     template<size_t index, typename T = tstring, typename... TArgs>
     HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const tstring& first, TArgs... rest);
 
+    template<size_t index, typename T = GUID, typename... TArgs>
+    HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const GUID& first, TArgs... rest);
+
     template<size_t index, typename T, typename... TArgs>
     HRESULT WritePayload(COR_PRF_EVENT_DATA* data, const std::vector<typename T::value_type>& first, TArgs... rest);
 
@@ -139,6 +142,33 @@ HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const tst
      }
      return WritePayload<index + 1, TArgs...>(data, rest...);
  }
+
+template<typename... Args>
+template<size_t index, typename T, typename... TArgs>
+HRESULT ProfilerEvent<Args...>::WritePayload(COR_PRF_EVENT_DATA* data, const GUID& first, TArgs... rest)
+{
+    // Manually copy the GUID into a buffer and pass the buffer address.
+    // We can't pass the GUID address directly (or use sizeof(GUID)) because the GUID may have padding between its different data segments.
+    const int GUID_FLAT_SIZE = sizeof(INT32) + sizeof(INT16) + sizeof(INT16) + sizeof(INT64);
+    static_assert(GUID_FLAT_SIZE == 128 / 8, "Incorrect flat GUID size.");
+
+    BYTE buffer[GUID_FLAT_SIZE] = {0};
+    int offset = 0;
+
+    memcpy(&buffer[offset], &first.Data1, sizeof(INT32));
+    offset += sizeof(INT32);
+    memcpy(&buffer[offset], &first.Data2, sizeof(INT16));
+    offset += sizeof(INT16);
+    memcpy(&buffer[offset], &first.Data3, sizeof(INT16));
+    offset += sizeof(INT16);
+    memcpy(&buffer[offset], first.Data4, sizeof(INT64));
+
+    data[index].ptr = reinterpret_cast<UINT64>(buffer);
+    data[index].size = static_cast<UINT32>(GUID_FLAT_SIZE);
+    data[index].reserved = 0;
+
+    return WritePayload<index + 1, TArgs...>(data, rest...);
+}
 
 template<typename... Args>
 template<typename T>

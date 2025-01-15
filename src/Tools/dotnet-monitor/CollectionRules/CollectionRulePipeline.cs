@@ -29,7 +29,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         // Flag used to guard against multiple invocations of _startCallback.
         private bool _invokedStartCallback;
 
+#nullable disable
         private CollectionRulePipelineState _stateHolder;
+#nullable restore
 
         public CollectionRulePipeline(
             ActionListExecutor actionListExecutor,
@@ -69,7 +71,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 (Context.Options.Limits?.ActionCount).GetValueOrDefault(CollectionRuleLimitsOptionsDefaults.ActionCount),
                 Context.Options.Limits?.ActionCountSlidingWindowDuration,
                 Context.Options.Limits?.RuleDuration,
-                Context.TimeProvider.GetUtcNow().UtcDateTime);
+                Context.HostInfo.TimeProvider.GetUtcNow().UtcDateTime);
 
             // Start cancellation timer for graceful stop of the collection rule
             // when the rule duration has been specified. Conditionally enable this
@@ -84,15 +86,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 bool completePipeline = false;
                 while (!completePipeline)
                 {
-                    TaskCompletionSource<object> triggerSatisfiedSource =
+                    TaskCompletionSource<object?> triggerSatisfiedSource =
                         new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-                    ICollectionRuleTrigger trigger = null;
+                    ICollectionRuleTrigger? trigger = null;
                     try
                     {
                         KeyValueLogScope triggerScope = new();
                         triggerScope.AddCollectionRuleTrigger(Context.Options.Trigger.Type);
-                        using IDisposable triggerScopeRegistration = Context.Logger.BeginScope(triggerScope);
+                        using IDisposable? triggerScopeRegistration = Context.Logger.BeginScope(triggerScope);
 
                         Context.Logger.CollectionRuleTriggerStarted(Context.Name, Context.Options.Trigger.Type);
 
@@ -124,20 +126,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                     }
                     finally
                     {
-                        try
+                        if (trigger != null)
                         {
-                            // Intentionally not using the linkedToken. If the linkedToken was signaled
-                            // due to pipeline duration expiring, try to stop the trigger gracefully
-                            // unless forced by a caller to the pipeline.
-                            await trigger.StopAsync(token).ConfigureAwait(false);
+                            try
+                            {
+                                // Intentionally not using the linkedToken. If the linkedToken was signaled
+                                // due to pipeline duration expiring, try to stop the trigger gracefully
+                                // unless forced by a caller to the pipeline.
+                                await trigger.StopAsync(token).ConfigureAwait(false);
+                            }
+                            finally
+                            {
+                                await DisposableHelper.DisposeAsync(trigger);
+                            }
                         }
-                        finally
-                        {
-                            await DisposableHelper.DisposeAsync(trigger);
-                        }
+
                     }
 
-                    DateTime currentTimestamp = Context.TimeProvider.GetUtcNow().UtcDateTime;
+                    DateTime currentTimestamp = Context.HostInfo.TimeProvider.GetUtcNow().UtcDateTime;
 
                     if (_stateHolder.BeginActionExecution(currentTimestamp))
                     {
@@ -233,7 +239,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         {
             CollectionRulePipelineState pipelineStateCopy = new CollectionRulePipelineState(_stateHolder);
 
-            _ = pipelineStateCopy.CheckForThrottling(Context.TimeProvider.GetUtcNow().UtcDateTime);
+            _ = pipelineStateCopy.CheckForThrottling(Context.HostInfo.TimeProvider.GetUtcNow().UtcDateTime);
 
             return pipelineStateCopy;
         }

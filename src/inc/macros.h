@@ -16,6 +16,10 @@
 #define E_NOT_SET HRESULT_FROM_WIN32(1168L) //ERROR_NOT_FOUND
 #endif
 
+#ifndef E_NOT_SUPPORTED
+#define E_NOT_SUPPORTED HRESULT_FROM_WIN32(50L) //ERROR_NOT_SUPPORTED
+#endif
+
 #ifndef IfOomRetMem
 #define START_NO_OOM_THROW_REGION try {
 #define END_NO_OOM_THROW_REGION } catch (const std::bad_alloc&) { return E_OUTOFMEMORY; }

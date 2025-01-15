@@ -27,19 +27,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly ConcurrentDictionary<string, RequestCount> _requestCounts = new();
         private readonly ILogger<RequestLimitTracker> _logger;
 
-        public RequestLimitTracker(ILogger<RequestLimitTracker> logger)
+        public RequestLimitTracker(ILogger<RequestLimitTracker> logger, IEnumerable<RequestLimit> limits)
         {
-            //CONSIDER Should we have configuration for these?
+            foreach (RequestLimit requestLimit in limits)
+            {
+                _requestLimitTable.Add(requestLimit.Key, requestLimit.Limit);
+            }
 
-            _requestLimitTable.Add(Utilities.ArtifactType_Dump, 1);
-            _requestLimitTable.Add(Utilities.ArtifactType_GCDump, 1);
-            _requestLimitTable.Add(Utilities.ArtifactType_Logs, 3);
-            _requestLimitTable.Add(Utilities.ArtifactType_Trace, 3);
-            _requestLimitTable.Add(Utilities.ArtifactType_Metrics, 3);
-            _requestLimitTable.Add(Utilities.ArtifactType_Stacks, 1);
-            _requestLimitTable.Add(Utilities.ArtifactType_Exceptions, 1);
-            _requestLimitTable.Add(Utilities.ArtifactType_Parameters, 1);
-            _requestLimitTable.Add(Unlimited, int.MaxValue);
 
             _logger = logger;
         }

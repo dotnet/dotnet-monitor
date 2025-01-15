@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
+  <!--
+    Microsoft ResX Schema
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of "resheader" rows that contain simple 
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -814,14 +814,8 @@
   <data name="LogFormatString_StartCollectArtifact" xml:space="preserve">
     <value>Started capturing {artifactType} artifact.</value>
   </data>
-  <data name="LogFormatString_StartupHookEnvironmentMissing" xml:space="preserve">
-    <value>The DOTNET_STARTUP_HOOKS environment variable is missing from target process {processId}.</value>
-  </data>
   <data name="LogFormatString_StartupHookInstructions" xml:space="preserve">
-    <value>Exception-based features require that the DOTNET_STARTUP_HOOKS environment variable is set on the target process and must contain the path to the .NET Monitor startup hook library. The path to the library is "{path}".</value>
-  </data>
-  <data name="LogFormatString_StartupHookMissing" xml:space="preserve">
-    <value>The DOTNET_STARTUP_HOOKS environment variable for target process {processId} does not contain the '{name}' startup hook.</value>
+    <value>Certain in process features require that the DOTNET_STARTUP_HOOKS environment variable is set on the target process {processId} and must contain the path to the "{startupHookFileName}" startup hook library. The path to the library is "{path}".</value>
   </data>
   <data name="LogFormatString_UnableToApplyProfiler" xml:space="preserve">
     <value>Unable to apply profiler.</value>
@@ -903,12 +897,6 @@
 0. providerName: The name of the provider that failed validation.
 1. errorMessage: The validation failure message</comment>
   </data>
-  <data name="ErrorMessage_UnableToFindHostingStartupAssembly" xml:space="preserve">
-    <value>Unable to find hosting startup assembly at determined path.</value>
-  </data>
-  <data name="LogFormatString_UnableToApplyHostingStartup" xml:space="preserve">
-    <value>Unable to apply hosting startup.</value>
-  </data>
   <data name="LogFormatString_UnableToApplyInProcessFeatureFlags" xml:space="preserve">
     <value>Unable to apply in process feature flags.</value>
   </data>
@@ -922,8 +910,7 @@
     <value>Unable to fully remove endpoint for process {processId}.</value>
   </data>
   <data name="LogFormatString_StartupHookApplyFailed" xml:space="preserve">
-    <value>Failed to apply the startup hook. Not all in process features will be available.</value>
-    <comment>Gets a string similar to "Failed to apply the startup hook. Not all in process features will be available."</comment>
+    <value>Failed to apply the startup hook "{startupHookFileName}". Not all in process features will be available.</value>
   </data>
   <data name="ErrorMessage_SharedFileDiffersFromSource" xml:space="preserve">
     <value>The shared file '{0}' is different from source file '{1}'.</value>
@@ -934,11 +921,8 @@
 1 Format Parameters:
 0. reason: The reason why the feature is unavailable.</comment>
   </data>
-  <data name="ParameterCapturingNotAvailable_Reason_PreventedHostingStartup" xml:space="preserve">
-    <value>The process has prevented hosting startup assemblies from loading using the ASPNETCORE_PREVENTHOSTINGSTARTUP environment variable.</value>
-  </data>
-  <data name="ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad" xml:space="preserve">
-    <value>This feature is only available on processes using ASP.NET Core. If the process is using ASP.NET Core and has successfully started, ensure that it has not been configured to prevent hosting startup assemblies from loading.</value>
+  <data name="ParameterCapturingNotAvailable_Reason_StartupHookDidNotLoad" xml:space="preserve">
+    <value>This feature requires the startup hook to be loaded in the target process.</value>
   </data>
   <data name="ParameterCapturingNotAvailable_Reason_ManagedMessagingDidNotLoad" xml:space="preserve">
     <value>An internal error occurred that has prevented communication with the process.</value>
@@ -948,5 +932,12 @@
   </data>
   <data name="ParameterCapturingNotAvailable_Reason_HotReload" xml:space="preserve">
     <value>The process has Hot Reload enabled.</value>
+  </data>
+  <data name="ErrorMessage_ExpirationMustBePositive" xml:space="preserve">
+    <value>The expiration offset must be a positive time span value.</value>
+  </data>
+  <data name="HelpDescription_Expiration" xml:space="preserve">
+    <value>The expiration time on or after the generated key will no longer be accepted. This is a time span offset (e.g. "7.00:00:00" for 7 days) that will be added to the current date time to create the expiration date time.</value>
+    <comment>Gets the string to display in help that explains what the '--expiration' option does.</comment>
   </data>
 </root>

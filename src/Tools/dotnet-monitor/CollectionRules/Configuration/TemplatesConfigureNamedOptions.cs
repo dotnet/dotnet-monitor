@@ -28,29 +28,35 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             _configuration = configuration;
         }
 
-        public void PostConfigure(string name, TemplateOptions options)
+        public void PostConfigure(string? name, TemplateOptions options)
         {
             IConfigurationSection collectionRuleActionsSection = _configuration.GetSection(collectionRuleActionsPath);
 
-            foreach (string key in options.CollectionRuleActions.Keys)
+            if (options.CollectionRuleActions != null)
             {
-                IConfigurationSection actionSection = collectionRuleActionsSection.GetSection(key);
-
-                if (actionSection.Exists())
+                foreach (string key in options.CollectionRuleActions.Keys)
                 {
-                    CollectionRuleBindingHelper.BindActionSettings(actionSection, options.CollectionRuleActions[key], _actionOperations);
+                    IConfigurationSection actionSection = collectionRuleActionsSection.GetSection(key);
+
+                    if (actionSection.Exists())
+                    {
+                        CollectionRuleBindingHelper.BindActionSettings(actionSection, options.CollectionRuleActions[key], _actionOperations);
+                    }
                 }
             }
 
             IConfigurationSection collectionRuleTriggersSection = _configuration.GetSection(collectionRuleTriggersPath);
 
-            foreach (string key in options.CollectionRuleTriggers.Keys)
+            if (options.CollectionRuleTriggers != null)
             {
-                IConfigurationSection triggerSection = collectionRuleTriggersSection.GetSection(key);
-
-                if (triggerSection.Exists())
+                foreach (string key in options.CollectionRuleTriggers.Keys)
                 {
-                    CollectionRuleBindingHelper.BindTriggerSettings(triggerSection, options.CollectionRuleTriggers[key], _triggerOperations);
+                    IConfigurationSection triggerSection = collectionRuleTriggersSection.GetSection(key);
+
+                    if (triggerSection.Exists())
+                    {
+                        CollectionRuleBindingHelper.BindTriggerSettings(triggerSection, options.CollectionRuleTriggers[key], _triggerOperations);
+                    }
                 }
             }
         }

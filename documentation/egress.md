@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fegress)
-
 # Egress Providers
 
 `dotnet monitor` supports configuration of [egress providers](./configuration/egress-configuration.md) that can be used to egress artifacts externally, instead of to the client. This is supported for dumps, gcdumps, traces, logs, and live metrics. Currently supported providers are Azure blob storage and filesystem.
@@ -41,13 +38,13 @@ Users using the `monitor-base` image can manually install supported extensions v
 
 For an example of using Multi-Stage Docker Builds, see the [Dockerfile](https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/8.0/ubuntu-chiseled/amd64/Dockerfile) that the `dotnet monitor` team uses to construct the `amd64` `monitor` image.
 
-To directly access archives for one of `dotnet monitor`'s supported extensions, these are available using the following link (this example is specifically for the `linux-x64` archive): `https://dotnetbuilds.azureedge.net/public/diagnostics/monitor/$dotnet_monitor_extension_version/dotnet-monitor-egress-azureblobstorage-$dotnet_monitor_extension_version-linux-x64.tar.gz`.
+To directly access archives for one of `dotnet monitor`'s supported extensions, these are available using the following link (this example is specifically for the `linux-x64` archive): `https://ci.dot.net/public/diagnostics/monitor/$dotnet_monitor_extension_version/dotnet-monitor-egress-azureblobstorage-$dotnet_monitor_extension_version-linux-x64.tar.gz`.
 > [!NOTE]
 > The versions in this link will change in response to new `dotnet monitor` releases; as a result, the link will need to be changed to reflect the most recent version when updating your extensions.
 
 #### Example Of Manually Installing AzureBlobStorage Extension Locally (Version Numbers May Vary)
 
-1. Download the archive: `curl -fSL --output dotnet-monitor-egress-azureblobstorage.tar.gz https://dotnetbuilds.azureedge.net/public/diagnostics/monitor/8.0.0-preview.4.23260.4/dotnet-monitor-egress-azureblobstorage-8.0.0-preview.4.23260.4-linux-x64.tar.gz`
+1. Download the archive: `curl -fSL --output dotnet-monitor-egress-azureblobstorage.tar.gz https://ci.dot.net/public/diagnostics/monitor/8.0.0-preview.4.23260.4/dotnet-monitor-egress-azureblobstorage-8.0.0-preview.4.23260.4-linux-x64.tar.gz`
 2. Extract the contents of `dotnet-monitor-egress-azureblobstorage.tar.gz`
    * Example (Linux): `tar -xvzf dotnet-monitor-egress-azureblobstorage.tar.gz`
 4. Place the `AzureBlobStorage` directory found inside the archive in one of `dotnet monitor`'s designated extension [locations](./learningPath/egress.md#well-known-egress-provider-locations).

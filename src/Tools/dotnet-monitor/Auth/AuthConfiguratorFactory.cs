@@ -29,7 +29,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
                     return new NoAuthConfigurator();
 
                 case StartupAuthenticationMode.TemporaryKey:
-                    if (context.Properties.TryGetValue(typeof(GeneratedJwtKey), out object generatedJwtKeyObject))
+                    if (context.Properties.TryGetValue(typeof(GeneratedJwtKey), out object? generatedJwtKeyObject))
                     {
                         if (generatedJwtKeyObject is GeneratedJwtKey generatedJwtKey)
                         {
@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
             }
         }
 
-        private static void ValidateAuthConfigSection<T>(T options, string configurationPath)
+        private static void ValidateAuthConfigSection<T>(T options, string configurationPath) where T : notnull
         {
             List<ValidationResult> results = new();
             if (!Validator.TryValidateObject(options, new ValidationContext(options), results, validateAllProperties: true))

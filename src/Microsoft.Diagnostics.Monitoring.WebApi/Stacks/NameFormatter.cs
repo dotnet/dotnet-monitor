@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -42,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
             else
             {
-                BuildTypeName(builder, cache, functionData.ModuleId, functionData.ParentToken, TypeFormat.Full);
+                BuildTypeName(builder, cache, functionData.ModuleId, functionData.ParentClassToken, TypeFormat.Full);
             }
         }
 
@@ -80,11 +81,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             }
         }
 
-        private static void BuildTypeName(StringBuilder builder, NameCache cache, ulong moduleId, uint token, TypeFormat typeFormat)
+        private static void BuildTypeName(StringBuilder builder, NameCache cache, ulong moduleId, uint classToken, TypeFormat typeFormat)
         {
             var typeNames = new Stack<string>();
 
-            uint currentToken = token;
+            uint currentToken = classToken;
             while (currentToken != 0 && cache.TokenData.TryGetValue(new ModuleScopedToken(moduleId, currentToken), out TokenData? tokenData))
             {
                 string typeName = tokenData.Name;
@@ -124,6 +125,26 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
         public static void BuildGenericArgTypes(StringBuilder builder, IList<string> typeNames)
         {
             WriteTypeNamesList(builder, typeNames, GenericStart, GenericEnd, GenericSeparator);
+        }
+
+        public static string RemoveGenericArgTypes(string name, out string[] genericArgTypes)
+        {
+            int genericsStartIndex = name.IndexOf(GenericStart);
+            // Not found or an annotated frame
+            if (genericsStartIndex <= 0)
+            {
+                genericArgTypes = [];
+                return name;
+            }
+
+            int genericEndIndex = name.IndexOf(GenericEnd);
+            if (genericEndIndex != name.Length - 1)
+            {
+                throw new InvalidOperationException("Malformed name");
+            }
+
+            genericArgTypes = name[(genericsStartIndex + 1)..genericEndIndex].Split(GenericSeparator);
+            return name[..genericsStartIndex];
         }
 
         public static void BuildMethodParameterTypes(StringBuilder builder, IList<string> typeNames)

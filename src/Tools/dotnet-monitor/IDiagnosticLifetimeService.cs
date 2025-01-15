@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// <summary>
     /// Callbacks for the lifetime events related to the diagnostic connection.
     /// </summary>
-    internal interface IDiagnosticLifetimeService
+    public interface IDiagnosticLifetimeService
     {
         /// <summary>
         /// Invoked just as the target process is discovered and is available for diagnostics.

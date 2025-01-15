@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             //We can convert ActionResult to ActionResult<T>
             //and then safely convert back.
-            return controller.InvokeService<object>(() => serviceCall(), logger).Result;
+            return controller.InvokeService<object>(() => serviceCall(), logger).Result!;
         }
 
         public static ActionResult<T> InvokeService<T>(this ControllerBase controller, Func<ActionResult<T>> serviceCall, ILogger logger)
@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             //Task<ActionResult> -> Task<ActionResult<T>>
             //Then unwrap the result back to ActionResult
             ActionResult<object> result = await controller.InvokeService<object>(async () => await serviceCall(), logger);
-            return result.Result;
+            return result.Result!;
         }
 
         public static async Task<ActionResult<T>> InvokeService<T>(this ControllerBase controller, Func<Task<ActionResult<T>>> serviceCall, ILogger logger)

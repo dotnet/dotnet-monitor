@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fconfiguration%2Fcollection-rule-configuration)
-
 # Collection Rule Configuration
 
 `dotnet monitor` can be configured to automatically collect diagnostic artifacts based on conditions within the discovered processes.

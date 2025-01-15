@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fprocesses)
-
 # Processes
 
 The Processes API enables enumeration of the processes that `dotnet monitor` can detect and allows for obtaining their metadata (such as their names and environment variables).

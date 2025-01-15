@@ -9,7 +9,7 @@ parameters:
   type: object
   default:
     name: $(DncEngInternalBuildPool)
-    image: windows.vs2022preview.amd64
+    image: 1es-windows-2022
     os: windows
 - name: sdl
   type: object
@@ -27,13 +27,13 @@ extends:
   parameters:
     containers:
       build_linux_amd64_cross:
-        image: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-amd64
+        image: mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-3.0-net8.0-cross-amd64
       build_linux_arm64_cross:
-        image: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-arm64
+        image: mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-3.0-net8.0-cross-arm64
       build_linux_musl_amd64_cross:
-        image: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-amd64-alpine
+        image: mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-3.0-net8.0-cross-amd64-alpine
       build_linux_musl_arm64_cross:
-        image: mcr.microsoft.com/dotnet-buildtools/prereqs:cbl-mariner-2.0-cross-arm64-alpine
+        image: mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-3.0-net8.0-cross-arm64-alpine
       helix_linux_amd64:
         image: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-20.04
       helix_linux_musl_amd64:

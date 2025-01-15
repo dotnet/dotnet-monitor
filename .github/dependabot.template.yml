@@ -8,9 +8,8 @@
 #! to the list of TFMs that the major version uses for build and test.
 #@ def getTfms():
 #@   return {
+#@     "9": [ "net9.0", "net8.0", "net7.0", "net6.0" ],
 #@     "8": [ "net8.0", "net7.0", "net6.0" ],
-#@     "7": [ "net7.0", "net6.0" ],
-#@     "6": [ "net6.0", "netcoreapp3.1" ]
 #@   }
 #@ end
 
@@ -19,9 +18,8 @@
 #@ def getBranches():
 #@   return [
 #@     struct.encode({"name": "main", "majorVersion": "8"}),
+#@     struct.encode({"name": "feature/9.x", "majorVersion": "9"}),
 #@     struct.encode({"name": "release/8.0", "majorVersion": "8"}),
-#@     struct.encode({"name": "release/7.x", "majorVersion": "7"}),
-#@     struct.encode({"name": "release/6.x", "majorVersion": "6"}),
 #@   ]
 #@ end
 
@@ -41,17 +39,27 @@ updates:
     target-branch: #@ branch.name
     ignore:
       - dependency-name: "Microsoft.Extensions.*"
-        update-types: [ "version-update:semver-major" ]
+        update-types:
+        - "version-update:semver-major"
+#@ if branch.majorVersion == "6":
+      #! The IdentityModel libraries bring in System.Text.Json 8+ starting with 7.7.0.
+      #! Keep the major and minor version pinned to avoid incompatible versions.
+      - dependency-name: "Microsoft.IdentityModel.*"
+        update-types:
+        - "version-update:semver-major"
+        - "version-update:semver-minor"
+#@ end
       - dependency-name: "Moq"
     commit-message:
       prefix: #@ commit_prefix
     groups:
-      azure-storage-dependencies:
+      azure-sdk-dependencies:
         patterns:
+          - "Azure.Core"
+          - "Azure.Identity"
           - "Azure.Storage.*"
       identity-dependencies:
         patterns:
-          - "Azure.Identity"
           - "Microsoft.Identity.*"
           - "Microsoft.IdentityModel.*"
   - package-ecosystem: "nuget"
@@ -69,13 +77,15 @@ updates:
     target-branch: #@ branch.name
     ignore:
       - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
+        update-types:
+        - "version-update:semver-major"
     commit-message:
       prefix: #@ commit_prefix
     groups:
       runtime-dependencies:
         patterns:
           - "Microsoft.Extensions.*"
-          - "Microsoft.NETCore.App.Runtime.*"
+          - "Microsoft.NETCore.DotNetHost"
+          - "System.Text.Json"
 #@ end
 #@ end

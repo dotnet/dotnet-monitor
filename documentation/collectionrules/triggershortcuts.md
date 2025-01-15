@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fcollectionrules%2Ftriggershortcuts)
-
 # Trigger Shortcuts
 
 These triggers simplify configuration for several common trigger use-cases. All of these shortcuts can be expressed as `EventCounter` triggers; however, these shortcuts provide improved defaults, range validation, and a simpler syntax. There are currently three built-in default triggers; additional trigger shortcuts may be added in future versions of `dotnet monitor`.
@@ -38,7 +35,7 @@ Execute a trigger when the target application's CPU Usage is continuously greate
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   CollectionRules__RuleName__Trigger__Type: "EventCounter"
   CollectionRules__RuleName__Trigger__Settings__ProviderName: "System.Runtime"
@@ -80,7 +77,7 @@ Usage that is satisfied when the CPU usage of the application is higher than 50%
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   CollectionRules__RuleName__Trigger__Type: "CPUUsage"
   ```
@@ -128,7 +125,7 @@ Execute a trigger when the target application's GC Heap Size is continuously gre
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   CollectionRules__RuleName__Trigger__Type: "EventCounter"
   CollectionRules__RuleName__Trigger__Settings__ProviderName: "System.Runtime"
@@ -170,7 +167,7 @@ Usage that is satisfied when the GC Heap Size of the application is greater than
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   CollectionRules__RuleName__Trigger__Type: "GCHeapSize"
   ```
@@ -218,7 +215,7 @@ Execute a trigger when the target application's threadpool queue length is conti
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   CollectionRules__RuleName__Trigger__Type: "EventCounter"
   CollectionRules__RuleName__Trigger__Settings__ProviderName: "System.Runtime"
@@ -260,7 +257,7 @@ Usage that is satisfied when the threadpool queue length of the application is h
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   CollectionRules__RuleName__Trigger__Type: "ThreadpoolQueueLength"
   ```

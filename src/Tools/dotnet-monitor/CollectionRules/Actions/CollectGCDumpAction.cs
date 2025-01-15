@@ -44,13 +44,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 _operationFactory = serviceProvider.GetRequiredService<IGCDumpOperationFactory>();
             }
 
-            protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata collectionRuleMetadata)
+            protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata? collectionRuleMetadata)
             {
                 KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_GCDump, EndpointInfo);
 
                 return new EgressOperation(
                     _operationFactory.Create(ProcessInfo.EndpointInfo),
                     Options.Egress,
+                    Options.ArtifactName,
                     ProcessInfo,
                     scope,
                     tags: null,

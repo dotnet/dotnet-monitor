@@ -8,6 +8,7 @@
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
     <ServerGarbageCollection>false</ServerGarbageCollection>
     <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -73,7 +74,6 @@
   <!-- Targets and properties for ensuring publish before pack. -->
   <Import Project="$(RepoRoot)src\archives\AzureBlobStorage\ProjectsToPublish.props" />
   <Import Project="$(RepoRoot)src\archives\S3Storage\ProjectsToPublish.props" />
-  <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.HostingStartup\ProjectsToPublish.props" />
   <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.StartupHook\ProjectsToPublish.props" />
   <Import Project="$(RepositoryEngineeringDir)PublishProjects.targets" />
 
@@ -117,13 +117,6 @@
       </TfmSpecificPackageFile>
       <TfmSpecificPackageFile Include="$(StartupHookSymbolsPath)">
         <PackagePath>tools/$(TargetFramework)/any/shared/any/$(StartupHookTargetFramework)</PackagePath>
-      </TfmSpecificPackageFile>
-      <!-- Pack hosting startup files -->
-      <TfmSpecificPackageFile Include="$(HostingStartupLibraryPath)">
-        <PackagePath>tools/$(TargetFramework)/any/shared/any/$(HostingStartupTargetFramework)</PackagePath>
-      </TfmSpecificPackageFile>
-      <TfmSpecificPackageFile Include="$(HostingStartupSymbolsPath)">
-        <PackagePath>tools/$(TargetFramework)/any/shared/any/$(HostingStartupTargetFramework)</PackagePath>
       </TfmSpecificPackageFile>
 
       <!-- Pack extension files -->

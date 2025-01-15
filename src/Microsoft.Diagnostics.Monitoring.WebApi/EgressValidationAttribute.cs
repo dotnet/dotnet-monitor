@@ -12,7 +12,7 @@ using System;
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-    internal sealed class EgressValidationAttribute : ActionFilterAttribute, IFilterFactory
+    public sealed class EgressValidationAttribute : ActionFilterAttribute, IFilterFactory
     {
         public bool IsReusable => true;
 

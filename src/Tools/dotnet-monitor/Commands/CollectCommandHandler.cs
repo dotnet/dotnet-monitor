@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
-using Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing;
 using Microsoft.Diagnostics.Tools.Monitor.Stacks;
 using Microsoft.Diagnostics.Tools.Monitor.Swagger;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 {
     internal static class CollectCommandHandler
     {
-        public static async Task<int> Invoke(CancellationToken token, string[] urls, string[] metricUrls, bool metrics, string diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress, FileInfo configurationFilePath, bool exitOnStdinDisconnect)
+        public static async Task<int> Invoke(CancellationToken token, string[]? urls, string[]? metricUrls, bool metrics, string? diagnosticPort, bool noAuth, bool tempApiKey, bool noHttpEgress, FileInfo? configurationFilePath, bool exitOnStdinDisconnect)
         {
             try
             {
@@ -114,35 +113,44 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 
                 services.ConfigureDotnetMonitorDebug(context.Configuration);
 
-                services.AddSingleton<IEndpointInfoSource, FilteredEndpointInfoSource>();
-                services.AddSingleton<ServerEndpointInfoSource>();
-                services.AddHostedServiceForwarder<ServerEndpointInfoSource>();
+                services.ConfigureEndpointInfoSource();
+
                 services.AddSingleton<IDiagnosticServices, DiagnosticServices>();
                 services.AddSingleton<IDumpService, DumpService>();
                 services.AddSingleton<IEndpointInfoSourceCallbacks, OperationTrackerServiceEndpointInfoSourceCallback>();
-                services.AddSingleton<IRequestLimitTracker, RequestLimitTracker>();
+                services.ConfigureRequestLimits();
                 services.ConfigureOperationStore();
                 services.ConfigureExtensions();
                 services.ConfigureExtensionLocations(settings);
                 services.ConfigureEgress();
                 services.ConfigureMetrics(context.Configuration);
+                services.ConfigureParameterCapturing();
                 services.ConfigureStorage(context.Configuration);
                 services.ConfigureDefaultProcess(context.Configuration);
                 services.AddSingleton<ProfilerChannel>();
                 services.ConfigureCollectionRules();
                 services.ConfigureLibrarySharing();
-                services.ConfigureProfiler();
-                services.ConfigureStartupHook();
-                services.ConfigureHostingStartup();
-                services.ConfigureExceptions();
-                services.ConfigureStartupLoggers(authConfigurator);
+
+                // 
+                // The order of the below calls is **important**.
+                // - ConfigureInProcessFeatures needs to be called before ConfigureProfiler and ConfigureStartupHook
+                //   because these features will configure themselves depending on environment variables set by InProcessFeaturesEndpointInfoSourceCallbacks.
+                // - ConfigureProfiler needs to be called before ConfigureStartupHook
+                //   because the startup hook may call into the profiler on load.
+                // - ConfigureExceptions needs to be called before ConfigureStartupHook
+                //   because we want to avoid missing exception data events and potentially having an out-of-sync name cache.
+                //
                 services.ConfigureInProcessFeatures(context.Configuration);
+                services.ConfigureProfiler();
+                services.ConfigureExceptions();
+                services.ConfigureStartupHook();
+
+                services.ConfigureStartupLoggers(authConfigurator);
                 services.AddSingleton<IInProcessFeatures, InProcessFeatures>();
                 services.AddSingleton<IDumpOperationFactory, DumpOperationFactory>();
                 services.AddSingleton<ILogsOperationFactory, LogsOperationFactory>();
                 services.AddSingleton<IMetricsOperationFactory, MetricsOperationFactory>();
                 services.AddSingleton<ITraceOperationFactory, TraceOperationFactory>();
-                services.AddSingleton<ICaptureParametersOperationFactory, CaptureParametersOperationFactory>();
                 services.AddSingleton<IGCDumpOperationFactory, GCDumpOperationFactory>();
                 services.AddSingleton<IStacksOperationFactory, StacksOperationFactory>();
 
@@ -152,7 +160,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             })
             .ConfigureContainer((HostBuilderContext context, IServiceCollection services) =>
             {
-                ServerUrlsBlockingConfigurationManager manager =
+                ServerUrlsBlockingConfigurationManager? manager =
                     context.Properties[typeof(ServerUrlsBlockingConfigurationManager)] as ServerUrlsBlockingConfigurationManager;
                 Debug.Assert(null != manager, $"Expected {typeof(ServerUrlsBlockingConfigurationManager).FullName} to be a {typeof(HostBuilderContext).FullName} property.");
                 if (null != manager)

@@ -44,7 +44,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             _operationFactory = serviceProvider.GetRequiredService<IStacksOperationFactory>();
         }
 
-        protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata collectionRuleMetadata)
+        protected override EgressOperation CreateArtifactOperation(CollectionRuleMetadata? collectionRuleMetadata)
         {
             KeyValueLogScope scope = Utils.CreateArtifactScope(Utils.ArtifactType_Stacks, EndpointInfo);
 
@@ -53,6 +53,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             EgressOperation egressOperation = new EgressOperation(
                 stacksOperation,
                 Options.Egress,
+                Options.ArtifactName,
                 ProcessInfo,
                 scope,
                 tags: null,

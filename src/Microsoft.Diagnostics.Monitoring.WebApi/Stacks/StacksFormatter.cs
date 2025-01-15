@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
         public abstract Task FormatStack(CallStackResult stackResult, CancellationToken token);
 
-        protected static string FormatThreadName(uint threadId, string threadName)
+        protected static string FormatThreadName(uint threadId, string? threadName)
         {
             const string Separator = " ";
 

@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Flivemetrics-get)
-
 # Livemetrics - Get
 
 Captures metrics for a chosen process for a duration of time.

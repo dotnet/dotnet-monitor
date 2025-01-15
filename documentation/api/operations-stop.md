@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Foperations-stop)
-
 # Operations - Stop (7.1+)
 
 Gracefully stops a running operation. Only valid against operations with the `isStoppable` property set to `true`, not all operations support being gracefully stopped. Transitions the operation to `Succeeded` or `Failed` state depending on if the operation was successful.

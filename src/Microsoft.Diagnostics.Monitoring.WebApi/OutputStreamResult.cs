@@ -16,10 +16,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     {
         private readonly Func<Stream, CancellationToken, Task> _action;
         private readonly string _contentType;
-        private readonly string _fileDownloadName;
+        private readonly string? _fileDownloadName;
         private readonly KeyValueLogScope _scope;
 
-        public OutputStreamResult(Func<Stream, CancellationToken, Task> action, string contentType, string fileDownloadName, KeyValueLogScope scope)
+        public OutputStreamResult(Func<Stream, CancellationToken, Task> action, string contentType, string? fileDownloadName, KeyValueLogScope scope)
         {
             _contentType = contentType;
             _fileDownloadName = fileDownloadName;
@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _scope = scope;
         }
 
-        public OutputStreamResult(IArtifactOperation operation, string fileDownloadName, KeyValueLogScope scope)
+        public OutputStreamResult(IArtifactOperation operation, string? fileDownloadName, KeyValueLogScope scope)
             : this(operation.ExecuteAsync, operation.ContentType, fileDownloadName, scope)
         {
         }

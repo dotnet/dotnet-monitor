@@ -56,7 +56,7 @@ jobs:
       ${{ if eq(variables['System.TeamProject'], 'public') }}:
         pool:
           name: $(DncEngPublicBuildPool)
-          demands: ImageOverride -equals Build.Ubuntu.1804.Amd64.Open
+          demands: ImageOverride -equals Build.Ubuntu.2204.Amd64.Open
           os: linux
 
       # Official Build Linux Pool
@@ -70,7 +70,7 @@ jobs:
     ${{ if in(parameters.osGroup, 'MacOS') }}:
       pool:
         name: Azure Pipelines
-        vmImage: macos-11
+        vmImage: macos-15
         os: macOS
 
     ${{ if ne(parameters.container, '') }}:
@@ -108,7 +108,6 @@ jobs:
       - _CrossBuildArgs: '-cross'
 
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
-      - group: DotNetBuilds storage account read tokens
       - _InternalInstallArgs: >-
           -RuntimeSourceFeed https://dotnetbuilds.blob.core.windows.net/internal
           -RuntimeSourceFeedKey $(dotnetbuilds-internal-container-read-token-base64)
@@ -139,6 +138,9 @@ jobs:
 
     - ${{ each step in parameters.preBuildSteps }}:
       - ${{ step }}
+
+    # Populate internal runtime access variables
+    - template: /eng/common/templates/steps/enable-internal-runtimes.yml
 
     - script: >-
         $(Build.SourcesDirectory)/eng/cibuild$(scriptExt)

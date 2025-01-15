@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi-key-format)
-
 # API Key Format
 API Keys or MonitorApiKeys used in `dotnet monitor` are JSON Web Tokens or JWTs as defined by [RFC 7519: JSON Web Token (JWT)](https://datatracker.ietf.org/doc/html/rfc7519).
 > [!IMPORTANT]
@@ -31,12 +28,18 @@ The header (decoded from the token above) must contain at least 2 elements: `alg
 > The `alg` requirement is designed to enforce `dotnet monitor` to use public/private key signed tokens. This allows the key that is stored in configuration (as `Authentication__MonitorApiKey__PublicKey`) to only contain public key information and thus does not need to be kept secret.
 
 ### Payload
-The payload (also decoded from the token above) must contain at least 2 elements: `aud` (or [Audience](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.3)), and `sub` (or [Subject](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2)). `dotnet monitor` expects the `aud` to always be `https://github.com/dotnet/dotnet-monitor` which signals that the token is intended for dotnet-monitor. The `sub` field is any non-empty string defined in `Authentication__MonitorApiKey__Subject`, this is used to validate that the token provided is for the expected instance and is user-defined in configuration.
+The payload (also decoded from the token above) must contain at least 4 elements: `aud` , `exp`  `iss`, and `sub`.
+- The `aud` field ([Audience](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.3)) must to always be `https://github.com/dotnet/dotnet-monitor` which signals that the token is intended for dotnet-monitor.
+- The `exp` field ([Expiration](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.4)) is the expiration date of the token in the form of an integer that is the number of seconds since Unix epoch.
+- The `iss` field ([Issuer](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1)) is any non-empty string defined in `Authentication__MonitorApiKey__Issuer`, this is used to validate that the token provided was produced by the expected issuer. If `Authentication__MonitorApiKey__Issuer` is not specified, the value in the token must be `https://github.com/dotnet/dotnet-monitor/generatekey+MonitorApiKey`.
+- The `sub` field ([Subject](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2)) is any non-empty string defined in `Authentication__MonitorApiKey__Subject`, this is used to validate that the token provided is for the expected instance and is user-defined in configuration.
 
-When using the `generatekey` command, the `sub` field will be a randomly-generated `Guid` but the `sub` field may be any non-empty string that matches the configuration. The `iss` (or [Issuer](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1)) field will be set to `https://github.com/dotnet/dotnet-monitor/generatekey+MonitorApiKey` to specify the source of the token, however `dotnet monitor` will accept any `iss` field value, and does not need to be present.
+When using the `generatekey` command, the `sub` field will be a randomly-generated `Guid` but the `sub` field may be any non-empty string that matches the configuration. The `iss` (or [Issuer](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1)) field will be set to `https://github.com/dotnet/dotnet-monitor/generatekey+MonitorApiKey` to specify the source of the token.
+
 ```json
 {
   "aud": "https://github.com/dotnet/dotnet-monitor",
+  "exp": "1713799523",
   "iss": "https://github.com/dotnet/dotnet-monitor/generatekey+MonitorApiKey",
   "sub": "ae5473b6-8dad-498d-b915-ffffffffffff"
 }

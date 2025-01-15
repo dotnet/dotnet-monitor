@@ -1,8 +1,9 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing;
-using Microsoft.Diagnostics.Monitoring.HostingStartup.ParameterCapturing.FunctionProbes;
+using Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing;
+using Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.FunctionProbes;
+using Microsoft.Diagnostics.Monitoring.StartupHook;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using SampleMethods;
 using System;
@@ -57,6 +58,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 { TestAppScenarios.FunctionProbes.SubScenarios.RecursingProbe, Test_RecursingProbeAsync},
                 { TestAppScenarios.FunctionProbes.SubScenarios.RequestInstallationOnProbeFunction, Test_RequestInstallationOnProbeFunctionAsync},
 
+                /* Monitor context */
+                { TestAppScenarios.FunctionProbes.SubScenarios.ProbeInMonitorContext, Test_DontProbeInMonitorContextAsync}, 
+
                 /* Self tests */
                 { TestAppScenarios.FunctionProbes.SubScenarios.AssertsInProbesAreCaught, Test_AssertsInProbesAreCaughtAsync},
             };
@@ -66,10 +70,10 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 CliCommand testCaseCommand = new(subCommand);
                 testCaseCommand.SetAction((result, token) =>
                 {
-                    return ScenarioHelpers.RunScenarioAsync(async logger =>
+                    return ScenarioHelpers.RunScenarioAsync(async _ =>
                     {
                         PerFunctionProbeProxy probeProxy = new PerFunctionProbeProxy();
-                        using FunctionProbesManager probeManager = new(logger);
+                        using FunctionProbesManager probeManager = new();
 
                         await testCase(probeManager, probeProxy, token);
 
@@ -365,12 +369,29 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
             });
         }
 
+        private static async Task Test_DontProbeInMonitorContextAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token)
+        {
+            MethodInfo method = typeof(StaticTestMethodSignatures).GetMethod(nameof(StaticTestMethodSignatures.NoArgs));
+            probeProxy.RegisterPerFunctionProbe(method, (object[] actualArgs) =>
+            {
+            });
+
+            await probeManager.StartCapturingAsync(new[] { method }, probeProxy, token);
+
+            using (IDisposable _ = MonitorExecutionContextTracker.MonitorScope())
+            {
+                StaticTestMethodSignatures.NoArgs();
+            }
+
+            Assert.Equal(0, probeProxy.GetProbeInvokeCount(method));
+        }
+
 
         public static Task<int> ValidateNoMutatingProfilerAsync(ParseResult result, CancellationToken token)
         {
-            return ScenarioHelpers.RunScenarioAsync(logger =>
+            return ScenarioHelpers.RunScenarioAsync(_ =>
             {
-                Assert.Throws<DllNotFoundException>(() => new FunctionProbesManager(logger));
+                Assert.Throws<DllNotFoundException>(() => new FunctionProbesManager());
 
                 return Task.FromResult(0);
             }, token);
